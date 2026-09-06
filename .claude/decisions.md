@@ -8806,6 +8806,91 @@ non-vacuous — against the old stripper the planted use drops 2 occurrences →
 24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
 four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
 
+## D661 [INCIDENT] — CHECK 5's comment stripper swallowed 715 lines; all 24 advisories were false (2026-08-18)
+
+`check-dead-controls.js` printed **24 dead-assignment advisories on every build, every one false,
+all on `sgs/hero`**. `stripPhpCommentsForAssignmentCheck()` stripped `/* */` block comments in a
+pass BEFORE `//` line comments. `hero/render.php:313` is an ordinary line comment reading
+`the *Tablet/*Mobile siblings …` — the `/*` inside it opened a phantom block comment that did not
+close until another `//` comment at `:1028` happened to contain `*/`. ~715 lines were deleted before
+the liveness check ran, including every genuine use of the attributes then reported dead.
+
+**The first diagnosis was wrong and is recorded here because the wrong one is instructive:** the
+liveness logic (Rule 3) was blamed and is in fact correct. Prescribing "make it test variable
+liveness" would have sent someone rewriting working code and left the bug. Fixed with a single
+alternation pass so whichever comment style STARTS FIRST wins — reordering the two passes instead
+would only mirror the defect (a `//` comment containing `*/` would leave an unterminated `/*` and
+leak comment text back in, a false NEGATIVE).
+
+CHECK 4's shared `stripComments()` already carried a regression test for this exact shape; CHECK 5's
+separate *"a simpler pass is sufficient"* stripper never did. It does now (Test G), proven
+non-vacuous — against the old stripper the planted use drops 2 occurrences → 1 and the test fails.
+24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
+four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
+
+## D662 [ROUTINE] — device-tier breakpoint 599→767 on 4 stylesheets, NOT 9 (2026-08-18)
+
+`SGS_Breakpoints::MOBILE_MAX = 767`, but `info-box`, `tabs` (×2), `gallery` and `post-grid` still
+stacked at 599px — so at 600–767px they kept their wider layout while the shared wrapper had already
+switched to the mobile tier. Fixed, deployed, live-verified on the canary.
+
+Three scoping decisions, each of which a blanket sweep would have got wrong:
+- **`form/style.css:120` deliberately untouched.** Its 599px sits inside
+  `@supports not (container-type: inline-size)` — a container-query fallback, not a device tier.
+- **`post-grid` needed a companion edit.** Its tablet block is an explicit RANGE
+  (`600px <= width <= 1023px`), not a cascading max-width, so raising the mobile ceiling alone would
+  have left 600–767px matching both blocks — tablet wins on source order and silently cancels the fix.
+- **`countdown-timer`, `google-reviews`, `process-steps`, `trust-bar` excluded** — cosmetic rules
+  (font-size/gap/padding/touch-target); two already carry correct 767px tiers elsewhere.
+
+⚠ CLAUDE.md cites "D228, unified 2026-06-16" for the 599 retirement. **That D-number does not
+resolve to that content.** The 767/1023 standard is real and verified in code; the citation is not.
+Commit `efe5c2a3`; evidence `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md`.
+
+## D663 [ROUTINE] — Stage 8 runtime audit: ONE Lighthouse run, not three bespoke scripts (2026-08-18)
+
+`plans/strategy/chrome-devtools-stage-8-integration.md` specified three scripts, each "calling" a
+Chrome DevTools **MCP** tool. Two corrections, both load-bearing:
+
+1. **A Node script cannot invoke an MCP tool** — MCP is an agent-session channel. As specified these
+   would only ever run with Claude driving. Built as real scripts (Playwright/`lighthouse`) so they
+   run in CI unattended.
+2. **Lighthouse already ships two of the three audits** (`errors-in-console`, `network-requests`), so
+   two scripts would have re-implemented Google's own work. One browser run now yields Core Web
+   Vitals + console + network. Found by GitHub research BEFORE building, at Bean's prompting.
+
+Cross-tier review then proved the first cut **reported OVERALL PASS on a page that never loaded** —
+seven scenarios incl. main-document 404/500 — because Lighthouse returns an `lhr` carrying
+`runtimeError` rather than throwing, and nothing read it. Also proved the self-test could not detect
+**8 of 10** injected mutations, including `>` → `>=` on all four CWV thresholds. Fixed: new `error`
+severity ranked worse than `critical` (distinguishing *this page is bad* from *we could not measure
+it*); self-test 24 → 68 assertions with exact-boundary and per-field value checks. A missing
+`favicon.ico` no longer fails the gate — Lighthouse reports network 404s as console errors, and
+console-`critical` now counts genuine JS exceptions only. **Deliberately NOT wired into `prebuild`:
+it needs a live URL, and a gate that silently passes when the target is unreachable is worse than
+none.** PR #31, not merged.
+
+## D664 [ROUTINE] — plans-folder audit: 14 archived, verified against source not status lines (2026-08-18)
+
+38 plan docs audited by checking **code**, not the docs' own `status:` lines — which were wrong in
+both directions. 14 archived (plans root 29→20, strategy 9→4), **58 citations repointed first**.
+
+The load-bearing finding is where the citations were: four `mega-aside` source files carry
+`GROUND-TRUTH: verified against …` headers, eleven strict-`xfail` test decorators name a plan as the
+record for the Spec 39 residual they carry, and `goals.md` — an ACTIVE doc — cites three "dead"
+April docs across four live goal rows. A docs-only sweep would have broken all of it.
+
+⚠ **`handoff-preflight.py`'s dangling-link check does not cover this.** It scans three files and only
+`[text](path.md)` markdown syntax — structurally blind to code comments, spec body text and
+`goals.md`. The repo-wide `git grep` was the real gate; preflight is secondary. Do not cite it as
+proof that a doc move is safe.
+
+Bean's rulings recorded: Spec 31 is superseded by **Spec 39** (archive-and-salvage the current
+converter scripts, do not delete); Snooza remains live; the leftover `scroll-smoother` registry row
+stays (inert, and unrelated to the Lenis desktop smooth-scrolling that is actually shipped).
+Reference docs fold into specs as **Parts** (`Spec 35 Part O` precedent) — decimal `spec_id`s were
+rejected because the spec template mandates `spec_id: <N>  # integer`.
+
 ## D656 [ROUTINE] — Step 1b added: unnumbered normative statements are TRIAGED, never demoted (2026-08-18)
 
 S1 found all six of Spec 32 §3's "hard constraints" were binding, unnumbered and carried no

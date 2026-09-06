@@ -1,282 +1,219 @@
 ---
 doc_type: state
 project: small-giants-wp
-last_updated: 2026-09-06 (nav-drawer discriminator actually closed + Check #12 fully cleared — D974)
+last_updated: 2026-08-18
 note: "THE single living-status doc. REPLACED each session, never appended. History → memory/session-YYYY-MM-DD*.md (ledger-rotate.py Stop hook snapshots automatically past the cap but NEVER edits this file). Structural defences live UNCAPPED in STOP-CATALOGUE.md. Keep < 24576 bytes."
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
-## Human Summary
+## Human Summary — FOR BEAN, plain English (read this first)
 
-Plain English, for Bean. The framework is a WordPress block system that clones any design draft
-into native blocks a non-technical client can then edit. Multiple sessions share one `main`
-concurrently, every session — treat this as the norm, not the exception (this session ran
-alongside 150+ peer sessions on the same tree, coordinated via re-verification not trust).
+**S1 of the verification programme ran, and it worked — 199 of 219 points in Spec 32 now carry a
+verdict backed by a command and its raw output. Along the way it found three real bugs that every
+existing gate had passed.**
 
-**2026-09-06 (this session, `small-giants-wp-90` continuation) — closed the Spec 32/35 gates
-track; caught + reverted a real shared-mechanism mistake same night; opened a new typography
-full-replacement track with its foundation shipped.** Deployed + live-verified the 3 D812
-control-shape fixes (hero/modal/trustpilot-reviews), unblocked by a genuine cross-session
-database-write collision that 3 peer sessions helped diagnose live (no bypass needed in the
-end — the actual owner landed their fix first). A mechanical rule-41 batch then built an
-unauthorised colour-panel placement mechanism across 10 blocks, contradicting an architecture
-rule already documented ~6 days earlier that nobody checked first — caught by a proactive audit,
-reverted, and the detector itself taught the real rule instead (D970, [INCIDENT]). Rule 41:
-45 -> 26 (10 real scattering left, 16 unrelated pre-existing `dom-order` debt). Rule 43: a real
-accessibility bug found and fixed (table-of-contents' active-page underline was losing to a
-generic site-wide hover animation on specificity), committed not yet deployed. **New track
-opened at Bean's direction: fully replace native WordPress typography with the framework's
-shared component everywhere** — a claimed blocker (CSS inheritance) was checked and disproven
-(D971); a real 84-block census, a new detector (rule 45, 29 findings), and a backward-compatible
-multi-target switcher component all shipped and verified same night (D972); a suspected helper
-bug was investigated and DISPROVED rather than "fixed" (nothing was broken). Full orchestration
-for what's left: TYPOGRAPHY FULL-REPLACEMENT TRACK below.
+**The method proved itself.** Last session's audit produced claims nobody had tested. This session
+every claim got a prediction written before anything ran, then a command, then its output. The
+pleasant surprise: the status table that carries its own warning ("this is a cache, re-derive before
+quoting") turned out to be accurate on all 12 rows. The thing that had been hedged hardest was the
+thing that held up.
 
-**2026-09-06 (same-day continuation, `small-giants-wp-30`) — Tasks 1+2 of the typography track
-shipped, 23 blocks, 2 merged PRs; a codemod was ruled out by evidence; the shared helper gained a
-real capability.** Resolved the 3+ day orphaned stash (checked every file against `main`, all 26
-superseded — dropped). Migrated all 19 native-only blocks + tidied all 4 duplicate-logic blocks
-onto the shared `TypographyControls`/`sgs_typography_css_rule()` mechanism — PR #40 (`0e3a1447f`)
-+ PR #41 (`ddf04a5ea`), both merged. Bean asked mid-session whether a `--fix` codemod could
-replace the per-block agent dispatch; investigation found the "one shape" premise false (prefix
-varies by target element, detected only by reading each block's own `selectors.typography`) —
-proven concretely when 3 of 19 candidates (`heading`/`label`/`text`) independently stopped on the
-same real gap a codemod would have silently mismigrated. That gap (a theme font-size PRESET slug
-inside a tiered object — live-reachable, not theoretical) was root-caused and fixed in the shared
-helper itself via its pre-existing `transform` extension point, verified by 11 EXECUTED
-assertions against the real helper, not just read-through (D973). rule 45 findings: 29 → 6 (the
-remainder is Task 3's genuine conflicts + 2 known false alarms). **Deploy still pending** — full
-detail + next steps: TYPOGRAPHY FULL-REPLACEMENT TRACK below + D973.
+**Three real bugs, all invisible to the ~50-gate build chain because the code is syntactically
+perfect.** First: the button's "reduce motion" rule could never match anything, so anyone browsing
+with motion reduced still got the animation. Second — and this is the big one — **72 colour
+references across the whole framework pointed at colour names that don't exist.** Nothing looked
+broken, because each one had a hardcoded fallback that quietly won. The cost was invisible: those
+72 properties could never change colour per client. A framework block was serving Mama's beige to
+every client on the platform. Third: a spec requirement said "there should be a lint check for this"
+— and that check had never been built, for months.
 
-**2026-09-06 (separate parallel session) — colour-conformance: `svg-paint-gradient` end-shape
-CLOSED, `fill-custom-property-gradient` codemod hardened, a real `business-info` control bug
-fixed by eye.** The session's opening prompt undercounted scope (named ~7 rows across 3 blocks);
-re-running the real census (`classify-end-shape.js`) found 136 rows across 7 end-shapes. Closed
-`svg-paint-gradient` in full (`before-after.handleIconColour`, converted to the shared icon
-mechanism 11 other blocks already use) after discovering its apparent 2nd row was a
-misclassification from a stale block.json manifest entry. Hardened the
-`fill-custom-property-gradient` codemod (2 real detector bugs fixed as universal widenings, not
-per-row patches) and ran it on 2 rows. Separately fixed a real `business-info` design flaw Bean
-found by reading the controls (dead hover-colour pickers, pointless clickable toggles, a
-silently-wrong dropdown) — never a codemod row. All merged to `main` via PR #43, live-verified.
-Full detail: COLOUR TRACK below + `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
+**You spotted the thread that unravelled the big one.** Noticing that `border-subtle` existed without
+a plain `border` led to finding that most of the 72 were WordPress's own colour names, used by
+mistake instead of ours. The palette is now 21 colours with every family complete, and two new gates
+make the whole class of mistake impossible to reintroduce.
 
-**2026-09-06 (`small-giants-wp-26` continuation) — nav-drawer's `two-column-editorial` variant
-is genuinely detectable now (D969 alone hadn't closed it); Check #12 fully cleared, not
-baselined; a real schema-drift gap caught unprompted and fixed.** D969's composition tiebreaker
-(below) left this variant still returning `None` — its two candidate discriminators
-(`itemFontSize` seeded flat against a tiered schema; `listColumns` with zero CSS routing) were
-both unusable from a real clone. Fixed for real + confirmed live via `detect_variant()`
-(`3e8006dea`, merged `68378ab86`). Separately closed all 15 baselined Check #12
-(order-dependent role-resolution guard) findings — `db-consistency-baseline.json` back to `[]`
-— via 9 direct declarations, a widened `canonical_slot_aliases` mechanism, and a new
-container-marker resolver rule. Caught + fixed a `schema.sql` drift (2 tables from earlier
-work, 2 new columns from this session, `81852feaa`) via `check_schema_drift.py`, run
-unprompted. Full detail: D974.
+**What I got wrong, repeatedly.** About twelve of my own measurements were wrong before they were
+right — a bad regex, the wrong shell, a parser that misread its own output. Every single one was
+caught by re-reading the raw output instead of trusting the tool. One is worth naming: a check I
+wrote returned "passed" without ever looking at its own result, and reported a clean bill of health
+on a real defect. I also had a subagent revert one of my fixes mid-deploy.
 
-**Prior sessions, all historical and fully closed — narrative moved to their D-numbers, not
-repeated here:** `is_responsive` tidy-up (D968, `148e83bfd`); colour-conformance "remaining 8
-hard rows" + reseed-conflict fix (D964); a token-limit-truncated session's hand-wiring verified +
-committed (D963); Spec 32/35 gates closure by the session this one continues, prior to tonight's
-final closure above (superseded — see SPEC 32/35 GATES TRACK below); CHECK A editor-canvas
-210->0 across 2 concurrent sessions (D965/D967); 4 dead-attribute bugs + a composition-detection
-signal that turned out only PARTIALLY to fix nav-drawer's variant detection (D969, PR #38 —
-actually closed by D974 above, correcting this line). Full per-session detail:
-`memory/session-2026-09-04*.md`, `memory/session-2026-09-05*.md`.
+**Where it stands.** Steps 1–4c of S1 are done. Steps 5, 6 and 7 (write the verdicts into the spec,
+reverse-check, close) remain, and the full open list is written up so the next session starts cold
+without losing anything.
 
-**Canary:** sandybrown-nightingale-600381.hostingersite.com; no live client sites yet.
+## Shipped today
+
+| What | Detail lives at |
+|---|---|
+| **S1 verdicts — 199/219 DONE, 0 AGENT-classed, 0 live points carried** | `.claude/reports/2026-08-18-spec32-points-roster.json` |
+| **Open-points report — what remains, why, and what closes it** | `.claude/reports/2026-08-18-s1-open-points.md` |
+| `sgs/button` reduced-motion rule fixed (live-proven 0→1 match) + `check-id-scoped-emits.js` | D657 · `f52c6b53` |
+| 72 phantom colour refs fixed; palette completed to 21 slugs across 9 files | D658 · `0def190f` |
+| `check-palette-slug-refs.py` + `check-preset-token-naming.py` (FR-32-9's own missing gate) | `0def190f` |
+| Step 1b (triage unnumbered normative statements) added to the programme plan | D656 · `6ed24ee5` |
+| Tree cleaned — hook artefacts, LEDGER pointer, 3 untracked reports committed | `010d7d41`–`62855152` |
+| **[2nd thread] Plans-folder audit — 14 docs archived, 58 citations repointed first. Plans root 29→20, strategy 9→4** | `4dd5f895` · `69fe8024` · this session |
+| **[2nd thread] `check-dead-controls` CHECK 5 — 24 false advisories → 0.** Comment-stripper ran `/* */` before `//`, so a `//` comment containing `/*` swallowed 715 lines of `hero/render.php` | D661 · `a2bdbae7` |
+| **[2nd thread] Device-tier breakpoint 599→767 on 4 stylesheets** (+ post-grid companion range). Live-verified on canary; `form` deliberately untouched | D662 · `efe5c2a3` · `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md` |
+| **[2nd thread] Stage 8 runtime audit — CWV + network + console from ONE Lighthouse run** | D663 · **PR #31**, not merged |
+
+## Blockers
+
+**One, and it is contained.** `push-theme-snapshot.py` aborts safely for mamas-munches — it refuses
+to write `wp_global_styles` without a verified rollback backup, and its own REST read reports
+unavailable. **The credentials are fine** (`curl` against `/wp-json/wp/v2/global-styles/7` returns
+HTTP 200), so the fault is inside the script. Consequence: the canary serves the framework `border`
+(#D4DBE5) instead of mamas' (#e8d5c0), so product-card borders render grey-blue rather than beige.
+The local snapshot is correct; only the live DB layer is stale.
+
+## THE FRONT — close the WHOLE of S1, then S2
+
+**Goal: S1 finishes.** Not "make progress on S1" — every open point either closes with evidence, or
+is recorded as genuinely unclosable with the named blocker. Then Spec 32 is written once and
+committed. Total ~3h.
+
+### ⛔ MANDATORY READING GATE — read these IN FULL before touching anything
+
+Not a skim, not a grep. The 2026-08-17 session failed precisely by acting on a summary of a document
+rather than the document.
+
+| Read fully | Why |
+|---|---|
+| **`.claude/reports/2026-08-18-s1-open-points.md`** | THE brief. Separates what is settled-and-needs-transcribing from what is genuinely open. Read this first |
+| **`.claude/reports/2026-08-18-spec32-points-roster.json`** | All 219 points with prediction, command, raw output, verdict, evidence. The evidence base for Step 5 |
+| **`.claude/plans/2026-08-17-spec-verification-programme.md`** | The loop, the verification ladder, Step 1b, Step 4c, the 8-condition done-gate |
+| **`.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`** | The doc being corrected — END TO END, per the programme's own rule |
+| **`.claude/STOP-CATALOGUE.md`** | §E16 is this session's five new entries, all earned by real failures |
+
+**Self-check before Task 1:** can you name the 3 SUPERSEDED entries to delete, the 10 stale claims to
+correct, and the 4 points that need a fixture? If not, re-read — the brief already lists all of them.
+
+⛔ **Do NOT read `decisions.md` end-to-end.** Consult a specific D-number only while investigating a
+specific point, and only for *why* — never for what is true.
+
+### Task 1 — unblock the canary palette push `[start here, it gates Task 3]`
+**What:** Fix `push-theme-snapshot.py`'s `wp_global_styles` read, push mamas-munches, confirm `border`
+resolves to `#e8d5c0` live (currently serving the framework `#D4DBE5`).
+**Why:** Blocks `ACC-03`. The credentials are fine — `curl -u` against `/wp-json/wp/v2/global-styles/7`
+returns HTTP 200 — so the fault is inside the script.
+**Orchestration:** delegated, **sonnet** via `/delegate`. ⛔ Dispatch prompt MUST forbid mutating any
+repo file as a fixture (D659). ⛔ Never `--force-no-backup`.
+**Acceptance:** `border` = `#e8d5c0` at `:root` on the canary, verified live not by exit code. **~25 min.**
+
+### Task 2 — build ONE probe page, close 4 live points
+**What:** A canary page carrying `social-icons` + `card-grid` + `trust-bar` (repeaters), an instance
+with a real per-instance override, and an asymmetric 4-side box.
+**Closes:** `FR-32-4a` positional integrity · `FR-32-10` · `§6.1(e)` · `FR-32-4`.
+**Orchestration:** inline (Playwright) — cannot be delegated, needs the editor and the eye.
+**Parallel with:** Task 1. **Acceptance:** all 4 rows carry `LIVE` evidence. **~30 min.**
+
+### Task 3 — the remaining close-outs
+**a.** `ACC-03` re-skin (Bean-approved): edit `buttonPresets.primary.text`, push, measure, revert.
+**Depends on Task 1.**
+**b.** `§6.2(d)` head mode: flip `sgs_css_output_mode`, measure, flip back.
+**c.** `NFR-02` editor parity: open the editor, compare against the frontend.
+**d.** `ACC-05`: render a site actually running the fallback path.
+**e.** `NFR-03`: add `:focus-visible` to the 5 blocks that have `:hover` without it — `hero`,
+`icon-list`, `mega-panel`, `process-steps`, `testimonial`.
+**f.** `text-secondary`: framework code reads a slug only 5 clients declare. Decide — seed it for all,
+or drop the reference. Then tighten `check-palette-slug-refs.py` to per-client resolution.
+**Orchestration:** a–d inline; e–f may delegate to sonnet. **~50 min.**
+
+### Task 4 — Step 5: write every verdict into Spec 32 `[the deliverable]`
+**What:** 10 stale claims corrected, 3 SUPERSEDED entries DELETED, §12.2 rewritten for the 21-slug
+roster, the two discharged "live not re-run" caveats dropped. All listed in the brief.
+**Orchestration:** inline (Opus) — governing doc, never delegated.
+**Depends on:** Tasks 1–3 (so the doc is written ONCE, per Step 4c). **/qc gate:** `/qc-inline`.
+**Acceptance:** no claim in Spec 32 disagrees with the roster. **~40 min.**
+
+### Task 5 — Steps 6 + 7: reverse check, cross-spec, commit `[close]`
+**What:** Find what exists in code but is absent from Spec 32. Already banked: 3 undocumented
+`nth-child` emitters (`gallery:438`, `google-reviews:488`, `pricing-table:244`) and the dead page-144
+canary reference in root `CLAUDE.md`. Move other-spec items to their owning spec, then commit.
+**Orchestration:** sonnet scans, **verified inline** — re-derive every count before writing it (D660).
+**Acceptance:** the programme's 8-condition done-gate, all eight. **~35 min.**
+
+```
+Task 1 (sonnet) ── Task 2 (inline, parallel)
+      └─> Task 3a          Task 3b-f
+              └──────┬──────┘
+                  Task 4 (Step 5, inline)  ← doc written ONCE
+                     └─> Task 5 (Steps 6+7) ─> commit ─> S1 CLOSED
+```
+
+### Then S2 — Spec 35 Parts A–L
+Per the programme. ⛔ NEVER S2 ∥ S3 (same file). ⛔ ONE canary lock.
+
+## Open — carried
+
+- **`text-secondary` is a client-only slug that framework code reads.**
+  `includes/variations/sgs-text-variations.php:83` references it; only 5 clients declare it, so
+  helping-doctors / indus-foods / mamas-munches fall back forever. ⚠ `check-palette-slug-refs.py`
+  does NOT catch this by design — it accepts a slug declared by ANY client. Per-client resolution is
+  the durable fix.
+- **5 blocks have `:hover` with no `:focus-visible`** (§5's a11y NFR): `hero`, `icon-list`,
+  `mega-panel`, `process-steps`, `testimonial`. 35 blocks comply.
+- **Four points need a fixture that does not exist** — `FR-32-4a` positional integrity (needs a page
+  with social-icons/card-grid/trust-bar), `FR-32-10` (asymmetric 4-side box), `§6.1(e)`/`FR-32-4` (an
+  instance with a real override). **One probe page closes three of them.**
+- **`ACC-03` re-skin** — Bean approved running it; blocked behind the canary push.
+- **`inspector-scan` rule 21 is unhealthy on `main`** — `--self-test` FAILS at HEAD; treat as tier 4.
+- **45 attributes a client can never reach** — needs per-attribute judgement, not a blind fix.
+- **Two dead components** (`StateToggleControl`, `SgsLinkControl`) — clutter, not gaps.
+- **Two parallel hover systems** — the COLOUR subset already uses the D609 toggle; re-derive what is
+  genuinely still duplicated before treating it as a defect.
+- **Six gates look like enforcement and are not** — 5 shell-neutralised by `|| echo [ADVISORY]`.
+- ~~17 stale agent worktrees~~ — **RESOLVED 2026-08-18.** `git worktree list` returns only the
+  live checkouts and `.claude/worktrees/` is empty. The `git grep`-not-`grep -r` guardrail below
+  still stands on its own merits, but the ~18× inflation this item warned about is gone.
+
+## Methodology guardrails (carried forward — all still true)
+
+- ⛔ **`git grep` only, never `grep -r`** — 17 stale worktrees inflate counts ~18×.
+- ⛔ **Never pipe a population-defining survey through `head -N`.** Count first (`| wc -l`).
+- ⛔ **`$?` after a pipe reads the LAST command's status.** Redirect first.
+- ⛔ **`git grep -c` with an explicit path prints `path:count`, not a bare integer.** An `isdigit()`
+  test on it manufactured **9 false NOT-DONE verdicts** in one pass (2026-08-18).
+- ⛔ **Python `shell=True` on Windows is cmd.exe, not bash.** Quoted git pathspecs silently match
+  nothing; two logically-opposite greps both returned 0. The tell: every fixture gave identical output.
+- ⛔ **A regex `\b` after a slug matches inside a hyphenated sibling** — `contrast\b` matched inside
+  `contrast-2` and rewrote it to `text-2`.
+- ⛔ **A name-mention is not a usage.** A string match for `SGS_Container_Wrapper` reported all 12
+  composites as using it; real call-detection gave a perfect 6/6 block-private / 6/6 wrapper split.
+- ⛔ **A verdict function needs the same can-this-fail proof as a gate** (D660).
+- ⛔ **A subagent must never mutate a repo file as a test fixture** — require temp fixtures (D659).
+- ⛔ **Metadata is not evidence.** Filename, line count, file existence, grep-hit count — open the file.
+- **A completeness error is invisible to every correctness gate.**
+- **A pre-commit gate can fail SILENTLY** after ~250 lines of passing output — never `--no-verify`;
+  use the scoped `SGS_VISUAL_GATE_SKIP` + `SGS_VISUAL_GATE_REASON`.
+- **Run builds synchronously, never backgrounded.**
+- **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
 
 ## State Snapshot
 
-- **Prior sessions' commits (`main`), all closed, full detail in their D-numbers, recoverable via
-  `git log`:** `148e83bfd` (is_responsive, D968); `daddbbb1b`/`bd4076235`/`358584e79`/`2fb58e412`
-  + PR #38 (`9c40ab746`)/`85f6e313f` (CHECK A + nav-drawer composition-tiebreaker, D965/D967/D969,
-  task-ledger `.claude/memory/sdd-progress.md`); `ed9e9ccda`/`aa8e6f5c3`/`9e82fa272`/`533634eb6`
-  (colour-conformance 7-row fix + reseed-survival, D964); `f351464db`/`3e8006dea` merged
-  `68378ab86` (nav-drawer discriminator actually closed + Check #12, D974) + `81852feaa`
-  (schema.sql drift fix, D974).
-- **Branch:** `main`. This session ran alongside 150+ peer sessions (`ListAgents`) committing
-  concurrently — path-scope every commit, re-check `git status`/branch immediately before each
-  one. The shared `sgs-framework.db` is a live-write target too, not just the git tree — a
-  concurrent session's own write can silently wipe a fresh insert with no error (D964). Re-verify
-  DB row counts after any write, don't assume they hold.
-- **Build:** green — `npm run gate:fast` passing on every commit this session (pre-existing,
-  unrelated findings bypassed via `SGS_F5_SKIP`, D964).
-- **Spec 32/35 gates track — CLOSED this session.** The 3 D812 control-shape fixes
-  (`ba5dc407f`/`fee0631b8`/`c7f25aa75`) are now deployed + live-verified. Rule-41 colour-panel
-  correction: `5f0c2e2d0` (revert), `c330f2a6b` (detector taught the real exemption),
-  `ed41a61c9` (real independent bug, `responsive-logo` attrMap gap). Rule-43 accessibility fix
-  (table-of-contents underline): `93dacf0d4`, committed not yet deployed. See D970 for the
-  incident narrative.
-- **Typography full-replacement track commits:** `2750f1a1e` (detector rule 45), `2e61e9803`
-  (switcher API on `TypographyControls.js`), `90b50989a` (switcher wired on `card-grid`) — all
-  foundation, D972. Migration: PR #40 `0e3a1447f` (19 blocks + button), PR #41 `ddf04a5ea` (shared
-  helper widened + heading/label/text) — D973. See TYPOGRAPHY FULL-REPLACEMENT TRACK below.
-- **Live fronts:** `31-golden-colour-control` — down to the 8 rows named above (from 241 at
-  session 8). `45-typography-full-replacement` — 6 findings (down from 29; the remainder is
-  Task 3's 4 genuine conflicts + 2 known false alarms). Everything else in this track's original
-  scope unchanged from session 10.
-- **Orphaned stash — RESOLVED 2026-09-06.** `stash@{0}` (26 files, base `7a2c68b05`) checked
-  file-by-file against `main`: every change was superseded (hover-safety codemod shipped
-  separately, WCAG contrast rollout resolved+archived, a dedup landed, the webgl file moved on via
-  its own commits). Dropped. Not open work any more — do not re-flag it.
-- **Per-track detail:** each `## ▶ … TRACK` section below owns its own status. Read only yours.
-  Closed-track narrative lives in `memory/session-2026-09-04-tracks-history-sweep.md`, not here.
+- **Branch:** `main` at `12b70c6f`. 6 commits this session, all pushed.
+- **D-ceiling:** **D660** — verify with
+  `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+- **Build:** `npx wp-scripts build` exit 0. Gates green: `check-palette-slug-refs`,
+  `check-preset-token-naming`, `check-id-scoped-emits`, `audit-inline-styling` all exit 0.
+- **Canary:** deployed and live-verified — all 21 palette slugs resolve at `:root`, 0 inline styles
+  across 59 blocks, reduced-motion rule matches 1 element. ⚠ `wp_global_styles` push still pending.
+- **Uncommitted: a CO-ACTIVE SESSION is live on this repo.** At handoff it held
+  `gallery/style.css`, `info-box/style.css`, `post-grid/style.css`, `tabs/style.css` (and earlier
+  `scripts/check-dead-controls.js`, a real fix to its comment-stripper, since committed). **The set
+  moves — re-run `git status` yourself; do not trust this list.** Deliberately untouched: commit by
+  explicit pathspec only, never `git add -A`, and never revert a file you did not change.
 
-# ▶ NEXT SESSION STARTS HERE
+## Pointers
 
-**Invoke `/autopilot` first.**
-
-Two live prompt docs, pick either (independent, no ordering requirement between them):
-
-- **Typography full-replacement** (D971/D972/D973) — Tasks 1+2 shipped + merged, deploy +
-  Tasks 3/4/5 remain. Full plan: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
-- **Spec 32/35 residual debt** (D970) — the core track is closed; rule-41/43 framework debt it
-  surfaced is not. Full plan: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md`
-  (updated 2026-09-06, still live — despite the filename's date).
-
-Read whichever you pick in full before starting; do not re-derive the plan from this file. Check
-`ListAgents` first, this tree runs many concurrent sessions.
-
-## ▶ ROAD-TO-UNIFORM RECONCILIATION — FULLY CLOSED, all 9 items, qc-council-audited.
-
-All 9 items closed (2026-08-25). Full detail: `.claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md`.
-2 residual gaps NOT part of the 9, full detail `memory/session-2026-08-25*.md`: Spec 32 §5
-CSS-injection sanitisation has no gate for `borderStyle`/`textTransform` free-text attrs (9
-unaudited `render.php` files); `text/edit.js`'s "Font" reset is a no-op.
-
-✅ **`git stash@{0}` (26 files, base `7a2c68b05`) RESOLVED 2026-09-06** — checked file-by-file
-against `main`, every change was superseded elsewhere, dropped. Detail: LEDGER State Snapshot
-above.
-
-## ▶ UNIFORMITY SWEEP TRACK — CLOSED bar one detector. Detail: D918/D919/D922/D924/D930/D933.
-
-`01-tab-group` and `21-render-without-control` both closed to zero. Nothing else open — see
-COLOUR TRACK for `31-golden-colour-control`.
-
-## ▶ SPEC 32/35 GATES TRACK — core track CLOSED 2026-09-06; residual rule-41/43 debt still open. Full task list: `.claude/prompts/2026-09-04-spec32-35-gates-next-session.md` (updated 2026-09-06, still live — do not treat as historical). Detail: D970.
-
-Opened 2026-09-04: Spec 32 §5 blob-sanitisation gate, rules 42/43/44, rule-41 61→42, 2 live
-`sgs/post-grid` bugs fixed, 3 D812 control-shape findings root-caused. Closed 2026-09-06 (this
-session): the 3 D812 fixes deployed + live-verified; rule 43's pending recheck found + fixed a
-real bug (`93dacf0d4`, TOC underline losing to a hover-animation on specificity, not yet
-deployed); rule-41 batches (`3548f7c85`/`689c3f2b5`) built an unauthorised colour-panel
-mechanism on 10 of 11 blocks, reverted + detector corrected (D970, `5f0c2e2d0`/`c330f2a6b`); one
-independent bug fixed (`responsive-logo` attrMap gap, `ed41a61c9`). **Still open, full detail in
-the prompt doc:** rule 41 at 26 (10 real scattering + 16 `dom-order` debt); rule 43 at 13 across
-9 blocks, including 8 findings of a new, unexamined kind (`ambiguous-state-property`).
-
-## ▶ TYPOGRAPHY FULL-REPLACEMENT TRACK — OPENED 2026-09-06, Tasks 1+2 CLOSED same day. Detail: D970 (why)/D971 (architecture)/D972 (foundation)/D973 (Tasks 1+2). Next-session orchestration: `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
-
-**Decision (D971):** fully replace native `supports.typography` with shared `TypographyControls`
-everywhere, including root-inheritance cases — a claimed CSS-inheritance blocker was checked and
-disproven; WP Global Styles per-block-type overrides confirmed unused by any `sgs/*` block, so
-nothing lost.
-
-**Foundation (D972):** real 84-block census; detector `45-typography-full-replacement.js`;
-switcher component on `TypographyControls.js` (`targets=[]` prop, wired on `card-grid`); a
-suspected helper bug investigated and DISPROVED (nothing was broken).
-
-**Tasks 1+2 CLOSED (D973), merged to `main`:** all 19 native-only blocks migrated (PR #40,
-`0e3a1447f`) + all 4 duplicate-logic blocks tidied (PR #41, `ddf04a5ea`, which also widened the
-shared helper — a real preset-slug font-size gap, found independently by 3 blocks that correctly
-refused a lossy swap, fixed at the mechanism level via the helper's own `transform` extension
-point, not worked around per-block). rule 45: 29 → 6. A mid-session codemod question was answered
-by evidence (the per-block prefix/gap variance is real, not uniform — see D973) rather than
-assumption.
-
-**Still open — full task list in the prompt doc:** deploy + live spot-check both merged PRs
-(nothing has reached the canary yet); Task 3 (resolve 4 genuine double-writer conflicts —
-judgement-heavy); Task 4 (live-verify the card-grid switcher); Task 5 (deploy the already-committed
-TOC underline fix, `93dacf0d4`). No collision with the separate tier-object migration (disjoint
-attribute namespaces, checked directly). Task 6 (orphaned stash) is CLOSED — see State Snapshot.
-
-## ▶ TIER-OBJECT PHASE 3 (padding/margin/borderRadius) — Groups 0-1 CLOSED + build-verified 2026-09-06. Full detail: `.claude/prompts/2026-09-06-tier-object-phase-3-remaining-work.md`.
-
-Groups 0-1 migrated + verified via a full `npm run build` (node_modules had been broken; fixed
-this session via `npm install` + `composer install`). **Lesson: a schema-fold codemod's own
-`--check` passing is NOT the definition of done** — only the real build/gate chain caught what it
-missed: ~150 dead-destructure findings (`check-undeclared-attrs.py`), a duplicate-shaped control
-the exact-shape matcher didn't recognise (`check-undefined-refs.js`), a var-used-before-assignment
-in 4 `render.php` files (PHPStan via `check-render-undefined-vars.py`), and a hand-reformat pass
-that briefly corrupted 2 files (caught by reading the diff, not the tool's own success report). All
-fixed live this session; gate chain now clean for the padding/margin/borderRadius work touched.
-**Still open:** `check-undeclared-attrs.py` still flags a dead `style` destructure across ~22
-blocks — traced to a DIFFERENT, concurrent migration (native `supports.color`/`supports.typography`
-removal), deliberately left for that migration's owner rather than guessed at.
-
-## ▶ CHECK A EDITOR-CANVAS TRACK — CLOSED. 210 -> 0. Detail: D965 (phase 1 + standards) + D967 (positive-control fix).
-
-Phase 1 (35 findings, shared `svgBackgroundPreview()`) + phases 2-4 (remaining 128, a concurrent
-session, `daddbbb1b`/`bd4076235`/`358584e79`/`2fb58e412`) closed 2026-09-05. Durable output: Spec
-02 item 0 (a shared mechanism is mirrorable once only if it OWNS ITS SELECTOR); DONE-checklist
-7b; `plugins/sgs-blocks/CLAUDE.md` "Editor-canvas mirrors" + four traps.
-
-## ▶ COLOUR TRACK — end-shape census now the live front; svg-paint-gradient CLOSED 2026-09-06. Full plan + method learnings: `.claude/plans/2026-09-05-colour-conformance-shape-batch-triad.md`.
-
-**The `survey.js`/`fix.js` unification this doc previously pointed at was superseded, not
-finished as originally scoped** — a concurrent session between 2026-09-05 and 2026-09-06 replaced
-that approach with `classify-end-shape.js`, a DB-driven classifier (reads real
-`block_attributes.css_property`, not a hand-maintained bucket list) against 12 named end-shapes
-(canonical definitions: `plugins/sgs-blocks/CLAUDE.md` "Colour EMISSION helpers"/"Known
-precedent-function registry"). **Full current census: 136 rows across 7 populated end-shapes** —
-`text-gradient` 38, `fill-custom-property-gradient` 35 open (2 fixed), `text-gradient-needs-bg-
-layer` 25, `fill-base-hover-flat` 17, `border-base-hover` 15, `per-item-loop` 2,
-`svg-paint-gradient` **0 open (CLOSED)**.
-
-**2026-09-06 — `svg-paint-gradient` closed in full + `fill-custom-property-gradient` codemod
-hardened:** `before-after.handleIconColour` converted to the shared IconPicker/Lucide +
-`sgs_svg_stroke_gradient()` mechanism (commit `e8d296bf9`) — the category's only real row once a
-stale `timeline/block.json` manifest entry (wrongly claimed `css:stroke`, zero real stroke
-consumers) was fixed and the row correctly reclassified into `fill-custom-property-gradient`.
-`migrate-fill-custom-property-gradient.js` widened (missing-fallback-default CSS regex + a new
-`DesignTokenPicker` row-detection path, plus a pre-existing bug fixed in the already-working
-detection path) and run for real on `before-after.dividerColour` + `timeline.connectorFillColour`
-(commit `0fd0f8f66`) — deliberately not the other 35 `fill-custom-property-gradient` rows, per
-Bean's one-category-per-session direction. Separately, `business-info`'s link/hover/attribution
-controls had a real design flaw (Bean caught it by reading the actual controls, not from the
-census) — `linkHoverBackgroundImage`/`linkHoverTextColour` painted nothing for the phone/email
-links they appeared under, `linkPhone`/`linkEmail` had no real use case, and the "What to
-display" dropdown silently misreported "Phone Number" for attribution instances — all fixed by
-hand (commit `15237d85a`), never a codemod row. All 4 commits (+ DB reseed, `0e511be6d`) merged
-`main` via PR #43 (`1eb344ad0`), live-verified on sandybrown.
-
-**Next (Bean's directed cadence: one category per session):** `text-gradient` (38 rows) is next,
-no fixed order beyond that.
-
-**Still open, historical rows not yet re-verified against the new census** (carried forward,
-unconfirmed current status): `mega-panel`'s slug-derivation-shape rows,
-`social-icons`/`form.progressBarColour`/`product-card`'s title/desc/price rows/`tabs`' other rows
-— likely now inside `text-gradient`/`fill-base-hover-flat`, re-classify rather than assuming;
-`cta-section.backgroundColour` (WP-native mechanism, not SGS helpers, out of scope by design).
-
-## ▶ MOTION TRACK (A closed+live; B closed).
-
-Two separate tracks, never re-merge. Full account: `memory/session-2026-09-04-tracks-history-sweep.md`.
-
-## ▶ CONSOLIDATION TRACK — CLOSED 2026-08-22 (D725/D726, D731-D733)
-
-One item survives, PARKED, owned by nobody: sticky sidebar + band-replacement model
-(`parking.md` P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL) — RE-MEASURE first.
-
-## ▶ CLIENT-CONTROLS TRACK — CLOSED 2026-09-02 (D904-D913, D915/D916, PR #36)
-
-All 16 media atoms adopted by all six in-scope blocks. Narrative:
-`memory/session-2026-09-02-client-controls-track.md`.
-
-## ▶ EDITOR-ERRORS TRACK — CLOSED 2026-08-22 (D743)
-
-Narrative: `memory/session-2026-08-22-editor-errors-track.md`. Nothing pending.
-
-## ▶ IS_RESPONSIVE TIDY-UP — CLOSED 2026-09-06 (D968). Nothing pending.
-
-3 deferred Minors from the original `is_responsive` fix (61f70ba08) closed with no behaviour
-change — see Human Summary above + D968 for full detail. `.claude/prompts/2026-09-06-is-
-responsive-closeout.md` consumed and deleted; do not re-dispatch from it.
-
-## ▶ SPEC-35 CAPABILITY-ROUTING TRACK — CLOSED 2026-09-04 (prior session), all four items
-
-Plan archived: `.claude/plans/archive/spec-35-capability-routing-doctrine.md`. All four items
-closed, deployed, live-verified. Commits: `a314fdc47`/`335a0885a`/`ef051e39c`/`0fbfb51d2`/
-`94485dad5`.
+| For | Read |
+|---|---|
+| **THE FRONT — what remains of S1** | **`.claude/reports/2026-08-18-s1-open-points.md`** |
+| S1 verdict roster (219 points, all evidence) | `.claude/reports/2026-08-18-spec32-points-roster.json` |
+| The programme (loop, ladder, Step 1b, Step 4c) | `.claude/plans/2026-08-17-spec-verification-programme.md` |
+| Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
+| Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
+| Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
+| Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |
