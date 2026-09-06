@@ -15,3 +15,4 @@ timestamp | script | type | reason
 2026-09-06 12:22:20 | db-consistency/run.py | MANUAL SKIP | 236 pre-existing DB-vs-classifier rogue-seed rows unrelated to this render.php-only commit
 2026-09-06 12:46:52 | db-consistency/run.py | MANUAL SKIP | shared-tree DB-vs-classifier drift from unrelated concurrent sessions, same class already bypassed twice this session
 2026-09-06 12:50:26 | db-consistency/run.py | MANUAL SKIP | shared-tree DB-vs-classifier drift from unrelated concurrent sessions, same class already bypassed twice this session
+2026-09-06 13:26:38 | db-consistency/run.py | MANUAL SKIP | same pre-existing unrelated DB-vs-classifier drift bypassed repeatedly this session
