@@ -198,14 +198,27 @@ if ( $icon_colour ) {
 	}
 }
 // D636/D644 icon/SVG gradient — non-empty wins over iconColour's flat
-// currentColor paint above (helpers-svg-gradient.php). $icon_html was built
-// earlier (icon/lucide/wp-icon cases only carry real <svg> markup — dashicon/
-// emoji/text are unaffected, sgs_svg_inject_defs() no-ops when there's no
-// <svg> to match).
-$sgs_notice_banner_stroke_grad = sgs_icon_gradient_css( $resolved_source, $icon_colour_gradient, $uid . '-ig', $root_sel . ' .sgs-notice-banner__icon svg' );
+// currentColor paint above (helpers-svg-gradient.php). $resolved_source can
+// be dashicon/emoji here (unlike the lucide-only blocks), so the gradient
+// SELECTOR must branch on it too — a dashicon/emoji glyph paints on the
+// wrapper span itself via background-clip:text, never on a child <svg>.
+// FIXED 2026-09-06 (caught live): the selector was hardcoded to
+// "...__icon svg" regardless of source, so a dashicon/emoji gradient matched
+// no element in the DOM and silently never painted — the exact live-DOM
+// verification this rollout needed. $icon_html was built earlier
+// (lucide/wp-icon cases only carry real <svg> markup; sgs_svg_inject_defs()
+// no-ops when there's no <svg> to match).
+$sgs_notice_banner_icon_sel = $root_sel . ' .sgs-notice-banner__icon';
+$sgs_notice_banner_grad_sel = in_array( $resolved_source, array( 'dashicon', 'emoji' ), true ) ? $sgs_notice_banner_icon_sel : "{$sgs_notice_banner_icon_sel} svg";
+$sgs_notice_banner_stroke_grad = sgs_icon_gradient_css( $resolved_source, $icon_colour_gradient, $uid . '-ig', $sgs_notice_banner_grad_sel );
 if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
-	$icon_html    = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_stroke_grad['defs'] );
-	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon svg{' . $sgs_notice_banner_stroke_grad['css'] . ';}';
+	$icon_html = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_stroke_grad['defs'] );
+}
+if ( '' !== $sgs_notice_banner_stroke_grad['css'] ) {
+	$scoped_css[] = "{$sgs_notice_banner_grad_sel}{" . $sgs_notice_banner_stroke_grad['css'] . ';}';
+	if ( '' !== $sgs_notice_banner_stroke_grad['fallback_rule'] ) {
+		$scoped_css[] = $sgs_notice_banner_stroke_grad['fallback_rule'];
+	}
 }
 
 // --- Text colour (flat-or-gradient, base + hover) — D744: replaces core's
