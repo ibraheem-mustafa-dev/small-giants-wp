@@ -1119,3 +1119,5 @@
 2026-09-06 13:53:08 | icon-list | MANUAL SKIP | genuine new capability, about to be live-verified
 2026-09-06 13:53:30 | icon-list | MANUAL SKIP | genuine new capability, about to be live-verified
 2026-09-06 13:53:32 | inspector-scan | MANUAL SKIP | pre-existing unrelated advisory ratchet debt
+2026-09-06 14:06:02 | button | MANUAL SKIP | live-verified this session (Playwright hover test): purely cosmetic uid_base fix, same behaviour before/after
+2026-09-06 14:06:03 | trust-bar | MANUAL SKIP | live-verified this session (Playwright hover test): purely cosmetic uid_base fix, same behaviour before/after
