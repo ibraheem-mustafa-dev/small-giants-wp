@@ -9,7 +9,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -402,23 +402,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Border', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-					values={ {
-						base: attributes.borderRadius?.desktop ?? {},
-						tablet: attributes.borderRadius?.tablet ?? {},
-						mobile: attributes.borderRadius?.mobile ?? {},
-					} }
-					onChange={ ( tier, next ) => {
-						const key = tier === 'base' ? 'desktop' : tier;
-						setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-					} }
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

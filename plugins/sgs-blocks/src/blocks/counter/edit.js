@@ -10,7 +10,7 @@ import {
   RangeControl,
   ToggleControl,
 } from "@wordpress/components";
-import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from "../../utils";
 
 
@@ -229,22 +229,6 @@ export default function Edit({ attributes, setAttributes }) {
           </ResponsiveOverride>
         </PanelBody>
 
-        {/* Border radius — a single block-owned tier-object attr
-            { desktop, tablet, mobile }, read directly by render.php. */}
-        <PanelBody title={__("Border radius", "sgs-blocks")} initialOpen={false}>
-          <ResponsiveBorderRadiusControl
-            label={__("Border radius", "sgs-blocks")}
-    values={ {
-    	base: attributes.borderRadius?.desktop ?? {},
-    	tablet: attributes.borderRadius?.tablet ?? {},
-    	mobile: attributes.borderRadius?.mobile ?? {},
-    } }
-    onChange={ ( tier, next ) => {
-    	const key = tier === 'base' ? 'desktop' : tier;
-    	setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-    } }
-          />
-        </PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }

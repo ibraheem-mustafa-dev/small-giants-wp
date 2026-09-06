@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, textPaintPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -362,18 +362,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.borderRadius?.desktop ?? {},
-							tablet: attributes.borderRadius?.tablet ?? {},
-							mobile: attributes.borderRadius?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-						} }
-					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl

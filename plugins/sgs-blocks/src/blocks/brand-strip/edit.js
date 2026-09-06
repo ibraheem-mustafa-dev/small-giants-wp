@@ -13,7 +13,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveControl, ResponsiveBoxControl, ResponsiveBorderRadiusControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { SgsColourPanel, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -299,8 +299,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover,
 		transitionDuration,
 		transitionEasing,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		nameColourHover,
 	} = attributes;
 
@@ -1046,18 +1044,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.borderRadius?.desktop ?? {},
-							tablet: attributes.borderRadius?.tablet ?? {},
-							mobile: attributes.borderRadius?.mobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							const key = tier === 'base' ? 'desktop' : tier;
-							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
-						} }
-					/>
 				</PanelBody>
 			</InspectorControls>
 
