@@ -48,6 +48,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -427,11 +441,11 @@ $style_arr = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : a
 $base_style_engine_args = array();
 
 $spacing_arr = array();
-if ( isset( $style_arr['spacing']['padding'] ) && is_array( $style_arr['spacing']['padding'] ) ) {
-	$spacing_arr['padding'] = $style_arr['spacing']['padding'];
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	$spacing_arr['padding'] = $sgs_tor_padding_desktop;
 }
-if ( isset( $style_arr['spacing']['margin'] ) && is_array( $style_arr['spacing']['margin'] ) ) {
-	$spacing_arr['margin'] = $style_arr['spacing']['margin'];
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	$spacing_arr['margin'] = $sgs_tor_margin_desktop;
 }
 if ( ! empty( $spacing_arr ) ) {
 	$base_style_engine_args['spacing'] = $spacing_arr;
@@ -484,10 +498,10 @@ if ( $width_decls ) {
 // max-width:1023px, mobile max-width:767px). Base padding/margin above is
 // WP-native style.spacing.*; these are the NEW paddingTablet/paddingMobile/
 // marginTablet/marginMobile object attrs. ---
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
 $padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );

@@ -33,6 +33,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
@@ -1680,8 +1694,10 @@ if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
 $root_box_css = '';
 
 $nav_base_spacing = array();
-foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
-	$raw_sides = $attributes['style']['spacing'][ $spacing_prop ] ?? null;
+foreach ( array(
+	'padding' => $sgs_tor_padding_desktop,
+	'margin'  => $sgs_tor_margin_desktop,
+) as $spacing_prop => $raw_sides ) {
 	if ( ! is_array( $raw_sides ) ) {
 		continue;
 	}
@@ -1709,11 +1725,11 @@ if ( $nav_base_spacing ) {
 // so the rendered breakpoints do not move — this is the locked 768/1024 device
 // standard, NOT an arbitrary visual breakpoint.
 foreach ( array(
-	array( 'paddingTablet', '(max-width:1023px)' ),
-	array( 'paddingMobile', '(max-width:767px)' ),
+	array( $sgs_tor_padding_tiers['tablet'] ?? null, '(max-width:1023px)' ),
+	array( $sgs_tor_padding_tiers['mobile'] ?? null, '(max-width:767px)' ),
 ) as $nav_tier ) {
-	list( $tier_attr, $tier_mq ) = $nav_tier;
-	$tier_box = is_array( $attributes[ $tier_attr ] ?? null ) ? $attributes[ $tier_attr ] : array();
+	list( $tier_box_raw, $tier_mq ) = $nav_tier;
+	$tier_box = is_array( $tier_box_raw ) ? $tier_box_raw : array();
 	if ( ! $tier_box ) {
 		continue;
 	}

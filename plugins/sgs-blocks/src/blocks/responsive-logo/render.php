@@ -28,6 +28,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 // This block calls sgs_responsive_css_rule() (below) and sgs_svg_kses_allowed_tags()
 // (SVG animation path). Neither is autoloaded — the plugin bootstrap loads only
 // includes/forms/field-render-helpers.php — so both resolve ONLY through
@@ -325,11 +339,11 @@ $scoped_css[] = sgs_responsive_css_rule(
 // --- Base padding/margin — WP-native style.spacing (skip-serialised) emitted
 // scoped via the stable core style engine. ---
 
-$base_padding_obj = ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) )
-	? $attributes['padding']
+$base_padding_obj = ( ! empty( $sgs_tor_padding_desktop ) )
+	? $sgs_tor_padding_desktop
 	: array();
-$base_margin_obj  = ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) )
-	? $attributes['margin']
+$base_margin_obj  = ( ! empty( $sgs_tor_margin_desktop ) )
+	? $sgs_tor_margin_desktop
 	: array();
 
 if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
@@ -352,10 +366,10 @@ if ( ! empty( $base_padding_obj ) || ! empty( $base_margin_obj ) ) {
 // --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
 // shorthand, scoped @media on the SAME selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
 $padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );

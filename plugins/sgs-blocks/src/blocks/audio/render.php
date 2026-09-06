@@ -26,6 +26,20 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -157,26 +171,26 @@ $uid      = 'sgs-au-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-audio';
 
 $base_padding_obj = array();
-if ( isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
-	foreach ( $attributes['padding'] as $padding_side => $padding_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $padding_side => $padding_value ) {
 		if ( is_string( $padding_value ) && '' !== $padding_value ) {
 			$base_padding_obj[ $padding_side ] = $padding_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
-	foreach ( $attributes['margin'] as $margin_side => $margin_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $scoped_css = array();
 
