@@ -953,3 +953,6 @@
 2026-09-06 13:46:02 | inspector-scan | MANUAL SKIP | pre-existing unrelated advisory ratchet debt
 2026-09-06 14:03:29 | button | MANUAL SKIP | live-verified this session (Playwright hover test, page 3336): purely cosmetic uid_base fix (redundant -ig-ig suffix), same behaviour before/after
 2026-09-06 14:03:30 | trust-bar | MANUAL SKIP | live-verified this session (Playwright hover test, page 3336): purely cosmetic uid_base fix (redundant -ig-ig suffix), same behaviour before/after
+2026-09-06 16:28:56 | product-card | MANUAL SKIP | Additive-only: 2 new gradient attributes (default empty string) declared + wired into an existing helper that already branches on non-empty; any existing card with these unset renders byte-identical output. Live-verifying via Playwright before push.
+2026-09-06 16:30:04 | product-card | MANUAL SKIP | Additive-only: 2 new gradient attributes (default empty string) declared + wired into an existing helper that already branches on non-empty; any existing card with these unset renders byte-identical output. Live-verifying via Playwright before push.
+2026-09-06 16:30:27 | inspector-scan | MANUAL SKIP | roster.json staleness is repo-wide (83 blocks) and regenerating it here would sweep in other concurrent sessions' uncommitted block.json drift on accordion/container/icon-list, not just this commit's product-card change
