@@ -28,6 +28,16 @@
 
 defined( 'ABSPATH' ) || exit;
 
+
+
+// This block calls sgs_responsive_css_rule() (below) and sgs_svg_kses_allowed_tags()
+// (SVG animation path). Neither is autoloaded — the plugin bootstrap loads only
+// includes/forms/field-render-helpers.php — so both resolve ONLY through
+// render-helpers.php, which is the documented single entry point for every shared
+// helper (see its own docblock).
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+
 // [D-tier-object-render-fix 2026-09-06]
 // Group 1 folded padding/margin into owned tier-object attrs
 // {desktop,tablet,mobile}, but this block's own scoped CSS below still
@@ -40,15 +50,6 @@ $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'
 $sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
-
-
-// This block calls sgs_responsive_css_rule() (below) and sgs_svg_kses_allowed_tags()
-// (SVG animation path). Neither is autoloaded — the plugin bootstrap loads only
-// includes/forms/field-render-helpers.php — so both resolve ONLY through
-// render-helpers.php, which is the documented single entry point for every shared
-// helper (see its own docblock).
-require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-
 // ---------------------------------------------------------------------------
 // Security sanitisers (no-inline contract §D) — mirrors sgs/label/render.php.
 // ---------------------------------------------------------------------------

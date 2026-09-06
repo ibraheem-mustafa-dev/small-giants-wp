@@ -47,6 +47,11 @@
 
 defined( 'ABSPATH' ) || exit;
 
+
+
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+
 // [D-tier-object-render-fix 2026-09-06]
 // Group 1 folded padding/margin into owned tier-object attrs
 // {desktop,tablet,mobile}, but this block's own scoped CSS below still
@@ -59,10 +64,6 @@ $sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'
 $sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
-
-
-require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
-
 // ---------------------------------------------------------------------------
 // 1. Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
 // values (mirrors sgs/label + sgs/container).
