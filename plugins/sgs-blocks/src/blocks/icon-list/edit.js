@@ -9,7 +9,21 @@ import {
   Button,
   Notice,
 } from "@wordpress/components";
-import { IconPicker, IconPreview, ResponsiveBoxControl, TypographyControls, SgsColourPanel, fillRow, textRow, SgsBorderControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from "../../components";
+import {
+  IconPicker,
+  IconPreview,
+  ResponsiveBoxControl,
+  TypographyControls,
+  SgsColourPanel,
+  fillRow,
+  textRow,
+  SgsBorderControl,
+  ResponsiveOverride,
+  BOX_UNITS,
+  normaliseResponsiveBox,
+  SgsBoxControl,
+  GradientCapableColourControl,
+} from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
 
@@ -122,6 +136,32 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         __nextHasNoMarginBottom
       	__next40pxDefaultSize
       />
+      <GradientCapableColourControl
+        label={__("Icon colour (this item)", "sgs-blocks")}
+        states={[
+          {
+            key: "normal",
+            label: __("Normal", "sgs-blocks"),
+            value: item.iconColour || "",
+            onChange: (val) => onChange({ ...item, iconColour: val ?? "" }),
+            linked: true,
+            gradientValue: item.iconColourGradient || "",
+            onGradientChange: (val) =>
+              onChange({ ...item, iconColourGradient: val ?? "" }),
+          },
+          {
+            key: "hover",
+            label: __("Hover", "sgs-blocks"),
+            value: item.iconColourHover || "",
+            onChange: (val) => onChange({ ...item, iconColourHover: val ?? "" }),
+            linked: true,
+            gradientValue: item.iconColourGradientHover || "",
+            onGradientChange: (val) =>
+              onChange({ ...item, iconColourGradientHover: val ?? "" }),
+          },
+        ]}
+        clearable
+      />
       <Button
         variant="secondary"
         isDestructive
@@ -145,6 +185,7 @@ export default function Edit({ attributes, setAttributes }) {
     iconColour,
     iconColourHover,
     iconColourGradient,
+    iconColourHoverGradient,
     iconSize,
     dividers,
     textColour,
@@ -368,7 +409,10 @@ export default function Edit({ attributes, setAttributes }) {
                 value: iconColourHover,
                 onChange: (val) => setAttributes({ iconColourHover: val ?? "" }),
                 linked: true,
-                },
+                gradientValue: iconColourHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourHoverGradient: val ?? "" }),
+              },
             ],
           },
           textRow({

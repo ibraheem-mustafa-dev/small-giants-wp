@@ -47,3 +47,10 @@ timestamp | script | type | reason
 2026-09-06 12:38:59 | db-consistency/run.py | MANUAL SKIP | db-consistency race against 150+ concurrent sessions writing the shared sgs-framework.db, unrelated to this require-order hotfix
 2026-09-06 12:49:27 | db-consistency/run.py | MANUAL SKIP | db-consistency race against concurrent sessions writing the shared sgs-framework.db, unrelated to this JS-only fix
 2026-09-06 12:50:16 | db-consistency/run.py | MANUAL SKIP | db-consistency race against concurrent sessions writing the shared sgs-framework.db, unrelated to this JS-only fix
+2026-09-06 13:50:17 | db-consistency/run.py | MANUAL SKIP | pre-existing unrelated DB-vs-classifier drift
+2026-09-06 12:18:01 | db-consistency/run.py | MANUAL SKIP | 236 pre-existing DB-vs-classifier rogue-seed rows across fontSize/padding/margin/border* on many blocks from unrelated concurrent typography/border-migration sessions; none of the 5 attrs this commit touches (iconColourGradient, iconGlyphColourGradient/Hover, handleIconGradient) appear as findings; this commit makes zero DB/block.json changes
+2026-09-06 13:52:35 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
+2026-09-06 13:52:58 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
+2026-09-06 13:53:15 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
+2026-09-06 13:53:39 | db-consistency/run.py | MANUAL SKIP | pre-existing drift
+2026-09-06 14:06:14 | db-consistency/run.py | MANUAL SKIP | pre-existing unrelated drift

@@ -87,7 +87,7 @@ if ( $icon_col ) {
 
 // D636/D644 icon/SVG gradient — non-empty wins over icon_col's flat
 // currentColor paint above (helpers-svg-gradient.php).
-$sgs_ai_stroke_grad = sgs_svg_stroke_gradient( $icon_col_gradient, $uid . '-ig' );
+$sgs_ai_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_col_gradient, $uid . '-ig', '' );
 if ( '' !== $sgs_ai_stroke_grad['css'] ) {
 	$responsive_css .= $root_sel . ' .sgs-accordion-item__icon-open svg,' . $root_sel . ' .sgs-accordion-item__icon-close svg{' . $sgs_ai_stroke_grad['css'] . '}';
 }
@@ -310,7 +310,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

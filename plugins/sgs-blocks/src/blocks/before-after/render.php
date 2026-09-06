@@ -299,7 +299,7 @@ $root_var_decls = array_merge(
 // var. sgs_svg_stroke_gradient() fails soft (empty defs/css) on an
 // empty/invalid gradient, so this is always safe to compute.
 $handle_icon_grad_id  = $uid . '-handle-icon-grad';
-$sgs_handle_icon_grad = sgs_svg_stroke_gradient( $handle_icon_gradient, $handle_icon_grad_id, 'stroke' );
+$sgs_handle_icon_grad = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient, $handle_icon_grad_id, '' );
 if ( '' !== $sgs_handle_icon_grad['defs'] ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:url(#' . $handle_icon_grad_id . ')';
 } elseif ( $handle_icon_col ) {
@@ -669,7 +669,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

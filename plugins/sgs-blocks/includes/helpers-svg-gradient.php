@@ -308,3 +308,93 @@ function sgs_icon_gradient_css( string $icon_source, string $gradient_css, strin
 
 	return $empty;
 }
+
+/**
+ * Resolve BOTH resting + hover icon gradient state in one call and return
+ * ready-to-append scoped-CSS rules plus each state's <defs> markup.
+ *
+ * Built 2026-09-06 after `sgs/notice-banner` shipped a REAL bug: its render.php
+ * only ever called `sgs_icon_gradient_css()` once (resting state) because the
+ * hover-gradient sibling attribute did not exist on the block at all — a gap
+ * that could recur on any future icon-hosting block, since the base
+ * `sgs_icon_gradient_css()` primitive resolves ONE state per call by design
+ * (each state needs its own unique defs-id) and nothing forced a caller to
+ * remember the second call. This wrapper makes "only wired the base state"
+ * structurally harder: one call, both states, matching the shape every other
+ * SGS colour mechanism (`sgs_fill_states_css()`, `sgs_text_states_css()`,
+ * `sgs_border_states_css()`) already uses.
+ *
+ * Supports BOTH hover-trigger shapes already in use across icon-hosting
+ * blocks — pass `$hover_trigger`/`$hover_suffix` to pick:
+ *   - SELF-HOVER (default, both args empty): the painted element itself is
+ *     also the `:hover` trigger (icon-list, trust-bar — decorative icons
+ *     with no natural interactive ancestor).
+ *   - ANCESTOR+SUFFIX: a distinct ancestor is the trigger, with the painted
+ *     selector's tail passed as `$hover_suffix` (`sgs/button`'s
+ *     `.{uid}.sgs-button` ancestor + ` .sgs-button__icon svg` suffix —
+ *     matching its OWN flat-colour hover, which already uses this shape;
+ *     `sgs/cart`'s `.sgs-cart__trigger`, `sgs/accordion-item`'s
+ *     `.sgs-accordion-item__header` are the same shape but those two blocks
+ *     are NOT migrated onto this helper, to avoid touching proven working
+ *     code for a purely cosmetic consistency gain).
+ * Caught live during the button migration (2026-09-06): the resting-state
+ * hand-written selector already used the ancestor+suffix shape to match its
+ * own flat-colour hover, and a first pass at this helper defaulted to
+ * self-hover only — silently changing the hover TRIGGER from "anywhere on
+ * the button" to "only the icon glyph itself". Always check the block's OWN
+ * flat-colour hover shape before assuming self-hover.
+ *
+ * @param string $icon_source    lucide | wp-icon | dashicon | emoji.
+ * @param string $base_gradient  Resting-state gradient attribute value.
+ * @param string $hover_gradient Hover-state gradient attribute value.
+ * @param string $uid_base       Unique id PREFIX for this icon instance — the
+ *                                 function appends '-ig'/'-igh' itself so the
+ *                                 two states never collide on one #id.
+ * @param string $selector       The icon's own painted-element selector (the
+ *                                 SAME shape `sgs_icon_gradient_css()` expects
+ *                                 — caller branches this on `$icon_source`
+ *                                 itself: the wrapper span for dashicon/emoji,
+ *                                 the child `<svg>` for lucide/wp-icon).
+ * @param string $hover_trigger  Ancestor selector the `:hover`/focus pseudo
+ *                                 attaches to. Empty (default) = self-hover,
+ *                                 i.e. `$selector` is also the trigger.
+ * @param string $hover_suffix   Appended after the trigger + pseudo (the
+ *                                 `sgs_hover_state_rules()` 4th arg) — only
+ *                                 meaningful when `$hover_trigger` is set.
+ * @param string $hover_focus    Companion focus pseudo-class, default
+ *                                 ':focus-visible' (matches every other
+ *                                 caller of `sgs_hover_state_rules()`).
+ * @return array{css:string[],defs_base:string,defs_hover:string} `css` is
+ *         0-4 entries ready for `array_push($scoped_css, ...$result['css'])`
+ *         — resting rule, resting fallback, hover rule, hover fallback, each
+ *         present only when that state resolved to something real.
+ *         `defs_base`/`defs_hover` are each state's `<defs>` markup, empty
+ *         for a flat colour or a text-glyph source — inject the non-empty
+ *         one(s) into the icon's own `<svg>` via `sgs_svg_inject_defs()`.
+ */
+function sgs_icon_gradient_states_css( string $icon_source, string $base_gradient, string $hover_gradient, string $uid_base, string $selector, string $hover_trigger = '', string $hover_suffix = '', string $hover_focus = ':focus-visible' ): array {
+	$css  = array();
+	$base = sgs_icon_gradient_css( $icon_source, $base_gradient, $uid_base . '-ig', $selector );
+	if ( '' !== $base['css'] ) {
+		$css[] = "{$selector}{" . $base['css'] . ';}';
+		if ( '' !== $base['fallback_rule'] ) {
+			$css[] = $base['fallback_rule'];
+		}
+	}
+
+	$hover = sgs_icon_gradient_css( $icon_source, $hover_gradient, $uid_base . '-igh', $selector );
+	if ( '' !== $hover['css'] ) {
+		$css[] = '' !== $hover_trigger
+			? sgs_hover_state_rules( $hover_trigger, $hover['css'], $hover_focus, $hover_suffix )
+			: sgs_hover_state_rules( $selector, $hover['css'], $hover_focus );
+		if ( '' !== $hover['fallback_rule'] ) {
+			$css[] = $hover['fallback_rule'];
+		}
+	}
+
+	return array(
+		'css'        => $css,
+		'defs_base'  => $base['defs'],
+		'defs_hover' => $hover['defs'],
+	);
+}

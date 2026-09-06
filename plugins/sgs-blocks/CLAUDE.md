@@ -981,6 +981,7 @@ listed.
 | Problem shape | Known precedent | Where |
 |---|---|---|
 | SVG paint (fill/stroke) gradient | `sgs_svg_stroke_gradient()` + `sgs_svg_inject_defs()` | `includes/helpers-svg-gradient.php:51,199` |
+| Icon gradient where the icon's SOURCE varies (lucide/wp-icon render `<svg>`, dashicon/emoji render `<span>` and paint via `color:` like any other text node) — picks SVG stroke-gradient or the text-gradient trio per source, never a bare `sgs_svg_stroke_gradient()` call that silently no-ops on dashicon/emoji | `sgs_icon_gradient_css( $iconSource, $gradientCss, $uniqueId, $selector )` — built 2026-09-05 as `sgs/icon`'s POC, rolled out 2026-09-06 to `notice-banner` (real bug fix — the only one of these with a genuinely variable source), `cart`/`accordion-item`/`before-after`/`social-icons` (lucide-only consistency swaps). `icon-list` is a KNOWN DIFFERENT SHAPE — its list items can each declare a different source, so one call can't resolve the whole row; still open. | `includes/helpers-svg-gradient.php:274` |
 | Text colour/gradient, base OR ancestor-hover, one owned scoped rule | `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` (+ `sgs_hover_state_rules()`'s 4-arg form for ancestor-hover) | `includes/helpers-tokens.php:1124` + worked example `src/blocks/post-grid/render.php:670-689`, `src/blocks/brand-strip/render.php:502-515` |
 | Per-item dynamic-loop colour (repeater/query loop) | `:nth-child(N)`-scoped rule per iteration | `src/blocks/pricing-table/render.php:171,223-248` (`ribbonColour`) |
 | Fill or text colour, base+hover, flat-or-gradient, one owned rule | `sgs_fill_states_css()` / `sgs_text_states_css()` | `includes/helpers-colour-variants.php:109,215` |
@@ -1071,6 +1072,14 @@ exemption mechanism, not something to hand-derive per block. It reads the elemen
 so no block list is hardcoded and none needs to be kept in sync by hand. This is a real,
 sizeable backlog (button, container, hero, product-card, trust-bar, nav-menu, cta-section,
 info-box, and ~27 more) — closing all of it is its own project, not a quick follow-up.
+
+**Icon/SVG gradient where the icon's source can vary:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_icon_gradient_css()` | `( string $iconSource, string $gradientCss, string $uniqueId, string $selector ): array{defs,css,fallback_rule}` (`includes/helpers-svg-gradient.php:274`) | Picks the correct gradient mechanism per icon source — SVG stroke-gradient (delegates to `sgs_svg_stroke_gradient()`) for `lucide`/`wp-icon`, the text-gradient trio (delegates to `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()`) for `dashicon`/`emoji`, since those render a `<span>` not an `<svg>` and paint via `color:` like any other text node. |
+
+⛔ **Never call `sgs_svg_stroke_gradient()` directly on a block whose icon source can be `dashicon` or `emoji`** — it targets an `<svg>` selector that doesn't exist for those sources, a silent no-op. Use `sgs_icon_gradient_css()` instead; for a block whose icon is provably always lucide/wp-icon (no source picker, or the picker's value never reaches render), a direct `sgs_svg_stroke_gradient()` call is not wrong, but `sgs_icon_gradient_css('lucide', ...)` is the now-standard convention — matches every other icon-hosting block on one call shape. **Open gap:** a block whose REPEATED items each declare their own icon source (e.g. `sgs/icon-list`) can't be fixed by one `sgs_icon_gradient_css()` call — that needs a per-item design, not a call-site swap.
 
 **The bespoke custom-property pattern — NOT a shared helper, block-private by design:**
 
