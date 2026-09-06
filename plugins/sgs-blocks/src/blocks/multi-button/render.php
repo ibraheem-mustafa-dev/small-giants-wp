@@ -248,6 +248,23 @@ $mb_css_length     = static function ( $value ) {
 if ( isset( $attributes['childBtnBackground'] ) && '' !== $attributes['childBtnBackground'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-bg-default:' . sgs_colour_value( (string) $attributes['childBtnBackground'] );
 }
+// childBtnBackgroundGradient/Hover(Gradient) (2026-09-06, FILL closeout) — the
+// group-default cascade previously only reached RESTING colour; button/
+// style.css's own background-image/hover fallback chains had no rung for a
+// group default at all. sgs_css_gradient_value() returns '' for anything that
+// doesn't parse as a real gradient function, so this can never emit an
+// invalid background-image value.
+$mb_child_bg_gradient = sgs_css_gradient_value( (string) ( $attributes['childBtnBackgroundGradient'] ?? '' ) );
+if ( '' !== $mb_child_bg_gradient ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-bg-image-default:' . $mb_child_bg_gradient;
+}
+if ( isset( $attributes['childBtnBackgroundHover'] ) && '' !== $attributes['childBtnBackgroundHover'] ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-bg-hover-default:' . sgs_colour_value( (string) $attributes['childBtnBackgroundHover'] );
+}
+$mb_child_bg_hover_gradient = sgs_css_gradient_value( (string) ( $attributes['childBtnBackgroundHoverGradient'] ?? '' ) );
+if ( '' !== $mb_child_bg_hover_gradient ) {
+	$mb_child_defaults[] = '--sgs-mb-btn-bg-hover-image-default:' . $mb_child_bg_hover_gradient;
+}
 if ( isset( $attributes['childBtnTextColour'] ) && '' !== $attributes['childBtnTextColour'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-color-default:' . sgs_colour_value( (string) $attributes['childBtnTextColour'] );
 }

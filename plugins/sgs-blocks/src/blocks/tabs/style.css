@@ -252,6 +252,12 @@
 	background-image: var( --sgs-panel-bg-gradient, none );
 }
 
+.sgs-tabs__panel:hover,
+.sgs-tabs__panel:focus-visible {
+	background-color: var( --sgs-panel-bg-hover, var( --sgs-panel-bg, transparent ) );
+	background-image: var( --sgs-panel-bg-hover-gradient, var( --sgs-panel-bg-gradient, none ) );
+}
+
 /* Semantic hidden — display:none is correct here (hidden attribute) */
 .sgs-tabs__panel[hidden] {
 	display: none;

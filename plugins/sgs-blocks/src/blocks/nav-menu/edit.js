@@ -634,6 +634,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: featuredBg,
 					onChange: ( val ) => setAttributes( { featuredBg: val ?? '' } ),
+					gradientValue: attributes.featuredBgGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredBgGradient: val ?? '' } ),
 					linked: true,
 				},
 				{
@@ -641,6 +643,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: featuredBgHover,
 					onChange: ( val ) => setAttributes( { featuredBgHover: val ?? '' } ),
+					gradientValue: attributes.featuredBgHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { featuredBgHoverGradient: val ?? '' } ),
 					linked: true,
 				},
 			],

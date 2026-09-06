@@ -484,9 +484,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorStyle,
 		connectorColour,
 		connectorColourGradient,
+		connectorColourHover,
+		connectorColourHoverGradient,
 		connectorProgressFill,
 		connectorFillColour,
 		connectorFillColourGradient,
+		connectorFillColourHover,
+		connectorFillColourHoverGradient,
 		dateColour,
 		scrollEffect,
 		revealOnScroll,
@@ -501,8 +505,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		rowStripes,
 		rowStripeColourA,
 		rowStripeColourAGradient,
+		rowStripeColourAHover,
+		rowStripeColourAHoverGradient,
 		rowStripeColourB,
 		rowStripeColourBGradient,
+		rowStripeColourBHover,
+		rowStripeColourBHoverGradient,
 		borderWidth,
 		borderColour,
 		borderColourGradient,
@@ -716,6 +724,16 @@ export default function Edit( { attributes, setAttributes } ) {
 											onGradientChange: ( val ) =>
 												setAttributes( { rowStripeColourAGradient: val ?? '' } ),
 										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: rowStripeColourAHover,
+											onChange: ( val ) =>
+												setAttributes( { rowStripeColourAHover: val ?? '' } ),
+											gradientValue: rowStripeColourAHoverGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { rowStripeColourAHoverGradient: val ?? '' } ),
+										},
 									],
 								},
 								{
@@ -733,6 +751,16 @@ export default function Edit( { attributes, setAttributes } ) {
 											gradientValue: rowStripeColourBGradient,
 											onGradientChange: ( val ) =>
 												setAttributes( { rowStripeColourBGradient: val ?? '' } ),
+										},
+										{
+											key: 'hover',
+											label: __( 'Hover', 'sgs-blocks' ),
+											value: rowStripeColourBHover,
+											onChange: ( val ) =>
+												setAttributes( { rowStripeColourBHover: val ?? '' } ),
+											gradientValue: rowStripeColourBHoverGradient,
+											onGradientChange: ( val ) =>
+												setAttributes( { rowStripeColourBHoverGradient: val ?? '' } ),
 										},
 									],
 								},
@@ -888,6 +916,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { connectorColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: connectorColourHover,
+								onChange: ( val ) => setAttributes( { connectorColourHover: val ?? '' } ),
+								gradientValue: connectorColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorColourHoverGradient: val ?? '' } ),
+							},
 						] }
 					/>
 					<DesignTokenPicker
@@ -902,6 +939,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: connectorFillColourGradient,
 								onGradientChange: ( val ) => setAttributes( { connectorFillColourGradient: val ?? '' } ),
 								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: connectorFillColourHover,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColourHover: val ?? '' } ),
+								gradientValue: connectorFillColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorFillColourHoverGradient: val ?? '' } ),
 							},
 						] }
 					/>

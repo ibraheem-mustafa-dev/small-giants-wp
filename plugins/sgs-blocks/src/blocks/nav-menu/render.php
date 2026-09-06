@@ -1103,6 +1103,11 @@ $featured_colour_gradient  = isset( $attributes['featuredColourGradient'] ) ? (s
 $featured_colour_effective = sgs_resolve_text_colour_or_gradient( $featured_colour, $featured_colour_gradient );
 $featured_bg_slug  = isset( $attributes['featuredBg'] ) ? sanitize_html_class( $attributes['featuredBg'] ) : '';
 $featured_bg_hex   = '' !== $featured_bg_slug ? sgs_resolve_palette_hex( $featured_bg_slug, '' ) : '';
+// D958 -- Bean-directed preset-to-gradient upgrade. Gradient wins over the
+// resolved slug/hex when set+valid; the slug mechanism above is untouched
+// when this is unset, so an existing site renders byte-identical.
+$featured_bg_gradient = sgs_css_gradient_value( $attributes['featuredBgGradient'] ?? '' );
+$featured_bg_active   = ( '' !== $featured_bg_hex ) || ( '' !== $featured_bg_gradient );
 
 $featured_radius       = isset( $attributes['featuredRadius'] ) ? (float) $attributes['featuredRadius'] : 8;
 $featured_radius_hover = isset( $attributes['featuredRadiusHover'] ) && null !== $attributes['featuredRadiusHover']
@@ -1114,10 +1119,28 @@ $featured_weight_hover = isset( $attributes['featuredFontWeightHover'] ) && null
 	: $featured_weight;
 
 $featured_fg = '';
-if ( '' !== $featured_bg_hex ) {
-	$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
-	$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
-	$css         .= $featured_sel . '{background-color:' . esc_attr( $featured_bg_hex ) . ';color:' . esc_attr( $featured_fg ) . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
+if ( $featured_bg_active ) {
+	$featured_bg_paint = sgs_background_paint_decl( $featured_bg_hex, $featured_bg_gradient );
+	if ( '' !== $featured_bg_gradient ) {
+		// A gradient has no single colour to run WCAG contrast maths against
+		// (sgs_wcag_preferred_text_colour_for_bg() takes ONE background hex)
+		// -- skip the computation and use the operator's own FLAT
+		// featuredColour choice instead. Deliberately NOT
+		// $featured_colour_effective (the gradient-capable resolve): a text
+		// gradient paints via background-image+background-clip:text on this
+		// SAME selector, which would collide with the pill's own
+		// background-image gradient set here -- the identical precondition
+		// failure already documented for the flat-hex pill form
+		// (featuredColourGradient's block.json note, textSharesElementWithBackground()).
+		$featured_fg = sgs_colour_value( $featured_colour );
+	} else {
+		$preferred_fg = sgs_resolve_palette_hex( $featured_colour, '' );
+		$featured_fg  = sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hex, $preferred_fg );
+	}
+	$css .= $featured_sel . '{' . $featured_bg_paint
+		. ( '' !== $featured_fg ? ';color:' . esc_attr( $featured_fg ) : '' )
+		. ';font-weight:' . esc_attr( (string) $featured_weight )
+		. ';border-radius:' . esc_attr( (string) $featured_radius ) . 'px;}';
 } else {
 	$featured_colour_decl = sgs_text_colour_decl( $featured_colour_effective );
 	if ( '' !== $featured_colour_decl ) {
@@ -1182,13 +1205,31 @@ $featured_hover_sel    = implode(
 $featured_bg_hover     = isset( $attributes['featuredBgHover'] ) ? sanitize_html_class( $attributes['featuredBgHover'] ) : '';
 $featured_bg_hover_hex = '' !== $featured_bg_hover ? sgs_resolve_palette_hex( $featured_bg_hover, '' ) : '';
 $featured_fg_hover     = isset( $attributes['featuredColourHover'] ) ? (string) $attributes['featuredColourHover'] : '';
+// D958 -- gradient sibling, mirrors featuredBgGradient above. Gradient wins
+// over the resolved featuredBgHover slug/hex when set+valid.
+$featured_bg_hover_gradient = sgs_css_gradient_value( $attributes['featuredBgHoverGradient'] ?? '' );
+$featured_bg_hover_active   = ( '' !== $featured_bg_hover_hex ) || ( '' !== $featured_bg_hover_gradient );
 
-if ( '' !== $featured_bg_hover_hex ) {
-	$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
-	$featured_fg_h   = '' !== $preferred_hover
-		? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
-		: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
-	$css            .= sgs_hover_state_rules( $featured_sel, 'background-color:' . esc_attr( $featured_bg_hover_hex ) . ';color:' . esc_attr( $featured_fg_h ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast, ':focus-visible' );
+if ( $featured_bg_hover_active ) {
+	$featured_bg_hover_paint = sgs_background_paint_decl( $featured_bg_hover_hex, $featured_bg_hover_gradient );
+	if ( '' !== $featured_bg_hover_gradient ) {
+		// Same WCAG-skip rationale as the resting pill above -- a gradient
+		// has no single hex to contrast-check. Use the operator's own flat
+		// featuredColourHover choice, falling back to the resting flat
+		// featuredColour, rather than computing WCAG contrast against a
+		// gradient.
+		$featured_fg_h = sgs_colour_value( '' !== $featured_fg_hover ? $featured_fg_hover : $featured_colour );
+	} else {
+		$preferred_hover = '' !== $featured_fg_hover ? sgs_resolve_palette_hex( $featured_fg_hover, '' ) : '';
+		$featured_fg_h   = '' !== $preferred_hover
+			? sgs_wcag_preferred_text_colour_for_bg( $featured_bg_hover_hex, $preferred_hover )
+			: sgs_wcag_text_colour_for_bg( $featured_bg_hover_hex );
+	}
+	$css .= sgs_hover_state_rules(
+		$featured_sel,
+		$featured_bg_hover_paint . ( '' !== $featured_fg_h ? ';color:' . esc_attr( $featured_fg_h ) : '' ) . ';transition:background-color ' . $transition_fast . ',color ' . $transition_fast,
+		':focus-visible'
+	);
 } elseif ( '' !== $featured_fg_hover ) {
 	$css .= sgs_hover_state_rules( $featured_sel, 'color:' . sgs_colour_value( $featured_fg_hover ) . ';transition:color ' . $transition_fast, ':focus-visible' );
 }

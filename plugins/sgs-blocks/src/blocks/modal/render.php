@@ -33,6 +33,14 @@ $overlay_colour     = $attributes['overlayColour'] ?? 'text';
 $overlay_colour_gradient = $attributes['overlayColourGradient'] ?? '';
 $overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
 
+// overlayColourHover/overlayColourHoverGradient (2026-09-06, colour-conformance
+// closeout) — the ::backdrop box is a genuine click-to-close target (view.js),
+// resolved below via the same 5-arg sgs_custom_property_gradient_decls() call.
+// Kept in their own blank-line-separated alignment group so this addition
+// does not cascade a phpcs realignment warning across the whole block above.
+$overlay_colour_hover          = (string) ( $attributes['overlayColourHover'] ?? '' );
+$overlay_colour_hover_gradient = (string) ( $attributes['overlayColourHoverGradient'] ?? '' );
+
 // Generate unique ID for this modal instance.
 $modal_id = 'sgs-modal-' . wp_unique_id();
 
@@ -67,12 +75,28 @@ if ( '' !== $trigger_colour_effective ) {
 		$trigger_rules[] = 'background-color:transparent';
 	}
 }
-if ( $trigger_background || $trigger_background_gradient ) {
-	// Gate must include the gradient var, not just the flat colour — a
-	// gradient-only instance (no flat triggerBackground set) previously
-	// emitted zero CSS at all (found live, 2026-09-03).
-	$trigger_rules[] = sgs_background_paint_decl( $trigger_background, $trigger_background_gradient );
-}
+// Trigger background fill — migrated 2026-09-06 (colour-conformance closeout,
+// Case C) off a hand-assembled entry in $trigger_rules onto sgs_fill_states_css(),
+// which owns its OWN standalone rule for this fill alone (the recommended shape
+// per CLAUDE.md's "Colour EMISSION helpers" table — the trigger button already
+// shares its selector with the colour rule above, but the FILL half needed no
+// composing, only a state pair). Adds triggerBackgroundHover/-HoverGradient: the
+// static `.sgs-modal__trigger--{style}:hover` class default (style.css) never
+// adapted to a custom triggerBackground, and the trigger is a genuinely
+// interactive element — the scoped rule below out-specifies that class default
+// via the same selector-compounding already proven for the normal state (D942
+// comment above). Unset hover attrs resolve to '' -> sgs_fill_states_css()
+// emits no hover rule, byte-for-byte the prior no-hover behaviour.
+$trigger_bg_css = sgs_fill_states_css(
+	$root_sel . ' .sgs-modal__trigger',
+	$attributes,
+	array(
+		'base'           => 'triggerBackground',
+		'gradient'       => 'triggerBackgroundGradient',
+		'hover'          => 'triggerBackgroundHover',
+		'hover_gradient' => 'triggerBackgroundHoverGradient',
+	)
+);
 
 // Dialog background colour — same treatment.
 $dialog_rules = array();
@@ -87,7 +111,20 @@ $backdrop_vars = array();
 // sgs_custom_property_gradient_decls() resolves the flat colour (via
 // sgs_colour_value()) and, when set+valid, its gradient sibling — emitting
 // --sgs-modal-backdrop-colour and --sgs-modal-backdrop-colour-gradient.
-$backdrop_vars = array_merge( $backdrop_vars, sgs_custom_property_gradient_decls( 'sgs-modal-backdrop-colour', $overlay_colour, $overlay_colour_gradient ) );
+// Hover sibling (2026-09-06, colour-conformance closeout) — the ::backdrop box
+// is a genuine click-to-close target (view.js), so this 5-arg call also emits
+// --sgs-modal-backdrop-colour-hover(-gradient), consumed by a new
+// .sgs-modal__dialog::backdrop:hover rule in style.css.
+$backdrop_vars = array_merge(
+	$backdrop_vars,
+	sgs_custom_property_gradient_decls(
+		'sgs-modal-backdrop-colour',
+		$overlay_colour,
+		$overlay_colour_gradient,
+		$overlay_colour_hover,
+		$overlay_colour_hover_gradient
+	)
+);
 if ( $overlay_opacity ) {
 	$backdrop_vars[] = '--sgs-modal-backdrop-opacity:' . ( (float) $overlay_opacity / 100 );
 }
@@ -108,6 +145,9 @@ if ( $trigger_rules ) {
 	// @supports fallback for a browser lacking background-clip:text — no-op
 	// when $trigger_colour_effective is a flat colour.
 	$scoped_css_rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective );
+}
+if ( $trigger_bg_css ) {
+	$scoped_css_rules[] = $trigger_bg_css;
 }
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';

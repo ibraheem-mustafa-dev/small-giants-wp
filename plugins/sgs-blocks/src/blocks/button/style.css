@@ -70,7 +70,7 @@
 	   per-instance override has set --sgs-btn-*. */
 	color: var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text)));
 	background-color: var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));
-	background-image: var(--sgs-btn-bg-image, none);
+	background-image: var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-image-default, none));
 	border-color: var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent));
 }
 
@@ -117,8 +117,8 @@
 .sgs-button:focus-visible {
 	text-decoration: none;
 	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text))));
-	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent)));
-	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, none));
+	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-hover-default, var(--sgs-mb-btn-bg-default, transparent))));
+	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))));
 	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
 	/* Preset hover transform (FR-33-4 open-bag "transform-lift"): applied from the client's
 	   buttonPresets hover-transform token; `none` fallback = current behaviour when no preset.

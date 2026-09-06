@@ -19,6 +19,12 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
+			"colourExemptions": {
+				"drawerBg": {
+					"rule": "states",
+					"reason": "The drawer panel is a disclosure surface toggled open/closed by the burger trigger, not a hover target itself — only its own close button has :hover CSS (style.css:99). Already correctly painted with a real gradient sibling wired (drawerBgGradient, layered over the flat colour rather than replacing it, D-pending: an overlay panel keeps its solid base so alpha in the gradient doesn't let the page behind show through). Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"containerKind": "content",
 			"containerMirror": false,
 			"boxFamilies": {

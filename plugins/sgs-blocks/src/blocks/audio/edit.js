@@ -72,6 +72,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		audioPreload,
 		accentColour,
 		accentColourGradient,
+		accentColourHover,
+		accentColourHoverGradient,
 		spectrumColour,
 		title,
 		borderColour,
@@ -101,6 +103,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			// genuine solid-fill background-image rules in style.css consume
 			// it; --sgs-audio-accent above is untouched.
 			...( accentColourGradient ? { '--sgs-audio-accent-gradient': accentColourGradient } : {} ),
+			// Hover siblings (2026-09-06, FILL closeout) — mirrored onto the
+			// canvas wrapper so hovering the play button in the editor shows
+			// the same :hover background style.css's own rule paints on the
+			// frontend (CHECK A editor-canvas-parity: a control that writes an
+			// attribute style.css consumes must appear on the DOM style too).
+			...( accentColourHover ? { '--sgs-audio-accent-hover': resolveColourToken( accentColourHover, palette ) } : {} ),
+			...( accentColourHoverGradient ? { '--sgs-audio-accent-hover-gradient': accentColourHoverGradient } : {} ),
 			...buildBorderPreviewStyle( attributes ),
 		},
 	} );
@@ -120,7 +129,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
 			   panel, rendered FIRST. Replaces the old scattered "Colours"
-			   PanelBody below. No hover siblings exist for these two attrs. */ }
+			   PanelBody below. accent now carries a hover pair (2026-09-06,
+			   FILL closeout, scoped to the play button's own :hover rule);
+			   spectrum below still has no hover sibling. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -136,6 +147,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: accentColourGradient,
 								onGradientChange: ( value ) =>
 									setAttributes( { accentColourGradient: value ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: accentColourHover,
+								onChange: ( value ) =>
+									setAttributes( { accentColourHover: value ?? '' } ),
+								gradientValue: accentColourHoverGradient,
+								onGradientChange: ( value ) =>
+									setAttributes( { accentColourHoverGradient: value ?? '' } ),
 							},
 						],
 					},

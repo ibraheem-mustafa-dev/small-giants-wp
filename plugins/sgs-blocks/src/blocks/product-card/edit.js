@@ -1195,6 +1195,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: attributes.tagBackgroundColour,
 					onChange: ( val ) => setAttributes( { tagBackgroundColour: val ?? '' } ),
 					linked: true,
+					gradientValue: attributes.tagBackgroundColourGradient,
+					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourGradient: val ?? '' } ),
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: attributes.tagBackgroundColourHover,
+					onChange: ( val ) => setAttributes( { tagBackgroundColourHover: val ?? '' } ),
+					linked: true,
+					gradientValue: attributes.tagBackgroundColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { tagBackgroundColourHoverGradient: val ?? '' } ),
 				},
 			],
 		} );

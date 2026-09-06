@@ -72,9 +72,10 @@
 					"clusters": [ "fill" ],
 					"isWrapper": false,
 					"attrMap": {
-						"css:background-color": "backgroundColour"
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient"
 					},
-					"_note": "The block's own background paint, moved off the `label` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`label` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`. No gradient/hover siblings exist on this block's `backgroundColour` — a flat colour only."
+					"_note": "The block's own background paint, moved off the `label` element onto a `::after` pseudo-element layer (render.php) so a text gradient on the SAME root node (`label` element's `css:color-gradient`) cannot clip or overwrite it via `background-clip:text`. GRADIENT SIBLING (colour-conformance FILL closeout, 2026-09-06): backgroundColourGradient added — the block already calls the shared sgs_block_background_layer_css()/sgs_background_paint_decl() mechanism, it just hardcoded the gradient argument to '' instead of reading a real attribute. No hover sibling — a static decorative label has no :hover CSS anywhere on this block."
 				}
 			}
 		}
@@ -101,6 +102,11 @@
 		"backgroundColour": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label's background via background-image, on the ::after layer sgs_block_background_layer_css() already builds (colour-conformance FILL closeout 2026-09-06). Non-empty wins over backgroundColour."
 		},
 		"fontFamily": {
 			"type": "string",

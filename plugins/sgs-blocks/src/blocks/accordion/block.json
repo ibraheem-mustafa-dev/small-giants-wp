@@ -102,9 +102,18 @@
 					],
 					"attrMap": {
 						"css:color": "headerColour",
-						"css:background-color": "headerBackground"
+						"css:background-color": "headerBackground",
+						"css:background-image": "headerBackgroundGradient"
 					},
-					"_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "headerBackgroundHover",
+								"css:background-image": "headerBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css."
 				},
 				"icon": {
 					"label": "Toggle icon",
@@ -237,6 +246,21 @@
 		"headerBackground": {
 			"type": "string"
 		},
+		"headerBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting every accordion-item's header row background via background-image (colour-conformance preset-upgrade, 2026-09-06). Non-empty wins over headerBackground's theme-preset-slug resolution entirely — bypasses the var(--wp--preset--color--{slug}) mechanism, since a gradient cannot be a swatch name. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundGradient)."
+		},
+		"headerBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Header row background colour on :hover/:focus-visible (colour-conformance FILL closeout, 2026-09-06). The header row already has a real :hover rule (style.css .sgs-accordion-item__header:hover) with hardcoded theme-default colours — this control lets the operator override it. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundHover)."
+		},
+		"headerBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the header row's :hover background. Non-empty wins over headerBackgroundHover. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundHoverGradient)."
+		},
 		"iconColour": {
 			"type": "string"
 		},
@@ -358,6 +382,9 @@
 		"sgs/accordionIconPosition": "iconPosition",
 		"sgs/accordionHeaderColour": "headerColour",
 		"sgs/accordionHeaderBackground": "headerBackground",
+		"sgs/accordionHeaderBackgroundGradient": "headerBackgroundGradient",
+		"sgs/accordionHeaderBackgroundHover": "headerBackgroundHover",
+		"sgs/accordionHeaderBackgroundHoverGradient": "headerBackgroundHoverGradient",
 		"sgs/accordionIconColour": "iconColour",
 		"sgs/accordionIconColourGradient": "iconColourGradient",
 		"sgs/accordionIconColourHover": "iconColourHover",

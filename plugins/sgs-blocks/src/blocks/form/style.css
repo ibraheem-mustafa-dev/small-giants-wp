@@ -557,6 +557,19 @@ select.sgs-form-field__input {
 	transition: width 0.3s ease;
 }
 
+/* Hover/focus-visible sibling (hover-sibling closeout, 2026-09-06) — same
+   fallback-chain shape as before-after's handle-colour hover: unset falls
+   through to the resting colour, then the CSS default, so an untouched form
+   stays byte-identical. .sgs-form__progress-bar itself has no cursor/tabindex
+   (:focus-visible never matches it), but the pairing is kept for parity with
+   every other hover rule in the framework and to cover a wrapping-element
+   focus/hover class a future feature might add. */
+.sgs-form__progress-bar:hover,
+.sgs-form__progress-bar:focus-visible {
+	background-color: var(--sgs-progress-colour-hover, var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80)));
+	background-image: var(--sgs-progress-colour-hover-gradient, var(--sgs-progress-colour-gradient, none));
+}
+
 .sgs-form__progress-steps {
 	display: flex;
 	justify-content: space-between;
@@ -599,6 +612,12 @@ select.sgs-form-field__input {
 
 .sgs-form__progress-step--active .sgs-form__progress-step-number,
 .sgs-form__progress-step--completed .sgs-form__progress-step-number {
+	/* Reuses --sgs-progress-colour for visual consistency with the progress-bar
+	 * fill, but the step-number circle is NOT the declared "progress-bar"
+	 * fill element (block.json supports.sgs.elements) and is scoped instead
+	 * under sgs/form-step's own step-navigation UI — no -hover sibling added
+	 * here (hover-sibling closeout, 2026-09-06); the step button already has
+	 * its own :focus-visible outline rule below. */
 	border-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	color: var(--wp--preset--color--text-inverse, #fff);

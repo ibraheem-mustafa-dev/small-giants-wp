@@ -315,9 +315,17 @@
 	font-weight: 600;
 	border-radius: 20px;
 	background-color: var( --sgs-pg-badge-bg, var( --wp--preset--color--primary, #1a3a5c ) );
+	background-image: var( --sgs-pg-badge-bg-gradient, none );
 	color: var( --sgs-pg-badge-colour, var( --wp--preset--color--text-inverse, #fff ) );
 	text-decoration: none;
 	line-height: 1.4;
+	transition: background-color var( --sgs-transition-duration ) var( --sgs-transition-easing ), background-image var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-post-grid__badge:hover,
+.sgs-post-grid__badge:focus-visible {
+	background-color: var( --sgs-pg-badge-bg-hover, var( --sgs-pg-badge-bg, var( --wp--preset--color--primary, #1a3a5c ) ) );
+	background-image: var( --sgs-pg-badge-bg-hover-gradient, var( --sgs-pg-badge-bg-gradient, none ) );
 }
 
 .sgs-post-grid__category {

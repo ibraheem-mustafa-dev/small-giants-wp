@@ -65,6 +65,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabHoverBgColour,
 		panelBgColour,
 		panelBgColourGradient,
+		panelBgColourHover,
+		panelBgColourHoverGradient,
 		panelBorderColour,
 		panelBorderColourGradient,
 		transitionDuration,
@@ -299,6 +301,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								gradientValue: panelBgColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { panelBgColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: panelBgColourHover,
+								onChange: ( val ) => setAttributes( { panelBgColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: panelBgColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBgColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

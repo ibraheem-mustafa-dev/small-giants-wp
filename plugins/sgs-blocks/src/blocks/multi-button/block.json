@@ -266,6 +266,21 @@
 			"default": "",
 			"_comment": "A2 (D638 SS4/5) -- CSS custom-property GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-default on this block's own wrapper; button/style.css reads it as the second fallback tier of --sgs-btn-bg. Empty = no group default; buttons behave exactly as before."
 		},
+		"childBtnBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient GROUP DEFAULT for child sgs/button instances (colour-conformance FILL closeout 2026-09-06). Emitted as --sgs-mb-btn-bg-image-default; button/style.css reads it as the fallback tier of --sgs-btn-bg-image, right before button/style.css's own 'transparent'/'none' floor. Empty = no group default."
+		},
+		"childBtnBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover background colour GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-default; button/style.css's own :hover chain previously had no group-default rung at all -- a hover colour set here only ever fell through to the RESTING group default, never a distinct hover one."
+		},
+		"childBtnBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient hover GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-image-default."
+		},
 		"childBtnTextColour": {
 			"type": "string",
 			"default": ""

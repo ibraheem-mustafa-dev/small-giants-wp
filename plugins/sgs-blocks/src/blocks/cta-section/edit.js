@@ -305,10 +305,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		} );
 	};
 
-	// Contrast check for border colour against the CTA section's own background.
-	// Note: cta-section has no backgroundColourGradient sibling (see block.json comment),
-	// so we check only the flat backgroundColour value.
-	const ctaSectionContrastAgainst = backgroundColour || '';
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the CTA section's own background. When the background is a
+	// gradient, comparing against the flat colour would compare against a
+	// surface that isn't rendered — skip the check entirely in that case
+	// (mirrors sgs/quote's identical `quoteContrastAgainst` guard).
+	const ctaSectionContrastAgainst =
+		backgroundColour && ! attributes.backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
 	// the server; `pointer-events:none` is editor-only insurance so the
@@ -463,17 +468,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					},
 					{
 						/* Root BACKGROUND colour (`backgroundColour`, default 'accent') — a
-						   palette-slug-only control mirroring sgs/hero / sgs/quote's own
-						   backgroundColour row. render.php never emits inline CSS for this
-						   value; it re-adds the native `has-background`/`has-{slug}-
+						   theme-preset-swatch picker mirroring sgs/hero / sgs/quote's own
+						   backgroundColour row. render.php never emits inline CSS for the flat
+						   slug; it re-adds the native `has-background`/`has-{slug}-
 						   background-color` classes (color support is skip-serialised) so
 						   the theme's own preset CSS paints it — see render.php's
-						   `$cta_preset_bg_slug` block. No gradient sibling: unlike
-						   sgs/quote, this block does not declare `backgroundColourGradient`.
-						   `backgroundColourHover` (render.php:80/214-215) has no gradient
-						   sibling either — the hover state below is a plain colour swap. */
+						   `$cta_preset_bg_slug` block. `backgroundColourGradient` (Bean-requested
+						   colour+gradient upgrade) is the raw-gradient override sibling: when
+						   set it WINS over the slug entirely and bypasses the preset-class
+						   mechanism, painted directly as `background-image` on the block's own
+						   scoped root rule. Same win-over-slug rule applies to the hover pair
+						   (`backgroundColourHover`/`backgroundColourHoverGradient`). */
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -481,6 +489,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								value: attributes.backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributes.backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -488,6 +499,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								value: attributes.backgroundColourHover,
 								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: attributes.backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

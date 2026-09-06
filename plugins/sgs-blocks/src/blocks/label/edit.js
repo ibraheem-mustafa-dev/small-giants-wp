@@ -123,6 +123,7 @@ function buildStyle( attributes ) {
 		textColour,
 		textColourGradient,
 		backgroundColour,
+		backgroundColourGradient,
 		fontFamily,
 		fontSize,
 		fontSizeUnit,
@@ -174,6 +175,11 @@ function buildStyle( attributes ) {
 	// render.php's ungated helper (no pill gate).
 	previewStyle.padding = paddingPreview;
 	previewStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
+	// Gradient sibling preview (colour-conformance FILL closeout, 2026-09-06) —
+	// mirrors render.php's sgs_background_paint_decl() gradient-wins-when-set.
+	if ( backgroundColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( backgroundColourGradient ) ) {
+		previewStyle.backgroundImage = backgroundColourGradient;
+	}
 	// borderRadius is a CSS-length STRING (2026-08-13). The old check used
 	// `Number( borderRadius ) !== 0`, which is NaN for '1.5rem' — and the old
 	// preview appended 'px' unconditionally, so '1.5rem' painted as '1.5rempx'
@@ -212,6 +218,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColour,
 		textColourGradient,
 		backgroundColour,
+		backgroundColourGradient,
 		fontSize,
 		fontSizeUnit,
 		fontWeight,
@@ -264,6 +271,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -271,6 +279,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: backgroundColour,
 								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
 							},
 						],
 					},

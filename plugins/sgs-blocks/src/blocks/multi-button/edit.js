@@ -326,7 +326,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					fillRow( {
 						key: 'child-btn-background',
 						label: __( 'Button background colour', 'sgs-blocks' ),
-						attrs: { base: 'childBtnBackground' },
+						attrs: {
+							base: 'childBtnBackground',
+							hover: 'childBtnBackgroundHover',
+							gradient: 'childBtnBackgroundGradient',
+							hoverGradient: 'childBtnBackgroundHoverGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),

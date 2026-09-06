@@ -56,6 +56,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:border-width": "borderWidth",
@@ -78,6 +79,7 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient"
@@ -664,6 +666,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Raw CSS gradient override for the resting root background, alongside the backgroundColour theme-preset-swatch picker. Non-empty WINS over backgroundColour at render time, bypassing the has-{slug}-background-color preset class entirely and painting background-image directly on the block's own scoped root rule instead."
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-within."
 		},
 		"borderWidth": {
 			"type": "object",

@@ -148,6 +148,20 @@
 	}
 }
 
+/* iconBackground/iconBackgroundGradient HOVER siblings (2026-09-06,
+   hover-controls task) — editor-canvas mirror of render.php's touch-guarded
+   hover pair. Fires off the SAME ancestor hover trigger as the lift/shadow
+   rule above — `cards` style only, the one style where `.sgs-mega-group`
+   already has a real hover treatment. The var(...) fallback chain resolves to
+   the exact resting-state --sgs-mm-soft / --sgs-mm-soft-gradient values, so
+   this is a no-op until an operator sets iconBackgroundHover /
+   iconBackgroundGradientHover. --------------------------------------------- */
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon,
+.wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:focus-within .sgs-icon-list__icon {
+	background-color: var( --sgs-mm-icon-hover-bg, var( --sgs-mm-soft ) );
+	background-image: var( --sgs-mm-icon-hover-bg-gradient, var( --sgs-mm-soft-gradient, none ) );
+}
+
 /* -- media-cards / brands: a `sgs/card-grid` child sitting as a flat sibling
    in the content row (not wrapped in `.sgs-mega-group`) gets the SAME
    flex-basis as a group under the `columns` style — universal per-style
@@ -219,10 +233,18 @@
 	inset: 0;
 	opacity: 0.9;
 	pointer-events: none;
-	background: radial-gradient(
-		260px circle at var( --mx, 50% ) var( --my, 30% ),
-		var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
-		transparent 70%
+	/* accentBackgroundImageGradient (2026-09-06, preset-to-gradient upgrade
+	   task) — when set, --sgs-mm-accent-image-gradient BYPASSES the
+	   color-mix()-derived --sgs-mm-soft-image tint entirely and paints the raw
+	   gradient directly as the WHOLE background-image; unset falls back to the
+	   exact pre-existing radial-gradient + colour-stop chain, unchanged. */
+	background-image: var(
+		--sgs-mm-accent-image-gradient,
+		radial-gradient(
+			260px circle at var( --mx, 50% ) var( --my, 30% ),
+			var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
+			transparent 70%
+		)
 	);
 }
 /* CHILD-LIFT — `:where()`-wrapped at ZERO specificity (2026-08-25, D793), for the
@@ -242,10 +264,16 @@
 }
 @media ( prefers-reduced-motion: reduce ) {
 	.wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before {
-		background: radial-gradient(
-			260px circle at 50% 30%,
-			var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
-			transparent 70%
+		/* accentBackgroundImageGradient bypass — same as the main rule above,
+		   mirrored here since prefers-reduced-motion only fixes the cursor
+		   position (50%/30% static), not the colour source. */
+		background-image: var(
+			--sgs-mm-accent-image-gradient,
+			radial-gradient(
+				260px circle at 50% 30%,
+				var( --sgs-spotlight-colour, var( --sgs-mm-soft-image, var( --wp--preset--color--accent ) ) ),
+				transparent 70%
+			)
 		);
 	}
 }

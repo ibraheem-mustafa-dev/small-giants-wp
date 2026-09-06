@@ -110,6 +110,12 @@ $connector_colour = $attributes['connectorColour'] ?? 'border';
 // shape already proven on brand-strip/post-grid/social-icons/form/gallery/
 // before-after/option-picker/tabs.
 $connector_colour_gradient = $attributes['connectorColourGradient'] ?? '';
+// connectorColourHover/HoverGradient (2026-09-06, colour-conformance FILL
+// closeout) — the `--sgs-connector-colour-hover`/`-hover-gradient` siblings,
+// same sgs_custom_property_gradient_decls() 5-arg form proven on
+// before-after's handleColour.
+$connector_colour_hover          = $attributes['connectorColourHover'] ?? '';
+$connector_colour_hover_gradient = $attributes['connectorColourHoverGradient'] ?? '';
 $date_colour      = $attributes['dateColour'] ?? 'accent';
 $progress_fill    = ! empty( $attributes['connectorProgressFill'] );
 $fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
@@ -192,6 +198,14 @@ $stripe_b      = $attributes['rowStripeColourB'] ?? 'surface-alt';
 // adopter.
 $stripe_a_gradient = $attributes['rowStripeColourAGradient'] ?? '';
 $stripe_b_gradient = $attributes['rowStripeColourBGradient'] ?? '';
+// rowStripeColourA/BHover(Gradient) (2026-09-06, colour-conformance FILL
+// closeout) — same no-attrMap reasoning as the gradient siblings above; each
+// row's own :hover/:focus-within rule falls back to its resting stripe
+// colour, then transparent, when unset.
+$stripe_a_hover          = $attributes['rowStripeColourAHover'] ?? '';
+$stripe_a_hover_gradient = $attributes['rowStripeColourAHoverGradient'] ?? '';
+$stripe_b_hover          = $attributes['rowStripeColourBHover'] ?? '';
+$stripe_b_hover_gradient = $attributes['rowStripeColourBHoverGradient'] ?? '';
 
 // Sanitise orientation to avoid arbitrary CSS class injection. $content_layout
 // and $content_side were already validated above, so they need no separate
@@ -513,16 +527,25 @@ $wrapper_style_parts = array();
 // option-picker/tabs; style.scss carries the matching
 // background-image:var(--sgs-connector-colour-gradient,none) line next to
 // each existing background-color:var(--sgs-connector-colour) rule.
+// connectorColourHover/HoverGradient (colour-conformance FILL closeout) are
+// the 4th/5th args — style.scss's matching :hover/:focus-visible pair reads
+// the resulting --sgs-connector-colour-hover(-gradient) vars.
 $wrapper_style_parts = array_merge(
 	$wrapper_style_parts,
-	sgs_custom_property_gradient_decls( 'sgs-connector-colour', $connector_colour, $connector_colour_gradient )
+	sgs_custom_property_gradient_decls( 'sgs-connector-colour', $connector_colour, $connector_colour_gradient, $connector_colour_hover, $connector_colour_hover_gradient )
 );
 if ( $date_colour ) {
 	$wrapper_style_parts[] = '--sgs-date-colour:' . sgs_colour_value( $date_colour );
 }
 if ( $progress_fill && $fill_colour ) {
 	$fill_colour_gradient = $attributes['connectorFillColourGradient'] ?? '';
-	$wrapper_style_parts  = array_merge( $wrapper_style_parts, sgs_custom_property_gradient_decls( 'sgs-timeline-fill-colour', $fill_colour, $fill_colour_gradient ) );
+	// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,
+	// 2026-09-06) — 4th/5th args; style.scss's `.sgs-timeline:hover`/
+	// `:focus-within` + `.is-reached:hover`/`:focus-visible` rules read the
+	// resulting --sgs-timeline-fill-colour-hover(-gradient) vars.
+	$fill_colour_hover          = $attributes['connectorFillColourHover'] ?? '';
+	$fill_colour_hover_gradient = $attributes['connectorFillColourHoverGradient'] ?? '';
+	$wrapper_style_parts        = array_merge( $wrapper_style_parts, sgs_custom_property_gradient_decls( 'sgs-timeline-fill-colour', $fill_colour, $fill_colour_gradient, $fill_colour_hover, $fill_colour_hover_gradient ) );
 }
 if ( $reveal_stagger > 0 ) {
 	$wrapper_style_parts[] = '--sgs-reveal-stagger:' . $reveal_stagger . 'ms';
@@ -556,6 +579,25 @@ if ( $row_stripes ) {
 	$resolved_stripe_b_gradient = sgs_css_gradient_value( $stripe_b_gradient );
 	if ( '' !== $resolved_stripe_b_gradient ) {
 		$wrapper_style_parts[] = '--sgs-timeline-stripe-b-gradient:' . $resolved_stripe_b_gradient;
+	}
+	// rowStripeColourA/BHover(Gradient) (colour-conformance FILL closeout,
+	// 2026-09-06) — unlike the resting values above, an unset hover emits
+	// NOTHING here (no 'transparent' fallback): style.scss's own
+	// var(…-hover, var(…, transparent)) fallback chain covers it, matching the
+	// sgs_custom_property_gradient_decls() convention used elsewhere in this file.
+	if ( '' !== $stripe_a_hover ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-a-hover:' . sgs_colour_value( $stripe_a_hover );
+	}
+	$resolved_stripe_a_hover_gradient = sgs_css_gradient_value( $stripe_a_hover_gradient );
+	if ( '' !== $resolved_stripe_a_hover_gradient ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-a-hover-gradient:' . $resolved_stripe_a_hover_gradient;
+	}
+	if ( '' !== $stripe_b_hover ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-b-hover:' . sgs_colour_value( $stripe_b_hover );
+	}
+	$resolved_stripe_b_hover_gradient = sgs_css_gradient_value( $stripe_b_hover_gradient );
+	if ( '' !== $resolved_stripe_b_hover_gradient ) {
+		$wrapper_style_parts[] = '--sgs-timeline-stripe-b-hover-gradient:' . $resolved_stripe_b_hover_gradient;
 	}
 }
 // NO-INLINE (Spec 32 FR-32-4 as amended 2026-07-18 / D345): these are

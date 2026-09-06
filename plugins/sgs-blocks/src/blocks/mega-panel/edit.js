@@ -181,6 +181,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourScheme,
 		iconBackground,
 		iconBackgroundGradient,
+		iconBackgroundHover,
+		iconBackgroundGradientHover,
 		groupBorderColour,
 		groupBorderColourGradient,
 		groupBorderColourHover,
@@ -188,6 +190,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconColourGradient,
 		accentBackgroundImage,
+		accentBackgroundImageGradient,
 		maxWidth,
 		panelPadding,
 		groupGap,
@@ -249,6 +252,27 @@ export default function Edit( { attributes, setAttributes } ) {
 			iconBackgroundGradient &&
 			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradient )
 				? iconBackgroundGradient
+				: undefined,
+		// iconBackgroundHover/iconBackgroundGradientHover canvas mirrors (2026-09-06,
+		// hover-controls task) — consumed by style.css's `cards`-style hover rule on
+		// `.sgs-mega-group:hover .sgs-icon-list__icon`. Only set when the operator
+		// has picked one; unset means the hover rule's own var(...) fallback chain
+		// resolves to the exact resting-state values, so this stays a no-op.
+		'--sgs-mm-icon-hover-bg': iconBackgroundHover
+			? colourVar( iconBackgroundHover ) || iconBackgroundHover
+			: undefined,
+		'--sgs-mm-icon-hover-bg-gradient':
+			iconBackgroundGradientHover &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( iconBackgroundGradientHover )
+				? iconBackgroundGradientHover
+				: undefined,
+		// accentBackgroundImageGradient canvas mirror (2026-09-06) — consumed by
+		// style.css's spotlight `[data-spotlight]::before` rule, bypassing the
+		// derived --sgs-mm-soft-image tint entirely when set.
+		'--sgs-mm-accent-image-gradient':
+			accentBackgroundImageGradient &&
+			/^(repeating-)?(linear|radial|conic)-gradient\(/i.test( accentBackgroundImageGradient )
+				? accentBackgroundImageGradient
 				: undefined,
 		'--sgs-mm-panel-bg': panelBg ? colourVar( panelBg ) || panelBg : undefined,
 		// panelBgGradient canvas mirror (2026-09-06) — same approach: --sgs-mm-panel-bg-gradient
@@ -406,6 +430,22 @@ export default function Edit( { attributes, setAttributes } ) {
 								onGradientChange: ( val ) =>
 									setAttributes( { iconBackgroundGradient: val ?? '' } ),
 							},
+							{
+								// Hover pair (2026-09-06, hover-controls task) — fires off the
+								// icon chip's ancestor `.sgs-mega-group:hover` on the `cards`
+								// style only (the one style where that ancestor already has a
+								// real hover trigger). Default empty string: no colour override
+								// at hover until an operator sets one.
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconBackgroundHover,
+								onChange: ( val ) =>
+									setAttributes( { iconBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconBackgroundGradientHover,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconBackgroundGradientHover: val ?? '' } ),
+							},
 						],
 					},
 					{
@@ -456,6 +496,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'accentBackgroundImage',
 						label: __( 'Accent background image', 'sgs-blocks' ),
+						// gradientCapable (2026-09-06, preset-to-gradient upgrade task): the
+						// new accentBackgroundImageGradient sibling BYPASSES the base slug's
+						// color-mix()-derived tint entirely and paints the raw gradient
+						// directly on the spotlight glow's background-image — a gradient
+						// cannot be meaningfully passed through that same colour-stop
+						// derivation the way a flat colour can (see block.json's own note).
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -464,6 +511,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( { accentBackgroundImage: val ?? 'accent' } ),
 								linked: true,
+								gradientValue: accentBackgroundImageGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { accentBackgroundImageGradient: val ?? '' } ),
 							},
 						],
 					},

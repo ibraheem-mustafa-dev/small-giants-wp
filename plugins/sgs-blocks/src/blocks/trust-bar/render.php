@@ -34,9 +34,9 @@ $uid = wp_unique_id( 'sgs-tb-' );
 // CSS length/unit sanitiser — for free-text length values (border-width etc.)
 // concatenated into raw CSS declarations. Mirrors sgs/hero's sgs_css_length_value().
 // --- Shared attributes --------------------------------------------------------
-$badge_style  = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
-$badge_size   = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
-$block_title  = $attributes['title'] ?? '';
+$badge_style           = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
+$badge_size            = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
+$block_title           = $attributes['title'] ?? '';
 $title_colour          = $attributes['titleColour'] ?? 'text-muted';
 $title_colour_gradient = $attributes['titleColourGradient'] ?? '';
 $label_colour          = $attributes['labelColour'] ?? 'text';
@@ -48,7 +48,11 @@ $icon_circle_bg   = $attributes['iconCircleBackground'] ?? 'surface';
 // iconCircleBackgroundGradient (2026-09-06, colour-conformance closeout) —
 // gradient sibling, resolved below alongside $circle_bg_value.
 $icon_circle_bg_gradient = $attributes['iconCircleBackgroundGradient'] ?? '';
-$icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
+// Hover-state background (colour-conformance 2026-09-06 closeout) — sibling
+// gradient. Both resolved alongside the resting values below.
+$icon_circle_bg_hover          = $attributes['iconCircleBackgroundHover'] ?? '';
+$icon_circle_bg_gradient_hover = $attributes['iconCircleBackgroundHoverGradient'] ?? '';
+$icon_colour                   = $attributes['iconColour'] ?? 'primary-dark';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above,
 // but only paints the outline (default) badge's `stroke` — a 'filled' badge's
 // `fill` paint is out of this mechanism's scope (css:fill territory, Builder 5).
@@ -58,28 +62,28 @@ $icon_colour      = $attributes['iconColour'] ?? 'primary-dark';
 $icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
 $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $tb_stroke_grad_defs_used   = false;
-$text_colour               = $attributes['textColour'] ?? 'text';
-$icon_circle_border_radius = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
+$text_colour                = $attributes['textColour'] ?? 'text';
+$icon_circle_border_radius  = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
 
 // --- Root-element background/text colour (+ hover), D636-style gradient siblings.
 // Mirrors sgs/testimonial-slider's `slider` wrapper element exactly (css:background-color
 // -> backgroundColour, css:color -> textColour, states.hover -> the Hover pair).
-$root_background_colour          = $attributes['backgroundColour'] ?? '';
-$root_background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
-$root_background_colour_hover    = $attributes['backgroundColourHover'] ?? '';
+$root_background_colour                = $attributes['backgroundColour'] ?? '';
+$root_background_colour_gradient       = $attributes['backgroundColourGradient'] ?? '';
+$root_background_colour_hover          = $attributes['backgroundColourHover'] ?? '';
 $root_background_colour_hover_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
-$root_text_colour_gradient       = $attributes['textColourGradient'] ?? '';
-$root_text_colour_hover          = $attributes['textColourHover'] ?? '';
-$root_text_colour_hover_gradient = $attributes['textColourHoverGradient'] ?? '';
-$icon_circle_shadow        = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
-$icon_circle_shadow_colour = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
-$icon_circle_shadow_colour_hover = isset( $attributes['iconCircleShadowColourHover'] ) ? (string) $attributes['iconCircleShadowColourHover'] : '';
+$root_text_colour_gradient             = $attributes['textColourGradient'] ?? '';
+$root_text_colour_hover                = $attributes['textColourHover'] ?? '';
+$root_text_colour_hover_gradient       = $attributes['textColourHoverGradient'] ?? '';
+$icon_circle_shadow                    = isset( $attributes['iconCircleShadow'] ) ? (string) $attributes['iconCircleShadow'] : 'subtle';
+$icon_circle_shadow_colour             = isset( $attributes['iconCircleShadowColour'] ) ? (string) $attributes['iconCircleShadowColour'] : '';
+$icon_circle_shadow_colour_hover       = isset( $attributes['iconCircleShadowColourHover'] ) ? (string) $attributes['iconCircleShadowColourHover'] : '';
 
 // --- image-badge attributes (mirrors icon-circle's own control set) -----------
-$badge_image_border_radius = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
-$badge_image_size          = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
-$badge_image_shadow        = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
-$badge_image_shadow_colour = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
+$badge_image_border_radius       = isset( $attributes['badgeImageBorderRadius'] ) ? (string) $attributes['badgeImageBorderRadius'] : '';
+$badge_image_size                = isset( $attributes['badgeImageSize'] ) ? absint( $attributes['badgeImageSize'] ) : 60;
+$badge_image_shadow              = isset( $attributes['badgeImageShadow'] ) ? (string) $attributes['badgeImageShadow'] : '';
+$badge_image_shadow_colour       = isset( $attributes['badgeImageShadowColour'] ) ? (string) $attributes['badgeImageShadowColour'] : '';
 $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHover'] ) ? (string) $attributes['badgeImageShadowColourHover'] : '';
 // badgeImageObjectFit is read directly by SGS_Media_Element::style() (the
 // shared object-fit atom, rule 37-media-no-handroll) further down — no local
@@ -99,10 +103,13 @@ $icon_circle_size = max( 36, min( 64, $icon_circle_size ) );
 $badge_image_size = max( 24, min( 160, $badge_image_size ) );
 
 // --- Resolve colour values ----------------------------------------------------
-$circle_bg_value            = sgs_colour_value( $icon_circle_bg );
-$circle_bg_gradient_value   = sgs_css_gradient_value( $icon_circle_bg_gradient );
-$icon_colour_value = sgs_colour_value( $icon_colour );
-$text_colour_value = sgs_colour_value( $text_colour );
+$circle_bg_value          = sgs_colour_value( $icon_circle_bg );
+$circle_bg_gradient_value = sgs_css_gradient_value( $icon_circle_bg_gradient );
+// Hover-state values (colour-conformance 2026-09-06).
+$circle_bg_hover_value          = sgs_colour_value( $icon_circle_bg_hover );
+$circle_bg_gradient_hover_value = sgs_css_gradient_value( $icon_circle_bg_gradient_hover );
+$icon_colour_value              = sgs_colour_value( $icon_colour );
+$text_colour_value              = sgs_colour_value( $text_colour );
 // D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
 // numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
 $title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
@@ -189,6 +196,23 @@ if ( 'icon-circle' === $badge_style && '' !== $icon_circle_shadow_colour_hover )
 	}
 }
 
+// HOVER-state background colours (colour-conformance 2026-09-06 closeout) —
+// emit custom properties scoped to .sgs-trust-bar__circle:hover/:focus-visible.
+// Both flat colour and gradient are emitted when set, allowing style.css to
+// layer them (gradient wins via background-image order).
+if ( 'icon-circle' === $badge_style && ( '' !== $circle_bg_hover_value || '' !== $circle_bg_gradient_hover_value ) ) {
+	$hover_bg_decls = array();
+	if ( '' !== $circle_bg_hover_value ) {
+		$hover_bg_decls[] = '--sgs-trust-badge-circle-bg-hover:' . $circle_bg_hover_value;
+	}
+	if ( '' !== $circle_bg_gradient_hover_value ) {
+		$hover_bg_decls[] = '--sgs-trust-badge-circle-bg-gradient-hover:' . $circle_bg_gradient_hover_value;
+	}
+	if ( $hover_bg_decls ) {
+		$tb_extra_scoped_css .= $uid_scope . ' .sgs-trust-bar__circle:hover,' . $uid_scope . ' .sgs-trust-bar__circle:focus-visible{' . implode( ';', $hover_bg_decls ) . ';}';
+	}
+}
+
 $tb_style_engine_args = array();
 
 $tb_border_args = array();
@@ -235,9 +259,9 @@ if ( '' !== $tb_text_colour_hover_effective ) {
 }
 
 if ( $tb_root_colour_decls || $tb_root_colour_hover_decls ) {
-if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
-	$tb_root_colour_hover_decls[] = 'color:' . sgs_colour_value( $attributes['iconColourHover'] );
-}
+	if ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
+		$tb_root_colour_hover_decls[] = 'color:' . sgs_colour_value( $attributes['iconColourHover'] );
+	}
 	$tb_extra_scoped_css .= sgs_emit_state_colour_css( $root_sel, $tb_root_colour_decls, $tb_root_colour_hover_decls );
 }
 
@@ -302,10 +326,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt                  = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                  = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                  = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                  = '' !== $border_width_left ? $border_width_left : '0';
 		$tb_extra_scoped_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -381,8 +405,8 @@ if ( '' !== $title_colour_effective ) {
 // deliberately out of scope (css:fill territory). Both states resolved
 // together via sgs_icon_gradient_states_css() (2026-09-06 close-out) —
 // lucide-only badge glyphs, so the icon source is hardcoded here.
-$tb_icon_grad_sel  = $uid_scope . ' .sgs-trust-bar__circle svg';
-$tb_stroke_grad    = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $tb_icon_grad_sel );
+$tb_icon_grad_sel = $uid_scope . ' .sgs-trust-bar__circle svg';
+$tb_stroke_grad   = sgs_icon_gradient_states_css( 'lucide', $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $tb_icon_grad_sel );
 if ( $tb_stroke_grad['css'] ) {
 	$tb_extra_scoped_css .= implode( '', $tb_stroke_grad['css'] );
 }
@@ -618,9 +642,9 @@ foreach ( $items as $tb_item_index => $item ) {
 
 		// Per-item object-fit override (Spec 35 Part 4) — see the
 		// $tb_per_item_css declaration above the loop for the full rationale.
-		$tb_item_key       = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $tb_item_index );
-		$tb_item_key_attr  = ' data-badge-key="' . esc_attr( $tb_item_key ) . '"';
-		$tb_per_item_css  .= sgs_media_position_css(
+		$tb_item_key      = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $tb_item_index );
+		$tb_item_key_attr = ' data-badge-key="' . esc_attr( $tb_item_key ) . '"';
+		$tb_per_item_css .= sgs_media_position_css(
 			array(
 				'objectPosition' => null,
 				'objectFit'      => $item['objectFit'] ?? '',

@@ -394,7 +394,7 @@ if ( '' !== $sgs_pc_text_normal_decl || '' !== $sgs_pc_text_hover_decl ) {
 // Gradient companion rule — a no-op for a flat colour, MUST accompany
 // sgs_text_colour_decl(): its gradient branch has no @supports fallback of
 // its own.
-$sgs_card_typo_css          .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
+$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_root_sel, $sgs_pc_text_normal_resolved );
 if ( '' !== $sgs_pc_text_hover_resolved && $sgs_pc_text_hover_resolved !== $sgs_pc_text_normal_resolved ) {
 	$sgs_card_typo_css .= sgs_hover_media_wrap(
 		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_pc_root_sel . ':hover', $sgs_pc_text_hover_resolved )
@@ -640,6 +640,41 @@ if ( 'typed' === $source_mode ) {
 		}
 		$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel, $sgs_tag_text_colour_effective );
 	}
+
+	// Tag background gradient (resting) — FILL surface, colour-conformance audit.
+	// The shared helper handles flat-colour background but not gradients. Emit
+	// the gradient rule separately if set, following the same fallback-chain
+	// pattern as the card root (lines 404-417).
+	$sgs_tag_bg_flat     = sgs_colour_value( (string) ( $attributes['tagBackgroundColour'] ?? '' ) );
+	$sgs_tag_bg_gradient = (string) ( $attributes['tagBackgroundColourGradient'] ?? '' );
+	if ( '' !== $sgs_tag_bg_gradient ) {
+		$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel, $sgs_tag_bg_gradient );
+	}
+
+	// Tag background hover state (flat + gradient, base + hover) — colour-conformance
+	// audit closure. Emit :hover/:focus-visible rules with fallback chains: hover var
+	// → resting var → original default. Structured identically to the card root's
+	// root-background-hover pattern (lines 393-398).
+	$sgs_tag_bg_hover_flat     = sgs_colour_value( (string) ( $attributes['tagBackgroundColourHover'] ?? '' ) );
+	$sgs_tag_bg_hover_gradient = (string) ( $attributes['tagBackgroundColourHoverGradient'] ?? '' );
+	if ( '' !== $sgs_tag_bg_hover_flat || '' !== $sgs_tag_bg_hover_gradient ) {
+		$sgs_tag_hover_decls = array();
+		if ( '' !== $sgs_tag_bg_hover_flat ) {
+			$sgs_tag_hover_decls[] = "background-color:{$sgs_tag_bg_hover_flat}";
+		}
+		if ( '' !== $sgs_tag_bg_hover_gradient ) {
+			$sgs_tag_hover_decls[] = "background-image:{$sgs_tag_bg_hover_gradient}";
+		}
+		if ( $sgs_tag_hover_decls ) {
+			$sgs_tag_box_css .= $sgs_tag_text_colour_sel . ':hover,' . $sgs_tag_text_colour_sel . ':focus-visible{' . implode( ';', $sgs_tag_hover_decls ) . ';}';
+		}
+		// Gradient fallback rule for hover state (if gradient was set).
+		if ( '' !== $sgs_tag_bg_hover_gradient ) {
+			$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel . ':hover', $sgs_tag_bg_hover_gradient );
+			$sgs_tag_box_css .= sgs_text_colour_gradient_fallback_rule( $sgs_tag_text_colour_sel . ':focus-visible', $sgs_tag_bg_hover_gradient );
+		}
+	}
+
 	$sgs_card_typo_css .= $sgs_tag_box_css;
 
 	$sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';

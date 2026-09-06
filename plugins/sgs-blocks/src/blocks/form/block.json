@@ -104,7 +104,15 @@
 					"attrMap": {
 						"css:background-image": "submitBackgroundGradient"
 					},
-					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline. submitBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "submitBackgroundHover",
+								"css:background-image": "submitBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "submitColour/submitBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule on `.uid .sgs-form__button--submit` (render.php:211-228, contract §A) — not inline. submitBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). submitBackgroundHover/submitBackgroundHoverGradient (Case C fill-helper adoption, 2026-09-06) migrated the hand-rolled background-color:transparent-cancellation paint onto sgs_fill_decls()/sgs_emit_state_colour_css() so a hover sibling came free -- explicit hover attrMap because, same as the normal state's gradient, the default convention has no Hover-suffix awareness."
 				},
 				"prev-button": {
 					"label": "Previous-step button",
@@ -138,7 +146,15 @@
 						"css:background-color": "progressBarColour",
 						"css:background-image": "progressBarColourGradient"
 					},
-					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "progressBarColourHover",
+								"css:background-image": "progressBarColourHoverGradient"
+							}
+						}
+					},
+					"_note": "progressBarColour drives the `--sgs-progress-colour` custom-property value; progressBarColourGradient drives the `--sgs-progress-colour-gradient` sibling (2026-09-04). Both are custom-property-fed (not real declarations), so mapped explicitly. The gradient wins when set (render.php line 290 uses sgs_custom_property_gradient_decls). progressBarColourHover/progressBarColourHoverGradient (2026-09-06, hover-sibling closeout) feed the -hover/-hover-gradient custom-property siblings via the SAME 5-arg sgs_custom_property_gradient_decls() call, consumed by a new :hover/:focus-visible rule in style.css."
 				},
 				"focus-ring": {
 					"label": "Focus ring",
@@ -218,6 +234,16 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"submitBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Submit button background colour on :hover/:focus-visible (Case C fill-helper adoption, 2026-09-06). Falls back to submitBackground, then the style variant class default, when unset."
+		},
+		"submitBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the submit button's :hover/:focus-visible background. Non-empty wins over submitBackgroundHover; falls back to submitBackgroundGradient, then submitBackground, then none."
+		},
 		"progressBarColour": {
 			"type": "string",
 			"default": "primary"
@@ -226,6 +252,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the progress bar with a gradient instead of a flat colour. Non-empty wins over progressBarColour at render time."
+		},
+		"progressBarColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Progress bar fill colour on :hover/:focus-visible (hover-sibling closeout, 2026-09-06). Falls back to progressBarColour, then the CSS default, when unset."
+		},
+		"progressBarColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress bar's :hover/:focus-visible fill. Non-empty wins over progressBarColourHover; falls back to progressBarColourGradient, then none."
 		},
 		"prevColourBackground": {
 			"type": "string",

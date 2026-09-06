@@ -201,6 +201,14 @@
 						"css:background-color": "tagBackgroundColour",
 						"css:width": "tagFullWidth",
 						"css:background-image": "tagTextColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "tagBackgroundColourHover",
+								"css:background-image": "tagBackgroundColourHoverGradient"
+							}
+						}
 					}
 				},
 				"pill": {
@@ -880,6 +888,21 @@
 			"type": "string",
 			"default": "accent",
 			"description": "Background colour for the in-body trial tag. Theme token slug or raw CSS colour. Matches the retired style.css class default (accent tint) so an untouched card renders unchanged. Cloning converter lifts the draft trial-tag background-color here."
+		},
+		"tagBackgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trial tag's resting background with a gradient instead of a flat colour. Non-empty wins over tagBackgroundColour."
+		},
+		"tagBackgroundColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour for the in-body trial tag on hover/focus-visible. Theme token slug or raw CSS colour."
+		},
+		"tagBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the trial tag's hover background with a gradient instead of a flat colour. Non-empty wins over tagBackgroundColourHover."
 		},
 		"tagTextColour": {
 			"type": "string",

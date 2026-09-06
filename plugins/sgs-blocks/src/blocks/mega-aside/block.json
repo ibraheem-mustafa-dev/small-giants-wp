@@ -29,11 +29,20 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "asideBg",
+						"css:background-image": "asideBgGradient",
 						"css:padding": "asidePadding",
 						"css:border-radius": "asideRadius",
 						"css:border-color": "asideBorderColour",
 						"css:border-width": "asideBorderWidth",
 						"css:border-color-gradient": "asideBorderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "asideBgHover",
+								"css:background-image": "asideBgHoverGradient"
+							}
+						}
 					},
 					"_note": "The `.sgs-mega-aside` side-column wrapper. GRID POSITION (width, divider) stays parent-owned (CF-10: mega-panel's asideWidth/asideSeparator paint this element per data-mega-style/data-mega-scheme) — never duplicated here. FILL (background/padding/radius/border) is THIS block's own attrs, resolved against the panel's inherited --sgs-mm-* custom properties as safe fallbacks so an unset value still looks correct inside any panel scheme. `asideFormat` (feature|preview|cta) is a content-arrangement mode attr, not a css: property mapping (CF-4 pattern, mirrors mega-panel's variant/style), so it is deliberately absent from attrMap. Its content (media + tag + heading + text + button) is child-owned (HC2) — no typography/colour duplicate control lives on THIS block for any of those elements."
 				}
@@ -49,6 +58,20 @@
 		"asideBg": {
 			"type": "string",
 			"default": ""
+		},
+		"asideBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the aside background instead of a flat colour. Non-empty wins over asideBg at render time."
+		},
+		"asideBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"asideBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the aside background on hover instead of a flat colour. Non-empty wins over asideBgHover at render time."
 		},
 		"asidePadding": {
 			"type": "object",

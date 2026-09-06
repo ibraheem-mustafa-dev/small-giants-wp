@@ -129,7 +129,15 @@
 						"css:border-color": "panelBorderColour",
 						"css:border-color-gradient": "panelBorderColourGradient"
 					},
-					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "panelBgColourHover",
+								"css:background-image": "panelBgColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Only background + border-colour are independently controlled for the panel — the remaining fill/layout members are honest gaps. Hover state added FR-colour-conformance-closeout."
 				}
 			},
 			"boxFamilies": {
@@ -225,6 +233,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the panel background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over panelBgColour."
+		},
+		"panelBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelBgColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the panel background on hover via background-image. Non-empty wins over panelBgColourHover."
 		},
 		"panelBorderColour": {
 			"type": "string",
