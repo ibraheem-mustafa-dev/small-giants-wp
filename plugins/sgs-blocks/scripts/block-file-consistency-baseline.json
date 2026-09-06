@@ -1,33 +1,51 @@
 {
   "accepted": [
     {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "afterImageAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+      "type": "undeclared_render_ref",
+      "block": "sgs/accordion",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/accordion",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/accordion-item",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/accordion-item",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/audio",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/audio",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     },
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
       "attr": "afterImageDecorative",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "afterImageUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "afterImageUrlMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "afterImageUrlTablet",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
@@ -57,31 +75,7 @@
     {
       "type": "orphan_attr",
       "block": "sgs/before-after",
-      "attr": "beforeImageAlt",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
       "attr": "beforeImageDecorative",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "beforeImageUrl",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "beforeImageUrlMobile",
-      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
-    },
-    {
-      "type": "orphan_attr",
-      "block": "sgs/before-after",
-      "attr": "beforeImageUrlTablet",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
@@ -109,10 +103,164 @@
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
+      "type": "undeclared_render_ref",
+      "block": "sgs/before-after",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/before-after",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/brand-strip",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/brand-strip",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/breadcrumbs",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/breadcrumbs",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/business-info",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/business-info",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/button",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/button",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/buybox",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/buybox",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/card-grid",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/card-grid",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
       "type": "orphan_attr",
       "block": "sgs/container",
       "attr": "contentBandMargin",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/container",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/container",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/countdown-timer",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/countdown-timer",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/counter",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/counter",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/cta-section",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/cta-section",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     },
     {
       "type": "undeclared_render_ref",
@@ -122,10 +270,260 @@
       "reason": "render.php reads 'fx' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     },
     {
+      "type": "undeclared_render_ref",
+      "block": "sgs/feature-grid",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/feature-grid",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form-field-tiles",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form-field-tiles",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form-step",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/form-step",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/gallery",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/gallery",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/google-reviews",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/google-reviews",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/heading",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/heading",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/icon-list",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/icon-list",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/info-box",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/info-box",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/multi-button",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/multi-button",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/nav-drawer",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/nav-drawer",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
       "type": "orphan_attr",
       "block": "sgs/nav-menu",
       "attr": "_note_nav_fill",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/nav-menu",
+      "attr": "paddingMobile",
+      "reason": "edit.js binds a control to 'paddingMobile' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/nav-menu",
+      "attr": "paddingTablet",
+      "reason": "edit.js binds a control to 'paddingTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/notice-banner",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/notice-banner",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/option-picker",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/option-picker",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/physics-canvas",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/physics-canvas",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/post-grid",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/post-grid",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/pricing-table",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/pricing-table",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/process-steps",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/process-steps",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     },
     {
       "type": "orphan_attr",
@@ -150,6 +548,348 @@
       "block": "sgs/product-card",
       "attr": "titleFontFamily",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-card",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-card",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-faq",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-faq",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-faq-item",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-faq-item",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-search",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/product-search",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/quote",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/quote",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/quote",
+      "attr": "marginMobile",
+      "reason": "edit.js binds a control to 'marginMobile' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/quote",
+      "attr": "marginTablet",
+      "reason": "edit.js binds a control to 'marginTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/quote",
+      "attr": "paddingMobile",
+      "reason": "edit.js binds a control to 'paddingMobile' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/quote",
+      "attr": "paddingTablet",
+      "reason": "edit.js binds a control to 'paddingTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/responsive-logo",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/responsive-logo",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-footer",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-footer",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-footer-row",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-footer-row",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-header",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-header",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/site-header",
+      "attr": "marginMobile",
+      "reason": "edit.js binds a control to 'marginMobile' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/site-header",
+      "attr": "marginTablet",
+      "reason": "edit.js binds a control to 'marginTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/site-header",
+      "attr": "paddingMobile",
+      "reason": "edit.js binds a control to 'paddingMobile' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_control",
+      "block": "sgs/site-header",
+      "attr": "paddingTablet",
+      "reason": "edit.js binds a control to 'paddingTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-header-row",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/site-header-row",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/star-rating",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/star-rating",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/tab",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/tab",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/table-of-contents",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/table-of-contents",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/tabs",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/tabs",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/team-member",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/team-member",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/testimonial",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/testimonial",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/testimonial-slider",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/testimonial-slider",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/text",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/text",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/timeline",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/timeline",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/trust-bar",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/trust-bar",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/trustpilot-reviews",
+      "attr": "borderRadiusMobile",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/trustpilot-reviews",
+      "attr": "borderRadiusTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'borderRadiusTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     }
   ]
 }
