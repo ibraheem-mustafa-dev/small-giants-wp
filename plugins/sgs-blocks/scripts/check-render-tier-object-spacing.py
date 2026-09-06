@@ -69,7 +69,7 @@ REQUIRE_DEFINER_RE = re.compile(
 )
 NORMALISE_CALL_RE = re.compile(r"\bsgs_responsive_normalise_object\s*\(")
 
-DEAD_FLAT_ATTRS = ('paddingTablet', 'paddingMobile', 'marginTablet', 'marginMobile')
+DEAD_FLAT_ATTRS = ('paddingTablet', 'paddingMobile', 'marginTablet', 'marginMobile', 'borderRadiusTablet', 'borderRadiusMobile')
 DEAD_FLAT_RE = {
     name: re.compile(r"\$attributes\[\s*['\"]" + re.escape(name) + r"['\"]\s*\]")
     for name in DEAD_FLAT_ATTRS
@@ -249,6 +249,17 @@ def self_test():
     findings = check_dead_flat_attrs(dead_read, 'fixture', declared={'paddingTablet'})
     if findings:
         failures.append('self-test: dead_read fixture with declared attr should be exempt, was flagged')
+
+    # Fixture 5b — dead flat attr read for borderRadius, NOT declared -> flagged.
+    dead_radius_read = "<?php\n$t = $attributes['borderRadiusTablet'] ?? null;\n"
+    findings = check_dead_flat_attrs(dead_radius_read, 'fixture', declared=set())
+    if not findings:
+        failures.append('self-test: dead_radius_read fixture should have been flagged, was not')
+
+    # Fixture 5c — same read, but attr genuinely still declared (not migrated) -> exempt.
+    findings = check_dead_flat_attrs(dead_radius_read, 'fixture', declared={'borderRadiusTablet'})
+    if findings:
+        failures.append('self-test: dead_radius_read fixture with declared attr should be exempt, was flagged')
 
     # Fixture 6 — idempotence: running the same text through both checks twice
     # yields the same finding set (checks are read-only / pure).

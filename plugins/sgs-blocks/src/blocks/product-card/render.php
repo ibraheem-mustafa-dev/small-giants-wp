@@ -153,6 +153,10 @@ if ( '' !== $image_height && preg_match( $sgs_css_length_re, $image_height ) ) {
 // (built below). Only the COLOUR vars are emitted here (the helper does not
 // handle colour). A per-instance uid scopes the typography rules.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
+$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+
 $sgs_card_uid          = 'sgs-pc-' . wp_unique_id();
 $sgs_title_colour      = sgs_colour_value( $attributes['titleColour'] ?? '' );
 $sgs_price_colour      = sgs_colour_value( $attributes['priceColour'] ?? '' );
@@ -487,8 +491,8 @@ if ( 'none' !== $sgs_pc_border_style ) {
 // stable core style engine. ---
 $sgs_pc_style_engine_args = array();
 $sgs_pc_radius_args       = array();
-if ( isset( $attributes['borderRadius'] ) ) {
-	$sgs_pc_radius_raw = $attributes['borderRadius'];
+if ( null !== $sgs_radius_tiers['desktop'] ) {
+	$sgs_pc_radius_raw = $sgs_radius_tiers['desktop'];
 	if ( is_string( $sgs_pc_radius_raw ) && '' !== $sgs_pc_radius_raw ) {
 		$sgs_pc_radius_args['radius'] = sgs_css_length_value( $sgs_pc_radius_raw );
 	} elseif ( is_array( $sgs_pc_radius_raw ) ) {
@@ -518,8 +522,8 @@ if ( ! empty( $sgs_pc_style_engine_args ) ) {
 
 // Border-radius tablet/mobile tiers — block-private object attrs (2026-08-30
 // radius target-shape correction; base handled above).
-$sgs_pc_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$sgs_pc_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$sgs_pc_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
+$sgs_pc_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
 $sgs_pc_radius_tab_val    = sgs_corner_object_shorthand( $sgs_pc_radius_tablet_obj );
 $sgs_pc_radius_mob_val    = sgs_corner_object_shorthand( $sgs_pc_radius_mobile_obj );
 
