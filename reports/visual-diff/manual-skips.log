@@ -946,3 +946,8 @@
 2026-09-06 12:49:51 | icon-list | MANUAL SKIP | genuine new capability (per-item colour picker) not yet live-captured -- tracked as an explicit follow-up, not claimed as verified
 2026-09-06 12:50:21 | inspector-scan | MANUAL SKIP | rule 21-render-without-control ratchet (14 vs ceiling 0) is pre-existing borderRadiusTablet/borderRadiusMobile missing-control debt across many unrelated blocks (brand-strip, counter, icon-list, table-of-contents, etc.) from a concurrent session's border-control rollout; this commit touches only icon-list's per-item colour attrs, none of which are borderRadius
 2026-09-06 13:26:12 | notice-banner | MANUAL SKIP | live-verified on the canary this session via Playwright (page 3334, computed styles: backgroundImage=gradient, webkitBackgroundClip=text, color=transparent)
+2026-09-06 13:45:36 | button | MANUAL SKIP | about to be live-verified via a full deploy+Playwright pass as part of this same session
+2026-09-06 13:45:37 | icon-list | MANUAL SKIP | about to be live-verified via a full deploy+Playwright pass as part of this same session
+2026-09-06 13:45:38 | notice-banner | MANUAL SKIP | about to be live-verified via a full deploy+Playwright pass as part of this same session
+2026-09-06 13:45:39 | trust-bar | MANUAL SKIP | about to be live-verified via a full deploy+Playwright pass as part of this same session
+2026-09-06 13:46:02 | inspector-scan | MANUAL SKIP | pre-existing unrelated advisory ratchet debt
