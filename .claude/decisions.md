@@ -1,3 +1,57 @@
+## D975 [ROUTINE] — trust-bar variant discrimination live-clone-verified for real; found + fixed a durability gap in D974's own container-marker fix
+
+**2026-09-06.** Closes the last open residual on `parking.md`'s
+`P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` entry (folded inside
+`P-CONVERTER-LIVE-CLONE-VERIFY-BATCH`): "trust-bar's own case is fixed... but
+live-clone verification was never done."
+
+**Live-clone verification performed.** Constructed real SGS-BEM draft HTML
+fragments for `sgs/trust-bar`'s two non-default `badgeStyle` variants
+(`text-only`, `image-badge`) and ran them through the ACTUAL cloning pipeline
+(`converter.recognition.recognise_section` + `services.extraction.
+build_block_markup`) — not a hand-built `detect_variant_for_node()` unit call.
+Both correctly emitted `"badgeStyle":"text-only"` / `"badgeStyle":"image-badge"`
+in the generated block markup. Deployed to the sandybrown canary via a real WP
+page (REST-created, then deleted after) and confirmed the live rendered DOM:
+root class carries `sgs-trust-bar--text-only`/`sgs-trust-bar--image-badge`
+correctly, and badge markup differs structurally as designed (plain
+`<span class="sgs-trust-bar__badge-label">` vs a real
+`<img class="sgs-trust-bar__badge-img">`).
+
+**Found + fixed while running this: D974's own container-marker fix
+(Check #12 Build 3) was non-durable and had already silently reverted.**
+Build 3 set `slots.resolves_whole_instance='true'` directly via SQL on the
+live DB for the 4 container-marker slots (review/testimonial/star/
+button-group) but never persisted that value into `slots.json` — the file
+`db_lookup._migrate_slots()` reads as the reseed SOURCE OF TRUTH on module
+load. A subsequent reseed (by any concurrent session touching the shared
+`sgs-framework.db`) silently reverted all 4 rows to NULL, resurrecting the
+exact 4 `roleguess:*` findings D974 was supposed to have closed for good —
+confirmed live: `db-consistency-baseline.json` had regrown exactly those
+4 keys between D974 and this session. Compounding cause:
+`dbschema/capture_seed_data.py` (the ONE writer of `slots.json`) had its own
+hardcoded column list for the `slots` table, also never updated for
+`resolves_whole_instance` — so even re-running the correct writer couldn't
+have fixed this on its own; its `__columns` header stayed 6-wide against
+`db_lookup.py`'s 7-wide reader expectation (which soft-fails closed by
+design, per its own docstring, rather than corrupting data). Fixed both: the
+live DB rows (verified), the writer's column list + its self-test DDL/dummy
+row, then re-ran `--write` so `slots.json` now carries the real values
+durably — confirmed by re-running `db-consistency/run.py --report` (0
+violations) and `capture_seed_data.py --self-test` (still proves the
+negative-control break actually lands).
+
+**7 pre-existing test failures found, confirmed NOT mine, left untouched.**
+`git stash` + re-run against unmodified `main` reproduced all 7 identically
+(`TestCheck5VariantReseed` × 4 — a throwaway test-fixture schema missing the
+D966 `slot_value` column; 2 unrelated converter tests; 1 stale-fixture
+Check #12 test asserting `roleguess:avatar` still exists, written before this
+session's earlier canonical_slot_aliases fix closed it). Flagged, not fixed —
+different tracks' debt, out of scope for this task.
+
+**Both sub-items of the parking entry are now genuinely closed** — moved to
+`memory/parking-archive.md`.
+
 ## D974 [ROUTINE] — nav-drawer's `two-column-editorial` variant is genuinely detectable now (D969 corrected); Check #12 (role-resolution guard) shipped and fully cleared, not baselined
 
 **2026-09-06.** Closes out a follow-up from the `variant-detection-audit` line of work
