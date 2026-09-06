@@ -97,7 +97,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "iconColourHover"
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
 							}
 						}
 					}
@@ -204,6 +205,14 @@
 						"type": "string",
 						"description": "Per-item icon gradient override. Empty falls back to the block-level iconColourGradient. Non-empty wins over this item's own iconColour."
 					},
+					"iconColourHover": {
+						"type": "string",
+						"description": "Per-item icon hover-colour override. Empty falls back to the block-level iconColourHover."
+					},
+					"iconColourGradientHover": {
+						"type": "string",
+						"description": "Per-item icon hover-gradient override. Empty falls back to the block-level iconColourHoverGradient. Non-empty wins over this item's own iconColourHover."
+					},
 					"url": {
 						"type": "string",
 						"role": "url-href"
@@ -234,6 +243,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting every item's icon stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourGradient. Non-empty wins over iconColourHover at render time."
 		},
 		"iconSize": {
 			"type": "string",

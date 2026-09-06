@@ -146,6 +146,7 @@ $default_source = $attributes['defaultIconSource'] ?? 'lucide';
 $icon_colour    = $attributes['iconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $icon_size      = $attributes['iconSize'] ?? 'medium';
 $dividers       = ! empty( $attributes['dividers'] );
 $text_colour    = $attributes['textColour'] ?? '';
@@ -653,23 +654,36 @@ foreach ( $resolved_items as $item ) {
 		}
 		$svg = $render_icon( $item_source, $item_name );
 
-		// Per-item colour override + per-item gradient resolution.
-		$item_has_own_colour  = isset( $item['iconColour'] ) && '' !== $item['iconColour'];
-		$item_icon_colour     = $item_has_own_colour ? $item['iconColour'] : $icon_colour;
-		$item_icon_gradient   = ( isset( $item['iconColourGradient'] ) && '' !== $item['iconColourGradient'] )
+		// Per-item colour override + per-item gradient resolution — BOTH
+		// states, via the shared sgs_icon_gradient_states_css() composer
+		// (2026-09-06; see its docblock for why a two-state helper exists).
+		// Block-level hover-flat already cascades onto every item via the
+		// shared $icon_sel rule below (step 5), so a per-item hover-flat
+		// rule is only needed when the ITEM sets its own hover colour.
+		$item_has_own_colour       = isset( $item['iconColour'] ) && '' !== $item['iconColour'];
+		$item_icon_colour          = $item_has_own_colour ? $item['iconColour'] : $icon_colour;
+		$item_has_own_colour_hover = isset( $item['iconColourHover'] ) && '' !== $item['iconColourHover'];
+		$item_icon_colour_hover    = $item_has_own_colour_hover ? $item['iconColourHover'] : ( $attributes['iconColourHover'] ?? '' );
+		$item_icon_gradient        = ( isset( $item['iconColourGradient'] ) && '' !== $item['iconColourGradient'] )
 			? $item['iconColourGradient']
 			: $icon_colour_gradient;
-		$item_sel             = "{$root_sel} .sgs-icon-list__item:nth-child({$sgs_icon_list_item_idx}) .sgs-icon-list__icon";
-		$item_grad_selector   = in_array( $item_source, array( 'dashicon', 'emoji' ), true ) ? $item_sel : "{$item_sel} svg";
-		$item_grad            = sgs_icon_gradient_css( $item_source, $item_icon_gradient, $uid . '-ig-' . $sgs_icon_list_item_idx, $item_grad_selector );
-		if ( '' !== $item_grad['css'] ) {
-			$svg          = sgs_svg_inject_defs( $svg, $item_grad['defs'] );
-			$scoped_css[] = "{$item_grad_selector}{" . $item_grad['css'] . ';}';
-			if ( '' !== $item_grad['fallback_rule'] ) {
-				$scoped_css[] = $item_grad['fallback_rule'];
+		$item_icon_gradient_hover  = ( isset( $item['iconColourGradientHover'] ) && '' !== $item['iconColourGradientHover'] )
+			? $item['iconColourGradientHover']
+			: $icon_colour_hover_gradient;
+		$item_sel           = "{$root_sel} .sgs-icon-list__item:nth-child({$sgs_icon_list_item_idx}) .sgs-icon-list__icon";
+		$item_grad_selector = in_array( $item_source, array( 'dashicon', 'emoji' ), true ) ? $item_sel : "{$item_sel} svg";
+		$item_grad          = sgs_icon_gradient_states_css( $item_source, $item_icon_gradient, $item_icon_gradient_hover, $uid . '-ig-' . $sgs_icon_list_item_idx, $item_grad_selector );
+		$svg = sgs_svg_inject_defs( $svg, $item_grad['defs_base'] );
+		$svg = sgs_svg_inject_defs( $svg, $item_grad['defs_hover'] );
+		if ( $item_grad['css'] ) {
+			$scoped_css = array_merge( $scoped_css, $item_grad['css'] );
+		} else {
+			if ( $item_has_own_colour ) {
+				$scoped_css[] = "{$item_sel}{color:" . sgs_colour_value( $item_icon_colour ) . ';}';
 			}
-		} elseif ( $item_has_own_colour ) {
-			$scoped_css[] = "{$item_sel}{color:" . sgs_colour_value( $item_icon_colour ) . ';}';
+			if ( $item_has_own_colour_hover ) {
+				$scoped_css[] = sgs_hover_state_rules( $item_sel, 'color:' . sgs_colour_value( $item_icon_colour_hover ), ':focus-visible' );
+			}
 		}
 		$marker_html = sgs_list_marker_render( $marker_type, $svg );
 	}
