@@ -51,6 +51,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 
+// Normalise borderRadius from flat/tier-object shape to tier-keyed structure.
+$sgs_radius_tiers = sgs_responsive_normalise_object( $attributes['borderRadius'] ?? null );
+
 // ---------------------------------------------------------------------------
 // 0. FR-36-26c Dispatch B — resolve `source: menu` into flat { text, url }
 // items via the ONE shared resolver (SGS_Nav_Menu_Source, R-31-9 — never a
@@ -248,15 +251,15 @@ $padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $
 $padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
 $margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$border_radius_tablet_obj = is_array( $sgs_radius_tiers['tablet'] ) ? $sgs_radius_tiers['tablet'] : array();
+$border_radius_mobile_obj = is_array( $sgs_radius_tiers['mobile'] ) ? $sgs_radius_tiers['mobile'] : array();
 
 // Base border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Skip-serialised
 // → emitted scoped via the style engine below.
 $base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
+if ( null !== $sgs_radius_tiers['desktop'] ) {
+	$radius_raw = $sgs_radius_tiers['desktop'];
 	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
 		$base_border_radius = $radius_raw;
 	} elseif ( is_array( $radius_raw ) ) {
