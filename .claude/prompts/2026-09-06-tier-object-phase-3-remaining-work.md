@@ -257,6 +257,40 @@ concurrent sessions. Before every commit: `git branch --show-current`, `git stat
 0's wrapper fix went up as its own PR/merge before Group 1's 32-block codemod started —
 kept the diff reviewable and gave every other concurrent session a smaller rebase window.
 
+## Codemod completeness — a schema fold is not a finished migration step
+
+Folding `block.json`'s schema for a property is step 1 of N, never the whole job. Before
+calling ANY attribute-shape migration step done, run the REAL build
+(`npm run build` inside `plugins/sgs-blocks/`) — not just the individual codemod's own
+`--check` mode. Confirmed this session: only the full gate chain
+(`check-undeclared-attrs.py`, `check-undefined-refs.js`, `check-render-undefined-vars.py`
+via PHPStan, `check-duplicate-controls.js`) catches these bug classes — no individual
+codemod's self-test does:
+
+- **Dead destructured attrs** — `check-undeclared-attrs.py` found ~150 findings where old
+  flat sibling names (`paddingTablet`, `paddingMobile`, `borderRadiusTablet`, etc.) were
+  still destructured in `edit.js` after `block.json` stopped declaring them.
+- **Second, un-migrated read site** — `check-undefined-refs.js` found real
+  `ReferenceError` bugs: some blocks have TWO separate controls for the same attribute
+  family (one correctly migrated, a second still reading the old flat/native shape — e.g.
+  a second `<ResponsiveBorderRadiusControl>` mount, or a `ToolsPanelItem`'s
+  `hasValue`/`onDeselect` reset handler). An automated codemod matching one exact JSX shape
+  will silently miss a differently-shaped second occurrence in the same file. After any
+  codemod run, re-grep the WHOLE file for the old attribute names — don't just re-run the
+  codemod's own survey.
+- **Use-before-define** — `check-render-undefined-vars.py` (PHPStan) found 4 render.php
+  files where a variable (`$radius_tiers`) was read before the line that assigns it later
+  in the same file — required a manual move, not a regex fix.
+- **A "prettify" pass is not safe just because it ran clean.** A regex-based reformat of a
+  manual fix matched the WRONG occurrence in a file with two similar controls, and
+  separately corrupted whitespace into literal control characters elsewhere. Both were
+  caught only by running `node --check` AND reading the actual `git diff` — never trust a
+  tool's own "success" exit code on a reformat of already-correct code.
+- **Worktree tooling gaps mask real failures.** Missing `node_modules` packages or an
+  un-run `composer install` can hide gate failures for a long time. A worktree needs the
+  same junctioned `node_modules`/`vendor/` as the main tree before its gate output means
+  anything.
+
 ## Verification checklist (every remaining group)
 
 1. `git branch --show-current` immediately before every commit; stage only touched files.
