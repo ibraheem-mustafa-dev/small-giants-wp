@@ -84,11 +84,12 @@ $picker_label_colour    = isset( $attributes['pickerLabelColour'] ) ? sanitize_t
 // guards on non-empty), so an un-set card looks unchanged. pickerColourPreset
 // defaults 'solid' — see R5 note in style.css for why (replaces the removed
 // card-scoped --sgs-op-border hardcode).
-$picker_colour_preset      = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
-$picker_show_selected_tick = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
-$picker_pill_bg_colour     = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
-$picker_pill_text_colour   = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
-$picker_pill_border_colour = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
+$picker_colour_preset           = isset( $attributes['pickerColourPreset'] ) ? sanitize_key( $attributes['pickerColourPreset'] ) : 'solid';
+$picker_show_selected_tick      = array_key_exists( 'pickerShowSelectedTick', $attributes ) ? (bool) $attributes['pickerShowSelectedTick'] : true;
+$picker_pill_bg_colour          = isset( $attributes['pickerPillBgColour'] ) ? sanitize_text_field( $attributes['pickerPillBgColour'] ) : '';
+$picker_pill_bg_colour_gradient = isset( $attributes['pickerPillBgColourGradient'] ) ? sanitize_text_field( $attributes['pickerPillBgColourGradient'] ) : '';
+$picker_pill_text_colour        = isset( $attributes['pickerPillTextColour'] ) ? sanitize_text_field( $attributes['pickerPillTextColour'] ) : '';
+$picker_pill_border_colour      = isset( $attributes['pickerPillBorderColour'] ) ? sanitize_text_field( $attributes['pickerPillBorderColour'] ) : '';
 // Border-radius forwards are CSS-length STRINGS (e.g. "6px") — the option-picker
 // side reads them as strings, gates on '' !== and sanitises via sgs_css_length_value(),
 // so an explicit "0"/"0px" survives and empty = the picker's own default.
@@ -105,6 +106,7 @@ $picker_style_attrs = array(
 	'colourPreset'             => $picker_colour_preset,
 	'showSelectedTick'         => $picker_show_selected_tick,
 	'pillBgColour'             => $picker_pill_bg_colour,
+	'pillBgColourGradient'     => $picker_pill_bg_colour_gradient,
 	'pillTextColour'           => $picker_pill_text_colour,
 	'pillBorderColour'         => $picker_pill_border_colour,
 	'pillBorderRadius'         => $picker_pill_border_radius,

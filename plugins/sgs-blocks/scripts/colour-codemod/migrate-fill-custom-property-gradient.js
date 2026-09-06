@@ -37,12 +37,9 @@ const { BLOCKS_DIR } = require( './survey.js' );
 
 const TARGET_ROWS = [
 	{ block: 'breadcrumbs', attr: 'currentColour' },
-	{ block: 'timeline', attr: 'dateColour' },
 	{ block: 'timeline', attr: 'connectorFillColour' },
 	{ block: 'before-after', attr: 'dividerColour' },
 	{ block: 'before-after', attr: 'handleIconColour' },
-	{ block: 'business-info', attr: 'linkHoverBackgroundImage' },
-	{ block: 'business-info', attr: 'linkHoverTextColour' },
 ];
 
 // Rows in this exact backlog bucket that DO NOT match this shape — named so
@@ -57,6 +54,21 @@ const KNOWN_DIFFERENT_SHAPE = {
 	'product-search.resultHoverBackgroundColour': 'foreach-over-map emission — see inputBorderColour',
 	'product-search.matchHighlightColour': 'foreach-over-map emission — see inputBorderColour',
 	'audio.spectrumColour': 'canvas fillStyle/strokeStyle consumer, not CSS at all — no CSS fix applies',
+	'business-info.attributionHoverColour': 'MISCLASSIFIED (2026-09-06 FILL census) — this attr IS the gradient value itself (feeds background-image:linear-gradient() directly), with attributionHoverColourFallback as its own already-complete plain-colour companion for @supports-not-background-clip browsers (D643, 2026-09-05 rename from linkHoverBackgroundImage/linkHoverTextColour). There is no separate base-flat-colour attribute for this script\'s "add a Gradient sibling" shape to attach to — the two-attribute pair is already the correct, finished mechanism. The stale TARGET_ROWS entries referencing the pre-rename dead names linkHoverBackgroundImage/linkHoverTextColour were removed 2026-09-06 (they no longer exist in render.php/block.json at all).',
+	'timeline.dateColour': 'WRONG SURFACE (2026-09-06 audit) — DB mechanism is text, not fill (classify-end-shape.js confirms endShape=text-gradient for this exact row). Belongs to the TEXT-surface backlog (sgs_resolve_text_colour_or_gradient()), not this FILL-only script. Left in TARGET_ROWS by a prior session before the FILL/TEXT split was worked out; --check correctly flagged it as still-needing-gradient because this script cannot and should not fix a TEXT-mechanism row.',
+	'before-after.boxShadowColour': 'MISCLASSIFIED FAMILY (2026-09-06 audit) — box-shadow structurally cannot render a CSS gradient (`box-shadow: linear-gradient(...)` is invalid CSS); survey.js\'s own independent gradientExtensibility trace agrees these are not gradient-extensible. See sibling entries below for the rest of the *ShadowColour family this census mis-tagged into fill-custom-property-gradient/fill-base-hover-flat.',
+	'brand-strip.tileShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'button.boxShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'card-grid.cardShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'cta-section.shadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour (sgs_shadow_value_composed())',
+	'media.boxShadowColour': 'box-shadow owned by the shared media ATOM layer (css_element resolves to wrapper, D-confirmed 2026-08-27 intentional) — never reaches sgs_colour_value() via this block\'s own render.php at all, and cannot hold a gradient regardless',
+	'quote.boxShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'team-member.cardShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'trust-bar.iconCircleShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'trust-bar.badgeImageShadowColour': 'same box-shadow-cannot-hold-a-gradient reason as before-after.boxShadowColour',
+	'cta-section.backgroundColour': 'slug-derivation via sanitize_html_class() before any colour resolution (render.php:409, $cta_preset_bg_slug) — same shape as mega-panel.accentBackgroundImage/nav-menu.featuredBg above, not this script\'s shape',
+	'product-card.pickerPillBgColour': 'FORWARD-ATTRIBUTE shape, not this script\'s — product-card never paints this itself, it forwards into a nested render_block(\'sgs/option-picker\') attrs array. sgs/option-picker already has the full pillBgColourGradient mechanism (2026-09-05); the missing piece was product-card declaring + forwarding the sibling attr, hand-fixed directly 2026-09-06 (block.json + render.php $picker_style_attrs + edit.js), not via this codemod.',
+	'product-card.ctaColourBackground': 'Case E (FILL plan, 2026-09-06) — already painted by sgs_button_element_style_css(), which was silently missing the ctaColourBackgroundGradient/ctaColourBackgroundHoverGradient attribute DECLARATIONS (the helper already reads them). Hand-fixed directly, not this codemod\'s shape (no custom-property indirection involved at all).',
 };
 
 // ---------------------------------------------------------------------------
