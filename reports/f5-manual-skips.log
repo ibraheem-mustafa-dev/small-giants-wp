@@ -18,3 +18,4 @@ timestamp | script | type | reason
 2026-09-06 13:26:38 | db-consistency/run.py | MANUAL SKIP | same pre-existing unrelated DB-vs-classifier drift bypassed repeatedly this session
 2026-09-06 13:46:07 | db-consistency/run.py | MANUAL SKIP | same pre-existing unrelated DB-vs-classifier drift bypassed repeatedly this session
 2026-09-06 14:04:05 | db-consistency/run.py | MANUAL SKIP | same pre-existing unrelated drift bypassed repeatedly this session
+2026-09-06 14:20:46 | db-consistency/run.py | MANUAL SKIP | same pre-existing unrelated DB-vs-classifier drift bypassed repeatedly this session
