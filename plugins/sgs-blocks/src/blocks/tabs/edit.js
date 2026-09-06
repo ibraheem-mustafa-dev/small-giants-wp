@@ -127,6 +127,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( panelBgColourGradient ) {
 		cssVars[ '--sgs-panel-bg-gradient' ] = panelBgColourGradient;
 	}
+	// panelBgColourHover(Gradient) canvas mirror (CHECK A, 2026-09-06) —
+	// style.css:255-259's `.sgs-tabs__panel:hover,:focus-visible` rule already
+	// reads `--sgs-panel-bg-hover`/`-hover-gradient` (the same custom
+	// properties render.php emits via sgs_custom_property_gradient_decls()).
+	// This wrapper already carries `--sgs-panel-bg` as an inherited custom
+	// property (no literal background-color set anywhere, so no specificity
+	// conflict) — adding the hover siblings here is the whole fix, same
+	// mechanism as every other var() in this block.
+	if ( panelBgColourHover ) {
+		cssVars[ '--sgs-panel-bg-hover' ] = colourVar( panelBgColourHover );
+	}
+	if ( panelBgColourHoverGradient ) {
+		cssVars[ '--sgs-panel-bg-hover-gradient' ] = panelBgColourHoverGradient;
+	}
 	if ( panelBorderColour ) {
 		cssVars[ '--sgs-panel-border' ] = colourVar( panelBorderColour );
 	}

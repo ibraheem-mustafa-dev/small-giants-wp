@@ -76,7 +76,7 @@ const TEMPLATE = [
 	[ 'sgs/button', {} ],
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		asideFormat,
 		asideBg,
@@ -139,8 +139,37 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle.padding = paddingPreview;
 	}
 
+	/*
+	 * asideBgHover(Gradient) canvas mirror (CHECK A, 2026-09-06). render.php:88-104
+	 * already emits both hover-sibling CSS custom properties, consumed by
+	 * style.css:49-53's real `.sgs-mega-aside:hover,:focus-within` rule — the
+	 * editor canvas never showed it because nothing outside the control read
+	 * either Hover attr. Same shape as this file's own resting preview above:
+	 * a clientId-scoped `<style>` tag with a real `:hover,:focus-within` rule,
+	 * resolved via the same resolveColourToken already used for the resting
+	 * background.
+	 *
+	 * `!important` is required because the resting preview above sets the SAME
+	 * background-color/-image properties as an inline `style` prop on this
+	 * same element (previewStyle, spread into blockProps.style below) — an
+	 * inline declaration always out-ranks an external stylesheet rule for the
+	 * same property regardless of `:hover` matching, so without it this rule
+	 * would parse correctly and still never paint whenever a resting
+	 * background is also set (the common case).
+	 */
+	const megaAsidePreviewScope = `sgs-mega-aside-preview-${ clientId }`;
+	const asideBgHoverDecl =
+		asideBgHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBgHoverGradient )
+			? `background-image:${ asideBgHoverGradient } !important;background-color:transparent !important;`
+			: asideBgHover
+				? `background-color:${ resolveColourToken( asideBgHover, palette ) } !important;`
+				: '';
+	const megaAsideHoverPreviewCss = asideBgHoverDecl
+		? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }}`
+		: '';
+
 	const blockProps = useBlockProps( {
-		className: 'sgs-mega-aside',
+		className: `sgs-mega-aside ${ megaAsidePreviewScope }`,
 		style: previewStyle,
 		'data-aside-format': format,
 	} );
@@ -290,6 +319,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ megaAsideHoverPreviewCss && <style>{ megaAsideHoverPreviewCss }</style> }
 			<div { ...innerBlocksProps } />
 		</>
 	);

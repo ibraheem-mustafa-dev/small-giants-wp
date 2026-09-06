@@ -569,6 +569,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			// every other {attr}Gradient custom-property value (tabs/
 			// option-picker precedent).
 			'--sgs-connector-colour-gradient': connectorColourGradient || undefined,
+			// connectorColourHover(Gradient) canvas mirror (CHECK A,
+			// 2026-09-06) — style.scss's `:hover`/`:focus-visible` rules
+			// (e.g. lines 442-446, 890-896) already read
+			// `--sgs-connector-colour-hover`/`-hover-gradient`, the same
+			// custom properties render.php emits. No literal background
+			// property is set anywhere on this element, so there is no
+			// specificity conflict — adding the hover siblings here is the
+			// whole fix.
+			'--sgs-connector-colour-hover': connectorColourHover
+				? `var(--wp--preset--color--${ connectorColourHover })`
+				: undefined,
+			'--sgs-connector-colour-hover-gradient': connectorColourHoverGradient || undefined,
 			'--sgs-timeline-media-width': milestoneMediaWidth || undefined,
 			// Mirrors render.php: an EMPTY stripe A resolves to `transparent`,
 			// so odd rows keep the page/section background and only even rows
@@ -597,6 +609,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				? `var(--wp--preset--color--${ connectorFillColour })`
 				: undefined,
 			'--sgs-timeline-fill-colour-gradient': connectorFillColourGradient || undefined,
+			// connectorFillColourHover(Gradient) canvas mirror (CHECK A,
+			// 2026-09-06) — style.scss's `.is-reached:hover`/`:focus-visible`
+			// rules (lines 921-925, 946-950) already read
+			// `--sgs-timeline-fill-colour-hover`/`-hover-gradient`, the same
+			// custom properties render.php emits. Same no-conflict reasoning
+			// as connectorColourHover above.
+			'--sgs-timeline-fill-colour-hover': connectorFillColourHover
+				? `var(--wp--preset--color--${ connectorFillColourHover })`
+				: undefined,
+			'--sgs-timeline-fill-colour-hover-gradient': connectorFillColourHoverGradient || undefined,
 			// Task 3 (2026-08-30) — milestoneMinHeight/entryGap. Mirrors
 			// render.php exactly: BOTH custom-property values are emitted
 			// unconditionally (unset -> undefined -> no declaration, matching

@@ -276,7 +276,7 @@ function PreviewCard( { post, attributes, palette } ) {
 // Main edit component
 // -------------------------------------------------------------------------
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	// categoryBadgeBgColour canvas mirror (CHECK A) — resolveColourToken needs
 	// the live theme palette to turn a stored slug into a real CSS colour.
 	const [ colourPalette ] = useSettings( 'color.palette' );
@@ -318,6 +318,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		categoryBadgeColour,
 		categoryBadgeColourGradient,
 		categoryBadgeBgColour,
+		categoryBadgeBgColourHover,
+		categoryBadgeBgColourHoverGradient,
 		readMoreColour,
 		readMoreColourGradient,
 		cardBgColour,
@@ -446,8 +448,37 @@ export default function Edit( { attributes, setAttributes } ) {
 		...( shadowPreview ? { '--sgs-card-shadow': shadowPreview } : {} ),
 	};
 
+	/*
+	 * categoryBadgeBgColourHover(Gradient) canvas mirror (CHECK A, 2026-09-06).
+	 * class-post-grid-rest.php:328-334 already emits both hover-sibling CSS
+	 * custom properties (--sgs-pg-badge-bg-hover/-gradient), consumed by
+	 * style.css:325-329's real `.sgs-post-grid__badge:hover,:focus-visible`
+	 * rule — the editor canvas never showed it because nothing outside the
+	 * control read either Hover attr. categoryBadgeBgColour is a single
+	 * block-level value (identical for every card in this grid, per
+	 * PreviewCard's own comment above), so ONE scoped rule covers every
+	 * card's badge.
+	 *
+	 * `!important` is required because PreviewCard's badgeFillStyle sets the
+	 * SAME background-color as a literal inline `style` prop on the same
+	 * element — an inline declaration always out-ranks an external
+	 * stylesheet rule for the same property regardless of `:hover` matching,
+	 * so without it this rule would parse correctly and still never paint
+	 * whenever a resting badge colour is also set (the common case).
+	 */
+	const postGridPreviewScope = `sgs-post-grid-preview-${ clientId }`;
+	const categoryBadgeBgHoverDecl =
+		categoryBadgeBgColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( categoryBadgeBgColourHoverGradient )
+			? `background-image:${ categoryBadgeBgColourHoverGradient } !important;background-color:transparent !important;`
+			: categoryBadgeBgColourHover
+				? `background-color:${ resolveColourToken( categoryBadgeBgColourHover, colourPalette ) } !important;`
+				: '';
+	const postGridHoverPreviewCss = categoryBadgeBgHoverDecl
+		? `.${ postGridPreviewScope } .sgs-post-grid__badge:hover,.${ postGridPreviewScope } .sgs-post-grid__badge:focus-visible{${ categoryBadgeBgHoverDecl }}`
+		: '';
+
 	const blockProps = useBlockProps( {
-		className: `sgs-post-grid sgs-post-grid--${ layout }`,
+		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }`,
 		style:     inlineStyles,
 	} );
 
@@ -560,15 +591,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						key: 'category-badge-bg',
 						label: __( 'Category badge background', 'sgs-blocks' ),
 						gradientCapable: true,
+						// block.json declares NO categoryBadgeBgColourGradient — the
+						// resting state is FLAT-only (PreviewCard's own comment,
+						// above, confirms this: "categoryBadgeBgColour is a FLAT
+						// fill colour with no gradient sibling"). Only the hover
+						// state has a real gradient sibling
+						// (categoryBadgeBgColourHoverGradient). Referencing the
+						// non-existent categoryBadgeBgColourGradient here was a
+						// check-undefined-refs finding before this fix — removed.
+						// `gradientCapable` is ROW-level (SgsColourPanel.js:123),
+						// so the "normal" state below still needs a real
+						// onGradientChange — GradientCapableColourControl.js:268
+						// calls it UNCONDITIONALLY on every solid-colour pick,
+						// even for a state with no gradient sibling — a no-op
+						// keeps that call safe without writing to any attribute.
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: categoryBadgeBgColour,
 								onChange: ( val ) => setAttributes( { categoryBadgeBgColour: val ?? '' } ),
-								gradientValue: categoryBadgeBgColourGradient,
-								onGradientChange: ( val ) => setAttributes( { categoryBadgeBgColourGradient: val ?? '' } ),
 								linked: true,
+								onGradientChange: () => {},
 							},
 							{
 								key: 'hover',
@@ -1339,6 +1383,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			     Live preview canvas
 			     ============================================================ */ }
 			<div { ...blockProps }>
+				{ postGridHoverPreviewCss && <style>{ postGridHoverPreviewCss }</style> }
 				{ isResolving && (
 					<div className="sgs-post-grid-editor__loading">
 						<Spinner />

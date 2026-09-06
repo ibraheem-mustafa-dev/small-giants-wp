@@ -50,7 +50,7 @@ const TEMPLATE = [
 	],
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		triggerText,
 		triggerStyle,
@@ -58,6 +58,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		triggerColourGradient,
 		triggerBackground,
 		triggerBackgroundHover,
+		triggerBackgroundHoverGradient,
 		maxWidth,
 		closeOnOverlay,
 		modalBackground,
@@ -77,8 +78,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
+	const modalPreviewScope = `sgs-modal-preview-${ clientId }`;
 	const blockProps = useBlockProps( {
-		className: 'sgs-modal',
+		className: `sgs-modal ${ modalPreviewScope }`,
 	} );
 
 	// Mirrors render.php's dialog rules: max-width variant class + the
@@ -110,6 +112,49 @@ export default function Edit( { attributes, setAttributes } ) {
 		...resolveTextColourPreviewStyle( triggerColour, triggerColourGradient, ( v ) => resolveColourToken( v, palette ) ),
 		backgroundColor: resolveColourToken( triggerBackground, palette ) || undefined,
 	};
+
+	/*
+	 * triggerBackgroundHover(Gradient) + overlayColourHover(Gradient) canvas
+	 * mirror (CHECK A, 2026-09-06). render.php already paints both hover
+	 * pairs on the frontend — triggerBackgroundHover via sgs_fill_states_css()
+	 * out-specifying the static `.sgs-modal__trigger--{style}:hover` class
+	 * default, overlayColourHover via sgs_custom_property_gradient_decls()
+	 * feeding the `::backdrop`'s hover custom properties — the editor canvas
+	 * never showed either because nothing outside the two controls read the
+	 * Hover attrs. The trigger mirror targets the REAL `.sgs-modal__trigger`
+	 * button rendered below; the overlay mirror targets the SAME decorative
+	 * "Overlay preview" swatch that already reproduces the resting overlay
+	 * colour (see the swatch's own comment above) — hovering that swatch is
+	 * the honest editor-canvas equivalent of hovering the real ::backdrop,
+	 * which the canvas can never render open.
+	 *
+	 * `!important` is required because the resting styles above set the SAME
+	 * background-color/-image properties as an inline `style` prop on these
+	 * same elements — an inline declaration always out-ranks an external
+	 * stylesheet rule for the same property regardless of `:hover` matching,
+	 * so without it these rules would parse correctly and still never paint
+	 * whenever a resting colour is also set (the common case).
+	 */
+	const triggerBgHoverDecl =
+		triggerBackgroundHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( triggerBackgroundHoverGradient )
+			? `background-image:${ triggerBackgroundHoverGradient } !important;background-color:transparent !important;`
+			: triggerBackgroundHover
+				? `background-color:${ resolveColourToken( triggerBackgroundHover, palette ) } !important;`
+				: '';
+	const overlayHoverDecl =
+		overlayColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( overlayColourHoverGradient )
+			? `background-image:${ overlayColourHoverGradient } !important;background-color:transparent !important;`
+			: overlayColourHover
+				? `background-color:${ resolveColourToken( overlayColourHover, palette ) } !important;`
+				: '';
+	const modalHoverPreviewCss = [
+		triggerBgHoverDecl &&
+			`.${ modalPreviewScope } .sgs-modal__trigger:hover,.${ modalPreviewScope } .sgs-modal__trigger:focus-visible{${ triggerBgHoverDecl }}`,
+		overlayHoverDecl &&
+			`.${ modalPreviewScope } .sgs-modal__overlay-preview-swatch:hover{${ overlayHoverDecl }}`,
+	]
+		.filter( Boolean )
+		.join( '' );
 
 	return (
 		<>
@@ -344,6 +389,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ modalHoverPreviewCss && <style>{ modalHoverPreviewCss }</style> }
 				<button
 					className={ `sgs-modal__trigger sgs-modal__trigger--${ triggerStyle }` }
 					style={ triggerButtonStyle }

@@ -162,6 +162,52 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		.filter( Boolean )
 		.join( '' );
 
+	/*
+	 * submitBackgroundHover(Gradient) + progressBarColourHover(Gradient) canvas
+	 * mirror (CHECK A, 2026-09-06). render.php:220-228/300-308 already paint
+	 * both hover pairs on the frontend — submitBackgroundHover via
+	 * sgs_fill_decls() feeding sgs_emit_state_colour_css()'s real
+	 * `:hover`/`:focus-visible` rule, progressBarColourHover via
+	 * sgs_custom_property_gradient_decls() feeding style.css's
+	 * `.sgs-form__progress-bar:hover,:focus-visible` rule (style.css:567-571) —
+	 * the editor canvas never showed either because nothing outside the two
+	 * controls read the Hover attrs. Same shape as the tileBorder/fileLabel
+	 * preview above: a formPreviewScope-scoped `<style>` tag with a real
+	 * `:hover,:focus-visible` rule, resolved via the same resolveColourToken +
+	 * FORM_PREVIEW_GRADIENT_RE already used throughout this file.
+	 *
+	 * `!important` is required here (and nowhere else in this file) because
+	 * the RESTING preview above sets the SAME background-color/-image
+	 * properties as an inline `style` prop on the same element
+	 * (submitButtonStyle/progressBarStyle) — an inline declaration always
+	 * out-ranks an external stylesheet rule for the same property regardless
+	 * of `:hover` matching, so without it this rule would parse correctly and
+	 * still never paint whenever a resting colour is also set (the common
+	 * case).
+	 */
+	const submitBgHoverDecl =
+		submitBackgroundHoverGradient && FORM_PREVIEW_GRADIENT_RE.test( submitBackgroundHoverGradient )
+			? `background-image:${ submitBackgroundHoverGradient } !important;background-color:transparent !important;`
+			: resolveColourToken( submitBackgroundHover, palette )
+				? `background-color:${ resolveColourToken( submitBackgroundHover, palette ) } !important;`
+				: '';
+
+	const progressBarHoverDecl =
+		progressBarColourHoverGradient && FORM_PREVIEW_GRADIENT_RE.test( progressBarColourHoverGradient )
+			? `background-image:${ progressBarColourHoverGradient } !important;`
+			: resolveColourToken( progressBarColourHover, palette )
+				? `background-color:${ resolveColourToken( progressBarColourHover, palette ) } !important;`
+				: '';
+
+	const formHoverPreviewCss = [
+		submitBgHoverDecl &&
+			`.${ formPreviewScope } .sgs-form__button--submit:hover,.${ formPreviewScope } .sgs-form__button--submit:focus-visible{${ submitBgHoverDecl }}`,
+		progressBarHoverDecl &&
+			`.${ formPreviewScope } .sgs-form__progress-bar:hover,.${ formPreviewScope } .sgs-form__progress-bar:focus-visible{${ progressBarHoverDecl }}`,
+	]
+		.filter( Boolean )
+		.join( '' );
+
 	const blockProps = useBlockProps( {
 		className: `sgs-form ${ formPreviewScope }`,
 	} );
@@ -669,6 +715,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 			<div { ...blockProps }>
 				{ formPreviewCss && <style>{ formPreviewCss }</style> }
+				{ formHoverPreviewCss && <style>{ formHoverPreviewCss }</style> }
 				<div { ...innerBlocksProps } />
 				{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this
