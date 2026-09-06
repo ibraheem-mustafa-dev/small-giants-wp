@@ -737,8 +737,59 @@ if ( ! function_exists( 'sgs_emit_tier_rules' ) ) {
 	 * @return string CSS text (no <style> wrapper); '' when nothing resolves to non-empty declarations.
 	 */
 	function sgs_emit_tier_rules( $uid_selector, $value, $css_on, $css_off = '', $default = 'off' ) {
-		$css_for_state = function ( $state ) use ( $css_on, $css_off ) {
-			return 'on' === $state ? $css_on : $css_off;
+		// Delegates to the general N-value form. The binary case IS the 1-entry
+		// map ('on' => $css_on) plus a fallback ($css_off) for every other
+		// resolved state — exactly reproducing the previous ternary, including
+		// the case where $css_on is itself '' (a present-but-empty map entry is
+		// returned as '', never coalesced to the fallback, because `??` tests
+		// null and not emptiness).
+		return sgs_emit_tier_rules_map(
+			$uid_selector,
+			$value,
+			array( 'on' => $css_on ),
+			$css_off,
+			$default
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
+	/**
+	 * The general N-value form of {@see sgs_emit_tier_rules()}: emit scoped
+	 * per-tier CSS for a responsive attribute whose resolved value is one of
+	 * MANY states, not just 'on'/'off'.
+	 *
+	 * Tier resolution, the differs-from-the-tier-above minimisation, the
+	 * empty-CSS skip, the selector scoping and the breakpoints are all
+	 * identical to the binary form — this differs ONLY in how a resolved state
+	 * is mapped to CSS text. `sgs_emit_tier_rules()` is the 1-entry case and
+	 * delegates here, so there is one implementation of the cascade, not two.
+	 *
+	 * Added 2026-08-19 for `sgs/site-header`'s `contrastSafe`, which is a
+	 * FOUR-value enum ('none'|'scrim'|'shadow'|'force-solid') going per-device.
+	 * The binary helper could not express it: its `'on' === $state` test means
+	 * 'scrim' and 'none' would both fall to $css_off and paint identically.
+	 * Note that sgs_resolve_tier() itself needed no change — it is already
+	 * value-agnostic, treating only 'inherit'/null specially.
+	 *
+	 * ⚠ D386 applies here unchanged: CSS text is emitted verbatim, so a caller
+	 * must never pass per-instance absolute values destined for shared CSS.
+	 *
+	 * @param string $uid_selector  Fully-formed, already-safe CSS selector (caller-owned uid scope).
+	 * @param mixed  $value         Responsive object `{desktop,tablet,mobile}` (or junk — D328 defence via sgs_resolve_tier()).
+	 * @param array  $css_by_value  Map of resolved state => CSS declarations (no selector/braces).
+	 * @param string $css_fallback  CSS emitted for any resolved state absent from the map. Default '' (emit nothing).
+	 * @param string $default       State used when desktop inherits/is missing (§6b guard). Default 'off'.
+	 * @return string CSS text (no <style> wrapper); '' when nothing resolves to non-empty declarations.
+	 */
+	function sgs_emit_tier_rules_map( $uid_selector, $value, array $css_by_value, $css_fallback = '', $default = 'off' ) {
+		$css_for_state = function ( $state ) use ( $css_by_value, $css_fallback ) {
+			// A non-scalar resolved value can never be an array key; treat it as
+			// unmapped rather than letting PHP raise on the lookup.
+			if ( ! is_string( $state ) && ! is_int( $state ) ) {
+				return $css_fallback;
+			}
+			return $css_by_value[ $state ] ?? $css_fallback;
 		};
 
 		$desktop = sgs_resolve_tier( $value, 'desktop', $default );

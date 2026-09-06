@@ -15,8 +15,8 @@
 
 ?>
 
-<!-- wp:sgs/site-header {"align":"full","backgroundColor":"surface","headerSticky":{"desktop":"on"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
-<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"center","backgroundColor":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
+<!-- wp:sgs/site-header {"align":"full","backgroundColour":"surface","headerSticky":{"desktop":"on"},"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"center","backgroundColour":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
 <!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 <!-- /wp:sgs/site-header-row -->
 
@@ -25,7 +25,7 @@
 
 <!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 
-<!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap"} -->
+<!-- wp:sgs/container {"className":"sgs-header-icons","layout":"flex","flexWrap":"nowrap","contentWidth":{"desktop":"full"}} -->
 <!-- wp:sgs/cart /-->
 <!-- /wp:sgs/container -->
 <!-- /wp:sgs/site-header-row -->

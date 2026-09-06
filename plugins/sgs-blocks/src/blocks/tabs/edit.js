@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -15,8 +16,11 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { SgsColourPanel } from '../../components';
-import { colourVar } from '../../utils';
+import { SgsColourPanel,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
+import { colourVar, textPaintPreview, borderPaintPreview } from '../../utils';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],
@@ -49,7 +53,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabAlignment,
 		tabStyle,
 		tabTextColour,
+		tabTextColourGradient,
 		tabBgColour,
+		tabBgColourGradient,
 		tabActiveTextColour,
 		tabActiveBgColour,
 		tabIndicatorColour,
@@ -58,12 +64,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		tabActiveIndicatorColourGradient,
 		tabHoverBgColour,
 		panelBgColour,
+		panelBgColourGradient,
+		panelBgColourHover,
+		panelBgColourHoverGradient,
 		panelBorderColour,
 		panelBorderColourGradient,
 		transitionDuration,
 	} = attributes;
 
 	const [ activeEditorTab, setActiveEditorTab ] = useState( 0 );
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// Read inner block (tab) labels from the store so the nav stays in sync.
 	const tabLabels = useSelect(
@@ -91,6 +101,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( tabBgColour ) {
 		cssVars[ '--sgs-tab-bg' ] = colourVar( tabBgColour );
 	}
+	if ( tabBgColourGradient ) {
+		cssVars[ '--sgs-tab-bg-gradient' ] = tabBgColourGradient;
+	}
 	if ( tabActiveTextColour ) {
 		cssVars[ '--sgs-tab-active-text' ] = colourVar( tabActiveTextColour );
 	}
@@ -111,6 +124,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	if ( panelBgColour ) {
 		cssVars[ '--sgs-panel-bg' ] = colourVar( panelBgColour );
 	}
+	if ( panelBgColourGradient ) {
+		cssVars[ '--sgs-panel-bg-gradient' ] = panelBgColourGradient;
+	}
 	if ( panelBorderColour ) {
 		cssVars[ '--sgs-panel-border' ] = colourVar( panelBorderColour );
 	}
@@ -129,10 +145,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// block.json — this composite already restricts children to its own
 	// structural child block (`sgs/tab`) below; a generic preset would only
 	// conflict with that fixed relationship.
+	// panelBorderColourGradient (D636) real mechanism: render.php scopes a
+	// masked `::before` ring (`sgs_border_gradient_css()`) to `.sgs-tabs__panel`
+	// — the same technique `borderPaintPreview()` already approximates via
+	// `border-image` for `sgs/container` (documented deliberate approximation:
+	// the real masked ring needs a `::before` pseudo-element a plain inline
+	// style cannot reach). The editor never renders individual `.sgs-tabs__panel`
+	// divs per tab (only the ONE visible panel's InnerBlocks, direct children of
+	// `.sgs-tabs__panels`), so the preview applies to that wrapper instead — the
+	// only panel-shaped element the canvas actually has.
+	const panelBorderPreview = borderPaintPreview( panelBorderColour, panelBorderColourGradient, colourPalette );
+
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-tabs__panels',
 			'data-active-tab': activeEditorTab,
+			style: panelBorderPreview.borderImage ? { borderImage: panelBorderPreview.borderImage } : undefined,
 		},
 		{
 			allowedBlocks: [ 'sgs/tab' ],
@@ -165,7 +193,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			       active=tabActiveIndicatorColour (no hover indicator attribute
 			       exists either).
 			   Panel background/border have only ONE colour attribute each
-			   (panelBgColour/panelBorderColour) — `state=selected` per the DB
+			   (panelBgColour/panelBorderColour) — `state=current` per the DB
 			   census, labelled "Active" here because CSS only ever paints the
 			   currently-visible panel (`.sgs-tabs__panel[hidden]` hides the
 			   rest); there is no separate resting-panel colour to pair it
@@ -175,6 +203,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'tab-bg',
 						label: __( 'Tab background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -182,6 +211,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabBgColour,
 								onChange: ( val ) => setAttributes( { tabBgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabBgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabBgColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -189,13 +221,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabHoverBgColour,
 								onChange: ( val ) => setAttributes( { tabHoverBgColour: val ?? '' } ),
 								linked: true,
+								// No tabHoverBgColourGradient attribute exists (out of
+								// scope for this rollout) — required no-op, not a missing
+								// feature (GradientCapableColourControl calls
+								// onGradientChange('') on every pick for every state in a
+								// gradientCapable row).
+								onGradientChange: () => {},
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveBgColour,
 								onChange: ( val ) => setAttributes( { tabActiveBgColour: val ?? '' } ),
 								linked: true,
+								onGradientChange: () => {},
 							},
 						],
 					},
@@ -209,10 +248,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: tabTextColour,
 								onChange: ( val ) => setAttributes( { tabTextColour: val ?? '' } ),
 								linked: true,
+								gradientValue: tabTextColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tabTextColourGradient: val ?? '' } ),
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveTextColour,
 								onChange: ( val ) => setAttributes( { tabActiveTextColour: val ?? '' } ),
 								linked: true,
@@ -234,8 +276,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									setAttributes( { tabIndicatorColourGradient: val ?? '' } ),
 							},
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: tabActiveIndicatorColour,
 								onChange: ( val ) => setAttributes( { tabActiveIndicatorColour: val ?? '' } ),
 								linked: true,
@@ -248,13 +290,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'panel-bg',
 						label: __( 'Panel background', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: panelBgColour,
 								onChange: ( val ) => setAttributes( { panelBgColour: val ?? '' } ),
 								linked: true,
+								gradientValue: panelBgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBgColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: panelBgColourHover,
+								onChange: ( val ) => setAttributes( { panelBgColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: panelBgColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { panelBgColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -263,8 +319,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label: __( 'Panel border colour', 'sgs-blocks' ),
 						states: [
 							{
-								key: 'active',
-								label: __( 'Active', 'sgs-blocks' ),
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
 								value: panelBorderColour,
 								onChange: ( val ) => setAttributes( { panelBorderColour: val ?? '' } ),
 								linked: true,
@@ -337,7 +393,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				<PanelBody
 					title={ __( 'Animation', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -355,6 +414,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -365,23 +448,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					aria-label={ __( 'Content tabs', 'sgs-blocks' ) }
 					aria-orientation={ orientation }
 				>
-					{ tabLabels.map( ( label, index ) => (
-						<Button
-							key={ index }
-							className={ [
-								'sgs-tabs__tab',
-								index === activeEditorTab
-									? 'sgs-tabs__tab--active'
-									: '',
-							]
-								.filter( Boolean )
-								.join( ' ' ) }
-							aria-selected={ index === activeEditorTab }
-							onClick={ () => setActiveEditorTab( index ) }
-						>
-							{ label }
-						</Button>
-					) ) }
+					{ tabLabels.map( ( label, index ) => {
+						const isActive = index === activeEditorTab;
+						// tabTextColourGradient (D948-follow-up) real mechanism:
+						// render.php's `sgs_resolve_text_colour_or_gradient()` +
+						// `sgs_text_colour_decl()` — a genuine background-clip:text
+						// gradient, scoped ONLY to `:not([aria-selected='true'])`
+						// (resting tabs). textPaintPreview() is the exact same
+						// technique already used by sgs/container's own text-colour
+						// mirror, so it applies unmodified here; the active tab is
+						// deliberately excluded, matching the frontend selector.
+						const textPreview = ! isActive
+							? textPaintPreview( tabTextColour, tabTextColourGradient, colourPalette )
+							: {};
+						return (
+							<Button
+								key={ index }
+								className={ [
+									'sgs-tabs__tab',
+									isActive ? 'sgs-tabs__tab--active' : '',
+								]
+									.filter( Boolean )
+									.join( ' ' ) }
+								style={ textPreview }
+								aria-selected={ isActive }
+								onClick={ () => setActiveEditorTab( index ) }
+							>
+								{ label }
+							</Button>
+						);
+					} ) }
 				</div>
 
 				{ /* Tab panels — only active tab's InnerBlocks are visible */ }

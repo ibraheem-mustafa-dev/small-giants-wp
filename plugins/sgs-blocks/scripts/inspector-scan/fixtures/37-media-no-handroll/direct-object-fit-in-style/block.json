@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/direct-object-fit-in-style",
+	"title": "Fixture: style.css hardcodes object-fit directly, no mediaElements adoption (must flag, condition 2)",
+	"category": "sgs",
+	"attributes": {}
+}

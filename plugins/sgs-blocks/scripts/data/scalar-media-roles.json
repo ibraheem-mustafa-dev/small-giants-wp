@@ -6,16 +6,59 @@
   "__proven": "Sandbox experiment 2026-08-02 against a COPY of the live DB, real two-class markup, real run_universal_content_walk: BEFORE splitImage=/hero-mob.jpg + stray ChildBlock; AFTER applying these 3 rows splitImage=/hero-desk.webp, splitImageMobile=/hero-mob.jpg, no stray child.",
   "__format": "[block_slug, attr_name, note] — the role applied is always 'scalar-media'",
   "__roster_source": "D128's stated roster, re-verified against the live DB 2026-08-02: all three currently hold role='image-object' with canonical_slot='media'.",
+  "__emit_as": "Wave 6 (2026-09-02). sgs/hero's split-media adopted the shared media-atom system, which stores the picked image as THREE scalar attrs (Id/Url/Alt) rather than the one composite {id,url,alt} object run_mechanism_b's ScalarLift still emits (scalar_media_from_img() in lift_helpers.py, unchanged — the LIFT logic is correct and untouched; only the FINAL WRITE shape needed adapting). render.php stopped reading the composite `splitImage`/`splitImageMobile` attrs entirely (Bean-locked, no legacy read-time fallback — R-31-14), so a future /sgs-clone run populating the old composite shape would silently write a value nothing displays. `emit_as` names the three new keys a ScalarLift targeting this attr should expand into instead of writing the composite object — consumed by assembly.py's ScalarLift handling loop. Absent `emit_as` (every other roster entry) means unchanged behaviour: write the composite object to `attr_name` as before.",
+  "__RE_ANCHOR_2026_09_02": "Wave 7b (2026-09-02, Bean-directed). Two problems, one fix. BUG: extraction.py's video/svg tier widening (added earlier the same day) lifted media CONTENT into splitVideo*/splitSvgContent* but never wrote the matching splitMediaType*/Tablet/Mobile — block.json's schema default for that attr is 'image', so WordPress silently coerced an unset tier back to 'image' at render time and a video/SVG split-media slot rendered nothing despite the content being correctly stored. GAP: the DB anchor for this whole mechanism (the block_attributes row carrying role='scalar-media', which db_lookup.scalar_media_attr_for() matches to the BEM element to decide 'is this column scalar-media at all') sat on splitImage/splitImageMobile — two attrs render.php has NEVER read since the Wave 6 media-atom migration (block.json's own _comment_sourceAtomPair said as much when it deliberately kept them alive ONLY for this anchor role). A dead-looking attribute that is secretly load-bearing is exactly the shape that gets deleted by a future cleanup pass with no way to know why the block broke. FIX: the anchor row moved onto splitMediaType — genuinely read by render.php, genuinely selects which media family displays, and the natural 'this is the split-media slot, here is its type' anchor point. Doing this on the SAME lift that already reads the content means type and content structurally cannot drift apart again (see the extraction.py Branch A comment for the two-ScalarLift mechanism: one for content via emit_as expansion, unchanged; one plain type-write for video/svg, new). scalar_media_attr_for('sgs/hero', <element>) now returns 'splitMediaType' — a PRESENCE/ELIGIBILITY GATE ONLY. It is no longer safe to use that return value as the content-family stem (the old assumption, since the anchor and the image-content stem used to be the same string by accident). The content-family stem for EVERY media kind — image included, newly, for symmetry with the pre-existing video/svg mechanism — is now declared explicitly in media_type_stems below and resolved via scalar_media_type_stem(), never derived from the anchor's name. Companion changes in the SAME commit: block.json's splitImage/splitImageMobile composite attrs deleted outright (their only remaining reason to exist — see the _comment_sourceAtomPair note removed alongside them); scripts/dbschema/check_value_identity.py's VALUE_ASSERTIONS updated to assert the NEW anchor row instead of the two deleted ones (its own docstring says it must NEVER import db_lookup, so it observes the true stored anchor independently of this roster's own re-assertion — do not let the two silently diverge again).",
+  "__media_type_stems": "Wave 7 (2026-09-02). scalar_media_attr_for() resolves the ELIGIBILITY/ANCHOR row from the DB (block_attributes.role='scalar-media' + canonical_slot matching the BEM element) — that mechanism is unchanged (the row it resolves changed, per __RE_ANCHOR_2026_09_02, but the mechanism did not). A scalar-media column can hold an <img>, a <video>, or an inline <svg> (sgs/hero's split-media slot supports all three per device tier — splitMediaType/*Tablet/*Mobile in block.json). None of the three media-kind CONTENT families (splitImage/splitVideo/splitSvgContent) can be derived from the anchor attr's own name — the anchor is 'splitMediaType', which shares no substring with any of them — so each kind's stem is declared here explicitly instead of being guessed by string-substitution (R-31-1: no invented naming convention). 'image' was added 2026-09-02 alongside the pre-existing 'video'/'svg' entries, for the same reason and by the same rule, once the re-anchor made an explicit image stem necessary too (previously the anchor attr_name WAS the image stem, by coincidence of both being 'splitImage' — that coincidence is exactly what the re-anchor removed). Read by db_lookup.scalar_media_type_stem(block_slug, media_kind).",
+  "media_type_stems": {
+    "sgs/hero": {
+      "image": "splitImage",
+      "video": "splitVideo",
+      "svg": "splitSvgContent"
+    }
+  },
+  "__virtual_entries": "Wave 7 (2026-09-02), widened Wave 7b. Every entry below is now \"virtual\": true — none of them carries a block_attributes row of its own any more. splitImage/splitImageMobile lost their real row in the Wave 7b re-anchor (the anchor moved to splitMediaType, which needs no emit_as entry of its own — see below); splitImageTablet/splitVideo*/splitVideoTablet/splitVideoMobile were virtual from the start (2026-09-02 widening) because block.json never declared a composite object for those tiers, only the flat Id/Url(/Alt) trio each emit_as expands into. Each entry exists purely so scalar_media_type_stem()/scalar_media_emit_as() can resolve the write target for run_mechanism_b Branch A's ScalarLift; db_lookup._load_scalar_media_roles() skips any entry with \"virtual\": true for exactly this reason — feeding one through the role re-assertion path prints a permanent false 'no block_attributes row' warning at module load, since the row can never exist by design. The ONE real (non-virtual) anchor row — splitMediaType — is declared separately below, outside `attrs`' virtual set, because it genuinely owns a block_attributes row and IS the target of the role re-assertion.",
+  "__anchor_entry": "The single real (non-virtual) row. splitMediaType is a plain enum control (block.json role auto-classifies it 'select-from-enum') that this seeder re-asserts to 'scalar-media' instead — same idempotent re-assertion pattern as the pre-2026-09-02 anchor, just pointed at a different, non-dead attr. It carries no emit_as: nothing ever constructs a ScalarLift whose `.attr` is the literal string 'splitMediaType' with content that needs decomposing — extraction.py's type-write ScalarLifts target 'splitMediaType'/'splitMediaTypeTablet'/'splitMediaTypeMobile' directly (plain string values, via base_attr + tier_suffix, the same suffix-concatenation convention used everywhere else in this mechanism) and those ARE the literal final block.json attr names already, so they fall through db_lookup.scalar_media_emit_as()'s 'no entry found' path straight into assembly.py's direct-write branch — correctly, with no expansion needed.",
   "attrs": [
     [
       "sgs/hero",
+      "splitMediaType",
+      "Presence/eligibility anchor for the split-media BEM element (2026-09-02 re-anchor, replacing the dead splitImage/splitImageMobile anchor — see __RE_ANCHOR_2026_09_02). Real block_attributes row; role re-asserted to 'scalar-media' by this seeder. No emit_as — see __anchor_entry."
+    ],
+    [
+      "sgs/hero",
       "splitImage",
-      "Desktop half of the hero split art-direction pair. Branch A routes the un-suffixed image here."
+      "Desktop image half of the hero split art-direction pair — CONTENT family stem only (media_type_stems.image), resolved via scalar_media_type_stem(), never via the anchor attr's name. VIRTUAL since the 2026-09-02 re-anchor (no block_attributes row — block.json's composite splitImage attr was deleted; see __RE_ANCHOR_2026_09_02).",
+      { "emit_as": { "id": "splitImageId", "url": "splitImageUrl", "alt": "splitImageAlt" }, "virtual": true }
     ],
     [
       "sgs/hero",
       "splitImageMobile",
-      "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the base attr name."
+      "Mobile half. Branch A routes the --mobile image here by appending 'Mobile' to the media_type_stems.image stem. VIRTUAL since the 2026-09-02 re-anchor (no block_attributes row — block.json's composite splitImageMobile attr was deleted; see __RE_ANCHOR_2026_09_02).",
+      { "emit_as": { "id": "splitImageIdMobile", "url": "splitImageUrlMobile", "alt": "splitImageAltMobile" }, "virtual": true }
+    ],
+    [
+      "sgs/hero",
+      "splitImageTablet",
+      "Tablet half. Branch A routes the --tablet image here by appending 'Tablet' to the media_type_stems.image stem (2026-09-02 widening). VIRTUAL — no block_attributes row; see __virtual_entries.",
+      { "emit_as": { "id": "splitImageIdTablet", "url": "splitImageUrlTablet", "alt": "splitImageAltTablet" }, "virtual": true }
+    ],
+    [
+      "sgs/hero",
+      "splitVideo",
+      "Desktop split-media VIDEO. Branch A routes an un-suffixed <video> here (2026-09-02 widening) — no 'alt' key, a video has none. VIRTUAL — no block_attributes row; see __virtual_entries.",
+      { "emit_as": { "id": "splitVideoId", "url": "splitVideoUrl" }, "virtual": true }
+    ],
+    [
+      "sgs/hero",
+      "splitVideoTablet",
+      "Tablet split-media VIDEO (2026-09-02 widening). VIRTUAL — no block_attributes row; see __virtual_entries.",
+      { "emit_as": { "id": "splitVideoIdTablet", "url": "splitVideoUrlTablet" }, "virtual": true }
+    ],
+    [
+      "sgs/hero",
+      "splitVideoMobile",
+      "Mobile split-media VIDEO (2026-09-02 widening). VIRTUAL — no block_attributes row; see __virtual_entries.",
+      { "emit_as": { "id": "splitVideoIdMobile", "url": "splitVideoUrlMobile" }, "virtual": true }
     ]
   ],
   "__WHY_TESTIMONIAL_SLIDER_IS_EXCLUDED": "⛔ sgs/testimonial-slider.sideImage was briefly added to this roster on 2026-08-02 and it BROKE THE BLOCK. Measured with the seeder disabled: role='image-object' lifts sideImage correctly; role='scalar-media' lifts NOTHING. Reason: scalar-media is not a content-bearing role, so it removes the attr from the universal walk's candidate set — and the path that is supposed to take over, run_mechanism_b branch A, only fires for is_class_section_block blocks. sgs/testimonial-slider returns False, so the attr ends up with no route in either direction. D128's own note said exactly this ('testimonial-slider.sideImage NOT routed — tier=block not class-section, gate doesn't fire; DB row not updated') and deliberately left it alone; adding it here overrode a documented decision with an assumption. ⚠ PRE-CONDITION for ever adding a block to this roster: db_lookup.is_class_section_block(slug) MUST return True. scalar-media only pays off when branch A can actually fire; on any other block it strands the attr with no route at all."

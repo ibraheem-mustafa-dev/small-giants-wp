@@ -1,0 +1,136 @@
+/**
+ * SGS motion — cursor grid-dot field (Spec 38 §3.3, FR-38-33). Tier V.
+ *
+ * The POSITIONING half of the effect. `src/shared/effects/grid-dots.js` appends
+ * a `<canvas class="sgs-grid-dots__canvas">` inside the element carrying
+ * `data-sgs-fx="grid-dots"` and writes only that canvas's WIDTH/HEIGHT
+ * ATTRIBUTES (the drawing buffer). Per Spec 32 that module writes zero CSS
+ * property declarations — `canvas.style.*` never appears there; this stylesheet
+ * positions it.
+ */
+
+[data-sgs-fx="grid-dots"] {
+	/* The canvas is absolutely positioned, so the host is its containing block.
+	   `isolation: isolate` keeps the canvas's stacking local to the emitter, so
+	   a z-index here can never reach out and reorder anything on the page —
+	   the same containment `fx-wave-gradient.css` uses for its own background
+	   canvas. */
+	position: relative;
+	isolation: isolate;
+
+	/* The paint colour, resolved by the JS from the CANVAS's computed `color`
+	   (see grid-dots.js — a custom property read via getPropertyValue() returns
+	   the `var(...)` TEXT unresolved, and a canvas cannot paint with a string).
+
+	   ⛔ PRIMARY, NEVER ACCENT — and this default was WRONG on first ship.
+	   It read `--wp--preset--color--accent`, which measured **1.35:1** against
+	   the client's cream section background on the canary (accent #F59E0B on
+	   #FBF3DC), at 34% rest opacity. Bean's words: "very hard to even see them".
+	   That is WORSE than D846's 1.44:1 particle trail — the incident this very
+	   comment block cited as its reason for stating a default at all.
+
+	   The rule it broke is already written down: a brand ACCENT is a ground,
+	   never an indicator. Accents are chosen to sit behind content, so they are
+	   mid-luminance by construction and fail against both light and dark
+	   surfaces.
+
+	   ⚠ CORRECTED 2026-08-28. This comment used to claim primary "measures
+	   ~7:1" against the same cream. That number was measured on the FALLBACK
+	   teal #1F7A7A and then generalised to "primary" — which is not a colour,
+	   it is whatever the client's palette says. Measured live on Mama's
+	   Munches, primary is #e68a95 and scores **2.25:1** against the cream, not
+	   7:1. Do not restate a token's contrast as if it were fixed: a palette
+	   slug's ratio is a per-client fact, and the only safe general claim is
+	   that primary is chosen to be READ against the surface while accent is
+	   chosen to sit behind content.
+
+	   REST OPACITY IS THE COLOUR'S OWN ALPHA (2026-08-28). The engine no
+	   longer multiplies a hardcoded 0.34 over this value — see grid-dots.js.
+	   An opaque token therefore paints opaque. To get a translucent lattice,
+	   pick a custom colour with the picker's alpha slider (stored as hex8);
+	   the whole point is that the client controls it rather than discovering a
+	   constant they cannot reach.
+
+	   Per-instance override: `fxGridDotColour` -> `data-sgs-fx-grid-colour` ->
+	   `includes/fx-grid-dots.php` emits this custom property scoped to the
+	   instance. A client who wants a different colour sets one; nobody has to
+	   accept this default. */
+	--sgs-fx-grid-dot-colour: var( --wp--preset--color--primary, #1F7A7A );
+
+	/* The colour a dot reaches at the pointer. Dots interpolate between the
+	   resting colour above and this one by proximity, so the field reads as
+	   lighting up under the cursor rather than merely fading in.
+
+	   The fallback CHAIN matters and is not decoration: `primary-dark` is a
+	   real token on some palettes and absent on others, so it degrades to
+	   `contrast` (present in most block themes) and finally to the resting
+	   colour itself — which yields no colour shift, never a broken paint. */
+	--sgs-fx-grid-dot-colour-hover: var(
+		--wp--preset--color--primary-dark,
+		var( --wp--preset--color--contrast, var( --sgs-fx-grid-dot-colour ) )
+	);
+}
+
+.sgs-grid-dots__canvas {
+	/* `color` is the channel the JS reads. Setting it here, rather than having
+	   the JS read the custom property, is what makes the value a RESOLVED CSS
+	   colour by the time canvas code sees it. */
+	color: var( --sgs-fx-grid-dot-colour );
+
+	/* The SECOND resolved-colour channel, for the pointer colour.
+
+	   WHY A REAL CSS PROPERTY AND NOT THE CUSTOM PROPERTY DIRECTLY: exactly the
+	   reason stated for `color` above — `getComputedStyle().getPropertyValue()`
+	   on an unregistered custom property hands back the `var(...)` TEXT, and a
+	   canvas cannot paint with a string. A colour-valued CSS property, by
+	   contrast, always computes to `rgb()`/`rgba()`, which is directly
+	   parseable and already has alpha folded in.
+
+	   WHY THIS PROPERTY: it must be one that (a) computes to a colour and (b)
+	   paints nothing on a `<canvas>`. Text decoration does not render on a
+	   canvas element, so this is inert by construction — it is a data channel,
+	   not a style. `outline-color` would paint if anything ever set an
+	   `outline-style`; this cannot. */
+	text-decoration-color: var( --sgs-fx-grid-dot-colour-hover );
+
+	/* Declaring `position` is also what makes this layer immune to
+	   `sgs/container`'s child-lift rule. That rule was a hand-maintained
+	   `:not()` chain until 2026-08-25 — six features hit it independently, each
+	   fixed by appending one more class name — and is now `:where(...)` at
+	   (0,0,0), so ANY element declaring its own `position` out-ranks it with no
+	   registration anywhere. This declaration IS the registration. */
+	position: absolute;
+	inset: 0;
+
+	/* BEHIND the emitter's content, unlike the particle trail which sits above
+	   it at z-index 1. This is a background field: content must stay readable
+	   over it, and `isolation: isolate` on the host keeps 0 meaning "behind this
+	   block's content" rather than "behind the page". */
+	z-index: 0;
+
+	display: block;
+	width: 100%;
+	height: 100%;
+
+	/* Never intercept a click, a text selection or a link. The effect is
+	   decorative and the pointer belongs to the content above it. */
+	pointer-events: none;
+}
+
+/*
+ * Reduced motion — nothing to hide.
+ *
+ * `fx-grid-dots.js` creates NO instance and attaches NO listener under
+ * `prefers-reduced-motion: reduce`, so no canvas is ever appended and there is
+ * nothing here to suppress. That is deliberate and is the reason this file
+ * carries no `@media (prefers-reduced-motion: reduce)` block.
+ *
+ * ⛔ Do NOT "helpfully" add one that hides `.sgs-grid-dots__canvas`. The resting
+ * lattice (dots at their cell centres) is a legitimate static decoration, and
+ * the JS gate means a reduced-motion visitor never sees a canvas at all — a CSS
+ * rule hiding it could only ever fire for a visitor whose preference CHANGED
+ * mid-session, and would then remove a static background rather than any
+ * motion. That is the "degrade to less content" failure this framework's design
+ * rules forbid, and it is the same argument `fx-surface-treatment.css` records
+ * for having no reduced-motion gate of its own.
+ */

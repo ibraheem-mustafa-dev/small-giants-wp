@@ -1,0 +1,16 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/child-only-typography",
+	"title": "Fixture: typography selector set only on an InnerBlocks child — must flag (hero shape)",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-child-only-typography",
+		"typography": ".sgs-child-only-typography__headline"
+	},
+	"attributes": {}
+}

@@ -2,22 +2,16 @@
 /**
  * Server-side render for sgs/notice-banner.
  *
- * Dynamic render (save.js returns null; deprecated.js v2/v1 round-trip older
+ * Dynamic render (save.js returns null; the former deprecated.js v2/v1 round-tripped older
  * static instances). The icon is the variant's ideal default (Lucide) unless the
  * operator picks an override via the shared IconPicker (any of the four sources).
  *
- * NO-INLINE, NO-WRAPPER (LOCKED per-block no-inline migration contract §A/§B/§B3,
- * 2026-07-10): notice-banner is CONTENT-kind (box + width only) — it never used
- * SGS_Container_Wrapper's grid/section/background/overlay machinery (WS-4:
- * CONTENT kind only ever added maxWidth/contentWidth/padding on top of the
- * block's OWN BEM-driven background/border/icon styling), so per D294 the
- * wrapper is dropped and the block goes fully block-private — the same proven
- * pattern as sgs/quote. The rendered subtree carries ZERO inline CSS property
- * declarations; every declaration (base + tiered padding/margin, WP colour/
- * typography/border supports, iconColour, width) is emitted into the block's
- * OWN scoped `.{uid}` <style> tag. WP styling supports declare
- * `__experimentalSkipSerialization` in block.json so get_block_wrapper_attributes()
- * never auto-inlines them.
+ * NO-WRAPPER (LOCKED per-block no-inline migration contract §A/§B/§B3, 2026-07-10): notice-banner is CONTENT-kind (box + width only) — it never used
+ * SGS_Container_Wrapper's grid/section/background/overlay machinery (WS-4: CONTENT kind only ever added maxWidth/contentWidth/padding on top of the
+ * block's OWN BEM-driven background/border/icon styling), so per D294 the wrapper is dropped and the block goes fully block-private — the same proven
+ * pattern as sgs/quote.
+ *
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * The uid is a CLASS (`sgs-notice-banner-{md5}`), never an `id` — the block
  * declares `anchor: true`, so the id attribute stays free for the anchor (ToC).
@@ -46,19 +40,43 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
 // FR-22-6: $text is no longer rendered here — the text content slot is now
 // an InnerBlocks child (sgs/text), emitted via $content below.
-// Retained in block.json for deprecated.js back-compat only. R-22-14: no fallback.
+// Retained in block.json as historical schema only (no deprecated.js, D271). R-31-14: no fallback.
 $variant           = $attributes['variant'] ?? 'info';
 $icon_source       = $attributes['iconSource'] ?? '';
 $icon_name         = $attributes['iconName'] ?? '';
 $icon_colour       = $attributes['iconColour'] ?? '';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $display_mode      = $attributes['displayMode'] ?? 'inline';
 $sticky_position   = $attributes['stickyPosition'] ?? 'top';
 $dismissible       = ! empty( $attributes['dismissible'] );
@@ -122,10 +140,6 @@ if ( $show_icon ) {
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side value can never break out of its
 // declaration. Mirrors sgs/quote + sgs/heading + sgs/button.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // -------------------------------------------------------------------------
 // Resolve anchor / scope id. Uid is a CLASS (contract §B3) — the element's
 // single `id` attribute stays free for the anchor (ToC target).
@@ -161,39 +175,30 @@ if ( isset( $style_obj['spacing']['margin'] ) && is_array( $style_obj['spacing']
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // Border — WP-native style.border (color/width/style/radius). Style-engine
 // consumes this shape directly (mirrors core's own border support output).
 $style_border = isset( $style_obj['border'] ) && is_array( $style_obj['border'] ) ? $style_obj['border'] : array();
 
-// Colour support values.
-$style_color_text     = isset( $style_obj['color']['text'] ) ? (string) $style_obj['color']['text'] : '';
-$style_color_bg       = isset( $style_obj['color']['background'] ) ? (string) $style_obj['color']['background'] : '';
-$style_color_gradient = isset( $style_obj['color']['gradient'] ) ? (string) $style_obj['color']['gradient'] : '';
-$preset_text_slug     = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug       = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+// Colour support values — BLOCK-PRIVATE (D744): native `supports.color` is
+// fully false, so core no longer writes `style.color.*`/`textColor`/
+// `backgroundColor`. Text + background are now `textColour*`/
+// `backgroundColour*` attributes, resolved below via the shared five-variant
+// colour helpers (helpers-colour-variants.php / helpers-tokens.php).
+$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 
-// Typography support values.
-$style_font_size   = isset( $style_obj['typography']['fontSize'] ) ? (string) $style_obj['typography']['fontSize'] : '';
-$style_line_height = isset( $style_obj['typography']['lineHeight'] ) ? (string) $style_obj['typography']['lineHeight'] : '';
-
-// typography.textAlign is NOT a style-engine key — WP core applies it as a
-// `has-text-align-{value}` CLASS from the `textAlign` attribute, but does not
-// reliably merge that class into get_block_wrapper_attributes() for a dynamic
-// block (verified pattern: class-sgs-container-wrapper.php's identical fix for
-// container-equivalent composites) — emit it explicitly.
-// ⛔ KEY CORRECTED 2026-08-15. This read ONLY the top-level `textAlign`, but the
-// native control WP renders from `supports.typography.textAlign` writes to
-// `style.typography.textAlign` — verified live on the canary. So a client set the
-// alignment, it saved, and this stayed empty, emitting no class: a silent no-op.
-// Identical defect and fix to sgs/cta-section (same session). The top-level read
-// is KEPT as the fallback because the cloning converter writes that key.
-$text_align = $attributes['style']['typography']['textAlign']
-	?? ( $attributes['textAlign'] ?? '' );
+// textAlign is now a block-private bare attribute (D971/D972 full-replacement
+// track — mirrors sgs/text's canonical pattern; the old native
+// supports.typography.textAlign was removed from block.json). Rendered as a
+// `has-text-align-{value}` CLASS, not a style-engine declaration — WP core's
+// own convention, does not reliably merge into get_block_wrapper_attributes()
+// for a dynamic block (verified pattern: class-sgs-container-wrapper.php's
+// identical fix for container-equivalent composites) — emit it explicitly.
+$text_align = $attributes['textAlign'] ?? '';
 if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
 	$text_align = '';
 }
@@ -214,19 +219,93 @@ if ( $icon_colour ) {
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon{color:' . sgs_colour_value( $icon_colour ) . ';}';
 }
 // D636/D644 icon/SVG gradient — non-empty wins over iconColour's flat
-// currentColor paint above (helpers-svg-gradient.php). $icon_html was built
-// earlier (icon/lucide/wp-icon cases only carry real <svg> markup — dashicon/
-// emoji/text are unaffected, sgs_svg_inject_defs() no-ops when there's no
-// <svg> to match).
-$sgs_notice_banner_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
-	$icon_html    = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_stroke_grad['defs'] );
-	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon svg{' . $sgs_notice_banner_stroke_grad['css'] . ';}';
+// currentColor paint above (helpers-svg-gradient.php). $resolved_source can
+// be dashicon/emoji here (unlike the lucide-only blocks), so the gradient
+// SELECTOR must branch on it too — a dashicon/emoji glyph paints on the
+// wrapper span itself via background-clip:text, never on a child <svg>.
+// FIXED 2026-09-06 (caught live): the selector was hardcoded to
+// "...__icon svg" regardless of source, so a dashicon/emoji gradient matched
+// no element in the DOM and silently never painted — the exact live-DOM
+// verification this rollout needed. $icon_html was built earlier
+// (lucide/wp-icon cases only carry real <svg> markup; sgs_svg_inject_defs()
+// no-ops when there's no <svg> to match).
+// 2026-09-06: both states now resolved in ONE call via
+// sgs_icon_gradient_states_css() (includes/helpers-svg-gradient.php) — built
+// specifically because this block's own hover-gradient call was missing
+// entirely before this fix, and a shared two-state helper makes that class
+// of omission structurally harder to repeat than hand-wiring each state.
+$sgs_notice_banner_icon_sel = $root_sel . ' .sgs-notice-banner__icon';
+$sgs_notice_banner_grad_sel = in_array( $resolved_source, array( 'dashicon', 'emoji' ), true ) ? $sgs_notice_banner_icon_sel : "{$sgs_notice_banner_icon_sel} svg";
+$sgs_notice_banner_grad     = sgs_icon_gradient_states_css( $resolved_source, $icon_colour_gradient, $icon_colour_hover_gradient, $uid, $sgs_notice_banner_grad_sel );
+$icon_html                  = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_grad['defs_base'] );
+$icon_html                  = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_grad['defs_hover'] );
+if ( $sgs_notice_banner_grad['css'] ) {
+	$scoped_css = array_merge( $scoped_css, $sgs_notice_banner_grad['css'] );
+} elseif ( '' !== ( $attributes['iconColourHover'] ?? '' ) ) {
+	// Flat-colour-only fallback — no gradient set on either state.
+	$scoped_css[] = sgs_hover_state_rules( $sgs_notice_banner_icon_sel, 'color:' . sgs_colour_value( $attributes['iconColourHover'] ), ':focus-visible' );
 }
+
+// --- Text colour (flat-or-gradient, base + hover) — D744: replaces core's
+// `style.color.text` storage. Painted on the ROOT selector so it inherits
+// into the InnerBlocks child (sgs/text) and matches the prior style-engine
+// 'color' behaviour. ---
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). sgs_text_colour_decl() is the correct primary
+// primitive; the companion fallback rule below was already correct.
+$sgs_nb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_nb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_nb_text_normal_decl     = sgs_text_colour_decl( $sgs_nb_text_normal_resolved );
+$sgs_nb_text_hover_decl      = sgs_text_colour_decl( $sgs_nb_text_hover_resolved );
+if ( '' !== $sgs_nb_text_normal_decl || '' !== $sgs_nb_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_nb_text_normal_decl ? array( $sgs_nb_text_normal_decl ) : array(),
+		'' !== $sgs_nb_text_hover_decl ? array( $sgs_nb_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany
+// sgs_text_colour_decl(): its gradient branch has no @supports fallback of
+// its own.
+$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_nb_text_normal_resolved );
+if ( '' !== $sgs_nb_text_hover_resolved && $sgs_nb_text_hover_resolved !== $sgs_nb_text_normal_resolved ) {
+	$scoped_css[] = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_nb_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_nb_text_hover_resolved );
+}
+
+// --- Background (flat-or-gradient, base + hover) — painted on a `::after`
+// layer, never the root itself, so a text gradient on the SAME root
+// (background-clip:text, above) cannot clip or overwrite it (mirrors
+// sgs/product-card + sgs/heading + sgs/text's background/text pseudo-element
+// split — text + background land on the SAME element here). ---
+$sgs_nb_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+
+$scoped_css[] = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_nb_bg_decls['normal'][0] ?? '',
+	$sgs_nb_bg_decls['hover'][0] ?? ''
+);
 
 // --- Width (base only, kept-scalar). ---
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$scoped_css[] = "{$root_sel}{max-width:{$mw_safe};}";
 	}
@@ -234,78 +313,49 @@ if ( $max_width ) {
 // --- Base spacing (padding/margin), border (color/width/style/radius), WP
 // colour + typography supports — skip-serialised, emitted scoped via the
 // stable core style engine (exactly how WP core outputs `layout` support). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( ! empty( $style_border ) ) {
-		$base_style_engine_args['border'] = $style_border;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( '' !== $style_color_gradient ) {
-		$color_args['gradient'] = $style_color_gradient;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+if ( ! empty( $style_border ) ) {
+	$base_style_engine_args['border'] = $style_border;
+}
 
-	$typography_args = array();
-	if ( '' !== $style_font_size ) {
-		$typography_args['fontSize'] = $style_font_size;
-	}
-	if ( '' !== $style_line_height ) {
-		$typography_args['lineHeight'] = $style_line_height;
-	}
-	if ( ! empty( $typography_args ) ) {
-		$base_style_engine_args['typography'] = $typography_args;
-	}
-
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography fontSize/lineHeight/fontStyle (removed from block.json),
+// which also now offers fontWeight. Painted on the ROOT selector so it
+// inherits into the InnerBlocks sgs/text child (HC2's native-typography
+// wrapper-inheritance carve-out) rather than a per-element override.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -341,10 +391,6 @@ if ( '' !== $preset_text_slug ) {
 	$sgs_wrapper_classes[] = 'has-text-color';
 	$sgs_wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
 }
-if ( '' !== $preset_bg_slug ) {
-	$sgs_wrapper_classes[] = 'has-background';
-	$sgs_wrapper_classes[] = 'has-' . $preset_bg_slug . '-background-color';
-}
 if ( '' !== $text_align ) {
 	$sgs_wrapper_classes[] = 'has-text-align-' . $text_align;
 }
@@ -359,7 +405,7 @@ if ( $is_announcement ) {
 
 // -------------------------------------------------------------------------
 // Interior HTML — icon + InnerBlocks content + optional close button.
-// FR-22-6: text content is $content (sgs/text InnerBlock). R-22-14: no fallback.
+// FR-22-6: text content is $content (sgs/text InnerBlock). R-31-14: no fallback.
 // The icon <span> carries NO inline style any more — iconColour is scoped above.
 // -------------------------------------------------------------------------
 $sgs_inner_html = '';
@@ -459,13 +505,101 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 $output        = '<div ' . $wrapper_attrs . '>' . $sgs_inner_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attrs from get_block_wrapper_attributes(); $sgs_inner_html built from escaped parts + WP InnerBlocks.
 
 ?>
+<?php
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$scoped_css[] = $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+?>
 <?php if ( $scoped_css ) : ?>
 <style>
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D — matches SGS_Container_Wrapper
 	// + sgs/quote + sgs/heading). Every value reaching $scoped_css is
-	// pre-sanitised ($sgs_css_length / sgs_colour_value / wp_style_engine_get_styles /
+	// pre-sanitised (sgs_css_length_value() / sgs_colour_value / wp_style_engine_get_styles /
 	// allowlisted attribute enums), so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>

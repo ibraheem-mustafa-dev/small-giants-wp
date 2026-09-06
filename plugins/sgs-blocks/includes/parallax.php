@@ -2,18 +2,20 @@
 /**
  * Parallax — server-side attribute injection.
  *
- * Adds sgs-parallax-background or sgs-parallax-element CSS class,
- * the --sgs-parallax-strength custom property, and a data-sgs-parallax
- * attribute to the outermost wrapper element of any block whose
- * sgsParallax attribute is set to 'background' or 'element'.
+ * Adds the sgs-parallax-element CSS class, the --sgs-parallax-strength
+ * custom property, and a data-sgs-parallax attribute to the outermost
+ * wrapper element of any block whose sgsParallax attribute is set to
+ * 'element'. ('background' was RETIRED 2026-08-19 — see
+ * src/blocks/extensions/parallax.js's docblock for why; BackgroundPanel's
+ * bgKenBurns/bgParallax pair is the real, working background-motion
+ * mechanism.)
  *
  * Runs at priority 11 — after conditional-visibility (9) and
  * device-visibility (10) so all visibility guards have already run.
  *
  * The actual parallax effect is handled by:
  *   1. CSS Scroll-Driven Animations in assets/css/extensions.css (modern browsers).
- *   2. background-attachment: fixed fallback for older desktop browsers.
- *   3. assets/js/parallax.js for browsers without CSS SDA support.
+ *   2. assets/js/parallax.js for browsers without CSS SDA support.
  *
  * @package SGS\Blocks
  */
@@ -46,8 +48,8 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 
 	$type = $attrs['sgsParallax'];
 
-	// Only handle the two known parallax types.
-	if ( 'background' !== $type && 'element' !== $type ) {
+	// Only 'element' is a live type — 'background' was RETIRED 2026-08-19.
+	if ( 'element' !== $type ) {
 		return $block_content;
 	}
 
@@ -55,8 +57,7 @@ function inject_parallax_attributes( string $block_content, array $block ): stri
 	$raw_strength = isset( $attrs['sgsParallaxStrength'] ) ? $attrs['sgsParallaxStrength'] : 30;
 	$strength     = min( 100, max( 0, (int) $raw_strength ) );
 
-	// Determine the CSS class to add.
-	$css_class = 'background' === $type ? 'sgs-parallax-background' : 'sgs-parallax-element';
+	$css_class = 'sgs-parallax-element';
 
 	// --- Locate the block's actual ROOT element. ---
 	// The no-inline styling contract (Spec 32, D293-D296) has every composite

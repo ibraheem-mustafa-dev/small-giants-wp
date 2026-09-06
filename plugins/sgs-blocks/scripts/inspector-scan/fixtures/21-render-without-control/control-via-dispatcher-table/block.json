@@ -1,0 +1,7 @@
+{
+	"name": "sgs/control-via-dispatcher-table",
+	"title": "Fixture — control reached through a table-driven dispatcher",
+	"attributes": {
+		"contentWidth": { "type": "string", "default": "" }
+	}
+}

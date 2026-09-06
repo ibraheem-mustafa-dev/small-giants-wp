@@ -1,0 +1,18 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/native-color-all-false",
+	"title": "Fixture: supports.color declared with every sub-flag false (the conformant shape — must NOT flag native-colour-ui)",
+	"category": "sgs",
+	"attributes": {
+		"label": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		}
+	}
+}

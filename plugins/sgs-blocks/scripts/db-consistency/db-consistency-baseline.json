@@ -1,3 +1,6 @@
 [
-  "vc:sgs/nav-drawer:anchored-card-stack|centred-statement|editorial-ghost-list|solid-brand-light|split-zone-serif|two-column-editorial"
+  "roleguess:button-group",
+  "roleguess:review",
+  "roleguess:star",
+  "roleguess:testimonial"
 ]

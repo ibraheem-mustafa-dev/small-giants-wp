@@ -22,7 +22,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.models import GapOrigin
-from converter.orchestrator import process_element
+from converter.dispatch_spine import process_element
 from converter.services.border_side import border_side_write
 from converter.db.db_lookup import SGS_DB
 
@@ -104,16 +104,56 @@ def test_important_is_stripped(conn):
 # Negative controls — the helper must NOT fire where it should not
 # ---------------------------------------------------------------------------
 
+
+def _block_without_box_family(conn, family: str) -> str:
+    """Return a registered block that declares NO attr in the given box family.
+
+    Resolved from the DB rather than hardcoded so the negative control keeps
+    testing what it claims as blocks gain box families over time. Fails loudly
+    with a stated reason if every block has the family — at which point the
+    control is genuinely untestable and should be retired deliberately, not
+    left silently passing.
+    """
+    have = {
+        s for (s,) in conn.execute(
+            "SELECT DISTINCT block_slug FROM block_attributes WHERE box_family = ?",
+            (family,),
+        )
+    }
+    for (slug,) in conn.execute(
+        "SELECT DISTINCT block_slug FROM block_attributes "
+        "WHERE block_slug LIKE 'sgs/%' ORDER BY block_slug"
+    ):
+        if slug not in have:
+            return slug
+    raise AssertionError(
+        f"no registered block lacks the {family!r} box family — this negative "
+        f"control can no longer discriminate and must be retired deliberately."
+    )
+
 def test_block_without_borderWidth_family_falls_through(conn):
-    """A block with no borderWidth box-object family (sgs/container) → helper None,
-    the decl gaps honestly through the ordinary chain (never a phantom object)."""
+    """A block with no borderWidth box-object family → helper None, and the decl
+    gaps honestly through the ordinary chain (never a phantom object).
+
+    This is a NEGATIVE CONTROL: it proves `border_side_write` does not fire where
+    no family exists. It therefore has its own vacuity mode — if the block it
+    names ever GAINS a borderWidth family the assertions invert and the control
+    stops controlling anything. So the premise is asserted from the DB first,
+    and the block is resolved dynamically rather than hardcoded.
+
+    ⚠ It named `sgs/container` until 2026-08-28, when the container gained a
+    real `borderWidth` box family (D787 wired its declared-but-unwired border)
+    and this test began failing on `main` for a reason unrelated to its subject.
+    Asserting the premise is what turns that from a puzzling red into a stated one.
+    """
+    slug = _block_without_box_family(conn, "borderWidth")
     w = border_side_write(
         Decl("border-bottom-width", "3px", "Base"),
-        _ctx(conn, block_slug="sgs/container", base_layer="OUTER"),
+        _ctx(conn, block_slug=slug, base_layer="OUTER"),
     )
     assert w is None
     result = process_element(
-        _ctx(conn, block_slug="sgs/container", base_layer="OUTER"),
+        _ctx(conn, block_slug=slug, base_layer="OUTER"),
         [Decl("border-bottom-width", "3px", "Base")],
     )
     assert "borderWidth" not in result.attrs()

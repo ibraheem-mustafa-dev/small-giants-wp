@@ -2,6 +2,15 @@
 
 .sgs-countdown {
 	padding: var(--wp--preset--spacing--40);
+}
+
+/*
+ * Text-align default — :where() keeps this at specificity 0 so the uid-scoped
+ * textAlign rule (render.php's own $root_sel emit) always wins. Sanctioned
+ * F3-exempt overridable-default pattern (mirrors sgs/product-card's
+ * line-height :where() block).
+ */
+:where(.sgs-countdown) {
 	text-align: center;
 }
 

@@ -1,0 +1,7 @@
+{
+	"name": "sgs/scattered-element",
+	"attributes": {
+		"titleColour": { "type": "string" },
+		"titleFontSize": { "type": "number" }
+	}
+}

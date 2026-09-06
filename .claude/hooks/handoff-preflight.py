@@ -295,12 +295,31 @@ def check_stop_carry_forward(
 
     if prev_text is None:
         try:
+            # encoding='utf-8' is LOAD-BEARING, not tidiness. `text=True` alone decodes with the
+            # Windows locale codec (cp1252), and this repo's docs are full of the characters that
+            # codec cannot represent. The UnicodeDecodeError is raised inside subprocess's READER
+            # THREAD, so `run()` returns returncode 0 with stdout=None and the except clause below
+            # never fires — the failure is invisible to normal error handling.
             prev_text = subprocess.run(
                 ["git", "show", "HEAD:.claude/STOP-CATALOGUE.md"],
-                cwd=_REPO, capture_output=True, text=True, timeout=15,
+                cwd=_REPO, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=15,
             ).stdout
         except (OSError, subprocess.SubprocessError):
             prev_text = ""
+    if prev_text is None:
+        # ⛔ Do NOT silently coerce to "" here. An empty previous catalogue makes every STOP entry
+        # look NEW and none look DROPPED, so the D101 carry-forward check would pass trivially and
+        # for ever — a gate that cannot fail. Fail loudly instead; this branch means the read broke.
+        return Result(
+            "stop-carry-forward",
+            False,
+            "could not read the previous STOP-CATALOGUE from git (stdout was None — usually a "
+            "decode failure in subprocess's reader thread, which returns rc=0 and is invisible "
+            "to except). Refusing to compare against an empty baseline: that would make every "
+            "entry look NEW and none look DROPPED, so this check would pass trivially for ever.",
+            "Re-run; if it persists, check the git show call's encoding= argument.",
+        )
     prev_ids = _defined_stop_ids(prev_text) if prev_text.strip() else set()
 
     if floor_ids is None:
@@ -705,6 +724,48 @@ def check_memory_size(sizes: dict[str, int] | None = None) -> Result:
     )
 
 
+def check_decisions_no_duplicate_ids(text: str | None = None) -> Result:
+    """10 — two entries must never share a D-number.
+
+    WHY THIS EXISTS: `decisions.md` is an append-only file written by CONCURRENT tracks with
+    no locking, and that produces two opposite failures, neither visible on a read-through.
+    D581 note 8 records the first: "decisions.md has no write coordination between concurrent
+    tracks - a 5-entry version of this writeup was lost whole." On 2026-08-21 the same
+    mechanism produced the mirror image - `## D636` appeared TWICE, byte-identical, and sat
+    there for five days until an unrelated QC pass tripped over it. A lost entry looks like
+    nothing happened; a doubled one looks like a formatting slip. Both are silent.
+
+    ANCHORED on the heading (`^## D<n>`) deliberately. The unanchored `D[0-9]+` reported
+    D5557 on 2026-08-01 - that was the hex colour `#0D5557` on line 412, while the true
+    ceiling was D453. A gate that reads a wrong number confidently is worse than no gate.
+    """
+    path = _CLAUDE / "decisions.md"
+    if text is None:
+        if not path.exists():
+            return Result("decisions-no-duplicate-ids", True, "no decisions.md")
+        text = _read(path)
+
+    seen: dict[str, int] = {}
+    for m in re.finditer(r"^## (D\d+)\b", text, re.M):
+        seen[m.group(1)] = seen.get(m.group(1), 0) + 1
+    dupes = sorted((d for d, n in seen.items() if n > 1), key=lambda d: int(d[1:]))
+    if not dupes:
+        return Result(
+            "decisions-no-duplicate-ids", True,
+            f"{len(seen)} D-entries, all unique",
+        )
+    detail = ", ".join(f"{d} x{seen[d]}" for d in dupes[:8])
+    return Result(
+        "decisions-no-duplicate-ids", False,
+        f"{len(dupes)} duplicated D-number(s): {detail}",
+        "DIFF THE FULL BODIES BEFORE REMOVING EITHER - the fix depends on which case it is. "
+        "Byte-identical bodies = a concurrent-write duplication; delete the second copy. "
+        "DIFFERENT bodies = two real decisions that collided on one number; renumber the "
+        "later one to the current ceiling+1 and leave both. Deleting a colliding entry "
+        "destroys a decision.",
+    )
+
+
 CHECKS = (
     check_ledger_size,
     check_stop_carry_forward,
@@ -715,6 +776,7 @@ CHECKS = (
     check_citations_resolve,
     check_decisions_size,
     check_memory_size,
+    check_decisions_no_duplicate_ids,
 )
 
 
@@ -753,6 +815,11 @@ def self_test() -> int:
         ("no-tombstones",
          lambda: check_no_tombstones(extra=["SYNTHETIC-TOMBSTONE.md"]),
          lambda: check_no_tombstones(extra=[])),
+        ("decisions-no-duplicate-ids",
+         lambda: check_decisions_no_duplicate_ids(
+             "## D1 - a\nbody\n\n## D1 - a\nbody\n"),
+         lambda: check_decisions_no_duplicate_ids(
+             "## D1 - a\nbody\n\n## D2 - b\nbody\n")),
         ("no-dangling-links",
          lambda: check_no_dangling_links(
              overrides={".claude/CLAUDE.md": "[x](does-not-exist-xyz.md)"}),

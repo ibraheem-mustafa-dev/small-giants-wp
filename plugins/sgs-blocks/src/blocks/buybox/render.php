@@ -42,14 +42,13 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 / per-block migration contract): a CSS-length sanitiser
-// for box/side values (mirrors sgs/label + sgs/heading). Only margin has a
-// scoped no-inline treatment on this block — no other styling supports are
-// enabled (color is declared-but-disabled; padding is off).
+// for box/side values (mirrors sgs/label + sgs/heading). Margin has a scoped
+// no-inline treatment on this block; padding is off. Colour (background +
+// text, flat-or-gradient, resting + hover) is owned by the block-private
+// backgroundColour*/textColour* attrs below, emitted via the shared
+// five-variant colour helpers — supports.color's sub-flags are all false so
+// nothing native competes with the SGS colour panel.
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
 
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
 
@@ -379,9 +378,7 @@ $card_type = WP_Block_Type_Registry::get_instance()->get_registered( 'sgs/produc
 if ( $card_type ) {
 	$module_ids = isset( $card_type->view_script_module_ids ) ? (array) $card_type->view_script_module_ids : array();
 	foreach ( $module_ids as $module_id ) {
-		if ( function_exists( 'wp_enqueue_script_module' ) ) {
-			wp_enqueue_script_module( $module_id );
-		}
+		wp_enqueue_script_module( $module_id );
 	}
 }
 
@@ -397,9 +394,9 @@ $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
-// sgs/container). Only the WP-native `spacing.margin` support (base + the two
-// SGS custom object-attr tiers) is scoped here — color is declared-but-
-// disabled on this block and padding is off, so nothing else to route.
+// sgs/container). The WP-native `spacing.margin` support (base + the two SGS
+// custom object-attr tiers) is scoped here, plus the block-private colour
+// attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
 $uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
@@ -420,54 +417,103 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 }
 
 $style_group       = is_array( $attributes['style'] ?? null ) ? $attributes['style'] : array();
-$style_color_args  = ! empty( $style_group['color'] ) && is_array( $style_group['color'] ) ? $style_group['color'] : array();
 $style_border_args = ! empty( $style_group['border'] ) && is_array( $style_group['border'] ) ? $style_group['border'] : array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
+$base_style_engine_args = array();
 
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
-	}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_style_engine_args['spacing'] = array( 'margin' => $base_margin_obj );
+}
 
-	if ( ! empty( $style_color_args ) ) {
-		$base_style_engine_args['color'] = $style_color_args;
-	}
+if ( ! empty( $style_border_args ) ) {
+	$base_style_engine_args['border'] = $style_border_args;
+}
 
-	if ( ! empty( $style_border_args ) ) {
-		$base_style_engine_args['border'] = $style_border_args;
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+// --- Block-private colour (background + text, flat-or-gradient, resting +
+// hover) — supports.color's sub-flags are all false, so nothing native can
+// write $attributes['style']['color'] any more; these block-private attrs
+// (exposed through SgsColourPanel/fillRow/textRow in edit.js) are the SOLE
+// owner. Text colour applies to the same root element as the background
+// paint, so the background is painted on a `::after` layer rather than the
+// root itself — a text gradient (`background-clip:text`) on the root would
+// otherwise clip or overwrite the background paint (mirrors sgs/product-card's
+// text/background pseudo-element split). ---
+// FIXED 2026-09-04 — was sgs_text_decls()/sgs_emit_state_colour_css(), which
+// always emits a bare `color:` even for a resolved gradient string (invalid
+// CSS, silently dropped — same defect proven live on sgs/info-box and
+// sgs/testimonial-slider). sgs_text_colour_decl() is the correct primary
+// primitive; the companion fallback rule below was already correct.
+$sgs_bb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$sgs_bb_text_hover_resolved  = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+$sgs_bb_text_normal_decl     = sgs_text_colour_decl( $sgs_bb_text_normal_resolved );
+$sgs_bb_text_hover_decl      = sgs_text_colour_decl( $sgs_bb_text_hover_resolved );
+if ( '' !== $sgs_bb_text_normal_decl || '' !== $sgs_bb_text_hover_decl ) {
+	$scoped_css[] = sgs_emit_state_colour_css(
+		$root_sel,
+		'' !== $sgs_bb_text_normal_decl ? array( $sgs_bb_text_normal_decl ) : array(),
+		'' !== $sgs_bb_text_hover_decl ? array( $sgs_bb_text_hover_decl ) : array()
+	);
+}
+// Gradient companion rule — a no-op for a flat colour, MUST accompany
+// sgs_text_colour_decl(): its gradient branch has no @supports fallback of
+// its own.
+
+$sgs_bb_text_gradient_rule = sgs_text_colour_gradient_fallback_rule( $root_sel, $sgs_bb_text_normal_resolved );
+if ( '' !== $sgs_bb_text_gradient_rule ) {
+	$scoped_css[] = $sgs_bb_text_gradient_rule;
+}
+if ( '' !== $sgs_bb_text_hover_resolved && $sgs_bb_text_hover_resolved !== $sgs_bb_text_normal_resolved ) {
+	$sgs_bb_text_hover_gradient_rule = sgs_hover_media_wrap(
+		sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $sgs_bb_text_hover_resolved )
+	) . sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $sgs_bb_text_hover_resolved );
+	if ( '' !== $sgs_bb_text_hover_gradient_rule ) {
+		$scoped_css[] = $sgs_bb_text_hover_gradient_rule;
 	}
+}
+
+$sgs_bb_bg_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'backgroundColour',
+		'hover'          => 'backgroundColourHover',
+		'gradient'       => 'backgroundColourGradient',
+		'hover_gradient' => 'backgroundColourHoverGradient',
+	)
+);
+
+$sgs_bb_bg_layer_css = sgs_block_background_layer_css(
+	$root_sel,
+	$sgs_bb_bg_decls['normal'][0] ?? '',
+	$sgs_bb_bg_decls['hover'][0] ?? ''
+);
+if ( '' !== $sgs_bb_bg_layer_css ) {
+	$scoped_css[] = $sgs_bb_bg_layer_css;
 }
 
 // --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
 // mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 $margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
 
 if ( null !== $margin_tab_val ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";
@@ -485,8 +531,96 @@ $wrapper_attrs = get_block_wrapper_attributes(
 
 ob_start();
 ?>
+<?php
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$scoped_css[] = sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$scoped_css[] = $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$scoped_css[] = $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+?>
 <?php if ( $scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	data-wp-interactive="sgs/product-card"
@@ -630,16 +764,13 @@ ob_start();
 
 	<?php
 	// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
-	// HIDDEN WHEN OUT OF STOCK (2026-08-06). Previously the button bound only
-	// `context.pending`, so an out-of-stock variation still rendered an ENABLED
-	// Add to Cart beside the "Out of stock" notice and the notify-me form — a
-	// customer could click buy on something unbuyable. `data-wp-bind--disabled`
-	// evaluates a single path and the Interactivity API has no `||`, so gating
-	// the button on both stock and pending would need new store state; hiding
-	// the form is the same read of existing context, uses the `!` negation
-	// already used in form/render.php:356,369,377, mirrors the notify-me
-	// wrapper 15 lines above, and leaves the notify-me form as the offered
-	// action instead of a dead control.
+	// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path
+	// and the Interactivity API has no `||`, so gating the button on both stock
+	// and pending would need new store state; hiding the form is the same read
+	// of existing context, uses the `!` negation already used in
+	// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
+	// and leaves the notify-me form as the offered action instead of a dead
+	// control.
 	?>
 	<form
 		class="buybox__cart-form"

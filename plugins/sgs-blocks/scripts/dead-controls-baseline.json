@@ -1,4 +1,29 @@
 {
-	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance.",
-	"accepted": []
+	"_comment": "Accepted dead-control findings (HC2 guard, check-dead-controls.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { check, block, attr, reason }. To accept a finding add it here with a reason; to fix one, wire or remove the control and delete the entry. Empty `accepted` = zero tolerance. CRITICAL: never raise the baseline silently — any increase must include a written reason (see check-element-manifest-conformance.js:796-798).",
+	"accepted": [
+		{
+			"check": "block",
+			"block": "sgs/post-grid",
+			"attr": "titleColourGradient",
+			"reason": "False positive, not a real dead control (verified 2026-09-04, D948 golden-colour Phase 3). render.php DOES read this attribute every request, inside the post_grid_text_rows foreach loop (render.php ~line 606-617): \"$post_grid_gradient = $attributes[ $post_grid_attr . 'Gradient' ] ?? '';\" builds the literal attribute name at RUNTIME by string concatenation, so the static scanner never sees the literal token 'titleColourGradient' etc in the file text -- same dynamic-key false-positive class already documented for sgs/product-card's descFontFamily/priceFontFamily/priceNoteFontFamily (block-file-consistency-baseline.json). Confirmed via php -l + a manual trace of the loop, not just re-asserted."
+		},
+		{
+			"check": "block",
+			"block": "sgs/post-grid",
+			"attr": "excerptColourGradient",
+			"reason": "False positive, not a real dead control (verified 2026-09-04, D948 golden-colour Phase 3). render.php DOES read this attribute every request, inside the post_grid_text_rows foreach loop (render.php ~line 606-617): \"$post_grid_gradient = $attributes[ $post_grid_attr . 'Gradient' ] ?? '';\" builds the literal attribute name at RUNTIME by string concatenation, so the static scanner never sees the literal token 'titleColourGradient' etc in the file text -- same dynamic-key false-positive class already documented for sgs/product-card's descFontFamily/priceFontFamily/priceNoteFontFamily (block-file-consistency-baseline.json). Confirmed via php -l + a manual trace of the loop, not just re-asserted."
+		},
+		{
+			"check": "block",
+			"block": "sgs/post-grid",
+			"attr": "metaColourGradient",
+			"reason": "False positive, not a real dead control (verified 2026-09-04, D948 golden-colour Phase 3). render.php DOES read this attribute every request, inside the post_grid_text_rows foreach loop (render.php ~line 606-617): \"$post_grid_gradient = $attributes[ $post_grid_attr . 'Gradient' ] ?? '';\" builds the literal attribute name at RUNTIME by string concatenation, so the static scanner never sees the literal token 'titleColourGradient' etc in the file text -- same dynamic-key false-positive class already documented for sgs/product-card's descFontFamily/priceFontFamily/priceNoteFontFamily (block-file-consistency-baseline.json). Confirmed via php -l + a manual trace of the loop, not just re-asserted."
+		},
+		{
+			"check": "block",
+			"block": "sgs/post-grid",
+			"attr": "readMoreColourGradient",
+			"reason": "False positive, not a real dead control (verified 2026-09-04, D948 golden-colour Phase 3). render.php DOES read this attribute every request, inside the post_grid_text_rows foreach loop (render.php ~line 606-617): \"$post_grid_gradient = $attributes[ $post_grid_attr . 'Gradient' ] ?? '';\" builds the literal attribute name at RUNTIME by string concatenation, so the static scanner never sees the literal token 'titleColourGradient' etc in the file text -- same dynamic-key false-positive class already documented for sgs/product-card's descFontFamily/priceFontFamily/priceNoteFontFamily (block-file-consistency-baseline.json). Confirmed via php -l + a manual trace of the loop, not just re-asserted."
+		}
+	]
 }

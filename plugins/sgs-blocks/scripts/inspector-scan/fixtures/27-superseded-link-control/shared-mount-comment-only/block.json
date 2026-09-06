@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shared-mount-comment-only",
+	"title": "Fixture: shared component only MENTIONS SgsLinkControl in prose — must NOT flag",
+	"category": "sgs",
+	"attributes": {}
+}

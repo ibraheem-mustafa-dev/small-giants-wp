@@ -10,6 +10,14 @@
  * @package SGS\Blocks
  */
 
+// This file's helpers delegate to sgs_css_length_value() (Spec 32 §6.1 (a2)).
+// Require it HERE, not just via render-helpers.php, because a render.php may
+// require_once this file directly without ever loading render-helpers.php —
+// without this line those pages would fatal on "Call to undefined function
+// sgs_css_length_value()". Both files guard with function_exists(), so load
+// order does not matter — only that both load before either is CALLED.
+require_once __DIR__ . '/helpers-css-safety.php';
+
 /**
  * Determine whether an attribute value is meaningfully set.
  *
@@ -829,6 +837,311 @@ function sgs_background_paint_decl( ?string $colour, ?string $gradient ): string
 }
 
 /**
+ * Move a block's own BLOCK BACKGROUND paint off the element itself onto a
+ * `::after` pseudo-element layer, so a sibling text-gradient
+ * (`sgs_text_colour_decl()`'s `background-clip:text`) painted on the SAME
+ * element cannot overwrite it (both use `background-image`) or clip it to
+ * the glyph shapes (both are subject to the same `background-clip`).
+ *
+ * WHY `::after` AND NOT `::before`: `sgs_border_gradient_css()` already owns
+ * `::before` on every block this applies to (heading/text/label all call it
+ * for their border-colour-gradient capability — a masked ring painted via
+ * `{$selector}::before`). Two pseudo-elements cannot share one selector, so
+ * this layer takes the only slot left. Paint order does not matter: both
+ * pseudo-elements are absolutely positioned with `inset:0`, and this layer's
+ * `z-index:-1` keeps it behind everything else inside the stacking context
+ * `isolation:isolate` creates on the root — the border ring (auto z-index)
+ * and the text glyphs both still paint above it regardless of source order.
+ *
+ * `isolation:isolate` (NOT `z-index:0`) is deliberate: `position:relative`
+ * alone does not create a stacking context, so a `z-index:-1` child can
+ * escape BEHIND an ancestor's own background (e.g. this element nested
+ * inside an `sgs/container` that paints its own background) and vanish.
+ * `isolation` creates the stacking context the negative z-index needs
+ * without pulling the root itself out of `auto` stacking among its own
+ * siblings — a side effect a bare `z-index:0` would additionally cause.
+ *
+ * A NO-OP (returns '') when both paint declarations are empty, so a block
+ * with no background renders byte-identical CSS to before this helper
+ * existed.
+ *
+ * @param string $selector         Scoped selector for the block root (e.g. `.{uid}.wp-block-sgs-heading`).
+ * @param string $paint_decl       Resting-state paint, already resolved by `sgs_background_paint_decl()` (e.g. `background-color:...` or `background-image:...`). Empty = no resting paint.
+ * @param string $hover_paint_decl Hover-state paint, same shape. Empty = no hover paint. Skipped when identical to $paint_decl.
+ * @return string Scoped CSS (the root's position/isolation rule + one or two `::after` rules), or '' when there is no paint at all.
+ */
+function sgs_block_background_layer_css( string $selector, string $paint_decl, string $hover_paint_decl = '' ): string {
+	if ( '' === $paint_decl && '' === $hover_paint_decl ) {
+		return '';
+	}
+
+	// A comma-joined $selector (e.g. two alternate CTA markup shapes sharing
+	// one style rule) must have `::after` appended to EVERY branch, not just
+	// the last — plain string concatenation would silently drop the layer
+	// from every branch but the final one. Mirrors sgs_hover_state_rules()'s
+	// existing per-branch splitting (helpers-hover-state.php:109).
+	$after_selector = implode(
+		',',
+		array_map(
+			static function ( $part ) {
+				return trim( $part ) . '::after';
+			},
+			explode( ',', $selector )
+		)
+	);
+
+	$css  = "{$selector}{position:relative;isolation:isolate;}";
+	$css .= "{$after_selector}{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;";
+	$css .= $paint_decl . ';}';
+
+	if ( '' !== $hover_paint_decl && $hover_paint_decl !== $paint_decl ) {
+		$css .= sgs_hover_state_rules( $selector, $hover_paint_decl . ';', ':focus-within', '::after' );
+	}
+
+	return $css;
+}
+
+/**
+ * Gradient sibling for a colour-valued custom property that has NO stable
+ * CSS selector of its own to hang a direct scoped rule on (the shape
+ * `sgs_fill_states_css()`/`sgs_block_background_layer_css()` both assume).
+ * `survey.js`'s `paints-via-colour-valued-custom-property` refusal covers a
+ * genuinely mixed population — 21 of the 29 rows measured 2026-09-04 DO have
+ * a real selector and should migrate onto the direct helpers above instead
+ * (this function is the wrong tool for those); this one is scoped to the
+ * remainder.
+ *
+ * The trick: two SIBLING custom properties, not a conditional PHP branch.
+ * `background-image` composites OVER `background-color` in CSS, so the
+ * caller's EXISTING static style.css rule needs exactly ONE new line, added
+ * ONCE, ever — `background-image: var(--{name}-gradient, none);` next to
+ * its existing `background-color: var(--{name}, default)` — and an unset
+ * gradient var falls back to `none`, leaving the flat colour to show through
+ * completely unchanged. No `sgs_text_colour_decl()`-style branching is
+ * needed because `background-color` (unlike `color`) never needs its value
+ * blanked to `transparent` for the image layer to show — the two properties
+ * are independent from the start.
+ *
+ * ⛔ Verify the ACTUAL style.css consumption before using this for a new
+ * row — do not trust `survey.js`'s mechanism classification alone. Checked
+ * live 2026-09-04: `sgs/icon.backgroundColour` looks identical from the
+ * survey's own output but is actually TWO mechanisms depending on variant
+ * (a direct `background-color:` declaration for the filled variant, this
+ * custom-property shape only for the outline variant); `sgs/timeline.
+ * connectorColour`'s var is ALSO reused as colour stops inside an unrelated
+ * `repeating-linear-gradient()` elsewhere in the same stylesheet (the dashed-
+ * line effect), so introducing a gradient sibling here would need to reason
+ * about interaction with that existing usage first. Both were excluded from
+ * this function's first two real callers for exactly this reason — read the
+ * block's actual `style.css`/`style.scss`, every consumption site, before
+ * applying this to a new row.
+ *
+ * A NO-OP (returns `[]`) when both inputs are empty, matching this file's
+ * other paint helpers.
+ *
+ * ⭐ OPTIONAL HOVER PAIR (2026-09-06) — `$hover_flat`/`$hover_gradient` fold a
+ * hover state into the SAME call, emitting `--{var}-hover` /
+ * `--{var}-hover-gradient` alongside the resting pair. This is the EXACT
+ * naming convention `sgs/social-icons` and `sgs/option-picker` already used
+ * by calling this function TWICE by hand (`'sgs-social-bg'` +
+ * `'sgs-social-bg-hover'`) — folding it in removes that duplication for any
+ * NEW/migrated caller without touching either of those two working call
+ * sites. Unlike the icon-gradient primitive (`sgs_icon_gradient_css()`),
+ * there was never a structural reason for this one to stay single-state: it
+ * returns bare declaration strings with no unique-id/defs-injection side
+ * effect and builds no selector itself (the block's own static `style.css`
+ * already owns the `:hover` selector and reads `var(--x-hover, ...)`), so
+ * one call safely does both states. Omit both hover args (or leave them
+ * `''`) for the old 3-arg resting-only behaviour — fully backward compatible.
+ *
+ * @param string $var_name       Custom-property name, WITHOUT the leading
+ *                                 `--` and WITHOUT a `-gradient`/`-hover`
+ *                                 suffix (e.g. `sgs-tile-bg`).
+ * @param string $flat           The resolved flat colour attribute value.
+ * @param string $gradient       The resolved gradient attribute value (raw —
+ *                                 validated internally via
+ *                                 `sgs_css_gradient_value()`).
+ * @param string $hover_flat     Optional hover-state flat colour value.
+ * @param string $hover_gradient Optional hover-state gradient value (raw).
+ * @return string[] Declarations (`--name:value`, no trailing `;`) to merge
+ *                   into the caller's own custom-property array — the exact
+ *                   same array the flat value already feeds
+ *                   (`$css_vars[]`/`$root_var_decls[]`/`$wrapper_style_parts[]`
+ *                   depending on the block).
+ */
+function sgs_custom_property_gradient_decls( string $var_name, string $flat, string $gradient, string $hover_flat = '', string $hover_gradient = '' ): array {
+	$decls = array();
+	if ( '' !== $flat ) {
+		$decls[] = '--' . $var_name . ':' . sgs_colour_value( $flat );
+	}
+	$resolved_gradient = sgs_css_gradient_value( $gradient );
+	if ( '' !== $resolved_gradient ) {
+		$decls[] = '--' . $var_name . '-gradient:' . $resolved_gradient;
+	}
+	if ( '' !== $hover_flat ) {
+		$decls[] = '--' . $var_name . '-hover:' . sgs_colour_value( $hover_flat );
+	}
+	$resolved_hover_gradient = sgs_css_gradient_value( $hover_gradient );
+	if ( '' !== $resolved_hover_gradient ) {
+		$decls[] = '--' . $var_name . '-hover-gradient:' . $resolved_hover_gradient;
+	}
+	return $decls;
+}
+
+/**
+ * Derive ONE of a gradient-overlay family's attribute names from its base.
+ *
+ * PHP twin of `gradientOverlayAttrName()` in
+ * `src/components/GradientOverlayControl.js`. Both derive from one rule, so a
+ * block names its base ONCE and neither side can typo the pairing.
+ *
+ * ⭐ ENUMERATED, NOT GENERALISED, and only HALF derivable. Every mount in the
+ * tree (2026-08-26, all three in `sgs/hero`):
+ *   `gradient` = `<base>Gradient`  — holds 3/3.
+ *   `solid`    = `<base>` twice, `<base>Colour` once — NOT uniform, so it is
+ *                defaulted and overridden, never derived from a second rule.
+ * Deriving it would have named a non-existent attribute on one of the three,
+ * and WP silently discards writes to undeclared attributes (D338).
+ *
+ * @param string $base Base attribute name, e.g. 'mediaOverlay'.
+ * @param string $part One of 'gradient' | 'solid'.
+ * @return string The attribute key, or '' for an unknown part.
+ */
+function sgs_gradient_overlay_attr( string $base, string $part = 'gradient' ): string {
+	if ( '' === $base ) {
+		return '';
+	}
+	if ( 'gradient' === $part ) {
+		return $base . 'Gradient';
+	}
+	if ( 'solid' === $part ) {
+		return $base;
+	}
+	return '';
+}
+
+/**
+ * The attribute-key map for a gradient-overlay family.
+ *
+ * Feeds the value-taking consumers that already exist — `sgs_overlay_decls()`
+ * and `sgs_background_paint_decl()` — so a render.php reads its two attributes
+ * by ONE base name instead of two hand-typed keys.
+ *
+ * @param string      $base  Base attribute name, e.g. 'contentBackground'.
+ * @param string|null $solid Override the solid-colour attribute name, for the
+ *                           families that suffix it with `Colour`.
+ * @return array{gradient:string, solid:string}
+ */
+function sgs_gradient_overlay_attr_map( string $base, ?string $solid = null ): array {
+	return array(
+		'gradient' => sgs_gradient_overlay_attr( $base, 'gradient' ),
+		'solid'    => $solid ? $solid : sgs_gradient_overlay_attr( $base, 'solid' ),
+	);
+}
+
+/**
+ * Resolve an overlay LAYER's complete CSS declaration set — colour/gradient
+ * paint plus its own opacity (D717, 2026-08-21) plus its own blend mode
+ * (D6/Step 8, 2026-08-22).
+ *
+ * BLEND MODE IS OWNED HERE FOR THE SAME REASON OPACITY IS (D718's lesson,
+ * applied on purpose rather than repeated): extracting a shared helper for
+ * the VALUE while leaving a second overlay capability hand-rolled at each
+ * call site is exactly how sgs/hero's overlay drifted from the wrapper's
+ * before. Every future overlay capability goes through THIS function, not a
+ * second emitter appended after it.
+ *
+ * WHY THIS EXISTS, and why it is a layer ABOVE sgs_background_paint_value()
+ * rather than a widening of it: that helper answers one narrow question —
+ * "given a flat colour and a sibling gradient, which background property
+ * wins?" Opacity is not part of that question. It is a second, independent
+ * declaration that only has meaning for an element deliberately layered OVER
+ * something else, and pushing it down into the general paint resolver would
+ * hand an overlay-only concept to every caller painting a plain background
+ * (sgs/card-grid uses it for a card surface, where opacity means nothing).
+ * So this composes that helper for the paint half and owns the layer concept
+ * itself.
+ *
+ * THE DUPLICATION THIS REPLACES: the gradient-beats-colour check was
+ * hand-rolled independently in TWO places — SGS_Container_Wrapper's
+ * `.sgs-container__overlay` branch (which paints the overlay for seven of the
+ * eight blocks mounting `<BackgroundPanel>`) and sgs/hero's own
+ * `.sgs-hero__overlay` (hero passes `no_overlay => true` and paints its own).
+ * Two copies of one concept had already begun to drift. Every future overlay
+ * capability — the hover/tier siblings, blend mode — is now a single edit
+ * here rather than two edits that can disagree.
+ *
+ * SUPERSEDES D581's D5 (2026-08-11), which deleted `backgroundOverlayOpacity`
+ * on the reasoning that the colour picker's own alpha channel should be the
+ * single transparency mechanism. D581 was RIGHT that one mechanism beats two
+ * — do not read this as a reversal of that principle. It was wrong about
+ * WHICH mechanism, because alpha's side effect was not known when the call
+ * was made: `DesignTokenPicker` stores a palette SLUG only on exact string
+ * equality with a palette entry, so altering the alpha breaks the match and
+ * silently stores a raw hex, unlinking the client's brand token. Opacity is a
+ * separate CSS property and leaves the stored colour untouched.
+ *
+ * NO-INLINE CONTRACT (Spec 32): the caller splices this into its own scoped
+ * `.{uid} .sgs-*__overlay` rule. Nothing here rides inline on an element.
+ *
+ * @param string|null    $colour     Flat overlay colour (palette slug or CSS colour).
+ * @param string|null    $gradient   Sibling gradient attribute (complete CSS gradient string).
+ * @param int|float|null $opacity    Overlay opacity as a 0-100 PERCENTAGE (the attribute's
+ *                                   stored shape). Null/absent emits no opacity declaration,
+ *                                   so a block that has not adopted the attribute is unchanged.
+ *                                   Clamped to 0-100; 100 emits nothing (it is the CSS default,
+ *                                   and a redundant declaration is noise in every scoped rule).
+ * @param string|null    $blend_mode `backgroundOverlayBlendMode` attribute value. Null/empty/
+ *                                   'normal'/anything outside the allowed enum emits no
+ *                                   declaration — 'normal' is the CSS default and an
+ *                                   out-of-enum value is refused rather than passed through
+ *                                   (the attribute's block.json enum is the source of truth;
+ *                                   this allowlist mirrors it so a corrupted/hand-authored
+ *                                   value can never reach the stylesheet unescaped).
+ * @return string Declarations joined by `;`, no trailing semicolon (e.g.
+ *                `background-color:var(--wp--preset--color--primary);opacity:0.3;mix-blend-mode:multiply`),
+ *                or `''` when there is no paint at all.
+ */
+function sgs_overlay_decls( ?string $colour, ?string $gradient, $opacity = null, ?string $blend_mode = null ): string {
+	$paint = sgs_background_paint_decl( $colour, $gradient );
+
+	if ( '' === $paint ) {
+		return '';
+	}
+
+	$decls = array( $paint );
+
+	if ( null !== $opacity && '' !== $opacity && is_numeric( $opacity ) ) {
+		$pct = max( 0.0, min( 100.0, (float) $opacity ) );
+		if ( 100.0 !== $pct ) {
+			// rtrim keeps `0.3` rather than `0.300000`; a bare `0` stays `0`.
+			$decls[] = 'opacity:' . rtrim( rtrim( number_format( $pct / 100, 4, '.', '' ), '0' ), '.' );
+		}
+	}
+
+	if ( null !== $blend_mode && '' !== $blend_mode && 'normal' !== $blend_mode ) {
+		static $allowed_blend_modes = array(
+			'multiply',
+			'screen',
+			'overlay',
+			'darken',
+			'lighten',
+			'color-dodge',
+			'color-burn',
+			'soft-light',
+			'hard-light',
+			'difference',
+			'exclusion',
+		);
+		if ( in_array( $blend_mode, $allowed_blend_modes, true ) ) {
+			$decls[] = 'mix-blend-mode:' . $blend_mode;
+		}
+	}
+
+	return implode( ';', $decls );
+}
+
+/**
  * Resolve a text-colour attribute (flat colour OR gradient string, D636
  * single-attribute storage) into a bare CSS declaration fragment — no
  * selector, no trailing `;`, matching the shape every block already pushes
@@ -1008,7 +1321,7 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
 		return '';
 	}
 
-	$width = function_exists( 'sgs_css_length_sanitise' ) ? sgs_css_length_sanitise( $width ) : $width;
+	$width = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $width ) : $width;
 	if ( '' === $width ) {
 		$width = '2px';
 	}
@@ -1022,8 +1335,54 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
 		// stylesheet (a more specific selector than the plain base rule
 		// above) would otherwise still win the cascade on hover and repaint
 		// the real border solid, fighting the mask ring for the same pixels.
-		$css .= "{$selector}:hover,{$selector}:focus-within{border-color:transparent;}";
-		$css .= "{$selector}:hover::before,{$selector}:focus-within::before{background:{$hover_paint};}";
+		$css .= sgs_hover_state_rules( $selector, 'border-color:transparent;', ':focus-within' );
+		$css .= sgs_hover_state_rules( $selector, "background:{$hover_paint};", ':focus-within', '::before' );
+	}
+
+	return $css;
+}
+
+/**
+ * Universal per-instance hover/focus-visible colour-state emitter.
+ *
+ * Generalises the scoped `:hover` rule shape `sgs/info-box` already used
+ * before this helper existed (a per-instance `.{uid}.sgs-x:hover{…}` rule,
+ * specificity 0,3,0, beating the variant base 0,2,0) so other blocks can be
+ * converted to the same shape. Mirrors `sgs_border_gradient_css()` above:
+ * deliberately a NO-OP (returns '') when both `$decls_normal` and
+ * `$decls_hover` are empty — a block with no hover state set renders
+ * byte-identical CSS to before this helper existed. `$decls_normal` /
+ * `$decls_hover` are the caller's ALREADY-RESOLVED, complete CSS declaration
+ * strings (e.g. `'background-color:var(--wp--preset--color--primary)'`) —
+ * this helper only joins + wraps them into rules, it never resolves colours
+ * or reads block attributes itself.
+ *
+ * Pairs `:focus-visible` with `:hover` on the hover rule so keyboard users
+ * reach the same visual state as mouse users — the same accessibility
+ * reasoning `sgs_border_gradient_css()` applies by pairing `:focus-within`.
+ *
+ * ⛔ `sgs/button` is EXEMPT from this helper — do NOT convert it. Its
+ * `--sgs-btn-*-hover` custom properties feed a static rule in
+ * `src/blocks/button/style.css` (around lines 87-98) AND three preset
+ * classes (around lines 104-130) that carry `theme.json` fallback chains.
+ * Routing button's hover colours through this per-instance-selector helper
+ * would break that preset cascade — do not "finish the job" by converting
+ * it later.
+ *
+ * @param string $selector      CSS selector for the element the hover state applies to (already scoped, e.g. "{$root_sel}" or "{$root_sel} .sgs-x__item").
+ * @param array  $decls_normal  Complete CSS declaration strings for the resting state. Empty = no resting-state rule emitted.
+ * @param array  $decls_hover   Complete CSS declaration strings for `:hover`/`:focus-visible`. Empty = no hover rule emitted.
+ * @return string Scoped CSS (zero to two rules), or '' when there is nothing to paint.
+ */
+function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover ): string {
+	$css = '';
+
+	if ( $decls_normal ) {
+		$css .= "{$selector}{" . implode( ';', $decls_normal ) . '}';
+	}
+
+	if ( $decls_hover ) {
+		$css .= sgs_hover_state_rules( $selector, implode( ';', $decls_hover ), ':focus-visible' );
 	}
 
 	return $css;

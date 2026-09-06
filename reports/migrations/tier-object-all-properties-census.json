@@ -1,0 +1,527 @@
+{
+  "declared": 40,
+  "migratable": 24,
+  "done": 16,
+  "properties": [
+    {
+      "property": "afterImageId",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "afterImageUrl",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "avatarMedia",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 0
+    },
+    {
+      "property": "backgroundImage",
+      "blocks_declaring": 9,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 1,
+        "ASSET": 8
+      },
+      "render_followup": 3,
+      "edit_followup": 1
+    },
+    {
+      "property": "backgroundOverlayOpacity",
+      "blocks_declaring": 8,
+      "migratable_blocks": 8,
+      "kinds": {
+        "FLAT": 8,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 0
+    },
+    {
+      "property": "beforeImageId",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "beforeImageUrl",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "bgVideo",
+      "blocks_declaring": 8,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 8
+      },
+      "render_followup": 1,
+      "edit_followup": 0
+    },
+    {
+      "property": "borderRadius",
+      "blocks_declaring": 0,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "columns",
+      "blocks_declaring": 20,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 20,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 0
+    },
+    {
+      "property": "hideOn",
+      "blocks_declaring": 0,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "imageBorderRadius",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "imageId",
+      "blocks_declaring": 2,
+      "migratable_blocks": 2,
+      "kinds": {
+        "FLAT": 2,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 2,
+      "edit_followup": 1
+    },
+    {
+      "property": "imageObjectPosition",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "imagePadding",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "imageUrl",
+      "blocks_declaring": 2,
+      "migratable_blocks": 2,
+      "kinds": {
+        "FLAT": 2,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 2,
+      "edit_followup": 2
+    },
+    {
+      "property": "imageWidth",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 0
+    },
+    {
+      "property": "logoId",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "logoUrl",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "margin",
+      "blocks_declaring": 5,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 3,
+        "ASSET": 2
+      },
+      "render_followup": 0,
+      "edit_followup": 2
+    },
+    {
+      "property": "mediaPadding",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "padding",
+      "blocks_declaring": 6,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 4,
+        "ASSET": 2
+      },
+      "render_followup": 2,
+      "edit_followup": 3
+    },
+    {
+      "property": "photo",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "showOn",
+      "blocks_declaring": 0,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "splitImage",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "splitMediaType",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "splitSvg",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "splitVideo",
+      "blocks_declaring": 1,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "svgContent",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "textAlign",
+      "blocks_declaring": 0,
+      "migratable_blocks": 0,
+      "kinds": {
+        "FLAT": 0,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 0,
+      "edit_followup": 0
+    },
+    {
+      "property": "thumbnail",
+      "blocks_declaring": 2,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 1
+      },
+      "render_followup": 2,
+      "edit_followup": 2
+    },
+    {
+      "property": "thumbnailId",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoAutoplay",
+      "blocks_declaring": 2,
+      "migratable_blocks": 2,
+      "kinds": {
+        "FLAT": 2,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 2,
+      "edit_followup": 2
+    },
+    {
+      "property": "videoControls",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoId",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoLazyLoad",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoLoop",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoMuted",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoPlaysInline",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    },
+    {
+      "property": "videoUrl",
+      "blocks_declaring": 1,
+      "migratable_blocks": 1,
+      "kinds": {
+        "FLAT": 1,
+        "BLENDED": 0,
+        "OBJECT": 0,
+        "ASSET": 0
+      },
+      "render_followup": 1,
+      "edit_followup": 1
+    }
+  ]
+}

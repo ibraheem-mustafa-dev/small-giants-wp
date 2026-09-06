@@ -31,10 +31,13 @@ native color support but its own typography-resolver-backed colour attr;
 destination via ``attr_for_property``). ``background``/``border`` (the two
 composite shorthands that only ever NORMALISE into other longhand properties —
 see the base-tier normalisation block below) remain always-stripped
-regardless of consumption — see ``_ALWAYS_STRIP_SHORTHANDS``; they were never
-independently routable properties even before this fix (a CSS gradient
-background, for example, is an intentionally-documented drop with no
-destination — see the gradient gap-note below — not a routing bug).
+regardless of consumption — see ``_ALWAYS_STRIP_SHORTHANDS``; ``background``/
+``border`` themselves were never independently routable properties even
+before this fix. **CORRECTED 2026-08-27 (Task 1b):** a ``background:
+linear-gradient(...)`` shorthand is now expanded into the ``background-image``
+LONGHAND (which IS independently routable — see
+``expand_background_border_shorthand``'s gradient branch below) instead of
+being dropped; the drop was a bug, not an intentional gap.
 
 Spec ref: Spec 31 §3.A native-style lift (root supports gate).
 Port source lines: convert.py:514-547, 774-956.
@@ -49,7 +52,7 @@ from typing import Any
 from bs4 import Tag
 
 from converter.db import db_lookup
-from converter.orchestrator import ConservationError
+from converter.dispatch_spine import ConservationError
 from converter.services.styling_helpers import (
     collect_css_decls_for_element,
     split_value_unit,
@@ -166,17 +169,24 @@ def expand_background_border_shorthand(
             else:
                 if len(bg.split()) == 1:
                     decls["background-color"] = bg
-        elif bg and "gradient" in bg:
-            # Fix #6 (convert.py:825-844): CSS gradient backgrounds have no
-            # converter destination.  WP's style.color.gradient slot requires a
-            # preset slug lookup unavailable at clone time.  DROP with trace note.
-            _LOG.debug(
-                "[root_supports] gradient_background_gap slug=%s raw=%r — "
-                "CSS gradient background has no converter destination. "
-                "Gap candidate: add style.color.gradient to _root_lift_rules "
-                "when a gradient-slug resolver is available.",
-                slug, bg,
-            )
+        elif bg and "gradient" in bg and "background-image" not in decls:
+            # 2026-08-27 fix (Task 1b, D873 follow-up): a `background:
+            # linear-gradient(...)` SHORTHAND used to be dropped outright here
+            # ("no converter destination") — but `background-image` IS a real,
+            # independently-routable longhand (property_suffixes has a row for
+            # it: suffix='Gradient', role='colour-gradient', consumed by
+            # outer_box.py's generic OUTER dispatch via a block's own
+            # `{base}Gradient`-suffixed attr, e.g. sgs/product-card's
+            # `backgroundColourGradient`). The shorthand→longhand split mirrors
+            # exactly what this same function already does for the SOLID case
+            # two lines above (`background:white` → `background-color:white`)
+            # — this is that same normalisation, extended to the gradient
+            # branch, universal across every block (R-31-9), never gated on
+            # `slug`. `setdefault` semantics via the membership guard above:
+            # an explicit `background-image` declaration already on the
+            # element always wins over one inferred from the `background`
+            # shorthand.
+            decls["background-image"] = bg
 
     if "border" in decls and "border-width" not in decls:
         parts = decls["border"].strip().split()

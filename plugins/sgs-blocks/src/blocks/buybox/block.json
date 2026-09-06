@@ -22,16 +22,9 @@
 		"align": false,
 		"interactivity": true,
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
@@ -40,10 +33,30 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
+			"mediaElements": [
+				{
+					"prefix": "main",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "thumb",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"boxFamilies": {
 				"margin": [
 					"marginTablet",
 					"marginMobile"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -55,9 +68,24 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:margin": "native:spacing.margin"
+						"css:margin": "native:spacing.margin",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap."
+					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — this thin composer block carries no paint/typography surface of its own (it composes sgs/product-card + sgs/option-picker, which own their own styling). layout is scoped to margin only; every other layout member is an honest gap.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				}
 			},
 			"fx": {
@@ -144,6 +172,72 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Scrolling or dragging the thumbnail strip past the last image continues into the first, and back again — never a dead end. Independent of drag-to-scroll; combinable or standalone. Spec 38 §11 loop FR."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

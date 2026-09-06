@@ -14,19 +14,15 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
 
 const SUBMIT_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
 	{ label: __( 'Success', 'sgs-blocks' ), value: 'success' },
-];
-
-const TEMPLATE_MODE_OPTIONS = [
-	{ label: __( 'Free (form fields only)', 'sgs-blocks' ), value: 'free' },
-	{ label: __( 'Grid section (fields + heading/text)', 'sgs-blocks' ), value: 'grid-section' },
-	{ label: __( 'Card grid (fields only)', 'sgs-blocks' ), value: 'card-grid' },
 ];
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
@@ -39,14 +35,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		successRedirect,
 		honeypot,
 		storeSubmissions,
+		requireLogin,
+		rateLimit,
 		submitColour,
 		submitBackground,
+		submitBackgroundHover,
+		submitBackgroundHoverGradient,
 		progressBarColour,
+		progressBarColourGradient,
+		progressBarColourHover,
+		progressBarColourHoverGradient,
 		formFocusRingColour,
 		formFocusRingWidth,
 		formFocusRingOpacity,
 		formFocusRingOffset,
-		templateMode = 'free',
+		prevColourBackground,
+		prevColourBackgroundHover,
+		prevColourBackgroundGradient,
+		prevColourBackgroundHoverGradient,
+		tileBorderColour,
+		tileBorderColourHover,
+		tileBorderColourGradient,
+		tileBorderColourHoverGradient,
+		fileLabelBorderColour,
+		fileLabelBorderColourHover,
+		fileLabelBorderColourGradient,
+		fileLabelBorderColourHoverGradient,
+		fileLabelBackgroundColour,
+		fileLabelBackgroundColourHover,
+		fileLabelBackgroundColourGradient,
+		fileLabelBackgroundColourHoverGradient,
 	} = attributes;
 
 	// Auto-generate formId from clientId on first insert.
@@ -64,16 +82,88 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// the correct resolver. Mirrors render.php's scoped `.sgs-form__button
 	// --submit`/`.sgs-form__progress` rules (render.php:211-241).
 	const [ palette ] = useSettings( 'color.palette' );
+	// submitColourGradient (D636 gradient rollout finish, 2026-09-04) — the
+	// gradient sibling wins over the flat submitColour when set+valid, same
+	// precedence as render.php's sgs_resolve_text_colour_or_gradient().
+	const submitTextPreviewStyle = resolveTextColourPreviewStyle(
+		submitColour,
+		attributes.submitColourGradient,
+		( val ) => resolveColourToken( val, palette ) || undefined
+	);
 	const submitButtonStyle = {
-		color: resolveColourToken( submitColour, palette ) || undefined,
+		...submitTextPreviewStyle,
 		backgroundColor: resolveColourToken( submitBackground, palette ) || undefined,
 	};
 	const progressBarStyle = {
 		backgroundColor: resolveColourToken( progressBarColour, palette ) || undefined,
 	};
 
+	// prevColourBackground(Gradient) canvas preview (2026-09-05) — CHECK A
+	// finding. render.php's `.sgs-form__button--prev` mechanism
+	// (sgs_button_element_style_css( $attributes, 'prev', … )) already paints
+	// this correctly on the frontend; the editor canvas never rendered a
+	// Previous-button element at all (multi-step "previous" state has no
+	// natural moment to show without real step navigation), same gap the
+	// Submit button preview below was built to close. Resting state only —
+	// the Hover-suffixed siblings are already canvas-exempted, same doctrine
+	// as every other hover value this session.
+	const prevButtonStyle = backgroundPaintPreview(
+		prevColourBackground,
+		prevColourBackgroundGradient,
+		palette
+	);
+
+	// GROUND-TRUTH: source=file, confirmed against render.php:311-373 +
+	// helpers-colour-variants.php's sgs_border_states_css()/sgs_fill_states_css()
+	// this session. RESTING state only — the Hover-suffixed siblings are
+	// already canvas-exempted. tileBorderColour(Gradient) paints
+	// `.sgs-form-tile` and fileLabelBorderColour(Gradient)/
+	// fileLabelBackgroundColour(Gradient) paint `.sgs-form-field__file-label` —
+	// BOTH elements are rendered by CHILD blocks (sgs/form-field-tiles /
+	// sgs/form-field-file) nested inside this block's own InnerBlocks tree, not
+	// by sgs/form's own JSX. A plain inline `style` prop on this block's own
+	// markup cannot reach a child block's DOM, so this mirrors render.php's
+	// `.{uid} .sgs-form-tile{…}` scoped rule with a `clientId`-scoped `<style>`
+	// tag instead — same shape as the frontend's own scoped `<style>` block,
+	// just keyed to the editor's per-instance identity rather than the
+	// render-time uid hash. Border-gradient mirroring is the same
+	// `border-image` APPROXIMATION `borderPaintPreview()` documents (the real
+	// frontend paints a masked `::before` ring via `sgs_border_gradient_css()`,
+	// which a static `<style>` string can't reproduce faithfully).
+	const FORM_PREVIEW_GRADIENT_RE = /^(repeating-)?(linear|radial|conic)-gradient\(/i;
+	const formPreviewScope = `sgs-form-editor-${ clientId }`;
+
+	const tileBorderPreviewDecl =
+		tileBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( tileBorderColourGradient )
+			? `border-image:${ tileBorderColourGradient } 1;`
+			: resolveColourToken( tileBorderColour, palette )
+				? `border-color:${ resolveColourToken( tileBorderColour, palette ) };`
+				: '';
+
+	const fileLabelBorderPreviewDecl =
+		fileLabelBorderColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBorderColourGradient )
+			? `border-image:${ fileLabelBorderColourGradient } 1;`
+			: resolveColourToken( fileLabelBorderColour, palette )
+				? `border-color:${ resolveColourToken( fileLabelBorderColour, palette ) };`
+				: '';
+
+	const fileLabelBackgroundPreviewDecl =
+		fileLabelBackgroundColourGradient && FORM_PREVIEW_GRADIENT_RE.test( fileLabelBackgroundColourGradient )
+			? `background-image:${ fileLabelBackgroundColourGradient };`
+			: resolveColourToken( fileLabelBackgroundColour, palette )
+				? `background-color:${ resolveColourToken( fileLabelBackgroundColour, palette ) };`
+				: '';
+
+	const formPreviewCss = [
+		tileBorderPreviewDecl && `.${ formPreviewScope } .sgs-form-tile{${ tileBorderPreviewDecl }}`,
+		( fileLabelBorderPreviewDecl || fileLabelBackgroundPreviewDecl ) &&
+			`.${ formPreviewScope } .sgs-form-field__file-label{${ fileLabelBorderPreviewDecl }${ fileLabelBackgroundPreviewDecl }}`,
+	]
+		.filter( Boolean )
+		.join( '' );
+
 	const blockProps = useBlockProps( {
-		className: 'sgs-form',
+		className: `sgs-form ${ formPreviewScope }`,
 	} );
 
 	// Base roster of blocks a form's own children may ever sensibly be — unlike
@@ -97,20 +187,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs/form-review',
 	];
 
-	// Template mode — allowed children restriction. Mirrors sgs/container's
-	// TEMPLATE_MODE_ALLOWED pattern, but scoped to this block: "grid-section"
-	// adds heading/text so a step can carry a section title or instructional
-	// copy; "card-grid" has no form-shaped analogue (a form's steps are never
-	// cards), so it stays equal to the base roster rather than a fabricated
-	// list of blocks that would never belong here.
-	const TEMPLATE_MODE_ALLOWED = {
-		'grid-section': [ ...FORM_BASE_ALLOWED, 'sgs/heading', 'sgs/text' ],
-		'card-grid': FORM_BASE_ALLOWED,
-	};
-	const allowedBlocks =
-		'free' !== templateMode
-			? TEMPLATE_MODE_ALLOWED[ templateMode ] ?? FORM_BASE_ALLOWED
-			: FORM_BASE_ALLOWED;
+	const allowedBlocks = FORM_BASE_ALLOWED;
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-form__inner' },
@@ -138,6 +215,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'submit-text',
 						label: __( 'Submit button text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -145,6 +223,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: submitColour,
 								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributes.submitColourGradient,
+								onGradientChange: ( val ) => setAttributes( { submitColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -157,13 +237,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: submitBackground,
 								onChange: ( val ) => setAttributes( { submitBackground: val ?? '' } ),
+								gradientValue: attributes.submitBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { submitBackgroundGradient: val ?? '' } ),
 								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: submitBackgroundHover,
+								onChange: ( val ) => setAttributes( { submitBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: submitBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { submitBackgroundHoverGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'progress-bar',
 						label: __( 'Progress bar colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -171,6 +264,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: progressBarColour,
 								onChange: ( val ) => setAttributes( { progressBarColour: val ?? '' } ),
 								linked: true,
+								gradientValue: progressBarColourGradient,
+								onGradientChange: ( val ) => setAttributes( { progressBarColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: progressBarColourHover,
+								onChange: ( val ) => setAttributes( { progressBarColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: progressBarColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { progressBarColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -184,6 +289,110 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: formFocusRingColour,
 								onChange: ( val ) => setAttributes( { formFocusRingColour: val || 'primary' } ),
 								linked: true,
+							},
+						],
+					},
+					{
+						key: 'prev-button-background',
+						label: __( 'Previous button background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: prevColourBackground,
+								onChange: ( val ) => setAttributes( { prevColourBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: prevColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { prevColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: prevColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { prevColourBackgroundHover: val ?? '' } ),
+								linked: true,
+								gradientValue: prevColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { prevColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'tile-border',
+						label: __( 'Tile border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: tileBorderColour,
+								onChange: ( val ) => setAttributes( { tileBorderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: tileBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tileBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: tileBorderColourHover,
+								onChange: ( val ) => setAttributes( { tileBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: tileBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { tileBorderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'file-label-border',
+						label: __( 'File upload border colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: fileLabelBorderColour,
+								onChange: ( val ) => setAttributes( { fileLabelBorderColour: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: fileLabelBorderColourHover,
+								onChange: ( val ) => setAttributes( { fileLabelBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBorderColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'file-label-background',
+						label: __( 'File upload background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: fileLabelBackgroundColour,
+								onChange: ( val ) => setAttributes( { fileLabelBackgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBackgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBackgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: fileLabelBackgroundColourHover,
+								onChange: ( val ) => setAttributes( { fileLabelBackgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: fileLabelBackgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { fileLabelBackgroundColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -278,6 +487,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Require Login', 'sgs-blocks' ) }
+						checked={ requireLogin }
+						onChange={ ( value ) =>
+							setAttributes( { requireLogin: value } )
+						}
+						help={ __(
+							'Only allow logged-in users to submit this form.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<NumberControl
+						label={ __( 'Rate Limit', 'sgs-blocks' ) }
+						value={ rateLimit }
+						min={ 1 }
+						onChange={ ( value ) =>
+							setAttributes( { rateLimit: parseInt( value, 10 ) || 5 } )
+						}
+						help={ __(
+							'Maximum submissions allowed per IP address, per hour.',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -305,6 +539,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* Typography — replaces the old WP-native supports.typography
+					(fontSize/lineHeight only) with the shared TypographyControls
+					component + sgs_typography_css_rule() render.php helper (D971/D972
+					full-replacement track). Root prefix "" since this is a
+					single-target block; defaults also expose weight/style, which
+					native typography never offered here. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
 				<PanelBody
 					title={ __( 'Focus State', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -350,77 +601,63 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Responsive spacing (padding + margin) — box-object interface contract
-					(.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
-					writes to the WP-native style.spacing object (also visible in the Styles >
-					Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
-					and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */ }
+				{ /* Responsive spacing (padding + margin) — each is a single block-owned
+					tier-object attr { desktop, tablet, mobile }, written via
+					ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
+					tier-object emission path. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
-					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
-				</PanelBody>
-
-				{ /* Template mode — allowed children restriction. Form-specific:
-				   "free" keeps the block's own field roster (never truly
-				   unrestricted — see FORM_BASE_ALLOWED comment above). */ }
-				<PanelBody
-					title={ __( 'Template mode', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<SelectControl
-						label={ __( 'Allowed children', 'sgs-blocks' ) }
-						value={ templateMode }
-						options={ TEMPLATE_MODE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { templateMode: val } ) }
-						help={ __(
-							'Grid section adds heading and text alongside the usual form fields, for a section title or instructional copy. Card grid and Free both keep this form to its usual fields.',
-							'sgs-blocks'
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					</ResponsiveOverride>
+					<hr style={ { margin: '16px 0' } } />
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -431,6 +668,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 
 			<div { ...blockProps }>
+				{ formPreviewCss && <style>{ formPreviewCss }</style> }
 				<div { ...innerBlocksProps } />
 				{ /* Editor-canvas-only submit button preview — render.php mirror.
 					There is no real <form> in the editor canvas, so without this
@@ -441,6 +679,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					211-228 emits a real, unconditional `color`/`background-color`
 					rule on this exact element; the preview had never carried it. */ }
 				<div className="sgs-form__actions">
+					{ /* Editor-canvas-only Previous-button preview (2026-09-05) — same
+						reasoning as the Submit button preview above: no real multi-step
+						navigation exists in the editor canvas, so without this element
+						prevColourBackground(Gradient) showed no visible effect while
+						editing, even though render.php already paints it correctly via
+						`.sgs-form__button--prev` (sgs_button_element_style_css()). */ }
+					<button
+						type="button"
+						className="sgs-form__button sgs-form__button--prev"
+						style={ prevButtonStyle }
+					>
+						{ __( 'Previous', 'sgs-blocks' ) }
+					</button>
 					<button
 						type="button"
 						className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }

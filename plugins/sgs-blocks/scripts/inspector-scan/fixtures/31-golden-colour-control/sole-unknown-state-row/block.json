@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/sole-unknown-state-row",
+	"title": "Fixture: single-state row whose key is NOT in the admitted state vocabulary — must still flag (over-match control)",
+	"category": "sgs",
+	"attributes": {
+		"textColour": { "type": "string", "default": "" },
+		"textColourGradient": { "type": "string", "default": "" }
+	}
+}

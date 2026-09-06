@@ -19,10 +19,10 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-card-grid-products.php';
-// WooCommerce-INDEPENDENT collection engine + shared pagination markup. Folded
-// in from sgs/content-collection on 2026-08-01: Card_Grid_Products above returns
-// an empty array without WooCommerce, so this second engine is what keeps a
-// product collection working on a bare WordPress install.
+// WooCommerce-INDEPENDENT collection engine + shared pagination markup.
+// Card_Grid_Products above returns an empty array without WooCommerce, so
+// this second engine is what keeps a product collection working on a bare
+// WordPress install.
 require_once dirname( __DIR__, 3 ) . '/includes/class-cpt-collection-query.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 
@@ -31,17 +31,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-grid-pagination.php';
 // own scoped <style> tag. Strips everything except letters, digits, dot, and
 // % so a Contributor-authored malicious value can never break out of the
 // declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style / text-transform / font-weight / font-style) —
 // letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $source  = $attributes['source'] ?? 'manual';
 $variant = $attributes['variant'] ?? 'card';
 $items   = $attributes['items'] ?? array();
@@ -52,7 +44,7 @@ $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-// `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
+// `columns` is a TIER OBJECT (Spec 35 pass 4) — read each tier via
 // the normaliser, never the raw attribute (absint() on an unresolved array
 // throws "Array to int conversion" and would emit e.g. `columns:0`, exactly
 // the D569/D570 bug class this normaliser exists to prevent).
@@ -60,26 +52,35 @@ $columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? nul
 $columns        = $columns_obj['desktop'] ?? 3;
 $columns_tablet = $columns_obj['tablet'] ?? 2;
 $columns_mobile = $columns_obj['mobile'] ?? 1;
-// `gap` is a TIER OBJECT (Spec 35 pass 1, 2026-08-10) - read the desktop tier, never
+// `gap` is a TIER OBJECT (Spec 35 pass 1) - read the desktop tier, never
 // the raw array (a string cast downstream would emit `gap:Array`).
 $gap_obj      = sgs_responsive_normalise_object( $attributes['gap'] ?? null );
 $gap          = ( '' !== (string) ( $gap_obj['desktop'] ?? '' ) ) ? $gap_obj['desktop'] : '30';
 $aspect_ratio = $attributes['aspectRatio'] ?? '16/10';
+// Whitelist — mirrors image-sequence/render.php's six-value ratio list (the
+// shared source of truth is MediaSizingPanel.js's RATIO_OPTIONS, JS-side;
+// this array is byte-identical to that list's values). Falls back to this
+// block's OWN existing default ('16/10', unspaced) rather than
+// image-sequence's '16 / 9', so a legacy stored value ('16/10', authored
+// before this validation existed) renders exactly as it did before.
+$allowed_ratios = array( '16 / 9', '21 / 9', '4 / 3', '1 / 1', '3 / 4', '9 / 16' );
+if ( ! in_array( $aspect_ratio, $allowed_ratios, true ) ) {
+	$aspect_ratio = '16/10';
+}
 $hover_effect = sanitize_key( $attributes['effectHover'] ?? 'zoom' );
-// overlayStyle removed — no editor control, no consumer anywhere in the
-// repo (D338 full-repo grep, 2026-08-06); abandoned attribute, deleted from
-// block.json too.
+
 $title_colour        = $attributes['titleColour'] ?? '';
+$title_colour_gradient    = $attributes['titleColourGradient'] ?? '';
 $subtitle_colour     = $attributes['subtitleColour'] ?? '';
+$subtitle_colour_gradient = $attributes['subtitleColourGradient'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
-$hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient siblings — resolved once here, emitted via
 // sgs_border_gradient_css() masked ::before further down; border-color can
-// never legally hold a gradient value, so these never feed --sgs-hover-border
-// / --sgs-card-border-color above.
+// never legally hold a gradient value, so these never feed the flat
+// border-colour paint above.
 $hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
 $transition_dur      = $attributes['transitionDuration'] ?? '300';
 $transition_ease     = $attributes['transitionEasing'] ?? 'ease-in-out';
@@ -109,123 +110,114 @@ $query_category      = absint( $attributes['queryCategory'] ?? 0 );
 $uid      = 'sgs-cg-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-card-grid';
 
-// ── WP-native color / border / typography / shadow supports — no-inline
-// contract. block.json declares color/typography/spacing/__experimentalBorder/
-// shadow ALL with __experimentalSkipSerialization:true, so
-// get_block_wrapper_attributes() (called inside SGS_Container_Wrapper::render())
-// never auto-inlines them. Read the resolved values from $attributes['style']
-// here and emit them into THIS block's OWN scoped <style> (composite caveat —
-// do NOT pass these as wrapper `extra_styles`, that path inlines). Base
-// spacing (padding/margin) is a separate mechanism the wrapper already
-// handles scoped internally — not duplicated here.
+// -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — card-image
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to the
+// `<img>`/`<video>` markup `sgs_render_media()` already returns (see the
+// per-item loop below) — `.sgs-media-el` is the shared marker the generated
+// assets/css/media-atoms/object-fit.css rule targets, `$sgs_cg_media_scope`
+// is the per-instance scope the atom's custom-property value below is set
+// on. This is one shared block-wide value applied to every card (mirrors the
+// existing sgs_media_position_css() call below — items[] has no per-card
+// object-fit field).
+$sgs_cg_media_scope   = '';
+$sgs_cg_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_cg_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
+	$sgs_cg_media_classes = SGS_Media_Element::element_classes( $sgs_cg_media_scope );
+}
+
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. Values are read from $attributes['style'] and emitted into THIS
+// block's OWN scoped <style> (composite caveat — do NOT pass these as
+// wrapper `extra_styles`, that path inlines). Base spacing (padding/margin)
+// is a separate mechanism the wrapper already handles scoped internally —
+// not duplicated here.
 $card_grid_native_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$cg_style_engine_args = array();
 
-	$cg_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$cg_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$cg_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$cg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $cg_color_args ) ) {
-		$cg_style_engine_args['color'] = $cg_color_args;
-	}
+$cg_style_engine_args = array();
 
-	$cg_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$cg_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$cg_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$cg_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$cg_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $cg_radius_raw ) && '' !== $cg_radius_raw ) {
-			$cg_border_args['radius'] = $sgs_css_length( $cg_radius_raw );
-		} elseif ( is_array( $cg_radius_raw ) ) {
-			$cg_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $cg_corner ) {
-				if ( ! empty( $cg_radius_raw[ $cg_corner ] ) ) {
-					$cg_radius_clean[ $cg_corner ] = $sgs_css_length( $cg_radius_raw[ $cg_corner ] );
-				}
-			}
-			if ( ! empty( $cg_radius_clean ) ) {
-				$cg_border_args['radius'] = $cg_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $cg_border_args ) ) {
-		$cg_style_engine_args['border'] = $cg_border_args;
-	}
+$cg_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$cg_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$cg_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$cg_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $cg_color_args ) ) {
+	$cg_style_engine_args['color'] = $cg_color_args;
+}
 
-	if ( isset( $attributes['style']['shadow'] ) && '' !== $attributes['style']['shadow'] ) {
-		$cg_style_engine_args['shadow'] = (string) $attributes['style']['shadow'];
-	}
+$cg_border_args = array();
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width. Gated together via the shared helper (helpers-box.php)
+// so this rule is applied identically everywhere, not per block.
 
-	if ( ! empty( $cg_style_engine_args ) ) {
-		$cg_scoped_styles = wp_style_engine_get_styles(
-			$cg_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $cg_scoped_styles['css'] ) ) {
-			$card_grid_native_css .= $cg_scoped_styles['css'];
-		}
-	}
+if ( isset( $attributes['style']['shadow'] ) && '' !== $attributes['style']['shadow'] ) {
+	$cg_style_engine_args['shadow'] = (string) $attributes['style']['shadow'];
+}
 
-	// Typography — block.json selectors.typography targets .sgs-card-grid__title,
-	// so scope the native typography rule there (distinct from the per-instance
-	// titleFontSize/subtitleFontSize custom-attr mechanism further below).
-	$cg_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$cg_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-	}
-	if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
-		$cg_typography_args['letterSpacing'] = $sgs_css_length( $attributes['style']['typography']['letterSpacing'] );
-	}
-	if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
-		$cg_typography_args['textTransform'] = $sgs_css_keyword( $attributes['style']['typography']['textTransform'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
-		$cg_typography_args['fontWeight'] = $sgs_css_keyword( (string) $attributes['style']['typography']['fontWeight'] );
-	}
-	if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
-		$cg_typography_args['fontStyle'] = $sgs_css_keyword( $attributes['style']['typography']['fontStyle'] );
-	}
-	if ( ! empty( $cg_typography_args ) ) {
-		$cg_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $cg_typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-card-grid__title' )
-		);
-		if ( ! empty( $cg_typography_scoped['css'] ) ) {
-			$card_grid_native_css .= $cg_typography_scoped['css'];
-		}
-	}
-	if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
-		$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
+if ( ! empty( $cg_style_engine_args ) ) {
+	$cg_scoped_styles = wp_style_engine_get_styles(
+		$cg_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $cg_scoped_styles['css'] ) ) {
+		$card_grid_native_css .= $cg_scoped_styles['css'];
 	}
 }
 
-// ── FR-35-5 STATE_WITHOUT_BASE fix (Task 4, 2026-07-21, Bean's Option A) ────
-// Resting-state fill/border/shadow for the card tile. An empty control means
-// the card inherits the theme token exactly as before — these are custom-
-// property FALLBACKS in style.css (`var(--sgs-card-background,
-// var(--wp--preset--color--surface, #fff))` etc.), never a baked default, so
-// an unmigrated instance renders byte-identical to pre-fix. Scoped to
-// `.sgs-card-grid__item` under this instance's own uid; the wc-product
-// delegation path (below) renders sgs/product-card markup, which has no
-// `.sgs-card-grid__item` element at all, so this rule is a harmless no-op
-// there and never leaks into product-card's own styling.
+// Typography — block.json selectors.typography targets .sgs-card-grid__title,
+// so scope the native typography rule there (distinct from the per-instance
+// titleFontSize/subtitleFontSize custom-attr mechanism further below).
+$cg_typography_args = array();
+if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
+	$cg_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
+}
+if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
+	$cg_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
+}
+if ( isset( $attributes['style']['typography']['letterSpacing'] ) && '' !== $attributes['style']['typography']['letterSpacing'] ) {
+	$cg_typography_args['letterSpacing'] = sgs_css_length_value( $attributes['style']['typography']['letterSpacing'] );
+}
+if ( isset( $attributes['style']['typography']['textTransform'] ) && '' !== $attributes['style']['typography']['textTransform'] ) {
+	$cg_typography_args['textTransform'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['textTransform'] );
+}
+if ( isset( $attributes['style']['typography']['fontWeight'] ) && '' !== $attributes['style']['typography']['fontWeight'] ) {
+	$cg_typography_args['fontWeight'] = sgs_css_keyword_sanitise( (string) $attributes['style']['typography']['fontWeight'] );
+}
+if ( isset( $attributes['style']['typography']['fontStyle'] ) && '' !== $attributes['style']['typography']['fontStyle'] ) {
+	$cg_typography_args['fontStyle'] = sgs_css_keyword_sanitise( $attributes['style']['typography']['fontStyle'] );
+}
+if ( ! empty( $cg_typography_args ) ) {
+	$cg_typography_scoped = wp_style_engine_get_styles(
+		array( 'typography' => $cg_typography_args ),
+		array( 'selector' => $root_sel . ' .sgs-card-grid__title' )
+	);
+	if ( ! empty( $cg_typography_scoped['css'] ) ) {
+		$card_grid_native_css .= $cg_typography_scoped['css'];
+	}
+}
+if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
+	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
+}
+
+// FR-35-5 STATE_WITHOUT_BASE fix — resting-state fill/border/shadow for the
+// card tile. An empty control means the card inherits the theme token
+// exactly as before — these are custom-property FALLBACKS in style.css
+// (`var(--sgs-card-background, var(--wp--preset--color--surface, #fff))`
+// etc.), never a baked default. Scoped to `.sgs-card-grid__item` under this
+// instance's own uid; the wc-product delegation path (below) renders
+// sgs/product-card markup, which has no `.sgs-card-grid__item` element at
+// all, so this rule is a harmless no-op there and never leaks into
+// product-card's own styling.
 $card_state_vars = array();
 if ( '' !== $card_background || '' !== $card_background_gradient ) {
 	$card_bg_paint = sgs_background_paint_value( $card_background, $card_background_gradient );
@@ -245,12 +237,12 @@ if ( is_array( $card_border_width ) && array_filter( $card_border_width, static 
 	$card_border_width_sides = array();
 	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 		$side_value                = $card_border_width[ $side ] ?? '';
-		$card_border_width_sides[] = '' !== $side_value ? $sgs_css_length( $side_value ) : '0';
+		$card_border_width_sides[] = '' !== $side_value ? sgs_css_length_value( $side_value ) : '0';
 	}
 	$card_state_vars[] = '--sgs-card-border-width:' . implode( ' ', $card_border_width_sides ) . ';';
 }
 if ( '' !== $card_radius ) {
-	$card_state_vars[] = '--sgs-card-radius:' . $sgs_css_length( $card_radius ) . ';';
+	$card_state_vars[] = '--sgs-card-radius:' . sgs_css_length_value( $card_radius ) . ';';
 }
 if ( '' !== $card_shadow ) {
 	$card_state_vars[] = '--sgs-card-shadow:' . sgs_shadow_value_composed( $card_shadow, $card_shadow_colour ) . ';';
@@ -259,9 +251,61 @@ if ( ! empty( $card_state_vars ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__item{' . implode( '', $card_state_vars ) . '}';
 }
 
+// --- Hover COLOUR, via the one shared helper. The helper emits the real
+// declarations on this instance's own scoped selector, matching sgs/info-box,
+// sgs/hero, sgs/process-steps, sgs/cta-section and sgs/post-grid. Emitting
+// here rather than per-branch also collapses the two duplicate emission
+// sites into one — both branches resolve the SAME $hover_* variables further
+// up.
+//
+// Colours resolve through sgs_colour_value(), the shared resolver this file
+// already uses for the border-gradient hover paint below — it handles both a
+// preset slug and a raw hex value.
+$card_grid_hover_decls = array();
+if ( $hover_bg ) {
+	$card_grid_hover_decls[] = 'background-color:' . sgs_colour_value( $hover_bg );
+}
+$card_grid_hover_bg_gradient = sgs_css_gradient_value( $hover_bg_gradient );
+if ( '' !== $card_grid_hover_bg_gradient ) {
+	$card_grid_hover_decls[] = 'background-image:' . $card_grid_hover_bg_gradient;
+}
+if ( $hover_text ) {
+	$card_grid_hover_decls[] = 'color:' . sgs_colour_value( $hover_text );
+}
+if ( $hover_border ) {
+	$card_grid_hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border );
+}
+if ( $card_grid_hover_decls ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__item',
+		array(),
+		$card_grid_hover_decls
+	);
+}
+// titleColourHover/subtitleColourHover target DIFFERENT elements than the
+// item-level decls above (.sgs-card-grid__title / __subtitle, not
+// .sgs-card-grid__item) — each needs its OWN emission at its OWN selector,
+// not a shared array, or one attribute's `color:` declaration silently wins
+// over the other's on the same rule when both are set (found live, 2026-09-03).
+if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__title',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['titleColourHover'] ) )
+	);
+}
+if ( '' !== ( $attributes['subtitleColourHover'] ?? '' ) ) {
+	$card_grid_native_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-card-grid__subtitle',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['subtitleColourHover'] ) )
+	);
+}
+
 // --- Border gradient (D636 border builder) — masked ::before, replaces the
-// flat --sgs-card-border-color / --sgs-hover-border custom-property scheme
-// above when set. ---
+// flat border-colour paint above when set (the resting --sgs-card-border-color
+// var, and the scoped :hover border-color rule sgs_emit_state_colour_css()
+// emits). ---
 if ( '' !== $card_border_gradient ) {
 	$card_grid_native_css .= sgs_border_gradient_css(
 		$root_sel . ' .sgs-card-grid__item',
@@ -286,11 +330,35 @@ if ( '' !== $card_border_gradient ) {
 // never collide; harmless no-op in the wc-product/cpt-collection branches
 // below, which delegate to sgs/product-card and never render
 // `.sgs-card-grid__image-wrap` at all.
+//
+// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
+// read by the media-element atom below, not here — pass a copy with it
+// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
+// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
+// declaration on the SAME element with higher specificity, silently making
+// the atom's value dead the moment an operator set one). Object-position has
+// no atom coverage yet and stays on this explicit mechanism unchanged.
 $card_grid_native_css .= sgs_media_position_css(
-	$attributes,
+	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
 	'sgs',
 	$root_sel . ' .sgs-card-grid__image-wrap img, ' . $root_sel . ' .sgs-card-grid__image-wrap video'
 );
+
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
+// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
+// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
+// No value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$card_grid_native_css .= SGS_Media_Element::style(
+		$attributes,
+		'sgs',
+		'sgs/card-grid',
+		$uid,
+		array( 'object-fit' )
+	);
+}
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them
@@ -308,10 +376,90 @@ if ( '' !== $cg_preset_bg_slug ) {
 	$card_grid_preset_classes[] = 'has-' . $cg_preset_bg_slug . '-background-color';
 }
 
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$card_grid_native_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$card_grid_native_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$card_grid_native_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$card_grid_native_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$card_grid_native_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$card_grid_native_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
 // sgs/hero). Every value reaching $card_grid_native_css is pre-sanitised
-// ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles), so no
+// (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so no
 // un-sanitised value survives to here.
 $card_grid_native_style_tag = $card_grid_native_css ? '<style id="' . esc_attr( $uid ) . '-native">' . wp_strip_all_tags( $card_grid_native_css ) . '</style>' : '';
 
@@ -360,11 +508,11 @@ if ( 'query' === $source ) {
  *                      WC-canonical). Returns nothing without WooCommerce.
  *   'cpt-collection' — query delegated to CPT_Collection_Query. Plain WP_Query
  *                      over a custom post type with the seven meta-driven
- *                      selection rules. NO WooCommerce dependency — this is the
- *                      path folded in from sgs/content-collection (2026-08-01)
- *                      so a non-WooCommerce site can still render a product
- *                      collection. Removing it would delete a working
- *                      capability from every install without WooCommerce.
+ *                      selection rules. NO WooCommerce dependency — this
+ *                      keeps a product collection working on a
+ *                      non-WooCommerce site. Removing it would delete a
+ *                      working capability from every install without
+ *                      WooCommerce.
  *
  * Both share this branch's wrapper classes, CSS vars and empty state, so the
  * two data sources cannot drift apart visually.
@@ -446,19 +594,6 @@ if ( 'wc-product' === $source || 'cpt-collection' === $source ) {
 		'--sgs-card-grid-columns-tablet: ' . absint( $columns_tablet ),
 		'--sgs-card-grid-gap: ' . $gap_value_wc,
 	);
-	if ( $hover_bg ) {
-		$wc_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
-	}
-	$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
-	if ( '' !== $hover_bg_gradient_value ) {
-		$wc_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
-	}
-	if ( $hover_text ) {
-		$wc_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
-	}
-	if ( $hover_border ) {
-		$wc_style_parts[] = '--sgs-hover-border: var(--wp--preset--color--' . sanitize_key( $hover_border ) . ')';
-	}
 	if ( $transition_dur ) {
 		$wc_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
 	}
@@ -613,11 +748,25 @@ $sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $s
 // Per-item title/subtitle colour (was inline `style="color:…"` on every
 // title/subtitle element — moved to a scoped rule keyed off the same uid so
 // no rendered element carries an inline CSS property declaration).
-if ( $title_colour ) {
-	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title{color:' . sgs_colour_value( $title_colour ) . '}';
+// titleColourGradient/subtitleColourGradient (2026-09-03) are the sibling
+// gradient attrs — gradient wins when set+valid (sgs_resolve_text_colour_or_gradient).
+$sgs_grid_title_sel    = '.' . $sgs_grid_uid . ' .sgs-card-grid__title';
+$sgs_grid_subtitle_sel = '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle';
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+if ( '' !== $title_colour_effective ) {
+	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $title_colour_decl ) {
+		$sgs_grid_typo_css .= "{$sgs_grid_title_sel}{{$title_colour_decl};}";
+	}
+	$sgs_grid_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_grid_title_sel, $title_colour_effective );
 }
-if ( $subtitle_colour ) {
-	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle{color:' . sgs_colour_value( $subtitle_colour ) . '}';
+$subtitle_colour_effective = sgs_resolve_text_colour_or_gradient( $subtitle_colour, $subtitle_colour_gradient );
+if ( '' !== $subtitle_colour_effective ) {
+	$subtitle_colour_decl = sgs_text_colour_decl( $subtitle_colour_effective );
+	if ( '' !== $subtitle_colour_decl ) {
+		$sgs_grid_typo_css .= "{$sgs_grid_subtitle_sel}{{$subtitle_colour_decl};}";
+	}
+	$sgs_grid_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_grid_subtitle_sel, $subtitle_colour_effective );
 }
 
 $sgs_grid_typo_tag = '' !== $sgs_grid_typo_css ? '<style>' . wp_strip_all_tags( $sgs_grid_typo_css ) . '</style>' : '';
@@ -654,19 +803,6 @@ $grid_style_parts = array(
 	'--sgs-card-grid-aspect: ' . esc_attr( $aspect_ratio ),
 );
 
-if ( $hover_bg ) {
-	$grid_style_parts[] = '--sgs-hover-bg: var(--wp--preset--color--' . sanitize_key( $hover_bg ) . ')';
-}
-$hover_bg_gradient_value = sgs_css_gradient_value( $hover_bg_gradient );
-if ( '' !== $hover_bg_gradient_value ) {
-	$grid_style_parts[] = '--sgs-hover-bg-image: ' . $hover_bg_gradient_value;
-}
-if ( $hover_text ) {
-	$grid_style_parts[] = '--sgs-hover-text: var(--wp--preset--color--' . sanitize_key( $hover_text ) . ')';
-}
-if ( $hover_border ) {
-	$grid_style_parts[] = '--sgs-hover-border: var(--wp--preset--color--' . sanitize_key( $hover_border ) . ')';
-}
 if ( $transition_dur ) {
 	$grid_style_parts[] = '--sgs-transition-duration: ' . absint( $transition_dur ) . 'ms';
 }
@@ -688,12 +824,34 @@ if ( $stagger_delay ) {
 // `:nth-child(N)` scoped rule instead (same mechanism as sgs/social-icons' /
 // sgs/pricing-table's per-item colour), N = this item's 1-based position among
 // ALL rendered card items (every item renders `.sgs-card-grid__item`
-// unconditionally). Was previously an inline `style="--sgs-item-index:N"`.
+// unconditionally).
 $card_grid_stagger_css = '';
+
+// Spec 35 Part 4 — per-item crop, keyed by the item's OWN stable `_key`
+// (src/utils/generateItemKey.js), never by array index/`:nth-child` (both
+// break the moment an operator reorders/adds/removes a card — the exact
+// anti-pattern the doctrine names and rejects). `sgs_media_position_css()`
+// already accepts an arbitrary attributes array + prefix; passed a per-item
+// shim here rather than the block's own $attributes. A pre-existing item
+// authored before this field existed has no `_key` yet (client-side
+// backfill lands on next editor save) and also has no non-default
+// objectFit/focalPoint to emit, so the index fallback below is never
+// load-bearing in practice — it only prevents an empty selector.
+$card_grid_per_item_css = '';
 
 // Build the interior HTML (card items).
 ob_start();
 foreach ( $items as $index => $item ) :
+	$card_grid_item_key = ! empty( $item['_key'] ) ? (string) $item['_key'] : 'idx-' . absint( $index );
+	$card_grid_per_item_css .= sgs_media_position_css(
+		array(
+			'objectPosition' => $item['focalPoint'] ?? null,
+			'objectFit'      => $item['objectFit'] ?? '',
+		),
+		'',
+		$root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] img, '
+			. $root_sel . ' [data-card-key="' . esc_attr( $card_grid_item_key ) . '"] video'
+	);
 	// Task 2.1) resolved via sgs_link_attributes() — link/linkTarget/linkRel
 	// are the existing per-item storage keys, mapped to the shared
 	// SgsLinkControl object shape { url, opensInNewTab, rel } at render time.
@@ -711,21 +869,17 @@ foreach ( $items as $index => $item ) :
 	}
 
 	// Unified media slot — sgs_render_media() emits the right tag for either
-	// image or video. The legacy per-item `image` field (never declared in
-	// block.json's items schema) was removed 2026-08-03.
+	// image or video.
 	$item_media = $item['media'] ?? null;
-	// A BARE URL STRING is a first-class accepted shape (2026-07-29). block.json
-	// declares `items[].media` as `{"type":"string"}` while edit.js writes the
-	// object form, and `sgs_render_media()` bails on anything that is not an
-	// array (helpers-media.php:168) — so a string URL rendered NOTHING, silently,
-	// with an empty `.sgs-card-grid__image-wrap` left behind. That is exactly how
-	// both shipped mega starter patterns (sgs/mega-brands-1, sgs/mega-media-cards-1)
-	// lost all 8 of their card images through a green build. Normalising here
-	// fixes every caller at once — patterns, and any converter/clone output that
-	// emits the documented string shape — rather than patching the two patterns
-	// and leaving the trap armed for the next author.
-	// `alt` is deliberately '': these cards carry a visible title, so an alt that
-	// repeated it would double-announce to a screen reader.
+	// A BARE URL STRING is a first-class accepted shape. block.json declares
+	// `items[].media` as `{"type":"string"}` while edit.js writes the object
+	// form, and `sgs_render_media()` bails on anything that is not an array
+	// (helpers-media.php:168) — so a string URL would render NOTHING, silently,
+	// with an empty `.sgs-card-grid__image-wrap` left behind. Normalising here
+	// fixes every caller at once — patterns, and any converter/clone output
+	// that emits the documented string shape.
+	// `alt` is deliberately '': these cards carry a visible title, so an alt
+	// that repeated it would double-announce to a screen reader.
 	if ( is_string( $item_media ) ) {
 		$item_media = '' !== trim( $item_media )
 			? array(
@@ -735,10 +889,38 @@ foreach ( $items as $index => $item ) :
 			)
 			: null;
 	}
+	// Per-card decorative toggle (item 18 of the detector-findings backlog,
+	// D918/S8 repeater-field naming — the media slot lives inside the `items`
+	// array, so the flag does too). Blanking alt AND aria-hiding the wrapper
+	// mirrors sgs/timeline's block-level `milestoneMediaDecorative` mechanism
+	// so the image (or video) is skipped entirely by assistive tech, per
+	// WCAG 2.1 AA 1.1.1. wc-product/cpt-collection modes never reach this
+	// loop with client-authored media — `$items` there is the live product
+	// query result, not this attribute, so decorative scoping is a no-op for
+	// those modes rather than needing a separate exclusion.
+	$item_decorative = ! empty( $item['decorative'] );
+	if ( $item_decorative && is_array( $item_media ) ) {
+		$item_media['alt'] = '';
+	}
 	$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
+	// Media-element atom layer (rule 37-media-no-handroll fix) — append the
+	// `.sgs-media-el` marker + per-instance scope class onto the FIRST
+	// <img>/<video> tag `sgs_render_media()` returned, so this element inherits
+	// the `--sgs-media-object-fit` custom property set on $root_sel above and
+	// picks up assets/css/media-atoms/object-fit.css's rule. `sgs_render_media()`
+	// has no classes parameter (shared helper, out of this fix's scope), so the
+	// class is appended here via a scoped regex rather than editing that helper.
+	if ( '' !== $media_html && ! empty( $sgs_cg_media_classes ) ) {
+		$media_html = preg_replace(
+			'/(<(?:img|video)\b[^>]*\bclass=")/',
+			'$1' . esc_attr( implode( ' ', $sgs_cg_media_classes ) ) . ' ',
+			$media_html,
+			1
+		);
+	}
 	?>
-	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?>>
-		<div class="sgs-card-grid__image-wrap">
+	<<?php echo esc_attr( $item_tag ); ?> class="sgs-card-grid__item" data-card-key="<?php echo esc_attr( $card_grid_item_key ); ?>"<?php echo $link_attr; ?>>
+		<div class="sgs-card-grid__image-wrap"<?php echo $item_decorative ? ' aria-hidden="true"' : ''; ?>>
 			<?php if ( '' !== $media_html ) : ?>
 				<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
 			<?php endif; ?>
@@ -771,7 +953,8 @@ foreach ( $items as $index => $item ) :
 	</<?php echo esc_attr( $item_tag ); ?>>
 	<?php
 endforeach;
-$card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
+$card_grid_stagger_tag  = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags( $card_grid_stagger_css ) . '</style>' : '';
+$card_grid_per_item_tag = $card_grid_per_item_css ? '<style>' . wp_strip_all_tags( $card_grid_per_item_css ) . '</style>' : '';
 
 // FR-32-4a (no-inline contract): the per-item stagger rule addresses items by
 // `:nth-child(N)`, and `:nth-child` counts EVERY element sibling — including a
@@ -784,7 +967,7 @@ $card_grid_stagger_tag = $card_grid_stagger_css ? '<style>' . wp_strip_all_tags(
 // item N really is nth-child(N+1). Relative order of the three tags is
 // preserved, and each is a `.{uid}`-scoped rule, so moving them earlier in the
 // document cannot change which rule wins.
-$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag;
+$card_grid_style_tags = $card_grid_native_style_tag . $sgs_grid_typo_tag . $card_grid_stagger_tag . $card_grid_per_item_tag;
 $inner_html           = ob_get_clean();
 
 echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $card_grid_style_tags is CSS passed through wp_strip_all_tags(); SGS_Container_Wrapper::render() escapes internally.

@@ -28,94 +28,99 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "Single-element block (the <nav> root) — no `layer` declared, so the 12 ARRANGEMENT members are never asked (this block has no grid/flex attrs at all — correct). Only fontSize+lineHeight are declared under typography support (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily), no width/height/box-shadow/aspect-ratio/max-width attrs exist — all honest gaps."
+					"_note": "Single-element block (the <nav> root) — no `layer` declared, so the 12 ARRANGEMENT members are never asked (this block has no grid/flex attrs at all — correct). Typography migrated off the old WP-native supports.typography (fontSize+lineHeight only) onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight) — the helper also now offers fontWeight/fontStyle, which native typography never exposed here. No letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio/max-width attrs exist — honest gaps."
 				},
 				"title": {
 					"label": "TOC title",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
-						"css:color": "titleColour"
+						"css:color": "titleColour",
+						"css:background-image": "titleColourGradient"
 					},
-					"_note": "Only a design-token colour control exists for the title (titleColour) — resolves via default convention (`title`+`Colour`). No independent title font-size/weight/line-height control exists — honest gaps."
+					"_note": "Only a design-token colour control exists for the title (titleColour) — resolves via default convention (`title`+`Colour`). No independent title font-size/weight/line-height control exists — honest gaps. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient."
 				},
 				"link": {
 					"label": "TOC link",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "link",
 					"attrMap": {
-						"css:color": "linkColour"
+						"css:color": "linkColour",
+						"css:background-image": "linkColourGradient"
 					},
 					"states": {
-						"selected": {
+						"current": {
 							"attrMap": {
-								"css:color": "activeLinkColour"
+								"css:color": "activeLinkColour",
+								"css:background-image": "activeLinkColourGradient"
 							}
 						}
 					},
-					"_note": "`activeLinkColour` styles the scroll-spy-active link (render.php:195 `.sgs-toc__link--active`, toggled by view.js) — a SELECTED state per FR-35-5, declared via explicit `states.selected.attrMap` because the naming is a PREFIX (`activeLinkColour`), not the mechanical suffix form, and would otherwise be unreachable by the default convention. No resting-state font-size/weight control exists on the link — honest gap."
+					"_note": "`activeLinkColour` styles the scroll-spy-active link (render.php:195 `.sgs-toc__link--active`, toggled by view.js) — a CURRENT state per FR-35-5, declared via explicit `states.current.attrMap` because the naming is a PREFIX (`activeLinkColour`), not the mechanical suffix form, and would otherwise be unreachable by the default convention. No resting-state font-size/weight control exists on the link — honest gap. `linkColourGradient` (2026-09-03) is the text-colour gradient sibling to the RESTING linkColour; `activeLinkColourGradient` is the matching sibling for the CURRENT state, added the same day so the row's SgsColourPanel entry (linkColour normal + activeLinkColour current) can be marked `gradientCapable` as ONE row without leaving the current-state control without a working onGradientChange handler (mirrors sgs/hero's text row, which gives both its normal and hover states their own gradient sibling)."
 				}
 			}
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-table-of-contents",
-		"typography": ".sgs-toc__title"
+		"root": ".wp-block-sgs-table-of-contents"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"headingLevels": {
 			"type": "array",
 			"default": [
@@ -161,37 +166,83 @@
 			"type": "string",
 			"default": "text"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"linkColour": {
 			"type": "string",
 			"default": "text-muted"
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"activeLinkColour": {
 			"type": "string",
 			"default": "primary"
 		},
-		"paddingTablet": {
+		"activeLinkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"render": "file:./render.php",

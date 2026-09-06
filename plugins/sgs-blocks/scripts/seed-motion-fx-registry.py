@@ -72,6 +72,15 @@ WHAT THIS SEEDS (§6 numbered list — each item below maps 1:1)
    EXPLICITLY deferred (§6 item 6: "Wave A ships without it — theme.json
    `--wp--custom--duration/easing--*` already serve"). Not touched here, by design.
 
+CHANGELOG (post-Wave-A additions, newest first)
+---------------------------------------------------------------------------------------
+- 2026-08-21 (Tier W / D479 / D555): seeded `fx_effects.surface-treatment` (tier='W',
+  the FIRST Tier W row in this table) + its four `fx:*` attr rows (fxTreatment,
+  fxTreatmentIntensity, fxTreatmentShadow, fxTreatmentHighlight). Also corrected the
+  `requires` closed-vocabulary comment above, which had drifted behind the earlier
+  'surface' (cursor-field) addition — see that comment for detail. Per-row citation
+  lives on the `surface-treatment` row itself in FX_EFFECTS below.
+
 Run after any DB rebuild. Safe to re-run — a clean run reports zero changes both times
 (see the two-consecutive-run proof in the A6 session report).
 """
@@ -150,10 +159,15 @@ DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.
 #                                         row at all -- flagged, not silently
 #                                         dropped: there is nothing to seed here.
 #   requires                'text'|'svg'|'svg-subtree'|'section'|'item-set'|
-#                          'track'|'none' — what the effect needs OF ITS
-#                          TARGET, derived from each §2 row's own qualifiers
-#                          (Conditions/Exposure-surface text). Closed
-#                          vocabulary; per-row citation below.
+#                          'track'|'surface'|'image'|'none' — what the effect
+#                          needs OF ITS TARGET, derived from each §2 row's
+#                          own qualifiers (Conditions/Exposure-surface text).
+#                          Closed vocabulary; per-row citation below.
+#                          ('surface' added FR-38-25/D444 for cursor-field —
+#                          this list line itself drifted behind that add and
+#                          is corrected here, not just for the new row.
+#                          'image' added for surface-treatment, Tier W,
+#                          D479/D555 — see that row's own comment below.)
 #
 #                          'svg' vs 'svg-subtree' split 2026-07-31 (Motion
 #                          Wave D register Step 4). Before this split both
@@ -552,9 +566,11 @@ FX_EFFECTS: list[dict] = [
         # ("New block `sgs/image-sequence` inspector") — there is nothing
         # further to qualify against; a future block declaring this fx would
         # get it unconditionally, the same way scrub is unconditional. The
-        # block does not exist yet (verified: no `sgs/image-sequence` under
-        # src/blocks), so its qualifying-blocks roster is honestly EMPTY today
-        # — the row exists for when the block ships, not to hide the gap.
+        # block SHIPPED after this comment was written (corrected 2026-08-24:
+        # `src/blocks/image-sequence/` exists, agency-only with `inserter:
+        # false`, and the `image-sequence` row is live in `fx_effects`). The
+        # roster stays narrow because the block is the only qualifier, not
+        # because nothing qualifies.
         "scope": "block",
         "requires": "none",
     },
@@ -574,8 +590,18 @@ FX_EFFECTS: list[dict] = [
         # pins/triggers (D416). UNSHIPPED - placeholder. scope=site, so it never reaches a block panel at all.
         "pins": 0,
         "triggers": "scroll",
-        "tier": "G",
-        "plugin_set": ["ScrollSmoother"],
+        # tier='H', plugin_set=[] since D422 (2026-07-30): site-level smoothing
+        # moved from GSAP ScrollSmoother to Lenis, and Lenis was admitted as
+        # Tier H (helper/utility) rather than Tier G. This row carried tier='G'
+        # and plugin_set=['ScrollSmoother'] until 2026-08-21 — naming a GSAP
+        # plugin that decision retired. It was never load-bearing (scope='site'
+        # means nothing activates it, and 'ScrollSmoother' is not a key in
+        # SGS_Motion_Registry::PLUGIN_MODULES, so it enqueued nothing either
+        # way) but a stale mechanism name is a trap for whoever reads it next.
+        # plugin_set is EMPTY because Tier H is not GSAP-plugin shaped at all —
+        # the same shape three other rows already use.
+        "tier": "H",
+        "plugin_set": [],
         "owns_scroll_transform": 0,
         "reduced_motion": "suppress",
         "editor_story": "no-preview",
@@ -655,6 +681,184 @@ FX_EFFECTS: list[dict] = [
         "creates_panel": 0,
     },
     {
+        # FR-38-30 (Spec 38 §3.3), Bean-approved 2026-08-24. An element
+        # leans toward the pointer while it is still OUTSIDE it — a proximity
+        # radius, which is the whole difference between a magnetic button and a
+        # hover state.
+        #
+        # NOT A NEW MECHANISM: `src/shared/effects/magnet.js` has shipped since
+        # the mega-menu build, driving `sgs/nav-menu`'s label nudge. This effect
+        # generalises that module (two axes + a proximity radius) rather than
+        # writing a second one. `initMagnet`'s no-options behaviour is unchanged
+        # and byte-identical, so nav-menu is untouched.
+        "effect": "wave-gradient",
+        # ⛔ TIER W'S SECOND ENTRY, and it WIDENS the tier rather than extending
+        # it. Recorded here because the D-number must not read as "one more
+        # shader". Tier W's founding premise is that a `null` return IS the
+        # fallback — the untouched <img> is already the finished state, so there
+        # is no second path to keep in sync. That holds ONLY because there is a
+        # source image. This effect is GENERATIVE: there is no untouched
+        # anything, so a real CSS fallback ships alongside it and must be kept
+        # in sync forever. That is the exact cost Tier W was designed to avoid.
+        #
+        # Bean's ruling 2026-08-25, after two researchers BOTH recommended not
+        # building it: "just model the stripe setup exactly", with client
+        # colours. He also chose autonomous over cursor-driven, which is what
+        # stripe.com does and which fixes the mobile problem — a cursor effect
+        # renders nothing at all on a phone, and phones are most client traffic.
+        "in_picker": 1,
+        # Autonomous: starts on its own and runs while visible. NOT 'hover' —
+        # that would misdescribe it in the one column that records what starts
+        # the motion, and this effect's whole SC 2.2.2 exposure comes from
+        # starting without being asked.
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # SIMPLIFY, not suppress: under `reduce` the module draws exactly ONE
+        # frame and stops, so the visitor still gets the gradient. Blanking a
+        # section the client styled would be the degrade-to-LESS-content
+        # failure; a still gradient is a legitimate finished state.
+        "reduced_motion": "simplify",
+        # The editor canvas never boots frontend script modules, so it shows the
+        # CSS fallback — which is the honest preview: it is exactly what a
+        # no-WebGL visitor sees, in the client's own colours.
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — a paintable background, the same token cursor-field uses.
+        # Not 'image': this generates its own pixels rather than treating one.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # measurement D459 forced for cursor-field.
+        "creates_panel": 0,
+    },
+    {
+        "effect": "magnet",
+        # in_picker=1 with creates_panel=0, the same pair cursor-field carries
+        # and for the same reason: offered wherever an fx panel already exists,
+        # never creating one.
+        "in_picker": 1,
+        # Pointer-driven, so 'hover' is the only coherent trigger — there is
+        # nothing for 'load' or 'scroll' to mean.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. The 2026-08-02 motion-ecosystem survey: magnetic buttons and
+        # cursor followers "are commonly ~20-30 lines of vanilla JS (mousemove
+        # + rAF + CSS transform) — write it, don't dependency it".
+        "tier": "V",
+        "plugin_set": [],
+        # It writes `transform` on ONE element from pointer position, never
+        # across a scroll range, so it does not own the scroll transform and
+        # does not exclude a Tier V entrance (§4.3).
+        "owns_scroll_transform": 0,
+        # SUPPRESS, and this differs from cursor-field's SIMPLIFY on purpose.
+        # A resting field is a legitimate finished PAINT; a displaced element is
+        # not a finished position — its finished position is where the layout
+        # put it. Under `reduce` the element simply sits still, which is also
+        # exactly the no-JS state, so there is no second code path.
+        "reduced_motion": "suppress",
+        # The editor shows the element at its authored position, which IS the
+        # resting state. Same code path as reduced motion.
+        "editor_story": "end-state",
+        "scope": "block",
+        # PERMISSIVE. Structurally, anything with a box can be nudged toward a
+        # pointer — there is no capability to require, which is exactly what
+        # `requires='none'` means here (the same value `scrub` and `motion-path`
+        # carry). Combined with creates_panel=0 it reaches every block that
+        # already hosts an fx panel, INCLUDING sgs/button, with zero widening of
+        # the panel roster. Measured before the row was written: sgs/button
+        # already offers morph / motion-path / scramble / scrub / split-reveal.
+        "requires": "none",
+        # Offered where a panel exists; never creates one. A magnet control on
+        # a form field or a star rating is precisely the "13 panels where none
+        # makes sense" containment failure D459 exists to prevent.
+        "creates_panel": 0,
+    },
+    {
+        # FR-38-32, owner-approved. A canvas-painted pointer trail — three
+        # presets (sparks / gravity-dots / ripple), one shared engine
+        # (`src/shared/effects/particles.js`); the params table inside that
+        # file is the only thing that differs per preset.
+        "effect": "particles",
+        # in_picker=1 with creates_panel=0, the same pair magnet/cursor-field
+        # carry and for the same reason: offered wherever an fx panel already
+        # exists, never creating one.
+        "in_picker": 1,
+        # Pointer-driven — there is nothing for 'load' or 'scroll' to mean
+        # for an effect that paints only where the cursor has actually been.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. A 150-particle pool integrated with plain arithmetic on a
+        # <canvas> 2D context is nowhere near what needs a GPU pass — see
+        # Tier W's own five-part admission test (D479), which this effect
+        # does not come close to needing.
+        "tier": "V",
+        "plugin_set": [],
+        # It paints particles from pointer samples, never drives a scroll
+        # transform, so it does not exclude a Tier V entrance (§4.3).
+        "owns_scroll_transform": 0,
+        # SUPPRESS, same reasoning as magnet's own row above: a painted
+        # particle is not a finished resting state the way a still field is
+        # for cursor-field — there is nothing to paint until the pointer
+        # moves, so under `reduce` there is simply nothing, which is also
+        # exactly the no-JS state. No second code path.
+        "reduced_motion": "suppress",
+        # The editor canvas never boots frontend script modules, so it shows
+        # the block exactly as authored, with no trail — the resting state.
+        "editor_story": "end-state",
+        "scope": "block",
+        # PERMISSIVE, same reasoning as magnet's own row above: structurally
+        # anything with a box can host a pointer trail — there is no
+        # capability to require. Combined with creates_panel=0 it reaches
+        # every block that already hosts an fx panel, with zero widening of
+        # the panel roster.
+        "requires": "none",
+        # Offered where a panel exists; never creates one. Same containment
+        # discipline D459 established for cursor-field/magnet.
+        "creates_panel": 0,
+    },
+    {
+        # FR-38-33 cursor grid-dot field. Owner-specified 2026-08-27, built
+        # 2026-08-28 to Preset B after a design gate run against a live
+        # prototype (nine published references were measured first and NOT ONE
+        # does this — they attract without clamping, repel, or only brighten).
+        "effect": "grid-dots",
+        "in_picker": 1,
+        # Pointer-driven, so 'hover' is the only coherent trigger — there is
+        # nothing for 'load' or 'scroll' to mean for an effect whose entire
+        # state is a function of where the pointer currently is. Same reasoning
+        # cursor-field / magnet / particles each record.
+        "pins": 0,
+        "triggers": "hover",
+        # Tier V. A grid of dots with an ease-back integrator needs no GPU
+        # shader, so §1.3's ratchet refuses anything dearer. ⛔ NOT Tier W —
+        # that list stays closed (FR-38-33 says so explicitly).
+        "tier": "V",
+        "plugin_set": [],
+        # Never touches scroll position; it paints a background layer.
+        "owns_scroll_transform": 0,
+        # SUPPRESS, not simplify — matching magnet/particles rather than
+        # cursor-field. `fx-grid-dots.js` creates NO instance and attaches NO
+        # listener under reduced motion, so there is no canvas at all and the
+        # page is byte-identical to the no-JS state. Nothing is hidden from a
+        # reduced-motion visitor that a JS-less visitor would have seen.
+        "reduced_motion": "suppress",
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — it paints a background field across an area, so it needs a
+        # paintable surface, exactly as cursor-field and wave-gradient do. This
+        # is the field that decides the qualifying roster, and 'surface' is what
+        # scopes it to the section-shaped blocks (container / cta-section /
+        # hero) rather than offering a full-bleed dot lattice on a button.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # discipline as cursor-field/magnet/particles above — a background
+        # decoration must not be the reason a brand-new fx panel appears on a
+        # nav or a form.
+        "creates_panel": 0,
+    },
+    {
         # Spec 38 §11 loop FR. Bean, verbatim: "looping should not be tied to
         # the drag effect — they should be independent controls", and "we're
         # not setting the default behaviour in all carousels, just making the
@@ -711,6 +915,118 @@ FX_EFFECTS: list[dict] = [
         # rather than being consulted by any code path — same shape as
         # `draggable`'s row above, which also never gained a `creates_panel`
         # key and is also never offered from the generic panel.
+        "creates_panel": 0,
+    },
+    {
+        # Tier W (D479, "rendering substrate" tier — WebGL) / D555. A shader
+        # pass (grain, halftone, duotone — TREATMENT_PRESETS in
+        # src/shared/effects/surface-treatments/presets.js) drawn ONCE over a
+        # block's own image, via the four fxTreatment* attrs named in the
+        # build brief. This is the first fx_effects row of tier 'W' — every
+        # prior row is 'V' or 'G'; D479's own five-part test is what admits a
+        # rendering substrate as a tier at all, not re-litigated here.
+        "effect": "surface-treatment",
+        "in_picker": 1,
+        # pins/triggers. VERIFIED against the built runtime shape (a WebGL
+        # canvas painted once over the target <img>, no scroll/hover
+        # listener, no re-render loop): there is nothing to pin (it never
+        # spans a scroll range) and nothing for a trigger enum to arm —
+        # 'load' is the only coherent reading, matching every other
+        # draw-once-on-mount effect in this table (e.g. `draggable`).
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        # No GSAP plugin — this is the WebGL rendering substrate itself, not
+        # a GSAP-driven tween. plugin_set stays the GSAP-plugin-name channel
+        # every other row uses it for; a Tier W effect has nothing to put
+        # there, same shape as the Tier V rows above (cursor-field,
+        # carousel-loop, page-transitions) which are also `[]`.
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # 'simplify', NOT 'unimplemented': this effect draws its shader pass
+        # once on load and NEVER animates again — there is no ongoing motion
+        # for `prefers-reduced-motion` to gate off. Output is byte-identical
+        # whether reduced-motion is set or not, because there was only ever
+        # one frame to draw. This is the SAME "nothing to gate" shape
+        # `cursor-field` documents on its own row above (a resting/static
+        # state IS the finished state); `simplify` is the established value
+        # for exactly this case, not a placeholder for a degradation that
+        # was never built.
+        "reduced_motion": "simplify",
+        # 'no-preview': WebGL requires a real GPU-backed <canvas> context: the
+        # block editor's iframe can construct one, but doing so for every
+        # image on every block in the canvas is exactly the cost D479's own
+        # budget doctrine gates against (a NAMED 120KB allowance is for
+        # PAGES that opt in, not for the editor always paying it). The
+        # editor therefore shows the plain untreated image — a real, honest
+        # state (not a broken preview) — and the treatment only ever paints
+        # on the published frontend. Matches `scroll-smoother`/
+        # `page-transitions`'s own 'no-preview' rows for the same "cannot
+        # honestly preview this surface in wp-admin" reason.
+        "editor_story": "no-preview",
+        "scope": "block",
+        # 'image' — this effect's target is the block's own rendered <img>,
+        # not a section/text/svg surface. See generate-fx-qualifying-blocks.py
+        # `_block_provisions()` for how a block DECLARES this requirement
+        # (supports.sgs.imageControls === true, the project-mandated flag on
+        # every image-rendering block — never a hardcoded block-name list).
+        "requires": "image",
+        # creates_panel=0, DELIBERATE. Same containment reasoning as
+        # `cursor-field`'s own row (D459/FR-38-25's "13 panels where none
+        # makes sense" containment failure): `imageControls` is declared on
+        # 15 of 83 blocks (7 with it `true` — see generate-fx-qualifying-
+        # blocks.py's own comment for the measured count), and several of
+        # those are decorative/logo-shaped blocks where a shader-treatment
+        # panel is not a sensible default surface. Offering the effect
+        # (in_picker=1) wherever a qualifying block ALREADY has a fx panel
+        # for another reason, without unconditionally creating a NEW panel
+        # on every imageControls block, is the same measured containment
+        # choice cursor-field made — not re-derived from scratch here.
+        "creates_panel": 0,
+    },
+    {
+        # Generative background (Spec 38, D874 technique spec — the
+        # generative-background-engine build). Tier W's THIRD entry.
+        #
+        # ⛔ v1 IS STATIC — this row describes the SHIPPED v1 build, not the
+        # technique spec's later folded-plane/animation sections (v1.1, a
+        # separate, later, design-gated build per the spec's own kill
+        # criterion). A single OKLCH-interpolated gradient image, built once
+        # on a <canvas> 2D context (`fx-generative-background.js`) and
+        # painted as a static background. No shader, no WebGL context, no
+        # per-frame draw loop.
+        "effect": "generative-background",
+        "in_picker": 1,
+        # Nothing to pin (it never spans a scroll range) and nothing for a
+        # trigger enum to arm beyond the initial paint — 'load' matches
+        # `surface-treatment`'s own draw-once-on-mount row above.
+        "pins": 0,
+        "triggers": "load",
+        "tier": "W",
+        # No GSAP plugin — v1 is Canvas 2D colour maths, not a GSAP-driven
+        # tween and not a shader. Same shape as `surface-treatment`'s `[]`.
+        "plugin_set": [],
+        "owns_scroll_transform": 0,
+        # 'simplify', same reasoning as `surface-treatment`'s own row: v1
+        # draws its image once on load and never animates again — there is
+        # no ongoing motion for `prefers-reduced-motion` to gate off, and
+        # output is byte-identical whether reduced-motion is set or not.
+        "reduced_motion": "simplify",
+        # 'end-state', NOT 'no-preview' — unlike `surface-treatment`, v1
+        # needs no GPU-backed WebGL context (Canvas 2D is cheap and already
+        # used throughout wp-admin), so the editor canvas CAN honestly show
+        # the real built image. It currently shows the CSS fallback instead
+        # (the editor never boots frontend script modules, same as
+        # wave-gradient) — which is still an honest "end state" preview in
+        # the client's own colours, not a broken one.
+        "editor_story": "end-state",
+        "scope": "block",
+        # 'surface' — a paintable background, the same token
+        # wave-gradient/cursor-field use. Not 'image': this generates its
+        # own pixels rather than treating one.
+        "requires": "surface",
+        # Offered where a panel exists; never creates one. Same containment
+        # measurement D459 forced for cursor-field/wave-gradient.
         "creates_panel": 0,
     },
 ]
@@ -832,6 +1148,50 @@ FX_ATTR_CSS_PROPERTY: dict[str, str] = {
     # an empty-but-present attribute rather than omitting it).
     "fxDisableTablet": "fx:disable-tablet",
     "fxDisableMobile": "fx:disable-mobile",
+    #
+    # `fxTreatment` / `fxTreatmentIntensity` / `fxTreatmentShadow` /
+    # `fxTreatmentHighlight` -> fx:treatment / fx:treatment-intensity /
+    # fx:treatment-shadow / fx:treatment-highlight (Tier W surface-treatment,
+    # D479/D555). Same shape as the fxPath*/fxShape* rows above: the AUTHORING
+    # attrs a block declares in its own block.json, each mapped 1:1 to its
+    # `fx:*` pseudo-namespace name rather than invented from scratch. Four
+    # separate rows, not one, because the shader pass has four independently
+    # settable parameters (preset id, an intensity float, and two colour
+    # overrides) — collapsing them would lose which one a cloned draft's
+    # value belongs to.
+    "fxTreatment": "fx:treatment",
+    "fxTreatmentIntensity": "fx:treatment-intensity",
+    "fxTreatmentShadow": "fx:treatment-shadow",
+    "fxTreatmentHighlight": "fx:treatment-highlight",
+    #
+    # `fxPin` -> fx:pin (2026-08-28, registry-completeness gap). A real BLOCK
+    # attribute on sgs/image-sequence, read by `shared/effects/gsap/
+    # fx-image-sequence.js` as `data-sgs-fx-pin` to decide whether the canvas
+    # pins for the duration of its scrub. It had NO fx:* marker at all, so it
+    # sat at css_property=NULL with nothing marking it — the same
+    # registry-completeness gap `dragToScroll` had above, and the same fix.
+    # `attr-classification-overrides.json` already recorded the diagnosis in
+    # its own `_reason` field ("not yet seeded into the fx:* namespace ...
+    # unlike its siblings fxStart/fxEnd/fxScrub") without anyone acting on it.
+    "fxPin": "fx:pin",
+    #
+    # `fxDraggable` -> fx:drag-handle, NOT fx:draggable.
+    #
+    # ⛔ THE OBVIOUS NAME IS ALREADY TAKEN. `dragToScroll` claims `fx:draggable`
+    # ~70 lines above. These are two genuinely different mechanisms that both
+    # reasonably answer to the word "draggable", and collapsing them would lose
+    # which one a cloned draft's value belongs to (the same argument the
+    # fxTreatment* rows make for staying four rows rather than one):
+    #   · `dragToScroll` (sgs/gallery, sgs/buybox, sgs/google-reviews) — drag a
+    #     carousel horizontally to SCROLL it. Gates `data-sgs-fx="draggable"`.
+    #   · `fxDraggable`  (sgs/before-after) — GSAP Draggable free-drag on the
+    #     comparison DIVIDER (`before-after/view.js:20`, read as
+    #     `data-sgs-fx-draggable`). Nothing scrolls; it moves a handle.
+    # Hence `fx:drag-handle` — named for what it actually drags. This is a
+    # judgement call on a DB-namespace name, made deliberately and reversible:
+    # if a later spec amendment prefers a different value, change it here and
+    # reseed; nothing downstream hardcodes it.
+    "fxDraggable": "fx:drag-handle",
 }
 
 FX_EFFECTS_COLUMNS = (
@@ -1091,7 +1451,8 @@ def main() -> int:
         # Deliberately unversioned (13.9MB local dev knowledge base — see
         # .claude/dev-setup.md "sgs-framework.db" section). A contributor
         # without it builds off the already-committed generated artefacts
-        # (generated-fx-effects.php, generated-fx-qualifying-blocks.php/json,
+        # (generated-fx-effects.php, generated-fx-qualifying-blocks.json — the
+        # .php mirror was deleted as dead code at `1ac16ec9`,
         # generated-fx-effect-meta.json) instead — this seeder has nothing to
         # do in that case, so it skips cleanly rather than failing the build.
         print(

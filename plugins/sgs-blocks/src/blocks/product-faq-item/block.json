@@ -23,15 +23,8 @@
 		"reusable": false,
 		"color": {
 			"background": false,
-			"gradients": true,
+			"gradients": false,
 			"text": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -47,17 +40,24 @@
 					"attrMap": {
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-image": "textColourGradient"
 					},
-					"_note": "No `text` cluster declared — this block declares no `typography` support at all and no per-element font attrs (question/isOpen are content-only), so a text cluster would resolve zero members and violate ROLLOUT REQUIREMENT 1. Similarly no `spacing` support exists (padding/margin absent) — those layout members are honest gaps."
+					"_note": "No `text` cluster declared — this block declares no `typography` support at all and no per-element font attrs (question/isOpen are content-only), so a text cluster would resolve zero members and violate ROLLOUT REQUIREMENT 1. Similarly no `spacing` support exists (padding/margin absent) — those layout members are honest gaps. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure)."
 				}
 			},
 			"hideExtensions": [
 				"fx"
-			]
+			],
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
+			}
 		}
 	},
 	"usesContext": [
@@ -68,7 +68,23 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -80,6 +96,40 @@
 		"isOpen": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

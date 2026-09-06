@@ -1,0 +1,11 @@
+{
+	"name": "sgs/missing-control-mustflag",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "opacity" ] }
+			]
+		}
+	},
+	"attributes": {}
+}

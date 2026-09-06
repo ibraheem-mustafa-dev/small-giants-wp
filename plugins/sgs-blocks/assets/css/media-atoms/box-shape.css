@@ -1,0 +1,92 @@
+/*
+ * box-shape — sizing mode (auto/height/ratio), named shape, min/max/width,
+ * and the media element's own border (width/style/colour/radius).
+ *
+ * Custom-property names match `box-shape.js`/`box-shape.php`'s `css()`
+ * output exactly: `--sgs-media-height[-tablet|-mobile]`,
+ * `--sgs-media-aspect-ratio`, `--sgs-media-width[-tablet|-mobile]`,
+ * `--sgs-media-min-height[-tablet|-mobile]`, `--sgs-media-max-width`,
+ * `--sgs-media-max-height`, `--sgs-media-max-width-percent`,
+ * `--sgs-media-clip-path`, `--sgs-media-border-radius[-tablet|-mobile]`,
+ * `--sgs-media-border-width`, `--sgs-media-border-style`,
+ * `--sgs-media-border-color`, `--sgs-media-border-image`.
+ *
+ * SHAPE IS `clip-path` for the CLIP itself, NEVER the block WRAPPER's
+ * `border-radius` — that property still belongs to `SgsBorderControl`
+ * (44 blocks) and native `__experimentalBorder` (`sgs/media`). A second
+ * writer targeting THAT node is a bug (plugins/sgs-blocks/CLAUDE.md,
+ * "Border controls"). See `box-shape.js`'s module docblock for the full
+ * none/square/rounded/circle -> clip-path mapping.
+ *
+ * THE BORDER'S OWN PAINT (width/style/colour/radius) is a SEPARATE,
+ * UNGATED-by-shape capability (added 2026-09-02) — `SgsBorderControl` fed
+ * this atom's own attribute names with zero custom logic. `--sgs-media-
+ * border-color`/`-image` are mutually exclusive (gradient wins, same rule
+ * as `overlay`'s colour/gradient pair) — a gradient rides `border-image`
+ * because a single custom property cannot carry the masked-::before-ring
+ * technique a full gradient border normally needs, and `border-image-
+ * slice:1` is a harmless companion when no gradient is set (`none 1` is a
+ * standard, non-`initial`/`unset`/`revert` no-op value).
+ *
+ * Height/Width/BorderRadius follow the mobile -> tablet -> desktop ->
+ * initial fallback chain `_base.css` documents; min-height does the same.
+ * Aspect-ratio, max-width/max-height/max-width-percent/clip-path/border-
+ * width/border-style/border-color/border-image are single-value (no device
+ * tiers — MEDIA_TIERED_BASES does not carry them; per-device border WIDTH
+ * is cancelled outright, not merely untiered, per CLAUDE.md "Border
+ * controls").
+ */
+
+.sgs-media-el {
+	height: var( --sgs-media-height, auto );
+	width: var( --sgs-media-width, auto );
+	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
+	min-height: var( --sgs-media-min-height, 0 );
+	max-width: var( --sgs-media-max-width, none );
+	max-height: var( --sgs-media-max-height, none );
+	clip-path: var( --sgs-media-clip-path, none );
+	border-radius: var( --sgs-media-border-radius, 0 );
+	border-width: var( --sgs-media-border-width, 0 );
+	border-style: var( --sgs-media-border-style, none );
+	border-color: var( --sgs-media-border-color, currentcolor );
+	border-image-source: var( --sgs-media-border-image, none );
+	border-image-slice: 1;
+}
+
+/* max-width-percent is a SEPARATE cap from max-width (a percentage floor
+ * distinct from an absolute length) — only applied when the atom emits it,
+ * via the same custom-property/initial-fallback contract as every other
+ * declaration here. */
+.sgs-media-el {
+	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, none ) );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
+		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
+		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) );
+		border-radius: var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) );
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		height: var(
+			--sgs-media-height-mobile,
+			var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) )
+		);
+		width: var(
+			--sgs-media-width-mobile,
+			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
+		);
+		min-height: var(
+			--sgs-media-min-height-mobile,
+			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) )
+		);
+		border-radius: var(
+			--sgs-media-border-radius-mobile,
+			var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) )
+		);
+	}
+}

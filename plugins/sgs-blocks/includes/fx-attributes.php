@@ -32,17 +32,17 @@ defined( 'ABSPATH' ) || exit;
  * Block attribute name => rendered data-attribute suffix (Spec 38 §11.2).
  */
 const FX_ATTR_MAP = array(
-	'fx'           => 'data-sgs-fx',
-	'fxTrigger'    => 'data-sgs-fx-trigger',
-	'fxStart'      => 'data-sgs-fx-start',
-	'fxEnd'        => 'data-sgs-fx-end',
-	'fxHold'       => 'data-sgs-fx-hold',
-	'fxScrub'      => 'data-sgs-fx-scrub',
-	'fxStagger'    => 'data-sgs-fx-stagger',
-	'fxDuration'   => 'data-sgs-fx-duration',
-	'fxEase'       => 'data-sgs-fx-ease',
-	'fxSplit'      => 'data-sgs-fx-split',
-	'fxMask'       => 'data-sgs-fx-mask',
+	'fx'                   => 'data-sgs-fx',
+	'fxTrigger'            => 'data-sgs-fx-trigger',
+	'fxStart'              => 'data-sgs-fx-start',
+	'fxEnd'                => 'data-sgs-fx-end',
+	'fxHold'               => 'data-sgs-fx-hold',
+	'fxScrub'              => 'data-sgs-fx-scrub',
+	'fxStagger'            => 'data-sgs-fx-stagger',
+	'fxDuration'           => 'data-sgs-fx-duration',
+	'fxEase'               => 'data-sgs-fx-ease',
+	'fxSplit'              => 'data-sgs-fx-split',
+	'fxMask'               => 'data-sgs-fx-mask',
 
 	/*
 	 * Motion-path route (Spec 38 §11.2, D427). These two are the AUTHORING
@@ -60,9 +60,9 @@ const FX_ATTR_MAP = array(
 	 * params above, so emitting the label too would ship a data attribute no
 	 * runtime reads.
 	 */
-	'fxPath'       => 'data-sgs-fx-path',
-	'fxPathAsset'  => 'data-sgs-fx-path-asset',
-	'fxPathRotate' => 'data-sgs-fx-motion-path-rotate',
+	'fxPath'               => 'data-sgs-fx-path',
+	'fxPathAsset'          => 'data-sgs-fx-path-asset',
+	'fxPathRotate'         => 'data-sgs-fx-motion-path-rotate',
 
 	/*
 	 * Resting position (Spec 38 §11.2, D441, 2026-08-01). Where the traveller
@@ -74,8 +74,8 @@ const FX_ATTR_MAP = array(
 	 * file's docblock for the full mechanism and why a runtime clamp was
 	 * rejected in favour of it.
 	 */
-	'fxPathRest'   => 'data-sgs-fx-motion-path-rest',
-	'fxPathRestVh' => 'data-sgs-fx-motion-path-rest-vh',
+	'fxPathRest'           => 'data-sgs-fx-motion-path-rest',
+	'fxPathRestVh'         => 'data-sgs-fx-motion-path-rest-vh',
 
 	/*
 	 * MorphSVG shape pair (Spec 38 §11.2, D427). These are the AUTHORING
@@ -86,7 +86,7 @@ const FX_ATTR_MAP = array(
 	 * deliberately has no row here, same as the motion-path target above —
 	 * nothing authors it.
 	 */
-	'fxShape'          => 'data-sgs-fx-shape',
+	'fxShape'              => 'data-sgs-fx-shape',
 
 	/*
 	 * Cursor field (FR-38-25). These three MUST be here, not just in `fx.js`'s
@@ -98,11 +98,123 @@ const FX_ATTR_MAP = array(
 	 * colour override — an effect that looks configured and renders something
 	 * else. Caught by a qc-council code-path trace before deploy.
 	 */
-	'fxFieldType'      => 'data-sgs-fx-field',
-	'fxFieldColour'    => 'data-sgs-fx-field-colour',
-	'fxFieldRadius'    => 'data-sgs-fx-field-radius',
-	'fxShapeAssetFrom' => 'data-sgs-fx-shape-asset-from',
-	'fxShapeAssetTo'   => 'data-sgs-fx-shape-asset-to',
+	'fxFieldType'          => 'data-sgs-fx-field',
+	'fxFieldColour'        => 'data-sgs-fx-field-colour',
+	'fxFieldRadius'        => 'data-sgs-fx-field-radius',
+	'fxFieldShape'         => 'data-sgs-fx-field-shape',
+	'fxFieldBlend'         => 'data-sgs-fx-field-blend',
+	'fxWaveBase'           => 'data-sgs-fx-wave-base',
+	'fxWave1'              => 'data-sgs-fx-wave-1',
+	'fxWave2'              => 'data-sgs-fx-wave-2',
+	'fxWave3'              => 'data-sgs-fx-wave-3',
+	'fxWaveVariant'        => 'data-sgs-fx-wave-variant',
+	'fxWaveSpeed'          => 'data-sgs-fx-wave-speed',
+	'fxWaveAmplitude'      => 'data-sgs-fx-wave-amplitude',
+	'fxMagnetAxis'         => 'data-sgs-fx-magnet-axis',
+	'fxMagnetRadius'       => 'data-sgs-fx-magnet-radius',
+	'fxMagnetStrength'     => 'data-sgs-fx-magnet-strength',
+	'fxFieldTrail'         => 'data-sgs-fx-field-trail',
+	'fxShapeAssetFrom'     => 'data-sgs-fx-shape-asset-from',
+	'fxShapeAssetTo'       => 'data-sgs-fx-shape-asset-to',
+
+	/*
+	 * Surface treatment (Tier W, Spec 38 §1.2b, D479). Same reasoning as the
+	 * cursor-field rows above: most qualifying hosts are DYNAMIC blocks, so
+	 * these MUST be injected here, not just baked in by `fx.js`'s save
+	 * filter for static blocks — without this row a dynamic block's chosen
+	 * treatment/colours never reach the rendered root and
+	 * `includes/fx-surface-treatment.php` (which reads these back off the
+	 * markup at p11) has nothing to act on.
+	 */
+	'fxTreatment'          => 'data-sgs-fx-treatment',
+	'fxTreatmentIntensity' => 'data-sgs-fx-treatment-intensity',
+	'fxTreatmentShadow'    => 'data-sgs-fx-treatment-shadow',
+	'fxTreatmentHighlight' => 'data-sgs-fx-treatment-highlight',
+
+	/*
+	 * Per-treatment single colour (owner request: every treatment gets
+	 * colour control, not only duotone). Same reasoning as the shadow/
+	 * highlight rows immediately above — most qualifying hosts are DYNAMIC
+	 * blocks, so these MUST be injected here too, not just baked in by
+	 * `fx.js`'s save filter for static blocks.
+	 */
+	'fxTreatmentTint'      => 'data-sgs-fx-treatment-tint',
+	'fxTreatmentInk'       => 'data-sgs-fx-treatment-ink',
+	'fxTreatmentReveal'    => 'data-sgs-fx-treatment-reveal',
+
+	/*
+	 * Particle trail (FR-38-32). Same reasoning as cursor-field/magnet/
+	 * wave-gradient above: most qualifying hosts (`sgs/container`,
+	 * `sgs/hero`, `sgs/cta-section`, `sgs/button`…) are DYNAMIC blocks, so
+	 * these MUST be injected here, not just baked in by `fx.js`'s save
+	 * filter for static blocks.
+	 */
+	'fxParticlePreset'     => 'data-sgs-fx-particle-preset',
+	'fxParticleDensity'    => 'data-sgs-fx-particle-density',
+	'fxParticleSize'       => 'data-sgs-fx-particle-size',
+	'fxParticleColour'     => 'data-sgs-fx-particle-colour',
+	// FR-38-33 grid-dot field. Same shape as the particle colour above.
+	'fxGridDotColour'      => 'data-sgs-fx-grid-colour',
+	'fxGridDotHoverColour' => 'data-sgs-fx-grid-colour-hover',
+	'fxGridDotShape'       => 'data-sgs-fx-grid-shape',
+	// Geometry. These attribute names are the ones `fx-grid-dots.js`'s
+	// readOptions() already reads and clamps; the engine's own DEFAULTS table
+	// supplies any value a client leaves unset.
+	'fxGridCell'           => 'data-sgs-fx-grid-cell',
+	'fxGridDotSize'        => 'data-sgs-fx-grid-dot',
+	'fxGridRadius'         => 'data-sgs-fx-grid-radius',
+	'fxGridLean'           => 'data-sgs-fx-grid-lean',
+	'fxGridEase'           => 'data-sgs-fx-grid-ease',
+
+	/*
+	 * Generative background (Spec 38, D874 technique spec — v1 static build
+	 * only). Same reasoning as wave-gradient/surface-treatment above: most
+	 * qualifying hosts (`sgs/container`, `sgs/hero`, `sgs/cta-section`,
+	 * `sgs/trust-bar`) are DYNAMIC blocks, so these MUST be injected here,
+	 * not just baked in by `fx.js`'s save filter for static blocks — without
+	 * this row a dynamic block's chosen colours/ground never reach the
+	 * rendered root and `includes/fx-generative-background.php` (which reads
+	 * these back off the markup at p11) has nothing to act on.
+	 */
+	'fxGenColour1'         => 'data-sgs-fx-gen-colour-1',
+	'fxGenColour2'         => 'data-sgs-fx-gen-colour-2',
+	'fxGenColour3'         => 'data-sgs-fx-gen-colour-3',
+	'fxGenColour4'         => 'data-sgs-fx-gen-colour-4',
+	'fxGenGround'          => 'data-sgs-fx-gen-ground',
+
+	/*
+	 * Generative background — geometry mechanism (v1.2 rewrite, 2026-08-28).
+	 * Ten real params: overall speed + the nine tunables the vertex shader
+	 * reads directly (3 rotation frequencies, 3 rotation powers, 2
+	 * displacement frequencies, 1 displacement amount). Same reasoning as the
+	 * colour/ground rows above — most qualifying hosts are DYNAMIC blocks, so
+	 * these MUST be injected here for `sgs_fx_data_attr_string()`'s generic
+	 * loop to pick them up, not just baked in by `fx.js`'s save filter.
+	 */
+	'fxGenSpeed'           => 'data-sgs-fx-gen-speed',
+	'fxGenFoldFreq1'       => 'data-sgs-fx-gen-fold-freq-1',
+	'fxGenFoldFreq2'       => 'data-sgs-fx-gen-fold-freq-2',
+	'fxGenFoldFreq3'       => 'data-sgs-fx-gen-fold-freq-3',
+	'fxGenFoldPower1'      => 'data-sgs-fx-gen-fold-power-1',
+	'fxGenFoldPower2'      => 'data-sgs-fx-gen-fold-power-2',
+	'fxGenFoldPower3'      => 'data-sgs-fx-gen-fold-power-3',
+	'fxGenDisplaceFreqX'   => 'data-sgs-fx-gen-disp-freq-x',
+	'fxGenDisplaceFreqZ'   => 'data-sgs-fx-gen-disp-freq-z',
+	'fxGenDisplaceAmount'  => 'data-sgs-fx-gen-disp-amount',
+
+	/*
+	 * Generative background — striation / glow-gate + depth-fade params
+	 * (§3, 2026-08-28 build). Same reasoning as the geometry row above —
+	 * most qualifying hosts are DYNAMIC blocks, so these MUST be injected
+	 * here for `sgs_fx_data_attr_string()`'s generic loop to pick them up.
+	 */
+	'fxGenGlowAmount'      => 'data-sgs-fx-gen-glow-amount',
+	'fxGenGlowPower'       => 'data-sgs-fx-gen-glow-power',
+	'fxGenGlowRamp'        => 'data-sgs-fx-gen-glow-ramp',
+	'fxGenStriationStrength' => 'data-sgs-fx-gen-striation-strength',
+	'fxGenStriationFreq'   => 'data-sgs-fx-gen-striation-freq',
+	'fxGenColourAttenuation' => 'data-sgs-fx-gen-colour-attenuation',
+	'fxGenParabolaPower'   => 'data-sgs-fx-gen-parabola-power',
 );
 
 /**
@@ -341,12 +453,12 @@ function sgs_fx_apply_preset( array $attrs, string $effect ): array {
  */
 function sgs_fx_effect_param_scope(): array {
 	return array(
-		'scrub'            => array( 'fxScrub', 'fxEase' ),
-		'pin-scrub'        => array( 'fxHold', 'fxScrub' ),
-		'horizontal-panel' => array( 'fxHold', 'fxScrub' ),
-		'split-reveal'     => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
-		'motion-path'      => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
-		'morph'            => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
+		'scrub'             => array( 'fxScrub', 'fxEase' ),
+		'pin-scrub'         => array( 'fxHold', 'fxScrub' ),
+		'horizontal-panel'  => array( 'fxHold', 'fxScrub' ),
+		'split-reveal'      => array( 'fxDuration', 'fxStagger', 'fxEase', 'fxSplit', 'fxMask' ),
+		'motion-path'       => array( 'fxPath', 'fxPathAsset', 'fxPathRotate', 'fxPathRest', 'fxPathRestVh', 'fxScrub' ),
+		'morph'             => array( 'fxShape', 'fxShapeAssetFrom', 'fxShapeAssetTo' ),
 
 		/*
 		 * FR-38-25. Found by LIVE verification, not by review: with the row
@@ -362,7 +474,103 @@ function sgs_fx_effect_param_scope(): array {
 		 * the second of the three to have been missed on this effect. None is
 		 * cross-checked by a gate.
 		 */
-		'cursor-field'     => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius' ),
+		'cursor-field'      => array( 'fxFieldType', 'fxFieldColour', 'fxFieldRadius', 'fxFieldShape', 'fxFieldTrail', 'fxFieldBlend' ),
+		'magnet'            => array( 'fxMagnetAxis', 'fxMagnetRadius', 'fxMagnetStrength' ),
+
+		/*
+		 * FR-38-33 grid-dot field. This row was OMITTED at first ship because the
+		 * effect had no params, and `check-fx-list-drift.py` correctly refuses an
+		 * EMPTY row as a vacuous parse (it cannot tell empty-by-design from a
+		 * failed parse). It is legitimate now that there is a real param to scope.
+		 *
+		 * ⛔ LOAD-BEARING, not bookkeeping — the same trap the cursor-field and
+		 * surface-treatment comments above record: `sgs_fx_clear_stale_params()`
+		 * NULLs every scoped key not in `$allowed`, so omitting this row now would
+		 * wipe the client's chosen colour on EVERY render while the editor still
+		 * showed it set.
+		 */
+		'grid-dots'         => array(
+			'fxGridDotColour',
+			'fxGridDotHoverColour',
+			'fxGridDotShape',
+			'fxGridCell',
+			'fxGridDotSize',
+			'fxGridRadius',
+			'fxGridLean',
+			'fxGridEase',
+		),
+		'wave-gradient'     => array( 'fxWaveVariant', 'fxWaveBase', 'fxWave1', 'fxWave2', 'fxWave3', 'fxWaveSpeed', 'fxWaveAmplitude' ),
+
+		/*
+		 * Surface treatment (Tier W, Spec 38 §1.2b, D479). THIS ROW IS
+		 * LOAD-BEARING, NOT BOOKKEEPING — the exact `cursor-field` trap
+		 * documented immediately above, repeated for a different effect:
+		 * `sgs_fx_clear_stale_params()` below does `$allowed = $scope[
+		 * $effect ] ?? array()` and then NULLS every scoped key not in
+		 * `$allowed`. Omitting this row would make `fxTreatment` — a key
+		 * scoped to no effect at all — read as belonging to a DIFFERENT
+		 * effect, so it gets wiped on every single render regardless of
+		 * which effect is selected. The client's chosen treatment would
+		 * silently vanish at render time with no error anywhere: the panel
+		 * would still show it selected in the editor (that side reads the
+		 * stored attribute, not this scope), but the live page would never
+		 * receive `data-sgs-fx-treatment`, `-shadow`, `-highlight` or
+		 * `-intensity` — a feature that looks configured and renders
+		 * nothing.
+		 */
+		'surface-treatment' => array(
+			'fxTreatment',
+			'fxTreatmentIntensity',
+			'fxTreatmentShadow',
+			'fxTreatmentHighlight',
+			'fxTreatmentTint',
+			'fxTreatmentInk',
+			'fxTreatmentReveal',
+		),
+
+		/*
+		 * Particle trail (FR-38-32). LOAD-BEARING, not bookkeeping — the
+		 * same `cursor-field`/`surface-treatment` trap documented above,
+		 * repeated for a third effect: `sgs_fx_clear_stale_params()` below
+		 * nulls every scoped key not in this effect's own allowlist, so
+		 * omitting this row would wipe the client's chosen preset/density/
+		 * size on every render regardless of which effect is selected.
+		 */
+		'particles'         => array( 'fxParticlePreset', 'fxParticleDensity', 'fxParticleSize', 'fxParticleColour' ),
+
+		/*
+		 * Generative background (Spec 38, D874 technique spec — v1 static
+		 * build only). LOAD-BEARING, not bookkeeping — the same
+		 * cursor-field/surface-treatment/particles trap documented above,
+		 * repeated for this effect: `sgs_fx_clear_stale_params()` below nulls
+		 * every scoped key not in this effect's own allowlist, so omitting
+		 * this row would wipe the client's chosen colours/ground on every
+		 * render regardless of which effect is selected.
+		 */
+		'generative-background' => array(
+			'fxGenColour1',
+			'fxGenColour2',
+			'fxGenColour3',
+			'fxGenColour4',
+			'fxGenGround',
+			'fxGenSpeed',
+			'fxGenFoldFreq1',
+			'fxGenFoldFreq2',
+			'fxGenFoldFreq3',
+			'fxGenFoldPower1',
+			'fxGenFoldPower2',
+			'fxGenFoldPower3',
+			'fxGenDisplaceFreqX',
+			'fxGenDisplaceFreqZ',
+			'fxGenDisplaceAmount',
+			'fxGenGlowAmount',
+			'fxGenGlowPower',
+			'fxGenGlowRamp',
+			'fxGenStriationStrength',
+			'fxGenStriationFreq',
+			'fxGenColourAttenuation',
+			'fxGenParabolaPower',
+		),
 	);
 }
 

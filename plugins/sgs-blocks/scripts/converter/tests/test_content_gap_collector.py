@@ -225,7 +225,14 @@ class TestConvertSectionContentGaps:
         assert len(dropped) == 1
         assert dropped[0]["block_slug"] == "sgs/container"
         assert dropped[0]["where"] == "band:margin"
-        assert dropped[0]["detail"].startswith("[NO_DESTINATION]")
+        # Relabelled NO_DESTINATION -> EXCLUDED: `sgs/container` now has a real
+        # `margin` destination (box-object attr, seeded by a 2026-08-22
+        # /sgs-update reseed), so NO_DESTINATION's own meaning ("no attr —
+        # add one") is factually false here. This is a DELIBERATE non-lift of
+        # the `margin: 0 auto` horizontal-centring idiom, which the band-rule
+        # emitter already reproduces via `margin-inline:auto` on the __inner
+        # band — EXCLUDED is the correct label for an intentional non-lift.
+        assert dropped[0]["detail"].startswith("[EXCLUDED]")
 
     def test_sgs_tabs_block_markup_unaffected_by_gap_collection(self) -> None:
         """Regression guard: recording gaps must never change block_markup.

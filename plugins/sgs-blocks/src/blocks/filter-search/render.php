@@ -15,12 +15,8 @@
  * threshold is met (it does not depend on JS to appear). view.js only wires
  * the filtering interaction.
  *
- * NO-INLINE (LOCKED per-block no-inline migration contract, 2026-07-10): the
- * rendered wrapper carries ZERO inline CSS property declarations. `margin`
- * is a WP-native style.spacing.margin object; `spacing` declares
- * `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines it — it is instead
- * emitted scoped via wp_style_engine_get_styles() into this block's own
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. `margin`
+ * is a WP-native style.spacing.margin object, emitted scoped via wp_style_engine_get_styles() into this block's own
  * `.{uid}` <style> tag. marginTablet / marginMobile are SGS custom object
  * attrs (not WP-native), scoped @media(max-width:1023px)/767px on the same
  * selector.
@@ -34,25 +30,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // ---------------------------------------------------------------------------
 // Security sanitisers (contract §D) — a CSS-length sanitiser for box/side
 // values (mirrors sgs/label + sgs/heading + sgs/container).
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
 
 $attribute_id = absint( $attributes['attributeId'] ?? 0 );
 
@@ -167,7 +150,7 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 		}
 	}
 }
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_scoped_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $root_sel )
@@ -183,8 +166,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_ob
 $margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
 
 if ( null !== $margin_tab_val ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{margin:{$margin_tab_val};}}";

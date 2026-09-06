@@ -1,0 +1,20 @@
+{
+	"_note": "Seeds rule 31's mechanism axis for the two helper-shape fixtures. A fixture slug is never in the real DB map, so without this every fixture row resolves UNRESOLVED and the mechanism branch is unreachable — the branch these two fixtures exist to pin. Values mirror the real DB's vocabulary (core/golden.js MECHANISM_BY_CSS_PROPERTY): `color` + `color-gradient` = the text mechanism.",
+	"sgs/textrow-helper-gradient": {
+		"textColour": "color",
+		"textColourHover": "color",
+		"textColourGradient": "color-gradient",
+		"textColourHoverGradient": "color-gradient"
+	},
+	"sgs/fillrow-helper-on-text-attr": {
+		"textColour": "color",
+		"textColourHover": "color",
+		"textColourGradient": "color-gradient",
+		"textColourHoverGradient": "color-gradient"
+	},
+	"sgs/standalone-gradientcapable-direct-conformant": {
+		"titleColour": "color",
+		"titleColourHover": "color",
+		"titleColourGradient": "color-gradient"
+	}
+}

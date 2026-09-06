@@ -64,11 +64,24 @@ def _make_slots_db(rows: list[tuple]) -> sqlite3.Connection:
 
 
 def _rows_from_live_slots_json() -> list[tuple]:
-    """Load the actual seed file so this test tracks the real data, not a copy."""
+    """Load the actual seed file so this test tracks the real data, not a copy.
+
+    Reads only the first 4 columns positionally and ignores the rest by name
+    lookup against `__columns` — so a WIDENING of slots.json's row shape
+    (e.g. `resolves_whole_instance` added 2026-09-06, Check#12 Build 3) never
+    breaks this unpack again; only slot_name/scope/aliases/standalone_block
+    are load-bearing for the alias-resolution behaviour this file tests.
+    """
     data = json.loads(_SLOTS_JSON_PATH.read_text(encoding="utf-8"))
+    cols = list(data["__columns"])
+    idx = {name: cols.index(name) for name in
+           ("slot_name", "scope", "aliases", "standalone_block")}
     out = []
-    for slot_name, scope, aliases_json, standalone, _notes, _defaults in data["rows"]:
-        out.append((slot_name, scope, aliases_json, standalone))
+    for row in data["rows"]:
+        out.append((
+            row[idx["slot_name"]], row[idx["scope"]],
+            row[idx["aliases"]], row[idx["standalone_block"]],
+        ))
     return out
 
 

@@ -26,6 +26,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
@@ -42,8 +65,6 @@ $show_icon    = ! empty( $attributes['showIcon'] );
 // clip differs, and a clipped label stays in the a11y tree so an icon-only
 // phone/email link keeps its accessible name (WCAG name-required).
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
-$link_phone     = ! empty( $attributes['linkPhone'] );
-$link_email     = ! empty( $attributes['linkEmail'] );
 // Colour overrides (WCAG 1.4.3 fix, D-pending): empty by default — an unset
 // colour means "no override", so style.css's var(--sgs-bi-*, currentColor)
 // fallback inherits the surrounding container's text colour (e.g. the light
@@ -52,18 +73,41 @@ $link_email     = ! empty( $attributes['linkEmail'] );
 // explicit non-empty value here (set programmatically or via a future
 // colour control) still wins — see the colour-bridge block below, which only
 // emits the custom property when the resolved value is non-empty.
-$icon_colour  = (string) ( $attributes['iconColour'] ?? '' );
+$icon_colour = (string) ( $attributes['iconColour'] ?? '' );
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
 $icon_colour_gradient = (string) ( $attributes['iconColourGradient'] ?? '' );
-$text_colour  = (string) ( $attributes['textColour'] ?? '' );
-$label_colour = (string) ( $attributes['labelColour'] ?? '' );
-// Link hover — unset means "no override", so style.css's #e7d768 default applies.
-// Split 2026-08-16 (D643): the resolved colour used to feed BOTH the gradient
-// colour-stop (background-image) AND the @supports-fallback `color:` from one
-// attribute. A `color:` value can never legally hold a gradient, so each CSS
-// technique now gets its own attribute — see block.json's `link` element note.
-$link_hover_bg_image_colour = (string) ( $attributes['linkHoverBackgroundImage'] ?? '' );
-$link_hover_text_colour     = (string) ( $attributes['linkHoverTextColour'] ?? '' );
+// Icon hover siblings (2026-09-05) — mirror sgs/button's icon element exactly.
+$icon_colour_hover          = (string) ( $attributes['iconColourHover'] ?? '' );
+$icon_colour_hover_gradient = (string) ( $attributes['iconColourHoverGradient'] ?? '' );
+$text_colour                = (string) ( $attributes['textColour'] ?? '' );
+// D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
+// non-empty wins over textColour/labelColour at render time.
+$text_colour_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
+// Text hover siblings (2026-09-05) — real normal/hover pair via sgs_text_states_css().
+$text_colour_hover          = (string) ( $attributes['textColourHover'] ?? '' );
+$text_colour_hover_gradient = (string) ( $attributes['textColourHoverGradient'] ?? '' );
+$label_colour               = (string) ( $attributes['labelColour'] ?? '' );
+$label_colour_gradient      = (string) ( $attributes['labelColourGradient'] ?? '' );
+// Attribution hover-sweep colours — unset means "no override", so style.css's
+// #e7d768 default applies. Renamed 2026-09-05 from linkHoverBackgroundImage/
+// linkHoverTextColour (D643, 2026-08-16): both only ever paint the website-credit
+// sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css),
+// never a phone/email link — see block.json's `link` element note. Split
+// because a `color:` value can never legally hold a gradient, so each CSS
+// technique keeps its own attribute.
+$attribution_hover_colour          = (string) ( $attributes['attributionHoverColour'] ?? '' );
+$attribution_hover_colour_fallback = (string) ( $attributes['attributionHoverColourFallback'] ?? '' );
+
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Placeholder shown when data is missing.
 $placeholder = sprintf(
@@ -84,9 +128,12 @@ $sgs_is_editor_render = ! \SGS\Blocks\sgs_is_frontend_render();
 // definition below, which needs it) using the SAME uid this render also uses
 // for its scoped <style> further down (moved up unchanged — one definition,
 // referenced both here and where $root_sel is built).
-$uid                 = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_bi_stroke_grad  = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
-$sgs_bi_defs_injected = false;
+$uid                = 'sgs-biz-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_bi_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+// Icon hover gradient sibling (2026-09-05) — same mechanism, own <defs> id/'-igh'
+// suffix, mirroring sgs/button's iconColourHoverGradient handling exactly.
+$sgs_bi_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_colour_hover_gradient, $uid . '-igh' );
+$sgs_bi_defs_injected     = false;
 
 /**
  * Helper: wrap an inline SVG icon in a presentational span.
@@ -94,15 +141,20 @@ $sgs_bi_defs_injected = false;
  * @param string $icon_name Lucide icon slug.
  * @return string HTML.
  */
-$icon_html = function ( string $icon_name ) use ( $show_icon, $sgs_bi_stroke_grad, &$sgs_bi_defs_injected ): string {
+$icon_html = function ( string $icon_name ) use ( $show_icon, $sgs_bi_stroke_grad, $sgs_bi_stroke_grad_hover, &$sgs_bi_defs_injected ): string {
 	if ( ! $show_icon ) {
 		return '';
 	}
 	$svg = sgs_get_lucide_icon( $icon_name );
 	// Gradient <defs> only needs to exist ONCE in the DOM — this closure can
 	// render more than once per instance (e.g. a combined display type).
-	if ( ! $sgs_bi_defs_injected && '' !== $sgs_bi_stroke_grad['defs'] ) {
-		$svg                   = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad['defs'] );
+	if ( ! $sgs_bi_defs_injected ) {
+		if ( '' !== $sgs_bi_stroke_grad['defs'] ) {
+			$svg = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad['defs'] );
+		}
+		if ( '' !== $sgs_bi_stroke_grad_hover['defs'] ) {
+			$svg = sgs_svg_inject_defs( $svg, $sgs_bi_stroke_grad_hover['defs'] );
+		}
 		$sgs_bi_defs_injected = true;
 	}
 	return sprintf( '<span class="sgs-business-info__icon" aria-hidden="true">%s</span>', $svg );
@@ -134,15 +186,13 @@ switch ( $display_type ) {
 		if ( '' !== $phone_raw ) {
 			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
 			$inner    = $icon_html( 'phone' ) . $label_html( Sgs_Site_Info::get_esc_html( 'phone' ) );
-			if ( $link_phone ) {
-				$html = sprintf(
-					'<a href="%s" class="sgs-business-info__link">%s</a>',
-					esc_url( $tel_href ),
-					$inner
-				);
-			} else {
-				$html = $inner;
-			}
+			// Always a link — there is no use case for an unclickable phone
+			// number, so the old linkPhone toggle was removed 2026-09-05.
+			$html = sprintf(
+				'<a href="%s" class="sgs-business-info__link">%s</a>',
+				esc_url( $tel_href ),
+				$inner
+			);
 			$html = '<p class="sgs-business-info sgs-business-phone">' . $html . '</p>';
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-phone">' . $placeholder . '</p>' : '';
@@ -154,15 +204,13 @@ switch ( $display_type ) {
 		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
 		if ( '' !== $email_raw && is_email( $email_raw ) ) {
 			$inner = $icon_html( 'mail' ) . $label_html( Sgs_Site_Info::get_esc_html( 'email' ) );
-			if ( $link_email ) {
-				$html = sprintf(
-					'<a href="%s" class="sgs-business-info__link">%s</a>',
-					esc_url( 'mailto:' . antispambot( $email_raw ) ),
-					$inner
-				);
-			} else {
-				$html = $inner;
-			}
+			// Always a link — there is no use case for an unclickable email
+			// address, so the old linkEmail toggle was removed 2026-09-05.
+			$html = sprintf(
+				'<a href="%s" class="sgs-business-info__link">%s</a>',
+				esc_url( 'mailto:' . antispambot( $email_raw ) ),
+				$inner
+			);
 			$html = '<p class="sgs-business-info sgs-business-email">' . $html . '</p>';
 		} else {
 			$html = $sgs_is_editor_render ? '<p class="sgs-business-info sgs-business-email">' . $placeholder . '</p>' : '';
@@ -388,16 +436,11 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 }
 
 // ---------------------------------------------------------------------------
-// NO-INLINE (per-block no-inline migration contract §A, 2026-07-10): the
-// rendered subtree carries ZERO inline CSS property declarations. The colour
-// bridge (--sgs-bi-icon-colour/--sgs-bi-text-colour/--sgs-bi-label-colour,
-// consumed by style.css) and the WP `spacing`/`color`/`typography` supports
-// (all three declare __experimentalSkipSerialization in block.json so
-// get_block_wrapper_attributes() never auto-inlines them) are all emitted
-// into the block's own scoped
-// `.{uid}` <style> tag instead. This is a content-KIND single-container
-// block (box+width only, no grid/section machinery) — block-private per the
-// D294 pattern, mirroring sgs/heading's mechanism.
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+// --check. This is a content-KIND single-container block (box+width only,
+// no grid/section machinery) — block-private per the D294 pattern,
+// mirroring sgs/heading's mechanism.
 //
 // BOX-GROUP (contract §B): base padding/margin come from WP-native
 // style.spacing.* (skip-serialised, emitted scoped via the core style
@@ -408,22 +451,97 @@ if ( '' === $html && ! $sgs_is_editor_render ) {
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side value can never break out of its
 // declaration (contract §D; mirrors sgs/heading + sgs/container).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // $uid was already computed earlier (above $icon_html's closure definition,
 // which needs the gradient derived from it) — reused here, not recomputed.
 $root_sel = '.' . $uid;
 
 $scoped_css = array();
+
+// --- Border — width/style on the wrapper, colour (flat or gradient, base +
+// hover) via the shared sgs_border_states_css() helper, radius via the
+// shared sgs_border_radius_tiers() + core style engine (base) plus
+// hand-built shorthand tiers (tablet/mobile). Mirrors sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+}
+
 if ( '' !== $sgs_bi_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-business-info__icon svg{" . $sgs_bi_stroke_grad['css'] . ';}';
 }
+// Icon hover — flat colour + gradient siblings (2026-09-05), touch-safe via
+// sgs_hover_state_rules() (helpers-hover-state.php), mirroring sgs/button's
+// icon element exactly. The hover TRIGGER is the whole block wrapper
+// ($root_sel) rather than .sgs-business-info__link alone, because the icon
+// also renders on non-linked display types (address/hours) where there is no
+// link element to hover.
+if ( '' !== $icon_colour_hover ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$root_sel,
+		'color:' . sgs_colour_value( $icon_colour_hover ),
+		':focus-visible',
+		' .sgs-business-info__icon'
+	);
+}
+if ( '' !== $sgs_bi_stroke_grad_hover['css'] ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$root_sel,
+		$sgs_bi_stroke_grad_hover['css'],
+		':focus-visible',
+		' .sgs-business-info__icon svg'
+	);
+}
 
-// --- Colour bridge (icon/text/label) — was an inline `style` attr, now a
-// scoped custom-property declaration; style.css's var(--sgs-bi-*, currentColor)
-// consumption is unchanged. Each custom property is emitted ONLY when the
+// --- Colour bridge (icon/text/label) — a scoped custom-property declaration;
+// style.css consumes it via var(--sgs-bi-*, currentColor). Each custom
+// property is emitted ONLY when the
 // attribute resolves to a non-empty value (an explicit override) — an unset
 // attribute means "no override", so no declaration is written at all and
 // style.css's currentColor fallback takes over, inheriting the surrounding
@@ -437,27 +555,61 @@ $sgs_bi_icon_colour_css = sgs_colour_value( $icon_colour );
 if ( '' !== $sgs_bi_icon_colour_css ) {
 	$sgs_bi_colour_decls[] = '--sgs-bi-icon-colour:' . $sgs_bi_icon_colour_css;
 }
-$sgs_bi_text_colour_css = sgs_colour_value( $text_colour );
-if ( '' !== $sgs_bi_text_colour_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-text-colour:' . $sgs_bi_text_colour_css;
+// textColour moved OFF the custom-property bridge (2026-09-04, D636 gradient
+// rollout finish) — a custom property can never legally hold a CSS gradient
+// string the way --sgs-bi-icon-colour above still can for a flat value, so it
+// emits direct scoped declarations, exactly mirroring sgs/counter's
+// numberColour. The "unset means no override, inherit currentColor" contract
+// is UNCHANGED: when none of the four text attrs are set,
+// sgs_text_states_css() emits nothing and style.css's
+// `var(--sgs-bi-text-colour, currentColor)` rule simply resolves its fallback
+// (that custom property is never declared by any mechanism any more).
+//
+// 2026-09-05: replaced the old single-state (normal only) hand-rolled call
+// with sgs_text_states_css() — the shared 2-state (normal+hover) helper
+// (helpers-colour-variants.php) already used for this exact shape elsewhere
+// in the framework. It resolves both states, emits the touch-safe hover pair
+// via sgs_hover_state_rules(), AND both mandatory gradient `@supports`
+// fallback rules, at the SAME $root_sel this block's text colour was already
+// scoped to.
+$scoped_css[] = sgs_text_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
+	)
+);
+// labelColour's only real paint target today is .sgs-business-hours__day
+// (style.css:167 `color: var(--sgs-bi-label-colour, currentColor)`) — the
+// generic .sgs-business-info__label span carries no colour rule of its own,
+// it inherits. The gradient sibling follows the SAME real selector.
+$label_sel              = "{$root_sel} .sgs-business-hours__day";
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+if ( '' !== $label_colour_effective ) {
+	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
+	if ( '' !== $label_colour_decl ) {
+		$scoped_css[] = "{$label_sel}{{$label_colour_decl};}";
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
-$sgs_bi_label_colour_css = sgs_colour_value( $label_colour );
-if ( '' !== $sgs_bi_label_colour_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-label-colour:' . $sgs_bi_label_colour_css;
+// Attribution hover-sweep — same omit-when-unset contract as the icon colour
+// above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` /
+// `var(--sgs-bi-link-hover-text, #e7d768)`, the SGS credit sweep colour. Two
+// separate custom properties (split 2026-08-16, D643; renamed 2026-09-05 from
+// linkHoverBackgroundImage/linkHoverTextColour — see block.json's `link`
+// element note) — one feeds the gradient colour-stop, one feeds the
+// @supports fallback `color:` — so each can be resolved independently and,
+// later, so only the gradient one can ever be offered a gradient value.
+$sgs_bi_attribution_hover_bg_css = sgs_colour_value( $attribution_hover_colour );
+if ( '' !== $sgs_bi_attribution_hover_bg_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_attribution_hover_bg_css;
 }
-// Link hover — same omit-when-unset contract as the three above. Unset falls back
-// to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` / `var(--sgs-bi-link-hover-text, #e7d768)`,
-// the SGS credit sweep colour. Two separate custom properties (split 2026-08-16,
-// D643) — one feeds the gradient colour-stop, one feeds the @supports fallback
-// `color:` — so each can be resolved independently and, later, so only the
-// gradient one can ever be offered a gradient value.
-$sgs_bi_link_hover_bg_css = sgs_colour_value( $link_hover_bg_image_colour );
-if ( '' !== $sgs_bi_link_hover_bg_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-bg:' . $sgs_bi_link_hover_bg_css;
-}
-$sgs_bi_link_hover_text_css = sgs_colour_value( $link_hover_text_colour );
-if ( '' !== $sgs_bi_link_hover_text_css ) {
-	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-text:' . $sgs_bi_link_hover_text_css;
+$sgs_bi_attribution_hover_text_css = sgs_colour_value( $attribution_hover_colour_fallback );
+if ( '' !== $sgs_bi_attribution_hover_text_css ) {
+	$sgs_bi_colour_decls[] = '--sgs-bi-link-hover-text:' . $sgs_bi_attribution_hover_text_css;
 }
 if ( $sgs_bi_colour_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $sgs_bi_colour_decls ) . ';}';
@@ -487,16 +639,16 @@ if ( $show_icon && 'none' !== $label_collapse ) {
 // core style engine (exactly how sgs/heading + WP core `layout` support do
 // it). ---
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -508,81 +660,63 @@ $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (stri
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// --- WP-native typography support (skip-serialised) — same auto-inline
-// problem as color/spacing: get_block_wrapper_attributes() would otherwise
-// inline style.typography.* straight onto the wrapper. Read the base
-// style.typography.* object and fold it into the same scoped
-// wp_style_engine_get_styles() call used for color/spacing below (contract
-// §A/§B — mirrors sgs/heading + sgs/label). Only fontSize + fontFamily are
-// declared in block.json supports.typography, so only those keys can ever
-// be present.
-$style_typography = isset( $attributes['style']['typography'] ) && is_array( $attributes['style']['typography'] )
-	? $attributes['style']['typography']
-	: array();
+$base_style_engine_args = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+}
 
-	if ( ! empty( $style_typography ) ) {
-		$base_style_engine_args['typography'] = $style_typography;
-	}
-
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
-	}
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + fontFamily only) with the framework's own
+// helper, which also now offers fontWeight/fontStyle/lineHeight. Scope is
+// unchanged — $root_sel is the same whole-wrapper selector the native support
+// was applied to above.
+$typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+if ( '' !== $typography_css ) {
+	$scoped_css[] = $typography_css;
 }
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the same wrapper selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -637,7 +771,7 @@ if ( $scoped_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while
 	// leaving CSS combinators intact (contract §D — matches sgs/heading +
 	// SGS_Container_Wrapper). Every value reaching $scoped_css is
-	// pre-sanitised ($sgs_css_length / sgs_colour_value / wp_style_engine_get_styles),
+	// pre-sanitised (sgs_css_length_value() / sgs_colour_value / wp_style_engine_get_styles),
 	// so no un-sanitised value survives here.
 	$scoped_style_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 }

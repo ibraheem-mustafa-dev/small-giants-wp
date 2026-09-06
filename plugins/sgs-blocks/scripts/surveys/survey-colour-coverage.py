@@ -90,11 +90,12 @@ KNOWN LIMITATIONS (disclosed, not hidden)
 3. STATE NAMING: this script's own vocabulary (base/hover/focus/active/
    disabled, from the selector shape) does not match `block_attributes`'
    OWN `css_state` vocabulary 1:1 — the DB was found (queried live,
-   2026-08-14) to use only 'hover' and 'selected' for role='color' rows
-   (never 'focus'/'active'/'disabled'/'open'). This script's 'active'
+   2026-08-14; renamed 'selected'->'current' 2026-08-19) to use only
+   'hover' and 'current' for role='color' rows (never
+   'focus'/'active'/'disabled'/'open'). This script's 'active'
    state (covering `[aria-current]`/`[aria-selected="true"]`/`.is-active`/
    `.is-current`/`.is-selected`/`[open]`/`.is-open`/`:checked`) is matched
-   against DB `css_state='selected'` — the closest existing DB concept for
+   against DB `css_state='current'` — the closest existing DB concept for
    "the chosen/current one of a set". 'focus' and 'disabled' have no DB
    equivalent at all today, so any hardcoded focus/disabled-state colour on
    an element that has a base attribute is UNCONDITIONALLY a
@@ -203,11 +204,12 @@ STATE_MARKERS = [
 ]
 
 # DB block_attributes.css_state has ONLY ever been observed to carry 'hover'
-# and 'selected' for role='color' rows (verified live, 2026-08-14) — see
-# module docstring limitation 3. 'focus'/'disabled' map to nothing, by design.
+# and 'current' for role='color' rows (verified live, 2026-08-14; renamed
+# 'selected'->'current' 2026-08-19) — see module docstring limitation 3.
+# 'focus'/'disabled' map to nothing, by design.
 STATE_TO_DB_STATE = {
     'hover': {'hover'},
-    'active': {'selected'},
+    'active': {'current'},
     'focus': set(),
     'disabled': set(),
 }

@@ -1,0 +1,17 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-text-cluster-no-typography",
+	"title": "Fixture: no native typography, and no element declares the text cluster — out of scope, must NOT flag (negative control)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"elements": {
+				"icon": {
+					"label": "Icon",
+					"clusters": [ "fill" ]
+				}
+			}
+		}
+	},
+	"attributes": {}
+}

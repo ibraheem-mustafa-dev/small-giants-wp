@@ -1,7 +1,23 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:sgs/container {"tagName":"main","anchor":"main"} -->
-	<!-- wp:post-content {"layout":{"type":"constrained","contentSize":"1200px","wideSize":"1400px"}} /-->
+<!-- WIDTH MODEL (2026-08-21). ONE cap per page, and it is ours.
+     OUTER (maxWidth, default {} = no cap) paints full-bleed; INNER (contentWidth,
+     default "normal" = 1200px) holds the content. That pairing IS the model.
+     `<main>` is STRUCTURE, not content, so it says contentWidth:"full" and passes width
+     through — each section inside then paints edge-to-edge and caps its own words. This
+     is the shape archive-product.html already uses and which measured correct live.
+     ⛔ Do NOT re-add wp:post-content {"layout":{"type":"constrained"}}. It applied a
+     SECOND 1200px cap inside a container that already capped at 1200 — three stacked
+     caps doing one job, and the source of the outer/content width confusion.
+     A BARE BLOCK — one placed straight into the page rather than inside a container —
+     is INTENTIONALLY full-width and unbanded (Bean-ruled 2026-08-21, D725). Not using a
+     container is itself the choice, and the block still carries its own padding, margin
+     and alignment. Do NOT "fix" this by re-adding a cap on post-content's children: two
+     bare paragraphs measuring flush at left:0 on a fixture page is the DESIGNED result,
+     not a regression. (Sole gap: sgs/media declares no spacing supports, so a bare image
+     has no padding control — full-width is usually wanted there anyway.) -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"}} -->
+	<!-- wp:post-content /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -8,7 +8,8 @@
       "property": "max-width",
       "value": "min(900px, calc(100vw - 2rem))",
       "attr": "panelWidth, panelMaxWidth",
-      "reason": "baseline — pre-existing F3 debt (fix tracked separately)"
+      "reason": "baseline — pre-existing F3 debt (fix tracked separately)",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/brand-strip",
@@ -16,7 +17,8 @@
       "property": "line-height",
       "value": "1.3",
       "attr": "nameLineHeight",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (button/style.css's header comment contained literal {}, desyncing the parser's brace-depth tracking for the whole file). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (button/style.css's header comment contained literal {}, desyncing the parser's brace-depth tracking for the whole file). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/button",
@@ -24,7 +26,8 @@
       "property": "line-height",
       "value": "1.2",
       "attr": "lineHeight",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/mega-panel",
@@ -32,7 +35,8 @@
       "property": "padding",
       "value": "17px",
       "attr": "panelPadding",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/mega-panel",
@@ -40,7 +44,8 @@
       "property": "border-radius",
       "value": "15px",
       "attr": "borderRadius",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/product-card",
@@ -48,7 +53,8 @@
       "property": "border-radius",
       "value": "16px",
       "attr": "pickerPillBorderRadius, pickerPillSelectedBorderRadius, tagBorderRadius",
-      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately."
+      "reason": "2026-08-16 — unmasked by fixing check-hardcoded-render-defaults.js's dead stripComments() call (see sgs/brand-strip entry above for the root cause). Pre-existing debt, not introduced by that fix. Fix tracked separately.",
+      "disposition": "accepted-debt"
     },
     {
       "block": "sgs/card-grid",
@@ -56,7 +62,8 @@
       "property": "color",
       "value": "primary",
       "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
-      "reason": "2026-08-17 — unmasked by the E12 element-scoping fix (D-pending): PART A now admits enums containing p/div/span, so card-grid's headingLevel enum (h2..h6,p) reaches the F3b default-value scan for the first time; PART B correctly resolves titleColour and headingLevel to the SAME element ('title'). NOT a real F3 violation — CONFIRMED false positive of a SEPARATE, pre-existing gap in isLiteralConstant()/formatDefaultForLiteralCheck(): titleColour's block.json default (\"primary\") is a design-TOKEN SLUG, not a literal CSS colour. render.php:616-618 always resolves it through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)' — never the literal string 'primary' — so the painted CSS is a var() reference, exempt per this script's own CSS_VAR_RE rule, and correctly theme-differentiated (the var resolves against whatever the theme's 'primary' preset is at each breakpoint/variation, not a flattened constant). Verified by reading render.php directly (not inferred). Fixing the underlying gap (recognising a bare colour-token-slug default as var()-bound) is out of scope for the E12 pass — it is a shared exemption in isLiteralConstant() used by every block's CSS scan, not specific to headingLevel/E12, and changing it deserves its own review. Tracked separately; do not re-baseline blindly if this recurs on a NEW attribute/value pair — verify the render.php path resolves through sgs_colour_value() (or an equivalent local wrapper) first."
+      "reason": "2026-08-17 — unmasked by the E12 element-scoping fix (D-pending): PART A now admits enums containing p/div/span, so card-grid's headingLevel enum (h2..h6,p) reaches the F3b default-value scan for the first time; PART B correctly resolves titleColour and headingLevel to the SAME element ('title'). NOT a real F3 violation — CONFIRMED false positive of a SEPARATE, pre-existing gap in isLiteralConstant()/formatDefaultForLiteralCheck(): titleColour's block.json default (\"primary\") is a design-TOKEN SLUG, not a literal CSS colour. render.php:616-618 always resolves it through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)' — never the literal string 'primary' — so the painted CSS is a var() reference, exempt per this script's own CSS_VAR_RE rule, and correctly theme-differentiated (the var resolves against whatever the theme's 'primary' preset is at each breakpoint/variation, not a flattened constant). Verified by reading render.php directly (not inferred). Fixing the underlying gap (recognising a bare colour-token-slug default as var()-bound) is out of scope for the E12 pass — it is a shared exemption in isLiteralConstant() used by every block's CSS scan, not specific to headingLevel/E12, and changing it deserves its own review. Tracked separately; do not re-baseline blindly if this recurs on a NEW attribute/value pair — verify the render.php path resolves through sgs_colour_value() (or an equivalent local wrapper) first.",
+      "disposition": "detector-limitation"
     },
     {
       "block": "sgs/pricing-table",
@@ -64,7 +71,8 @@
       "property": "color",
       "value": "text",
       "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
-      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:99-104 declares a local `$colour_val` closure that always returns `var(--wp--preset--color--<slug>)`, and render.php:534-535 is the only place titleColour is painted, always through that closure — the block.json default \"text\" is never emitted as a literal. Same root cause, same out-of-scope-for-E12 disposition."
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:99-104 declares a local `$colour_val` closure that always returns `var(--wp--preset--color--<slug>)`, and render.php:534-535 is the only place titleColour is painted, always through that closure — the block.json default \"text\" is never emitted as a literal. Same root cause, same out-of-scope-for-E12 disposition.",
+      "disposition": "detector-limitation"
     },
     {
       "block": "sgs/process-steps",
@@ -72,7 +80,8 @@
       "property": "color",
       "value": "text",
       "attr": "titleColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
-      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:381-382 paints titleColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--text)', never the literal 'text'. Same root cause, same out-of-scope-for-E12 disposition."
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:381-382 paints titleColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--text)', never the literal 'text'. Same root cause, same out-of-scope-for-E12 disposition.",
+      "disposition": "detector-limitation"
     },
     {
       "block": "sgs/team-member",
@@ -80,7 +89,71 @@
       "property": "color",
       "value": "primary",
       "attr": "nameColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
-      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:583-584 paints nameColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)', never the literal 'primary'. Same root cause, same out-of-scope-for-E12 disposition."
+      "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:583-584 paints nameColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)', never the literal 'primary'. Same root cause, same out-of-scope-for-E12 disposition.",
+      "disposition": "detector-limitation"
+    },
+    {
+      "block": "sgs/button",
+      "file": "src\\blocks\\button\\style.css",
+      "property": "padding",
+      "value": "14px 24px",
+      "attr": "padding",
+      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms button/style.css last changed by an unrelated earlier commit). Surfaced by the F5/build gate for the first time this run, not introduced here. Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/form",
+      "file": "src\\blocks\\form\\style.css",
+      "property": "padding",
+      "value": "1rem",
+      "attr": "padding",
+      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms form/style.css was never touched by this branch). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/heading",
+      "file": "src\\blocks\\heading\\style.css",
+      "property": "margin-bottom",
+      "value": "8px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's heading/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/option-picker",
+      "file": "src\\blocks\\option-picker\\style.css",
+      "property": "margin",
+      "value": "-1px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's option-picker/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/product-faq",
+      "file": "src\\blocks\\product-faq\\style.css",
+      "property": "margin-top",
+      "value": "8px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's product-faq/edit.js change was scoped to a stale style-read cleanup only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "file": "src\\blocks\\whatsapp-cta\\style.css",
+      "property": "margin",
+      "value": "-1px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; sgs/whatsapp-cta was never touched by this session's colour-conformance work (git diff confirms zero changes to this block). Fix tracked separately.",
+      "disposition": "accepted-debt"
     }
-  ]
+  ],
+  "_meta": {
+    "dispositionVocabulary": [
+      "by-design",
+      "accepted-debt",
+      "detector-limitation",
+      "blocked"
+    ],
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+  }
 }

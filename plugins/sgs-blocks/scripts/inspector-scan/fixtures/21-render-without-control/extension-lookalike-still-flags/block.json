@@ -1,0 +1,8 @@
+{
+	"name": "sgs/extension-lookalike-still-flags",
+	"title": "Fixture — names that LOOK extension-owned but are registered by nothing",
+	"attributes": {
+		"fxNotARegisteredAttr": { "type": "string", "default": "" },
+		"sgsNotARegisteredAttr": { "type": "string", "default": "" }
+	}
+}

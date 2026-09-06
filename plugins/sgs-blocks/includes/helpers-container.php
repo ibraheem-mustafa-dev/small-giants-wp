@@ -73,10 +73,10 @@ if ( ! function_exists( 'sgs_serialise_box_corners' ) ) {
 			// Defensive: a legacy string value read from an old post still renders as-is.
 			return (string) $box;
 		}
-		$top_left     = sgs_css_length_sanitise( $box['topLeft'] ?? '' );
-		$top_right    = sgs_css_length_sanitise( $box['topRight'] ?? '' );
-		$bottom_left  = sgs_css_length_sanitise( $box['bottomLeft'] ?? '' );
-		$bottom_right = sgs_css_length_sanitise( $box['bottomRight'] ?? '' );
+		$top_left     = sgs_css_length_value( $box['topLeft'] ?? '' );
+		$top_right    = sgs_css_length_value( $box['topRight'] ?? '' );
+		$bottom_left  = sgs_css_length_value( $box['bottomLeft'] ?? '' );
+		$bottom_right = sgs_css_length_value( $box['bottomRight'] ?? '' );
 		if ( '' === $top_left && '' === $top_right && '' === $bottom_left && '' === $bottom_right ) {
 			return '';
 		}
@@ -199,11 +199,19 @@ if ( ! function_exists( 'sgs_intrinsic_columns_track' ) ) {
 	 * N=4 but adds 3 children: auto-fill reserves a 4th empty track and leaves a
 	 * quarter of the row blank; auto-fit collapses it and the three balance.
 	 *
-	 * @param int    $count     Operator's column count for this tier (the ceiling).
-	 * @param string $gap_value Sanitised CSS gap length for this tier.
+	 * @param int         $count     Operator's column count for this tier (the ceiling).
+	 * @param string      $gap_value Sanitised CSS gap length for this tier.
+	 * @param string|null $basis     Optional explicit CSS length (e.g. '320px') to use as
+	 *                               BASIS instead of the built-in `var(--sgs-col-basis,16rem)`
+	 *                               default. Client-configurable via `sgs/container`'s
+	 *                               `minColumnWidth`/`minColumnWidthUnit` attribute pair
+	 *                               (resolved per-tier by `sgs_container_tier_min_column_width()`).
+	 *                               Null or an empty string falls back to the default unchanged —
+	 *                               `sgs/site-footer-row`, the only other caller, never passes
+	 *                               this argument and is therefore unaffected.
 	 * @return string A `grid-template-columns` value, or '' when count is invalid.
 	 */
-	function sgs_intrinsic_columns_track( int $count, string $gap_value ): string {
+	function sgs_intrinsic_columns_track( int $count, string $gap_value, ?string $basis = null ): string {
 		$count = absint( $count );
 		if ( $count < 1 ) {
 			return '';
@@ -216,10 +224,47 @@ if ( ! function_exists( 'sgs_intrinsic_columns_track' ) ) {
 		}
 
 		$gap   = '' !== trim( $gap_value ) ? $gap_value : '0px';
-		$basis = 'var(--sgs-col-basis,16rem)';
+		$basis = null !== $basis && '' !== trim( $basis ) ? $basis : 'var(--sgs-col-basis,16rem)';
 		$max   = 'calc((100% - (' . ( $count - 1 ) . ' * ' . $gap . ')) / ' . $count . ')';
 
 		return 'repeat(auto-fit,minmax(min(100%,max(' . $basis . ',' . $max . ')),1fr))';
+	}
+}
+
+if ( ! function_exists( 'sgs_container_tier_min_column_width' ) ) {
+	/**
+	 * Resolve the effective intrinsic-columns BASIS (minimum column width) for one
+	 * device tier, from `sgs/container`'s client-configurable `minColumnWidth` /
+	 * `minColumnWidthUnit` attribute pair.
+	 *
+	 * `minColumnWidth` is tiered (desktop/tablet/mobile), the same shape as `gap`;
+	 * `minColumnWidthUnit` is a single flat string applied to every tier, the same
+	 * shape as `sgs/feature-grid`'s `minItemWidth`/`minItemWidthUnit` pair. Tiers
+	 * inherit upward (mobile -> tablet -> desktop) via the canonical
+	 * `sgs_resolve_tier()` cascade, matching every other responsive attribute.
+	 *
+	 * Returns null (never a fabricated default) when the client hasn't set a value
+	 * for this tier — the caller then omits the `$basis` argument to
+	 * `sgs_intrinsic_columns_track()`, which falls back to its own built-in
+	 * `var(--sgs-col-basis,16rem)` default unchanged.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $tier       'desktop' | 'tablet' | 'mobile'.
+	 * @return string|null A sanitised CSS length (e.g. '320px'), or null when unset.
+	 */
+	function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string {
+		$raw      = $attributes['minColumnWidth'] ?? null;
+		$resolved = sgs_resolve_tier( is_array( $raw ) ? $raw : array(), $tier, null );
+		$width    = $resolved['value'];
+
+		if ( null === $width || '' === trim( (string) $width ) ) {
+			return null;
+		}
+
+		$unit = $attributes['minColumnWidthUnit'] ?? 'px';
+		$unit = in_array( $unit, array( 'px', 'em', 'rem' ), true ) ? $unit : 'px';
+
+		return absint( $width ) . $unit;
 	}
 }
 

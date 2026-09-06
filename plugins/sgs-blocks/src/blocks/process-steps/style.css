@@ -126,8 +126,17 @@
 
 .sgs-process-steps__title {
 	font-size: var(--wp--preset--font-size--medium);
-	font-weight: 700;
 	margin: 0 0 var(--wp--preset--spacing--10) 0;
+}
+
+/*
+ * Typography defaults — :where() keeps these at specificity 0 so the
+ * uid-scoped titleFontWeight/titleLineHeight rule (sgs_typography_css_rule,
+ * prefix "title") always wins. Sanctioned F3-exempt overridable-default
+ * pattern (mirrors sgs/product-card's line-height :where() block).
+ */
+:where(.sgs-process-steps__title) {
+	font-weight: 700;
 	line-height: 1.3;
 }
 
@@ -159,18 +168,6 @@
 
 /* ===== Hover States ===== */
 
-.sgs-process-steps:hover {
-	background-color: var(--sgs-hover-bg, transparent);
-}
-
-.sgs-process-steps:hover {
-	color: var(--sgs-hover-text, inherit);
-}
-
-.sgs-process-steps:hover {
-	border-color: var(--sgs-hover-border, transparent);
-}
-
 /* Hover effect variants — duration/easing driven by CSS vars set on wrapper */
 .sgs-process-steps--hover-lift .sgs-process-steps__step {
 	transition-property: transform, box-shadow;
@@ -178,7 +175,8 @@
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-process-steps--hover-lift .sgs-process-steps__step:hover {
+.sgs-process-steps--hover-lift .sgs-process-steps__step:hover,
+.sgs-process-steps--hover-lift .sgs-process-steps__step:focus-within {
 	transform: translateY(-4px);
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
@@ -189,7 +187,8 @@
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-process-steps--hover-scale .sgs-process-steps__step:hover {
+.sgs-process-steps--hover-scale .sgs-process-steps__step:hover,
+.sgs-process-steps--hover-scale .sgs-process-steps__step:focus-within {
 	transform: scale(1.02);
 }
 
@@ -199,7 +198,8 @@
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
-.sgs-process-steps--hover-glow .sgs-process-steps__step:hover {
+.sgs-process-steps--hover-glow .sgs-process-steps__step:hover,
+.sgs-process-steps--hover-glow .sgs-process-steps__step:focus-within {
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
@@ -260,11 +260,13 @@
 		transition: none;
 	}
 
-	.sgs-process-steps--hover-lift .sgs-process-steps__step:hover {
+	.sgs-process-steps--hover-lift .sgs-process-steps__step:hover,
+	.sgs-process-steps--hover-lift .sgs-process-steps__step:focus-within {
 		transform: none;
 	}
 
-	.sgs-process-steps--hover-scale .sgs-process-steps__step:hover {
+	.sgs-process-steps--hover-scale .sgs-process-steps__step:hover,
+	.sgs-process-steps--hover-scale .sgs-process-steps__step:focus-within {
 		transform: none;
 	}
 }

@@ -14,39 +14,38 @@
  * `shapeDivider{Top,Bottom}ColourGradient` (gradient), via a custom
  * `attrNames` map rather than the default overlay names.
  *
- * UX shape (Background panel redesign D1, 2026-08-11): a compact swatch
- * BUTTON that opens a Dropdown popover, matching WP's own native
- * colour/gradient control shape, rather than every sub-control rendered
- * inline in the sidebar. Modelled on `@wordpress/block-editor`'s
- * `ColorGradientSettingsDropdown` (`packages/block-editor/src/components/
- * colors-gradients/dropdown.js`): a `ColorIndicator` swatch + label as the
- * toggle. Built from the STABLE primitives (`Dropdown`, `ColorIndicator`,
- * `Button` — none `__experimental*`) rather than importing WP's own dropdown
- * component, because that component expects the multi-origin theme
- * colour/gradient dataset and ToolsPanel context this control doesn't use —
- * this is the same visual pattern without pulling in machinery this control
- * has no data source for.
+ * ⛑ THIN-ADAPTER REBUILD (D4, unified-colour-panel design, 2026-08-22) —
+ * SUPERSEDES the bespoke Card/Dropdown/ToggleGroupControl markup this file
+ * used to hand-roll. This was never a distinct capability: it was mechanism
+ * A (`DesignTokenPicker`'s `states` row shape) wearing a different prop
+ * register (`attributes`/`setAttributes`/`attrNames` instead of a `states`
+ * array) — and it was SINGLE-STATE BY CONSTRUCTION, which is the sole
+ * reason a background overlay colour could never carry a hover. This file
+ * is now a thin translation layer: it reads `attrNames`/`attributes` and
+ * hands a one-entry `states` array down to `DesignTokenPicker`, which does
+ * all the actual rendering (the same row/popover/tab shape every other
+ * `SgsColourPanel` row already uses). Hover arrives for free the moment a
+ * caller's `attrNames` grows hover siblings and this file's `states` array
+ * is extended to a second entry — no rewrite needed here.
  *
- * ⛑ Task 3 rebuild (D636, 2026-08-16) — SUPERSEDES the 2026-08-11 ruling
- * this docblock used to record. That ruling kept WP's NATIVE `GradientPicker`
- * because its per-stop colour editor renders a bare `ColorPicker`, never
- * `ColorPalette`, so a stop could not be linked to a theme/global palette
- * colour — assessed then as "not worth the time". A 4-seat design council
- * (2026-08-16) re-opened that trade-off: SGS now composes its own gradient
- * bar (`../gradient-picker`, forked from the same pinned Gutenberg SHA the
- * colour-picker fork uses) whose stop editor mounts the SGS `ColorPalette`
- * above the raw picker — see `gradient-picker/gradient-bar/control-points.js`.
- * Picking a swatch stores that stop as `var(--wp--preset--color--<slug>)`.
+ * Every existing call site (container/cta-section/hero's whole-block
+ * overlay, hero's mediaOverlay/contentBackground/mediaBackground, the two
+ * shape-divider rows) keeps its exact props — `attributes`, `setAttributes`,
+ * `attrNames`, `solidLabel` — so this is a one-file rebuild, not a migration
+ * across blocks.
  *
- * STORAGE — collapsed from 4 scalars to 1 string (D636): `attrNames.gradient`
- * now holds the COMPLETE CSS gradient value (any stop count, linear or
- * radial), validated at render time through `sgs_css_gradient_value()`
- * (`includes/helpers-tokens.php`). A non-empty gradient string wins over the
- * flat `solid` colour, exactly as WP core and Kadence/Spectra/Otter resolve
- * it — no boolean discriminator. The old `angle`/`from`/`to` keys and the
- * `parseLinearGradient`/`buildGradientCss` bridge functions that existed only
- * to translate a free-form CSS string down onto that lossy 2-stop shape are
- * gone — the stored value IS the CSS string now, nothing to translate.
+ * ⚠ SEMANTIC RULING CARRIED FORWARD (design doc D4): "a client who had a
+ * gradient, picks a solid, keeps an invisible gradient" must never happen.
+ * The old hand-rolled control cleared the gradient sibling on EVERY solid
+ * pick, inside the solid picker's own `onChange` — not only when the
+ * Solid/Gradient toggle switched modes. `DesignTokenPicker`'s own toggle
+ * already clears the gradient sibling when switching TO solid, and the
+ * solid palette is unreachable without passing through that toggle first
+ * (only one of {palette, gradient bar} renders per mode), so the two
+ * mechanisms are behaviourally equivalent for any reachable operator path.
+ * This adapter still clears `attrNames.gradient` explicitly inside its own
+ * `onChange` below — belt and braces, matching the old control's semantic
+ * literally rather than relying on that reachability argument alone.
  *
  * `attrNames` — an optional `{ gradient, solid }` map of attribute names to
  * read/write. Defaults to the original whole-block overlay names
@@ -54,15 +53,7 @@
  * is unaffected by this parameterisation.
  */
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
-import { Button, Card, CardBody, ColorIndicator, Dropdown } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
-import SgsGradientPicker from './gradient-picker';
-import {
-	HStack,
-	ToggleGroupControl,
-	ToggleGroupControlOption,
-} from './primitives';
 
 // Default attribute-name map — today's whole-block "overlay" shape. Passing a
 // different map lets other elements (e.g. hero's mediaBackground/
@@ -73,7 +64,82 @@ import {
 const DEFAULT_ATTR_NAMES = {
 	gradient: 'overlayGradient',
 	solid: 'backgroundOverlayColour',
+	// Hover siblings are OPTIONAL. When a caller supplies them, this control
+	// renders Normal and Hover as TABS INSIDE ONE POPOVER rather than as two
+	// separate rows — `DesignTokenPicker` already switches to its tab shape
+	// the moment it receives more than one state (see its `hasStates`). The
+	// whole point of the D4 adapter was to make that reachable here; a second
+	// row would duplicate a row shape the shared picker already owns.
+	solidHover: 'backgroundOverlayColourHover',
+	gradientHover: 'overlayGradientHover',
 };
+
+
+/**
+ * Derive ONE of a gradient-overlay family's attribute names from its base.
+ *
+ * The standard helper pair for this control, mirroring `shadowAttrName()` and
+ * `typographyAttrName()`. See `scripts/check-control-helper-parity.py` for the
+ * census of which controls carry theirs.
+ *
+ * ⭐ ENUMERATED, NOT GENERALISED — and the enumeration found the rule is only
+ * HALF derivable. Every mount in the tree (2026-08-26, all three in `sgs/hero`;
+ * `sgs/info-box` merely DISCUSSES this control in a docblock and mounts no such
+ * thing):
+ *
+ *   solid                  gradient
+ *   ---------------------  --------------------------
+ *   mediaOverlayColour     mediaOverlayGradient
+ *   contentBackground      contentBackgroundGradient
+ *   mediaBackground        mediaBackgroundGradient
+ *
+ *   • `gradient` = `<base>Gradient`  — holds **3/3**, so it is derivable.
+ *   • `solid`    = `<base>` twice, `<base>Colour` once — **NOT uniform**, so it
+ *     is NOT derived. It defaults to `<base>` (the majority) and is overridable.
+ *
+ * ⛔ Deriving `solid` from a single rule would have named a non-existent
+ * attribute on one of the three mounts, and WordPress SILENTLY DISCARDS writes
+ * to undeclared attributes (D338) — an editor control that moves and does
+ * nothing. The shadow pair learned this the expensive way; this one did not.
+ *
+ * @param {string} base Base attribute name, e.g. 'mediaOverlay'.
+ * @param {string} part One of 'gradient' | 'solid'.
+ * @return {string} The attribute key, or '' for an unknown part.
+ */
+export function gradientOverlayAttrName( base, part = 'gradient' ) {
+	if ( ! base ) {
+		return '';
+	}
+	if ( 'gradient' === part ) {
+		return base + 'Gradient';
+	}
+	if ( 'solid' === part ) {
+		return base;
+	}
+	return '';
+}
+
+/**
+ * The attribute-key map for a gradient-overlay family.
+ *
+ * `solid` defaults to the base name and is overridable for the families that
+ * suffix it with `Colour` — see the enumeration above for why that override
+ * exists rather than a second rule.
+ *
+ * The PHP twin is `sgs_gradient_overlay_attr_map()` (`includes/helpers-tokens.php`),
+ * which carries the same default and the same override.
+ *
+ * @param {string} base              Base attribute name, e.g. 'contentBackground'.
+ * @param {Object} [options]         Options.
+ * @param {string} [options.solid]   Override the solid-colour attribute name.
+ * @return {{gradient: string, solid: string}} The keys.
+ */
+export function gradientOverlayAttrKeys( base, { solid } = {} ) {
+	return {
+		gradient: gradientOverlayAttrName( base, 'gradient' ),
+		solid: solid || gradientOverlayAttrName( base, 'solid' ),
+	};
+}
 
 export default function GradientOverlayControl( {
 	attributes,
@@ -81,97 +147,88 @@ export default function GradientOverlayControl( {
 	attrNames = DEFAULT_ATTR_NAMES,
 	solidLabel = __( 'Overlay colour', 'sgs-blocks' ),
 } ) {
-	const {
-		[ attrNames.gradient ]: gradientValue = '',
-		[ attrNames.solid ]: solidColour,
-	} = attributes;
-
-	// Mode is DERIVED from the stored value, not a separate boolean attr —
-	// matches the storage-layer resolution model (non-empty gradient wins).
-	// A local toggle-in-progress (operator clicked "Gradient" but hasn't
-	// picked a stop yet) is UI-only state, not written until they interact.
-	const [ localGradientMode, setLocalGradientMode ] = useState( null );
-	const gradientEnabled =
-		localGradientMode !== null ? localGradientMode : !! gradientValue;
-
-	// What the swatch preview + Dropdown toggle shows — whichever of the two
-	// mutually-exclusive paths (solid / gradient) is active.
-	const swatchValue = gradientEnabled ? gradientValue : solidColour;
-
 	return (
-		<Card size="small" className="sgs-gradient-overlay-control__card">
-			<CardBody size="small">
-				<Dropdown
-					className="sgs-gradient-overlay-control"
-					contentClassName="sgs-gradient-overlay-control__popover"
-					popoverProps={ { placement: 'left-start', offset: 36, shift: true } }
-					renderToggle={ ( { isOpen, onToggle } ) => (
-						<Button
-							__next40pxDefaultSize
-							onClick={ onToggle }
-							aria-expanded={ isOpen }
-							className="sgs-gradient-overlay-control__toggle"
-						>
-							<HStack justify="flex-start">
-								<ColorIndicator colorValue={ swatchValue } />
-								<span>{ solidLabel }</span>
-							</HStack>
-						</Button>
-					) }
-					renderContent={ () => (
-						<div className="sgs-gradient-overlay-control__content">
-							<ToggleGroupControl
-								label={ __( 'Overlay type', 'sgs-blocks' ) }
-								value={ gradientEnabled ? 'gradient' : 'solid' }
-								onChange={ ( val ) =>
-									setLocalGradientMode( val === 'gradient' )
-								}
-								isBlock
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							>
-								<ToggleGroupControlOption
-									value="solid"
-									label={ __( 'Solid', 'sgs-blocks' ) }
-								/>
-								<ToggleGroupControlOption
-									value="gradient"
-									label={ __( 'Gradient', 'sgs-blocks' ) }
-								/>
-							</ToggleGroupControl>
-
-							{ gradientEnabled ? (
-								<SgsGradientPicker
-									value={ gradientValue }
-									onChange={ ( newGradient ) => {
-										setLocalGradientMode( true );
-										setAttributes( {
-											[ attrNames.gradient ]: newGradient ?? '',
-										} );
-									} }
-									enableAlpha
-									__experimentalIsRenderedInSidebar
-								/>
-							) : (
-								<DesignTokenPicker
-									label={ solidLabel }
-									value={ solidColour }
-									onChange={ ( val ) => {
-										setLocalGradientMode( false );
-										setAttributes( {
-											[ attrNames.solid ]: val,
-											// Switching back to solid clears any
-											// gradient so the two paths never
-											// disagree about which is "current".
-											[ attrNames.gradient ]: '',
-										} );
-									} }
-								/>
-							) }
-						</div>
-					) }
-				/>
-			</CardBody>
-		</Card>
+		<DesignTokenPicker
+			label={ solidLabel }
+			// D717 (2026-08-21) — carried forward verbatim. Without `linked`
+			// the picker stores whatever CSS colour the swatch happens to
+			// hold rather than the palette SLUG, so picking the client's own
+			// brand swatch freezes a raw hex and silently unlinks the
+			// palette token on every pick. `states[].linked` below is the
+			// mechanism-A equivalent of the flag this control used to pass
+			// directly to `DesignTokenPicker` in single-value mode.
+			//
+			// enableAlpha is OFF on the SOLID swatch (D717) — transparency
+			// belongs to `backgroundOverlayOpacity`, a separate CSS
+			// property that leaves the stored colour/slug intact. Two
+			// transparency mechanisms is what let the token-corrupting one
+			// stay reachable. The gradient bar never carried that risk (a
+			// gradient stop lives inside a full CSS gradient STRING, never
+			// slug-matched), so its alpha stays ON via `gradientEnableAlpha`
+			// — one shared `enableAlpha` cannot express both policies at
+			// once, which is why `DesignTokenPicker` grew that prop for
+			// this adapter.
+			enableAlpha={ false }
+			gradientEnableAlpha
+			/*
+			 * TWO LITERAL ENTRIES, deliberately — not a .map() over a spec
+			 * list. inspector-scan rule 31 resolves a row's state count by
+			 * READING THIS ARRAY STATICALLY; it follows array literals,
+			 * spreads and conditionals, but it cannot evaluate a runtime
+			 * `.filter( spec => attrNames[ spec.key ] )` because the
+			 * predicate depends on a prop. A first version of this fix used
+			 * exactly that shape: the control really did render both states,
+			 * and the gate reported "carries 1 state" — the code improved
+			 * while the detector went blind, which is strictly worse than
+			 * the honest finding it replaced. The duplication below is the
+			 * price of staying legible to the gate that enforces it.
+			 *
+			 * Hover is emitted ONLY when the caller's attrNames carries the
+			 * pair, so the shape-divider rows and hero's media/content
+			 * backgrounds (which pass a custom map without hover keys) keep
+			 * exactly one state and no tab strip.
+			 */
+			states={ [
+				{
+					key: 'normal',
+					label: solidLabel,
+					value: attributes[ attrNames.solid ],
+					linked: true,
+					onChange: ( val ) =>
+						setAttributes( {
+							[ attrNames.solid ]: val ?? '',
+							// A solid pick always clears that state's stored
+							// gradient so the two paths never disagree about
+							// which is "current" — the semantic ruling in the
+							// docblock above.
+							[ attrNames.gradient ]: '',
+						} ),
+					gradientValue: attributes[ attrNames.gradient ] || '',
+					onGradientChange: ( val ) =>
+						setAttributes( { [ attrNames.gradient ]: val ?? '' } ),
+				},
+				...( attrNames.solidHover
+					? [
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes[ attrNames.solidHover ],
+								linked: true,
+								onChange: ( val ) =>
+									setAttributes( {
+										[ attrNames.solidHover ]: val ?? '',
+										[ attrNames.gradientHover ]: '',
+									} ),
+								gradientValue:
+									attributes[ attrNames.gradientHover ] || '',
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										[ attrNames.gradientHover ]: val ?? '',
+									} ),
+							},
+					  ]
+					: [] ),
+			] }
+		/>
 	);
 }

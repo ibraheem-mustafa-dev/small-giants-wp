@@ -23,6 +23,10 @@
 	--sgs-gap: 30px;
 	--sgs-card-bg: var( --wp--preset--color--surface, #ffffff );
 	--sgs-card-radius: 8px;
+	/* cardStyle preset default (card/overlay variants). render.php overrides
+	   this same property inline, on this same element, only when the
+	   `shadow` attribute is set — so an unset shadow leaves this default,
+	   and therefore the preset's look, untouched. */
 	--sgs-card-shadow: 0 2px 12px rgba( 0, 0, 0, 0.08 );
 	--sgs-hover-scale: 1;
 	--sgs-hover-shadow: none;
@@ -92,7 +96,10 @@
 .sgs-post-grid--list .sgs-post-grid__image img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit: removed (37-media-no-handroll) — this and the grid-mode
+	   .sgs-post-grid__img rule below both targeted the SAME <img>, now
+	   controlled by the shared media-atom system (assets/css/media-atoms/
+	   object-fit.css). See render.php's SGS_Media_Element::style() call. */
 }
 
 /* ==========================================================================
@@ -146,6 +153,7 @@
 	position: relative;
 	overflow: hidden;
 	background-color: var( --sgs-card-bg );
+	background-image: var( --sgs-card-bg-gradient, none );
 	transition:
 		transform var( --sgs-transition-duration ) var( --sgs-transition-easing ),
 		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing ),
@@ -248,7 +256,9 @@
 	display: block;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	/* object-fit: removed (37-media-no-handroll) — see the list-mode rule
+	   above; the shared media-atom system now controls this property for
+	   both selectors. */
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
@@ -305,9 +315,17 @@
 	font-weight: 600;
 	border-radius: 20px;
 	background-color: var( --sgs-pg-badge-bg, var( --wp--preset--color--primary, #1a3a5c ) );
+	background-image: var( --sgs-pg-badge-bg-gradient, none );
 	color: var( --sgs-pg-badge-colour, var( --wp--preset--color--text-inverse, #fff ) );
 	text-decoration: none;
 	line-height: 1.4;
+	transition: background-color var( --sgs-transition-duration ) var( --sgs-transition-easing ), background-image var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-post-grid__badge:hover,
+.sgs-post-grid__badge:focus-visible {
+	background-color: var( --sgs-pg-badge-bg-hover, var( --sgs-pg-badge-bg, var( --wp--preset--color--primary, #1a3a5c ) ) );
+	background-image: var( --sgs-pg-badge-bg-hover-gradient, var( --sgs-pg-badge-bg-gradient, none ) );
 }
 
 .sgs-post-grid__category {
@@ -326,6 +344,16 @@
 
 .sgs-post-grid__title {
 	margin: 0 0 10px;
+}
+
+/*
+ * Typography defaults — :where() keeps these at specificity 0 so the
+ * uid-scoped titleFontSize/titleLineHeight/titleFontWeight rule
+ * (sgs_typography_css_rule, prefix "title") always wins. Sanctioned
+ * F3-exempt overridable-default pattern (mirrors sgs/product-card's
+ * line-height :where() block).
+ */
+:where(.sgs-post-grid__title) {
 	font-size: 1.125rem;
 	line-height: 1.35;
 	font-weight: 700;
@@ -420,69 +448,13 @@
 }
 
 /*
- * Attribute-driven hover colour shifts. The --sgs-hover-bg/text/border custom
- * property VALUES are now emitted by the shared wrapper as a scoped `.{uid}{…}`
- * rule (GOTCHA F, D345 Facet B) rather than inline on `.sgs-post-grid`, so the
- * old `[style*="--sgs-hover-…"]` presence-gate no longer matches. Fixed per
- * the info-box / brand-strip pattern: drop the gate, gate on the VAR itself
- * via `var(--x, <resting-value>)` so an unset var is a true no-op.
- *
- * Background falls back to the card's own resting background — transparent
- * for the minimal card style, which never uses --sgs-card-bg.
+ * Attribute-driven hover colour shifts (background/text/border) are now
+ * emitted by render.php via sgs_emit_state_colour_css() (background/border,
+ * self-hover on the card) + a hand-built ancestor-hover rule (text, since the
+ * colour applies to descendant elements) as per-instance scoped rules — no
+ * static rule here, no hardcoded fallback colour. Unset hover colour = no
+ * visible change on hover (matches sgs/info-box / sgs/cta-section).
  */
-.sgs-post-grid__card:not( .sgs-post-grid__card--minimal ):hover {
-	background-color: var( --sgs-hover-bg, var( --sgs-card-bg ) );
-}
-
-.sgs-post-grid__card--minimal:hover {
-	background-color: var( --sgs-hover-bg, transparent );
-}
-
-/*
- * Text colour falls back to each element's OWN resting colour var, not a
- * blanket `inherit` — title/excerpt/meta/readmore each carry their own
- * configured colour and `inherit` would silently discard it whenever
- * --sgs-hover-text isn't set. The card root itself has no explicit colour
- * of its own, so `inherit` is the correct resting value there.
- */
-.sgs-post-grid__card:hover {
-	color: inherit;
-}
-
-.sgs-post-grid__card:hover .sgs-post-grid__title a {
-	color: var( --sgs-hover-text, var( --sgs-pg-title-colour, var( --wp--preset--color--text, #1e1e1e ) ) );
-}
-
-.sgs-post-grid__card:hover .sgs-post-grid__excerpt {
-	color: var( --sgs-hover-text, var( --sgs-pg-excerpt-colour, var( --wp--preset--color--text-muted, #555 ) ) );
-}
-
-.sgs-post-grid__card:hover .sgs-post-grid__meta {
-	color: var( --sgs-hover-text, var( --sgs-pg-meta-colour, var( --wp--preset--color--text-muted, #555 ) ) );
-}
-
-.sgs-post-grid__card:hover .sgs-post-grid__readmore {
-	color: var( --sgs-hover-text, var( --sgs-pg-readmore-colour, var( --wp--preset--color--primary, #1a3a5c ) ) );
-}
-
-/*
- * Border colour falls back to each card style's own resting border colour.
- * card/overlay have no visible border (border-width 0) so `transparent` is a
- * true no-op there; flat and minimal DO carry a real border and must restore
- * it — not go invisible — when --sgs-hover-border isn't configured.
- */
-.sgs-post-grid__card--card:hover,
-.sgs-post-grid__card--overlay:hover {
-	border-color: var( --sgs-hover-border, transparent );
-}
-
-.sgs-post-grid__card--flat:hover {
-	border-color: var( --sgs-hover-border, var( --wp--preset--color--border, #e0e0e0 ) );
-}
-
-.sgs-post-grid__card--minimal:hover {
-	border-top-color: var( --sgs-hover-border, var( --wp--preset--color--primary, currentColor ) );
-}
 
 /* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */
 .sgs-post-grid[data-hover-image-zoom="true"] .sgs-post-grid__card:hover .sgs-post-grid__img {
@@ -584,6 +556,10 @@
 .sgs-post-grid__filter[aria-pressed="true"] {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
+	/* Rule 43 (WCAG 1.4.1): active-filter state must not rely on colour alone —
+	 * the resting border is already 2px solid primary, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-post-grid__filter:disabled {
@@ -630,6 +606,10 @@
 .sgs-post-grid__page-btn[aria-current="page"] {
 	background-color: var( --wp--preset--color--primary, #1a3a5c );
 	color: var( --wp--preset--color--text-inverse, #fff );
+	/* Rule 43 (WCAG 1.4.1): current-page state must not rely on colour alone —
+	 * the resting border is already 2px solid primary, so bump to 3px as the
+	 * non-colour signal. */
+	border-width: 3px;
 }
 
 .sgs-post-grid__page-btn:disabled {

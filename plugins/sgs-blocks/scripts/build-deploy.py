@@ -41,6 +41,7 @@ client by adding a single dict entry; no code changes needed elsewhere.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import shlex
@@ -79,7 +80,33 @@ SSH_USER_HOST = "u945238940@141.136.39.73"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PLUGIN_DIR = REPO_ROOT / "plugins" / "sgs-blocks"
 BUILD_DIR = PLUGIN_DIR / "build"
+# `composer.phar` is GITIGNORED (only a developer's primary clone has a copy that
+# was hand-downloaded once). REPO_ROOT here is *this checkout's* root — in a git
+# worktree (e.g. `.claude/worktrees/wave-deploy`) or a fresh clone/CI checkout that
+# is a directory that never had the phar dropped into it, so the old hardcoded
+# `REPO_ROOT / "composer.phar"` pointed at a file that simply does not exist there.
+# composer_dump_autoload() then failed, and it is SUPPOSED to fail closed rather
+# than skip the dev-package purge (see its docstring + D849) — but "fails closed"
+# should mean "refuses to deploy with a useful message", not "cannot run at all
+# from a worktree". Hit for real 2026-08-27 working from `wave-deploy`; worked
+# around by hand-copying the phar, which is not repeatable for the next session
+# or for CI. `resolve_composer()` below is the fix: try every real location, in
+# order, and only fail once none of them work.
+COMPOSER_PHAR = REPO_ROOT / "composer.phar"
 TARBALL_NAME = "sgs-deploy.tar"
+# Ceiling for the packaged tarball. MEASURED, not guessed. A blocks-only deploy on
+# 2026-08-27 was 114.4MB pre-exclusion (scripts/ 43MB dev tooling, vendor/ ~40MB of
+# which ~34MB was PHPStan/PHPUnit-only Composer dev packages, pipeline-state/tests/
+# caches ~3MB). scripts/, the dev-only vendor packages (proven via composer's own
+# `dev-package-names` list -- see TAR_EXCLUDES) and the test/pipeline residue were
+# excluded the same day once each was proven unreferenced by any runtime PHP path
+# (see the TAR_EXCLUDES comments for the grep evidence). Re-measured after: the SAME
+# blocks-only tarball is now 28.6MB; theme/sgs-theme/ adds ~2.1MB on a full deploy.
+# 45MB sits above the ~31MB combined real baseline (same ~1.4x margin the previous
+# 150MB ceiling held over its own 113MB baseline) and still catches the case this
+# guard exists for -- a stray untracked tree landing inside the plugin/theme dir.
+# ⚠ Raise this ONLY after measuring, and say what grew.
+TARBALL_MAX_MB = 45
 
 # WP-internal post types whose post_content structurally cannot carry SGS block
 # markup. Everything else on the site — pages, posts, reusable blocks, templates,
@@ -98,6 +125,61 @@ TAR_EXCLUDES = [
     "plugins/sgs-blocks/_retired",
     "*.pyc",
     "__pycache__",
+    # Third-party reference checkouts + scratch output that sit INSIDE the plugin
+    # dir without being part of it (2026-08-27). Both were UNTRACKED, and an
+    # untracked file is invisible to deployed_dirty_files() -- which reads tracked
+    # files from `git status` -- while being perfectly visible to tar. 278MB of a
+    # competitor's GPL source would have landed web-accessible inside the live
+    # plugin directory. Proven with a controlled tar test, not inferred: the
+    # existing "plugins/sgs-blocks/src" pattern is PATH-ANCHORED and so does NOT
+    # match "plugins/sgs-blocks/stackable/src".
+    "plugins/sgs-blocks/stackable",
+    "plugins/sgs-blocks/now.tmp.json",
+    # --- dev-tooling / build-residue exclusions (2026-08-27) ---------------
+    # PROVEN unused at runtime before adding, not assumed: grepped includes/,
+    # src/ and sgs-blocks.php for any require/include/plugin_dir_path reach
+    # into these paths -- zero hits (only human-facing comments/error-message
+    # strings MENTION "scripts/generate-*.py" as instructions for a developer
+    # to re-run by hand; none of them execute it). The `wp sgs` CLI command
+    # tree (`WP_CLI::add_command`) is registered from includes/class-sgs-cli-
+    # commands.php and includes/class-sgs-header-footer-cli-commands.php --
+    # i.e. INSIDE includes/, never scripts/ -- so excluding scripts/ does not
+    # remove any WP-CLI command the site exposes.
+    "plugins/sgs-blocks/scripts",
+    # Pipeline run artefacts, Python/PHP test residue -- none read by
+    # render.php/includes/src at runtime (grepped, zero hits). tests/ was
+    # already exempted from the DIRTY-file gate below as "ships but never
+    # executes"; now it does not ship at all.
+    "plugins/sgs-blocks/pipeline-state",
+    "plugins/sgs-blocks/tests",
+    "plugins/sgs-blocks/.pytest_cache",
+    "plugins/sgs-blocks/.ruff_cache",
+    "plugins/sgs-blocks/.phpunit.cache",
+    # --- vendor/: dev-only Composer packages (2026-08-27) -------------------
+    # `vendor/autoload.php` IS required unconditionally at plugin bootstrap
+    # (sgs-blocks.php lines 23-24/49-50) -- vendor/ as a whole is NOT excluded,
+    # that would break the live site. But `composer.json`'s `require-dev` (PHPStan
+    # + PHPUnit + the WordPress stub/test toolchain) pulls ~40MB of packages that
+    # exist only to support local static analysis and tests, never loaded by any
+    # PHP that runs on a request. PROVEN, not inferred: composer itself computed
+    # the full transitive dependency graph and recorded it in
+    # `vendor/composer/installed.json`'s `dev-package-names` array -- these 11
+    # vendor NAMESPACES (not individual packages -- verified every package under
+    # each namespace is dev-only, so excluding the whole namespace dir is safe)
+    # are the packages composer itself marked dev-only, matched 1:1 against that
+    # list. `symfony/*`, `psr/*`, `carbonphp/*` are runtime deps of nesbot/carbon
+    # and are NOT in the dev list, so they stay.
+    "plugins/sgs-blocks/vendor/bin",
+    "plugins/sgs-blocks/vendor/myclabs",
+    "plugins/sgs-blocks/vendor/nikic",
+    "plugins/sgs-blocks/vendor/phar-io",
+    "plugins/sgs-blocks/vendor/php-stubs",
+    "plugins/sgs-blocks/vendor/phpstan",
+    "plugins/sgs-blocks/vendor/phpunit",
+    "plugins/sgs-blocks/vendor/sebastian",
+    "plugins/sgs-blocks/vendor/staabm",
+    "plugins/sgs-blocks/vendor/szepeviktor",
+    "plugins/sgs-blocks/vendor/theseer",
 ]
 
 # Mirror of the tarball scope, used by deployed_dirty_files(). Keep in step with
@@ -115,8 +197,8 @@ DEPLOY_SKIP_PREFIXES = (
     # src/ is the only place that churn is visible.
     "plugins/sgs-blocks/_retired/",   # excluded from the tar
     "theme/sgs-theme/styles/",        # per-client snapshots, pushed separately
-    "plugins/sgs-blocks/scripts/",    # tooling — ships but never executes in WP
-    "plugins/sgs-blocks/tests/",      # tests — ship but never execute in WP
+    "plugins/sgs-blocks/scripts/",    # excluded from the tar (2026-08-27) — dev tooling, never executes in WP
+    "plugins/sgs-blocks/tests/",      # excluded from the tar (2026-08-27) — tests, never execute in WP
 )
 DEPLOY_SKIP_BASENAMES = {
     "package-lock.json",
@@ -130,6 +212,34 @@ DEPLOY_SKIP_BASENAMES = {
     "lucide-icons.php",
 }
 RUNTIME_SUFFIXES = (".php", ".js", ".css", ".html", ".json")
+
+
+def deploy_roots_for_scope(theme_only: bool, blocks_only: bool) -> tuple[str, ...]:
+    """The deploy roots THIS INVOCATION will actually ship.
+
+    ``DEPLOY_ROOTS`` names everything the script CAN deploy; a given run may
+    deploy less. ``--blocks-only`` never writes a theme file, so a dirty theme
+    template is not "about to execute on a live site" for that run — and that is
+    precisely the contract ``deployed_dirty_files()`` promises when it fires.
+
+    WHY THIS IS A NARROWING, NOT A WEAKENING. Before this, a ``--blocks-only``
+    deploy aborted on another track's uncommitted theme templates: files that run
+    could not have shipped. That is the SAME over-broadness the docstring below
+    already blames for D336 — a guard that fires on files a run cannot touch
+    trains the operator to reach for ``--allow-dirty``, and that reflex is what
+    put two client sites down for ~2.5h. It blocked three separate deploys in one
+    session (2026-08-24) on files none of them could write.
+
+    Returns a strictly SMALLER set than ``DEPLOY_ROOTS``, never a larger one, and
+    returns ``DEPLOY_ROOTS`` unchanged for a full deploy — so the default path is
+    byte-identical to the pre-change behaviour. ``self_test()`` cases 5-7 prove
+    both directions, including that an in-scope dirty file STILL blocks.
+    """
+    if blocks_only:
+        return ("plugins/sgs-blocks/",)
+    if theme_only:
+        return ("theme/sgs-theme/",)
+    return DEPLOY_ROOTS
 
 ROLLBACK_HINT = (
     "roll back: ssh in and swap the .bak copy back, then reset OPcache:\n"
@@ -175,6 +285,125 @@ def run(cmd: list[str], *, dry_run: bool, cwd: Path | None = None) -> int:
     return result.returncode
 
 
+def resolve_composer() -> tuple[list[str], str] | None:
+    """Resolve a runnable Composer invocation, trying every real location in turn.
+
+    Resolved LAZILY (called at the point of use, not at import time) so a
+    failure surfaces with a useful message right when it matters, rather than
+    crashing the whole script at module load with a bare traceback.
+
+    Returns ``(base_cmd, description)`` for the FIRST candidate that resolves,
+    where ``base_cmd`` is the argv prefix to which ``dump-autoload --optimize
+    [--no-dev]`` gets appended — or ``None`` if nothing resolved, in which case
+    the caller must fail closed and name every location tried (see
+    ``composer_dump_autoload()`` below).
+
+    Candidates, in order:
+      1. ``composer.phar`` at THIS checkout's repo root — the original,
+         unchanged behaviour for a normal primary clone.
+      2. ``composer.phar`` at the MAIN worktree's root, derived via
+         ``git rev-parse --git-common-dir``. A git worktree's own directory
+         never holds the gitignored phar, but ``--git-common-dir`` always
+         points at the shared ``.git`` inside the primary clone, whose parent
+         is the primary clone's root — proven to hold the phar on this
+         machine. This is the case that actually broke a deploy on
+         2026-08-27 (see COMPOSER_PHAR's comment above).
+      3. ``composer`` on PATH as a plain executable, via ``resolve_exe()``.
+         Not installed on this machine as of writing, so this branch is
+         implemented carefully but could not be smoke-tested here.
+    """
+    php = resolve_exe("php")
+
+    # Candidate 1 — this checkout's own repo root (unchanged default path).
+    if COMPOSER_PHAR.is_file():
+        return ([php, str(COMPOSER_PHAR)], f"composer.phar at {COMPOSER_PHAR}")
+
+    # Candidate 2 — the main worktree's root, via git's own bookkeeping. A
+    # worktree's `.git` is a FILE pointing at the real gitdir inside the
+    # primary clone, and `--git-common-dir` resolves that indirection for us
+    # rather than us hand-parsing the `.git` file.
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            common_dir = Path(result.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (REPO_ROOT / common_dir).resolve()
+            main_worktree_root = common_dir.parent
+            candidate = main_worktree_root / "composer.phar"
+            if candidate.is_file():
+                return ([php, str(candidate)], f"composer.phar at the main worktree root ({candidate})")
+    except OSError:
+        # git itself not runnable — fall through to the next candidate rather
+        # than treat that as fatal here; the final all-miss message covers it.
+        pass
+
+    # Candidate 3 — `composer` on PATH as a plain executable. Note the command
+    # shape differs from the phar branches above: no `php` prefix, and the
+    # subcommand is `dump-autoload` directly rather than `php composer.phar
+    # dump-autoload`.
+    composer_exe = shutil.which("composer")
+    if composer_exe:
+        return ([composer_exe], f"composer on PATH ({composer_exe})")
+
+    return None
+
+
+def composer_dump_autoload(dry_run: bool, *, no_dev: bool) -> int:
+    """Regenerate plugins/sgs-blocks's Composer autoloader, dev-included or not.
+
+    Two DIFFERENT autoloaders are needed by two DIFFERENT consumers, and
+    conflating them is the exact bug this function exists to stop happening a
+    third time:
+
+    - The DEPLOYED tarball must ship an autoloader with ZERO references to
+      dev-only packages (PHPStan/PHPUnit/etc — see TAR_EXCLUDES's `vendor/`
+      block). Those packages' directories are excluded from the tarball, but
+      a dev-included `vendor/composer/autoload_files.php` still `require`s
+      files inside them unconditionally — proven live: it fatal'd the site
+      with a 500 on every page load until root-caused.
+    - The LOCAL working tree needs a dev-included autoloader so
+      `check-render-undefined-vars.py`/PHPStan (which needs
+      `szepeviktor/phpstan-wordpress`'s rule classes in the classmap) keeps
+      working for `npm run build`'s local gates. A prior session "fixed" the
+      first bug by regenerating dev-included ON DISK — which silently undid
+      the safe autoloader and reopened the fatal.
+
+    `--no-dev` is for packaging ONLY, always followed by a dev-included
+    regenerate to restore the working tree (see step_tar()'s finally block).
+    Never call this with `no_dev=True` and leave it there.
+
+    WHEN and WHETHER this runs, and the `no_dev` semantics, are unchanged by
+    the resolution logic below — only HOW composer is located and invoked
+    changed (see `resolve_composer()`).
+    """
+    resolved = resolve_composer()
+    if resolved is None:
+        err(
+            "Could not locate a runnable Composer — tried all of:\n"
+            f"    1. {COMPOSER_PHAR} (this checkout's repo root)\n"
+            "    2. composer.phar at the main worktree's root (via `git "
+            "rev-parse --git-common-dir`)\n"
+            "    3. `composer` on PATH\n"
+            "  Fix: drop composer.phar at the repo root, or install Composer "
+            "on PATH."
+        )
+        return 1
+
+    base_cmd, description = resolved
+    cmd = [*base_cmd, "dump-autoload", "--optimize"]
+    if no_dev:
+        cmd.insert(len(base_cmd) + 1, "--no-dev")
+    label = "--no-dev (safe for deploy)" if no_dev else "dev-included (safe for local gates)"
+    log(f"  [composer] regenerating autoloader — {label} — using {description}")
+    return run(cmd, dry_run=dry_run, cwd=PLUGIN_DIR)
+
+
 def ssh_has_alias(alias: str) -> bool:
     """Return True if the SSH config defines `alias`."""
     cfg = Path.home() / ".ssh" / "config"
@@ -204,7 +433,10 @@ def scp_base_cmd(use_alias: bool, local: str, remote_path: str) -> list[str]:
             local, f"{SSH_USER_HOST}:{remote_path}"]
 
 
-def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
+def deployed_dirty_files(
+    repo_root: Path = REPO_ROOT,
+    roots: tuple[str, ...] = DEPLOY_ROOTS,
+) -> list[str]:
     """Tracked, uncommitted files that BOTH ship in the tarball AND run at runtime.
 
     Deliberately narrower than a repo-wide ``git status``. A repo-wide check is
@@ -217,6 +449,10 @@ def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
 
     ``repo_root`` is overridable (default: the real repo) so this can be exercised
     against an isolated temp repo in ``self_test()`` without touching real git state.
+
+    ``roots`` is the set of deploy roots THIS RUN will ship — see
+    ``deploy_roots_for_scope()``. It defaults to every root, so a caller that does
+    not pass it gets the pre-existing behaviour unchanged.
     """
     result = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
@@ -228,7 +464,7 @@ def deployed_dirty_files(repo_root: Path = REPO_ROOT) -> list[str]:
         if "->" in path:  # rename entries read "old -> new"
             path = path.split("->")[-1].strip()
         path = path.strip('"')
-        if not path.startswith(DEPLOY_ROOTS):
+        if not path.startswith(roots):
             continue
         if path.startswith(DEPLOY_SKIP_PREFIXES):
             continue
@@ -318,6 +554,11 @@ def self_test() -> int:
         unrelated_file = payload_dir / "unrelated-inflight.php"
         payload_file.write_text("<?php // v1\n", encoding="utf-8")
         unrelated_file.write_text("<?php // v1\n", encoding="utf-8")
+        # A THEME file, for the scope cases (5-7): another track's template.
+        theme_dir = repo / "theme" / "sgs-theme" / "templates"
+        theme_dir.mkdir(parents=True)
+        theme_file = theme_dir / "archive.html"
+        theme_file.write_text("<!-- v1 -->", encoding="utf-8")
         git("add", "-A")
         git("commit", "-q", "-m", "initial")
 
@@ -325,12 +566,18 @@ def self_test() -> int:
         payload_file.write_text("<?php // v2 -- this wave's declared payload\n", encoding="utf-8")
         unrelated_file.write_text("<?php // v2 -- someone else's unfinished edit\n", encoding="utf-8")
 
+        theme_file.write_text("<!-- v2 another track -->", encoding="utf-8")
+
         # 0. Confirm the plant actually landed. `sed`/write-with-no-effect exits 0
         # on a no-op; check the diff itself, not the write command's return code.
         diffstat = subprocess.run(
             ["git", "diff", "--stat"], cwd=repo, check=False, capture_output=True, text=True,
         ).stdout
-        if "payload-target.php" not in diffstat or "unrelated-inflight.php" not in diffstat:
+        if (
+            "payload-target.php" not in diffstat
+            or "unrelated-inflight.php" not in diffstat
+            or "archive.html" not in diffstat
+        ):
             print("[SELF-TEST FAIL] negative control did not land — git diff --stat:")
             print(diffstat)
             return 1
@@ -372,6 +619,37 @@ def self_test() -> int:
                 f"uncovered={uncovered_none} dirty={dirty}"
             )
 
+        # 5. SCOPE: a --blocks-only run must NOT be blocked by a dirty THEME
+        #    file — that run cannot write one, so it is not a risk it creates.
+        blocks_scope = deploy_roots_for_scope(theme_only=False, blocks_only=True)
+        dirty_blocks_only = deployed_dirty_files(repo_root=repo, roots=blocks_scope)
+        rel_theme = "theme/sgs-theme/templates/archive.html"
+        if rel_theme in dirty_blocks_only:
+            failures.append(
+                "SCOPE FAILED: a dirty THEME file still blocked a --blocks-only "
+                f"deploy, which cannot ship it: {dirty_blocks_only}"
+            )
+
+        # 6. NEGATIVE CONTROL for case 5 — scoping must NARROW, not DISABLE. An
+        #    in-scope dirty file MUST still block, or the guard has been switched
+        #    off and would read green forever (D336 intact).
+        if rel_unrelated not in dirty_blocks_only:
+            failures.append(
+                "SCOPE NEGATIVE CONTROL FAILED: an in-scope dirty file was NOT "
+                "detected under --blocks-only -- the scoping disabled the guard "
+                f"rather than narrowing it: {dirty_blocks_only}"
+            )
+
+        # 7. The narrowing is CONDITIONAL: a FULL deploy still sees the theme
+        #    file. Without this, case 5 would also pass if the theme root had
+        #    simply been dropped from DEPLOY_ROOTS outright.
+        dirty_full = deployed_dirty_files(repo_root=repo, roots=DEPLOY_ROOTS)
+        if rel_theme not in dirty_full:
+            failures.append(
+                "SCOPE FAILED: a FULL deploy did not see the dirty theme file -- "
+                f"the theme root is being dropped unconditionally: {dirty_full}"
+            )
+
     if failures:
         print("[SELF-TEST FAIL]")
         for f in failures:
@@ -384,6 +662,9 @@ def self_test() -> int:
     print("  2. POSITIVE CONTROL: declared --payload file is covered (deadlock-breaker works)")
     print("  3. NEGATIVE CONTROL (known failure probe): undeclared dirty file stays blocked (D336 intact)")
     print("  4. BACKWARD COMPAT: no --payload => identical to pre-existing all-blocking behaviour")
+    print("  5. SCOPE: a dirty THEME file does not block --blocks-only (it cannot ship it)")
+    print("  6. SCOPE NEGATIVE CONTROL: an in-scope dirty file STILL blocks --blocks-only")
+    print("  7. SCOPE is CONDITIONAL: a full deploy still sees the dirty theme file")
     return 0
 
 
@@ -403,24 +684,158 @@ def step_build(dry_run: bool) -> int:
     return 0
 
 
+def step_gate_full(dry_run: bool) -> int:
+    """PRE-DEPLOY heavyweight gate tier (`npm run gate:full`).
+
+    ⛔ WHY THIS EXISTS AND WHY IT IS NOT OPTIONAL. `prebuild` used to be 61
+    `&&`-joined commands taking 153.4s measured, and it is FAIL-FAST — a change
+    tripping five gates showed ONE failure per build. The chain was split into
+    two measured tiers (`scripts/gates.json`): `fast` (52 gates, 33.4s) runs on
+    every build; `full` is the four gates that were 76.1% of the total time —
+    pytest 47.3s, check-dead-api-calls 31.2s, audit-block-file-consistency
+    16.7s, inspector-scan 11.3s.
+
+    Moving a gate to a later tier is only legitimate if something actually runs
+    that tier. WITHOUT THIS STEP the split would be enforcement laundering: four
+    gates would sit in a roster, run on no build, and the repo would read green
+    while nothing checked them. That is this project's recorded failure mode —
+    a mandatory gate sat unwired for three weeks while three documents said it
+    was enforced. `run-gates.py --assert-wired` exists to prove this call is
+    still here, and fails closed if it is deleted.
+
+    It runs PRE-tar so a failure costs nothing: nothing has been uploaded yet.
+    All four are static source checks, so they need no live canary — unlike
+    `step_motion_qa()`, which is post-deploy precisely because it does.
+
+    ⚠ Opting out with `--skip-gate-full` re-creates the hole. Do not make it
+    reflex.
+    """
+    if dry_run:
+        log("[gate:full] SKIPPED (--dry-run)")
+        return 0
+    log("[gate:full] running the pre-deploy heavyweight gate tier")
+    return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
+
+
 def step_tar(dry_run: bool, theme: bool, blocks: bool) -> int:
     log("[2/5] Packaging tarball")
-    cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
-    for ex in TAR_EXCLUDES:
-        cmd.append(f"--exclude={ex}")
-    if theme:
-        cmd.append("theme/sgs-theme")
-    if blocks:
-        cmd.append("plugins/sgs-blocks")
-    rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
-    if rc != 0:
-        err(f"tar failed (exit {rc})")
-        return rc
-    if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
-        err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
-        return 2
-    log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
-    return 0
+
+    # PRE-TAR: regenerate a dev-free autoloader before packaging, and ALWAYS
+    # restore the dev-included one afterwards — even if packaging fails
+    # partway. Only relevant for a blocks deploy (vendor/ lives inside
+    # plugins/sgs-blocks); a --theme-only deploy never touches vendor/ at
+    # all, and dry-run never writes to disk in the first place.
+    #
+    # Why this exists (D849, 2026-08-27): the deployed tarball must ship an
+    # autoloader with zero references to PHPStan/PHPUnit/etc (see
+    # TAR_EXCLUDES's `vendor/` block, and composer_dump_autoload()'s
+    # docstring for the two-consumer split). A prior session regenerated the
+    # working tree's autoloader dev-included to fix a LOCAL gate, which
+    # silently undid the deploy-safe one and reopened the exact live-site
+    # fatal this function exists to prevent. See:
+    # `python plugins/sgs-blocks/scripts/check-render-undefined-vars.py --check`
+    regen_composer = blocks and not dry_run
+    if regen_composer:
+        rc = composer_dump_autoload(dry_run, no_dev=True)
+        if rc != 0:
+            err(
+                f"composer dump-autoload --no-dev failed (exit {rc}) — refusing to "
+                "package a tarball with a dev-included autoloader (that is the exact "
+                "bug that fatal'd the live site, D849). Nothing was packaged."
+            )
+            return rc
+
+    try:
+        cmd: list[str] = ["tar", "-cf", TARBALL_NAME]
+        for ex in TAR_EXCLUDES:
+            cmd.append(f"--exclude={ex}")
+        if theme:
+            cmd.append("theme/sgs-theme")
+        if blocks:
+            cmd.append("plugins/sgs-blocks")
+        rc = run(cmd, dry_run=dry_run, cwd=REPO_ROOT)
+        if rc != 0:
+            err(f"tar failed (exit {rc})")
+            return rc
+        if not dry_run and not (REPO_ROOT / TARBALL_NAME).exists():
+            err(f"tarball not produced: {REPO_ROOT / TARBALL_NAME}")
+            return 2
+
+        # STRUCTURAL SIZE GUARD (2026-08-27). The named excludes fix the two strays we
+        # found; this catches the NEXT one. Any untracked tree dropped inside
+        # plugins/sgs-blocks or theme/sgs-theme is invisible to the dirty gate and ships
+        # silently -- the only symptom is a suddenly huge tarball, and "the deploy is a
+        # bit slow" is exactly how that goes unnoticed. Fail closed and NAME the biggest
+        # members, so the next person is not left guessing what got in.
+        if not dry_run:
+            size_mb = (REPO_ROOT / TARBALL_NAME).stat().st_size / (1024 * 1024)
+            if size_mb > TARBALL_MAX_MB:
+                err(
+                    f"tarball is {size_mb:.0f}MB, over the {TARBALL_MAX_MB}MB ceiling. "
+                    "Something that is not part of the plugin/theme is being packaged."
+                )
+                try:
+                    import subprocess as _sp
+                    out = _sp.run(
+                        ["tar", "-tvf", TARBALL_NAME],
+                        cwd=str(REPO_ROOT), capture_output=True, text=True, timeout=180,
+                    ).stdout.splitlines()
+                    tops: dict[str, int] = {}
+                    # `tar -tvf` prints: perms owner group SIZE date time path.
+                    # Do NOT index a fixed column: the first two cuts of this guard did
+                    # (parts[2], then "first digit in parts[1:5]") and both silently read
+                    # the OWNER id 0, accumulating zeros and printing an alphabetical list
+                    # of 0.0MB rows that named nothing. Anchor on the DATE instead and take
+                    # the integer immediately before it. Verified against the real 113MB
+                    # tarball: totals 108.6MB and names scripts/vendor/build, matching an
+                    # independent awk pass. A diagnostic that fails quietly is worse than
+                    # no diagnostic, because it reads as an answer.
+                    import re as _re
+                    _MONTH = _re.compile(r"^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$")
+                    _DATE = _re.compile(r"^\d{4}-\d{2}-\d{2}$")
+                    for line in out:
+                        parts = line.split()
+                        if not parts:
+                            continue
+                        nbytes = None
+                        for idx, tok in enumerate(parts):
+                            if _MONTH.match(tok) or _DATE.match(tok):
+                                for j in range(idx - 1, -1, -1):
+                                    if parts[j].isdigit():
+                                        nbytes = int(parts[j])
+                                        break
+                                break
+                        if nbytes is None:
+                            continue
+                        key = "/".join(parts[-1].rstrip("/").split("/")[:3])
+                        tops[key] = tops.get(key, 0) + nbytes
+                    for path, nbytes in sorted(tops.items(), key=lambda kv: -kv[1])[:8]:
+                        err(f"    {nbytes / (1024 * 1024):8.1f}MB  {path}")
+                except Exception as exc:  # noqa: BLE001 - diagnostics only
+                    err(f"    (could not enumerate tar members: {exc})")
+                err(
+                    "Fix: add it to TAR_EXCLUDES + .gitignore, or move it out of the "
+                    "plugin/theme directory. Do NOT raise the ceiling to get past this."
+                )
+                return 2
+        log(f"[2/5] Packaging tarball: OK ({TARBALL_NAME})")
+        return 0
+    finally:
+        # POST-TAR restore — runs on every exit path (success, tar failure, size
+        # guard). NEVER leave the working tree in the --no-dev state: the next
+        # developer's `npm run build` needs PHPStan's classmap present for
+        # check-render-undefined-vars.py to run at all.
+        if regen_composer:
+            restore_rc = composer_dump_autoload(dry_run, no_dev=False)
+            if restore_rc != 0:
+                err(
+                    f"composer dump-autoload --optimize (dev-included) restore FAILED "
+                    f"(exit {restore_rc}) — the working tree's vendor/composer/"
+                    "autoload_*.php are left in the --no-dev state. Local PHPStan gates "
+                    "will fail until this is re-run by hand: "
+                    "php composer.phar dump-autoload --optimize (from plugins/sgs-blocks/, "
+                    "composer.phar is at the repo root)."
+                )
 
 
 def step_scp(dry_run: bool, use_alias: bool, host_label: str) -> int:
@@ -504,6 +919,126 @@ def step_local_cleanup(dry_run: bool) -> int:
     return 0
 
 
+def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
+                      host: str) -> int:
+    """Post-deploy cache purge - TWO DIFFERENT CACHES, deliberately both.
+
+    WHY THIS EXISTS (2026-08-21). Both CLAUDE.md files stated that this script
+    "resets OPcache", and it did not: the only two `opcache` mentions in this file
+    were inside ROLLBACK_HINT, a string of MANUAL instructions printed on failure.
+    A defence asserted in docs and enforced nowhere is this repo's recorded failure
+    mode, and D709 (theme assets served STALE to every warm browser cache, the day
+    before this was written) is what it costs.
+
+    The two layers are not interchangeable:
+
+      OPcache   holds COMPILED PHP.   Stale => the server runs yesterday's render.php.
+      LiteSpeed holds RENDERED HTML.  Stale => the server never runs today's PHP at all.
+
+    Clearing one does nothing for the other.
+
+    OPCACHE MUST BE RESET OVER HTTP, NOT OVER SSH. Each PHP SAPI keeps its OWN
+    OPcache: `wp eval` runs in the CLI pool and resets the CLI's cache, leaving the
+    web pool - the one that actually serves visitors - untouched, while reporting
+    success. So a temporary file is written into the webroot, fetched over HTTPS so
+    the WEB pool executes it, then removed. The filename carries a random token: it
+    is world-reachable for the ~1s it exists, and a guessable opcache_reset()
+    endpoint is a free cache-stampede lever. The payload ships base64-encoded so no
+    PHP quoting can be mangled by the shell on the way.
+
+    FAILS SOFT, LOUDLY. By this point the files are already live, so a failed purge
+    is not grounds to abort - that would read as "nothing shipped" and invite a
+    retry loop. But a leg that did not run is NEVER reported as OK: the whole point
+    of this step is that silence is what made D709 invisible.
+    """
+    log("[purge] clearing both cache layers (OPcache + page cache)")
+    if dry_run:
+        log("[purge] SKIPPED (--dry-run); would reset OPcache over HTTPS "
+            "and run `wp litespeed-purge all`")
+        return 0
+
+    webroot = (wp_content[: -len("/wp-content")]
+               if wp_content.endswith("/wp-content") else wp_content)
+    ok_opcache = False
+    ok_page = False
+
+    # ---- leg 1: OPcache, via the WEB pool ---------------------------------
+    probe = "sgs-opcache-" + os.urandom(8).hex() + ".php"
+    remote_probe = webroot + "/" + probe
+    php = ("<?php if (function_exists('opcache_reset')) { echo opcache_reset() "
+           "? 'SGS-OPCACHE-RESET-OK' : 'SGS-OPCACHE-RESET-FAILED'; } "
+           "else { echo 'SGS-OPCACHE-ABSENT'; }")
+    b64 = base64.b64encode(php.encode("utf-8")).decode("ascii")
+    write_cmd = ssh_base_cmd(use_alias) + [
+        "echo " + shlex.quote(b64) + " | base64 -d > " + shlex.quote(remote_probe)]
+    rm_cmd = ssh_base_cmd(use_alias) + ["rm -f " + shlex.quote(remote_probe)]
+    try:
+        w = subprocess.run(write_cmd, check=False, capture_output=True, text=True)
+        if w.returncode != 0:
+            err("[purge] could not write the OPcache probe (exit %d): %s"
+                % (w.returncode, (w.stderr or "").strip()[:200]))
+        else:
+            import urllib.error
+            import urllib.request
+            url = "https://" + host + "/" + probe
+            try:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": "sgs-deploy/opcache"})
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    body = resp.read(200).decode("utf-8", "replace")
+                if "SGS-OPCACHE-RESET-OK" in body:
+                    log("[purge] OPcache: RESET (web pool)")
+                    ok_opcache = True
+                elif "SGS-OPCACHE-ABSENT" in body:
+                    log("[purge] OPcache: not enabled on this host - nothing to reset")
+                    ok_opcache = True
+                else:
+                    err("[purge] OPcache reset did not confirm; probe said: %r"
+                        % body.strip()[:120])
+            except (urllib.error.URLError, OSError) as e:
+                err("[purge] OPcache probe request failed: %s" % e)
+    finally:
+        subprocess.run(rm_cmd, check=False, capture_output=True, text=True)
+        # Prove the probe is gone rather than assuming the rm landed - it is a
+        # publicly reachable file that resets a shared cache.
+        chk = subprocess.run(
+            ssh_base_cmd(use_alias)
+            + ["test -e " + shlex.quote(remote_probe)
+               + " && echo PRESENT || echo GONE"],
+            check=False, capture_output=True, text=True)
+        if "PRESENT" in (chk.stdout or ""):
+            err("[purge] the OPcache probe is STILL on the server: %s "
+                "- remove it by hand" % remote_probe)
+
+    # ---- leg 2: page cache (LiteSpeed) ------------------------------------
+    # Gated on the plugin actually being active so a target without LiteSpeed
+    # reports "not installed" rather than a red error on every deploy.
+    page_cmd = ssh_base_cmd(use_alias) + [
+        "cd " + shlex.quote(webroot) + " && "
+        "if wp plugin is-active litespeed-cache 2>/dev/null; then "
+        "wp litespeed-purge all 2>&1; else echo SGS-NO-LITESPEED; fi"]
+    pc = subprocess.run(page_cmd, check=False, capture_output=True, text=True)
+    out = ((pc.stdout or "") + (pc.stderr or "")).strip()
+    if "SGS-NO-LITESPEED" in out:
+        log("[purge] page cache: LiteSpeed not active on this target - skipped")
+        ok_page = True
+    elif pc.returncode == 0 and "Purged" in out:
+        log("[purge] page cache: PURGED (LiteSpeed)")
+        ok_page = True
+    else:
+        err("[purge] page-cache purge did not confirm (exit %d): %s"
+            % (pc.returncode, out[:200]))
+
+    if ok_opcache and ok_page:
+        log("[purge] OK - both layers clear")
+        return 0
+    # Non-fatal by design (see the docstring), but never silent.
+    err("[purge] NOT FULLY PURGED - the deploy IS live, but visitors with a warm "
+        "cache may still be served the previous version. Re-run the failing leg "
+        "by hand before trusting a visual check.")
+    return 0
+
+
 def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
                         wp_content: str) -> int:
     """Pre-deploy content-compat gate (Track B, 2026-07-15 — the gate D182 used
@@ -511,7 +1046,8 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
     the LOCAL block.json schemas (i.e. the code about to be deployed) for:
       * stranded content — old scalar shapes an InnerBlocks render no longer reads
         (the empty-Indus-homepage class), and
-      * undeclared attrs — silently discarded at parse, DELETED on next editor save.
+      * undeclared attrs — dropped from the EDITOR schema (not from render.php's
+        `$attributes`; PHP keeps an unrecognised key), DELETED on next editor save.
 
     Read-only on the site (`wp post get` — the guard-sanctioned route). Findings
     already dispositioned in the casualty register live in
@@ -756,6 +1292,31 @@ def write_deploy_marker(use_alias: bool, target_key: str, dry_run: bool) -> int:
     return 0
 
 
+def step_motion_qa(dry_run: bool) -> int:
+    """Post-deploy LIVE motion regression check (D730).
+
+    ⛔ WHY THIS IS HERE AND NOT IN `prebuild`. Every motion probe needs a live canary.
+    A network-dependent check inside a BUILD gate can only fail when the canary is
+    merely unreachable, or warn-and-pass — and warn-and-pass is precisely the vacuity
+    `check-no-inline.py --live-default` already carries (it PASSES on a disconnected
+    machine, so a green run there proves nothing). Post-deploy is the honest home: the
+    canary is up by definition, and `step_verify_payload()` has just proven the live
+    plugin IS this run's payload, so a motion regression here is genuinely attributable
+    to this deploy rather than to ambient site state.
+
+    ⚠ Before this existed, `scripts/motion-qa/` held 13 probes with ZERO references in
+    `package.json` — an entire directory of the D338/D493 "built but never wired"
+    failure. Opting out with `--skip-motion-qa` re-creates it.
+    """
+    if dry_run:
+        log("[motion-qa] SKIPPED (--dry-run)")
+        return 0
+    log("[motion-qa] running live motion probes against the canary")
+    # npm is a shell shim on Windows; shell=False needs the .cmd form there.
+    npm = "npm.cmd" if os.name == "nt" else "npm"
+    return run([npm, "run", "qa:motion"], dry_run=False, cwd=PLUGIN_DIR)
+
+
 def step_verify_payload(use_alias: bool, wp_content: str, blocks: bool) -> int:
     """CHANGE-SPECIFIC verify: does the LIVE plugin match the payload we just shipped?
 
@@ -949,6 +1510,9 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument("--target", choices=sorted(TARGETS.keys()), default="sandybrown",
                    help="Deploy target (default: sandybrown — the canary).")
+    p.add_argument("--skip-gate-full", action="store_true",
+                   help="Skip the pre-deploy heavyweight gate tier (gate:full). "
+                        "This DISABLES four real gates for this deploy.")
     p.add_argument("--skip-build", action="store_true",
                    help="Skip npm run build; reuse existing build/.")
     scope = p.add_mutually_exclusive_group()
@@ -973,6 +1537,13 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--skip-motion-qa", action="store_true",
+                   help="skip the post-deploy live motion probes. Doing so is "
+                        "the D338 mistake: it makes the probes unreachable again.")
+    p.add_argument("--skip-purge", action="store_true",
+                   help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
+                        "NOT recommended: the deploy still lands, but warm caches "
+                        "keep serving the previous version — that is D709.")
     p.add_argument("--takeover", action="store_true",
                    help="Deploy even when the live target carries a commit that is NOT "
                         "an ancestor of HEAD (i.e. deliberately overwrite another "
@@ -1012,7 +1583,13 @@ def main() -> int:
 
     # Git cleanliness guard — scoped to files that ship AND execute on the site.
     if not args.allow_dirty and not args.dry_run:
-        dirty = deployed_dirty_files()
+        # Scope the guard to what THIS run ships: a --blocks-only deploy cannot
+        # write a theme file, so another track's dirty template is not a risk
+        # this invocation can create. Narrowing keeps the guard credible — a
+        # guard that cries wolf gets --allow-dirty'd, and that reflex is D336.
+        dirty = deployed_dirty_files(
+            roots=deploy_roots_for_scope(args.theme_only, args.blocks_only)
+        )
         if dirty:
             covered, uncovered = split_dirty_by_payload(dirty, args.payload)
             if covered:
@@ -1075,6 +1652,18 @@ def main() -> int:
         else:
             log("[1/5] npm run build: SKIPPED (--theme-only)")
 
+    # Pre-deploy heavyweight gate tier. Runs before tar so an abort costs
+    # nothing. See step_gate_full()'s docstring for why omitting it would
+    # silently disable four gates.
+    if args.skip_gate_full:
+        log("[gate:full] SKIPPED (--skip-gate-full) — four gates did NOT run")
+    else:
+        rc = step_gate_full(args.dry_run)
+        if rc != 0:
+            print(f"[ABORTED] reason: gate-full-failed (exit {rc}). Nothing was "
+                  "uploaded.", flush=True)
+            return 1
+
     # [2/5] Tar
     # Pre-deploy ownership gate: would this deploy clobber work that is live and
     # NOT in this checkout? Runs BEFORE tar/scp so an abort costs nothing.
@@ -1110,6 +1699,15 @@ def main() -> int:
         print(f"[ABORTED] reason: local-cleanup-failed (exit {rc})", flush=True)
         return 1
 
+    # Cache purge — BEFORE verify, so the smoke test measures what a visitor gets
+    # rather than what a cache-busting query string gets. Never aborts: see the
+    # step's docstring.
+    if args.skip_purge:
+        log("[purge] SKIPPED (--skip-purge) — a warm cache may serve the OLD version")
+    else:
+        step_purge_caches(args.dry_run, use_alias, target["wp_content"],
+                          target["host"])
+
     # Post-deploy smoke test — ON by default, aborts on a broken site.
     verify_url = args.verify_url or f"https://{target['host']}/"
     if args.skip_verify:
@@ -1138,6 +1736,18 @@ def main() -> int:
             print("[DEPLOYED-BUT-STALE] the deploy completed and the site responds, "
                   "but the LIVE plugin does not match this run's payload. Your code "
                   "is probably NOT what is running (D576).", flush=True)
+            return 1
+
+    # Post-deploy LIVE motion gate: do the shipped scroll effects still work?
+    # Runs after the payload gate so a STALE payload is reported before motion is blamed.
+    if deploy_blocks and not args.skip_motion_qa and not args.dry_run:
+        rc = step_motion_qa(args.dry_run)
+        if rc != 0:
+            print("[DEPLOYED-BUT-MOTION-REGRESSED] the deploy completed, the site "
+                  "responds and the payload matches, but a live motion probe failed. "
+                  "Read the probe output: it distinguishes a real regression from a "
+                  "rotted canary fixture, and re-running the deploy fixes neither.",
+                  flush=True)
             return 1
 
     # Post-deploy structural gate: live scoped-selector match audit.

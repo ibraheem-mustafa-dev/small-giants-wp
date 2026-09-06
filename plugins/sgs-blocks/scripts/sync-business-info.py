@@ -138,7 +138,16 @@ def _load_env_file(path: Path) -> dict[str, str]:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, value = line.partition("=")
-        result[key.strip()] = value.strip()
+        value = value.strip()
+        # Strip a MATCHED surrounding quote pair. Bash's `source` strips these as part of
+        # its own parsing, so a hand-rolled reader that does not diverges SILENTLY - here it
+        # built Basic auth from a quoted user/password and 401'd every authenticated REST
+        # call, which reads as a credentials fault rather than a parsing one (2026-08-18).
+        # Matched-pair ONLY: a blind .strip() of quote chars corrupts a value that
+        # legitimately ends in one.
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+            value = value[1:-1]
+        result[key.strip()] = value
     return result
 
 

@@ -1,0 +1,11 @@
+[check-undeclared-attrs] 3 finding(s) (3 undeclared, 0 extension-injected, 0 native-supports-injected):
+
+  sgs/quote -> "backgroundColourHoverGradient"
+      Destructured in edit.js but NOT declared in block.json — WordPress silently discards it at render.
+
+  sgs/text -> "fontSizeMobile"
+      Destructured in edit.js but NOT declared in block.json — WordPress silently discards it at render.
+
+  sgs/text -> "fontSizeTablet"
+      Destructured in edit.js but NOT declared in block.json — WordPress silently discards it at render.
+

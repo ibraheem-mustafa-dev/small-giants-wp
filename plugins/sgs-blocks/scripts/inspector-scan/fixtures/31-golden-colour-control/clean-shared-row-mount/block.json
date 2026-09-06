@@ -1,0 +1,12 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/clean-shared-row-mount",
+	"title": "Fixture: mounts the SHARED FixtureCleanSharedRowPanel — its row is fully conformant (2 states, gradient on both) and must NOT flag (mustNotFlag: 'FixtureCleanSharedRowPanel')",
+	"category": "sgs",
+	"attributes": {
+		"fixtureCleanColour": { "type": "string", "default": "" },
+		"fixtureCleanColourGradient": { "type": "string", "default": "" },
+		"fixtureCleanColourHover": { "type": "string", "default": "" },
+		"fixtureCleanColourHoverGradient": { "type": "string", "default": "" }
+	}
+}

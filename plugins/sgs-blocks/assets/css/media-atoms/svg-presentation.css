@@ -1,0 +1,87 @@
+/*
+ * svg-presentation — position (z-index layering), animation, opacity,
+ * text-shadow and min-height for an inline SVG media element.
+ *
+ * Custom-property names match `svg-presentation.js`/`svg-presentation.php`'s
+ * `css()` output exactly: `--sgs-media-svg-zindex`,
+ * `--sgs-media-svg-animation-name`, `--sgs-media-svg-animation-duration`,
+ * `--sgs-media-svg-opacity`, `--sgs-media-svg-text-shadow`,
+ * `--sgs-media-svg-min-height`.
+ *
+ * NONE of these six bases are tiered (MEDIA_TIERED_BASES does not carry any
+ * of them) — no @media blocks needed here, unlike box-shape/focal-point.
+ *
+ * PREFERS-REDUCED-MOTION IS A NEW, DEDICATED GUARD — this selector
+ * (`.sgs-media-el`) is not covered by the existing guards in
+ * `hero/style.css`/`container/style.css`/`parallax.js`, which are scoped to
+ * THOSE blocks' own selectors. Mirrors their pattern rather than inventing a
+ * new one: the whole animation rule sits inside
+ * `@media (prefers-reduced-motion: no-preference)`, so a client with reduced
+ * motion enabled sees the SVG fully static — animation-name/-duration
+ * simply never apply. (The real `animation-name`/`-duration` properties now
+ * live in `_base.css`'s combined rule — see the note below — which is ALSO
+ * wrapped in this same `@media` guard, so that still holds.)
+ *
+ * ✅ CROSS-ATOM COLLISION RESOLVED (2026-09-01, Bean's direction). This atom
+ * used to declare `animation-name`/`-duration`/`-timing-function`/
+ * `-iteration-count`/`-direction` directly on `.sgs-media-el`, and so did
+ * `motion.css` — identical specificity (0,1,0), whichever partial loaded
+ * last (alphabetically after `_base.css`) always won, so `motion`'s ken-
+ * burns/parallax silently never animated on any element that could also
+ * carry an SVG animation. Bean's direction: this atom KEEPS sole ownership
+ * of the pulse/float/wave SVG vocabulary — nothing about that changes —
+ * but the two atoms' animations must be able to run simultaneously rather
+ * than one silently winning. The fix: this atom still writes only to its
+ * OWN uniquely named custom properties (unchanged below), but the REAL
+ * `animation-*` properties are now composed ONCE, in `_base.css`, using
+ * CSS's native comma-separated multi-value animation syntax — each atom
+ * occupies its own position in the list. See `_base.css`'s "Cross-atom
+ * rule: composed animation" section for the combining rule itself.
+ *
+ * ⛔ NO BARE `opacity:` DECLARATION HERE EITHER (2026-09-01, same session).
+ * The `opacity` atom (`opacity.css`) ALSO declares `opacity` on this exact
+ * selector via its own `--sgs-media-opacity` custom property — the identical
+ * collision class the animation fix above already documents, just on a
+ * different property. This atom still writes only to its own uniquely
+ * named `--sgs-media-svg-opacity`; the REAL `opacity` property is composed
+ * ONCE in `_base.css` by multiplying both atoms' values. See `_base.css`'s
+ * "Cross-atom rule: composed opacity" section.
+ */
+
+.sgs-media-el {
+	z-index: var( --sgs-media-svg-zindex, -1 );
+	text-shadow: var( --sgs-media-svg-text-shadow, none );
+	min-height: var( --sgs-media-svg-min-height, 0 );
+}
+
+@media ( prefers-reduced-motion: no-preference ) {
+	@keyframes sgs-media-svg-pulse {
+		from {
+			transform: scale( 1 );
+		}
+		to {
+			transform: scale( 1.05 );
+		}
+	}
+
+	@keyframes sgs-media-svg-float {
+		from {
+			transform: translateY( 0 );
+		}
+		to {
+			transform: translateY( -12px );
+		}
+	}
+
+	@keyframes sgs-media-svg-wave {
+		0% {
+			transform: rotate( -2deg );
+		}
+		50% {
+			transform: rotate( 2deg );
+		}
+		100% {
+			transform: rotate( -2deg );
+		}
+	}
+}

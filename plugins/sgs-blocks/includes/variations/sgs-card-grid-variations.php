@@ -60,8 +60,8 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 		'cardShadowColour'  => '',
 	);
 
-	// "Boxed" — background "surface" (theme.json line 48) + border colour
-	// "border-subtle" (theme.json line 73) + 1px border on all sides + the
+	// "Boxed" — background "surface" + border colour "border" + 1px border on
+	// all sides + the
 	// same 8px radius, with the shadow explicitly zeroed out (the retired CSS
 	// set `box-shadow: none`). cardShadow doesn't accept the literal keyword
 	// "none" (an empty string instead falls back to the block's own
@@ -72,7 +72,7 @@ function sgs_register_card_grid_variations( array $variations, \WP_Block_Type $b
 	// offset/blur/spread regardless.
 	$boxed_card_style = array(
 		'cardBackground'    => 'surface',
-		'cardBorderColour'  => 'border-subtle',
+		'cardBorderColour'  => 'border',
 		'cardBorderWidth'   => array(
 			'top'    => '1px',
 			'right'  => '1px',

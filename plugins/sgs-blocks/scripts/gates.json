@@ -1,0 +1,933 @@
+[
+  {
+    "id": "consistency-run-consistency-gates",
+    "cmd": "python scripts/consistency/run-consistency-gates.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "9468fd94",
+    "budget_ms": 1085,
+    "order": 0
+  },
+  {
+    "id": "consistency-build-roster",
+    "cmd": "python scripts/consistency/build-roster.py",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "d54e41db",
+    "budget_ms": null,
+    "order": 1
+  },
+  {
+    "id": "clean-build",
+    "cmd": "npm run clean:build",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 2
+  },
+  {
+    "id": "generate-icons",
+    "cmd": "node scripts/generate-icons.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "666e1ee4",
+    "budget_ms": null,
+    "order": 3
+  },
+  {
+    "id": "generate-extension-attributes",
+    "cmd": "node scripts/generate-extension-attributes.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": "8694aebc",
+    "budget_ms": null,
+    "order": 4
+  },
+  {
+    "id": "run-motion-fx-generators",
+    "cmd": "node scripts/run-motion-fx-generators.js",
+    "tier": "generator",
+    "added_D": "D427",
+    "added_commit": "6c8d78ca",
+    "budget_ms": null,
+    "order": 5
+  },
+  {
+    "id": "check-fx-list-drift",
+    "cmd": "python scripts/check-fx-list-drift.py --check",
+    "tier": "fast",
+    "added_D": "D465",
+    "added_commit": "4f07a72a",
+    "budget_ms": 98,
+    "order": 6
+  },
+  {
+    "id": "check-dead-controls",
+    "cmd": "node scripts/check-dead-controls.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "6922e541",
+    "budget_ms": 1300,
+    "order": 7
+  },
+  {
+    "id": "check-dead-pattern-attrs",
+    "cmd": "python scripts/check-dead-pattern-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D338",
+    "added_commit": "2d413758",
+    "budget_ms": 146,
+    "order": 8
+  },
+  {
+    "id": "check-shared-panel-schema",
+    "cmd": "node scripts/check-shared-panel-schema.js --check",
+    "tier": "fast",
+    "added_D": "D587",
+    "added_commit": "14df1ffb",
+    "budget_ms": 124,
+    "order": 9
+  },
+  {
+    "id": "check-empty-inspector-containers",
+    "cmd": "node scripts/check-empty-inspector-containers.js --check",
+    "tier": "fast",
+    "added_D": "D639",
+    "added_commit": "4cec3b6c",
+    "budget_ms": 312,
+    "order": 10
+  },
+  {
+    "id": "check-wrapper-capability-preconditions",
+    "cmd": "node scripts/check-wrapper-capability-preconditions.js --check",
+    "tier": "fast",
+    "added_D": "D639",
+    "added_commit": "8c3bfbae",
+    "budget_ms": 84,
+    "order": 11
+  },
+  {
+    "id": "surveys-survey-background-colour-support",
+    "cmd": "python scripts/surveys/survey-background-colour-support.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "517b2e9b",
+    "budget_ms": 89,
+    "order": 12
+  },
+  {
+    "id": "surveys-check-image-controls-support",
+    "cmd": "python scripts/surveys/check-image-controls-support.py --check",
+    "tier": "fast",
+    "added_D": "D585",
+    "added_commit": "ceec53b3",
+    "budget_ms": 94,
+    "order": 13
+  },
+  {
+    "id": "surveys-survey-control-parity",
+    "cmd": "python scripts/surveys/survey-control-parity.py --check",
+    "tier": "fast",
+    "added_D": "D493",
+    "added_commit": "21b40503",
+    "budget_ms": 2373,
+    "order": 14
+  },
+  {
+    "id": "check-hardcoded-render-defaults",
+    "cmd": "node scripts/check-hardcoded-render-defaults.js --check",
+    "tier": "fast",
+    "added_D": "D193",
+    "added_commit": "8bbe7143",
+    "budget_ms": 171,
+    "order": 15
+  },
+  {
+    "id": "check-dead-api-calls",
+    "cmd": "python scripts/check-dead-api-calls.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "d1e36104",
+    "budget_ms": 25385,
+    "order": 16,
+    "tier_reason": "Promoted full→fast 2026-09-02 (P-DEAD-API-PROMOTE-TO-HARD-GATE): baseline is genuinely 0 (all 96 real WP/WC names promoted to the allowlist), self-test still catches the D641 incident call, and it already runs hard-blocking on every `npm start` via prestart — gating it on every prebuild too closes the gap where a plain `npm run build` (no start, no deploy) could still ship a hallucinated call."
+  },
+  {
+    "id": "check-control-ux",
+    "cmd": "node scripts/check-control-ux.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "61d95f41",
+    "budget_ms": 140,
+    "order": 17
+  },
+  {
+    "id": "surveys-survey-experimental-imports",
+    "cmd": "node scripts/surveys/survey-experimental-imports.js --check",
+    "tier": "fast",
+    "added_D": "D562",
+    "added_commit": "5d84324b",
+    "budget_ms": 173,
+    "order": 18
+  },
+  {
+    "id": "check-product-search-guards",
+    "cmd": "node scripts/check-product-search-guards.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "027f6c67",
+    "budget_ms": 52,
+    "order": 19
+  },
+  {
+    "id": "dbschema-check_schema_drift",
+    "cmd": "python scripts/dbschema/check_schema_drift.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a8fb47d5",
+    "budget_ms": 269,
+    "order": 20
+  },
+  {
+    "id": "dbschema-check_value_identity",
+    "cmd": "python scripts/dbschema/check_value_identity.py --check",
+    "tier": "fast",
+    "added_D": "D345",
+    "added_commit": "85212a9d",
+    "budget_ms": 75,
+    "order": 21
+  },
+  {
+    "id": "dbschema-capture_seed_data",
+    "cmd": "python scripts/dbschema/capture_seed_data.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a8fb47d5",
+    "budget_ms": 85,
+    "order": 22
+  },
+  {
+    "id": "db-consistency-run",
+    "cmd": "python scripts/db-consistency/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "1293c24f",
+    "budget_ms": 461,
+    "order": 23
+  },
+  {
+    "id": "lint-responsive-controls",
+    "cmd": "python scripts/lint-responsive-controls.py --check",
+    "tier": "fast",
+    "added_D": "D478",
+    "added_commit": "8a9adaf3",
+    "budget_ms": 100,
+    "order": 24
+  },
+  {
+    "id": "check-tier-storage-shape",
+    "cmd": "python scripts/check-tier-storage-shape.py --check",
+    "tier": "fast",
+    "added_D": "D563",
+    "added_commit": "7b272d81",
+    "budget_ms": 79,
+    "order": 25
+  },
+  {
+    "id": "check-inert-controls",
+    "cmd": "python scripts/check-inert-controls.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "fab7e97e",
+    "budget_ms": 460,
+    "order": 26
+  },
+  {
+    "id": "check-undeclared-attrs",
+    "cmd": "python scripts/check-undeclared-attrs.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "fab7e97e",
+    "budget_ms": 461,
+    "order": 27
+  },
+  {
+    "id": "check-undefined-refs",
+    "cmd": "node scripts/check-undefined-refs.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0ac0c830",
+    "budget_ms": 1499,
+    "order": 28
+  },
+  {
+    "id": "check-render-undefined-vars",
+    "cmd": "python scripts/check-render-undefined-vars.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "da170be8",
+    "budget_ms": 1759,
+    "order": 29
+  },
+  {
+    "id": "cheat-gate-run",
+    "cmd": "python scripts/cheat-gate/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 1849,
+    "order": 30
+  },
+  {
+    "id": "excluded-gate-run",
+    "cmd": "python scripts/excluded-gate/run.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 224,
+    "order": 31
+  },
+  {
+    "id": "ledger-coverage_check",
+    "cmd": "python scripts/ledger/coverage_check.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "e7679b09",
+    "budget_ms": 1734,
+    "order": 32
+  },
+  {
+    "id": "check-atomic-slug-literals",
+    "cmd": "python scripts/check-atomic-slug-literals.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "524c7aa5",
+    "budget_ms": 68,
+    "order": 33
+  },
+  {
+    "id": "ledger-declare_input",
+    "cmd": "python scripts/ledger/declare_input.py --check",
+    "tier": "fast",
+    "added_D": "D228",
+    "added_commit": "f8a746c7",
+    "budget_ms": 193,
+    "order": 34
+  },
+  {
+    "id": "audit-inline-styling",
+    "cmd": "node scripts/audit-inline-styling.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c5be4ab1",
+    "budget_ms": 561,
+    "order": 35
+  },
+  {
+    "id": "check-id-scoped-emits",
+    "cmd": "node scripts/check-id-scoped-emits.js --check",
+    "tier": "fast",
+    "added_D": "D303",
+    "added_commit": "f52c6b53",
+    "budget_ms": 114,
+    "order": 36
+  },
+  {
+    "id": "check-text-gradient-companion",
+    "cmd": "node scripts/check-text-gradient-companion.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "973870bc",
+    "budget_ms": 311,
+    "order": 37
+  },
+  {
+    "id": "check-preset-token-naming",
+    "cmd": "python scripts/check-preset-token-naming.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0def190f",
+    "budget_ms": 93,
+    "order": 38
+  },
+  {
+    "id": "check-palette-slug-refs",
+    "cmd": "python scripts/check-palette-slug-refs.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "0def190f",
+    "budget_ms": 203,
+    "order": 39
+  },
+  {
+    "id": "check-box-family-guard",
+    "cmd": "python scripts/check-box-family-guard.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c5be4ab1",
+    "budget_ms": 549,
+    "order": 40
+  },
+  {
+    "id": "check-jsonld-flags",
+    "cmd": "python scripts/check-jsonld-flags.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "a42cc0f8",
+    "budget_ms": 2661,
+    "order": 41
+  },
+  {
+    "id": "remove-vacuous-style-engine-guard",
+    "cmd": "python scripts/remove-vacuous-style-engine-guard.py --check",
+    "tier": "fast",
+    "added_D": "D338",
+    "added_commit": "b6e11174",
+    "budget_ms": 190,
+    "order": 42
+  },
+  {
+    "id": "check-no-core-blocks",
+    "cmd": "python scripts/check-no-core-blocks.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "bf71f5aa",
+    "budget_ms": 91,
+    "order": 43
+  },
+  {
+    "id": "no-inline-check-no-inline",
+    "cmd": "python scripts/no-inline/check-no-inline.py --live-default",
+    "tier": "fast",
+    "added_D": "D345",
+    "added_commit": "da9d6ddb",
+    "budget_ms": 1028,
+    "order": 44
+  },
+  {
+    "id": "no-inline-check-stranded-guards",
+    "cmd": "python scripts/no-inline/check-stranded-guards.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "c7a4ee5c",
+    "budget_ms": 196,
+    "order": 45
+  },
+  {
+    "id": "pytest-oracle-converter",
+    "cmd": "python -m pytest scripts/oracle/tests/ scripts/converter/tests/ -q --deselect scripts/converter/tests/test_content_gap_collector.py::TestConvertSectionContentGaps::test_sgs_tabs_fixture_surfaces_the_proven_gaps",
+    "tier": "full",
+    "added_D": "D263",
+    "added_commit": "60a920b6",
+    "budget_ms": 35892,
+    "order": 46,
+    "tier_reason": "47.3s / 33.8% — converter+oracle unit tests. Not deployed code; a converter regression cannot reach the canary, so pre-deploy is the honest home."
+  },
+  {
+    "id": "check-shared-css-state-rules",
+    "cmd": "node scripts/check-shared-css-state-rules.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "36461b85",
+    "budget_ms": 60,
+    "order": 47
+  },
+  {
+    "id": "inspector-scan-run",
+    "cmd": "node scripts/inspector-scan/run.js --check",
+    "tier": "full",
+    "added_D": "D99",
+    "added_commit": "7af5f95f",
+    "budget_ms": 9826,
+    "order": 48,
+    "tier_reason": "11.3s / 8.1% — whole-repo static inspector-rule scan."
+  },
+  {
+    "id": "check-element-manifest-conformance",
+    "cmd": "node scripts/check-element-manifest-conformance.js --check",
+    "tier": "fast",
+    "added_D": "D545",
+    "added_commit": "c196ed33",
+    "budget_ms": 123,
+    "order": 49
+  },
+  {
+    "id": "audit-feature-parity",
+    "cmd": "python scripts/audit-feature-parity.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "98ff88df",
+    "budget_ms": 73,
+    "order": 50
+  },
+  {
+    "id": "audit-declared-vs-seeded-roles",
+    "cmd": "python scripts/audit-declared-vs-seeded-roles.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "ceada1d4",
+    "budget_ms": 3051,
+    "order": 51
+  },
+  {
+    "id": "check-universal-fit",
+    "cmd": "node scripts/check-universal-fit.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 142,
+    "order": 52
+  },
+  {
+    "id": "check-duplicate-controls",
+    "cmd": "node scripts/check-duplicate-controls.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 946,
+    "order": 53
+  },
+  {
+    "id": "check-simple-surface-cap",
+    "cmd": "node scripts/check-simple-surface-cap.js",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 329,
+    "order": 54
+  },
+  {
+    "id": "audit-block-file-consistency",
+    "cmd": "python scripts/audit-block-file-consistency.py --check",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 15149,
+    "order": 55,
+    "tier_reason": "16.7s / 11.9% — whole-repo static block-file structure audit."
+  },
+  {
+    "id": "audit-block-uniformity",
+    "cmd": "python scripts/audit-block-uniformity.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "071b7915",
+    "budget_ms": 73,
+    "order": 56
+  },
+  {
+    "id": "check-editor-render-parity",
+    "cmd": "node scripts/check-editor-render-parity.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": "b47bc24b",
+    "budget_ms": 2122,
+    "order": 57
+  },
+  {
+    "id": "check-ksort-before-hash",
+    "cmd": "python scripts/check-ksort-before-hash.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 109,
+    "order": 58
+  },
+  {
+    "id": "check-tier-object-cast",
+    "cmd": "python scripts/check-tier-object-cast.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 536,
+    "order": 59
+  },
+  {
+    "id": "check-single-instance-invariants",
+    "cmd": "python scripts/check-single-instance-invariants.py --check",
+    "tier": "fast",
+    "added_D": "D736",
+    "added_commit": "914c2ad4",
+    "budget_ms": 60,
+    "order": 60
+  },
+  {
+    "id": "check-withdrawn-figures",
+    "cmd": "python scripts/check-withdrawn-figures.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1407,
+    "order": 61
+  },
+  {
+    "id": "migrate-length-sanitiser",
+    "cmd": "python scripts/migrate-length-sanitiser.py --check",
+    "tier": "fast",
+    "added_D": "D734",
+    "added_commit": "a2f6d5df9",
+    "budget_ms": 163,
+    "order": 62
+  },
+  {
+    "id": "run-gates-selftest",
+    "cmd": "python scripts/run-gates.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 168,
+    "order": 63
+  },
+  {
+    "id": "check-doc-citations",
+    "cmd": "python scripts/check-doc-citations.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 95,
+    "order": 64
+  },
+  {
+    "id": "migrate-tier-object-db-parity",
+    "cmd": "python scripts/migrate-tier-object.py --check-db-parity",
+    "tier": "fast",
+    "added_D": "D775",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 65
+  },
+  {
+    "id": "lint-patterns-personal-data",
+    "cmd": "python ../../scripts/lint-patterns-for-personal-data.py",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 66
+  },
+  {
+    "id": "font-source-audit",
+    "cmd": "node ../../scripts/font-source-audit.js",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 67
+  },
+  {
+    "id": "migrate-render-closures",
+    "cmd": "python scripts/migrate-render-closures.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 68
+  },
+  {
+    "id": "migrate-theme-native-spacing",
+    "cmd": "python scripts/migrate-theme-native-spacing.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 69
+  },
+  {
+    "id": "migrate-shadow-mounts",
+    "cmd": "node scripts/colour-codemod/migrate-shadow-mounts.js --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 70
+  },
+  {
+    "id": "fanout-overlay-sibling-attrs",
+    "cmd": "python scripts/fanout-overlay-sibling-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D776",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 71
+  },
+  {
+    "id": "check-child-lift",
+    "cmd": "python scripts/check-child-lift.py",
+    "tier": "fast",
+    "added_D": "D793",
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 72
+  },
+  {
+    "id": "check-fx-registration",
+    "cmd": "python scripts/check-fx-registration.py",
+    "tier": "fast",
+    "added_D": "D789",
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 73
+  },
+  {
+    "id": "check-colour-preview-resolver",
+    "cmd": "node scripts/check-colour-preview-resolver.js --check",
+    "tier": "fast",
+    "added_D": "D792",
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 74
+  },
+  {
+    "id": "check-border-style-without-width",
+    "cmd": "python scripts/check-border-style-without-width.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 75
+  },
+  {
+    "id": "check-control-helper-parity",
+    "cmd": "python scripts/check-control-helper-parity.py --check",
+    "tier": "fast",
+    "added_D": "D809",
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 76
+  },
+  {
+    "id": "survey-border-control-migration",
+    "cmd": "python scripts/survey-border-control-migration.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1500,
+    "order": 77
+  },
+  {
+    "id": "border-shape-b-selftest",
+    "cmd": "node scripts/migrate-border-shape-b.js --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 78
+  },
+  {
+    "id": "border-shape-b-check",
+    "cmd": "node scripts/migrate-border-shape-b.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 79
+  },
+  {
+    "id": "check-hover-state-classification",
+    "cmd": "python scripts/check-hover-state-classification.py --check",
+    "tier": "fast",
+    "added_D": "D885",
+    "added_commit": "c50066bff",
+    "budget_ms": 150,
+    "order": 80
+  },
+  {
+    "id": "check-transform-parity",
+    "cmd": "node scripts/generative-background/verify-transform.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 400,
+    "order": 81
+  },
+  {
+    "id": "generate-svg-allowlist",
+    "cmd": "node scripts/generate-svg-allowlist.js",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 6
+  },
+  {
+    "id": "check-svg-allowlist-parity",
+    "cmd": "node scripts/generate-svg-allowlist.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 82
+  },
+  {
+    "id": "test-sanitise-svg",
+    "cmd": "node scripts/tests/test-sanitise-svg.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 83
+  },
+  {
+    "id": "test-media-attr-parity",
+    "cmd": "node scripts/tests/test-media-attr-parity.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 84
+  },
+  {
+    "id": "generate-media-attributes",
+    "cmd": "node scripts/generate-media-attributes.mjs",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 7
+  },
+  {
+    "id": "check-media-attributes-parity",
+    "cmd": "node scripts/generate-media-attributes.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 85
+  },
+  {
+    "id": "test-media-injection-parity",
+    "cmd": "node scripts/tests/test-media-injection-parity.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 86
+  },
+  {
+    "id": "check-media-breakpoints",
+    "cmd": "node scripts/check-media-breakpoints.js",
+    "tier": "fast",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 87
+  },
+  {
+    "id": "test-media-atom-parity",
+    "cmd": "node scripts/tests/test-media-atom-parity.mjs",
+    "tier": "fast",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 88
+  },
+  {
+    "id": "generate-media-stylesheet",
+    "cmd": "node scripts/generate-media-stylesheet.mjs",
+    "tier": "generator",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 8
+  },
+  {
+    "id": "check-media-stylesheet",
+    "cmd": "node scripts/generate-media-stylesheet.mjs --check",
+    "tier": "fast",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 89
+  },
+  {
+    "id": "check-media-atom-purity",
+    "cmd": "node scripts/check-media-atom-purity.js",
+    "tier": "fast",
+    "added_D": 909,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 90
+  },
+  {
+    "id": "check-media-disclosure-coverage",
+    "cmd": "node scripts/check-media-disclosure-coverage.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 91
+  },
+  {
+    "id": "check-enum-control-shape",
+    "cmd": "python scripts/check-enum-control-shape.py --check",
+    "tier": "fast",
+    "added_D": "D812",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 92
+  },
+  {
+    "id": "test-hover-state-guard",
+    "cmd": "node scripts/tests/test-hover-state-guard.mjs",
+    "tier": "fast",
+    "added_D": "D922",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 93
+  },
+  {
+    "id": "check-preset-absence-no-slug-literal",
+    "cmd": "python scripts/converter/gates/check_preset_absence_no_slug_literal.py",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 50,
+    "order": 94
+  },
+  {
+    "id": "migrate-orchestrator-rename",
+    "cmd": "python scripts/migrate-orchestrator-rename.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 95
+  },
+  {
+    "id": "audit-bindable-attrs",
+    "cmd": "python scripts/audit-bindable-attrs.py --check",
+    "tier": "fast",
+    "added_D": "D962",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 96
+  },
+  {
+    "id": "wire-border-contrast",
+    "cmd": "node scripts/colour-codemod/wire-border-contrast.js --check",
+    "tier": "fast",
+    "added_D": "D963",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 97
+  },
+  {
+    "id": "check-colour-attr-css-property",
+    "cmd": "python scripts/check-colour-attr-css-property.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 98
+  },
+  {
+    "id": "check-render-tier-object-spacing",
+    "cmd": "python scripts/check-render-tier-object-spacing.py --check",
+    "tier": "fast",
+    "added_D": "D976",
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 99
+  }
+]

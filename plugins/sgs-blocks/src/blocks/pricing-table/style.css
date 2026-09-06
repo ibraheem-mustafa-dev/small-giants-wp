@@ -78,17 +78,20 @@
 	z-index: 1;
 }
 
-/* Popular badge */
+/* Popular badge. Colour/background are PHP-emitted (popularBadgeColour/
+   Background, render.php) — no static default here, or it would repaint the
+   same selector PHP already owns and reintroduce the text/background
+   collision the D937 recipe exists to remove. `isolation: isolate` contains
+   the background `::after` layer's `z-index: -1` to this element alone. */
 .sgs-pricing-table__badge {
 	position: absolute;
+	isolation: isolate;
 	top: calc(var(--sgs-pricing-padding) * -0.5);
 	right: var(--sgs-pricing-padding);
 	padding: 0.25rem 1rem;
 	border-radius: 999px;
 	font-size: 0.875rem;
 	font-weight: 600;
-	color: var(--wp--preset--color--text-inverse, #fff);
-	background-color: var(--wp--preset--color--accent, #d4a843);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
 }
@@ -321,8 +324,17 @@
 .sgs-pricing-table__name {
 	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
 	font-size: var(--wp--preset--font-size--large, 1.5rem);
-	font-weight: 700;
 	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/*
+ * Font-weight default — :where() keeps this at specificity 0 so the
+ * uid-scoped titleFontWeight rule (sgs_typography_css_rule, prefix "title")
+ * always wins. Sanctioned F3-exempt overridable-default pattern (mirrors
+ * sgs/product-card's line-height :where() block).
+ */
+:where(.sgs-pricing-table__title, .sgs-pricing-table__name) {
+	font-weight: 700;
 }
 
 /* ── Feature included / excluded states ──────────────────────────────────── */
@@ -455,11 +467,18 @@
 	font-weight: 700;
 }
 
-/* Inactive button hover: light tint */
-.sgs-pricing-table__billing-toggle--style-button
-	.sgs-pricing-table__toggle-label:hover,
-.sgs-pricing-table__toggle--style-button
-	.sgs-pricing-table__toggle-label:hover {
+/* Inactive button hover tint is client-controllable via the
+   `toggleLabelHoverColour` attribute (render.php emits a scoped
+   `:hover`/`:focus-visible` rule at real specificity, winning once a client
+   sets a value). The rule below is the DEFAULT tint, kept at zero
+   specificity via :where() so an unset attribute still shows today's
+   look unchanged. */
+:where(
+	.sgs-pricing-table__billing-toggle--style-button
+		.sgs-pricing-table__toggle-label:hover,
+	.sgs-pricing-table__toggle--style-button
+		.sgs-pricing-table__toggle-label:hover
+) {
 	background-color: color-mix(
 		in srgb,
 		var(--wp--preset--color--primary, #0f7e80) 10%,
@@ -467,12 +486,14 @@
 	);
 }
 
-/* Fallback for browsers without color-mix */
+/* Fallback for browsers without color-mix (same :where()-zeroed default) */
 @supports not (color: color-mix(in srgb, black 10%, transparent)) {
-	.sgs-pricing-table__billing-toggle--style-button
-		.sgs-pricing-table__toggle-label:hover,
-	.sgs-pricing-table__toggle--style-button
-		.sgs-pricing-table__toggle-label:hover {
+	:where(
+		.sgs-pricing-table__billing-toggle--style-button
+			.sgs-pricing-table__toggle-label:hover,
+		.sgs-pricing-table__toggle--style-button
+			.sgs-pricing-table__toggle-label:hover
+	) {
 		background-color: rgba(15, 126, 128, 0.1);
 	}
 }

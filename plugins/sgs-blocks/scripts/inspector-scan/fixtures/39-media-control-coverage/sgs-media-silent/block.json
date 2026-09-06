@@ -1,0 +1,17 @@
+{
+	"name": "sgs/media",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit", "overlay" ] }
+			]
+		}
+	},
+	"attributes": {
+		"mediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ]
+		}
+	}
+}

@@ -69,6 +69,7 @@
 	 * --sgs-tab-active-bg (selected) / --sgs-tab-hover-bg (hover) so a client
 	 * can style all three states of this member (FR-35-5 STATE_WITHOUT_BASE). */
 	background-color: var( --sgs-tab-bg, transparent );
+	background-image: var( --sgs-tab-bg-gradient, none );
 	margin: 0;
 	cursor: pointer;
 	outline: none;
@@ -196,6 +197,7 @@
 	border: 1px solid var( --sgs-panel-border );
 	border-bottom-color: var( --sgs-panel-bg, #fff );
 	background: var( --sgs-panel-bg, #fff );
+	background-image: var( --sgs-panel-bg-gradient, none );
 	/* Pull tab down to overlap the nav border */
 	margin-bottom: -2px;
 	position: relative;
@@ -247,6 +249,13 @@
 .sgs-tabs__panel {
 	padding: 24px;
 	background: var( --sgs-panel-bg, transparent );
+	background-image: var( --sgs-panel-bg-gradient, none );
+}
+
+.sgs-tabs__panel:hover,
+.sgs-tabs__panel:focus-visible {
+	background-color: var( --sgs-panel-bg-hover, var( --sgs-panel-bg, transparent ) );
+	background-image: var( --sgs-panel-bg-hover-gradient, var( --sgs-panel-bg-gradient, none ) );
 }
 
 /* Semantic hidden — display:none is correct here (hidden attribute) */
@@ -366,6 +375,7 @@
 		border: 1px solid var( --sgs-panel-border, #e5e7eb );
 		border-radius: var( --wp--custom--border-radius--small, 4px );
 		background-color: var( --sgs-panel-bg, transparent );
+		background-image: var( --sgs-panel-bg-gradient, none );
 		font-weight: 600;
 		min-height: 44px;
 		position: relative;
@@ -375,6 +385,10 @@
 		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
 		border-color: var( --wp--preset--color--primary, currentColor );
 		color: var( --wp--preset--color--primary, currentColor );
+		/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone —
+		 * the resting border is already 1px solid, so bump to 2px as the
+		 * non-colour signal. */
+		border-width: 2px;
 	}
 
 	/* Hide the underline indicator at mobile — full-button styling carries the active state */

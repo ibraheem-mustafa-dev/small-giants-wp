@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/panel-plus-self-routing-component",
+	"title": "Fixture: content panel + a self-routing shared component",
+	"category": "sgs",
+	"attributes": {}
+}

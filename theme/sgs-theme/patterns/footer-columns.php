@@ -12,17 +12,17 @@
 
 ?>
 
-<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"primary-dark","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"primary-dark","contentWidth":{"desktop":"normal"}} -->
 
 <!-- wp:sgs/site-footer-row {"rowSlot":"columns","layout":"grid","columns":{"desktop":4,"tablet":2},"padding":{"desktop":{"top":"var(--wp--preset--spacing--70)","bottom":"var(--wp--preset--spacing--40)"}}} -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/responsive-logo {"width":160,"linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 <!-- /wp:sgs/container -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
@@ -38,7 +38,7 @@
 <!-- /wp:list -->
 <!-- /wp:sgs/container -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
@@ -54,7 +54,7 @@
 <!-- /wp:list -->
 <!-- /wp:sgs/container -->
 
-<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"}} -->
+<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/heading {"content":"Stay Updated","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
 
 <!-- wp:sgs/text {"text":"Subscribe to our newsletter for the latest updates, tips, and insights.","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
@@ -66,9 +66,9 @@
 
 <!-- /wp:sgs/site-footer-row -->
 
-<!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}},"style":{"border":{"top":{"color":"var:preset|color|border-subtle","width":"1px"}}}} -->
+<!-- wp:sgs/site-footer-row {"borderWidth":{"top":"1px"},"borderStyle":"solid","borderColour":"border","rowSlot":"bottom","layout":"flex","justifyContent":"center","padding":{"desktop":{"top":"var(--wp--preset--spacing--40)","bottom":"var(--wp--preset--spacing--40)"}}} -->
 
-<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- /wp:sgs/site-footer-row -->
 

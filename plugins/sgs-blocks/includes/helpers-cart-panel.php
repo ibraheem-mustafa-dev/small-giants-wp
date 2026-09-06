@@ -52,7 +52,7 @@ defined( 'ABSPATH' ) || exit;
  * @return string Escaped trigger markup.
  */
 function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ): string {
-	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $inner_html is built from esc_attr + trusted Lucide SVG by the caller; wp_interactivity_data_wp_context() self-escapes and its fallback esc_attr()s the JSON.
+	// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $inner_html is built from esc_attr + trusted Lucide SVG by the caller; wp_interactivity_data_wp_context() self-escapes.
 	if ( 'flyout' === $mode ) {
 		return sprintf(
 			'<button type="button" class="sgs-cart__trigger" aria-label="%1$s" aria-expanded="false" aria-controls="%2$s" data-sgs-cart-trigger data-sgs-cart-flyout-trigger>%3$s</button>',
@@ -67,9 +67,7 @@ function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ):
 			'isOpen'    => false,
 			'drawerRef' => $args['drawer_id'],
 		);
-		$context_attr = function_exists( 'wp_interactivity_data_wp_context' )
-			? wp_interactivity_data_wp_context( $context )
-			: sprintf( "data-wp-context='%s'", esc_attr( wp_json_encode( $context ) ) );
+		$context_attr = wp_interactivity_data_wp_context( $context );
 
 		return sprintf(
 			'<div class="sgs-cart__trigger-wrap" data-wp-interactive="sgs/nav" %1$s><button type="button" class="sgs-cart__trigger" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%2$s" aria-label="%3$s" data-sgs-cart-trigger>%4$s</button></div>',

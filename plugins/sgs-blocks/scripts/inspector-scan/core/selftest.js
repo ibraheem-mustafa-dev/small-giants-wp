@@ -48,6 +48,7 @@ function buildTestCtx( cache, tmpBase ) {
 		// hardcoded real-repo path here would make any such rule untestable
 		// (a gate that cannot fail reads green forever).
 		extensionsDir: path.join( tmpBase, '_extensions' ),
+		componentsDir: path.join( tmpBase, '_components' ),
 		// Same reasoning again for repoRoot: rule 22 asserts that every surface
 		// STATING the placement rule still states the current one. Pointed at the
 		// real repo it could only ever confirm today's tree; pointed inside the
@@ -106,6 +107,78 @@ function runRuleAgainstFixture( mod, fixtureAbsPath ) {
 
 		const cache = new SourceCache();
 		const ctx = buildTestCtx( cache, tmpBase );
+
+		// Same reasoning as themeDir/extensionsDir/_surfaces.json above: rule 31's
+		// mechanism axis resolves each colour attribute through the DB's
+		// block_attributes.css_property map, keyed by REAL block slug. A fixture
+		// slug is never in that map, so every fixture row resolved as UNRESOLVED
+		// and the mechanism branch could not be exercised at all — a gate that
+		// cannot fail reads green forever. A fixture directory may therefore seed
+		// the map by placing `_css-property-map.json` at its root; absent = the
+		// real DB lookup, unchanged for every other rule and fixture.
+		const cssPropMapFile = path.join( tmpBase, '_css-property-map.json' );
+		if ( fs.existsSync( cssPropMapFile ) ) {
+			try {
+				ctx.__colourCssPropertyMap = JSON.parse( fs.readFileSync( cssPropMapFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _css-property-map.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
+		// Same reasoning again for rule 34 (34-declared-attr-unrendered, Task 2,
+		// 2026-08-27): it now consumes `check-dead-controls.js --dump-json`'s
+		// per-(block,attr) verdicts instead of re-deriving consumption itself. That
+		// CLI always scans the REAL src/blocks tree (no --blocks-dir flag exists,
+		// and the brief forbids modifying it), so it can never see a fixture's
+		// synthetic blocks — a fixture slug is never a row in the real dump. A
+		// fixture directory may therefore seed synthetic dump rows by placing
+		// `_dead-controls-dump.json` at its root (same array shape the real CLI
+		// emits: { block, attr, renderConsumed, controlPresent, renderVia, exempt,
+		// exemptReason }); absent = the real CLI invocation, unchanged for every
+		// other rule and fixture. This tests rule 34's OWN logic (the two-clause
+		// flag filter + the S1/S2/S3 kind classification) in isolation, without
+		// re-implementing or re-exercising check-dead-controls.js's resolvers —
+		// those already have their own self-test (Task 1).
+		const deadControlsDumpFile = path.join( tmpBase, '_dead-controls-dump.json' );
+		if ( fs.existsSync( deadControlsDumpFile ) ) {
+			try {
+				ctx.__deadControlsDumpRows = JSON.parse( fs.readFileSync( deadControlsDumpFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _dead-controls-dump.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
+		// Same reasoning again for rule 41 (41-co2-element-grouping-order,
+		// C14/C4): it consumes placement-reach.py's `--json` ownership/element/
+		// contested map instead of re-deriving THE PLACEMENT RULE's resolution
+		// itself. That CLI always scans the REAL src/blocks tree (no
+		// --blocks-dir flag exists), so it can never see a fixture's synthetic
+		// blocks — a fixture slug is never a key in the real map. A fixture
+		// directory may therefore seed `_placement-reach.json` at its root
+		// (same shape placement-reach.py's --json prints: `{slug: {elements,
+		// ownership, blockLevel, contested}}`); absent = the real CLI
+		// invocation, unchanged for every other rule and fixture.
+		const placementReachFile = path.join( tmpBase, '_placement-reach.json' );
+		if ( fs.existsSync( placementReachFile ) ) {
+			try {
+				ctx.__placementReach = JSON.parse( fs.readFileSync( placementReachFile, 'utf8' ) );
+			} catch ( e ) {
+				return {
+					pass: false,
+					reason: `fixture root has a malformed _placement-reach.json: ${ e.message }`,
+					findings: [],
+				};
+			}
+		}
+
 		let findings = [];
 
 		if ( mod.scope === 'per-block' ) {
@@ -189,7 +262,7 @@ function testRule( ruleDef, mod ) {
 	if ( ! mod.selfTest ) {
 		return { pass: false, failures: [ `rule ${ ruleDef.id } has no selfTest block` ] };
 	}
-	const { fixture, mustFlag = [], mustNotFlag = [] } = mod.selfTest;
+	const { fixture, mustFlag = [], mustNotFlag = [], mustFlagKind = {} } = mod.selfTest;
 	const fixtureAbsPath = path.resolve( __dirname, '..', fixture );
 	if ( ! fs.existsSync( fixtureAbsPath ) ) {
 		return { pass: false, failures: [ `fixture directory missing: ${ fixtureAbsPath }` ] };
@@ -206,8 +279,21 @@ function testRule( ruleDef, mod ) {
 	if ( shapeErr ) failures.push( `finding-shape: ${ shapeErr }` );
 
 	for ( const name of mustFlag ) {
-		if ( ! findings.some( ( f ) => findingMatchesName( f, name ) ) ) {
+		const match = findings.find( ( f ) => findingMatchesName( f, name ) );
+		if ( ! match ) {
 			failures.push( `expected a finding for "${ name }" (mustFlag) but none was produced` );
+		} else if ( Object.prototype.hasOwnProperty.call( mustFlagKind, name ) ) {
+			// GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md Critical 2 (2026-08-27)
+			// — the `kind` field was requirement 2's entire deliverable and had ZERO
+			// test coverage: a tampered classifyKind() (deleted branch, or collapsed to
+			// a constant return) left every existing mustFlag/mustNotFlag check green
+			// because they only match findings by NAME. This asserts the VALUE too.
+			const expectedKind = mustFlagKind[ name ];
+			if ( match.kind !== expectedKind ) {
+				failures.push(
+					`finding for "${ name }" has kind="${ match.kind }", expected "${ expectedKind }" (mustFlagKind)`
+				);
+			}
 		}
 	}
 	for ( const name of mustNotFlag ) {

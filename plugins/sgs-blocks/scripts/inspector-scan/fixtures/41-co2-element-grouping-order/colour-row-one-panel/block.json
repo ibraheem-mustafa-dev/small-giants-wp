@@ -1,0 +1,7 @@
+{
+	"name": "sgs/colour-row-one-panel",
+	"attributes": {
+		"iconColour": { "type": "string" },
+		"iconSize": { "type": "number" }
+	}
+}

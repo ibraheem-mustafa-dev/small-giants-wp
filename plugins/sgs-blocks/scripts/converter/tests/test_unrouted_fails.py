@@ -16,7 +16,7 @@ import pytest
 
 from converter.context import Ctx, Decl
 from converter.dispatch_table import resolver_id
-from converter.orchestrator import ConservationError, process_element
+from converter.dispatch_spine import ConservationError, process_element
 from converter.db.db_lookup import SGS_DB
 
 

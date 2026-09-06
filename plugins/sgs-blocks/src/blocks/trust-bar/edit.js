@@ -1,5 +1,7 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, RichText } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
+import { useEffect, useMemo } from '@wordpress/element';
 import {
 	PanelBody,
 	SelectControl,
@@ -10,27 +12,29 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox } from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier } from '../../utils';
-// No-inline migration (2026-07-10): trust-bar no longer uses the default
-// <ContainerWrapperControls> aggregator — its unconditional "Content band" /
-// "Responsive spacing" panels write to LEGACY FLAT attrs (contentBandPaddingTop,
-// paddingTopTablet, …), which are now REMOVED box-object attrs on this block
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
+// trust-bar does not use the default <ContainerWrapperControls> aggregator —
+// its "Content band" / "Responsive spacing" panels write to flat attrs
+// (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
+// its padding/margin/content-band values are box-object attrs
 // (paddingTablet/paddingMobile/marginTablet/marginMobile/contentBandPadding+
-// Tablet+Mobile). Import the individual panels still needed instead (mirrors
-// sgs/container's + sgs/hero's own edit.js) and roll trust-bar's own "Padding &
-// margin" / "Content band" panels below using ResponsiveBoxControl bound to the
-// object attrs.
+// Tablet+Mobile). The individual panels needed are imported instead (mirrors
+// sgs/container's + sgs/hero's own edit.js), and trust-bar rolls its own
+// "Padding & margin" / "Content band" panels below using ResponsiveBoxControl
+// bound to the object attrs.
 import {
 	WidthPanel,
 	LayoutPanel,
 	BackgroundPanel,
 	ShapeDividersPanel,
-	GridItemDefaultsPanel,
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
-import { UnitControl } from '../../components/primitives';
+// GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
+// beside its former mount point below (D-pending, 2026-08-30). This block
+// never renders a direct-child `.sgs-container` element, so the panel's
+// `--sgs-gi-*` custom properties have no CSS consumer here.
 
 /**
  * Resolve a gap attribute value to a valid CSS string for editor preview.
@@ -111,7 +115,7 @@ const AUTO_SCROLL_SPEED_OPTIONS = [
 // ─── Editor sub-components ────────────────────────────────────────────────────
 
 /** Circle wrapper with the actual selected icon for editor preview. */
-function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
+function EditorIconCircle( { size, circleBg, iconColour, iconGradient, iconSlug, borderRadius, boxShadow, filled, fillColour } ) {
 	// The filled class picks up the fill exemption from style.css (loaded in the
 	// editor iframe), so the preview matches the frontend. fillColour drives the
 	// same custom-fill var render.php sets.
@@ -140,6 +144,7 @@ function EditorIconCircle( { size, circleBg, iconColour, iconSlug, borderRadius,
 				source="lucide"
 				name={ iconSlug || 'check' }
 				size={ Math.round( size * 0.45 ) }
+				gradient={ iconGradient }
 			/>
 		</span>
 	);
@@ -153,17 +158,11 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 			style={ {
 				padding: '12px',
 				marginBottom: '12px',
-				background: item.pending ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.02)',
+				background: 'rgba(0,0,0,0.02)',
 				borderRadius: '4px',
-				border: item.pending ? '1px dashed #ccc' : '1px solid transparent',
-				opacity: item.pending ? 0.75 : 1,
+				border: '1px solid transparent',
 			} }
 		>
-			{ item.pending && (
-				<Notice status="warning" isDismissible={ false } style={ { marginBottom: '8px' } }>
-					{ __( 'Pending — hidden on the frontend until you uncheck "Pending".', 'sgs-blocks' ) }
-				</Notice>
-			) }
 			<IconPicker
 				label={ __( 'Icon', 'sgs-blocks' ) }
 				value={ { source: 'lucide', name: item.icon || 'check' } }
@@ -192,13 +191,6 @@ function IconCircleItemEditor( { item, onChange, onRemove } ) {
 					onChange={ ( val ) => update( 'fillColour', val ) }
 				/>
 			) }
-			<ToggleControl
-				label={ __( 'Pending (hidden on frontend)', 'sgs-blocks' ) }
-				help={ __( 'Keep the slot in the editor but hide it from visitors until the credential is confirmed.', 'sgs-blocks' ) }
-				checked={ !! item.pending }
-				onChange={ ( val ) => update( 'pending', val ) }
-				__nextHasNoMarginBottom
-			/>
 			<Button variant="secondary" isDestructive onClick={ onRemove } size="small" style={ { marginTop: '8px' } }>
 				{ __( 'Remove badge', 'sgs-blocks' ) }
 			</Button>
@@ -216,20 +208,50 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 			</p>
 
 			{ 'image-badge' === badgeStyle && (
-				<MediaPicker
-					value={ item.media || null }
-					onChange={ ( media ) => {
-						const next = { ...item, media };
-						if ( next.image ) {
-							next.image = undefined;
-						}
-						onChange( next );
-					} }
-					onRemove={ () => onChange( { ...item, media: null, image: undefined } ) }
-					allowedTypes={ [ 'image' ] }
-					label={ __( 'Badge image', 'sgs-blocks' ) }
-					instructionsImage={ __( 'Choose a certification badge or logo image', 'sgs-blocks' ) }
-				/>
+				<>
+					<MediaPicker
+						value={ item.media || null }
+						onChange={ ( media ) => {
+							const next = { ...item, media };
+							if ( next.image ) {
+								next.image = undefined;
+							}
+							onChange( next );
+						} }
+						onRemove={ () => onChange( { ...item, media: null, image: undefined } ) }
+						allowedTypes={ [ 'image' ] }
+						label={ __( 'Badge image', 'sgs-blocks' ) }
+						instructionsImage={ __( 'Choose a certification badge or logo image', 'sgs-blocks' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+						help={ __(
+							'Turn on for a purely decorative badge image — screen readers will skip it entirely instead of reading its alt text.',
+							'sgs-blocks'
+						) }
+						checked={ !! item.decorative }
+						onChange={ ( val ) => update( 'decorative', val ) }
+						__nextHasNoMarginBottom
+					/>
+					{ /* Spec 35 Part 4 — per-item object-fit only (no focal-point/
+					   crosshair control: badges are logos/certification marks,
+					   not photographs — same convention as sgs/testimonial's
+					   orgLogo and sgs/brand-strip's logoFit). Gated on media
+					   existing, mirroring the disclosure pattern above. */ }
+					{ !! item.media?.url && (
+						<SelectControl
+							label={ __( 'Image fit', 'sgs-blocks' ) }
+							value={ item.objectFit || 'cover' }
+							options={ [
+								{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+								{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+							] }
+							onChange={ ( val ) => update( 'objectFit', val ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</>
 			) }
 
 			<TextControl
@@ -274,15 +296,22 @@ function GenericBadgeItemEditor( { item, index, badgeStyle, onChange, onRemove }
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		badgeStyle,
-		items,
+		items: rawItems,
 		title,
 		titleColour,
+		titleColourGradient,
 		labelColour,
+		labelColourGradient,
 		badgeSize,
 		iconCircleSize,
 		iconCircleBackground,
+		iconCircleBackgroundGradient,
+		iconCircleBackgroundHover,
+		iconCircleBackgroundHoverGradient,
 		iconColour,
+		iconColourHover,
 		iconColourGradient,
+		iconColourHoverGradient,
 		iconCircleBorderRadius,
 		iconCircleShadow,
 		iconCircleShadowColour,
@@ -292,26 +321,139 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		badgeImageShadowColour,
 		badgeImageObjectFit,
 		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
 		columns,
 		gap,
 		layout,
 		gridTemplateColumns,
+		justifyItems,
+		alignContent,
+		alignItems,
+		gridAutoRows,
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollPauseOnHover,
 		shadow,
 	} = attributes;
 
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const items = useMemo( () => withStableItemKeys( rawItems ), [ rawItems ] );
+	useEffect( () => {
+		if ( items !== rawItems ) {
+			setAttributes( { items } );
+		}
+	}, [ items, rawItems, setAttributes ] );
+
 	const circleBgValue  = colourVar( iconCircleBackground ) || '#ffffff';
+	// iconCircleBackgroundGradient (2026-09-06) — mirrors render.php's
+	// --sgs-trust-badge-circle-bg-gradient sibling; style.css's matching
+	// background-image line makes this win over circleBgValue when set.
+	const circleBgGradientValue = iconCircleBackgroundGradient || undefined;
 	const iconColourValue = colourVar( iconColour ) || 'currentColor';
 	const textColourValue = colourVar( textColour ) || undefined;
+	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
+	// numberStyle/labelStyle wiring).
+	const titleStyle = resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar );
+	const labelStyle = resolveTextColourPreviewStyle( labelColour, labelColourGradient, colourVar );
+
+	// D717/background-preview: BackgroundPanel (mounted below) writes image/
+	// video/overlay/ken-burns/parallax attrs this block never previewed on
+	// canvas — the shared mirror (src/utils/background-preview.js, 2026-08-26)
+	// fixes that the same way sgs/container already did.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	// Root wrapper background/text paint — mirrors render.php's
+	// `sgs_background_paint_decl( $root_background_colour, $root_background_colour_gradient )`
+	// (backgroundColour/backgroundColourGradient → root `.sgs-trust-bar` background)
+	// and `sgs_resolve_text_colour_or_gradient( $text_colour, $root_text_colour_gradient )`
+	// + `sgs_text_colour_decl()` (textColour/textColourGradient → root `color`).
+	// Distinct from the icon-circle badge's own `--sgs-trust-badge-text-colour`
+	// (flat-only, applied inline on `.sgs-trust-bar__label` below) — an inline
+	// style there always wins over this inherited root colour, so both mechanisms
+	// coexist exactly as they do on the frontend.
+	const rootBgPaint = backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette );
+	const rootTextPaint = textPaintPreview( textColour, textColourGradient, colourPalette );
+	// Decorative SVG background layer — editor mirror (2026-09-05). Sibling of
+	// backgroundPreview() below, deliberately NOT folded into it: that helper
+	// paints via `--sgs-ed-bg-*` custom properties on a ::before, whereas the
+	// SVG layer is a real element whose painting rules already ship in the
+	// block's style.css (loaded in the canvas via block.json `style`). See
+	// svgBackgroundPreview()'s own docblock. Attributes are enumerated
+	// EXPLICITLY — check-editor-render-parity.js (CHECK A) resolves an
+	// attribute as canvas-reflected only when its NAME appears outside the
+	// Inspector panels, so a whole-object hand-off would render correctly but
+	// still read as a desync.
+	const svgPreview = svgBackgroundPreview( {
+		bgSvgContent: attributes.bgSvgContent,
+		bgSvgPosition: attributes.bgSvgPosition,
+		bgSvgAnimation: attributes.bgSvgAnimation,
+		bgSvgAnimationSpeed: attributes.bgSvgAnimationSpeed,
+		bgSvgOpacity: attributes.bgSvgOpacity,
+		bgSvgMinHeight: attributes.bgSvgMinHeight,
+		bgSvgTextShadow: attributes.bgSvgTextShadow,
+	} );
+
+	const bgPreview = backgroundPreview( {
+		backgroundImage: attributes.backgroundImage,
+		bgVideo: attributes.bgVideo,
+		backgroundSize: attributes.backgroundSize,
+		backgroundPosition: attributes.backgroundPosition,
+		backgroundRepeat: attributes.backgroundRepeat,
+		backgroundAttachment: attributes.backgroundAttachment,
+		bgKenBurns: attributes.bgKenBurns,
+		bgAnimationDuration: attributes.bgAnimationDuration,
+		bgParallax: attributes.bgParallax,
+		backgroundOverlayColour: attributes.backgroundOverlayColour,
+		overlayGradient: attributes.overlayGradient,
+		backgroundOverlayOpacity: attributes.backgroundOverlayOpacity,
+		backgroundOverlayBlendMode: attributes.backgroundOverlayBlendMode,
+	}, colourPalette );
+
+	// Active device tier for the padding/margin preview below — this block had
+	// no previewTier mechanism of its own, so this follows sgs/container's
+	// getDeviceType read exactly (same source its own Layout panel writes).
+	const previewTier = useSelect( ( select ) => {
+		const ed = select( 'core/editor' );
+		const device =
+			ed && typeof ed.getDeviceType === 'function' ? ed.getDeviceType() : null;
+		return { Tablet: 'tablet', Mobile: 'mobile' }[ device ] || 'desktop';
+	}, [] );
+
+	// Padding/margin canvas preview — the pair MEASURED live 2026-08-26 as the
+	// concrete regression evidence for this build (120px/80px on the real
+	// page, 0px on canvas). Base padding + margin are now the block-OWNED
+	// `padding`/`margin` object attrs (D555 gutter-default migration — no
+	// `supports.spacing`); tablet/mobile overrides are the block-private
+	// paddingTablet/paddingMobile/marginTablet/marginMobile object attrs
+	// (this block declares all four — verified in block.json).
+	const spacePreview = spacingPreview( {
+		basePadding: attributes.padding,
+		paddingTablet: attributes.paddingTablet,
+		paddingMobile: attributes.paddingMobile,
+		baseMargin: attributes.margin,
+		marginTablet: attributes.marginTablet,
+		marginMobile: attributes.marginMobile,
+	}, previewTier );
 
 	// Build className based on active variant.
 	const blockClassName = [
 		'sgs-trust-bar',
 		`sgs-trust-bar--${ badgeStyle }`,
 		`sgs-trust-bar--${ badgeSize }`,
-	].join( ' ' );
+		bgPreview.className,
+		...svgPreview.className,
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	const circleRadiusValue = ( iconCircleBorderRadius && iconCircleBorderRadius !== '50%' )
 		? iconCircleBorderRadius
@@ -334,11 +476,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const blockProps = useBlockProps( {
 		className: blockClassName,
 		style: {
+			...rootBgPaint,
+			...rootTextPaint,
+			...bgPreview.style,
+			...svgPreview.style,
+			...spacePreview,
 			...( shadow && { boxShadow: resolveShadowPreview( shadow ) } ),
 			...( badgeStyle === 'icon-circle' ? {
 				'--sgs-trust-bar-gap': gapCssValue( gap ),
 				'--sgs-trust-badge-circle-size': iconCircleSize !== 44 ? `${ iconCircleSize }px` : undefined,
 				'--sgs-trust-badge-circle-bg': circleBgValue,
+				'--sgs-trust-badge-circle-bg-gradient': circleBgGradientValue,
 				'--sgs-trust-badge-icon-colour': iconColourValue,
 				'--sgs-trust-badge-text-colour': textColourValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
@@ -348,9 +496,43 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				display: 'grid',
 				gridTemplateColumns: badgeGridTemplateColumns,
 				gap: gapCssValue( gap ),
+				// CHECK A (2026-09-05) — justifyItems/alignContent/alignItems/
+				// gridAutoRows are declared in block.json (css:grid-auto-rows,
+				// css:justify-items, css:align-content, + the alignItems attr)
+				// and render correctly on the frontend via
+				// class-sgs-container-wrapper.php's grid branch, but were never
+				// mirrored on this canvas. Hand-adapted (not routed through the
+				// shared applyGridLayoutPreview()) because that helper resolves
+				// gridTemplateColumns/columns itself via resolveResponsiveTier() —
+				// this block has ALREADY resolved its own tier via
+				// gridTemplateColumnsPreview() into a plain string above, and
+				// handing that resolved string back into the shared helper's
+				// tier-object resolver would silently return '' (resolveResponsiveTier
+				// indexes a plain string by tier key, which is always undefined).
+				// The 4-line body below is copied verbatim from
+				// applyGridLayoutPreview()'s grid branch (src/utils/grid-layout-preview.js)
+				// so behaviour still matches class-sgs-container-wrapper.php exactly.
+				...( gridAutoRows ? { gridAutoRows } : {} ),
+				alignItems,
+				...( justifyItems && justifyItems !== 'stretch' ? { justifyItems } : {} ),
+				...( alignContent && alignContent !== 'stretch' ? { alignContent } : {} ),
 			} : {} ),
 		},
 	} );
+
+	// Mirrors class-sgs-container-wrapper.php:2794-2798. `aria-hidden` matches
+	// the server; `pointer-events:none` is editor-only insurance so the
+	// decorative layer can never swallow a click meant for the block or its
+	// children. Rendered as a direct child of the block ROOT — never inside a
+	// badge item, which the repeater below owns.
+	const svgLayer = svgPreview.hasSvg ? (
+		<div
+			className="sgs-container__svg-bg"
+			aria-hidden="true"
+			style={ { pointerEvents: 'none' } }
+			dangerouslySetInnerHTML={ { __html: svgPreview.markup } }
+		/>
+	) : null;
 
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
@@ -364,21 +546,77 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const addItem = () => {
 		const newItem = badgeStyle === 'icon-circle'
-			? { icon: 'check', label: '', pending: false }
-			: { label: '', url: '' };
+			? { icon: 'check', label: '', _key: generateItemKey() }
+			: badgeStyle === 'image-badge'
+				? { label: '', url: '', _key: generateItemKey(), objectFit: 'cover' }
+				: { label: '', url: '', _key: generateItemKey() };
 		setAttributes( { items: [ ...items, newItem ] } );
 	};
 
 	return (
 		<>
-			{ /* D621/D622 — shadow colour split out of the legacy shape-only
-				iconCircleShadow/badgeImageShadow attrs into SgsColourPanel rows,
-				mounted first so they render at the top of the Styles tab. Scoped
-				to shadow only — the block's other colour controls (iconColour,
-				textColour, badge background) are pre-existing scattered
-				DesignTokenPicker rows, left untouched (out of scope here). */ }
+			{ /* D621/D622 — shadow colour rows, mounted first so they render at
+				the top of the Styles tab. Every colour control on this block
+				now lives here — the icon-circle appearance colours
+				(iconCircleBackground, iconColour+gradient) and the text-only/
+				image-badge title + label colours were consolidated in from
+				scattered bespoke DesignTokenPicker mounts in the Styles tab
+				(2026-08-30, duplicate-control fix): textColour previously had
+				TWO independent writers (this panel's "Root text colour" row
+				AND a "Label colour" picker in the Appearance panel below) —
+				the duplicate picker is deleted, this panel's row is now the
+				only writer. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'root-background',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'root-text',
+						label: __( 'Root text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
 					badgeStyle === 'icon-circle' && iconCircleShadow && {
 						key: 'icon-circle-shadow',
 						label: __( 'Icon circle shadow colour', 'sgs-blocks' ),
@@ -388,6 +626,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: iconCircleShadowColour,
 								onChange: ( val ) => setAttributes( { iconCircleShadowColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.iconCircleShadowColourHover,
+								onChange: ( val ) => setAttributes( { iconCircleShadowColourHover: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -403,8 +648,106 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onChange: ( val ) => setAttributes( { badgeImageShadowColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.badgeImageShadowColourHover,
+								onChange: ( val ) => setAttributes( { badgeImageShadowColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
+					// ── Icon circle background (colour-conformance 2026-09-06) ──
+					// Hover-state colour control added to close out the FILL
+					// surface. Paints via background-color + background-image
+					// custom properties on .sgs-trust-bar__circle (both resting
+					// and :hover/:focus-visible states). Mirrors the iconColour
+					// row below (same SgsColourPanel with 'normal' + 'hover'
+					// states), not the previous fillRow solo state.
+					badgeStyle === 'icon-circle' && {
+						key: 'icon-circle-background',
+						label: __( 'Icon circle background', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconCircleBackground,
+								onChange: ( val ) => setAttributes( { iconCircleBackground: val } ),
+								gradientValue: iconCircleBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconCircleBackgroundHover,
+								onChange: ( val ) => setAttributes( { iconCircleBackgroundHover: val } ),
+								gradientValue: iconCircleBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconCircleBackgroundHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					// ── Icon colour deliberately NOT expressed through
+					// fillRow/textRow. This paints via CSS `color` (consumed
+					// as currentColor by the SVG icon's stroke), which is
+					// neither fillRow's background-paint mechanism nor
+					// textRow's plain-text mechanism — Rule 31's own
+					// documented exemption (SgsColourPanel.js history)
+					// resolves icon colour via its gradient sibling's
+					// css_property:'stroke', a third mechanism belonging to
+					// neither helper. sgs/icon-list's own "Icon colour" row
+					// (edit.js:355-368) is the established precedent for this
+					// exact case and hand-builds the row the same way — this
+					// mirrors that, not an invented shape. Moved verbatim
+					// from the deleted Appearance-panel picker; unchanged.
+					badgeStyle === 'icon-circle' && {
+						key: 'icon-colour',
+						label: __( 'Icon colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: iconColour,
+								onChange: ( val ) => setAttributes( { iconColour: val } ),
+								gradientValue: iconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) => setAttributes( { iconColourHover: val } ),
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					// ── Consolidated in 2026-08-30 — was the "Title colour"
+					// picker in the Title panel (text-only/image-badge).
+					// Paints the RichText title's `color` -> textRow.
+					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
+						key: 'title-colour',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						attrs: { base: 'titleColour', gradient: 'titleColourGradient' },
+						attributes,
+						setAttributes,
+					} ),
+					// ── Consolidated in 2026-08-30 — was the "Label colour"
+					// picker in the Label styling panel (text-only/image-badge).
+					// Distinct attribute from textColour's "Label colour" row
+					// above (that one is icon-circle-mode only) — labelColour
+					// governs the text-only/image-badge badge label text ->
+					// textRow.
+					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
+						key: 'label-colour',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						attrs: { base: 'labelColour', gradient: 'labelColourGradient' },
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
@@ -462,22 +805,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Badge items repeater (content) ─────────────────────────── */ }
 				<PanelBody title={ __( 'Badges', 'sgs-blocks' ) }>
-					{ badgeStyle === 'icon-circle' && (
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Badges marked "Pending" are hidden on the frontend but remain editable.', 'sgs-blocks' ) }
-						</p>
-					) }
 					{ items.map( ( item, index ) => (
 						badgeStyle === 'icon-circle' ? (
 							<IconCircleItemEditor
-								key={ index }
+								key={ item._key || index }
 								item={ item }
 								onChange={ ( updated ) => updateItem( index, updated ) }
 								onRemove={ () => removeItem( index ) }
 							/>
 						) : (
 							<GenericBadgeItemEditor
-								key={ index }
+								key={ item._key || index }
 								item={ item }
 								index={ index }
 								badgeStyle={ badgeStyle }
@@ -495,6 +833,39 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					</Button>
 				</PanelBody>
 
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					{ (() => {
+						const trustBarContrastAgainst =
+							backgroundColour && ! backgroundColourGradient
+								? backgroundColour
+								: '';
+						return (
+							<SgsBorderControl
+								widthValues={ attributes.borderWidth ?? {} }
+								onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+								widthPresets={ [ '10', '20', '30' ] }
+								styleValue={ attributes.borderStyle }
+								onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								colourValue={ attributes.borderColour }
+								onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+								colourGradientValue={ attributes.borderColourGradient }
+								onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+								colourLinked={ true }
+								contrastAgainst={ trustBarContrastAgainst }
+								radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+								onRadiusChange={ ( tier, next ) => {
+									const key = tier === 'base' ? 'desktop' : tier;
+									setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+								} }
+							/>
+						);
+					} )() }
+				</PanelBody>
 			</InspectorControls>
 
 			<InspectorControls group="styles">
@@ -535,56 +906,40 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 				{ /* ── Padding & margin (box-object tiers) ───────────────────── */ }
 				{ /* Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-				     §5): base tier writes to the WP-native style.spacing object (also visible
-				     in the Styles > Dimensions panel); tablet/mobile write to the
-				     paddingTablet/paddingMobile + marginTablet/marginMobile object attrs
-				     read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
+				     §5): base tier writes to the block-OWNED `padding`/`margin` attrs
+				     (also visible in the Styles > Dimensions panel); tablet/mobile write
+				     to the paddingTablet/paddingMobile + marginTablet/marginMobile object
+				     attrs read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+							presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Content band (Layer 2 __inner) — object attrs ─────────── */ }
@@ -632,8 +987,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<LayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 
-				{ /* ── Grid item defaults ─────────────────────────────────────── */ }
-				<GridItemDefaultsPanel attributes={ attributes } setAttributes={ setAttributes } />
+				{ /* ── Grid item defaults — WITHDRAWN (2026-08-30) ────────────────
+				     Verified defect: the ONLY CSS consumer of --sgs-gi-* is
+				     `.sgs-container--grid > .sgs-container`
+				     (container/style.css:8-15), a DIRECT-CHILD selector requiring
+				     the child to itself carry class `.sgs-container`. This block's
+				     typed items[] repeater renders `<div class="sgs-trust-bar__badge">`
+				     (render.php), never `.sgs-container`, so the selector can never
+				     match here. The panel rendered ~15 client-facing controls that
+				     painted nothing. The 15 gridItem* attrs stay DECLARED in
+				     block.json (removing them is a stored-content migration risk,
+				     out of scope for this fix) — this only withdraws the dead UI.
+				     See sibling withdrawal in cta-section/edit.js for the same
+				     defect + fix shape. ─────────────────────────────────────── */ }
 
 				{ /* ── Shadow — legacy string token attr (sm/md/lg/glow OR a raw
 					box-shadow CSS string built by ShadowControl), resolved by
@@ -641,8 +1007,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ attributes.shadow || '' }
-						onChange={ ( val ) => setAttributes( { shadow: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'shadow',
+							colour: 'shadowColour',
+							hoverColour: 'shadowColourHover',
+						} }
 					/>
 				</PanelBody>
 
@@ -683,11 +1054,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
 							{ __( 'Optional heading above the badge row.', 'sgs-blocks' ) }
 						</p>
-						<DesignTokenPicker
-							label={ __( 'Title colour', 'sgs-blocks' ) }
-							value={ titleColour }
-							onChange={ ( val ) => setAttributes( { titleColour: val } ) }
-						/>
+						{ /* Title colour moved to the Colour panel (2026-08-30). */ }
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -709,16 +1076,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<DesignTokenPicker
-							label={ __( 'Icon circle background', 'sgs-blocks' ) }
-							value={ iconCircleBackground }
-							onChange={ ( val ) => setAttributes( { iconCircleBackground: val } ) }
-						/>
+						{ /* Icon circle background moved to the Colour panel (2026-08-30). */ }
 						{ /* §14.3 raw-TextControl violation fixed (D561). '%' is
 						     load-bearing here — the attribute DEFAULTS to '50%' to
 						     make the circle, so a px-only units array would silently
 						     remove the block's own default shape. */ }
-						<UnitControl
+						<SgsLengthControl
+							presets={ false }
 							label={ __( 'Icon circle border radius', 'sgs-blocks' ) }
 							value={ iconCircleBorderRadius }
 							onChange={ ( val ) => setAttributes( { iconCircleBorderRadius: val || '' } ) }
@@ -729,35 +1093,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								{ value: 'em', label: 'em', default: 0.5 },
 							] }
 							help={ __( "50% makes a circle; a px value makes a rounded square.", 'sgs-blocks' ) }
-							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
-							value={ iconCircleShadow }
-							onChange={ ( val ) => setAttributes( { iconCircleShadow: val } ) }
-							colour={ iconCircleShadowColour }
-							onColourChange={ ( val ) => setAttributes( { iconCircleShadowColour: val } ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'iconCircleShadow',
+								colour: 'iconCircleShadowColour',
+								hoverColour: 'iconCircleShadowColourHover',
+							} }
 						/>
-						<DesignTokenPicker
-							label={ __( 'Icon colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: iconColour,
-									onChange: ( val ) => setAttributes( { iconColour: val } ),
-									gradientValue: iconColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { iconColourGradient: val ?? '' } ),
-								},
-							] }
-						/>
-						<DesignTokenPicker
-							label={ __( 'Label colour', 'sgs-blocks' ) }
-							value={ textColour }
-							onChange={ ( val ) => setAttributes( { textColour: val } ) }
-							__nextHasNoMarginBottom
-						/>
+						{ /* Icon colour + Label colour (textColour) moved to the
+							Colour panel (2026-08-30) — textColour previously
+							had TWO writers (this picker + the Colour panel's
+							own "Root text colour" row); this duplicate is
+							deleted, the Colour panel row is now the only
+							writer. */ }
 					</PanelBody>
 				) }
 
@@ -788,7 +1140,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ /* §14.3 raw-TextControl violation fixed (D561). Same units
 						     array as the icon circle above — '%' reaches the circle
 						     case the old help text advertised. */ }
-						<UnitControl
+						<SgsLengthControl
+							presets={ false }
 							label={ __( 'Badge image border radius', 'sgs-blocks' ) }
 							value={ badgeImageBorderRadius }
 							onChange={ ( val ) => setAttributes( { badgeImageBorderRadius: val || '' } ) }
@@ -799,29 +1152,25 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								{ value: 'em', label: 'em', default: 0.5 },
 							] }
 							help={ __( 'Leave blank for square corners; 50% makes a circle.', 'sgs-blocks' ) }
-							__next40pxDefaultSize
 						/>
 						<ShadowControl
 							label={ __( 'Badge image shadow', 'sgs-blocks' ) }
-							value={ badgeImageShadow }
-							onChange={ ( val ) => setAttributes( { badgeImageShadow: val } ) }
-							colour={ badgeImageShadowColour }
-							onColourChange={ ( val ) => setAttributes( { badgeImageShadowColour: val } ) }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'badgeImageShadow',
+								colour: 'badgeImageShadowColour',
+								hoverColour: 'badgeImageShadowColourHover',
+							} }
 						/>
 					</PanelBody>
 				) }
 
-				{ /* ── text-only / image-badge label styling ─────────────────── */ }
-				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
-					<PanelBody title={ __( 'Label styling', 'sgs-blocks' ) } initialOpen={ false }>
-						<DesignTokenPicker
-							label={ __( 'Label colour', 'sgs-blocks' ) }
-							value={ labelColour }
-							onChange={ ( val ) => setAttributes( { labelColour: val } ) }
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
+				{ /* ── text-only / image-badge label styling ──────────────────
+					"Label styling" panel WITHDRAWN (2026-08-30) — its only
+					control was the Label colour picker, now moved to the
+					Colour panel. An empty PanelBody is a dead control
+					(check-empty-inspector-containers.js). */ }
 
 				{ /* ── Badges (icon-circle only) ──────────────────────────────
 				     Named for the ELEMENT it controls, not the property cluster
@@ -878,6 +1227,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			{ /* ── Editor canvas ───────────────────────────────────────────── */ }
 			<div { ...blockProps }>
+				{ svgLayer }
 
 				{ /* Optional title (text-only + image-badge variants) */ }
 				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
@@ -887,9 +1237,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						value={ title }
 						onChange={ ( val ) => setAttributes( { title: val } ) }
 						placeholder={ __( 'Trusted certifications & memberships', 'sgs-blocks' ) }
-						style={ {
-							color: colourVar( titleColour ) || undefined,
-						} }
+						style={ titleStyle }
 					/>
 				) }
 
@@ -901,18 +1249,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					) : (
 						items.map( ( item, index ) => {
 							if ( badgeStyle === 'icon-circle' ) {
-								const isPending = !! item.pending;
 								return (
 									<div
-										key={ index }
+										key={ item._key || index }
 										className="sgs-trust-bar__badge"
-										style={ { opacity: isPending ? 0.45 : 1 } }
-										title={ isPending ? __( 'Pending — hidden on frontend', 'sgs-blocks' ) : undefined }
 									>
 										<EditorIconCircle
 											size={ iconCircleSize }
 											circleBg={ circleBgValue }
 											iconColour={ iconColourValue }
+											iconGradient={ iconColourGradient }
 											iconSlug={ item.icon || 'check' }
 											borderRadius={ iconCircleBorderRadius !== '50%' ? iconCircleBorderRadius : undefined }
 											boxShadow={ circleShadowValue }
@@ -921,16 +1267,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 										/>
 										<span className="sgs-trust-bar__label" style={ { color: textColourValue } }>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-											{ isPending && (
-												<span style={ {
-													marginLeft: '6px', fontSize: '10px', fontWeight: 600,
-													textTransform: 'uppercase', background: '#f0ad4e',
-													color: '#fff', padding: '1px 5px', borderRadius: '3px',
-													letterSpacing: '0.05em',
-												} }>
-													{ __( 'Pending', 'sgs-blocks' ) }
-												</span>
-											) }
 										</span>
 									</div>
 								);
@@ -938,12 +1274,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 							if ( badgeStyle === 'text-only' ) {
 								return (
-									<div key={ index } className="sgs-trust-bar__badge">
+									<div key={ item._key || index } className="sgs-trust-bar__badge">
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ {
-												color: colourVar( labelColour ) || undefined,
-											} }
+											style={ labelStyle }
 										>
 											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
 										</span>
@@ -955,7 +1289,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							const mediaUrl = item.media?.url || item.image?.url || '';
 							const mediaAlt = item.media?.alt || item.label || '';
 							return (
-								<div key={ index } className="sgs-trust-bar__badge">
+								<div key={ item._key || index } className="sgs-trust-bar__badge">
 									{ mediaUrl && (
 										<img
 											src={ mediaUrl }
@@ -964,7 +1298,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 											style={ {
 												width: `${ badgeImageSize }px`,
 												height: `${ badgeImageSize }px`,
-												objectFit: badgeImageObjectFit === 'cover' ? 'cover' : 'contain',
+												objectFit: item.objectFit || badgeImageObjectFit,
 												borderRadius: badgeImageBorderRadius || undefined,
 												boxShadow: resolveShadowPreviewComposed( badgeImageShadow, badgeImageShadowColour ),
 											} }
@@ -973,9 +1307,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									{ item.label && (
 										<span
 											className="sgs-trust-bar__badge-label"
-											style={ {
-												color: colourVar( labelColour ) || undefined,
-											} }
+											style={ labelStyle }
 										>
 											{ item.label }
 										</span>

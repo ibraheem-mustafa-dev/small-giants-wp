@@ -14,8 +14,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride } from '../../components';
-import { UnitControl } from '../../components/primitives';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -168,18 +167,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		maxHeightUnit,
 		linkToHome,
 		alt,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		logoDecorative,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
 	} = attributes;
 
 	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2
-	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}. Neither has
-	// a per-tier attr map any more (D563's flat `maxHeightAttrMap` sibling was
-	// retired in the same pass that folded `maxHeightTablet`/`maxHeightMobile`
-	// into the object).
+	// (2026-08-11) — ONE attr each holding {desktop,tablet,mobile}.
 	//
 	// The per-tier VALUE stays a bare NUMBER paired with the block-level
 	// `maxWidthUnit`/`maxHeightUnit` — the tier axis and the unit are separate
@@ -200,18 +198,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { maxHeightUnit: unit } );
 	};
 
-	// The picker now persists BOTH the attachment ID and its URL, to the declared
+	// The picker persists BOTH the attachment ID and its URL, to the declared
 	// `logoId*` / `logoUrl*` attribute pairs — the shape every other SGS image
 	// block uses (sgs/media imageId + imageUrl).
-	//
-	// This replaces `_desktopLogoUrl` / `_tabletLogoUrl` / `_mobileLogoUrl`, which
-	// were written by setAttributes but never DECLARED in block.json. WordPress
-	// silently discards any attribute a block does not declare — no error, no
-	// warning — so those values existed only in editor memory for the length of a
-	// session and were gone on reload. That is the exact class
-	// `check-dead-pattern-attrs.py` was built for at D338 (45 found, 39 fixed),
-	// and it is why the old comment's "not persisted as attribute" was accurate
-	// while describing a silent data loss rather than a design.
 	//
 	// Persisting the URL is also what makes the a11y half work: `image-alt` pairs
 	// an alt attr to a sibling image attr via `alt_companion_attr`, and
@@ -250,14 +239,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { svgAnimationSource: undefined } );
 	};
 
-	// Preview URLs now come from the DECLARED, PERSISTED attrs. The previous
-	// `attributes._desktopLogoUrl` reads were the visible symptom of the silent
-	// discard described above: WordPress drops undeclared attributes, so after a
-	// save-and-reload every one of these was undefined and each slot fell back to
-	// its placeholder — the operator's chosen logo appeared to vanish from the
-	// editor even though the ID had been stored correctly and the FRONTEND
-	// rendered fine. A bug that only shows on reload, and only in the editor,
-	// which is a surface no gate in this repo covers.
+	// Preview URLs come from the DECLARED, PERSISTED attrs.
 	const desktopUrl = attributes.logoUrl;
 	const tabletUrl  = attributes.logoUrlTablet;
 	const mobileUrl  = attributes.logoUrlMobile;
@@ -412,15 +394,29 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 
+					<ToggleControl
+						label={ __( 'Decorative logo (hide from screen readers)', 'sgs-blocks' ) }
+						help={ __( 'Only use this if the logo is purely decorative — if it links to your homepage, keep this off so screen reader users can still navigate home. A site logo almost always carries meaning, so this should stay off in most cases.', 'sgs-blocks' ) }
+						checked={ !! logoDecorative }
+						onChange={ ( val ) => setAttributes( { logoDecorative: val } ) }
+						__nextHasNoMarginBottom
+					/>
+
 					<TextareaControl
 						label={ __( 'Alt text', 'sgs-blocks' ) }
-						help={ __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
+						help={ logoDecorative
+							? __( 'Disabled — the logo image is marked decorative and won’t be announced to screen readers.', 'sgs-blocks' )
+							: __( 'Describes what the logo depicts for screen readers. Leave empty to use "[Business name] home" automatically — never just "logo".', 'sgs-blocks' ) }
 						value={ alt }
 						onChange={ ( val ) => setAttributes( { alt: val } ) }
+						disabled={ !! logoDecorative }
 						rows={ 2 }
 					/>
 				</PanelBody>
+			</InspectorControls>
 
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ── Panel 3b: Maximum size per device ── */ }
 				<PanelBody
 					title={ __( 'Maximum size (per device)', 'sgs-blocks' ) }
@@ -435,7 +431,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeMaxBoxValue( ownValue, maxWidthUnit || 'px' ) }
@@ -446,8 +443,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxWidthChange( setOwnValue, val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -457,7 +452,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Max height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeMaxBoxValue( ownValue, maxHeightUnit || 'px' ) }
@@ -468,8 +464,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 								units={ MAX_BOX_UNITS }
 								onChange={ ( val ) => onMaxHeightChange( setOwnValue, val ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -480,34 +474,63 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				{ /* ── Panel 5: Border ── */ }
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

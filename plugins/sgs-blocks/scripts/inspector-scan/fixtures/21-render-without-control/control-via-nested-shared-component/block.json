@@ -3,9 +3,6 @@
 	"title": "Fixture — control lives TWO components deep",
 	"attributes": {
 		"backgroundOverlayColour": { "type": "string", "default": "" },
-		"overlayGradient": { "type": "boolean", "default": false },
-		"overlayGradientAngle": { "type": "number", "default": 180 },
-		"overlayGradientFrom": { "type": "string", "default": "" },
-		"overlayGradientTo": { "type": "string", "default": "" }
+		"overlayGradient": { "type": "boolean", "default": false }
 	}
 }

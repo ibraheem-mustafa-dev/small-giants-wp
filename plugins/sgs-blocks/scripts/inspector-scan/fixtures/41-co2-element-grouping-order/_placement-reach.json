@@ -1,0 +1,88 @@
+{
+	"sgs/scattered-element": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColour": "title", "titleFontSize": "title" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/grouped-correctly": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColour": "title", "titleFontSize": "title" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/contested-attr": {
+		"elements": {
+			"wrapper": { "label": "Wrapper", "order": 1, "prefix": "" }
+		},
+		"ownership": {},
+		"blockLevel": [],
+		"contested": { "sharedAttr": [ "band", "wrapper" ] }
+	},
+	"sgs/dom-order-mismatch": {
+		"elements": {
+			"first": { "label": "First", "order": 1, "prefix": "first" },
+			"second": { "label": "Second", "order": 2, "prefix": "second" }
+		},
+		"ownership": {
+			"firstA": "first",
+			"firstB": "first",
+			"secondA": "second",
+			"secondB": "second"
+		},
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-after-typography": {
+		"elements": {
+			"whatever": { "label": "Whatever", "order": 1, "prefix": "" }
+		},
+		"ownership": {},
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/single-owned-attr": {
+		"elements": {
+			"solo": { "label": "Solo", "order": 1, "prefix": "solo" }
+		},
+		"ownership": { "soloAttr": "solo" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/wrapper-element-not-flagged": {
+		"elements": {
+			"wrapper": { "label": "Wrapper", "order": 1, "prefix": "", "isWrapper": true }
+		},
+		"ownership": { "backgroundColour": "wrapper", "borderColour": "wrapper" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-row-one-panel": {
+		"elements": {
+			"icon": { "label": "Icon", "order": 1, "prefix": "icon" }
+		},
+		"ownership": { "iconColour": "icon", "iconSize": "icon" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-scattered-three-way": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColour": "title", "titleSize": "title", "titleBorder": "title" },
+		"blockLevel": [],
+		"contested": {}
+	},
+	"sgs/colour-attr-duplicated": {
+		"elements": {
+			"title": { "label": "Title", "order": 1, "prefix": "title" }
+		},
+		"ownership": { "titleColourA": "title", "titleColourB": "title" },
+		"blockLevel": [],
+		"contested": {}
+	}
+}

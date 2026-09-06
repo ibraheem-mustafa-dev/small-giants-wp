@@ -60,8 +60,10 @@
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: var( --sgs-object-fit, cover );
-	object-position: var( --sgs-object-position, center );
+	/* object-fit/object-position are owned by the media-atom layer now
+	   (Wave 5b) — each slot carries its own `.sgs-media-el` marker + scope
+	   class, painted by the shared assets/css/media-atoms/object-fit.css +
+	   focal-point.css (cover/centre fallback lives there, not here). */
 	-webkit-user-drag: none;
 	user-select: none;
 	pointer-events: none;
@@ -182,11 +184,14 @@
 	display: inline-block;
 	padding: 4px 10px;
 	border-radius: var( --wp--custom--border-radius--medium, 4px );
-	/* Fallback is the CSS default look; render.php only sets these custom
-	 * properties' VALUES when labelBackgroundColour/labelColour are actually
-	 * configured (Spec 32 — overrides are custom-property values, never a
-	 * competing selector{property:value} rule). */
-	background-color: var( --sgs-before-after-label-bg-colour, rgba( 0, 0, 0, 0.6 ) );
+	/* Fallback is the CSS default look; render.php only sets this custom
+	 * property's VALUE when labelColour is actually configured (Spec 32 —
+	 * overrides are custom-property values, never a competing
+	 * selector{property:value} rule). labelBackgroundColour moved to its own
+	 * scoped ::after layer (2026-09-04, sgs_block_background_layer_css()) so
+	 * a labelColour text gradient's background-clip:text cannot clip it —
+	 * render.php emits that rule unconditionally now, background-color is no
+	 * longer set here at all. */
 	color: var( --sgs-before-after-label-colour, #fff );
 	font-size: 13px;
 	line-height: var( --sgs-before-after-label-line-height, 1.4 );
@@ -217,6 +222,7 @@
 	width: var( --sgs-before-after-divider-width, 3px );
 	transform: translateX( -50% );
 	background-color: var( --sgs-before-after-divider-colour, #fff );
+	background-image: var(--sgs-before-after-divider-colour-gradient, none);
 	box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.15 );
 }
 
@@ -227,6 +233,24 @@
 	 * regardless of axis, so one custom property drives both orientations. */
 	height: var( --sgs-before-after-divider-width, 3px );
 	transform: translateY( -50% );
+}
+
+/*
+ * Divider-line hover (colour-conformance FILL closeout, 2026-09-06). The line
+ * itself is `aria-hidden` and sits under `pointer-events: none` (its `.divider`
+ * ancestor), so it never receives a direct `:hover`/`:focus-visible` from a
+ * real pointer — the `.__range` input on top (z-index 5) captures every
+ * pointer/keyboard event. Same ancestor-hover chain already proven live for
+ * the handle's scale transform below, applied here to the line's own
+ * background instead of a transform. Fallback chain mirrors the handle
+ * background-hover rule: unset falls through to the resting colour, then the
+ * CSS default, so a divider with nothing configured stays byte-identical.
+ */
+.wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
+.wp-block-sgs-before-after__range:focus-visible ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line,
+.wp-block-sgs-before-after__range:focus ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line {
+	background-color: var( --sgs-before-after-divider-colour-hover, var( --sgs-before-after-divider-colour, #fff ) );
+	background-image: var( --sgs-before-after-divider-colour-hover-gradient, var( --sgs-before-after-divider-colour-gradient, none ) );
 }
 
 .wp-block-sgs-before-after__handle {
@@ -240,6 +264,10 @@
 	/* Fallback is the CSS default look; render.php only sets this custom
 	 * property's VALUE when handleColour is actually configured. */
 	background-color: var( --sgs-before-after-handle-colour, #fff );
+	/* Gradient sibling (2026-09-04) — composites OVER background-color above;
+	 * an unset --...-gradient var falls back to "none" and this line paints
+	 * nothing, leaving the flat colour untouched. */
+	background-image: var( --sgs-before-after-handle-colour-gradient, none );
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -255,6 +283,32 @@
 	/* Fallback is the CSS default look; render.php only sets this custom
 	 * property's VALUE when handleIconColour is actually configured. */
 	stroke: var( --sgs-before-after-handle-icon-colour, #1e1e1e );
+	/* Explicit size (2026-09-05, IconPicker migration) — the resolved icon
+	 * markup now comes from sgs_get_lucide_icon()/sgs_get_wp_icon(), both of
+	 * which emit width="24" height="24" presentation attributes; CSS
+	 * width/height on an inline <svg> overrides those, so every icon
+	 * (including the previous hand-rolled 16x16 chevrons default) renders at
+	 * the SAME size this handle always used — no visual regression. */
+	width: 16px;
+	height: 16px;
+}
+
+.wp-block-sgs-before-after__handle:hover svg,
+.wp-block-sgs-before-after__handle:focus-visible svg {
+	/* Fallback chains to the resting colour, then the CSS default — render.php
+	 * only sets --sgs-before-after-handle-icon-colour-hover when
+	 * handleIconColourHover is actually configured. */
+	stroke: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
+}
+
+.wp-block-sgs-before-after__handle:hover,
+.wp-block-sgs-before-after__handle:focus-visible {
+	/* Handle background hover/focus (colour-conformance FILL closeout,
+	 * 2026-09-06) — same fallback-chain shape as the icon stroke rule above:
+	 * unset falls through to the resting colour, then the CSS default, so a
+	 * handle with nothing configured stays byte-identical. */
+	background-color: var( --sgs-before-after-handle-colour-hover, var( --sgs-before-after-handle-colour, #fff ) );
+	background-image: var( --sgs-before-after-handle-colour-hover-gradient, var( --sgs-before-after-handle-colour-gradient, none ) );
 }
 
 /* --- The native range input IS the accessible + no-JS-safe divider control.
@@ -343,7 +397,10 @@
 .wp-block-sgs-before-after__svg svg {
 	width: 100%;
 	height: 100%;
-	object-fit: var( --sgs-object-fit, contain );
+	/* object-fit is not part of the media-atom layer's SVG scope (registry.js
+	   `object-fit.types` is image+video only — inline SVG geometry doesn't
+	   take object-fit) — same fixed default this rule always had. */
+	object-fit: contain;
 }
 
 /*

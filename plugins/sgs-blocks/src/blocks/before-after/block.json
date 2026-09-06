@@ -6,67 +6,142 @@
 	"title": "Before / After",
 	"category": "sgs-interactive",
 	"description": "Two-media comparison slider with a draggable divider. Each side (before/after) independently chooses image / video / SVG via `beforeMediaType`/`afterMediaType` — mirroring sgs/media's mediaType fork applied per comparison slot. Works with zero JavaScript for the image/SVG case — both slots are always present in the markup and a CSS-only clip-path renders the configured default position; JS progressively enhances the divider into a live drag (native range input for keyboard + touch, GSAP Draggable for free-drag directly on the media) and, when either slot is video, drives synchronised play/pause + drift-corrected currentTime across both `<video>` elements. Video slots support WP-library uploads and direct MP4/WebM URLs ONLY — YouTube/Vimeo embeds are deliberately unsupported here because a cross-origin iframe cannot be kept in sync without loading each platform's external player SDK (Spec 38 three-tier motion doctrine: no CDN-loaded third-party script). `orientation` (horizontal/vertical) crossed with `reverseDirection` gives all four reveal directions — after-on-left (default), after-on-right, after-on-top, after-on-bottom — with the label order and clip-path both keyed off the same two attributes so a label never sits over the wrong media. Content-KIND, block-private (no SGS_Container_Wrapper) — box + width only, matches the sgs/quote / sgs/button pattern (D294).",
-	"keywords": [ "before after", "comparison", "slider", "image compare", "reveal" ],
+	"keywords": [
+		"before after",
+		"comparison",
+		"slider",
+		"image compare",
+		"reveal"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "columns",
 	"supports": {
 		"sgs": {
-			"imageControls": true,
-			"imageControlsExplicit": true,
+			"colourExemptions": {
+				"labelBackground": {
+					"rule": "states",
+					"reason": "The before/after caption label overlay is aria-hidden with pointer-events:none — no :hover CSS targets it anywhere. Already correctly painted via sgs_block_background_layer_css()/sgs_background_paint_decl() with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
+			"_comment_mediaElements": "Wave 5b. Replaces the old universal imageControls extension's single shared sgsObjectFit/sgsObjectPosition pair (which set BOTH the before and after slots identically) with two independently-scoped media elements, one per slot.",
+			"mediaElements": [
+				{
+					"prefix": "before",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				},
+				{
+					"prefix": "after",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				}
+			],
 			"fx": {
 				"draggable": true
 			},
 			"boxFamilies": {
-				"borderRadius": [ "borderRadiusTablet", "borderRadiusMobile" ]
+				"borderRadius": [
+					"borderRadius"
+				]
 			},
 			"elements": {
 				"frame": {
 					"label": "Frame",
 					"order": 1,
-					"clusters": [ "fill", "border", "layout" ],
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:style.color.background",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
+						"css:box-shadow-color": "boxShadowColour",
 						"css:max-width": "maxWidth",
-						"css:height": "height"
+						"css:height": "height",
+						"css:border-color-gradient": "borderColourGradient"
 					}
 				},
 				"label": {
 					"label": "Labels",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "label",
-					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour)."
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient",
+						"css:background-image": "labelBackgroundColourGradient",
+						"css:background-color": "labelBackgroundColour"
+					},
+					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour). Gradient siblings for both added 2026-09-04 as explicit attrMap entries (the default convention's suffix table doesn't cover *ColourGradient/*BackgroundColourGradient) — labelBackgroundColourGradient moved to its own ::after layer (sgs_block_background_layer_css()) to free the element's background-image for labelColourGradient's background-clip:text.",
+					"_note_bg": "labelBackgroundColour declared 2026-09-05: read at render.php:141 and painted as the label's own background. render.php:283 records it was deliberately moved OFF the shared mechanism, which is why nothing declared it and it showed as a rogue seed."
 				},
 				"divider": {
 					"label": "Divider",
 					"order": 3,
-					"clusters": [ "fill" ]
+					"clusters": [
+						"fill"
+					]
 				},
 				"divider-line": {
 					"label": "Divider line",
 					"order": 4,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"attrMap": {
 						"css:background-color": "dividerColour",
+						"css:background-image": "dividerColourGradient",
 						"css:width": "dividerWidth"
 					},
-					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "dividerColourHover",
+								"css:background-image": "dividerColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The visible divider stroke rendered inside the divider assembly (`.wp-block-sgs-before-after__divider-line`, render.php line 558) — a child of the `divider` element's positioning wrapper, NOT the same node. dividerColour/dividerWidth were previously misattributed as orphans under `divider` by simple prefix-string matching (both names literally start with 'divider'); this explicit attrMap claims them on their real owning element instead, clearing both from the conformance style-defect count. css:width is used for the line's thickness (DB records the underlying CSS as a height+width shorthand); no dedicated stroke-thickness member exists in the taxonomy, so css:width/layout is the nearest honest mapping. Found live 2026-08-15: DB tagged 2 attrs css_element='divider-line', undeclared until now. dividerColourHover/dividerColourHoverGradient (2026-09-06, FILL closeout) added the divider line's own hover state — mirrors the handle's hover-state shape on the sibling `handle` element below."
 				},
 				"handle": {
 					"label": "Handle",
 					"order": 5,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"prefix": "",
 					"attrMap": {
-						"css:background-color": "handleColour"
+						"css:background-color": "handleColour",
+						"css:background-image": "handleColourGradient",
+						"css:stroke": "handleIconColour",
+						"css:stroke-gradient": "handleIconColourGradient"
 					},
-					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "handleColourHover",
+								"css:background-image": "handleColourHoverGradient",
+								"css:stroke": "handleIconColourHover",
+								"css:stroke-gradient": "handleIconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The draggable divider handle/grip (`.wp-block-sgs-before-after__handle`, render.php line 559). handleColour paints its background. handleIconColour styles the icon's SVG stroke — a property with no cluster-member analogue anywhere in cluster-member-sets.json (no css:stroke member exists in the current taxonomy), so it is deliberately left unclustered rather than force-fit into background-color. `prefix: \"\"` opts this element out of orphan-candidate scanning so handleIconColour is reported honestly as an accepted gap (adding a css:stroke member is a framework-level taxonomy change, out of scope for a single block's manifest). Found live 2026-08-15: DB tagged 2 attrs css_element='handle', undeclared until now. 2026-09-05 (svg-paint-gradient end-shape): handleIconColourGradient added as the FIRST svg-paint-gradient row in the framework — resolved via sgs_svg_stroke_gradient() (same mechanism as sgs/icon's iconColourGradient), never the background-image custom-property-gradient pattern used elsewhere on this same block, because a stroke gradient needs a real SVG <linearGradient>/<radialGradient> def, not a CSS background paint. css:stroke/css:stroke-gradient entries added here rather than to cluster-member-sets.json (still no framework-wide stroke-gradient vocabulary member — same scope boundary as the note above). handleIconColourHover/handleIconColourHoverGradient (2026-09-06, colour-conformance closeout) resolved via the shared sgs_icon_gradient_css() composer, source-aware (lucide/wp-icon)."
 				}
 			}
 		},
@@ -78,113 +153,403 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"html": false,
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"style": true,
-			"color": true,
-			"__experimentalSkipSerialization": true
-		}
+		"html": false
 	},
 	"attributes": {
 		"_comment_ssr_nullable": "Every numeric attribute below whose default is null is declared as [ <numeric>, \"string\" ] — the house convention (sgs/heading, sgs/text). REASON: this block previews through <ServerSideRender>, which serialises an unset attribute as an EMPTY STRING into the block-renderer REST query. A schema of plain \"integer\"/\"number\" rejects \"\", the REST call returns HTTP 400, and the editor shows 'Preview failed to load' for every instance — while the frontend renders perfectly, so no frontend check can catch it. Found live 2026-07-31 by the Wave C editor probe (D388). render.php already coerces with (int) / a null check, so accepting \"\" changes no rendered output.",
 		"beforeMediaType": {
 			"type": "string",
 			"default": "image",
-			"enum": [ "image", "video", "svg" ],
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			],
 			"_comment": "Mirrors sgs/media's mediaType fork (Spec 38 Step 6), applied per comparison slot rather than block-wide — the before side and after side may each be a different media type (e.g. an SVG diagram compared against a photo)."
 		},
 		"afterMediaType": {
 			"type": "string",
 			"default": "image",
-			"enum": [ "image", "video", "svg" ]
+			"enum": [
+				"image",
+				"video",
+				"svg"
+			]
 		},
-		"beforeImageId": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrl": { "type": "string", "default": "", "role": "content" },
-		"beforeImageAlt": { "type": "string", "default": "", "role": "content" },
-		"afterImageId": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrl": { "type": "string", "default": "", "role": "content" },
-		"afterImageAlt": { "type": "string", "default": "", "role": "content" },
+		"beforeImageId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeImageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeImageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
+		},
+		"afterImageId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, this slot's image renders with an empty alt and aria-hidden so screen readers skip it, per D918/S8 naming convention ({element}Decorative)."
+		},
 		"_comment_artDirection": "Art-direction tiers (2026-08-07) — the IMAGE pair, completing the half this block was missing: its VIDEO playback tiers landed at d8cdcf8b. Same {base}/{base}Tablet/{base}Mobile shape and ID-wins-URL-falls-back pairing as sgs/media and sgs/hero. Alt text is deliberately NOT tiered — a different crop of the same subject describes the same thing, and a per-device alt would be a second place for the description to drift out of sync. Tier siblings render inside their own comparison slot so the divider still clips them.",
-		"beforeImageIdTablet": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrlTablet": { "type": "string", "default": "", "role": "content" },
-		"beforeImageIdMobile": { "type": [ "integer", "string" ], "default": null },
-		"beforeImageUrlMobile": { "type": "string", "default": "", "role": "content" },
-		"afterImageIdTablet": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrlTablet": { "type": "string", "default": "", "role": "content" },
-		"afterImageIdMobile": { "type": [ "integer", "string" ], "default": null },
-		"afterImageUrlMobile": { "type": "string", "default": "", "role": "content" },
-		"beforeVideoId": { "type": [ "integer", "string" ], "default": null },
-		"beforeVideoUrl": { "type": "string", "default": "", "role": "content" },
-		"beforeVideoAlt": { "type": "string", "default": "", "role": "content" },
-		"afterVideoId": { "type": [ "integer", "string" ], "default": null },
-		"afterVideoUrl": { "type": "string", "default": "", "role": "content" },
-		"afterVideoAlt": { "type": "string", "default": "", "role": "content" },
-		"beforeSvgContent": { "type": "string", "default": "", "role": "content" },
-		"afterSvgContent": { "type": "string", "default": "", "role": "content" },
+		"beforeImageIdTablet": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeImageIdMobile": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeImageUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageIdTablet": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrlTablet": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterImageIdMobile": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterImageUrlMobile": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeVideoId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"beforeVideoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeVideoAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterVideoId": {
+			"type": [
+				"integer",
+				"string"
+			],
+			"default": null
+		},
+		"afterVideoUrl": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterVideoAlt": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"beforeSvgContent": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"afterSvgContent": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
 		"videoAutoplay": {
 			"type": "boolean",
 			"default": false,
 			"_comment": "Gated behind prefers-reduced-motion at render time in view.js — reduced motion always starts both videos paused regardless of this attribute; the shared play/pause toggle remains available either way (explicit user action, never suppressed)."
 		},
 		"videoAutoplayTablet": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
 			"default": null,
-			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective."
+			"_comment": "Per-device playback tier (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — same convention as sgs/media's videoAutoplayTablet/Mobile and every other *Tablet/*Mobile attr in this framework. Still gated behind prefers-reduced-motion at whichever tier is effective. 'string' is in the type union ONLY because @wordpress/server-side-render's GET transport serialises a null attribute value to an empty string in the REST query string (addQueryArgs cannot represent a real null) — without 'string' here, block-renderer's own schema validation 400s the editor's own live preview on every load (confirmed live 2026-09-01: rest_invalid_param, '[videoAutoplayTablet] is not of type boolean,null.'). render.php treats an empty string identically to null (inherit) — see the raw-value guard below."
 		},
 		"videoAutoplayMobile": {
-			"type": [ "boolean", "null" ],
+			"type": [
+				"boolean",
+				"null",
+				"string"
+			],
 			"default": null
 		},
-		"showLabels": { "type": "boolean", "default": true },
-		"beforeLabel": { "type": "string", "default": "Before", "role": "content" },
-		"afterLabel": { "type": "string", "default": "After", "role": "content" },
-		"labelColour": { "type": "string", "default": "" },
-		"labelBackgroundColour": { "type": "string", "default": "" },
+		"showLabels": {
+			"type": "boolean",
+			"default": true
+		},
+		"beforeLabel": {
+			"type": "string",
+			"default": "Before",
+			"role": "content"
+		},
+		"afterLabel": {
+			"type": "string",
+			"default": "After",
+			"role": "content"
+		},
+		"labelColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"labelBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"labelBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"labelFontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"labelFontSizeUnit": { "type": "string", "default": "px" },
-		"labelFontWeight": { "type": "string", "default": "" },
-		"labelFontStyle": { "type": "string", "default": "" },
-		"labelLineHeight": { "type": [ "number", "string" ], "default": null },
-		"labelLineHeightUnit": { "type": "string", "default": "" },
+		"labelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"labelLineHeight": {
+			"type": [
+				"number",
+				"string"
+			],
+			"default": null
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
 		"orientation": {
 			"type": "string",
 			"default": "horizontal",
-			"enum": [ "horizontal", "vertical" ]
+			"enum": [
+				"horizontal",
+				"vertical"
+			]
 		},
 		"reverseDirection": {
 			"type": "boolean",
 			"default": false,
 			"_comment": "Crossed with orientation to give all 4 reveal directions. false (default, UNCHANGED — Bean-locked): horizontal reveals after on the LEFT, vertical reveals after on the TOP. true: horizontal reveals after on the RIGHT (the more common slider convention), vertical reveals after on the BOTTOM. style.css keys both the clip-path AND the label order off this same attribute so a direction change can never reintroduce the 2026-07-31 label-vs-image mismatch (labels + clip must always move together)."
 		},
-		"startPosition": { "type": "number", "default": 50 },
+		"startPosition": {
+			"type": "number",
+			"default": 50
+		},
 		"fxDraggable": {
 			"type": "boolean",
 			"default": true,
 			"_comment": "Spec 38 FR-38-13 roster opt-in. When true, GSAP Draggable enhances the divider so the visitor can drag anywhere on the image, on top of the always-present native range input (keyboard + native touch drag + no-JS-safe). When false, only the native range input drives the divider — still fully operable, just without the free-drag-on-image layer."
 		},
-		"dividerColour": { "type": "string", "default": "" },
-		"dividerWidth": { "type": "number", "default": 3 },
-		"handleColour": { "type": "string", "default": "" },
-		"handleIconColour": { "type": "string", "default": "" },
+		"dividerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dividerColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over dividerColour."
+		},
+		"dividerColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Divider-line background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06) — mirrors handleColourHover's shape. The divider line has no interaction of its own, so the trigger is the same range-hover ancestor chain style.css already uses for the handle's scale transform. Falls back to dividerColour, then the CSS default, when unset."
+		},
+		"dividerColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the divider-line's :hover background. Non-empty wins over dividerColourHover; falls back to dividerColourGradient, then none."
+		},
+		"dividerWidth": {
+			"type": "number",
+			"default": 3
+		},
+		"handleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"handleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"handleColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Handle background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06) — the handle's icon already had a hover stroke override; its own background never did. Falls back to handleColour, then the CSS default, when unset."
+		},
+		"handleColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle's :hover background. Non-empty wins over handleColourHover; falls back to handleColourGradient, then none."
+		},
+		"handleIconColour": {
+			"type": "string",
+			"default": ""
+		},
+		"handleIconColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle icon's SVG stroke via a real <linearGradient>/<radialGradient> def (sgs_svg_stroke_gradient(), same mechanism as sgs/icon's iconColourGradient) rather than the background-image custom-property pattern used elsewhere on this block (D636 gradient rollout, extended 2026-09-05 — the ONLY svg-paint-gradient row in the framework at the time this was added). Non-empty wins over handleIconColour at paint time."
+		},
+		"handleIconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"handleIconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the handle icon's SVG stroke on hover, resolved via the shared sgs_icon_gradient_css() composer. Non-empty wins over handleIconColourHover at paint time."
+		},
+		"handleIconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [
+				"lucide",
+				"wp-icon"
+			],
+			"description": "IconPicker source for the draggable handle's icon glyph (2026-09-05 migration off the hand-rolled two-polyline SVG onto the shared Lucide+IconPicker mechanism, matching sgs/icon's iconSource/iconName pair). Restricted to the two inline-SVG sources (lucide/wp-icon) — dashicon (font glyph) and emoji (text glyph) have no SVG stroke for a gradient to paint, unlike sgs/icon which supports all four sources for its FLAT colour. Defaults to 'lucide' + handleIconName='chevrons-left-right' so every existing instance renders visually unchanged."
+		},
+		"handleIconName": {
+			"type": "string",
+			"default": "chevrons-left-right",
+			"description": "Lucide/wp-icon/dashicon slug for the handle icon. Default 'chevrons-left-right' matches the previously hand-rolled two-polyline chevron SVG exactly — no visual regression on un-migrated instances."
+		},
 		"height": {
 			"type": "object",
-			"default": {"desktop": 400}
+			"default": {
+				"desktop": 400
+			}
 		},
-		"heightUnit": { "type": "string", "default": "px" },
+		"heightUnit": {
+			"type": "string",
+			"default": "px"
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"maxWidthUnit": { "type": "string", "default": "px" },
-		"boxShadow": { "type": "string", "default": "" },
-		"boxShadowColour": { "type": "string" },
-		"borderRadiusTablet": { "type": "object", "default": {} },
-		"borderRadiusMobile": { "type": "object", "default": {} }
+		"maxWidthUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string"
+		},
+		"boxShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

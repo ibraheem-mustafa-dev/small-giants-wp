@@ -29,34 +29,18 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -64,28 +48,37 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth"
 					},
-					"_note": "Mirrors sgs/container's wrapper/grid split — this block.json declares only fontSize+lineHeight (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) and no width/height/box-shadow/aspect-ratio attrs, so the remaining text+layout BOX members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
+					"_note": "Mirrors sgs/container's wrapper/grid split — typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio attrs exist, so those remain honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -103,22 +96,45 @@
 				"header": {
 					"label": "Item header",
 					"order": 3,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "headerColour",
-						"css:background-color": "headerBackground"
+						"css:background-color": "headerBackground",
+						"css:background-image": "headerBackgroundGradient"
 					},
-					"_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "headerBackgroundHover",
+								"css:background-image": "headerBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "headerColour/headerBackground style every accordion-item's header row via block context (providesContext) — no independent header font-size/weight/line-height control exists, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css."
 				},
 				"icon": {
 					"label": "Toggle icon",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour paints the open/close chevron. openIcon/closeIcon (icon slug) and iconPosition are content/variant fields, not independent style controls, so only the colour member is mapped — the rest are honest gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror the same mechanism, consumed by sgs/accordion-item via block context exactly like the resting pair (providesContext below)."
 				},
 				"item": {
 					"label": "Accordion item",
@@ -133,6 +149,18 @@
 		"root": ".wp-block-sgs-accordion"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"allowMultiple": {
 			"type": "boolean",
 			"default": false
@@ -145,19 +173,93 @@
 			"type": "string",
 			"default": "right"
 		},
-		"style": {
+		"accordionStyle": {
 			"type": "string",
-			"default": "bordered"
+			"default": "bordered",
+			"description": "Visual preset (bordered | flush | card). Renamed from `style` 2026-08-30 — a block attribute named `style` shadows WP's reserved style object, silently disabling this block's colour, spacing, typography and border supports."
 		},
 		"faqSchema": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the accordion's border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"headerColour": {
 			"type": "string"
 		},
 		"headerBackground": {
 			"type": "string"
+		},
+		"headerBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting every accordion-item's header row background via background-image (colour-conformance preset-upgrade, 2026-09-06). Non-empty wins over headerBackground's theme-preset-slug resolution entirely — bypasses the var(--wp--preset--color--{slug}) mechanism, since a gradient cannot be a swatch name. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundGradient)."
+		},
+		"headerBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Header row background colour on :hover/:focus-visible (colour-conformance FILL closeout, 2026-09-06). The header row already has a real :hover rule (style.css .sgs-accordion-item__header:hover) with hardcoded theme-default colours — this control lets the operator override it. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundHover)."
+		},
+		"headerBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the header row's :hover background. Non-empty wins over headerBackgroundHover. Relayed to accordion-item via block context (sgs/accordionHeaderBackgroundHoverGradient)."
 		},
 		"iconColour": {
 			"type": "string"
@@ -166,6 +268,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the toggle chevron's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the toggle chevron's stroke on hover instead of a flat colour. Non-empty wins over iconColourHover at render time."
 		},
 		"openIcon": {
 			"type": "string",
@@ -185,6 +296,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"gridTemplateColumns": {
@@ -236,7 +353,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -249,37 +370,25 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"providesContext": {
-		"sgs/accordionStyle": "style",
+		"sgs/accordionStyle": "accordionStyle",
 		"sgs/accordionIconPosition": "iconPosition",
 		"sgs/accordionHeaderColour": "headerColour",
 		"sgs/accordionHeaderBackground": "headerBackground",
+		"sgs/accordionHeaderBackgroundGradient": "headerBackgroundGradient",
+		"sgs/accordionHeaderBackgroundHover": "headerBackgroundHover",
+		"sgs/accordionHeaderBackgroundHoverGradient": "headerBackgroundHoverGradient",
 		"sgs/accordionIconColour": "iconColour",
 		"sgs/accordionIconColourGradient": "iconColourGradient",
+		"sgs/accordionIconColourHover": "iconColourHover",
+		"sgs/accordionIconColourHoverGradient": "iconColourHoverGradient",
 		"sgs/accordionOpenIcon": "openIcon",
 		"sgs/accordionCloseIcon": "closeIcon",
 		"sgs/accordionDefaultOpen": "defaultOpen"
@@ -294,7 +403,7 @@
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
-			"style": "bordered",
+			"accordionStyle": "bordered",
 			"allowMultiple": false,
 			"iconPosition": "right"
 		},

@@ -475,13 +475,7 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
         out_path = _client_variation_css_path(client, run_dir)
         total_chars = 0
 
-    # ---- 5. Write D3 gap candidates to sgs-framework.db ----
     d3_inserted = 0
-    if d3_entries:
-        try:
-            d3_inserted = _css_router_mod.write_d3_to_db(d3_entries, sgs_db_path=None)
-        except Exception as exc:  # noqa: BLE001
-            warnings.append(f"D3 gap candidate DB write failed: {exc}")
 
     output = {
         "output_path": str(out_path.relative_to(REPO)) if out_path.exists() else "",
@@ -2426,6 +2420,20 @@ def main():
              "including R-31-15). (default: False — gate runs)",
     )
     parser.add_argument(
+        "--skip-attr-schema-gate", action="store_true",
+        help="Skip the Task 3 / G2 attribute-schema conformance gate "
+             "(check_attr_schema_conformance.py, run inside pipeline-stage-gate.py "
+             "alongside R-31-15 and Spec 35/D554-C). By default it runs on the "
+             "converter output (extract.json) right after Stage 9 and HARD-HALTS "
+             "the clone before deploy/register the moment an emitted attribute is "
+             "not declared on its target block, or an emitted value is outside a "
+             "declared enum (Bean's 'fail closed on an undeclared shape' ruling — "
+             "no baseline, every violation blocks). Use this flag only for "
+             "diagnostic runs where you need to inspect the output without "
+             "halting; --skip-stage-gate also skips it (that flag skips the whole "
+             "pipeline-stage-gate.py subprocess). (default: False — gate runs)",
+    )
+    parser.add_argument(
         "--enforce-autonomy-gate", action="store_true",
         help="Force the autonomy gate ON even in --mode draft. By default draft runs "
              "(dev/verification) auto-skip the gate so the deploy stays inspectable; "
@@ -2680,6 +2688,9 @@ def main():
         if args.skip_flat_tier_gate:
             gate_cmd.append("--skip-flat-tier-gate")
             print("[stage-gate] Spec 35/D554-C flat-tier-regression gate skipped per --skip-flat-tier-gate")
+        if args.skip_attr_schema_gate:
+            gate_cmd.append("--skip-attr-schema-gate")
+            print("[stage-gate] Task 3/G2 attr-schema-conformance gate skipped per --skip-attr-schema-gate")
         gate_proc = subprocess.run(gate_cmd)
         if gate_proc.returncode != 0:
             _emit(_trace_for(run_dir), stage="stage_gate_anti_mirror",
@@ -2691,15 +2702,19 @@ def main():
                 "[stage-gate] HALTED: pipeline-stage-gate.py found a violation in the "
                 "converter output — either (a) the R-31-15 anti-mirror gate found a "
                 "NEW mirror-cheat (a draft-class container or a bound sourceMode not "
-                "in the baseline), or (b) the Spec 35/D554-C gate found a flat tier "
+                "in the baseline), (b) the Spec 35/D554-C gate found a flat tier "
                 "emitted for a property already migrated to the object shape on the "
-                "target block. The clone was NOT deployed or registered. Scroll up "
-                "for the specific gate's report. Fix (a) by converting the section to "
-                "native block attributes instead of mirroring the draft wrapper, or "
-                "regenerate the baseline with check_no_mirror.py --update-baseline if "
-                "genuinely intended. Fix (b) by emitting the object shape for that "
-                "property in the converter — there is no shim and no baseline for (b) "
-                "by design (D554-C).",
+                "target block, or (c) the Task 3/G2 attr-schema-conformance gate "
+                "found an attribute the target block does not declare, or an "
+                "out-of-enum value for one it does. The clone was NOT deployed or "
+                "registered. Scroll up for the specific gate's report. Fix (a) by "
+                "converting the section to native block attributes instead of "
+                "mirroring the draft wrapper, or regenerate the baseline with "
+                "check_no_mirror.py --update-baseline if genuinely intended. Fix (b) "
+                "by emitting the object shape for that property in the converter — "
+                "there is no shim and no baseline for (b) by design (D554-C). Fix (c) "
+                "by fixing the resolver that wrote the undeclared attribute/value — "
+                "there is no baseline for (c) either.",
                 file=sys.stderr,
             )
             sys.exit(gate_proc.returncode)

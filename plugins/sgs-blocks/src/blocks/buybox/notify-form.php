@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Privacy policy URL — only rendered when non-empty.
-$notify_privacy_url = \function_exists( 'get_privacy_policy_url' ) ? \get_privacy_policy_url() : '';
+$notify_privacy_url = \get_privacy_policy_url();
 
 $notify_email_id   = 'sgs-notify-email-' . \absint( $buybox_post_id );
 $notify_consent_id = 'sgs-notify-consent-' . \absint( $buybox_post_id );

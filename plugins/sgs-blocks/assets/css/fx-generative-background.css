@@ -1,0 +1,167 @@
+/**
+ * SGS motion — generative background CSS fallback (Spec 38, D874 technique
+ * spec). Tier W, THIRD entry — v1.1 GEOMETRY BUILD.
+ *
+ * ⚠ THIS IS A DIFFERENT, WEAKER ARTEFACT FROM THE JS-BUILT LAYERS.
+ * `src/shared/effects/fx-generative-background.js` builds the real gradient
+ * on a <canvas> 2D context by interpolating the four client colours in OKLCH
+ * (Björn Ottosson's polar Lab space) — the shorter hue arc, avoiding the grey
+ * band a straight sRGB/OKLab blend produces between non-adjacent hues — and
+ * then, on top of that, attempts a WebGL2 folded-ribbon shape
+ * (`webgl/generative-background.js`) that samples the same OKLCH image as
+ * its colour texture.
+ *
+ * A plain CSS `linear-gradient()` has NO OKLCH-hue-angle interpolation mode
+ * to reach for — it interpolates in sRGB, same as this effect's own OKLCH fix
+ * exists to correct — so this rule relies on hue-adjacency (§5 of the
+ * technique spec) alone, picked by the client, not on any colour maths this
+ * stylesheet can perform. It is what a no-JS visitor sees permanently, and
+ * what every visitor sees for the moment before either canvas paints over it.
+ *
+ * No animation in THIS layer: a finished static image, matching the effect's
+ * own reduced-motion SIMPLIFY contract — a visitor without JS and a visitor
+ * with reduced-motion enabled see visually consistent, equally "finished"
+ * results (the WebGL layer itself draws exactly one frame under reduced
+ * motion, rather than skipping the CSS-fallback discipline entirely).
+ */
+
+[data-sgs-fx="generative-background"] {
+	position: relative;
+	overflow: hidden;
+	background-color: var( --sgs-genbg-ground, var( --wp--preset--color--surface ) );
+	background-image: linear-gradient(
+		120deg,
+		var( --sgs-genbg-1, var( --wp--preset--color--primary ) ) 0%,
+		var( --sgs-genbg-2, var( --wp--preset--color--accent ) ) 33%,
+		var( --sgs-genbg-3, var( --wp--preset--color--accent-light ) ) 66%,
+		var( --sgs-genbg-4, var( --wp--preset--color--primary-dark ) ) 100%
+	);
+	background-size: cover;
+	background-position: center;
+}
+
+/*
+ * Once the WebGL layer is genuinely painting, its own transparent-everywhere-
+ * except-the-shape canvas is meant to let the GROUND colour (background-color
+ * above, the client's light/dark preset) show through around the folded
+ * shape. The flat CSS fallback gradient (background-image above) is opaque
+ * and covers the whole element, so left in place it permanently hides the
+ * ground colour no matter what the client picks — the fallback's job ends
+ * once the real layer is drawing. background-color stays untouched, so the
+ * ground preset is finally visible in the space around the shape.
+ */
+[data-sgs-genbg-webgl-active="1"] {
+	background-image: none;
+}
+
+/*
+ * The canvas the JS module paints once, over the top of the CSS fallback
+ * above. Positioned here (Spec 32 — no inline styling) rather than by the JS
+ * setting an inline style. Hidden until the JS module's first draw actually
+ * succeeds (`data-sgs-genbg-active="1"`) — a shader/canvas that never runs
+ * leaves the CSS gradient visible, never a blank box.
+ */
+.sgs-generative-background__canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	transition: opacity 400ms ease-out;
+	pointer-events: none;
+}
+
+[data-sgs-genbg-active="1"] .sgs-generative-background__canvas {
+	opacity: 1;
+}
+
+/*
+ * Same reasoning as the background-image rule above, one layer up: the
+ * static OKLCH canvas is the pre-WebGL base state, painted opaquely across
+ * the whole element. Once the WebGL layer is genuinely drawing (its own,
+ * higher, z-index-1 layer), the static canvas underneath it has nothing left
+ * to contribute and — being opaque — was hiding the ground colour exactly
+ * like the background-image did. Fades it out the same way it faded in.
+ */
+[data-sgs-genbg-webgl-active="1"] .sgs-generative-background__canvas {
+	opacity: 0;
+}
+
+/*
+ * The WebGL folded-ribbon layer — sits ABOVE the static OKLCH canvas
+ * (z-index 1 > 0), revealed only once its OWN first draw succeeds
+ * (`data-sgs-genbg-webgl-active="1"`). Until then the static canvas beneath
+ * it is the finished-looking state, not a blank layer waiting to paint.
+ */
+.sgs-generative-background__webgl-canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	transition: opacity 400ms ease-out;
+	pointer-events: none;
+}
+
+[data-sgs-genbg-webgl-active="1"] .sgs-generative-background__webgl-canvas {
+	opacity: 1;
+}
+
+/*
+ * CHILD-LIFT — deliberately ZERO specificity, via `:where()`, matching
+ * `fx-wave-gradient.css`'s own documented fix for this exact bug class (see
+ * that file's comment for the incident this pattern exists to prevent): both
+ * decorative canvases are appended into the block's DOM subtree, so without
+ * this the block's own content can be painted UNDER them. `> *` rather than a
+ * descendant selector, so nested structures get one layer, not one each.
+ * Enforced by `scripts/check-child-lift.py`.
+ */
+:where( [data-sgs-fx="generative-background"] ) > * {
+	position: relative;
+	z-index: 2;
+}
+
+/*
+ * THE PAUSE CONTROL — SC 2.2.2. Only the WebGL layer animates autonomously;
+ * `hidden` in the markup, unhidden by JS once (and only once) that layer
+ * actually starts drawing. Sizing/contrast/focus mirrors
+ * `.sgs-wave-gradient__toggle` exactly — same control, same effect family.
+ */
+.sgs-generative-background__toggle:not( [hidden] ) {
+	position: absolute;
+	right: 12px;
+	bottom: 12px;
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0 12px;
+	border: 1px solid rgb( 255 255 255 / 20% );
+	border-radius: 999px;
+	background: rgb( 15 23 42 / 82% );
+	color: #fff;
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.sgs-generative-background__toggle:hover {
+	background: rgb( 15 23 42 / 95% );
+}
+
+.sgs-generative-background__toggle:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-generative-background__canvas,
+	.sgs-generative-background__webgl-canvas {
+		transition: none;
+	}
+}

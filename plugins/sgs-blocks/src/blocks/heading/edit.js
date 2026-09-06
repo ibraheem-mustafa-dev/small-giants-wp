@@ -3,21 +3,18 @@ import {
 	useBlockProps,
 	RichText,
 	InspectorControls,
+	InspectorAdvancedControls,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 	RadioControl,
 	ToggleControl,
+	RangeControl,
 } from '@wordpress/components';
-import {
-	TypographyControls,
-	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
-	SgsColourPanel,
-} from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
-import { UnitControl } from '../../components/primitives';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -40,50 +37,39 @@ const SUB_TAG_OPTIONS = [
 	{ label: __( 'div (block)', 'sgs-blocks' ), value: 'div' },
 ];
 
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+// ⛔ TEXT_TRANSFORM_OPTIONS / FONT_STYLE_OPTIONS / TEXT_DECORATION_OPTIONS /
+// TEXT_ALIGN_OPTIONS / TEXT_WRAP_OPTIONS / LETTER_SPACING_UNITS all lived here
+// until 2026-09-06. Every one is now owned by the shared TypographyControls
+// component (src/components/TypographyControls.js), which exports the canonical
+// sets as SGS_TEXT_TRANSFORM_OPTIONS, SGS_FONT_STYLE_OPTIONS,
+// SGS_TEXT_DECORATION_OPTIONS, SGS_TEXT_ALIGN_OPTIONS and
+// SGS_TEXT_WRAP_OPTIONS. Do not re-declare a block-private copy: divergence
+// between a block's list and the PHP allowlist in sgs_typography_css_rule() is
+// silent — an out-of-enum value is coerced to the attribute default by
+// WordPress and simply stops rendering, with nothing to flag it.
+//
+// FONT_STYLE_OPTIONS in particular was ALREADY dead here before this pass (one
+// reference: its own declaration) — font style has come from TypographyControls
+// for some time.
+
+// Heading's own block.json default is 'ease' (NOT team-member/gallery's
+// 'ease-in-out') — the options list is copied from those siblings, the
+// default stays heading's own.
+const EASING_OPTIONS = [
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
-const FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
-const TEXT_DECORATION_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
-];
-
-const LETTER_SPACING_UNITS = [
-	{ value: 'em', label: 'em', default: 0 },
-	{ value: 'rem', label: 'rem', default: 0 },
-	{ value: 'px', label: 'px', default: 0 },
+const CUSTOM_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: undefined },
+	{ value: '%', label: '%', default: undefined },
+	{ value: 'em', label: 'em', default: undefined },
+	{ value: 'rem', label: 'rem', default: undefined },
+	{ value: 'vw', label: 'vw', default: undefined },
+	{ value: 'vh', label: 'vh', default: undefined },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -148,7 +134,28 @@ function buildTextStyle( attributes ) {
 		textTransform,
 		fontStyle,
 		textDecoration,
+		textWrap,
 	} = attributes;
+
+	// lineHeight / letterSpacing are OBJECT-typed {desktop,tablet,mobile} attrs
+	// (tier-object migration, 2026-09-06) — resolve the DESKTOP tier before use.
+	//
+	// ⛔ Without this, `${ lineHeight }` string-coerces the whole object to the
+	// literal "[object Object]" and the canvas emits
+	// `line-height:[object Object]em` — invalid CSS the browser silently drops,
+	// so the preview would just stop reflecting the control with no error
+	// anywhere. Same bug class as D569/D570's `trim( (string) $attr )` → "Array"
+	// on the PHP side, and exactly why migrate-tier-object.py refuses to
+	// auto-fix a read: what breaks is what the surrounding code DOES with the
+	// value, not the read itself.
+	//
+	// Copied deliberately from sgs/text's identical resolveDesktop helper — the
+	// block that hit this first. `fontSize` needs no such guard: it routes
+	// through buildPreviewFontSize(), which already handles the tiered shape.
+	const resolveDesktop = ( val ) =>
+		val !== null && typeof val === 'object' && ! Array.isArray( val ) ? val.desktop : val;
+	const lineHeightVal = resolveDesktop( lineHeight );
+	const letterSpacingVal = resolveDesktop( letterSpacing );
 
 	const style = {
 		...resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar ),
@@ -156,14 +163,16 @@ function buildTextStyle( attributes ) {
 		// custom property (mirrors sgs_font_size_value() server-side).
 		fontSize: buildPreviewFontSize( fontSize, fontSizeUnit ),
 		fontWeight: fontWeight || undefined,
-		lineHeight: lineHeight ? `${ lineHeight }${ lineHeightUnit }` : undefined,
-		letterSpacing: ( letterSpacing !== null && letterSpacing !== undefined )
-			? `${ letterSpacing }${ letterSpacingUnit }`
+		lineHeight: lineHeightVal ? `${ lineHeightVal }${ lineHeightUnit }` : undefined,
+		letterSpacing: ( letterSpacingVal !== null && letterSpacingVal !== undefined )
+			? `${ letterSpacingVal }${ letterSpacingUnit }`
 			: undefined,
 		textTransform: textTransform || undefined,
 		fontFamily: fontFamily || undefined,
 		fontStyle: fontStyle || undefined,
 		textDecoration: textDecoration || undefined,
+		// render.php allowlist: wrap/nowrap/balance/pretty/stable.
+		textWrap: textWrap || undefined,
 	};
 
 	return Object.fromEntries(
@@ -184,7 +193,7 @@ function boxShorthand( box, keys ) {
 
 /** Build wrapper-level inline style for the editor canvas (mirrors render.php $wrapper_inline). */
 function buildWrapperStyle( attributes ) {
-	const { textAlign, backgroundColour, borderWidth, borderStyle, borderColour, style, inheritStyle } = attributes;
+	const { padding, margin, textAlign, backgroundColour, borderWidth, borderStyle, borderColour, borderColourGradient, inheritStyle, customWidth, customWidthUnit } = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
 	// styling (background/border/text-align) and inherits from the parent —
@@ -196,6 +205,12 @@ function buildWrapperStyle( attributes ) {
 		if ( backgroundColour ) {
 			wrapperStyle.backgroundColor = colourVar( backgroundColour ) || undefined;
 		}
+		// Custom width — mirrors render.php's sgs_heading_spacing_val() numeric
+		// guard (a non-numeric raw value emits nothing, same as the server).
+		if ( '' !== customWidth && null !== customWidth && undefined !== customWidth
+			&& /^-?\d+(\.\d+)?$/.test( String( customWidth ).trim() ) ) {
+			wrapperStyle.width = `${ customWidth }${ customWidthUnit || 'px' }`;
+		}
 		// Border-width preview — SGS custom object attr (base only, no tiers).
 		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 		if ( borderWidthPreview ) {
@@ -206,23 +221,30 @@ function buildWrapperStyle( attributes ) {
 			if ( borderColour ) {
 				wrapperStyle.borderColor = colourVar( borderColour ) || undefined;
 			}
+			// A gradient border renders frontend as a masked ::before ring, which cannot
+			// be reproduced in a plain inline style — approximate it with the gradient as
+			// a border-image so the canvas at least shows that a gradient is applied.
+			if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+				wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+			}
 		}
 	}
 	// Border-radius base preview — Box-object interface contract §1/§5: base
 	// radius is WP-native style.border.radius (CSS shorthand order top-left
 	// top-right bottom-right bottom-left). NOT part of Contract §A — render.php
 	// doesn't gate this on inheritStyle either, so neither does the preview.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) {
 		wrapperStyle.borderRadius = borderRadiusPreview;
 	}
-	// Base padding/margin preview — WP-native style.spacing.* objects
-	// (contract §B; box-model order top/right/bottom/left).
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
+	// order top/right/bottom/left).
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -233,7 +255,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		headingRole,
 		content,
 		level,
@@ -242,26 +263,37 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		textAlign,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
-		fontStyle,
-		textDecoration,
 		inheritStyle,
-		letterSpacing,
-		letterSpacingUnit,
-		textTransform,
 		borderWidth,
 		borderStyle,
 		borderColour,
 		borderColourGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		scaleHover,
+		customWidth,
+		customWidthUnit,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
+	// ⚠ textAlign / fontStyle / textDecoration / letterSpacing /
+	// letterSpacingUnit / textTransform / textWrap are deliberately NOT
+	// destructured here any more. Their controls moved to the shared
+	// TypographyControls (which reads them straight off `attributes`), and the
+	// editor-canvas preview builders below likewise take `attributes` whole.
+	// Leaving them destructured would be an unused binding, which is a lint
+	// error, not merely untidy.
+
+	// Contrast check for border — warn if border fails WCAG contrast against
+	// the block's own background. When there's no background set or a gradient
+	// is active, skip the check entirely.
+	const headingContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 
 	const isSubheading = headingRole === 'subheading';
 
@@ -308,7 +340,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -317,7 +349,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
 								gradientValue: textColourHoverGradient,
-								gradientOnChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -344,24 +376,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: backgroundColourHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						// No hover pair declared for borderColour (block.json has no
-						// borderColourHover attr) — single-state row.
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -400,14 +414,42 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
 				{ /* ── Typography panel ── */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /*
-					 * Font size (responsive) + line height + font weight + font style
-					 * via shared TypographyControls.
-					 * Handles: fontSize/fontSizeUnit/fontSizeTablet/fontSizeMobile
-					 *           lineHeight/lineHeightUnit
-					 *           fontWeight / fontStyle
+					 * THE WHOLE PANEL is the shared TypographyControls component
+					 * (2026-09-06 redesign). Every field this panel used to
+					 * hand-roll — text transform, text decoration, text wrap,
+					 * letter spacing — is now rendered by the shared component
+					 * instead, so sgs/heading and every other consumer show the
+					 * SAME controls in the SAME order with the SAME spacing.
+					 * Text align moved UP from the "Layout" panel below for the
+					 * same reason `sgs/text` moved its own: alignment is a
+					 * text-family property, not a box/layout one.
+					 *
+					 * Handles: fontSize (tier object) / fontSizeUnit
+					 *          fontWeight / fontStyle
+					 *          lineHeight / lineHeightUnit (unitless stepper)
+					 *          letterSpacing / letterSpacingUnit
+					 *          textDecoration / textTransform
+					 *          textAlign / textWrap
+					 *
+					 * ⛔ Do NOT re-add a block-private duplicate of any of these
+					 * here. Two controls writing one attribute is the
+					 * duplicate-writer class `check-duplicate-controls.js`
+					 * exists to catch, and it cannot see a writer that lives
+					 * inside a config object rather than literal JSX.
+					 *
+					 * ⚠ fontFamily is DECLARED by this block and consumed by
+					 * both render.php (via sgs_typography_css_rule) and the
+					 * canvas preview (buildTextStyle), but showFontFamily is
+					 * deliberately NOT switched on here — that is a pre-existing
+					 * gap being reported to Bean rather than silently widened
+					 * inside a redesign task.
 					 */ }
 					<TypographyControls
 						attributes={ attributes }
@@ -419,48 +461,40 @@ export default function Edit( { attributes, setAttributes } ) {
 						showStyle={ true }
 						showLineHeight={ true }
 						showResponsive={ true }
-					/>
-
-					<SelectControl
-						label={ __( 'Text transform', 'sgs-blocks' ) }
-						value={ textTransform }
-						options={ TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( val ) => setAttributes( { textTransform: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Text decoration', 'sgs-blocks' ) }
-						value={ textDecoration }
-						options={ TEXT_DECORATION_OPTIONS }
-						onChange={ ( val ) => setAttributes( { textDecoration: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-
-					{ /* Letter spacing — UnitControl (number + unit in one input) */ }
-					<UnitControl
-						label={ __( 'Letter spacing', 'sgs-blocks' ) }
-						value={ composeUnit( letterSpacing, letterSpacingUnit ) }
-						units={ LETTER_SPACING_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, letterSpacingUnit || 'em' );
-							setAttributes( { letterSpacing: num, letterSpacingUnit: unit } );
-						} }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						showLetterSpacing={ true }
+						showDecoration={ true }
+						showTransform={ true }
+						showTextAlign={ true }
+						showTextWrap={ true }
+						showWritingMode={ true }
 					/>
 				</PanelBody>
 
 				{ /* ── Layout panel ── */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
-						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					{ /* ⛔ Text align is NOT here any more (2026-09-06) — it moved
+					   into the Typography panel above, rendered by the shared
+					   TypographyControls, matching where `sgs/text` already put
+					   its own. Alignment is a text-family property; grouping it
+					   with box/width controls split it from the properties a
+					   client changes alongside it. Do not re-add it here: a
+					   second SelectControl writing `textAlign` would be a
+					   duplicate writer for one attribute. */ }
+					{ /* Custom width — ONE SgsLengthControl mount, split-scalar pattern
+					   (customWidth stores the raw number as a string; render.php calls
+					   sgs_heading_spacing_val( $custom_width, $custom_width_unit )). */ }
+					<SgsLengthControl
+						label={ __( 'Custom width', 'sgs-blocks' ) }
+						value={ composeUnit( customWidth, customWidthUnit ) }
+						units={ CUSTOM_WIDTH_UNITS }
+						onChange={ ( raw ) => {
+							const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
+							setAttributes( {
+								customWidth: ( num === undefined || num === null ) ? '' : String( num ),
+								customWidthUnit: unit,
+							} );
+						} }
+						presets={ false }
 					/>
 				</PanelBody>
 
@@ -471,76 +505,151 @@ export default function Edit( { attributes, setAttributes } ) {
 				   serialises scoped, not inline, matching the spacing pattern already
 				   proven on sgs/container + sgs/button). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Border style', 'sgs-blocks' ) }
-						value={ borderStyle }
-						options={ BORDER_STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+					{ /* One composite Width/Style/Colour row, mirroring native's
+					     BorderBoxControl layout (Task 0). This block used to mount border
+					     colour+style TWICE — here, and again as a "Border colour" row in
+					     the SgsColourPanel above — both wired to the same attributes. Bean's
+					     call (2026-08-29): keep this mount, drop the colour-panel row, so
+					     width sits with its own style and colour instead of being split from
+					     them. Border radius stays WP-native, below. */ }
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ borderColourGradient }
+						onColourGradientChange={ ( val ) =>
+							setAttributes( { borderColourGradient: val ?? '' } )
+						}
+						colourLinked={ true }
+						contrastAgainst={ headingContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
+
+				{ /* ── Effects panel ── Box shadow (2 states, mirroring sgs/quote's
+				   two SEPARATE ShadowControl mounts) + hover scale + transition
+				   duration/easing. */ }
+				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowControl
+						label={ __( 'Box shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadow', { colour: true } ) }
+					/>
+					<ShadowControl
+						label={ __( 'Box shadow (hover)', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadowHover', { colour: true } ) }
+					/>
+					<RangeControl
+						label={ __( 'Hover scale', 'sgs-blocks' ) }
+						value={ parseFloat( scaleHover ) || 1 }
+						onChange={ ( val ) => setAttributes( { scaleHover: val } ) }
+						min={ 1 }
+						max={ 1.1 }
+						step={ 0.01 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ResponsiveBoxControl
-						label={ __( 'Border width', 'sgs-blocks' ) }
-						values={ { base: borderWidth ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
+					<RangeControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) => setAttributes( { transitionDuration: val } ) }
+						min={ 0 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ { base: style?.border?.radius ?? {} } }
-						showResponsive={ false }
-						onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
-					/>
+					{ /* D812 (2026-08-26): a 2-5 option enum with longest rendered
+					   label <=12 chars renders as ToggleGroupControl, not
+					   SelectControl (this enum: 5 options, longest label 11
+					   chars — "Ease in-out"). Reference: sgs/mega-aside's Format
+					   ToggleGroupControl mount. */ }
+					<ToggleGroupControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						onChange={ ( val ) => setAttributes( { transitionEasing: val || 'ease' } ) }
+						isBlock
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					>
+						{ EASING_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E:
-				   padding/margin base routes to WP-native style.spacing.* (mirrors
-				   sgs/container + sgs/button); tiers are the paddingTablet/paddingMobile
-				   + marginTablet/marginMobile object attrs. The spacing support declares
-				   __experimentalSkipSerialization so base serialises scoped, not inline. */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Advanced panel ── */ }
-				<PanelBody title={ __( 'Advanced', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleControl
-						label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
-						help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
-						checked={ !! inheritStyle }
-						onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
-					/>
-				</PanelBody>
 			</InspectorControls>
+
+			{ /* S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 35): moved
+			   out of a block-private "Advanced" PanelBody in the default Settings
+			   group into the real InspectorAdvancedControls slot — "Advanced" is
+			   pinned structurally last on every block via the shared
+			   src/blocks/extensions/custom-css.js mechanism, and a block-private
+			   panel with the same title silently broke that guarantee for this one
+			   block while reading, by title alone, as if it kept it. */ }
+			<InspectorAdvancedControls>
+				<ToggleControl
+					label={ __( 'Inherit style from parent', 'sgs-blocks' ) }
+					help={ __( 'When enabled, all block-level typography styles are suppressed and the element inherits from its parent container.', 'sgs-blocks' ) }
+					checked={ !! inheritStyle }
+					onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
+				/>
+			</InspectorAdvancedControls>
 
 			{ /* ── Canvas ── the RichText h-tag/<p> IS the block root (§B3, no
 			   wrapper div): useBlockProps spreads straight onto it. ── */ }

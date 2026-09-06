@@ -29,12 +29,7 @@
 		"color": {
 			"text": false,
 			"background": false,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"typography": {
@@ -45,30 +40,33 @@
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Text box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin"
 					}
 				},
 				"body": {
 					"label": "Body text",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -76,7 +74,8 @@
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
 						"css:color": "textColour",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"css:background-image": "textColourGradient"
 					},
 					"_note": "typography.fontSize is deliberately disabled at block level (supports.typography.fontSize:false) — this block's own bare fontSize/fontWeight/fontStyle/lineHeight attrs are the real, non-native control set for the body text. An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy), so every member here needs an explicit attrMap entry rather than relying on bare-attribute matching."
 				}
@@ -88,6 +87,18 @@
 		"typography": ".sgs-collapsible-text__body"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"text": {
 			"type": "string",
 			"default": "",
@@ -125,27 +136,27 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"backgroundColour": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
 			"type": "string",
 			"default": ""
 		}

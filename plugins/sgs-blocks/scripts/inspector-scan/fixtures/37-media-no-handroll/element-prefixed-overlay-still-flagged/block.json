@@ -1,0 +1,10 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/element-prefixed-overlay-still-flagged",
+	"title": "Fixture: negative control for the background-panel exclusion — an ELEMENT-prefixed overlay attr (not bare-background-prefixed) with no mediaElements MUST still flag, condition 1",
+	"category": "sgs",
+	"attributes": {
+		"splitMediaOverlayColour": { "type": "string", "default": "" },
+		"unrelatedAttr": { "type": "string", "default": "" }
+	}
+}

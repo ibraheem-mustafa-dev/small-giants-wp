@@ -18,22 +18,15 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __FILE__, 4 ) . '/includes/class-sgs-container-wrapper.php';
 
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Strips everything
 // except letters, digits, dot, and % so a value can never break out of the
 // declaration into a new CSS rule. Mirrors sgs/hero's proven sanitiser.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS aspect-ratio sanitiser — the aspectRatio attr stores values like
 // "1/1", "4/3", "16/9". Allows digits, dot, and "/" only.
 $sgs_css_ratio = static function ( $value ) {
@@ -149,9 +142,23 @@ if ( $stagger_delay > 0 ) {
 	$inline_styles_parts[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 // Always emit colour CSS vars — fallbacks are set above so these are never empty.
-$inline_styles_parts[] = '--sgs-hover-overlay:' . sgs_colour_value( $hover_overlay_colour );
-$inline_styles_parts[] = '--sgs-caption-colour:' . sgs_colour_value( $caption_colour );
-$inline_styles_parts[] = '--sgs-caption-bg:' . sgs_colour_value( $caption_bg_colour );
+// overlayColourHover paints an EXISTING .sgs-gallery__img-wrap::after (the
+// hover fade layer) with no text sharing that selector, so its gradient
+// sibling is a simple sibling custom property (2026-09-04) — style.css gains
+// one new background-image:var(...,none) line next to the existing
+// background:var(--sgs-hover-overlay,...) declaration.
+$inline_styles_parts = array_merge(
+	$inline_styles_parts,
+	sgs_custom_property_gradient_decls(
+		'sgs-hover-overlay',
+		(string) $hover_overlay_colour,
+		(string) ( $attributes['overlayColourHoverGradient'] ?? '' )
+	)
+);
+// captionColour/captionBgColour moved OFF this custom-property mechanism
+// 2026-09-04 — see the scoped rule near $root_sel below (they share
+// .sgs-gallery__caption, which a text gradient's background-clip:text would
+// otherwise clip).
 
 $inline_styles = implode( ';', $inline_styles_parts ) . ';';
 
@@ -180,9 +187,14 @@ foreach ( $images as $img ) {
 		$full_url = esc_url( $img['url'] );
 	}
 
+	// Decorative items get an empty alt here too — otherwise the lightbox's
+	// Interactivity-API context (data-wp-bind--alt) leaks the real alt text
+	// even though the thumbnail's own alt/aria-hidden is already correct.
+	$context_img_decorative = ! empty( $img['decorative'] );
+
 	$context_images[] = [
 		'fullUrl' => $full_url,
-		'alt'     => esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) ),
+		'alt'     => $context_img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) ),
 		'caption' => esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ),
 		'type'    => $img_type,
 	];
@@ -195,11 +207,8 @@ $context_data = wp_json_encode( [
 ] );
 
 // -------------------------------------------------------------------------
-// NO-INLINE contract — scoped uid + WP-native color/border re-emit.
-// block.json declares color/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Spacing (padding/margin) is already handled scoped by the wrapper
+// NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Spacing (padding/margin) is already handled scoped by the wrapper
 // itself; color + border are re-emitted here into the gallery's OWN scoped
 // <style> (composite caveat — never via wrapper `extra_styles`, which
 // inlines). Mirrors sgs/hero.
@@ -208,6 +217,46 @@ $uid      = 'sgs-gallery-' . substr( md5( wp_json_encode( $attributes ) . ( $blo
 $root_sel = '.' . $uid . '.wp-block-sgs-gallery';
 
 $gallery_responsive_css = '';
+
+// Caption: captionColour (text) / captionBgColour (fill) share
+// .sgs-gallery__caption, which is already `position:absolute` (style.css) —
+// HAND-BUILT ::after, not sgs_block_background_layer_css() (that helper's
+// own position:relative would override the caption's absolute positioning,
+// the same trap sgs/cart's badge/panel already document).
+$sgs_gallery_caption_sel      = $root_sel . ' .sgs-gallery__caption';
+$sgs_gallery_caption_bg_grad  = (string) ( $attributes['captionBgColourGradient'] ?? '' );
+$sgs_gallery_caption_bg_paint = sgs_background_paint_decl( (string) $caption_bg_colour, $sgs_gallery_caption_bg_grad );
+if ( '' !== $sgs_gallery_caption_bg_paint ) {
+	$gallery_responsive_css .= $sgs_gallery_caption_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;' . $sgs_gallery_caption_bg_paint . ';}';
+}
+$sgs_gallery_caption_grad      = (string) ( $attributes['captionColourGradient'] ?? '' );
+$sgs_gallery_caption_effective = sgs_resolve_text_colour_or_gradient( (string) $caption_colour, $sgs_gallery_caption_grad );
+if ( '' !== $sgs_gallery_caption_effective ) {
+	$sgs_gallery_caption_decl = sgs_text_colour_decl( $sgs_gallery_caption_effective );
+	if ( '' !== $sgs_gallery_caption_decl ) {
+		$gallery_responsive_css .= $sgs_gallery_caption_sel . '{' . $sgs_gallery_caption_decl . ';}';
+	}
+	$gallery_responsive_css .= sgs_text_colour_gradient_fallback_rule( $sgs_gallery_caption_sel, $sgs_gallery_caption_effective );
+}
+
+// -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — grid-thumbnail
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/before-after` and `sgs/hero` guard it. Classes are added to the SAME
+// <img> already carrying `sgs-gallery__img` (built via wp_get_attachment_image()
+// below) — `.sgs-media-el` is the shared marker the generated
+// assets/css/media-atoms/object-fit.css rule targets, `$sgs_gallery_media_scope`
+// is the per-instance scope the atom's custom-property value below is set on.
+// The `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) does NOT
+// get these classes — that element is deliberately excluded, see style.css.
+$sgs_gallery_media_scope   = '';
+$sgs_gallery_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_gallery_media_scope   = SGS_Media_Element::scope_class( $uid, 'sgs' );
+	$sgs_gallery_media_classes = SGS_Media_Element::element_classes( $sgs_gallery_media_scope );
+}
+$sgs_gallery_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-gallery__img' ), $sgs_gallery_media_classes ) ) );
 
 // -------------------------------------------------------------------------
 // Responsive gap tiers (gapTablet / gapMobile).
@@ -263,74 +312,70 @@ if ( '' !== $gap_mobile ) {
 // Explicit image-controls crop (Spec 35 capability-routing doctrine, Part 9,
 // mechanism (c)). block.json declares `imageControlsExplicit:true` so the
 // universal render_block guessing-filter (includes/image-controls.php) bails
-// out for this block — this is the ONLY source of the sgsObjectPosition /
-// sgsObjectFit CSS now. Block-wide only (one crop setting for every grid
+// out for this block. Block-wide only (one crop setting for every grid
 // item — per-item cropping is an explicit non-goal, the array `mediaItems`
 // attribute has no per-item position/fit fields). Selector targets every
-// grid-item `<img>` uniformly via `.sgs-gallery__img` (style.css:218-224 —
-// the hardcoded `object-fit:cover` there is the intentional default; this
-// uid-scoped rule has higher specificity and overrides it only when the
-// operator sets a custom value). Deliberately excludes
-// `.sgs-gallery__lightbox-img` (style.css:477, `object-fit:contain`) — a
+// grid-item `<img>` uniformly via `.sgs-gallery__img`. Deliberately excludes
+// `.sgs-gallery__lightbox-img` (style.css, `object-fit:contain`) — a
 // separate, natural-size element per the block census, never scoped by this
 // selector.
-$gallery_responsive_css .= sgs_media_position_css( $attributes, 'sgs', $root_sel . ' .sgs-gallery__img' );
+//
+// object-fit split out (rule 37-media-no-handroll fix): `sgsObjectFit` is now
+// read by the media-element atom below, not here — pass a copy with it
+// cleared so this call only ever emits `object-position` (its `sgsObjectFit`
+// half would otherwise duplicate the atom's `var(--sgs-media-object-fit)`
+// declaration on the SAME element with higher specificity, silently making
+// the atom's value dead the moment an operator set one). Object-position has
+// no atom coverage yet (`focal-point`, not in scope for this fix) and stays
+// on this explicit mechanism unchanged.
+$gallery_responsive_css .= sgs_media_position_css(
+	array_merge( $attributes, array( 'sgsObjectFit' => '' ) ),
+	'sgs',
+	$root_sel . ' .sgs-gallery__img'
+);
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$gallery_style_engine_args = array();
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Reads the SAME `sgsObjectFit` attribute the block already stores (see the
+// block.json `_comment_mediaElements`); emits `.{scope}{--sgs-media-object-fit:…}`
+// which assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes.
+// No value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gallery_responsive_css .= SGS_Media_Element::style(
+		$attributes,
+		'sgs',
+		'sgs/gallery',
+		$uid,
+		array( 'object-fit' )
+	);
+}
 
-	$gallery_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$gallery_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$gallery_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$gallery_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $gallery_color_args ) ) {
-		$gallery_style_engine_args['color'] = $gallery_color_args;
-	}
+$gallery_style_engine_args = array();
 
-	$gallery_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$gallery_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$gallery_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$gallery_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$gallery_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $gallery_radius_raw ) && '' !== $gallery_radius_raw ) {
-			$gallery_border_args['radius'] = $sgs_css_length( $gallery_radius_raw );
-		} elseif ( is_array( $gallery_radius_raw ) ) {
-			$gallery_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gallery_corner ) {
-				if ( ! empty( $gallery_radius_raw[ $gallery_corner ] ) ) {
-					$gallery_radius_clean[ $gallery_corner ] = $sgs_css_length( $gallery_radius_raw[ $gallery_corner ] );
-				}
-			}
-			if ( ! empty( $gallery_radius_clean ) ) {
-				$gallery_border_args['radius'] = $gallery_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $gallery_border_args ) ) {
-		$gallery_style_engine_args['border'] = $gallery_border_args;
-	}
+$gallery_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$gallery_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$gallery_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$gallery_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $gallery_color_args ) ) {
+	$gallery_style_engine_args['color'] = $gallery_color_args;
+}
 
-	if ( ! empty( $gallery_style_engine_args ) ) {
-		$gallery_scoped_styles = wp_style_engine_get_styles(
-			$gallery_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $gallery_scoped_styles['css'] ) ) {
-			$gallery_responsive_css .= $gallery_scoped_styles['css'];
-		}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
+
+if ( ! empty( $gallery_style_engine_args ) ) {
+	$gallery_scoped_styles = wp_style_engine_get_styles(
+		$gallery_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $gallery_scoped_styles['css'] ) ) {
+		$gallery_responsive_css .= $gallery_scoped_styles['css'];
 	}
 }
 
@@ -399,20 +444,34 @@ ob_start();
 			<?php
 		else :
 			foreach ( $images as $index => $img ) :
-				$img_id      = absint( $img['id'] ?? 0 );
-				$img_type    = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
-				$img_alt     = esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
-				$img_caption = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
+				$img_id         = absint( $img['id'] ?? 0 );
+				$img_type       = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
+				// Item 18 (2026-09-02, decorative-image-aria) — per-item field on the
+				// mediaItems repeater (Spec 00 field-level naming). When set, the image
+				// is purely decorative: alt is blanked and aria-hidden="true" is added
+				// so assistive tech skips it entirely (WCAG 2.1 AA 1.1.1), instead of a
+				// client either writing meaningless alt text or leaving it blank and
+				// hoping.
+				$img_decorative = ! empty( $img['decorative'] );
+				$img_alt        = $img_decorative ? '' : esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
+				$img_caption    = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
 				// Build the unified media-slot shape for sgs_render_media().
 				$item_media = array(
 					'url'  => $img['url'] ?? '',
 					'type' => $img_type,
 					'id'   => $img_id,
-					'alt'  => $img['alt'] ?? '',
+					'alt'  => $img_decorative ? '' : ( $img['alt'] ?? '' ),
 					'mime' => $img['mime'] ?? '',
 				);
 				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
+				if ( $img_decorative ) {
+					// sgs_render_media() has no aria-hidden param (shared helper — out of
+					// scope to change here). Its output always opens with a literal
+					// `<img ` or `<video ` tag (helpers-media.php), so a single anchored
+					// replacement on the OPENING tag only is safe.
+					$item_html = preg_replace( '/^<(img|video)\s/', '<$1 aria-hidden="true" ', $item_html, 1 );
+				}
 
 				// Determine the aspect-ratio and stagger delay for this item. Both
 				// are CSS custom-PROPERTY VALUES (never a raw property
@@ -423,10 +482,8 @@ ob_start();
 				// sgs/social-icons' / sgs/card-grid's per-item values) — every
 				// image renders `.sgs-gallery__item` unconditionally, so position
 				// is stable. $sgs_css_ratio allows digits, dot, and the "/" the
-				// aspect-ratio grammar needs (e.g. "16/9"). Previously an inline
-				// `style="…"` (also emitting a bare `style=""` when both were
-				// unset — itself an FR-32-1 breach); now no `style` attribute is
-				// ever written on the item.
+				// aspect-ratio grammar needs (e.g. "16/9"). No `style` attribute
+				// is ever written on the item (FR-32-1 forbids a bare `style=""`).
 				$item_style_decls = array();
 				if ( $aspect_ratio ) {
 					$item_style_decls[] = '--sgs-item-aspect:' . $sgs_css_ratio( $aspect_ratio );
@@ -437,6 +494,25 @@ ob_start();
 				if ( ! empty( $item_style_decls ) ) {
 					$gallery_responsive_css .= $root_sel . ' .sgs-gallery__item:nth-child(' . ( absint( $index ) + 1 ) . '){' . implode( ';', $item_style_decls ) . ';}';
 				}
+
+				// Spec 35 Part 4 — per-item crop, keyed by the item's OWN
+				// stable `_key`, never `:nth-child`/array index (unlike the
+				// aspect-ratio/stagger rule just above, which is genuinely
+				// POSITION-bound and safe with nth-child — crop is IDENTITY-
+				// bound: reordering must keep each photo's own crop, not the
+				// crop that happened to sit at that grid position). Additive
+				// override of the block-wide sgs_media_position_css() call
+				// below; only emits when this item sets a non-default value.
+				$gallery_item_key        = ! empty( $img['_key'] ) ? (string) $img['_key'] : 'idx-' . absint( $index );
+				$gallery_responsive_css .= sgs_media_position_css(
+					array(
+						'objectPosition' => $img['focalPoint'] ?? null,
+						'objectFit'      => $img['objectFit'] ?? '',
+					),
+					'',
+					$root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] img, '
+						. $root_sel . ' [data-gallery-item-key="' . esc_attr( $gallery_item_key ) . '"] video'
+				);
 
 				// Determine full-size URL for lightbox data attribute.
 				$full_url = '';
@@ -453,6 +529,7 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
+						data-gallery-item-key="<?php echo esc_attr( $gallery_item_key ); ?>"
 					>
 						<button
 							type="button"
@@ -473,14 +550,24 @@ ob_start();
 										$img_id,
 										$image_size,
 										false,
-										array(
-											'class'   => 'sgs-gallery__img',
-											'loading' => $index < 4 ? 'eager' : 'lazy',
+										array_merge(
+											array(
+												'class'   => $sgs_gallery_img_class,
+												'loading' => $index < 4 ? 'eager' : 'lazy',
+											),
+											// Item 18 (decorative-image-aria): overriding 'alt' here beats
+											// wp_get_attachment_image()'s own default (the attachment's
+											// stored _wp_attachment_image_alt meta), and 'aria-hidden'
+											// passes straight through as an extra attribute.
+											$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
 										)
 									);
 								} else {
 									// Video items, or images without an attachment ID, render via the
-									// shared media-slot helper — emits <img> or <video> as needed.
+									// shared media-slot helper — emits <img> or <video> as needed. Pre-
+									// existing gap, unchanged by this fix: sgs_render_media() does not
+									// receive `sgs-gallery__img` (or the new media-element marker) either,
+									// so this path never carried the object-fit rule.
 									echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 								}
 								?>
@@ -504,6 +591,7 @@ ob_start();
 					?>
 					<figure
 						class="sgs-gallery__item"
+						data-gallery-item-key="<?php echo esc_attr( $gallery_item_key ); ?>"
 					>
 						<div class="sgs-gallery__img-wrap">
 							<?php
@@ -512,12 +600,19 @@ ob_start();
 									$img_id,
 									$image_size,
 									false,
-									array(
-										'class'   => 'sgs-gallery__img',
-										'loading' => $index < 4 ? 'eager' : 'lazy',
+									array_merge(
+										array(
+											'class'   => $sgs_gallery_img_class,
+											'loading' => $index < 4 ? 'eager' : 'lazy',
+										),
+										// Item 18 (decorative-image-aria) — see the lightbox branch above
+										// for the rationale (same override, no-lightbox path).
+										$img_decorative ? array( 'alt' => '', 'aria-hidden' => 'true' ) : array()
 									)
 								);
 							} else {
+								// Pre-existing gap, unchanged by this fix — see the lightbox branch
+								// above.
 								echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 							}
 							?>
@@ -582,17 +677,30 @@ ob_start();
 	<?php endif; ?>
 
 	<?php /* ----------------------------------------------------------------
-	       Lightbox modal — always in DOM, shown via --open class.
+	       Lightbox modal — always in DOM, opened via dialog.showModal().
 	       Only rendered when enableLightbox is true.
 	       ---------------------------------------------------------------- */ ?>
 	<?php if ( $enable_lightbox ) : ?>
 
-		<div
+		<?php
+		/* A NATIVE <dialog>, opened with showModal() — NOT a <div> with a big
+		   z-index (D806). Measured live on canary 2242: the lightbox is sealed
+		   inside `div.entry-content.wp-block-post-content`, which carries
+		   `position:relative; z-index:1` on EVERY page, so `z-index:100000`
+		   here lost to the sticky site header's `z-index:100` in the ROOT
+		   stacking context. elementFromPoint over the open lightbox returned
+		   `a.sgs-nav-menu__link`. No number could have won that fight and no
+		   container-scoped fix could either — only the top layer escapes an
+		   ancestor stacking context. Mirrors sgs/modal, which already does
+		   this, and inherits the UA focus trap + Escape for free.
+		   `role`/`aria-modal` are deliberately ABSENT: showModal() supplies
+		   both, and authoring them on a native dialog is redundant. */
+		?>
+		<dialog
 			class="sgs-gallery__lightbox"
-			role="dialog"
-			aria-modal="true"
 			aria-label="<?php esc_attr_e( 'Image lightbox', 'sgs-blocks' ); ?>"
 			data-wp-class--sgs-gallery__lightbox--open="state.isLightboxOpen"
+			data-wp-on--close="actions.closeLightbox"
 			data-wp-on-window--keydown="callbacks.onKeydown"
 		>
 			<button
@@ -645,7 +753,7 @@ ob_start();
 
 			<p class="sgs-gallery__lightbox-counter" data-wp-text="state.counterText"></p>
 
-		</div>
+		</dialog>
 
 	<?php endif; ?>
 
@@ -654,8 +762,96 @@ $inner_html = ob_get_clean();
 
 // Output the gallery's own scoped <style> (color/border no-inline re-emit).
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$gallery_responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$gallery_responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$gallery_responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$gallery_responsive_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$gallery_responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$gallery_responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // CSS combinators like `>` intact. Every value reaching $gallery_responsive_css
-// is pre-sanitised ($sgs_css_length / $sgs_css_keyword / wp_style_engine_get_styles),
+// is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() / wp_style_engine_get_styles),
 // so no un-sanitised value survives to here.
 if ( $gallery_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gallery_responsive_css built from pre-sanitised values only.

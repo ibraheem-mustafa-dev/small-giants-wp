@@ -64,50 +64,29 @@
  * ---------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------
- * F2 — Contrast-safe fallback for the transparent-over-hero case.
+ * F2 — Contrast-safe fallback: MOVED OUT OF THIS FILE (2026-08-19).
  *
- * scrim  — WCAG-verifiable: a dark gradient behind the header content so
- *          light text/icons stay legible over any hero image. Header content
- *          is lifted above the scrim via z-index.
- * shadow — COSMETIC ONLY, not WCAG-conformant (text-shadow contrast cannot be
- *          computed reliably against arbitrary imagery) — never claim this
- *          meets contrast requirements.
- * force-solid — the header never goes transparent, even at rest; scopes the
- *          transparent rule off via :not() so the two never fight.
+ * The three `body.sgs-header-behaviour-contrast-{scrim,shadow,force-solid}`
+ * rules that lived here are gone. `contrastSafe` became a per-device
+ * {desktop,tablet,mobile} attribute, and a class on <body> is site-wide — it
+ * cannot express "scrim over the desktop hero, nothing on a phone", which is
+ * the case clients actually want. The same reason moved sticky / transparent /
+ * shrink / hide-on-scroll off this file in 2026-07-28's T1.4 pass.
+ *
+ * Where they went: `sgs/site-header/render.php` now emits them per tier as
+ * per-instance uid-scoped CSS via `sgs_emit_tier_rules_map()`. The scrim's
+ * gradient, its `pointer-events:none` / `inset:0` / z-index layering and the
+ * `> *` content lift are reproduced there verbatim.
+ *
+ * Two things worth carrying forward rather than rediscovering:
+ *   - `shadow` is COSMETIC ONLY and never WCAG-conformant — a text-shadow's
+ *     contrast against arbitrary imagery cannot be computed. Never describe it
+ *     as meeting a contrast requirement.
+ *   - `force-solid` no longer paints anything. It used `background … !important`
+ *     here to out-rank the transparent rule; per-tier, that fight has no clean
+ *     undo, so render.php resolves it earlier instead — force-solid simply
+ *     means "do not go transparent at this tier".
  * ---------------------------------------------------------------------- */
-
-body.sgs-header-behaviour-contrast-scrim header.sgs-site-header {
-	position: relative;
-}
-
-body.sgs-header-behaviour-contrast-scrim header.sgs-site-header::before {
-	content: '';
-	position: absolute;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background: linear-gradient( to bottom, rgba( 0, 0, 0, 0.55 ), rgba( 0, 0, 0, 0 ) );
-}
-
-body.sgs-header-behaviour-contrast-scrim header.sgs-site-header > * {
-	position: relative;
-	z-index: 1;
-}
-
-/* Cosmetic only — see doc-comment above; do not treat as a WCAG fix. */
-body.sgs-header-behaviour-contrast-shadow header.sgs-site-header a,
-body.sgs-header-behaviour-contrast-shadow header.sgs-site-header button {
-	text-shadow: 0 1px 3px rgba( 0, 0, 0, 0.6 );
-}
-
-/* The transparent-resting `background:transparent` rule that used to live
- * here (keyed on the now-retired `body.sgs-header-behaviour-transparent`
- * class) is GONE — sgs/site-header/render.php now emits it per-instance,
- * per-tier, as part of the tri-state transparent behaviour's "on" CSS. */
-
-body.sgs-header-behaviour-contrast-force-solid header.sgs-site-header {
-	background: var( --wp--preset--color--surface, #ffffff ) !important;
-}
 
 /* -------------------------------------------------------------------------
  * PER-ROW behaviours (Phase 1, header-footer-per-row-identity design gate).

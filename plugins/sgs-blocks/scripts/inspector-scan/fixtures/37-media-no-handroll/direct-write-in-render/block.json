@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/direct-write-in-render",
+	"title": "Fixture: render.php builds an object-fit declaration via string concatenation, no mediaElements adoption (must flag, condition 2)",
+	"category": "sgs",
+	"attributes": {}
+}

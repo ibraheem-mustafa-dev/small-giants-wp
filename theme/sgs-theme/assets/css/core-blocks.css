@@ -896,16 +896,21 @@ footer .wp-block-list a:hover,
 /* ── Section gap fix: remove block-gap between full-width sections ────────
  * WordPress constrained layout applies --wp--style--block-gap as margin-top
  * to every child. alignfull sections should be flush — zero white strips
- * between coloured section containers. */
-.wp-block-post-content > .alignfull,
-.entry-content > .alignfull {
-	margin-block-start: 0 !important;
-	margin-block-end: 0 !important;
-}
+ * between coloured section containers.
+ * ⛔ REMOVED 2026-08-26 (T1 fix pass 3): this file used to duplicate the
+ * `.entry-content > .alignfull` / `.wp-block-post-content > .alignfull`
+ * reset with `!important`, which silently overrode an operator's explicit
+ * margin (the `!important` outranked the specificity-based fix already
+ * shipped elsewhere). The reset now lives SOLELY in
+ * core-blocks-critical.css (the "REMOVE INTER-SECTION GAPS" block, no
+ * `!important`, wins on selector specificity alone) — do NOT re-add a
+ * copy of this rule here or anywhere else; that would recreate a fourth
+ * source of the same bug. */
 
 /* Hero full-bleed + flush gaps are handled by the UNIVERSAL alignfull rules
- * above (the hero is now a widthMode:full alignfull container, mirroring
- * sgs/container — Bean 2026-06-16: no hero-specific layout hacks). The prior
+ * in core-blocks-critical.css (the hero is now a widthMode:full alignfull
+ * container, mirroring sgs/container — Bean 2026-06-16: no hero-specific
+ * layout hacks). The prior
  * per-hero margin-block-start:0 + margin-inline:-24px breakout were removed:
  * the -24px over-broke (real global padding is 16px) and capped the bg span. */
 
@@ -1059,4 +1064,68 @@ footer .wp-block-list a:hover,
 		width: 20px;
 		height: 20px;
 	}
+}
+
+/* ─── CORE QUERY PAGINATION ─── */
+
+/*
+ * WordPress's own core/query-pagination block ships zero built-in styling —
+ * bare underlined text with no button treatment. Same visual language as the
+ * SGS Secondary button style (teal outline, fills solid on hover) so it reads
+ * as part of the framework rather than a raw browser default.
+ */
+.wp-block-query-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20);
+	margin-top: var(--wp--preset--spacing--40);
+}
+
+.wp-block-query-pagination .page-numbers,
+.wp-block-query-pagination .wp-block-query-pagination-next,
+.wp-block-query-pagination .wp-block-query-pagination-previous {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+	border: 2px solid var(--wp--preset--color--primary, #0a7ea8);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: var(--wp--preset--color--primary, #0a7ea8);
+	background-color: transparent;
+	text-decoration: none;
+	font-weight: 600;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease),
+	            color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
+}
+
+.wp-block-query-pagination .page-numbers:hover,
+.wp-block-query-pagination .wp-block-query-pagination-next:hover,
+.wp-block-query-pagination .wp-block-query-pagination-previous:hover {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.wp-block-query-pagination .page-numbers:focus-visible,
+.wp-block-query-pagination .wp-block-query-pagination-next:focus-visible,
+.wp-block-query-pagination .wp-block-query-pagination-previous:focus-visible {
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: 2px;
+	box-shadow: 0 0 8px 2px var(--wp--custom--focus-ring--color-accent, rgba(245, 158, 11, 0.4));
+}
+
+/* Current page — solid fill, no hover-state confusion with a clickable link */
+.wp-block-query-pagination .page-numbers.current {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	cursor: default;
+}
+
+.wp-block-query-pagination .page-numbers.dots {
+	border: none;
+	min-width: auto;
+	padding: var(--wp--preset--spacing--10);
+	color: var(--wp--preset--color--text-muted, #606d80);
 }

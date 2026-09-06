@@ -1,0 +1,7 @@
+{
+	"name": "sgs/colour-attr-duplicated",
+	"attributes": {
+		"titleColourA": { "type": "string" },
+		"titleColourB": { "type": "string" }
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/unrelated-panel-titles",
+	"title": "Fixture: ordinary panels, no pinned-name collision",
+	"category": "sgs",
+	"attributes": {}
+}

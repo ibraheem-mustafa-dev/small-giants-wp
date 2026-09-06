@@ -73,5 +73,31 @@ export {
 	__experimentalTruncate as Truncate,
 } from '@wordpress/components';
 
-// ⚠ block-editor, NOT components. The only one.
-export { __experimentalBorderRadiusControl as BorderRadiusControl } from '@wordpress/block-editor';
+// ⚠ block-editor, NOT components.
+//
+// ⛔ This line read "The only one" until 2026-09-06. It is no longer true and
+// the count is deliberately not restated here — a number in a comment is a copy
+// that rots (this file's own header carried a wrong "47" for exactly that
+// reason). Read the export list below instead.
+//
+// The typography family was added 2026-09-06 when the shared TypographyControls
+// component was rebuilt on WordPress's REAL native controls rather than
+// SGS lookalikes. All of these live in `@wordpress/block-editor`, NOT
+// `@wordpress/components` — the split this file exists to absorb.
+export {
+	__experimentalBorderRadiusControl as BorderRadiusControl,
+	__experimentalLetterSpacingControl as LetterSpacingControl,
+	__experimentalTextTransformControl as TextTransformControl,
+	__experimentalTextDecorationControl as TextDecorationControl,
+	__experimentalFontAppearanceControl as FontAppearanceControl,
+	__experimentalFontFamilyControl as FontFamilyControl,
+	__experimentalWritingModeControl as WritingModeControl,
+} from '@wordpress/block-editor';
+
+// STABLE, unprefixed exports — no `__experimental` alias to absorb, so they do
+// NOT strictly need to route through this barrel. They are here anyway so that
+// the whole native-typography family is named in ONE place: if core ever
+// destabilises one (the reverse of the usual direction, but it has happened),
+// this file is still the single edit. Verified stable + unprefixed against
+// `packages/block-editor/src/components/index.js` on the `wp/7.1` branch.
+export { LineHeightControl, FontSizePicker } from '@wordpress/block-editor';

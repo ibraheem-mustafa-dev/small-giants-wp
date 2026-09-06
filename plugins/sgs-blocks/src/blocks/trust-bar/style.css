@@ -72,11 +72,18 @@ a.sgs-trust-bar__badge:focus-visible {
 	height: var(--sgs-trust-badge-circle-size, 44px);
 	border-radius: var(--sgs-trust-badge-circle-radius, 50%);
 	background-color: var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface-alt, #F1F0EC));
+	background-image: var(--sgs-trust-badge-circle-bg-gradient, none);
 	/* Subtle default border so the disc always reads as a circle regardless of
 	   the section background behind it — a white/surface circle on a white
 	   section was invisible (live-verified 2026-06-11). Overridable via the var. */
 	border: var(--sgs-trust-badge-circle-border, 1px solid rgba(0, 0, 0, 0.08));
 	box-shadow: var(--sgs-trust-badge-circle-shadow, 0 1px 2px rgba(0, 0, 0, 0.06));
+}
+
+.sgs-trust-bar__circle:hover,
+.sgs-trust-bar__circle:focus-visible {
+	background-color: var(--sgs-trust-badge-circle-bg-hover, var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface-alt, #F1F0EC)));
+	background-image: var(--sgs-trust-badge-circle-bg-gradient-hover, var(--sgs-trust-badge-circle-bg-gradient, none));
 }
 
 .sgs-trust-bar__circle svg {
@@ -166,7 +173,12 @@ a.sgs-trust-bar__badge:focus-visible {
 }
 
 .sgs-trust-bar__badge-img {
-	object-fit: contain;
+	/* object-fit is owned by the shared media-element atom (rule 37-media-no-handroll)
+	   — assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule, scoped per
+	   instance by render.php's SGS_Media_Element::element_classes() marker class.
+	   render.php always emits an explicit --sgs-media-object-fit value (block.json
+	   default 'contain'), so this element never falls through to the shared
+	   stylesheet's own 'cover' fallback. */
 	display: block;
 }
 

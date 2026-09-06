@@ -12,21 +12,18 @@
  * The block's own class (sgs-form) rides in `extra_classes`.
  * The interior (progress bar + <form> + success/error messages) is $inner_html.
  *
- * R-22-14: explicit discriminators only — never branch on empty($content).
+ * R-31-14: explicit discriminators only — never branch on empty($content).
  *
- * NO-INLINE (contract §A, 2026-07-09): color/typography/spacing/
- * __experimentalBorder all declare __experimentalSkipSerialization in
- * block.json. The wrapper handles base+tier padding/margin scoped internally
- * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs, new
- * this migration — box-group contract §B). color/typography/border are
- * block-private (mirrors sgs/container's render.php pattern): extracted from
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * The wrapper handles base+tier padding/margin scoped internally
+ * (paddingTablet/paddingMobile/marginTablet/marginMobile object attrs —
+ * box-group contract §B). color/typography/border are block-private
+ * (mirrors sgs/container's render.php pattern): extracted from
  * $attributes['style'], emitted into a scoped `<style>` keyed to a
  * content-hash uid CLASS, fed to the wrapper via `extra_classes`. The submit
- * button's colour (previously inline style="") is now a scoped rule on
- * `.uid .sgs-form__button--submit`; the honeypot's off-screen positioning
- * (previously inline style="position:absolute;...") now relies solely on the
- * pre-existing `.sgs-form__honeypot` rule in style.css — the div carries only
- * its class.
+ * button's colour is a scoped rule on `.uid .sgs-form__button--submit`; the
+ * honeypot's off-screen positioning relies solely on the pre-existing
+ * `.sgs-form__honeypot` rule in style.css — the div carries only its class.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
@@ -44,10 +41,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
 // fontSize/lineHeight are string values passed straight to
 // wp_style_engine_get_styles(), which sanitises them internally).
-$sgs_form_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $form_id           = $attributes['formId'] ?? '';
 $form_name         = $attributes['formName'] ?? '';
 $submit_label      = $attributes['submitLabel'] ?? __( 'Submit', 'sgs-blocks' );
@@ -58,8 +51,15 @@ $success_redirect  = $success_redirect ? wp_validate_redirect( $success_redirect
 $honeypot          = $attributes['honeypot'] ?? true;
 $store_submissions = $attributes['storeSubmissions'] ?? true;
 $submit_colour     = $attributes['submitColour'] ?? '';
-$submit_background = $attributes['submitBackground'] ?? '';
-$progress_colour   = $attributes['progressBarColour'] ?? 'primary';
+// D636 text-colour gradient sibling (778879732 rollout finish, 2026-09-04) —
+// non-empty wins over submitColour at render time.
+$submit_colour_gradient = $attributes['submitColourGradient'] ?? '';
+// submitBackground/submitBackgroundGradient/submitBackgroundHover/
+// submitBackgroundHoverGradient are read further down via sgs_fill_decls()
+// (Case C fill-helper adoption, 2026-09-06) — no standalone vars needed here,
+// that helper reads the raw attribute names straight off $attributes.
+$progress_colour          = $attributes['progressBarColour'] ?? 'primary';
+$progress_colour_gradient = $attributes['progressBarColourGradient'] ?? '';
 
 // Count form steps from inner blocks (not rendered content).
 $steps       = array();
@@ -132,70 +132,62 @@ $sgs_form_style_group      = is_array( $attributes['style'] ?? null ) ? $attribu
 $sgs_form_supports_css     = '';
 $sgs_form_supports_classes = array( 'sgs-form' );
 
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_form_style_engine_input = array();
+$sgs_form_style_engine_input = array();
 
-	if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
-		$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
-	}
+if ( ! empty( $sgs_form_style_group['color'] ) && is_array( $sgs_form_style_group['color'] ) ) {
+	$sgs_form_style_engine_input['color'] = $sgs_form_style_group['color'];
+}
 
-	if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
-		$sgs_form_border_raw = $sgs_form_style_group['border'];
-		$sgs_form_border     = array();
-		if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
-			$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
-		}
-		if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] ) {
-			$sgs_form_border['style'] = $sgs_form_css_keyword( $sgs_form_border_raw['style'] );
-		}
-		if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
-			$sgs_form_border['width'] = $sgs_form_border_raw['width'];
-		}
-		if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
-			$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
-		}
-		if ( ! empty( $sgs_form_border ) ) {
-			$sgs_form_style_engine_input['border'] = $sgs_form_border;
-		}
+if ( ! empty( $sgs_form_style_group['border'] ) && is_array( $sgs_form_style_group['border'] ) ) {
+	$sgs_form_border_raw = $sgs_form_style_group['border'];
+	$sgs_form_border     = array();
+	if ( isset( $sgs_form_border_raw['color'] ) && '' !== $sgs_form_border_raw['color'] ) {
+		$sgs_form_border['color'] = (string) $sgs_form_border_raw['color'];
 	}
-
-	if ( ! empty( $sgs_form_style_engine_input ) ) {
-		$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
-
-		$sgs_form_engine_styles = wp_style_engine_get_styles(
-			$sgs_form_style_engine_input,
-			array( 'selector' => $sgs_form_sel )
-		);
-		if ( ! empty( $sgs_form_engine_styles['css'] ) ) {
-			$sgs_form_supports_css      .= $sgs_form_engine_styles['css'];
-			$sgs_form_supports_classes[] = $sgs_form_uid;
-		}
+	// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+	// default — never fall through to the browser's initial medium (~3px)
+	// border-width.
+	if ( isset( $sgs_form_border_raw['style'] ) && '' !== $sgs_form_border_raw['style'] && isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
+		$sgs_form_border['style'] = sgs_css_keyword_sanitise( $sgs_form_border_raw['style'] );
 	}
-
-	// Typography — declared selector (block.json selectors.typography.root,
-	// none declared for sgs/form, so scope to the block root itself).
-	$sgs_form_typography_args = array();
-	if ( isset( $sgs_form_style_group['typography']['fontSize'] ) && '' !== $sgs_form_style_group['typography']['fontSize'] ) {
-		$sgs_form_typography_args['fontSize'] = (string) $sgs_form_style_group['typography']['fontSize'];
+	if ( isset( $sgs_form_border_raw['width'] ) && '' !== $sgs_form_border_raw['width'] ) {
+		$sgs_form_border['width'] = $sgs_form_border_raw['width'];
 	}
-	if ( isset( $sgs_form_style_group['typography']['lineHeight'] ) && '' !== $sgs_form_style_group['typography']['lineHeight'] ) {
-		$sgs_form_typography_args['lineHeight'] = (string) $sgs_form_style_group['typography']['lineHeight'];
+	if ( isset( $sgs_form_border_raw['radius'] ) && '' !== $sgs_form_border_raw['radius'] ) {
+		$sgs_form_border['radius'] = $sgs_form_border_raw['radius'];
 	}
-	if ( ! empty( $sgs_form_typography_args ) ) {
-		if ( empty( $sgs_form_uid ) ) {
-			$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-			$sgs_form_supports_classes[] = $sgs_form_uid;
-		}
-		$sgs_form_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $sgs_form_typography_args ),
-			array( 'selector' => '.' . $sgs_form_uid . '.sgs-form' )
-		);
-		if ( ! empty( $sgs_form_typography_scoped['css'] ) ) {
-			$sgs_form_supports_css .= $sgs_form_typography_scoped['css'];
-		}
+	if ( ! empty( $sgs_form_border ) ) {
+		$sgs_form_style_engine_input['border'] = $sgs_form_border;
 	}
 }
+
+// Hoisted out of the conditional: the Shape-B border emission scopes to
+// $sgs_form_sel, which was only assigned when NATIVE style-engine input existed.
+$sgs_form_uid = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_form_sel = '.' . $sgs_form_uid . '.sgs-form';
+
+if ( ! empty( $sgs_form_style_engine_input ) ) {
+
+	$sgs_form_engine_styles = wp_style_engine_get_styles(
+		$sgs_form_style_engine_input,
+		array( 'selector' => $sgs_form_sel )
+	);
+	if ( ! empty( $sgs_form_engine_styles['css'] ) ) {
+		$sgs_form_supports_css      .= $sgs_form_engine_styles['css'];
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+}
+
+// Typography — migrated off WP-native supports.typography onto the shared
+// TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-
+// replacement track), root prefix '' (fontSize/fontWeight/fontStyle/
+// lineHeight). Registers the uid class unconditionally the same way the
+// legacy block did (it can't know in advance whether the helper will emit
+// any CSS), matching sgs/accordion's migrated shape.
+if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+	$sgs_form_supports_classes[] = $sgs_form_uid;
+}
+$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel );
 
 $sgs_form_preset_text = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $sgs_form_preset_bg   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -212,32 +204,193 @@ if ( '' !== $sgs_form_preset_bg ) {
 // scoped rule on `.uid .sgs-form__button--submit`. Uses the SAME uid as the
 // color/border/typography supports above (generated eagerly here when none
 // of those already needed one) so everything lands in ONE scoped <style>.
-if ( $submit_colour || $submit_background ) {
-	if ( empty( $sgs_form_uid ) ) {
-		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// D636 text-colour gradient sibling — resolved once, used for both the decl
+// below and the mandatory @supports fallback further down. A gradient wins
+// over the flat submitColour when set+valid.
+$submit_colour_effective = sgs_resolve_text_colour_or_gradient( $submit_colour, $submit_colour_gradient );
+// Case C fill-helper adoption (2026-09-06): the background paint used to be
+// hand-built inline (a single sgs_background_paint_decl() call folded into
+// $sgs_form_submit_decls). This selector SHARES its rule with the text decl
+// above, so per the colour EMISSION helper decision table this is
+// sgs_fill_decls() (declarations, not finished CSS) composed into one rule —
+// never sgs_fill_states_css(), which would own its own separate rule and
+// risk a cascade-order fight with the D942 transparent-cancellation decl
+// below. sgs_fill_decls() reads the raw attribute names directly off
+// $attributes, so no standalone $submit_background* vars are needed here.
+$submit_fill_decls = sgs_fill_decls(
+	$attributes,
+	array(
+		'base'           => 'submitBackground',
+		'hover'          => 'submitBackgroundHover',
+		'gradient'       => 'submitBackgroundGradient',
+		'hover_gradient' => 'submitBackgroundHoverGradient',
+	)
+);
+if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_fill_decls['hover'] ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		// The uid is hoisted above; this now registers the CLASS exactly once. It
+		// used to key on empty($sgs_form_uid), which the hoist made permanently
+		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_submit_decls = array();
-	if ( $submit_colour ) {
-		$sgs_form_submit_decls[] = 'color:' . sgs_colour_value( $submit_colour );
+	if ( '' !== $submit_colour_effective ) {
+		// sgs_text_colour_decl() returns either 'color:X' (flat) or the full
+		// 'background-image:...;-webkit-background-clip:text;background-clip:text;
+		// color:transparent' form (gradient) — same helper + shape as
+		// sgs/counter's numberColour/labelColour.
+		$submit_colour_decl = sgs_text_colour_decl( $submit_colour_effective );
+		if ( '' !== $submit_colour_decl ) {
+			$sgs_form_submit_decls[] = $submit_colour_decl;
+		}
+		if ( ! $submit_fill_decls['normal'] ) {
+			// D942 recipe item 2: the style-variant class default
+			// (`:where(.sgs-form__button--primary)`, form/style.css) paints a
+			// `background-color` on this same selector. This scoped rule
+			// already out-specifies that class default today, so cancel it
+			// here via pure cascade rather than duplicating the class's
+			// actual colour value — frees `submitColour` for its
+			// `submitColourGradient` sibling (`background-clip:text` would
+			// otherwise be clipped by the class's inherited fill, and would
+			// otherwise collide with a genuine operator-set submitBackground).
+			// Only when the operator hasn't set an explicit `submitBackground`
+			// (normal-state fill decls empty) — that already wins this same
+			// rule below and must not be cancelled. NOTE: if an operator sets
+			// BOTH submitColourGradient AND submitBackground/
+			// submitBackgroundGradient, both write to `background-image` on
+			// this one rule below — the later decl in $sgs_form_submit_decls
+			// wins (submitColour is pushed first, so the background paint
+			// wins that combination; the gradient text clip is then visually
+			// inert). Documented trade-off, not a bug: no CSS mechanism lets
+			// one element's background paint two different gradients on the
+			// same property.
+			$sgs_form_submit_decls[] = 'background-color:transparent';
+		}
 	}
-	if ( $submit_background ) {
-		$sgs_form_submit_decls[] = 'background-color:' . sgs_colour_value( $submit_background );
-	}
-	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $sgs_form_submit_decls ) . '}';
+	// Both gates must include the gradient var, not just the flat colour —
+	// a gradient-only instance previously emitted zero CSS at all (same
+	// defect class as modal's triggerBackgroundGradient, found live 2026-09-03).
+	// sgs_fill_decls() already applies that same rule internally.
+	$sgs_form_submit_decls  = array_merge( $sgs_form_submit_decls, $submit_fill_decls['normal'] );
+	$sgs_form_supports_css .= sgs_emit_state_colour_css(
+		'.' . $sgs_form_uid . ' .sgs-form__button--submit',
+		$sgs_form_submit_decls,
+		$submit_fill_decls['hover']
+	);
+	// Mandatory companion (self-no-ops on a flat colour): a browser lacking
+	// background-clip:text support would otherwise get a bare `color:` value
+	// holding a gradient string, dropped silently.
+	$sgs_form_supports_css .= sgs_text_colour_gradient_fallback_rule(
+		'.' . $sgs_form_uid . ' .sgs-form__button--submit',
+		$submit_colour_effective
+	);
 }
 
 // Progress-bar colour custom-property VALUE (FR-32-4, D345) — scoped rule on
 // `.uid .sgs-form__progress`, NOT an inline `style="--x:y"` attribute. Uses the
 // SAME uid as the color/border/typography/submit-button supports above
 // (minted eagerly here when none of those already needed one) so everything
-// lands in ONE scoped <style>.
-if ( $progress_colour ) {
-	if ( empty( $sgs_form_uid ) ) {
-		$sgs_form_uid                = 'sgs-form-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+// lands in ONE scoped <style>. progressBarColourGradient sibling (2026-09-04)
+// — the gradient wins when set; flat colour acts as fallback. HOVER SIBLING
+// (2026-09-06, hover-sibling closeout) — the same 5-arg call now also emits
+// -hover/-hover-gradient custom-property siblings, consumed by a new
+// .sgs-form__progress-bar:hover/:focus-visible rule in style.css. Unset
+// hover attrs mean the two extra decls are simply never appended, so an
+// untouched form stays byte-identical.
+$progress_colour_decls = function_exists( 'sgs_custom_property_gradient_decls' )
+	? sgs_custom_property_gradient_decls(
+		'sgs-progress-colour',
+		(string) $progress_colour,
+		(string) $progress_colour_gradient,
+		(string) ( $attributes['progressBarColourHover'] ?? '' ),
+		(string) ( $attributes['progressBarColourHoverGradient'] ?? '' )
+	)
+	: array();
+if ( ! empty( $progress_colour_decls ) ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		// The uid is hoisted above; this now registers the CLASS exactly once. It
+		// used to key on empty($sgs_form_uid), which the hoist made permanently
+		// false -- so the class stopped being added and .{uid}.sgs-form matched nothing.
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
-	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . ';}';
+	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{' . implode( ';', $progress_colour_decls ) . ';}';
+}
+
+// Prev-button, tile + file-label hover colours — moved off style.css hardcoded
+// `:hover` rules into scoped attribute-driven CSS (mirrors the submit-button
+// pattern above). Uses the SAME uid so everything lands in ONE scoped <style>.
+$sgs_form_prev_css = function_exists( 'sgs_button_element_style_css' )
+	? sgs_button_element_style_css( $attributes, 'prev', '.' . $sgs_form_uid . ' .sgs-form__button--prev' )
+	: '';
+if ( '' !== $sgs_form_prev_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_prev_css;
+}
+
+// Tile border — routed through the shared sgs_border_states_css() emitter
+// (helpers-colour-variants.php) so a gradient sibling comes free: that helper
+// owns the flat-vs-gradient branch (a masked ::before ring only when a
+// gradient is actually set) rather than this block hand-building decls.
+$sgs_form_tile_border_css = function_exists( 'sgs_border_states_css' )
+	? sgs_border_states_css(
+		'.' . $sgs_form_uid . ' .sgs-form-tile',
+		$attributes,
+		array(
+			'base'           => 'tileBorderColour',
+			'hover'          => 'tileBorderColourHover',
+			'gradient'       => 'tileBorderColourGradient',
+			'hover_gradient' => 'tileBorderColourHoverGradient',
+		)
+	)
+	: '';
+if ( '' !== $sgs_form_tile_border_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_tile_border_css;
+}
+
+// File-label border + background — this selector mixes TWO mechanisms (border
+// AND fill), so it cannot be a single sgs_border_states_css()/sgs_fill_states_css()
+// call the way the tile is. Call each shared emitter separately (both return
+// FINISHED css for their own selector, per their own docblocks) and concatenate;
+// this is the least invasive swap that keeps the file-label's existing
+// one-selector-two-properties shape while still getting gradient support on both.
+$sgs_form_file_label_sel = '.' . $sgs_form_uid . ' .sgs-form-field__file-label';
+
+$sgs_form_file_border_css = function_exists( 'sgs_border_states_css' )
+	? sgs_border_states_css(
+		$sgs_form_file_label_sel,
+		$attributes,
+		array(
+			'base'           => 'fileLabelBorderColour',
+			'hover'          => 'fileLabelBorderColourHover',
+			'gradient'       => 'fileLabelBorderColourGradient',
+			'hover_gradient' => 'fileLabelBorderColourHoverGradient',
+		)
+	)
+	: '';
+
+$sgs_form_file_fill_css = function_exists( 'sgs_fill_states_css' )
+	? sgs_fill_states_css(
+		$sgs_form_file_label_sel,
+		$attributes,
+		array(
+			'base'           => 'fileLabelBackgroundColour',
+			'hover'          => 'fileLabelBackgroundColourHover',
+			'gradient'       => 'fileLabelBackgroundColourGradient',
+			'hover_gradient' => 'fileLabelBackgroundColourHoverGradient',
+		)
+	)
+	: '';
+
+if ( '' !== $sgs_form_file_border_css || '' !== $sgs_form_file_fill_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_file_border_css . $sgs_form_file_fill_css;
 }
 
 // Build focus ring CSS custom properties for :focus-visible on form inputs.
@@ -292,14 +445,9 @@ if ( $is_multi_step ) :
 <?php endif; ?>
 
 <?php
-// ACCESSIBLE NAME (2026-08-06, Bean). `formName` had an editor control (edit.js:97)
-// and two variations seeding translatable copy ("Contact Us", "Newsletter Signup",
-// includes/variations/sgs-form-variations.php:79,114) — and NOTHING rendered it: it
-// was assigned to $form_name above and read by no one, so a client could type a form
-// name and nothing happened. That is the Spec 35 failure mode (a control that needs
-// code to mean anything is not done), and it left every SGS form without an
-// accessible name, which is a real WCAG 2.1 gap when a page carries more than one
-// form — a screen-reader user hears "form" twice with nothing to tell them apart.
+// ACCESSIBLE NAME. Without an accessible name every SGS form is a real WCAG 2.1
+// gap when a page carries more than one form — a screen-reader user hears
+// "form" twice with nothing to tell them apart.
 //
 // Rendered as aria-label rather than a visible heading DELIBERATELY: a visible title
 // is the operator's own sgs/heading block placed above the form, and emitting a
@@ -389,6 +537,94 @@ $inner_html = ob_get_clean();
 // custom-property VALUES (`--x:y`), allowed inline per contract §A (not a
 // real property declaration). extra_classes carries 'sgs-form' + the uid +
 // re-added preset has-* classes computed above (color/typography/border are
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$sgs_form_supports_css .= $sgs_form_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$sgs_form_supports_css .= sgs_border_gradient_css( $sgs_form_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$sgs_form_supports_css .= $sgs_form_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$sgs_form_supports_css .= $sgs_form_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $sgs_form_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$sgs_form_supports_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $sgs_form_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$sgs_form_supports_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $sgs_form_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$sgs_form_supports_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // block-private, scoped in $sgs_form_supports_css).
 $sgs_form_output = SGS_Container_Wrapper::render(
 	$attributes,

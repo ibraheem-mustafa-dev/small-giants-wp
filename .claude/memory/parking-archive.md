@@ -7,6 +7,73 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-05 — 1 entry RESOLVED: nav-drawer's variant discriminators fixed via a new composition-based signal
+
+> ### P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS — nav-drawer's 7 variantPresets have empty structural discriminators
+> **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
+>
+> D403 shipped 7 nav-drawer `variantPreset` variations, but the `supports.sgs.variants` set-difference leaves 6 of 7 variants (anchored-card-stack / centred-statement / editorial-ghost-list / solid-brand-light / two-column-editorial / split-zone-serif) with an EMPTY discriminator signature — `detect_variant` cannot tell them apart from extracted CSS. This is the same class as `P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` (the universal F6 ambiguity rule built from the trust-bar case). The `variantPreset` enum itself was added (mechanical transcription from variations.js) and this finding was consciously BASELINED (`db-consistency-baseline.json`) to unblock main's prebuild — that is not a fix.
+>
+> **To close:** give each variant structural/styling discriminators per the F6 fix pattern (only ONE variant may keep the empty fallback), then remove the baseline key. `detect_variant` is blind on nav-drawer until this lands.
+>
+> **Status reasoning:** assigned OPEN rather than DEFERRED because it names a concrete next-session trigger and blocks a live capability (drawer-variant cloning), not a speculative future want.
+>
+> **Trigger:** next nav/Spec-36 session — before any drawer-variant cloning is attempted.
+
+**RESOLVED 2026-09-05, PR #38.** D966 had already closed 5 of the 6 empty-signature variants
+(unrelated session, same week) — `anchored-card-stack`/`centred-statement`/`editorial-ghost-list`/
+`solid-brand-light` gained real attribute discriminators, and `floating-capped-card` was found
+(2026-09-05, during the closing fix's own investigation) to have ALWAYS had real unique
+attributes (`anchor`/`panelSize`/`surfaceBlur`), never actually part of the collision. The
+remaining genuine pair, `split-zone-serif`/`two-column-editorial`, shared every attribute value
+with a sibling — unresolvable via the prescribed fix ("give each variant structural/styling
+discriminators") without an invented, reference-site-inconsistent value change. Closed instead
+via a SECOND detection signal (InnerBlocks child-block composition, `variant_composition_slots`
+table + a `detect_variant()` tiebreaker), per Bean's direction that a structural guard was worth
+building over a one-off value tweak — and a new proactive check ("Check #10 — Dead Composition
+Discriminator") now catches this exact bug class on any future block. F6 Check #3 baseline key
+removed (not just re-baselined); `db-consistency/run.py --check` reports 0 violations for this
+block. Full detail: D969, `.claude/memory/sdd-progress.md`.
+
+## 2026-09-02 — 1 entry SUPERSEDED: the detector itself was retired, not its rulings
+
+> **P-SCATTER-DETECTOR-FAMILY-CLASSIFICATION** — does a spacing/sizing split count as by-design
+> **Status: SUPERSEDED — 2026-09-02.** The question this entry asked (should RULING 2's
+> "by-design" family list include spacing/sizing alongside border/transform) never got ruled on,
+> because `/qc-council` (Bean-directed) found the entire detector's model was wrong, not just
+> RULING 2's family list: `scripts/scattered-element-controls.js` flagged a block's own `wrapper`
+> element (declared `isWrapper: true`) as needing ONE consolidated panel, when Spec 35's own
+> schema comment says `isWrapper: true` explicitly selects TIER 2 (property-family panels are
+> the CORRECT shape for a wrapper, not scatter) — confirmed against `decisions.md` D537 and a
+> working, spec-conformant, self-tested replacement (`scripts/placement-reach.py`) that was
+> already built and already gated (`check-element-manifest-conformance.js`). The script produced
+> ~600 false-positive findings from this conflation in one session, including the trust-bar
+> icon-badge/badge-img findings this entry names. Deleted outright rather than patched — see
+> `plugins/sgs-blocks/CLAUDE.md`'s `placement-reach.py` section for the replacement tool, and
+> its "CONTESTED" output (9 attributes, 5 blocks) for the real remaining work, if any.
+
+## 2026-08-30 (late) — housekeeping pass: 1 entry closed on live verification, both halves resolved
+
+> **P-HERO-VISUAL-DIFF-DEBT-AND-MEDIA-MANIFEST-MISMATCH** — two small carried items from the client-controls track
+> **Status: CLOSED — verified 2026-08-30.** Both halves resolved same session. (1) Ran
+> `node scripts/qa/check-border-roundtrip.js --blocks sgs/hero` live on the canary: PASS, positive
+> instance painted `4px solid rgb(230, 138, 149)` as configured, `borderStyle:"none"` negative
+> control painted `0px none` — the probe genuinely discriminates. Report written:
+> `reports/visual-diff/hero-2026-08-30.md`, paying the two 2026-08-29 `SGS_VISUAL_GATE_SKIP`
+> debts logged against commit `9a69d60b5`. (2) Ran
+> `node scripts/check-element-manifest-conformance.js --check --block sgs/media`: **GATE PASS**.
+> The "wrapper vs media" naming is not a defect — `block.json`'s own
+> `_note_css_element_resolves_to_wrapper` field already documents it as
+> "CONFIRMED INTENTIONAL 2026-08-27" (objectFit/objectPosition/opacity/boxShadow resolve through
+> the wrapper element's native-fallback path because `isWrapper:true` routes them there by
+> design). The LEDGER's "predates this work" note was simply stale — the investigation had
+> already happened and closed it, just never got reflected in parking.md. · **Bucket:** framework
+>
+> Original body: (1) `sgs/hero` owes a real visual-diff report — two `SGS_VISUAL_GATE_SKIP`
+> entries logged 2026-08-29 were never followed by the probe run or report they promised. (2)
+> `sgs/media`'s element manifest disagrees with its own classifier (`wrapper` vs `media`) — noted,
+> not diagnosed, predates the 2026-08-30 close-out.
+
 ## 2026-08-12 — doc-audit: 1 entry superseded by a merge
 
 > **P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM** — Migrate product mockup to SGS-BEM
@@ -3762,3 +3829,81 @@ attribute alongside the existing flat-colour attribute; gradient wins when set a
 
 Full record: `decisions.md` D636 (scope), D643/D644 (Phase 0 + `css:stroke`), D645 (first 4
 mechanisms + the 2 cross-builder merge collisions), D646 (border sweep), D648 (`gridItemBorder`).
+
+### P-GRADIENT-CONTRAST-ROLLOUT — 7 remaining `GradientCapableColourControl` callers with no WCAG contrast check
+**Status:** RESOLVED (2026-09-04, same session as parking) · **Bucket:** framework · **Parked:** 2026-09-04
+
+`GradientCapableColourControl.js` gained an opt-in WCAG contrast check (`contrastAgainst`/
+`contrastLabel` props — advisory Notice inside the popover, WARN ONLY, never blocks saving) this
+session, extracted from `sgs/site-header`/`sgs/site-footer`'s existing flat-colour contrast-warning
+pattern into a shared `src/utils/wcag-contrast.js` module (adds `worstGradientContrastRatio()` for
+the gradient case — worst-stop method against the resolved background). Wired into exactly 2 of 9
+call sites as a pilot: `sgs/site-header-row` and `sgs/site-footer-row`'s Text row, each resolving
+`contrastAgainst` from the nearest `sgs/site-header`/`sgs/site-footer` ancestor's
+`backgroundColour` (via `getBlockParentsByBlockName`) — but ONLY when the parent's background is
+actually what's visible behind the row's text, i.e. only when the row itself paints no
+background/gradient of its own. When the row has its own background set, the check is skipped
+entirely rather than comparing against a colour that isn't what's rendered (Bean-corrected
+2026-09-04 — the pilot's first cut wrongly fell back to comparing against the row's OWN background
+in that case).
+
+**Closed out same session, dispatched via `/dispatching-parallel-agents` (5 haiku branches, one
+per disjoint block file; the controller — not the dispatched agents — ran all git operations,
+per the lesson from this same session's stash incident):**
+- `hero/edit.js` — wired against root `backgroundColour` (flat-only; skipped when
+  `backgroundColourGradient` also set).
+- `card-grid/edit.js` — wired against `cardBackground` (flat-only, same gradient-skip guard) on
+  both the title and subtitle text rows.
+- `container/components/GridItemDefaultsPanel.js` — wired against `gridItemBackground`
+  (flat-only, same guard) since the text and background defaults are set together in one panel.
+- `components/colour-variants/textRow.js` + `components/SgsColourPanel.js` — extended the SHARED
+  plumbing (not a specific caller): `textRow()` now accepts + forwards optional
+  `contrastAgainst`/`contrastLabel` on its returned row descriptor, and `SgsColourPanel` forwards
+  those onto `GradientCapableColourControl` when a row is `gradientCapable`. Additive only — every
+  existing `textRow()`/`SgsColourPanel` caller that doesn't pass the new params is unaffected.
+- `text/edit.js` — wired against the block's own `backgroundColour` when set (flat-only, same
+  guard); skipped when the block has no background of its own (its actual background then
+  depends on the parent container at insertion time, which cannot be resolved statically the way
+  `site-header-row`'s single fixed parent type can).
+- `table-of-contents/edit.js` — **left permanently unwired, not parked work.** The block declares
+  no background attribute at all (`supports.color.background: false`) and has no fixed parent
+  block type — there is no background it could ever check against without inventing one. This is
+  a structural non-applicability, not a residual to revisit.
+
+⚠ **Two of the five agent-dispatched wirings shipped a real bug the controller caught and fixed
+before commit**: `card-grid` and the FIRST cut of `text/edit.js` computed `contrastAgainst` as
+"flat colour OR gradient string" (`text/edit.js` literally passed the raw gradient function
+string through when only a gradient background was set) — `contrastAgainst` only ever accepted a
+FLAT colour/token, so a gradient string fails to parse as a colour, returns luminance `-1`, and
+`meetsWCAG_AA()` then ALWAYS reports failure regardless of the real text colour: an unconditional
+false "fails contrast" warning on every text block with a gradient background. `GridItemDefaultsPanel`
+shipped the same class of bug independently. Fixed uniformly to: pass the flat background ONLY
+when no gradient sibling is also set (gradient wins the paint per D636 convention, so a flat-only
+comparison would also be comparing against a surface that isn't rendered when both are set) —
+otherwise skip the check. Caught by the controller reading each dispatched diff before commit, not
+by any build gate — none of these compile-checked or exercised the runtime contrast maths.
+
+**Explicitly NOT wired, real residual (see `P-BORDER-CONTRAST-THRESHOLD` below):**
+`components/SgsBorderControl.js` — routed to "handle inline" by `/delegate`'s complexity signal
+rather than dispatched, and on inspection needs a real design decision before it can be wired
+correctly (border contrast is a UI-component check per WCAG 1.4.11, 3:1, not the 4.5:1 text
+threshold `GradientCapableColourControl`'s check is hardcoded to) — parked separately, not folded
+into this now-closed entry.
+
+## P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL — CLOSED 2026-09-06 (D975)
+
+Originally folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 2 (parked 2026-07-21,
+design-gated + Bean-approved). Verbatim residual scope at close: "nav-drawer/trust-bar variant
+discrimination must be BEM-structural, not styling-attr-based. Trust-bar's own case is fixed
+(structural image controls double as its recogniser; the F6 gate is now a universal ambiguity
+rule — 2+ variants sharing an identical/empty signature = violation, one zero-signature fallback
+allowed) and unit-verified, but live-clone verification was never done. Nav-drawer's own defect
+[was] genuinely closed (D974)."
+
+**Trust-bar's live-clone verification (the last open leg) — done 2026-09-06 (D975).**
+Constructed real SGS-BEM draft fragments for `badgeStyle` text-only/image-badge, ran them through
+the actual `recognise_section()`/`build_block_markup()` pipeline (not a hand-built
+`detect_variant_for_node()` unit call), confirmed correct variant recognition, then deployed to
+the sandybrown canary and confirmed the live rendered DOM carries the correct structural markup
+per variant. Both sub-items (nav-drawer D974, trust-bar D975) are now genuinely closed. Full
+detail: `decisions.md` D975.

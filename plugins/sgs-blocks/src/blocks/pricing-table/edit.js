@@ -15,8 +15,12 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
-import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken } from '../../components';
-import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle } from '../../utils';
+import { DesignTokenPicker, IconPicker, LinkPopoverField, SgsColourPanel, resolveColourToken,
+	SgsBorderControl,
+	TypographyControls,
+	fillRow,
+} from '../../components';
+import { colourVar, resolveResponsiveTier, resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 
 // ⛔ `templateMode` (the container-family allowed-children preset) was
@@ -116,18 +120,33 @@ export default function Edit( { attributes, setAttributes } ) {
 		billingToggleMonthlyLabel,
 		billingToggleYearlyLabel,
 		plans: plansRaw,
-		style,
+		pricingTableStyle: style,
 		headingLevel,
 		titleColour,
+		titleColourGradient,
 		priceColour,
+		priceColourHover,
 		priceColourGradient,
 		featureColour,
+		featureColourGradient,
 		ctaStyle,
 		ctaColour,
+		ctaColourGradient,
 		ctaBackground,
+		ctaBackgroundGradient,
 		popularBadgeText,
 		popularBadgeColour,
+		popularBadgeColourGradient,
 		popularBadgeBackground,
+		popularBadgeBackgroundGradient,
+		toggleLabelHoverColour,
+		toggleLabelHoverColourGradient,
+		titleColourHover,
+		featureColourHover,
+		ctaColourHover,
+		popularBadgeColourHover,
+		ctaBackgroundHover,
+		popularBadgeBackgroundHover,
 	} = attributes;
 
 	const [ palette ] = useSettings( 'color.palette' );
@@ -236,29 +255,20 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel (own PanelBody, default
-			   InspectorControls group), rendered FIRST. All 7 colour attrs on this
-			   block are BLOCK-LEVEL (uniform across every plan/tier, confirmed via
-			   render.php's "BLOCK-LEVEL — emitted once as a scoped rule" comments)
-			   and single-state — no hover attribute exists for any of them
-			   (ctaStyle's `:hover` rules in style.css are static CSS-preset
-			   selectors keyed on the class, not an attribute-driven colour state).
+			   InspectorControls group), rendered FIRST. All 7 original colour attrs
+			   on this block are BLOCK-LEVEL (uniform across every plan/tier,
+			   confirmed via render.php's "BLOCK-LEVEL — emitted once as a scoped
+			   rule" comments) and single-state — no hover attribute existed for
+			   any of them (ctaStyle's `:hover` rules in style.css are static
+			   CSS-preset selectors keyed on the class, not an attribute-driven
+			   colour state). `toggleLabelHoverColour` below is the one genuine
+			   hover-only exception — it replaces a previously hardcoded
+			   `color-mix()` hover tint on the billing-toggle label with no
+			   backing attribute (mirrors business-info's hover-only rows).
 			   Replaces the DesignTokenPicker rows previously scattered across the
 			   Colours/CTA Button/Popular Badge panels below. */ }
 			<SgsColourPanel
 				rows={ [
-					{
-						key: 'title',
-						label: __( 'Title colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
 					{
 						key: 'price',
 						label: __( 'Price colour', 'sgs-blocks' ),
@@ -271,13 +281,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { priceColour: val ?? '' } ),
 								linked: true,
 								gradientValue: priceColourGradient,
-								gradientOnChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
+								onGradientChange: ( val ) => setAttributes( { priceColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: priceColourHover,
+								onChange: ( val ) => setAttributes( { priceColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
 						key: 'feature',
 						label: __( 'Feature colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -285,80 +303,37 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: featureColour,
 								onChange: ( val ) => setAttributes( { featureColour: val ?? '' } ),
 								linked: true,
+								gradientValue: featureColourGradient,
+								onGradientChange: ( val ) => setAttributes( { featureColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: featureColourHover,
+								onChange: ( val ) => setAttributes( { featureColourHover: val ?? '' } ),
+								linked: true,
+								},
 						],
 					},
 					{
-						key: 'cta-text',
-						label: __( 'CTA text colour', 'sgs-blocks' ),
+						key: 'toggle-label-hover',
+						label: __( 'Billing toggle label hover colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: ctaColour,
-								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: toggleLabelHoverColour,
+								onChange: ( val ) => setAttributes( { toggleLabelHoverColour: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'cta-background',
-						label: __( 'CTA background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: ctaBackground,
-								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'badge-text',
-						label: __( 'Popular badge text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: popularBadgeColour,
-								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
-						key: 'badge-background',
-						label: __( 'Popular badge background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: popularBadgeBackground,
-								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
-								linked: true,
+								gradientValue: toggleLabelHoverColourGradient,
+								onGradientChange: ( val ) => setAttributes( { toggleLabelHoverColourGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { headingLevel: val } )
-						}
-						help={ __(
-							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<RangeControl
 						label={ __( 'Columns', 'sgs-blocks' ) }
@@ -375,7 +350,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ style }
 						options={ STYLE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { style: val } )
+							setAttributes( { pricingTableStyle: val } )
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
@@ -439,6 +414,52 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "cta button" is a declared element whose
+					     attrMap claims ctaColour/ctaBackground). */ }
+					<DesignTokenPicker
+						label={ __( 'CTA text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaColour,
+								onChange: ( val ) => setAttributes( { ctaColour: val ?? '' } ),
+								linked: true,
+								gradientValue: ctaColourGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaColourHover,
+								onChange: ( val ) => setAttributes( { ctaColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'CTA background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ctaBackground,
+								onChange: ( val ) => setAttributes( { ctaBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: ctaBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { ctaBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ctaBackgroundHover,
+								onChange: ( val ) => setAttributes( { ctaBackgroundHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
 				</PanelBody>
 
 				{ /* Container wrapper (WS-4 mirror) */ }
@@ -460,6 +481,132 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "popular
+					     badge" is a declared element whose attrMap claims
+					     popularBadgeColour/popularBadgeBackground. */ }
+					<DesignTokenPicker
+						label={ __( 'Popular badge text colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeColour,
+								onChange: ( val ) => setAttributes( { popularBadgeColour: val ?? '' } ),
+								linked: true,
+								gradientValue: popularBadgeColourGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeColourHover,
+								onChange: ( val ) => setAttributes( { popularBadgeColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Popular badge background colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: popularBadgeBackground,
+								onChange: ( val ) => setAttributes( { popularBadgeBackground: val ?? '' } ),
+								linked: true,
+								gradientValue: popularBadgeBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { popularBadgeBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: popularBadgeBackgroundHover,
+								onChange: ( val ) => setAttributes( { popularBadgeBackgroundHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Pricing Table Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingLevel: val } )
+						}
+						help={ __(
+							'Pick the level that fits your page outline — usually H3 under a page-level H2.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ /* Moved in from the shared SgsColourPanel (D622); "plan
+					     name" is a declared element whose attrMap claims
+					     titleColour. */ }
+					<DesignTokenPicker
+						label={ __( 'Title colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+				{ /* Typography — replaces the old WP-native supports.typography (fontSize/
+				   lineHeight only, mis-scoped onto the block root) with the shared
+				   TypographyControls component + sgs_typography_css_rule() render.php helper
+				   (D971/D972 full-replacement track). Prefix "title" — the native support this
+				   panel replaces always rendered onto `.sgs-pricing-table__name`
+				   (block.json `selectors.typography`), the "title" element, not the wrapper. */ }
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="title"
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -499,11 +646,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									<div
 										className="sgs-pricing-table__badge"
 										style={ {
-											color: colourVar(
-												popularBadgeColour
+											...resolveTextColourPreviewStyle(
+												popularBadgeColour,
+												popularBadgeColourGradient,
+												colourVar
 											),
-											backgroundColor: colourVar(
-												popularBadgeBackground
+											...resolveBackgroundPaintPreviewStyle(
+												popularBadgeBackground,
+												popularBadgeBackgroundGradient
 											),
 										} }
 									>
@@ -545,12 +695,11 @@ export default function Edit( { attributes, setAttributes } ) {
 											'Plan name…',
 											'sgs-blocks'
 										) }
-										style={ {
-											color:
-												colourVar(
-													titleColour
-												) || undefined,
-										} }
+										style={ resolveTextColourPreviewStyle(
+											titleColour,
+											titleColourGradient,
+											colourVar
+										) }
 									/>
 									<div className="sgs-pricing-table__price-wrapper">
 										<RichText
@@ -655,12 +804,16 @@ export default function Edit( { attributes, setAttributes } ) {
 										__next40pxDefaultSize
 									/>
 									{ plan.ribbonText && (
-										<DesignTokenPicker
-											label={ __( 'Ribbon colour', 'sgs-blocks' ) }
-											value={ plan.ribbonColour || 'accent' }
-											onChange={ ( val ) =>
-												updatePlan( planIndex, 'ribbonColour', val )
-											}
+										<SgsColourPanel
+											rows={ [
+												fillRow( {
+													key: 'plan-ribbon-colour',
+													label: __( 'Ribbon colour', 'sgs-blocks' ),
+													get: () => plan.ribbonColour || 'accent',
+													set: ( val ) =>
+												updatePlan( planIndex, 'ribbonColour', val ),
+												} ),
+											] }
 										/>
 									) }
 								</div>
@@ -706,10 +859,11 @@ export default function Edit( { attributes, setAttributes } ) {
 														'sgs-blocks'
 													) }
 													style={ {
-														color:
-															colourVar(
-																featureColour
-															) || undefined,
+														...resolveTextColourPreviewStyle(
+															featureColour,
+															featureColourGradient,
+															colourVar
+														),
 														opacity: feature.included ? 1 : 0.5,
 													} }
 												/>
@@ -810,17 +964,30 @@ export default function Edit( { attributes, setAttributes } ) {
 								     an unset ctaText defaults to "Get started" via `??`,
 								     but an explicitly-emptied one stays hidden). Mirror
 								     that gate rather than always rendering a placeholder.
-								     ctaColour/ctaBackground's DesignTokenPickers have no
-								     `linked` prop, so they always store a raw CSS value,
-								     never a slug -- resolveColourToken() (not colourVar(),
-								     which is slug-only) is the correct resolver. */ }
+								     ctaColour previews via resolveColourToken() (palette
+								     lookup, not slug-only colourVar()) since its picker
+								     can store a raw CSS value.
+								     ctaColourGradient (D956) previews via the shared
+								     resolveTextColourPreviewStyle() -- byte-identical to
+								     the old flat-only style for an unset gradient.
+								     ctaBackground/ctaBackgroundGradient preview via the
+								     shared resolveBackgroundPaintPreviewStyle() (colourVar-
+								     based, matching the popular-badge background preview
+								     above) -- gradient wins when set+valid, same precedence
+								     as render.php's sgs_background_paint_decl(). */ }
 								{ '' !== ( plan.ctaText ?? __( 'Get started', 'sgs-blocks' ) ) && (
 								<div
 									className={ `sgs-pricing-table__cta sgs-pricing-table__cta--${ ctaStyle }` }
 									style={ {
-										color: resolveColourToken( ctaColour, palette ) || undefined,
-										backgroundColor:
-											resolveColourToken( ctaBackground, palette ) || undefined,
+										...resolveTextColourPreviewStyle(
+											ctaColour,
+											ctaColourGradient,
+											( v ) => resolveColourToken( v, palette )
+										),
+										...resolveBackgroundPaintPreviewStyle(
+											ctaBackground,
+											ctaBackgroundGradient
+										),
 									} }
 								>
 									{ plan.ctaText ||

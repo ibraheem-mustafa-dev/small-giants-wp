@@ -23,7 +23,7 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"link": true,
+			"link": false,
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -37,83 +37,163 @@
 			"fontStyle": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
-			"imageControls": true,
-			"imageControlsExplicit": true,
+			"_comment_orgLogoNotAdopted": "orgLogo's object-fit:contain (style.css) is deliberately NOT a client control and NOT routed through the media-atom layer -- a logo must never be cropped, so there is no orgLogoObjectFit attribute to adopt in the first place. Disclosed here (in addition to the existing style.css comment) for consistency with the other _comment_*NotAdopted notes added during the 37-media-no-handroll remediation, per /qc-council 2026-09-03.",
 			"containerKind": "content",
 			"scalarContentLift": true,
-			"presetSelectors": [ "effectHover" ],
+			"presetSelectors": [
+				"effectHover"
+			],
+			"_comment_mediaElements": "37-media-no-handroll remediation (2026-09-03). Replaces the old universal imageControls/imageControlsExplicit single sgsObjectFit/sgsObjectPosition pair (block-level, shared by whichever slot's render.php happened to call sgs_media_position_css()) with two independently-scoped media elements, one per slot, mirroring sgs/before-after's Wave 5b migration. `avatar` gets object-fit only (a fixed-crop circular headshot has no genuine focal-point need beyond the fit mode). `work` gets object-fit + focal-point, replacing the position control the old mechanism gave it 1:1 — case-study media varies in composition, so both crop mode and crop focus are genuine per-instance needs. The org logo is deliberately excluded — see elements.org-logo-image below.",
+			"mediaElements": [
+				{
+					"prefix": "avatar",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				},
+				{
+					"prefix": "work",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				}
+			],
 			"elements": {
 				"quote-box": {
 					"label": "Quote box",
 					"order": 1,
-					"clusters": [ "fill", "layout", "animation" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay"
+						"anim:stagger": "staggerDelay",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block."
+					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attrs on this block.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
+								"css:border-color": "borderColourHover"
+							}
+						}
+					}
 				},
 				"quote-text": {
 					"label": "Quote text",
 					"order": 2,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "quote",
 					"attrMap": {
 						"css:margin-bottom": "quoteMarginBottom",
 						"css:background-image": "quoteColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "quoteColourHover"
+							}
+						}
 					},
 					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
 				},
 				"reviewer-name": {
 					"label": "Reviewer name",
 					"order": 3,
-					"clusters": [ "text" ],
-					"prefix": "name"
+					"clusters": [
+						"text"
+					],
+					"prefix": "name",
+					"attrMap": {
+						"css:color": "nameColour",
+						"css:font-size": "nameFontSize",
+						"css:background-image": "nameColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"reviewer-role": {
 					"label": "Reviewer role",
 					"order": 4,
-					"clusters": [ "text" ],
-					"prefix": "role"
+					"clusters": [
+						"text"
+					],
+					"prefix": "role",
+					"attrMap": {
+						"css:color": "roleColour",
+						"css:background-image": "roleColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "roleColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"org-name": {
 					"label": "Organisation name",
 					"order": 5,
-					"clusters": [ "text" ],
-					"prefix": "org"
+					"clusters": [
+						"text"
+					],
+					"prefix": "org",
+					"attrMap": {
+						"css:color": "orgColour",
+						"css:background-image": "orgColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "orgColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				},
 				"avatar-image": {
 					"label": "Avatar image",
 					"order": 6,
 					"clusters": [],
-					"_note": "Deliberately NOT reachable by the universal image-controls mechanism (design decision, 2026-08-17): style.css:89-95 fixes object-fit:cover + border-radius:50% (circular headshot crop) as a component-owned constant — every avatar needs the same crop treatment, matching the CLAUDE.md DEFAULT-vs-HARDCODE test's 'component's own constant stays' carve-out (same status as sgs/label's fixed fontSize:12). Rendered inside a plain `<div>` (render.php), which the generic mechanism's 3 selectors (`> img` / `.wp-block-image > img` / `figure > img`) never reach anyway — leaving it declared-but-unreached would just be a silent no-op, so it is excluded by design rather than left accidentally dead. Only work-media below is wired for genuine per-instance crop control."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — REVERSES the 2026-08-17 note this used to carry. The circular cover-crop is still the component-owned DEFAULT (style.css's hardcoded object-fit:cover was removed; the shared `.sgs-media-el{object-fit:var(--sgs-media-object-fit,cover)}` atom stylesheet now paints the identical default), but it is no longer immovable — a client can override it per instance via the `avatar` mediaElements entry above (`avatarObjectFit`/`avatarObjectFitTablet`/`avatarObjectFitMobile`, auto-registered server-side from supports.sgs.mediaElements — see includes/media-element-attrs-register.php). Border-radius:50% stays a genuine fixed constant (a non-circular avatar is not a supported shape here). Rendered inside a plain `<div>` (render.php) — the marker classes are added explicitly via SGS_Media_Element::element_classes(), not via the generic render_block guessing injector, so the plain-`<div>` wrapper is no longer a reachability problem."
 				},
 				"org-logo-image": {
 					"label": "Organisation logo",
@@ -125,16 +205,50 @@
 					"label": "Work / case-study media",
 					"order": 8,
 					"clusters": [],
-					"_note": "The ONE image slot this block wires for genuine per-instance crop control (design decision, 2026-08-17) — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots above. `imageControlsExplicit:true` + an explicit `sgs_media_position_css()` call in render.php targets the known selector `.sgs-testimonial__work img, .sgs-testimonial__work video` directly (matches the team-member/gallery/testimonial-slider precedent), rather than relying on the generic render_block guessing injector — which only coincidentally reached this `<figure>`-wrapped slot and never the avatar/logo `<div>`-wrapped ones."
+					"_note": "37-media-no-handroll remediation (2026-09-03) — migrated off the old block-level imageControls/imageControlsExplicit + sgs_media_position_css() mechanism (design decision, 2026-08-17) onto the independently-scoped `work` mediaElements entry above (object-fit + focal-point), matching sgs/before-after's Wave 5b precedent 1:1. Still the one image slot with a genuine per-instance crop need — case-study photos vary in composition/aspect ratio, unlike the fixed-crop avatar/logo slots. SGS_Media_Element::element_classes()/style() target the same known `.sgs-testimonial__work img, .sgs-testimonial__work video` selector explicitly in render.php; the generic render_block guessing injector is still never relied on."
 				},
 				"rating": {
 					"label": "Rating",
 					"order": 9,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "rating",
 					"attrMap": {
-						"css:font-size": "ratingSize"
-					}
+						"css:font-size": "ratingSize",
+						"css:color": "ratingColour",
+						"css:background-image": "ratingColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "ratingColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
+				},
+				"summary": {
+					"label": "Summary phrase",
+					"order": 10,
+					"clusters": [
+						"text"
+					],
+					"prefix": "summary",
+					"attrMap": {
+						"css:color": "summaryColour",
+						"css:font-size": "summaryFontSize",
+						"css:background-image": "summaryColourGradient"
+					},
+					"_note": "The summary phrase — <p class=\"sgs-testimonial__summary\"> (render.php:699), styled at render.php:276-283 (color <- summaryColour, font-size <- summaryFontSize). A SEPARATE element from quote-text, which is the <blockquote class=\"sgs-testimonial__quote\"> (render.php:704, styled :288-309): two different DOM nodes, so one entry cannot cover both, and quote-text's prefix \"quote\" can never reach a summary* attribute. Before this element existed summaryColour had no manifest home, so css_property stayed NULL and survey.js/rule 31/the cloning pipeline were all blind to it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "summaryColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Previously these five pushed a bare `color:` into the shared root $hover_decls bucket (render.php, emitted against $root_sel), so they collided with each other (only the last survived) AND could never reach this element, which sets its own explicit resting colour. render.php now emits a per-element ancestor-hover rule ($root_sel:hover/:focus-within + this element's resting selector), matching the pattern quoteColourHover already used correctly, so this declaration is now truthful."
 				}
 			},
 			"variantAttr": "variant",
@@ -152,25 +266,29 @@
 					"sourcePlatform"
 				],
 				"avatar-spotlight": [
-					"avatarMedia"
+					"avatarMedia",
+					"avatarDecorative"
 				],
 				"corporate-logo": [
-					"orgLogo"
+					"orgLogo",
+					"orgLogoDecorative"
 				],
 				"case-study-media": [
-					"workMedia"
+					"workMedia",
+					"workMediaDecorative"
 				],
 				"minimal-quote": []
 			},
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			}
 		}
@@ -183,6 +301,18 @@
 		"typography": ".sgs-testimonial__quote"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"variant": {
 			"type": "string",
 			"default": "",
@@ -242,6 +372,21 @@
 		"workMedia": {
 			"type": "object",
 			"default": null
+		},
+		"avatarDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the reviewer photo carries no information beyond decoration; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"orgLogoDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the organisation logo is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
+		},
+		"workMediaDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Item 18 (WCAG 1.1.1) — the case-study work image/video is purely decorative for this instance; hides it from assistive tech (empty alt + aria-hidden) instead of storing/announcing the media library's alt text."
 		},
 		"showRating": {
 			"type": "boolean",
@@ -318,11 +463,28 @@
 			"type": "string",
 			"default": ""
 		},
+		"summaryColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"nameFontWeight": {
 			"type": "string",
 			"default": "700"
 		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Reviewer-name font size, per-device tier {desktop,tablet,mobile} (Spec 35 tier-object shape). Empty object = inherit the theme default (style.css var(--wp--preset--font-size--small)). Rendered via the shared sgs_typography_css_rule() helper, scoped to .sgs-testimonial__name."
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
 		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -330,7 +492,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"roleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"orgColour": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -339,6 +509,50 @@
 			"default": 16
 		},
 		"ratingColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -404,21 +618,63 @@
 			"default": ""
 		},
 		"_comment_boxTiers": "No-inline migration contract §B: tablet/mobile tier overrides for the WP-native style.spacing.padding/margin base (paddingTablet/paddingMobile/marginTablet/marginMobile).",
-		"paddingTablet": {
+		"quoteColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
+		"borderColour": {
+			"type": "string",
+			"default": ""
 		},
-		"marginMobile": {
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
+		},
+		"summaryColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"orgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ratingColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

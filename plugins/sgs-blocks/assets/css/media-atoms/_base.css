@@ -1,0 +1,217 @@
+/*
+ * L4 — the media-element stylesheet. THE RULES LIVE HERE; NOTHING ELSE HOLDS THEM.
+ * ==============================================================================
+ *
+ * The editor canvas and the front end each set VALUES. Neither owns a rule.
+ * That is the whole point: a rule written twice is a rule that drifts, and the
+ * canvas/front-end divergence this layer exists to remove came from exactly
+ * that (`container/edit.js` hand-builds a style object while
+ * `class-sgs-container-wrapper.php` builds the front-end CSS separately, and
+ * its own comments record the bill twice).
+ *
+ * So there are three participants and only one of them writes CSS:
+ *
+ *   this file            every rule, once
+ *   render.php (PHP)     custom-property VALUES, in a scoped <style>
+ *   edit.js (JS)         the same custom-property VALUES, for the canvas
+ *
+ * A fixture asserts the two value-setters emit byte-identical declarations for
+ * a fixed attribute set. That is the achievable claim — they cannot "run the
+ * same function", one is PHP and one is JS.
+ *
+ * ⛔ LOADED IN BOTH REALMS, deliberately. `class-sgs-blocks.php` enqueues this
+ * on `enqueue_block_assets` (the canvas iframe) and on the front end, mirroring
+ * `extensions.css`. A shared layer has no block.json to hang a `style:` entry
+ * on, so the dual enqueue is the mechanism.
+ *
+ * ⛔ THE CANVAS RESOLVES TIERS BY CONSTRUCTION. The editor canvas is an iframe
+ * whose width is the device-preview width, so these media queries resolve
+ * against the preview — which is what the device switcher WANTS. Never compute
+ * a preview tier in JS and inline the winner; that is the bug this replaces.
+ *
+ * ── BREAKPOINTS ──────────────────────────────────────────────────────────────
+ * Mobile ≤ 767, tablet ≤ 1023, desktop above. These match `SGS_Breakpoints`
+ * (`includes/class-sgs-breakpoints.php`: MOBILE_MAX 767, TABLET_MAX 1023) and
+ * `SGS_BREAKPOINTS` (`src/utils/responsive.js`).
+ *
+ * CSS cannot read a PHP constant, so these four numbers are the one place the
+ * layer restates them — and `scripts/check-media-breakpoints.js` fails the build
+ * if they ever stop matching the source. Do not hand-tune them.
+ *
+ * ⛔ Do NOT copy the pair used by the Image Controls block in `extensions.css`
+ * (`min-width:769px` / `max-width:768px`). That pair is off by one against this
+ * project's device-tier standard. It is a recorded bug, not a precedent.
+ *
+ * ── THE CASCADE ──────────────────────────────────────────────────────────────
+ * A tier inherits UPWARD when it sets nothing: mobile falls back to tablet,
+ * tablet to desktop. Expressed as nested var() fallbacks rather than as
+ * enumerated rules, because enumerating the combinations is what produced the
+ * tablet-set/mobile-empty bug that fell through to desktop instead of tablet.
+ *
+ * @package
+ */
+
+/* ── Scope: TWO markers, and which one an atom uses is declared ───────────────
+ *
+ * Both are MARKER classes, never layout classes — neither carries appearance of
+ * its own, so adding one can never change how an element looks until an atom
+ * sets a value.
+ *
+ *   .sgs-media-el   the REPLACED element itself — the <img> or <video>.
+ *   .sgs-media-box  the container around it.
+ *
+ * ⛔ ONE MARKER IS NOT ENOUGH, and the reason is a browser rule rather than a
+ * preference. `overlay` paints through `::after`, and a replaced element
+ * GENERATES NO PSEUDO-ELEMENT. Measured 2026-08-31 in Chromium: the identical
+ * ::after rule on a 100x100 <div> painted red, on a 100x100 <img> painted
+ * nothing. `source` has the same shape — an <img> takes its picture from its
+ * `src`, never from `background-image`.
+ *
+ * ⚠ getComputedStyle( img, '::after' ) reports the rule as fully applied. It
+ * resolves the cascade whether or not a pseudo-element exists, so it returns
+ * the same red for both. Verify this with a pixel sample, never a computed
+ * style — a computed-style check here reports a control that works.
+ *
+ * The mirror-image constraint runs the other way: `object-fit` and
+ * `object-position` are replaced-element properties and do nothing on a
+ * container, so they must never key on `.sgs-media-box`.
+ *
+ * Each atom DECLARES which marker it needs via `attachesTo: 'element' | 'box'`
+ * in registry.js, and `check-media-atom-purity.js` fails the build if a
+ * partial keys on the other one.
+ *
+ * ⛔ `attachesTo` is a SEPARATE axis from `scope`. `scope`
+ * (element | backdrop | both) selects an atom's VOCABULARY — object-fit's
+ * element enum is cover/contain/fill/none/scale-down, its backdrop enum is
+ * cover/contain/auto. `attachesTo` selects a DOM NODE. Collapsing two
+ * orthogonal axes into one enum is how a control ends up on the wrong element.
+ *
+ * Custom properties INHERIT, which is what lets one scoped rule feed both
+ * markers: the renderer sets `--sgs-media-*` on the scope class, and whichever
+ * marker sits at or below it reads them.
+ *
+ * The renderer also emits `data-sgs-media-src="<atom>@<prefix>"` on the same
+ * element, so "which descriptor produced this rule?" is answerable from the
+ * page rather than by tracing descriptor → filter → schema → renderer.
+ */
+
+.sgs-media-el,
+.sgs-media-box {
+	/* Desktop is the base tier: it reads its own property with no fallback
+	 * chain, because there is no tier above it to inherit from. */
+	--sgs-media-tier: desktop;
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el,
+	.sgs-media-box {
+		--sgs-media-tier: tablet;
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el,
+	.sgs-media-box {
+		--sgs-media-tier: mobile;
+	}
+}
+
+/* ── Atom rules ───────────────────────────────────────────────────────────────
+ *
+ * Each atom appends its own block below, in registry order, using the shape:
+ *
+ *   .sgs-media-el { <property>: var( --sgs-media-<prop>, <initial> ); }
+ *   @media (max-width: 1023px) {
+ *     .sgs-media-el {
+ *       <property>: var( --sgs-media-<prop>-tablet, var( --sgs-media-<prop>, <initial> ) );
+ *     }
+ *   }
+ *   @media (max-width: 767px) {
+ *     .sgs-media-el {
+ *       <property>: var( --sgs-media-<prop>-mobile,
+ *                    var( --sgs-media-<prop>-tablet,
+ *                     var( --sgs-media-<prop>, <initial> ) ) );
+ *     }
+ *   }
+ *
+ * ⛔ The nesting order in the mobile rule is load-bearing: mobile → tablet →
+ * desktop → initial. Reversing the middle two makes an unset mobile fall through
+ * to desktop and silently ignore a tablet value the client did set.
+ *
+ * ⛔ Only tiered properties get the two @media blocks. A property nothing varies
+ * per device gets the base rule alone — see MEDIA_TIERED_BASES.
+ *
+ * ⛔ An SVG is not a replaced element. `object-fit` and `object-position` do
+ * nothing to an inline <svg>, so the SVG path uses `preserveAspectRatio` or a
+ * sized wrapper. Never widen a fit selector to cover it.
+ */
+
+/* ── Cross-atom rule: composed animation (motion + svg-presentation) ──────────
+ *
+ * `motion.css` (ken-burns/parallax) and `svg-presentation.css` (pulse/float/
+ * wave) each write only to their OWN uniquely named custom properties
+ * (`--sgs-media-motion-animation-*` / `--sgs-media-svg-animation-*` — never
+ * renamed, never merged). Neither atom declares a real `animation-*`
+ * property any more; that ownership lives here, once, because two atom
+ * partials both declaring the same real property at the same specificity
+ * (0,1,0) is unresolvable by cascade alone — whichever partial the alphabet
+ * loads last always wins outright, silently killing the other (fixed
+ * 2026-09-01, Bean's direction: svg-presentation keeps sole ownership of the
+ * SVG decorative vocabulary, motion's ken-burns/parallax must still WORK,
+ * including on an element that also has an SVG animation active).
+ *
+ * CSS's native comma-separated multi-value animation syntax runs BOTH
+ * animations simultaneously, positionally matched by list order — position 1
+ * is svg-presentation's, position 2 is motion's, in every sub-property
+ * below. An atom that hasn't set its custom properties falls back to a
+ * harmless steady-state default (`none`/`0s`), so an element carrying only
+ * one of the two atoms still animates correctly; it just runs one animation
+ * instead of two.
+ *
+ * `animation-fill-mode` has no svg-presentation custom property (that atom
+ * never declared one) — position 1 is the literal `none`, matching what
+ * svg-presentation always rendered before this change.
+ *
+ * If a THIRD atom ever needs `.sgs-media-el` animation, extend this rule
+ * with a third comma-separated position — do not give it its own bare
+ * `animation-*` declaration elsewhere.
+ */
+
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-media-el {
+		animation-name: var( --sgs-media-svg-animation-name, none ), var( --sgs-media-motion-animation-name, none );
+		animation-duration: var( --sgs-media-svg-animation-duration, 0s ), var( --sgs-media-motion-animation-duration, 20s );
+		animation-timing-function: var( --sgs-media-svg-animation-timing-function, ease-in-out ), var( --sgs-media-motion-animation-timing-function, ease-in-out );
+		animation-iteration-count: var( --sgs-media-svg-animation-iteration-count, infinite ), var( --sgs-media-motion-animation-iteration-count, infinite );
+		animation-direction: var( --sgs-media-svg-animation-direction, alternate ), var( --sgs-media-motion-animation-direction, alternate );
+		animation-fill-mode: none, var( --sgs-media-motion-animation-fill-mode, none );
+	}
+}
+
+/* ── Cross-atom rule: composed opacity (`opacity` + `svg-presentation`) ───────
+ *
+ * Found live 2026-09-01, the `opacity` atom's first real deploy: both
+ * `opacity.css` (`--sgs-media-opacity`) and `svg-presentation.css`
+ * (`--sgs-media-svg-opacity`) declared a bare `opacity:` property on
+ * `.sgs-media-el` — identical specificity (0,1,0), so whichever partial the
+ * alphabet loads last (`svg-presentation` sorts after `opacity`) always won
+ * outright, silently discarding the general opacity control's value on
+ * every element: an authored `--sgs-media-opacity:0.5` computed as `1`.
+ * Same collision class as the animation rule above, on a different
+ * property.
+ *
+ * Fix: composed here, once, by MULTIPLYING both custom properties (each
+ * defaulting to 1 when its owning atom hasn't set one) rather than
+ * comma-listing — opacity is not a multi-value CSS property the way
+ * `animation-name` is, but it IS naturally multiplicative: two 0.5-opacity
+ * layers stacked visually combine to 0.25, which is the physically correct
+ * result, not an arbitrary tie-break. An element carrying only one of the
+ * two atoms is unaffected, since the absent one's factor is 1.
+ *
+ * If a THIRD atom ever needs `.sgs-media-el` opacity, extend this
+ * `calc()` with a third multiplied factor — do not give it its own bare
+ * `opacity:` declaration elsewhere.
+ */
+.sgs-media-el {
+	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
+}

@@ -23,8 +23,9 @@ require_once __DIR__ . '/inc/colour-helpers.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
-// the sgs/site-header block inspector drives scoped per-tier CSS (FR-37-15;
-// only contrastSafe still uses a body class). The old
+// the sgs/site-header block inspector drives scoped per-tier CSS (FR-37-15).
+// As of 2026-08-19 that covers ALL FIVE behaviours — contrastSafe was the last
+// body-class holdout and moved to scoped CSS too (FR-37-44). The old
 // theme-side header-mode system (inc/class-header-behaviour.php + header-modes.css
 // + header-behaviour.js + header-editor-panel.js) was RETIRED 2026-07-14 to remove
 // the duplicate --sgs-header-height publisher + competing position rules.
@@ -225,6 +226,39 @@ function preload_fonts(): void {
 add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
+ * Cache-busting version for a theme asset.
+ *
+ * ⛔ DO NOT revert this to the bare theme version. Every theme CSS/JS URL used to carry
+ * `?ver=<theme version>`, which is only bumped on a theme release — so an edited asset
+ * deployed between releases kept an IDENTICAL URL, and every browser holding that URL in
+ * its HTTP cache went on serving the OLD file indefinitely. Proven live on the canary
+ * 2026-08-20: the same URL returned 10,199 bytes when fetched with `cache: 'reload'` and
+ * 5,079 stale bytes from cache, so a shipped <dialog> rewrite of the shop filter drawer
+ * simply never ran, and the shop filter panel kept a background identical to the page.
+ * A server-side cache purge does NOT fix this — the stale copy is in the visitor's browser.
+ *
+ * filemtime() changes whenever the file changes, so the URL changes exactly when the
+ * bytes do. Falls back to the theme version if the file is unreadable.
+ *
+ * @param string $relative_path Theme-relative asset path, e.g. 'assets/css/woocommerce.css'.
+ * @param string $fallback      Version to use when the file cannot be stat'd.
+ * @return string
+ */
+function asset_version( string $relative_path, string $fallback ): string {
+	$file = get_theme_file_path( $relative_path );
+
+	if ( is_readable( $file ) ) {
+		$mtime = filemtime( $file );
+
+		if ( false !== $mtime ) {
+			return (string) $mtime;
+		}
+	}
+
+	return $fallback;
+}
+
+/**
  * Enqueue frontend stylesheets.
  */
 function enqueue_styles(): void {
@@ -235,7 +269,7 @@ function enqueue_styles(): void {
 		'sgs-core-blocks-critical',
 		get_theme_file_uri( 'assets/css/core-blocks-critical.css' ),
 		array(),
-		$theme_version
+		asset_version( 'assets/css/core-blocks-critical.css', $theme_version )
 	);
 
 	// Non-critical block styles — deferred via defer_non_critical_css() below.
@@ -243,14 +277,14 @@ function enqueue_styles(): void {
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
 		array( 'sgs-core-blocks-critical' ),
-		$theme_version
+		asset_version( 'assets/css/core-blocks.css', $theme_version )
 	);
 
 	wp_enqueue_style(
 		'sgs-utilities',
 		get_theme_file_uri( 'assets/css/utilities.css' ),
 		array(),
-		$theme_version
+		asset_version( 'assets/css/utilities.css', $theme_version )
 	);
 
 	// Per-variation stylesheet enqueue DELETED 2026-05-22 (Phase 5a Decision 18).
@@ -267,14 +301,14 @@ function enqueue_styles(): void {
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/css/dark-mode.css' ),
 			array(),
-			$theme_version
+			asset_version( 'assets/css/dark-mode.css', $theme_version )
 		);
 
 		wp_enqueue_script(
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/js/dark-mode.js' ),
 			array(),
-			$theme_version,
+			asset_version( 'assets/js/dark-mode.js', $theme_version ),
 			true // Load in footer — inline head script handles flash prevention.
 		);
 	}
@@ -284,7 +318,7 @@ function enqueue_styles(): void {
 		'sgs-nav-accessibility',
 		get_theme_file_uri( 'assets/js/nav-accessibility.js' ),
 		array(),
-		$theme_version,
+		asset_version( 'assets/js/nav-accessibility.js', $theme_version ),
 		true // Load in footer — runs after DOM is available.
 	);
 
@@ -298,7 +332,7 @@ function enqueue_styles(): void {
 		'sgs-viewport-width',
 		get_theme_file_uri( 'assets/js/viewport-width.js' ),
 		array(),
-		$theme_version,
+		asset_version( 'assets/js/viewport-width.js', $theme_version ),
 		array(
 			'in_footer' => false,
 			'strategy'  => 'defer',
@@ -328,7 +362,7 @@ function enqueue_styles(): void {
 			'sgs-woocommerce',
 			get_theme_file_uri( 'assets/css/woocommerce.css' ),
 			array( 'sgs-core-blocks-critical' ),
-			$theme_version
+			asset_version( 'assets/css/woocommerce.css', $theme_version )
 		);
 	}
 
@@ -342,7 +376,7 @@ function enqueue_styles(): void {
 			'sgs-shop-filters',
 			get_theme_file_uri( 'assets/js/sgs-shop-filters.js' ),
 			array(),
-			$theme_version,
+			asset_version( 'assets/js/sgs-shop-filters.js', $theme_version ),
 			true // Load in footer — no DOM dependency at parse time.
 		);
 	}
@@ -369,27 +403,31 @@ add_filter(
 );
 
 /**
- * Output critical layout fix CSS as an inline <style> block.
+ * Output site-wide image hover-scale CSS as an inline <style> block.
  *
- * These rules MUST load before paint to prevent flash of misaligned layout.
- * They are added as an inline style (not an external file) so they cannot be
- * cached and served stale by LiteSpeed's CSS optimiser.
+ * Added as an inline style (not an external file) so it cannot be cached
+ * and served stale by LiteSpeed's CSS optimiser. This is a hover/transition
+ * effect, not critical CSS — it plays no role in first paint, so there is
+ * no "must load before paint" requirement here (that framing described the
+ * alignfull/hero margin reset that USED to also live in this function; see
+ * the note below).
  *
  * Covers:
- * - Section gap: removes block-gap margin between alignfull sections
- * - Hero margin: removes block-gap top-margin from the hero block
  * - Site-wide image hover: subtle scale on hover for content images
+ *
+ * SGS: the alignfull/hero section-gap margin reset used to be duplicated
+ * here with `!important`. That duplicate silently overrode an operatorʼs
+ * explicit margin on the frontend (proven 2026-08-26, T1 fix pass) because
+ * it is a SECOND declaration of the same rule, not a competing-specificity
+ * case the CSS-file fix could beat. The reset now lives ONLY in
+ * core-blocks-critical.css (`.entry-content > .alignfull` /
+ * `.wp-site-blocks > .wp-block-sgs-hero`, no `!important`, incl. the
+ * `.wp-block-post-content >` variants). DO NOT re-add it here — a second
+ * copy would be unfalsifiable (prove-the-cause-before-fix.md: never leave
+ * two overlapping fixes for one behaviour).
  */
 function enqueue_global_layout_fixes(): void {
 	$css = '
-/* SGS: section gap — flush alignfull sections, no white strip between them */
-.wp-block-post-content>.alignfull,.entry-content>.alignfull{margin-block-start:0!important;margin-block-end:0!important}
-/* SGS: hero margin — hero is not alignfull so needs explicit zero top-margin */
-.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-start:0!important}
-/* SGS: hero full-bleed is now handled in plugins/sgs-blocks/src/blocks/hero/style.css
- * via viewport-aware width: var(--viewport-width, 100vw). No inline override needed. */
-/* SGS: hero bottom margin — zero to prevent white strip between hero and next section */
-.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-end:0!important}
 /* SGS: site-wide image hover scale — subtle zoom on content images */
 .wp-block-image:not(.brand-logo-tile){overflow:hidden}
 .wp-block-image:not(.brand-logo-tile) img{transition:transform .35s ease}

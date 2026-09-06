@@ -23,6 +23,28 @@
 const REACTIVE = new Set( [ 'spectrum', 'oscilloscope', 'gradient-pulse', 'radial' ] );
 const reduceMotion = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
+/**
+ * A 0-100 "Reactivity" slider value → AnalyserNode params. 50 reproduces the
+ * exact values this block shipped with before the control existed (512 / 0.8),
+ * so any existing published instance (no `data-reactive-sensitivity`, or an
+ * unparseable value) renders byte-identically to before.
+ *
+ * `fftSize` must be a power of 2 (Web Audio API constraint) so it's stepped
+ * in thirds rather than continuous; `smoothingTimeConstant` (the dominant
+ * "feel" — higher = calmer, lower = snappier) is a straight linear map, which
+ * is what makes the slider actually feel continuous while dragging.
+ */
+function sensitivityParams( raw ) {
+	let v = parseFloat( raw );
+	if ( ! isFinite( v ) ) {
+		v = 50;
+	}
+	v = Math.max( 0, Math.min( 100, v ) );
+	const fftSize = v < 34 ? 256 : v <= 66 ? 512 : 1024;
+	const smoothing = 0.95 - ( v / 100 ) * 0.3;
+	return { fftSize, smoothing };
+}
+
 let sharedCtx = null;
 function audioCtx() {
 	const AC = window.AudioContext || window.webkitAudioContext;
@@ -61,7 +83,7 @@ const ICON_PLAY = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="
 const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
 
 /** Build the shared analyser graph for one audio element (once). */
-function buildGraph( audio ) {
+function buildGraph( audio, sensitivity ) {
 	const ctx = audioCtx();
 	if ( ! ctx ) {
 		return null;
@@ -70,10 +92,11 @@ function buildGraph( audio ) {
 		return audio._sgsGraph;
 	}
 	try {
+		const params = sensitivityParams( sensitivity );
 		const src = ctx.createMediaElementSource( audio );
 		const analyser = ctx.createAnalyser();
-		analyser.fftSize = 512;
-		analyser.smoothingTimeConstant = 0.8;
+		analyser.fftSize = params.fftSize;
+		analyser.smoothingTimeConstant = params.smoothing;
 		src.connect( analyser );
 		analyser.connect( ctx.destination );
 		audio._sgsGraph = {
@@ -171,7 +194,7 @@ function makeSeek( audio, cls ) {
  * (c) the block is on-screen (IntersectionObserver). This keeps an off-screen or
  * paused player at zero CPU — the visualiser costs nothing when it isn't seen.
  */
-function runReactive( root, audio, drawFn ) {
+function runReactive( root, audio, drawFn, sensitivity ) {
 	let raf = 0;
 	let onScreen = true;
 	const running = () => ! audio.paused && ! reduceMotion && onScreen;
@@ -189,7 +212,7 @@ function runReactive( root, audio, drawFn ) {
 		raf = running() ? requestAnimationFrame( loop ) : 0;
 	};
 	const start = () => {
-		buildGraph( audio );
+		buildGraph( audio, sensitivity );
 		if ( ! raf && running() ) {
 			loop();
 		}
@@ -223,6 +246,7 @@ function fitCanvas( cv ) {
 
 function enhance( root ) {
 	const style = root.getAttribute( 'data-player-style' ) || 'minimal';
+	const sensitivity = root.getAttribute( 'data-reactive-sensitivity' ) || '50';
 	const audio = root.querySelector( '.sgs-audio__native' );
 	const viz = root.querySelector( '.sgs-audio__viz' );
 	if ( ! audio || style === 'hidden' ) {
@@ -309,7 +333,7 @@ function enhance( root ) {
 		runReactive( root, audio, ( f, t, level ) => {
 			glow.style.setProperty( '--sgs-glow-opacity', String( Math.min( 1, level * 2.2 ) ) );
 			glow.style.setProperty( '--sgs-glow-scale', String( 1 + level * 0.5 ) );
-		} );
+		}, sensitivity );
 		return;
 	}
 
@@ -341,7 +365,7 @@ function enhance( root ) {
 				'--sgs-viz-bg',
 				'linear-gradient(135deg, hsl(' + hue + ' ' + sat + '% ' + light + '%), hsl(' + ( hue + 24 ) + ' ' + sat + '% ' + Math.max( 14, light - 14 ) + '%))'
 			);
-		} );
+		}, sensitivity );
 		return;
 	}
 
@@ -369,7 +393,7 @@ function enhance( root ) {
 				c.roundRect( x + bw * 0.18, y, bw * 0.64, h, 3 );
 				c.fill();
 			}
-		} );
+		}, sensitivity );
 	} else {
 		let dpr = fitCanvas( cv );
 		new ResizeObserver( () => ( dpr = fitCanvas( cv ) ) ).observe( cv );
@@ -395,7 +419,7 @@ function enhance( root ) {
 			}
 			c.stroke();
 			c.shadowBlur = 0;
-		} );
+		}, sensitivity );
 	}
 }
 

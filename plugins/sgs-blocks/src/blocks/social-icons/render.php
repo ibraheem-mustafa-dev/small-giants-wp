@@ -2,22 +2,17 @@
 /**
  * Server-side render for the SGS Social Icons block.
  *
- * NO-INLINE (per-block no-inline migration contract §A): the rendered subtree
- * carries ZERO inline CSS property declarations. WP `color`/`spacing`/
- * `typography` supports declare `__experimentalSkipSerialization` in
- * block.json so get_block_wrapper_attributes() never auto-inlines them — base
- * padding/margin/text-colour/background-colour/typography are instead emitted
- * scoped via wp_style_engine_get_styles() into the block's own <style> tag,
- * mirroring sgs/heading + sgs/quote. The row `gap`, the per-icon-item colour
- * custom properties, and the per-icon-item size (previously inline
- * `style="width:...;height:..."`) all move into the same scoped stylesheet.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Base padding/margin/text-colour/background-colour/typography are
+ * emitted scoped via wp_style_engine_get_styles() into the block's own
+ * <style> tag, mirroring sgs/heading + sgs/quote.
  *
- * @since 2026-07-10  Closed a residual gap: `typography` support was declared
- * (textAlign) without `__experimentalSkipSerialization`, so any populated
- * `style.typography` value would have auto-inlined onto the wrapper. Now
- * skip-serialised + read back and emitted scoped (same mechanism as color/
- * spacing above), so the wrapper stays inline-free regardless of which
- * typography sub-features are enabled in future.
+ * Typography (font-size/weight/style/line-height) is migrated off the old
+ * WP-native `supports.typography` onto the shared TypographyControls editor
+ * component + `sgs_typography_css_rule()` render helper (D971/D972
+ * full-replacement track), root prefix '' — emitted scoped, same mechanism
+ * as color/spacing above, so the wrapper stays inline-free.
  *
  * BOX-GROUP (contract §B): padding/margin are box objects. Base = WP-native
  * style.spacing.padding/margin (skip-serialised); tiers = paddingTablet/
@@ -33,41 +28,76 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 use SGS\Blocks\Sgs_Site_Info;
 
-$source_raw          = $attributes['source'] ?? 'manual';
-$source              = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
-$icon_size           = (int) ( $attributes['iconSize'] ?? 24 );
-// D643: `iconColour`/`iconColourHover` split into one attribute PER real CSS
-// property (background-color / border-color / color) — the block's own
-// block.json used to document these as a "genuine 3-property shorthand"
-// because the resting/hover token fed up to 3 different declarations
-// depending on `iconStyle` (plain: color; filled: background; outlined:
-// border-color + color — simultaneously, both from the same value). A single
+$source_raw = $attributes['source'] ?? 'manual';
+$source     = in_array( $source_raw, array( 'manual', 'site-info' ), true ) ? $source_raw : 'manual';
+$icon_size  = (int) ( $attributes['iconSize'] ?? 24 );
+// D643: `iconColour`/`iconColourHover` are split into one attribute PER real
+// CSS property (background-color / border-color / color) because the
+// resting/hover token can feed up to 3 different declarations depending on
+// `iconStyle` (plain: color; filled: background; outlined: border-color +
+// color — simultaneously, both from the same value), and a single
 // gradient-capable value can't serve all three (a gradient is not a valid
-// border-color or currentColor value), so each property now has its own
-// attribute + default, each preserving the ORIGINAL shared default exactly
-// (text-muted resting / primary hover) so existing rendering is unchanged.
-$icon_background        = $attributes['iconBackground'] ?? 'text-muted';
-$icon_background_hover  = $attributes['iconBackgroundHover'] ?? 'primary';
-$icon_border_colour       = $attributes['iconBorderColour'] ?? 'text-muted';
-$icon_border_colour_hover = $attributes['iconBorderColourHover'] ?? 'primary';
-$icon_border_gradient       = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
-$icon_border_gradient_hover = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
-$icon_glyph_colour       = $attributes['iconGlyphColour'] ?? 'text-muted';
-$icon_glyph_colour_hover = $attributes['iconGlyphColourHover'] ?? 'primary';
+// border-color or currentColor value).
+$icon_background                = $attributes['iconBackground'] ?? 'text-muted';
+$icon_background_hover          = $attributes['iconBackgroundHover'] ?? 'primary';
+$icon_background_gradient       = $attributes['iconBackgroundGradient'] ?? '';
+$icon_background_hover_gradient = $attributes['iconBackgroundHoverGradient'] ?? '';
+$icon_border_colour             = $attributes['iconBorderColour'] ?? 'text-muted';
+$icon_border_colour_hover       = $attributes['iconBorderColourHover'] ?? 'primary';
+$icon_border_gradient           = sgs_css_gradient_value( $attributes['iconBorderColourGradient'] ?? '' );
+$icon_border_gradient_hover     = sgs_css_gradient_value( $attributes['iconBorderColourHoverGradient'] ?? '' );
+$icon_glyph_colour              = $attributes['iconGlyphColour'] ?? 'text-muted';
+$icon_glyph_colour_hover        = $attributes['iconGlyphColourHover'] ?? 'primary';
 // D636/D644 icon/SVG gradient siblings — non-empty wins over the flat glyph
 // colours above at render time (helpers-svg-gradient.php).
 $icon_glyph_colour_gradient       = $attributes['iconGlyphColourGradient'] ?? '';
 $icon_glyph_colour_hover_gradient = $attributes['iconGlyphColourHoverGradient'] ?? '';
-$colour_mode_raw     = $attributes['colourMode'] ?? 'theme';
-$colour_mode         = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
-$style_type_raw      = $attributes['iconStyle'] ?? 'plain';
-$gap_raw             = $attributes['gap'] ?? '20';
-$anchor              = $attributes['anchor'] ?? '';
+$colour_mode_raw                  = $attributes['colourMode'] ?? 'theme';
+$colour_mode                      = in_array( $colour_mode_raw, array( 'theme', 'brand' ), true ) ? $colour_mode_raw : 'theme';
+$style_type_raw                   = $attributes['iconStyle'] ?? 'plain';
+$gap_raw                          = $attributes['gap'] ?? '20';
+$anchor                           = $attributes['anchor'] ?? '';
+
+// Border (Block Customisation Standard — wrapper-level border control).
+// Prefixed `wrapper*` to distinguish from the pre-existing per-item
+// `icon*BorderColour` family (item element, above) — this frames the whole
+// row, not each icon. Box-object interface contract §1/§2: borderWidth is
+// an SGS custom OBJECT attr { top, right, bottom, left }, no tiers.
+$wrapper_border_style_raw = isset( $attributes['wrapperBorderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['wrapperBorderStyle'] ) : 'solid';
+$wrapper_border_width_obj = is_array( $attributes['wrapperBorderWidth'] ?? null ) ? $attributes['wrapperBorderWidth'] : array();
+$wrapper_border_width_top = sgs_css_length_value( $wrapper_border_width_obj['top'] ?? '' );
+$wrapper_border_width_rgt = sgs_css_length_value( $wrapper_border_width_obj['right'] ?? '' );
+$wrapper_border_width_bot = sgs_css_length_value( $wrapper_border_width_obj['bottom'] ?? '' );
+$wrapper_border_width_lft = sgs_css_length_value( $wrapper_border_width_obj['left'] ?? '' );
+$has_wrapper_border_width = ( '' !== $wrapper_border_width_top || '' !== $wrapper_border_width_rgt || '' !== $wrapper_border_width_bot || '' !== $wrapper_border_width_lft );
 
 // ---------------------------------------------------------------------------
 // Icon source resolution. 'manual' (default) keeps the stored `icons` repeater
@@ -212,55 +242,38 @@ $platform_brand_colours = array(
 // Security §D sanitisers — copied verbatim from sgs/heading + sgs/container.
 // ---------------------------------------------------------------------------
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // Box-object interface contract §B: base padding/margin (WP-native, skip-
 // serialised) + responsive tiers (SGS custom object attrs).
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-
-// WP `typography` support values (skip-serialised in block.json → NOT
-// auto-inlined). Only `textAlign` is currently enabled in supports.typography
-// (rendered as a `has-text-align-*` class by get_block_wrapper_attributes(),
-// unaffected by skip-serialisation), but fontSize/lineHeight are read
-// defensively here so the wrapper stays inline-free if either is enabled in
-// future — mirrors sgs/quote's identical read of style.typography.
-$style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
-$style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
 
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly — content-hash uid is a CLASS (this block has a genuine
@@ -275,19 +288,81 @@ $root_sel = '.' . $uid;
 $scoped_css = array();
 
 // --- Row gap + per-item colour custom properties (was inline `style=`). ---
-$gap_slug_raw = $sgs_css_keyword( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
+$gap_slug_raw = sgs_css_keyword_sanitise( str_replace( array( '.', '%' ), '', (string) $gap_raw ) );
 $gap_slug     = '' !== $gap_slug_raw ? $gap_slug_raw : preg_replace( '/[^0-9]/', '', (string) $gap_raw );
 $gap_slug     = '' !== $gap_slug ? $gap_slug : '20';
 $root_decls   = array(
 	'gap:var(--wp--preset--spacing--' . $gap_slug . ')',
-	'--sgs-social-bg:' . sgs_colour_value( $icon_background ),
-	'--sgs-social-bg-hover:' . sgs_colour_value( $icon_background_hover ),
-	'--sgs-social-border:' . sgs_colour_value( $icon_border_colour ),
-	'--sgs-social-border-hover:' . sgs_colour_value( $icon_border_colour_hover ),
-	'--sgs-social-glyph:' . sgs_colour_value( $icon_glyph_colour ),
-	'--sgs-social-glyph-hover:' . sgs_colour_value( $icon_glyph_colour_hover ),
+);
+$root_decls   = array_merge(
+	$root_decls,
+	sgs_custom_property_gradient_decls( 'sgs-social-bg', $icon_background, $icon_background_gradient ),
+	sgs_custom_property_gradient_decls( 'sgs-social-bg-hover', $icon_background_hover, $icon_background_hover_gradient ),
+	sgs_custom_property_gradient_decls( 'sgs-social-border', $icon_border_colour, sgs_css_gradient_value( $icon_border_gradient ) ),
+	sgs_custom_property_gradient_decls( 'sgs-social-border-hover', $icon_border_colour_hover, sgs_css_gradient_value( $icon_border_gradient_hover ) ),
+	sgs_custom_property_gradient_decls( 'sgs-social-glyph', $icon_glyph_colour, '' ),
+	sgs_custom_property_gradient_decls( 'sgs-social-glyph-hover', $icon_glyph_colour_hover, '' ),
 );
 $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
+
+// --- Wrapper border (Block Customisation Standard) — width/style on the
+// row, colour (flat or gradient, base + hover) via the shared
+// sgs_border_states_css() helper, radius via the shared
+// sgs_border_radius_tiers() + core style engine (base) plus hand-built
+// shorthand tiers (tablet/mobile). Distinct from the per-item border
+// gradient block below (that one paints EACH icon link; this frames the
+// whole row). ---
+$wrapper_border_base_decls = array();
+if ( $has_wrapper_border_width ) {
+	$wbwt                        = '' !== $wrapper_border_width_top ? $wrapper_border_width_top : '0';
+	$wbwr                        = '' !== $wrapper_border_width_rgt ? $wrapper_border_width_rgt : '0';
+	$wbwb                        = '' !== $wrapper_border_width_bot ? $wrapper_border_width_bot : '0';
+	$wbwl                        = '' !== $wrapper_border_width_lft ? $wrapper_border_width_lft : '0';
+	$wrapper_border_base_decls[] = "border-width:{$wbwt} {$wbwr} {$wbwb} {$wbwl}";
+	if ( $wrapper_border_style_raw && 'solid' !== $wrapper_border_style_raw ) {
+		$wrapper_border_base_decls[] = 'border-style:' . $wrapper_border_style_raw;
+	}
+}
+if ( $wrapper_border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_border_base_decls ) . ';}';
+}
+
+$wrapper_border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'wrapperBorderColour',
+		'hover'          => 'wrapperBorderColourHover',
+		'gradient'       => 'wrapperBorderColourGradient',
+		'hover_gradient' => 'wrapperBorderColourHoverGradient',
+		'width'          => $has_wrapper_border_width && '' !== $wrapper_border_width_top ? $wrapper_border_width_top : '1px',
+	)
+);
+if ( '' !== $wrapper_border_colour_css ) {
+	$scoped_css[] = $wrapper_border_colour_css;
+}
+
+$wrapper_border_radius_tiers      = sgs_border_radius_tiers( $attributes );
+$wrapper_border_radius_base       = $wrapper_border_radius_tiers['base'];
+$wrapper_border_radius_tablet_obj = $wrapper_border_radius_tiers['tablet'];
+$wrapper_border_radius_mobile_obj = $wrapper_border_radius_tiers['mobile'];
+if ( null !== $wrapper_border_radius_base ) {
+	$wrapper_border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $wrapper_border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $wrapper_border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $wrapper_border_radius_scoped['css'];
+	}
+}
+$wrapper_border_radius_tab_val = sgs_corner_object_shorthand( $wrapper_border_radius_tablet_obj );
+$wrapper_border_radius_mob_val = sgs_corner_object_shorthand( $wrapper_border_radius_mobile_obj );
+if ( null !== $wrapper_border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_tab_val};}}";
+}
+if ( null !== $wrapper_border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$wrapper_border_radius_mob_val};}}";
+}
 
 // --- Border gradient (D636 border builder) — masked ::before, outlined style only. ---
 if ( '' !== $icon_border_gradient ) {
@@ -303,13 +378,13 @@ if ( '' !== $icon_border_gradient ) {
 // (mirrors the single --sgs-social-glyph* custom properties above; a
 // gradient def is injected once into the FIRST rendered item's SVG below so
 // no duplicate #id exists in the DOM).
-$sgs_social_stroke_grad       = sgs_svg_stroke_gradient( $icon_glyph_colour_gradient, $uid . '-ig' );
-$sgs_social_stroke_grad_hover = sgs_svg_stroke_gradient( $icon_glyph_colour_hover_gradient, $uid . '-igh' );
+$sgs_social_stroke_grad       = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_gradient, $uid . '-ig', "{$root_sel} .sgs-social-icons__item svg" );
+$sgs_social_stroke_grad_hover = sgs_icon_gradient_css( 'lucide', $icon_glyph_colour_hover_gradient, $uid . '-igh', "{$root_sel} .sgs-social-icons__item:hover svg" );
 if ( '' !== $sgs_social_stroke_grad['css'] ) {
 	$scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{" . $sgs_social_stroke_grad['css'] . ';}';
 }
 if ( '' !== $sgs_social_stroke_grad_hover['css'] ) {
-	$scoped_css[] = "{$root_sel} .sgs-social-icons__item:hover svg{" . $sgs_social_stroke_grad_hover['css'] . ';}';
+	$scoped_css[] = sgs_hover_guarded_rule( "{$root_sel} .sgs-social-icons__item:hover svg", $sgs_social_stroke_grad_hover['css'] );
 }
 $sgs_social_defs_injected = false;
 
@@ -325,70 +400,47 @@ $scoped_css[] = "{$root_sel} .sgs-social-icons__item svg{width:{$icon_size}px;he
 
 // --- Base spacing (padding/margin) + WP colour support — skip-serialised in
 // block.json, emitted scoped via the stable core style engine (contract §B). ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	$color_args = array();
-	if ( '' !== $style_color_text ) {
-		$color_args['text'] = $style_color_text;
-	}
-	if ( '' !== $style_color_bg ) {
-		$color_args['background'] = $style_color_bg;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$typography_args = array();
-	if ( '' !== $style_font_size ) {
-		$typography_args['fontSize'] = $style_font_size;
-	}
-	if ( '' !== $style_line_height ) {
-		$typography_args['lineHeight'] = $style_line_height;
-	}
-	if ( ! empty( $typography_args ) ) {
-		$base_style_engine_args['typography'] = $typography_args;
-	}
+$color_args = array();
+if ( '' !== $style_color_text ) {
+	$color_args['text'] = $style_color_text;
+}
+if ( '' !== $style_color_bg ) {
+	$color_args['background'] = $style_color_bg;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
 // --- Responsive padding/margin tiers — hand-built shorthand, scoped @media
 // on the same wrapper selector (contract §B2: tablet 1023px, mobile 767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
 
 $tablet_box_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -411,6 +463,13 @@ if ( null !== $margin_mob_val ) {
 if ( $mobile_box_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
 }
+
+// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (textAlign only — dead in practice, this root is
+// display:flex with no inline/block content of its own) with the framework's
+// own helper, which offers font-size/weight/style/line-height instead.
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 
 // ---------------------------------------------------------------------------
 // Root element classes + attributes. NO 'style' key is passed to
@@ -452,9 +511,9 @@ foreach ( $icons as $icon_item ) {
 	}
 	++$rendered_pos;
 
-	$platform      = $icon_item['platform'] ?? 'website';
-	$label_raw     = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
-	$link_url_raw  = 'email' === $platform ? 'mailto:' . $icon_item['url'] : $icon_item['url'];
+	$platform     = $icon_item['platform'] ?? 'website';
+	$label_raw    = ! empty( $icon_item['label'] ) ? $icon_item['label'] : sgs_social_icons_default_label( $platform, $platform_labels, $platform_verbs );
+	$link_url_raw = 'email' === $platform ? 'mailto:' . $icon_item['url'] : $icon_item['url'];
 	// Shared SgsLinkControl object shape { url, opensInNewTab, rel } (Spec 35
 	// Task 2.1) resolved via sgs_link_attributes() — opensInNewTab defaults to
 	// true (matches the block's prior global default) when unset on an item.
@@ -465,7 +524,7 @@ foreach ( $icons as $icon_item ) {
 			'rel'           => $icon_item['rel'] ?? '',
 		)
 	);
-	$custom_url = '';
+	$custom_url     = '';
 	if ( 'custom' === $platform ) {
 		// Prefer resolving fresh from the attachment ID (survives a later media
 		// library edit/regenerate); fall back to the stored URL for a custom SVG
@@ -481,13 +540,18 @@ foreach ( $icons as $icon_item ) {
 	// uploaded glyph yet falls back to the generic 'link' Lucide icon so the
 	// row never renders a blank slot mid-authoring.
 	if ( '' !== $custom_url ) {
-		$glyph_html = sprintf( '<img src="%s" alt="" width="%d" height="%d" />', esc_url( $custom_url ), $icon_size, $icon_size );
+		// Spec 35 item 18 — default true (matches this glyph's existing,
+		// always-correct behaviour: it sits inside an aria-hidden span below,
+		// with the real accessible name on the wrapping <a>'s aria-label).
+		$icon_decorative = (bool) ( $icon_item['iconDecorative'] ?? true );
+		$custom_icon_alt = $icon_decorative ? '' : sanitize_text_field( $label_raw );
+		$glyph_html      = sprintf( '<img src="%s" alt="%s" width="%d" height="%d" />', esc_url( $custom_url ), esc_attr( $custom_icon_alt ), $icon_size, $icon_size );
 	} else {
 		$icon_name  = $platform_icons[ $platform ] ?? 'link';
 		$glyph_html = sgs_get_lucide_icon( $icon_name );
 		if ( ! $sgs_social_defs_injected ) {
-			$glyph_html                = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad['defs'] );
-			$glyph_html                = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad_hover['defs'] );
+			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad['defs'] );
+			$glyph_html               = sgs_svg_inject_defs( $glyph_html, $sgs_social_stroke_grad_hover['defs'] );
 			$sgs_social_defs_injected = true;
 		}
 	}
@@ -533,7 +597,7 @@ $scoped_css[] = "{$root_sel} .sgs-social-icons__item img{width:{$icon_size}px;he
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (contract §D). Every value reaching
-	// $scoped_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword /
+	// $scoped_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise() /
 	// allowlists / wp_style_engine_get_styles / sgs_colour_value), so no
 	// un-sanitised value survives here.
 	?>

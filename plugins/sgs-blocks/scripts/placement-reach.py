@@ -120,16 +120,21 @@ def _base_of(attr):
 
 def resolve_block(block_json, clusters=None):
     """Return (element_scoped, block_level) attribute-name lists for one block."""
-    scoped, block_level, _ = resolve_block_detailed(block_json, clusters)
+    scoped, block_level, _, _ = resolve_block_detailed(block_json, clusters)
     return scoped, block_level
 
 
 def resolve_block_detailed(block_json, clusters=None):
-    """As resolve_block, plus {attr: {element, ...}} for attrs two elements can claim."""
+    """As resolve_block, plus {attr: {element, ...}} for attrs two elements can claim,
+    plus (4th return value) {attr: owning_element_key} for every CLAIMED attribute —
+    the ownership map consumed by inspector-scan's CO-2 grouping rule via `--json`
+    below. Exposed as a genuine extra return value (not re-derived) so both callers
+    read the SAME resolution the placement split itself is built from — never a
+    second, drifting computation of "who owns this attribute"."""
     elements = (block_json.get('supports', {}).get('sgs', {}).get('elements') or {})
     attrs = [a for a in (block_json.get('attributes') or {}) if not a.startswith('_')]
     if not elements or not attrs:
-        return [], attrs, {}
+        return [], attrs, {}, {}
 
     if clusters is None:
         clusters = _load_clusters()
@@ -227,9 +232,11 @@ def resolve_block_detailed(block_json, clusters=None):
     # virtual member nothing implements is not a data gap worth anyone's time.
     declared = set(attrs)
     contested = {name: owners for name, owners in ambiguous.items() if name in declared}
+    ownership = {a: claimed[a] for a in attrs if a in claimed}
     return ([a for a in attrs if a in claimed],
             [a for a in attrs if a not in claimed],
-            contested)
+            contested,
+            ownership)
 
 
 def _self_test():
@@ -299,7 +306,7 @@ def _self_test():
         }}},
         'attributes': {'padding': {}},
     }
-    _, _, contested = resolve_block_detailed(contested_fixture, clusters)
+    _, _, contested, _ = resolve_block_detailed(contested_fixture, clusters)
     assert 'padding' in contested and contested['padding'] == {'wrapper', 'band'}, \
         'contested detection broken — an ambiguous attribute was resolved in silence: %r' % contested
 
@@ -307,14 +314,14 @@ def _self_test():
     # though the other element's cluster can reach the same name.
     declared_owner = json.loads(json.dumps(contested_fixture))
     declared_owner['supports']['sgs']['elements']['band']['attrMap'] = {'css:padding': 'padding'}
-    _, _, contested = resolve_block_detailed(declared_owner, clusters)
+    _, _, contested, _ = resolve_block_detailed(declared_owner, clusters)
     assert not contested, \
         'an explicitly mapped attribute was reported contested: %r' % contested
 
     # NEGATIVE CONTROL — give the second element its own prefix and the tie vanishes.
     uncontested = json.loads(json.dumps(contested_fixture))
     uncontested['supports']['sgs']['elements']['band']['prefix'] = 'band'
-    _, _, contested = resolve_block_detailed(uncontested, clusters)
+    _, _, contested, _ = resolve_block_detailed(uncontested, clusters)
     assert not contested, \
         'negative control failed — contested fires without an actual tie: %r' % contested
 
@@ -351,14 +358,68 @@ def _self_test():
     return 0
 
 
+def _json_main(block_filter=None):
+    """--json mode: the ownership map + element metadata + contested list per
+    block, consumed by inspector-scan's CO-2 grouping rule
+    (rules/41-co2-element-grouping-order.js) via a `spawnSync('python', ...)`
+    call — the SAME pattern core/components.js's `getStructuralAttrMap()`
+    already uses to reach this DB/manifest data from a Node AST rule, not a
+    new mechanism. Additive: does not touch the default text-report path
+    above, and does not change resolve_block_detailed()'s existing 3
+    positional return values other than appending a 4th.
+    """
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src', 'blocks')
+    paths = sorted(glob.glob(os.path.join(root, '*', 'block.json')))
+    clusters = _load_clusters()
+    out = {}
+    for path in paths:
+        tail = os.path.basename(os.path.dirname(path))
+        slug = 'sgs/' + tail
+        if block_filter and block_filter not in (slug, tail):
+            continue
+        with open(path, encoding='utf-8') as handle:
+            data = json.load(handle)
+        elements_raw = (data.get('supports', {}).get('sgs', {}).get('elements') or {})
+        _scoped, block_level, contested, ownership = resolve_block_detailed(data, clusters)
+        out[slug] = {
+            'elements': {
+                key: {
+                    'label': el.get('label') or key,
+                    'order': el.get('order'),
+                    'prefix': el.get('prefix') or '',
+                    # isWrapper marks a TIER-2 (property-family) element, not a
+                    # TIER-1 single-panel one — Colour/Border/Padding&margin are
+                    # DELIBERATELY separate panels for a wrapper (Spec 35 THE
+                    # PLACEMENT RULE TIER 2). Consumers must not apply the
+                    # TIER-1 "one panel per element" grouping check to it (the
+                    # exact false-positive class that got scattered-element-
+                    # controls.js deleted 2026-09-02).
+                    'isWrapper': bool( el.get( 'isWrapper' ) ),
+                }
+                for key, el in elements_raw.items()
+            },
+            'ownership': ownership,
+            'blockLevel': block_level,
+            'contested': {name: sorted(owners) for name, owners in contested.items()},
+        }
+    print(json.dumps(out))
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--block', help='report one block instead of the whole library')
     parser.add_argument('--self-test', action='store_true', help='prove the resolver can fail')
+    parser.add_argument('--json', action='store_true',
+                         help='machine-readable ownership map + element metadata + contested list, '
+                              'for inspector-scan/rules/41-co2-element-grouping-order.js')
     args = parser.parse_args()
 
     if args.self_test:
         return _self_test()
+
+    if args.json:
+        return _json_main(args.block)
 
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src', 'blocks')
     paths = sorted(glob.glob(os.path.join(root, '*', 'block.json')))
@@ -379,7 +440,7 @@ def main():
             data = json.load(handle)
         if (data.get('supports', {}).get('sgs', {}).get('elements') or {}):
             declaring += 1
-        scoped, block_level, contested = resolve_block_detailed(data, clusters)
+        scoped, block_level, contested, _ownership = resolve_block_detailed(data, clusters)
         if not scoped and not block_level:
             continue
         total_attrs += len(scoped) + len(block_level)

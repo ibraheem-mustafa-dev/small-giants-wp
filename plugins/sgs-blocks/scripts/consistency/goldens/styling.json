@@ -1,0 +1,505 @@
+{
+ "_meta": {
+  "purpose": "Session A (goldens-styling) — styling-primitive control-type contracts: gradient, typography, length-unit, box-4value, border, shadow, alignment. Merged into golden-controls.json's schema by core/golden.js loadMergedSchema() (D688, 2026-08-19) — never read this file directly, always through the composer.",
+  "regenerate": "HAND-MAINTAINED",
+  "encoded": [
+   "typography",
+   "box-4value",
+   "border",
+   "shadow",
+   "length-unit",
+   "alignment"
+  ],
+  "knownStaleClaims": [
+   "golden-controls.json's own _meta.notEncoded field currently states that plugins/sgs-blocks/scripts/inspector-scan/core/golden.js 'DOES NOT EXIST'. That claim is stale as of this session — the file exists (276 lines pre-session, extracted 2026-08-19 from rules/31-golden-colour-control.js) and this session added loadMergedSchema() to it. Flagged here because golden-controls.json is out of scope for this session to edit — whoever next touches that file should correct the notEncoded sentence."
+  ],
+  "gradientDecision": {
+   "decision": "NO standalone 'gradient' control-type key added. Gradient is already architecturally merged into colour's own row (controls.colour.canonical.textGradientRow / .wholeBlockOverlay in golden-controls.json) — a second top-level 'gradient' row here would fork the same concern across two files with two different qualifiesWhens.",
+   "evidence": {
+    "GradientOverlayControl": "src/components/GradientOverlayControl.js — whole-block/background colour-or-gradient hybrid, composes DesignTokenPicker + SgsGradientPicker. Measured 2026-08-19 via npm run survey:control-mounts: 6 mounts / 1 block directly (container's BackgroundPanel; fans out to hero/cta-section by inclusion).",
+    "GradientCapableColourControl": "src/components/GradientCapableColourControl.js — per-state (Normal/Hover) TEXT-colour gradient hybrid, built 2026-08-16 (3 days before this session). Measured: ZERO mounts anywhere in the tree.",
+    "SgsGradientPicker": "src/components/gradient-picker/index.js — the shared gradient-bar engine both hybrids above sit on top of."
+   },
+   "verdict": "GradientCapableColourControl is named CANONICAL for the per-state text-gradient slot (not a bannedLookalike, not dead code to remove) despite 0 current mounts — evidence: it composes the same SgsGradientPicker engine as the confirmed-canonical GradientOverlayControl, and GradientOverlayControl's own row explicitly disclaims 'SINGLE-STATE BY CONSTRUCTION', meaning GradientCapableColourControl is architecturally the correct answer for a case GradientOverlayControl deliberately does not cover, not a duplicate that lost to it. Zero mounts reads as 'not yet wired into any block's edit.js' — no comment marks it dead, no other implementation exists that it lost to. Cannot edit golden-controls.json's colour row directly (out of scope) — recording this verdict here as a correction note, same mechanism as knownStaleClaims above."
+  }
+ },
+ "controls": {
+  "typography": {
+   "specRef": "No dedicated Part O section exists for this type as of this session (the pre-existing golden-controls.json row said so explicitly: 'NO Part O contract exists for this type'). Included because plugins/sgs-blocks/CLAUDE.md R-22-13 mandates the shared component ('use the SHARED component, never bespoke font controls... MANDATORY'). This row is the first full Part-O-shaped contract for typography, written this session.",
+   "canonical": {
+    "panel": {
+     "component": "TypographyControls",
+     "path": "src/components/TypographyControls.js",
+     "api": "props: { attributes, setAttributes, prefix, showSize, showWeight, showStyle, showLineHeight, showResponsive, fontSizePresets, showFontFamily, showDecoration, showTransform, showLetterSpacing, showHover }. Attribute keys derived from prefix via typographyAttrKeys(prefix): {prefix}FontFamily / FontSize(+Unit/Tablet/Mobile) / FontWeight / FontStyle / LineHeight(+Unit) / TextDecoration / TextTransform / LetterSpacing(+Unit) / the three *Hover companions."
+    }
+   },
+   "canonicalDecisionBasis": {
+    "_note": "Per the brief's own instruction: 'most adopted is a signal, not the answer — the best implementation is the one that already handles the hard cases'. This decision is ordered on that test FIRST, adoption/mandate cited only as corroboration.",
+    "hardCaseTest": "TypographyControls is the only implementation in this tree offering, on a SINGLE component: (a) responsive tiers (fontSizeTablet/fontSizeMobile via ResponsiveControl reading the ONE global device toggle — confirmed live 2026-08-19, ResponsiveControl.js Spec 35 Phase 1.2, no per-field switcher), (b) theme-token integration (fontSizePresets resolves useSettings('typography.fontSizes') instead of a raw px input), (c) built-in hover-state rows (decoration/transform/weight under a collapsible group) — a hand-rolled font-size control would need to reimplement all three per block it touches.",
+    "corroboratingSignals": {
+     "adoption": "26 font-size mounts / 16 blocks (measured via python scripts/surveys/survey-typography-controls.py, 2026-08-19) — consistent with, not proof of, the capability call above.",
+     "mandate": "plugins/sgs-blocks/CLAUDE.md R-22-13 — a pre-existing project decision this row ratifies with the capability evidence above, not inherits uncritically."
+    }
+   },
+   "redesign2026_08_19": {
+    "_note": "Bean-directed compact-layout redesign, same session, verified live before/after against the real component and via 2 clean local `npx wp-scripts build` passes (isolated worktree, no shared build/ touched, no deploy to the canary). This IS the current shape of canonical.panel — not a proposal.",
+    "changes": [
+     "Preset size + Font size paired into one Flex/FlexItem(isBlock) row (both half-width) instead of two full-width rows — same pattern already established in ScaleAxisControl.js.",
+     "New Font Family control added (showFontFamily prop, {prefix}FontFamily attr, OPT-IN only — undeclared-attr silent-discard trap, D338, same guard fontSizePresets already carries). Sourced from useSettings('typography.fontFamilies'), same theme.json-preset pattern as fontSizePresets. This is a genuinely NEW capability — the panel had no font-family control before.",
+     "Weight / Style / Line height / Letter spacing default COLLAPSED behind a 'More typography options' toggle (local useState, UI-only — never affects whether the attribute exists or whether a block resolves the field once expanded). Mirrors WP core's own opt-in-via-⋮-menu disclosure pattern, confirmed live against the core Paragraph block's native Typography panel.",
+     "CONFIRMED no per-control device switcher was ever added or exists — ResponsiveControl.js's own docblock states it renders nothing; inspector-scan rule 25 exists specifically to catch a re-added one. An earlier draft of the comparison artifact mistakenly drew one; corrected before Bean approved."
+    ],
+    "verifiedNotChanged": "Every existing attribute key, onChange handler, and the tiered/responsive/hover branch logic is byte-identical to pre-redesign — this is a layout pass plus one new opt-in field, not a rebuild."
+   },
+   "bannedLookalikes": {
+    "_note": "Per-CSS-property divergence measured via `python scripts/surveys/survey-typography-controls.py` (2026-08-19, DB-resolved attribute instances). SelectControl/TextControl/UnitControl/NumberControl are NOT globally banned identifiers (they are legitimate elsewhere) — a violation here is a typography-family-shaped attribute (per the DB's css_property/suffix-table resolution) reaching one of these RAW instead of through TypographyControls. matchRule: attribute is typography-shaped (resolved font-size/font-style/font-weight/line-height/letter-spacing/text-transform via the DB) AND its resolved control is NOT TypographyControls.",
+    "measured2026_08_19": {
+     "font-size": {
+      "TypographyControls_conformant": 26,
+      "lookalikes": {
+       "TextControl": 4,
+       "NumberControl": 1,
+       "SelectControl": 1,
+       "UnitControl": 1
+      },
+      "excludedFalsePositive": "RangeControl x2 (sgs/icon.iconSize, sgs/testimonial.ratingSize) — DB name-matched as font-size-family but these are ICON size and STAR RATING size, not font sizes. Excluded per the standing 'false positive is a detector bug, not baseline fodder' rule, not counted as violations."
+     },
+     "font-style": {
+      "TypographyControls_conformant": 17,
+      "lookalikes": {
+       "SelectControl": 2
+      }
+     },
+     "font-weight": {
+      "TypographyControls_conformant": 19,
+      "lookalikes": {
+       "SelectControl": 8
+      }
+     },
+     "line-height": {
+      "TypographyControls_conformant": 14,
+      "lookalikes": {
+       "UnitControl": 1,
+       "TextControl": 1
+      }
+     },
+     "letter-spacing": {
+      "TypographyControls_conformant": 2,
+      "lookalikes": {
+       "UnitControl": 2
+      }
+     },
+     "text-transform": {
+      "TypographyControls_conformant": 2,
+      "lookalikes": {
+       "SelectControl": 4
+      },
+      "note": "Lookalikes OUTNUMBER canonical for this property — the clearest real gap of the six."
+     }
+    },
+    "knownScannerGap": "text-decoration is explicitly excluded from this survey's divergence output ('adjacent out-of-scope rows... NOT counted', 12 rows) — the script's own header note flags it as unmeasured, not clean. Carried forward as a known limitation, not silently treated as zero violations."
+   },
+   "nativeUi": {
+    "_note": "No native-UI competitor axis for this type. WP core's typography support panel is never used RAW in any SGS block edit.js (0 hits across the divergence survey and the earlier control-mounts survey) — every typography-shaped attribute in this tree resolves to either TypographyControls or one of the bannedLookalikes above, never to WP's own font-size/appearance/line-height sub-controls. Unlike colour, there is no supports.typography sub-flag axis to gate here (typography support in this framework is entirely custom-attribute-driven, not native-supports-driven) — stated explicitly per the row-shape mandate that absence must be said, not omitted."
+   },
+   "qualifiesWhen": {
+    "_note": "Per Spec 35 O.16 — roster.json has NO dedicated typography surface field (only colour/media/link do), so scope cannot key off surfaces.* (that would be the self-fulfilling-scope bug, D687). Uses independent evidence: own paint, ancestor paint, feature parity — reusing the SAME vocabulary/mechanisms survey-golden-conformance.js already implements for colour (qualifiesFor(), ancestorPainter()), not reinventing a fourth predicate.",
+    "paintsOwnSurface": {
+     "evidence": "Block's own style.css declares font-size, font-weight, or line-height.",
+     "command": "grep -lE \"font-size|font-weight|line-height\" src/blocks/*/style.css",
+     "cssProperties": [
+      "font-size",
+      "font-weight",
+      "line-height"
+     ],
+     "cssPropertiesNote": "Consumed by survey-golden-conformance.js's ownPaintRegex() (added alongside this field, 2026-08-19) to build the qualifiesFor() own-paint detector for this type, replacing the old colour-hardcoded regex that never matched typography properties. Bare CSS property names, matched literally (not a substring/regex fragment) against style.css.",
+     "measured2026_08_19": 49
+    },
+    "paintedByAncestor": {
+     "evidence": "Reuse ancestorPainter() from survey-golden-conformance.js — a block qualifies via home:'ancestor' when another block's style.css paints ITS rendered BEM classes for a typography property. Same mechanism as colour's paintedByAncestor (e.g. sgs/form-field-* painted by sgs/form), not independently re-derived.",
+     "measured2026_08_19": "not independently re-run this session — deferred to the census run; reuses the existing function, no new logic to verify."
+    },
+    "featureParity": {
+     "evidence": "roster.json blocks[].qualifies.replacedCoreSupports includes 'typography' (WP core family name matches the schema key literally — no FAMILY_BY_CONTROL_TYPE entry needed).",
+     "command": "node -e \"const r=require('./roster.json'); console.log(r.blocks.filter(b=>(b.qualifies&&b.qualifies.replacedCoreSupports||[]).includes('typography')).map(b=>b.slug))\"",
+     "measured2026_08_19": {
+      "count": 16,
+      "blocks": [
+       "sgs/accordion",
+       "sgs/accordion-item",
+       "sgs/breadcrumbs",
+       "sgs/button",
+       "sgs/container",
+       "sgs/form",
+       "sgs/heading",
+       "sgs/hero",
+       "sgs/multi-button",
+       "sgs/nav-menu",
+       "sgs/post-grid",
+       "sgs/quote",
+       "sgs/tab",
+       "sgs/table-of-contents",
+       "sgs/tabs",
+       "sgs/text"
+      ]
+     }
+    },
+    "verdicts": "MISSING = qualifies (any of the 3 above) AND does not mount TypographyControls for that property. NOT-APPLICABLE = does not qualify by any of the 3. home:'ancestor' blocks (e.g. sgs/form-field-*, painted by sgs/form per plugin CLAUDE.md's HC2 parent/child split) resolve here same as colour — CORRECT per HC2, not a bug."
+   },
+   "scope": {
+    "eligible": "Union of qualifiesWhen's three predicates — roster.json has no surfaces.typography field to key off directly (see qualifiesWhen._note).",
+    "whyRosterNotDb": "Same reasoning as colour's row: roster.json is the audit denominator (83 built/live blocks), not a per-property qualification source."
+   },
+   "predictedVsMeasured": {
+    "_note": "Predict-then-measure discipline (standing project rule: a measured count below prediction is a detector bug until proven otherwise). Prediction recorded BEFORE running the census.",
+    "predicted": {
+     "MISSING_estimate": "30-35 (49 own-paint qualifying blocks, minus the 16 already mounting TypographyControls, assuming most overlap; plus any feature-parity-only blocks from the 16-block list not already in the 49 own-paint set)",
+     "basis": "49 own-paint (measured) - 16 canonical-mounting (measured) ≈ 33, as a rough floor; feature-parity's 16 blocks were not cross-checked for overlap with the 49 before this prediction was written, so the true figure may run a few blocks either side of 33."
+    },
+    "measured": "51 MISSING / 16 CONFORMANT / 16 NOT-APPLICABLE (51+16+16=83, checks out) — measured 2026-08-19 after the survey-golden-conformance.js engine fix (see engineFix note below) via node scripts/surveys/survey-golden-conformance.js --json. ABOVE the 30-35 prediction, not below — per the standing rule this direction isn't the 'detector bug until proven' trigger (that's for measured-below-predicted), but the gap is still large enough to record why: the prediction's naive 49-own-paint-minus-16-mounting subtraction didn't account for ancestor-paint or feature-parity-only blocks adding to the qualifying set, which the real qualifiesFor() union correctly includes and the back-of-envelope prediction didn't model."
+   },
+   "engineFix": {
+    "_note": "A real engine bug was found and fixed while measuring this row, delegated to a background Sonnet agent (dispatch justified: architectural, multi-function, two numeric regression baselines to protect — see /delegate reasoning in the session). Not scoped to typography alone — it generalises for every future control type.",
+    "bugFound": "survey-golden-conformance.js's axisCanonical() did a blanket reached-component check for EVERY control type, reporting VIOLATION for every non-mounting block with zero qualifiesWhen gating — the exact O.16 'phantom backlog' trap. Measured before the fix: typography reported a blanket 67 VIOLATION / 16 CONFORMANT split. Separately, qualifiesFor()'s own-paint check hardcoded colour's CSS regex, so a non-colour type's paintsOwnSurface predicate could never actually match its own declared properties.",
+    "fixShape": "axisCanonical() now calls qualifiesFor() when a block doesn't reach the canonical component, returning MISSING (qualifies) / NOT-APPLICABLE (doesn't) / UNCLEAR instead of blanket VIOLATION — for every type EXCEPT colour, which keeps its pre-existing blanket-VIOLATION path deliberately (colour already gets its own MISSING/NOT-APPLICABLE split from an earlier pre-gate keyed on roster.json surfaces.colour; routing colour through the new qualifiesFor() branch was tested and found to MOVE colour's numbers, so it was excluded to protect the backward-compatibility requirement). qualifiesFor()'s paintsOwnSurface check now reads a new schema field, qualifiesWhen.paintsOwnSurface.cssProperties (a bare array of CSS property name strings — see the border/box-4value/shadow rows below for real usage), building the match regex from it; when a row doesn't declare that field, the function falls back to colour's original hardcoded regex byte-for-byte, so colour's existing measured numbers cannot move even if this fallback path is hit by accident.",
+    "verified": "node run.js --self-test 31-golden-colour-control still reports exactly 408 (unmoved — rule 31 never calls qualifiesFor()/axisCanonical() at all, so this was structurally impossible to break). node scripts/surveys/survey-golden-conformance.js --self-test passes (15/15 fixtures). Colour's canonical-axis distribution diffed row-by-row across all 83 blocks before vs after the fix: 0 differences (CONFORMANT 63 / VIOLATION 2 / NOT-APPLICABLE 6 / MISSING 12, both times)."
+   }
+  },
+  "box-4value": {
+   "specRef": "No dedicated Part O section pre-existed for this type either (matches typography's situation) — this is the first full contract for box-4value, written this session.",
+   "canonical": {
+    "panel": {
+     "component": "ResponsiveBoxControl",
+     "path": "src/components/ResponsiveBoxControl.js",
+     "api": "props: { label, values: {base,tablet,mobile}, onChange(tier,next), sides, showResponsive }. Internally renders SgsBoxControl per tier via the ONE global device toggle (ResponsiveControl, no per-field switcher)."
+    },
+    "radiusSlot": {
+     "component": "ResponsiveBorderRadiusControl",
+     "path": "src/components/ResponsiveBoxControl.js (named export, same file)",
+     "api": "Same tier/onChange shape as the panel slot, for the 4-corner family (border-radius) instead of 4-side."
+    }
+   },
+   "redesign2026_08_19": {
+    "_note": "Bean-directed rebuild, same session as typography's — a real, confirmed alignment defect in WP core's OWN BoxControl (icon+slider bottom-misaligned against the input, not centred), reproduced live on the Container block's Padding & margin panel and screenshotted for Bean before deciding the fix shape.",
+    "rootCause": "Confirmed via the real @wordpress/components npm package source (v39.0.0, pulled and read this session — box-control/styles/box-control-styles.ts): BoxControl's InputWrapper/ResetButton/LinkedButtonWrapper are laid out via a CSS grid + HStack combination in WP core's own Emotion-styled internals. No SGS-side CSS targets `.components-box-control` anywhere in this tree (grepped, 0 hits) — this rules out an SGS override as the cause. Patching WP core's internal CSS via scoped override was rejected as the fix (fragile against every WP core update to BoxControl's internals).",
+    "fixShape": "New component SgsBoxControl.js (src/components/SgsBoxControl.js) — same data model (a {top,right,bottom,left} box, linked/unlinked toggle, same re-link-collapses-to-one-value behaviour as core's own BoxControl) built from the same native primitives (UnitControl, RangeControl, Button) but hand-laid-out in one Flex row with align=\"center\", so the slider and unlink icon sit exactly level with the input. ResponsiveBoxControl.js now renders SgsBoxControl instead of core's BoxControl (both the showResponsive=false branch and the per-tier ResponsiveControl branch) — ResponsiveBorderRadiusControl / the corner control was UNCHANGED (Bean's complaint was specifically about the padding/margin row, not the radius corners, which use a different core component, __experimentalBorderRadiusControl, not flagged as broken).",
+    "verifiedNotChanged": "Same values/onChange(tier,next) contract as before — every one of the 48 blocks already calling ResponsiveBoxControl gets the fix automatically with no call-site changes. Verified via a clean local npx wp-scripts build (isolated worktree, no shared build/ touched)."
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [
+     "BoxControl"
+    ],
+    "_note": "Raw core BoxControl (bypassing ResponsiveBoxControl/SgsBoxControl) — measured 2026-08-19 via npm run survey:control-mounts: 15 mounts / 8 blocks outside the wrapped component. matchRule: exact JSX-identifier match, never substring (same rule as colour's row).",
+    "liveInstances": 15
+   },
+   "nativeUi": {
+    "_note": "No native-UI competitor axis — box-4value (padding/margin/border-width) rides on supports.spacing, which this framework declares with __experimentalSkipSerialization the same way colour does for supports.color, so there is no separate detectVia branch to add here beyond what colour's own row already models for its family. Not independently re-measured this session for the spacing family specifically — flagged as a gap, not silently assumed clean.",
+    "detectVia": "block.json supports.spacing (padding/margin sides) — border/radius has no native competitor (0 of 83 blocks declare supports.border)",
+    "_restored2026_08_20": "RESTORED 2026-08-20 (Bean's call). This row shipped with a `_note` and no `detectVia`, which silently switched OFF native-UI detection for this type when the peer row replaced the base row — the census then reported N/A on all 83 blocks, indistinguishable from 'no native competitor exists'. box-4value's own note conceded it was 'not independently re-measured ... flagged as a gap, not silently assumed clean', and the Phase 3 plan sizes native-UI retirement partly from supports.spacing. Detection restored so the number is measured rather than assumed; `typography` deliberately NOT restored — its reasoning (0 raw core typography mounts anywhere in the tree) holds."
+   },
+   "qualifiesWhen": {
+    "_note": "Evidence gathered via a parallel Explore agent, 2026-08-19 — reused rather than re-derived to keep this row consistent with the same measurement methodology as typography's.",
+    "paintsOwnSurface": {
+     "evidence": "Block's own style.css declares padding, margin, or border-width.",
+     "command": "grep -lE \"padding|margin|border-width\" src/blocks/*/style.css",
+     "cssProperties": [
+      "padding",
+      "margin",
+      "border-width"
+     ],
+     "measured2026_08_19": 52
+    },
+    "featureParity": {
+     "evidence": "roster.json blocks[].qualifies.replacedCoreSupports includes 'spacing'.",
+     "measured2026_08_19": {
+      "count": 23,
+      "blocks": [
+       "sgs/accordion",
+       "sgs/accordion-item",
+       "sgs/audio",
+       "sgs/breadcrumbs",
+       "sgs/button",
+       "sgs/container",
+       "sgs/form",
+       "sgs/gallery",
+       "sgs/heading",
+       "sgs/hero",
+       "sgs/icon",
+       "sgs/media",
+       "sgs/multi-button",
+       "sgs/nav-menu",
+       "sgs/post-grid",
+       "sgs/quote",
+       "sgs/responsive-logo",
+       "sgs/separator",
+       "sgs/social-icons",
+       "sgs/tab",
+       "sgs/table-of-contents",
+       "sgs/tabs",
+       "sgs/text"
+      ]
+     }
+    },
+    "overlapAnalysis": "52 own-paint ∩ 23 feature-parity = 18 blocks overlap; 5 feature-parity-only (spacing entirely attribute/inline-driven, no static CSS: accordion-item, multi-button, responsive-logo, separator, tab); 34 own-paint-only. Union (realistic qualifies estimate) = 52 + 23 - 18 = 57 blocks.",
+    "canonicalAdoptionCrossCheck": "101 mounts / 48 blocks (measured via python scripts/surveys/survey-control-mounts.py .) — below the 57-block qualifying union, meaning up to 9 qualifying blocks may hardcode a fixed padding/margin/border-width rather than exposing it as a user-configurable control. Treat 48 as the floor for 'user-configurable box-4value' and 57 as the ceiling for 'any box-4value involvement' — do not collapse these into one number.",
+    "verdicts": "MISSING = qualifies (own-paint OR feature-parity) AND does not mount ResponsiveBoxControl. NOT-APPLICABLE = qualifies by neither."
+   },
+   "scope": {
+    "eligible": "Union of qualifiesWhen's two predicates — roster.json has no surfaces.box-4value field to key off directly."
+   }
+  },
+  "border": {
+   "specRef": "No dedicated Part O section pre-existed for this type — first full contract, written this session.",
+   "canonical": {
+    "widthSlot": {
+     "component": "ResponsiveBoxControl",
+     "path": "src/components/ResponsiveBoxControl.js",
+     "api": "Cross-references box-4value's row above — same component, same evidence, not re-derived here to avoid two rows disagreeing on one component's numbers."
+    },
+    "radiusSlot": {
+     "component": "ResponsiveBorderRadiusControl",
+     "path": "src/components/ResponsiveBoxControl.js (named export)",
+     "api": "Cross-references box-4value's row above."
+    },
+    "styleSlot": {
+     "component": "BorderStyleControl",
+     "path": "src/components/BorderStyleControl.js",
+     "api": "props: { label, value: 'solid'|'dashed'|'dotted'|'', onChange }. A ToggleGroupControl with 3 ToggleGroupControlOptionIcon entries (Solid/Dashed/Dotted) + isDeselectable for 'none' — matches WP core's native BorderControlStylePicker EXACTLY (pulled and read from the real @wordpress/components v39.0.0 npm package source, border-control/border-control-style-picker/component.tsx, 2026-08-19)."
+    },
+    "colourSlot": {
+     "component": "DesignTokenPicker",
+     "path": "src/components/DesignTokenPicker.js",
+     "api": "Cross-references colour's own row. NEW opt-in props this session: borderStyle / onBorderStyleChange — when passed, BorderStyleControl renders INSIDE the same popover as the flat/gradient toggle and Normal/Hover state tabs, above the tab panel (border-style is one value for the whole border regardless of colour state). Every other DesignTokenPicker caller (60+ non-border colour rows) passes neither prop and renders byte-identical to before this change."
+    }
+   },
+   "redesign2026_08_19": {
+    "_note": "Bean-directed rebuild, matching native's border UI exactly but through SGS's own popover mechanism, plus a dual-entry design for border colour.",
+    "styleDecision": "Native WP's BorderControlStylePicker offers only 3 options (Solid/Dashed/Dotted, deselect-to-none) — narrower than the old hand-rolled 9-option SelectControl this replaces (None/Solid/Dashed/Dotted/Double/Groove/Ridge/Inset/Outset, duplicated across 13 files with no shared component). Bean confirmed adopting the native 3-option set exactly rather than keeping all 9 as icon buttons — the six dropped styles (Double/Groove/Ridge/Inset/Outset) are rarely used in practice.",
+    "colourDualEntry": "Border colour is wired to the SAME {name}BorderColour(+Gradient) attribute from TWO mount points in a consuming block's edit.js: (1) a DesignTokenPicker inside the compact 'Border' PanelBody, carrying borderStyle/onBorderStyleChange so its popover includes the style icons, and (2) a row inside SgsColourPanel's list (labelled 'Border colour'), ALSO carrying borderStyle/onBorderStyleChange per Bean's explicit follow-up ('will this popover open when we click the border colour row in the Colour panel?' — yes, both mounts pass the same props). Neither mount owns the attribute; both read/write the same setAttributes call, so there is no sync mechanism to build — React state is the single source of truth already.",
+    "wiredInto": "sgs/heading (this session, as the reference implementation) — old BORDER_STYLE_OPTIONS (9-entry dropdown options array) removed, both DesignTokenPicker mounts updated. The other ~12 blocks with the same hand-rolled pattern are NOT yet migrated — see bannedLookalikes.rolloutRemaining below.",
+    "verified": "Clean local npx wp-scripts build after each change (composer additions, SgsColourPanel prop passthrough, Heading wiring) — isolated worktree, no shared build/ touched, no deploy.",
+    "rule31CountMoved408to409_rootCaused": "node run.js --self-test 31-golden-colour-control moved from 408 to 409 after the Heading dual-mount wiring. ROOT-CAUSED before accepting it (per the standing prove-the-cause rule), not assumed harmless: inspected the real --json findings and confirmed BOTH of Heading's border-colour findings ('carries 1 state, below the required 2') share the SAME root cause — block.json declares no borderColourHover attribute, so neither the pre-existing SgsColourPanel row (already present before this session, already generating 1 of the original 408) nor the new compact-panel DesignTokenPicker mount (this session's addition, faithfully copying the pre-existing row's single-state shape) can satisfy the 2-state minimum. The +1 is the SAME limitation counted twice because a second real UI mount for the same under-specified attribute now exists — not a new class of defect, and not something this session's remit covers fixing (adding a borderColourHover attribute is a per-block block.json change, wider than the dual-entry-point wiring this row is about)."
+   },
+   "bannedLookalikes": {
+    "patterns": [
+     {
+      "shape": "hand-rolled SelectControl labelled 'Border style' with a 9-option value list (none/solid/dashed/dotted/double/groove/ridge/inset/outset)",
+      "why": "copy-pasted across 13 files with no shared source of truth prior to this session; superseded by BorderStyleControl",
+      "liveInstances": 13,
+      "_note": "Measured 2026-08-19 via node/grep across src/blocks — see the earlier session research. This session migrated 1 of 13 (sgs/heading) as the reference implementation; 12 remain on the old pattern."
+     }
+    ],
+    "rolloutRemaining": "12 blocks still carry the old hand-rolled 9-option SelectControl for border style (button, card-grid, container/GridItemDefaultsPanel, hero, icon-list, mega-aside, option-picker, process-steps, product-card, quote, text, timeline) — flagged for a follow-up migration pass, not silently left unaddressed."
+   },
+   "nativeUi": {
+    "detectVia": "block.json supports.__experimentalBorder — any sub-flag set true",
+    "conformantShape": "declared with every sub-flag false (matches colour's own conformant shape)",
+    "measured2026_08_19": {
+     "declareSupport": 52,
+     "finding": "ALL 52 blocks that declare __experimentalBorder have every observed sub-flag (color/radius/style/width, or radius-only in a leaner subset) set TRUE, paired with __experimentalSkipSerialization:true — NOT the all-false conformant shape colour's own row requires. skipSerialization stops core writing border CSS/attrs into SAVED markup, but core's native border UI panel is still LIVE in the editor sidebar for all 52 of these blocks, coexisting silently alongside SGS's own Border panel.",
+     "significance": "This is a genuine divergence from the colour row's pattern, not something this contract-writing pass silently resolved — it means up to 52 blocks may show BOTH WP's native border UI AND SGS's Border panel in the editor at once. Flagged here as a real finding requiring its own follow-up (setting the sub-flags to false, matching how colour's supports.color is already handled) — out of scope to fix silently while writing this row; the fix touches per-block block.json files, a wider blast radius than this session's remit."
+    }
+   },
+   "qualifiesWhen": {
+    "_note": "Evidence via a parallel Explore agent, 2026-08-19, same methodology as box-4value's row.",
+    "paintsOwnSurface": {
+     "evidence": "Block's own style.css declares border-style, border-width, border-color, or border-radius.",
+     "command": "grep -lE \"border-style|border-width|border-color|border-radius\" src/blocks/*/style.css (property-anchored, excludes custom-property names)",
+     "cssProperties": [
+      "border-style",
+      "border-width",
+      "border-color",
+      "border-radius"
+     ],
+     "measured2026_08_19": 48
+    },
+    "featureParity": {
+     "evidence": "roster.json blocks[].qualifies.replacedCoreSupports includes 'border'.",
+     "measured2026_08_19": {
+      "count": 16,
+      "blocks": [
+       "sgs/accordion",
+       "sgs/accordion-item",
+       "sgs/breadcrumbs",
+       "sgs/button",
+       "sgs/container",
+       "sgs/gallery",
+       "sgs/heading",
+       "sgs/hero",
+       "sgs/icon",
+       "sgs/media",
+       "sgs/multi-button",
+       "sgs/post-grid",
+       "sgs/quote",
+       "sgs/social-icons",
+       "sgs/table-of-contents",
+       "sgs/text"
+      ]
+     }
+    },
+    "overlapAnalysis": "48 own-paint ∩ 16 feature-parity = 12 blocks with BOTH signals (accordion, breadcrumbs, button, container, gallery, hero, icon, media, post-grid, quote, social-icons, table-of-contents) — the strongest, dual-evidenced candidates. 4 roster-only (qualifies via feature parity but no own-paint CSS found — likely styled via nested/child selectors: accordion-item, heading, multi-button, text). 36 CSS-only. Union (realistic qualifies estimate) = 48 + 16 - 12 = 52 blocks.",
+    "verdicts": "MISSING = qualifies (own-paint OR feature-parity) AND does not reach ResponsiveBoxControl (width) / ResponsiveBorderRadiusControl (radius) / DesignTokenPicker with a border-colour row. NOT-APPLICABLE = qualifies by neither."
+   },
+   "scope": {
+    "eligible": "Union of qualifiesWhen's two predicates — roster.json has no surfaces.border field to key off directly."
+   }
+  },
+  "shadow": {
+   "specRef": "Pre-existing golden-controls.json placeholder named ShadowControl as canonical and flagged conformance measured 0/13 due to a missing required id prop, plus a static-scanner blind-spot note. Carried forward, not re-derived, per this row.",
+   "canonical": {
+    "panel": {
+     "component": "ShadowControl",
+     "path": "src/components/ShadowControl.js",
+     "api": "props: { label, value, onChange, colour, onColourChange }. Preset button row (theme.json settings.shadow.presets) + a full builder (Offset X/Y, Blur, Spread, Inset toggle) that reveals once any value is set. Colour is EXTERNALLY managed (D621/D622) — the caller owns the sibling {name}Colour attribute via SgsColourPanel, passed in as colour/onColourChange."
+    }
+   },
+   "completenessCheck2026_08_19": {
+    "_note": "Bean asked directly: 'is there anything missing that a shadow panel should have?' Answered by reading ShadowControl.js's full source (not guessing from the collapsed-preset screenshot, which only shows the builder once a non-empty value is picked) and confirming live by selecting a preset on the Container block.",
+    "verdict": "Nothing missing from the standard shadow feature set. Confirmed present: Offset X, Offset Y, Blur, Spread, Colour (full alpha-capable token palette via DesignTokenPicker), Inset toggle. The only gap identified — multiple STACKED shadow layers (some design tools support this) — is a rare/advanced use case, not flagged as a real gap for this framework's needs."
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "patterns": [],
+    "_note": "No competing implementation found anywhere in this tree (0 hits for alternate shadow UI patterns, 0 raw WP-native ShadowPopover usage) — measured as a fact, not an omission."
+   },
+   "nativeUi": {
+    "_note": "No native-UI competitor axis — WP core has no dedicated shadow supports flag (confirmed 2026-08-19 by enumerating every family name across roster.json's replacedCoreSupports arrays: anchor/ariaLabel/border/className/color/dimensions/inserter/interactivity/layout/position/spacing/splitting/typography — 'shadow' does not appear). Checked, zero matches — a real finding, not a silent skip."
+   },
+   "qualifiesWhen": {
+    "_note": "Evidence via a parallel Explore agent, 2026-08-19.",
+    "paintsOwnSurface": {
+     "evidence": "Block's own style.css declares box-shadow.",
+     "command": "grep -l \"box-shadow\" src/blocks/*/style.css",
+     "cssProperties": [
+      "box-shadow"
+     ],
+     "measured2026_08_19": 29
+    },
+    "cardClassHeuristic": {
+     "evidence": "A .sgs-{slug}__card root-class pattern combined with a background declaration, as a secondary 'looks like a card, might want a shadow' signal.",
+     "measured2026_08_19": "0 additional blocks beyond the 29 already found via box-shadow — only 2 blocks (post-grid, trustpilot-reviews) show a __card class at all, and both were already in the box-shadow-29 list. This heuristic added no new candidates and is not a useful independent signal for this type in practice, despite being a reasonable predicate to try."
+    },
+    "featureParity": {
+     "evidence": "Checked — no 'shadow' family name exists anywhere in roster.json's replacedCoreSupports (see nativeUi above). Not a usable signal for this type.",
+     "measured2026_08_19": "N/A — confirmed zero matches, not silently skipped."
+    },
+    "canonicalAdoptionCrossCheck": {
+     "mounts": "43 mounts / 15 blocks (button, before-after, brand-strip, container, cta-section, hero, info-box, media, post-grid, quote, team-member, trust-bar, physics-canvas, card-grid, testimonial)",
+     "gapA_mountsButNoStaticCss": "3 blocks (button, hero, physics-canvas) mount ShadowControl but show no static box-shadow rule in style.css — likely applied only via inline/dynamic style, not flagged as a defect, just a measurement-method limitation worth knowing about.",
+     "gapB_paintsButNoMount": "17 blocks paint box-shadow in CSS but do not mount ShadowControl (whatsapp-cta, trustpilot-reviews, testimonial-slider, tabs, product-search, product-card, process-steps, pricing-table, option-picker, modal, mega-panel, google-reviews, gallery, form, countdown-timer, cart, accordion) — these are the real MISSING candidates: a hardcoded/design-token shadow the operator cannot currently customise via ShadowControl."
+    },
+    "verdicts": "MISSING = paints box-shadow in its own style.css AND does not mount ShadowControl (the 17-block Gap B list above is the concrete, evidenced MISSING set for this type — not a derived estimate). NOT-APPLICABLE = neither condition holds."
+   },
+   "scope": {
+    "eligible": "paintsOwnSurface's 29-block measured set, refined by the Gap A/B mount-cross-check above — roster.json has no surfaces.shadow field to key off directly."
+   }
+  },
+  "length-unit": {
+   "specRef": "No dedicated Part O section pre-existed for this type — first full contract, written this session.",
+   "canonical": {
+    "panel": {
+     "component": "SgsLengthControl",
+     "path": "src/components/SgsLengthControl.js",
+     "api": "props: { label, value, onChange, units, presets=false }. OPT-IN theme.json settings.spacing.spacingSizes preset dropdown (mirrors TypographyControls' fontSizePresets pattern exactly) alongside a fallback to the raw UnitControl when presets=false or the theme declares no scale. Built this session (Bean-directed new build) — NOT YET WIRED into any block's edit.js; this is new shared infrastructure, not a migration of an existing pattern."
+    }
+   },
+   "canonicalDecisionBasis": {
+    "_note": "Earlier in this session, before Bean's redesign-everything directive, this type's row said 'no component-level canonical — the real question is import-path discipline'. That call is SUPERSEDED — Bean's later instruction ('Session B used the linkpopover control as an example to build an sgs wrapper... you can do that too in this session') asked for a genuine new SGS wrapper, matching how TypographyControls/DesignTokenPicker offer theme-token integration over a raw input. SgsLengthControl is that wrapper.",
+    "themeTokenScale": "theme/sgs-theme/theme.json settings.spacing (lines 255-319) declares a real 8-entry custom scale with fluid clamps: XXS(10)=0.25rem, XS(20)=0.5rem, S(30)=1rem[fluid 0.75-1rem], M(40)=1.5rem[fluid 1-1.5rem], L(50)=2rem[fluid 1.25-2rem], XL(60)=3rem[fluid 1.75-3rem], XXL(70)=5rem[fluid 2.5-5rem], XXXL(80)=8rem[fluid 4-8rem]. customSpacingSize:true, defaultSpacingSizes:false (WP's own default scale suppressed in favour of this one) — SgsLengthControl's preset dropdown will show exactly these 8 tokens once wired up."
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "_note": "Not yet applicable — SgsLengthControl isn't wired into any block yet, so there is no 'bypasses the wrapper' violation to detect. Once rollout begins, a block using raw UnitControl directly where SgsLengthControl's preset capability would apply becomes the bannedLookalike shape (same pattern as fontSizePresets vs a hand-rolled font-size input) — left as a note for whoever does that rollout, not fabricated here."
+   },
+   "nativeUi": {
+    "_note": "No native-UI competitor axis for this type — length/unit is entirely custom-attribute-driven in this framework (same reasoning as typography's row), not native-supports-driven.",
+    "detectVia": "block.json supports.spacing — any sub-flag set true",
+    "_restored2026_08_20": "RESTORED 2026-08-20 (Bean's call). This row shipped with a `_note` and no `detectVia`, which silently switched OFF native-UI detection for this type when the peer row replaced the base row — the census then reported N/A on all 83 blocks, indistinguishable from 'no native competitor exists'. box-4value's own note conceded it was 'not independently re-measured ... flagged as a gap, not silently assumed clean', and the Phase 3 plan sizes native-UI retirement partly from supports.spacing. Detection restored so the number is measured rather than assumed; `typography` deliberately NOT restored — its reasoning (0 raw core typography mounts anywhere in the tree) holds."
+   },
+   "qualifiesWhen": {
+    "_note": "This type deliberately OVERLAPS with box-4value/typography/border's own qualifiesWhen — length-unit is the UNDERLYING mechanism those types ride on (any bare number+unit CSS value), not a disjoint category. Evidence gathered via a parallel Explore agent, 2026-08-19, confirms this explicitly rather than asserting it.",
+    "paintsOwnSurface": {
+     "evidence": "Block's own style.css declares a bare unit-shaped value (px/rem/em/%/vw/vh) anywhere.",
+     "command": "grep -E \":\\s*[\\d.]+(px|rem|em|%|vw|vh)\" src/blocks/*/style.css -l",
+     "measured2026_08_19": "59 of 84 blocks (70%) — a large, near-universal number BY DESIGN, confirming the overlap-not-disjoint framing above rather than being a measurement error to second-guess."
+    },
+    "declarativeSupportSignal": {
+     "evidence": "block.json declares supports.spacing.",
+     "measured2026_08_19": "50 of 84 blocks — NOTE this was a literal string grep for \\\"spacing\\\" anywhere in block.json, an upper-bound proxy, not a JSON-path-scoped query. Flagged as imprecise; a future pass should re-verify with a real JSON parse if this number needs to be load-bearing anywhere."
+    },
+    "verdicts": "Given the overlap-not-disjoint nature of this type, MISSING/NOT-APPLICABLE verdicts are better read through box-4value/typography/border's own qualifiesWhen rows (whichever concrete property is in question) than through a standalone length-unit predicate. This row exists so the census can still look up the type by name, per the composer's key-based lookup contract, not because a disjoint MISSING count is meaningful here."
+   },
+   "scope": {
+    "eligible": "Effectively universal (70% own-paint measured) — roster.json has no surfaces.length-unit field, and one would not usefully discriminate given the overlap noted above."
+   }
+  },
+  "alignment": {
+   "specRef": "NEW top-level key — no placeholder existed in golden-controls.json (unlike the other 6 types in this session's scope). Explained directly by the session operator rather than delegated, per Bean's explicit instruction, given the judgement-heavy nature of the gap-vs-invent call.",
+   "canonical": {
+    "_note": "CORRECTED 2026-08-19 — the first draft of this row treated contentAlign and textAlign as two separate architectural questions (one resolved, one an open gap). Bean challenged that directly: 'isn't it a variant of the same thing but for text?' Checked against real code (src/blocks/text/edit.js:582-591) and confirmed true — every textAlign implementation found is a FLAT SelectControl with no responsive tiers, while multi-button's contentAlign panel uses ResponsiveOverride (tier-object storage, per-device value). There is no genuine mechanism difference between 'pick a flex-alignment value per tier' and 'pick a text-align value per tier' — both are the SAME pattern (ResponsiveOverride wrapping a SelectControl, tier-object attribute), just with a different option list. One canonical SHAPE now covers both facets.",
+    "pattern": {
+     "shape": "ResponsiveOverride + SelectControl (tier-object attribute)",
+     "path": "src/components/ResponsiveOverride.js wrapping a plain SelectControl — reference instantiation at src/blocks/multi-button/edit.js:373-414 (the 'Alignment' PanelBody)",
+     "api": "ResponsiveOverride reads the ONE global device tier (same mechanism as every other responsive control this session touched — no per-field switcher), passes { tier, ownValue, setOwnValue } to a plain SelectControl whose options list is the only thing that changes per facet: justify-content/align-items values for contentAlign, left/center/right/justify for textAlign.",
+     "_note": "Bean-designated canonical, 2026-08-19, with one required fix on the reference instantiation — see labelFix below.",
+     "_noComponentIdentifier": "Deliberately NO `component` key here (2026-08-20 audit fix). This is a two-part PATTERN, not one owned component, and neither part is safe to declare alone: (1) ResponsiveOverride resolves as a real file (verified via resolveComponentFiles()) but is used in 23 blocks total (before-after, button, container, cta-section, decorative-image, feature-grid, gallery, google-reviews, hero, media, multi-button, physics-canvas, post-grid, product-search, quote, responsive-logo, separator, site-footer/-row, site-header/-row, trust-bar, trustpilot-reviews) for unrelated tier-object attributes (gap, spacing, etc, not alignment) — declaring it alone would score every one of those 23 as reaching alignment's canonical shape regardless of whether they touch alignment at all, a false-CONFORMANT sweep. (2) SelectControl does NOT resolve via resolveComponentFiles() (it is a bare `@wordpress/components` import, not an SGS-authored file in src/components/) and is mounted raw in 70 blocks for entirely unrelated selects — declaring it would be worse than (1). The prior draft put this description under a `component` key, which the census engine's COMPONENT_IDENTIFIER regex (`^[A-Z][A-Za-z0-9]*$`) correctly rejected as prose, so canonicalComponentNames() returned nothing and the axis silently read N/A (83/83) — same as the false-absence pattern this audit was scoped to fix elsewhere, except here the honest answer really is 'no single safely-declarable component', not a fixable oversight. Verdict: leave `canonical` axis at N/A for this type — a fabricated single-identifier declaration would trade an honest N/A for a false CONFORMANT sweep, which is worse."
+    }
+   },
+   "labelFix2026_08_19": {
+    "_note": "Bean flagged the ORIGINAL labels as inaccessible jargon before confirming this as canonical: 'update the bit in brackets in the label to be more non-techie friendly. it's hard to understand main axis and cross axis'.",
+    "before": "'Justify Content (main axis)' / 'Align Items (cross axis)'",
+    "after": "'Button spacing' / 'Button alignment'",
+    "changed": "src/blocks/multi-button/edit.js — two label strings only, no logic/attribute change. Verified compiling via a clean local build in the same pass as the other component changes this session."
+   },
+   "decision": "Both facets share ONE canonical pattern (ResponsiveOverride + SelectControl, tier-object storage) — see the CORRECTED note on canonical above for why treating them as separately-resolved/unresolved was wrong. Neither facet's EXISTING implementations (in any block, for either facet) currently use the responsive-tier version — every real textAlign instance found is a flat, non-responsive SelectControl (confirmed live in src/blocks/text/edit.js:582-591), and 10+ other contentAlign-shaped panels outside multi-button are the same flat shape. So the pattern itself is settled; wiring it (adding the ResponsiveOverride wrapper + tier-object attribute) into any specific block, for either facet, is rollout work — same shape as border-style's 12-block rollout, not a design question.",
+   "facets": {
+    "textAlign": {
+     "canonical": "Same pattern as contentAlign (see canonical.pattern above) — a SelectControl with options left/center/right/justify, wrapped in ResponsiveOverride.",
+     "currentMechanisms": [
+      {
+       "kind": "wp-native-toolbar",
+       "component": "AlignmentControl",
+       "path": "1 file: src/blocks/icon/edit.js",
+       "note": "a genuinely different surface (block toolbar, not sidebar) — left as-is, not a candidate for the sidebar pattern"
+      },
+      {
+       "kind": "declarative-support",
+       "detectVia": "block.json supports.typography.textAlign",
+       "measured": "19 blocks, no editor code needed — WP renders this natively; these are NOT violations, core's own UI already does the job"
+      },
+      {
+       "kind": "hand-rolled, flat (non-responsive)",
+       "pattern": "plain SelectControl, no ResponsiveOverride",
+       "measured": "11+ blocks (brand-strip, heading, label, text, and others) — confirmed live in text/edit.js:582-591",
+       "rolloutTarget": true
+      }
+     ]
+    },
+    "contentAlign": {
+     "canonical": "See top-level canonical.pattern above — RESOLVED this session (multi-button is the reference instantiation).",
+     "otherImplementations": "10+ other blocks still hand-roll their own flat (non-responsive) flex-alignment panel outside multi-button's pattern — a rollout/migration list, not re-enumerated here (out of scope to fully catalogue in this pass; flagged as remaining work like border-style's 12-block rollout)."
+    }
+   },
+   "bannedLookalikes": {
+    "_note": "A flat SelectControl NOT wrapped in ResponsiveOverride, for either facet, is the lookalike shape once rollout begins (mirrors border-style's bannedLookalikes.patterns shape) — the full instance list wasn't re-catalogued this session; see facets above for the counts found (11+ textAlign, 10+ contentAlign)."
+   },
+   "nativeUi": {
+    "_note": "textAlign facet has a real native competitor (supports.typography.textAlign, 19 blocks) — those 19 blocks are the CONFORMANT shape (core's own declarative UI, no bespoke code), not a violation, same reasoning as colour's all-flags-false shape. contentAlign has no native equivalent used anywhere in this tree.",
+    "_engineGapNoDetectVia": "Deliberately NO `detectVia` field added here (2026-08-20 audit). Verified the family is real — 'typography' is declared in 25 block.json files (python enumeration of src/blocks/*/block.json supports keys, 2026-08-20). But the engine's supportFamilyFromDetectVia() regex (core/golden.js) only captures the FIRST dotted segment after `supports.` and axisNativeUi() only reads ONE level of sub-flags off that family (liveNativeFlags(supports[key])) — it has no way to check a SPECIFIC nested sub-flag like `typography.textAlign` in isolation from typography's other sub-flags (fontSize, lineHeight, fontWeight, textDecoration, etc). Declaring `detectVia: 'block.json supports.typography — any sub-flag set true'` here would fire on ANY typography sub-flag, not textAlign specifically — a false/imprecise VIOLATION any time a block enables e.g. fontSize support for an unrelated reason, and it would silently duplicate typography's own axis (which deliberately declares NO detectVia for exactly this family, per its own row, to avoid the same over-trigger). Proposed engine fix for the main agent, not built here (out of scope, core/golden.js is off-limits this session): a new schema shape, e.g. `nativeUi.detectViaSubFlag: 'typography.textAlign'`, paired with a new evaluator that reads `supports.typography.textAlign === true` specifically rather than the generic any-sub-flag-in-family check `liveNativeFlags()` already does. Until that lands, this axis stays honestly N/A (schema declares no READABLE native-UI competitor) rather than a forced, imprecise measurement."
+   },
+   "qualifiesWhen": {
+    "textAlign": {
+     "evidence": "Block declares multi-line/paragraph-shaped text content — own style.css targets a text element, OR supports.typography is declared.",
+     "measured2026_08_19": "Not independently re-run this session — deferred; the mechanism list above (19 declarative + 11+ hand-rolled + 1 native-toolbar) is the closest available proxy for scale until a real MISSING/NOT-APPLICABLE census pass is run against the now-settled canonical pattern."
+    },
+    "contentAlign": {
+     "evidence": "Block is layout/container-shaped with multiple children — supports.sgs.elements count > 1, OR InnerBlocks/useInnerBlocksProps present in edit.js.",
+     "measured2026_08_19": "Not independently re-run this session — a real MISSING/NOT-APPLICABLE census pass for the now-real contentAlign canonical is future work, not fabricated here."
+    }
+   },
+   "scope": {
+    "eligible": "Both facets now have a real canonical pattern to measure against (corrected from the first draft's 'textAlign unresolved' framing). eligible = qualifiesWhen.textAlign / qualifiesWhen.contentAlign above, per facet. A real MISSING/NOT-APPLICABLE census pass for either facet is future work — not run this session — now that there's something real to measure against."
+   }
+  }
+ }
+}

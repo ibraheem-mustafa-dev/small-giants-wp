@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Generative background — POC replica (fidelity comparator, Task 1)</title>
+<style>
+  /*
+   * Layout copied from .claude/scratch/stripe-hero-poc/index.html (the
+   * reference rig) — hero box + canvas box only. The reference's copy,
+   * CTA, static-fallback <picture> and dark-theme branch are all measurement
+   * noise for THIS page's purpose (comparing the WebGL layer, not the
+   * surrounding hero chrome), so they are left out rather than carried
+   * across unused.
+   */
+  html, body { margin: 0; padding: 0; background: #fff; }
+  .hero {
+    position: relative;
+    width: 1440px;
+    height: 900px;
+    overflow: hidden;
+    background: #fff;
+  }
+  /* Canvas offset to the RIGHT, matching the reference: x=330, 1393x761
+     within a 1440x900 viewport (index.html:15-18). */
+  .hero__canvas {
+    position: absolute;
+    top: 0;
+    left: 330px;
+    width: 1393px;
+    height: 761px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<div class="hero">
+  <canvas class="hero__canvas" id="c" aria-hidden="true"></canvas>
+</div>
+<script type="module">
+/*
+ * poc-replica.html — Task 1 of the fidelity-comparator plan.
+ *
+ * Mounts the SHIPPING generative-background engine
+ * (src/shared/effects/webgl/generative-background.js) inside the reference
+ * rig's own hero/canvas box, exposing the same debug contract as
+ * .claude/scratch/stripe-hero-poc/index.html so a later driver can compare
+ * the two renderers frame-for-frame. This file only CREATES the page —
+ * capture and comparison are separate tasks.
+ *
+ * ── SERVING CONTRACT (must-read before wiring a driver at this page) ────
+ *
+ * This page needs a static server rooted at the REPO ROOT, not
+ * `plugins/sgs-blocks` (unlike `scripts/perf/generative-background-perf.html`,
+ * which only ever reaches inside the plugin). Two reasons:
+ *   1. `import … from '../../src/shared/effects/webgl/generative-background.js'`
+ *      needs `plugins/sgs-blocks/src/...` reachable, AND that module itself
+ *      does an EXTENSIONLESS import (`generative-background.js:152`,
+ *      `import { probeSurface } from './capability'`) — bundler-style, not
+ *      valid raw-ESM. The server must append `.js` to an extensionless
+ *      path that doesn't already exist, exactly as
+ *      `scripts/generative-background/capture-render.mjs`'s `serve()` does.
+ *   2. The `?pal=` texture fetch below reaches
+ *      `.claude/scratch/stripe-hero-poc/assets/<name>.png`, which sits
+ *      OUTSIDE `plugins/sgs-blocks` entirely.
+ * `capture-render.mjs`'s own committed server is rooted at
+ * `plugins/sgs-blocks` (`PLUGIN_ROOT`) and explicitly 403s anything outside
+ * it — so under THAT exact server this page's palette fetch will 403. That
+ * failure is now OBSERVABLE rather than a hang (see the img.onerror handler
+ * below) — the fix for the wrong root is a driver-side serving change
+ * (widen the root, or mount `.claude/scratch` as a second static path),
+ * not something this file can do by itself.
+ *
+ * ⚠ I4 — CAPTURE TRAP, read before writing a driver against this page.
+ * The WebGL2 context below is created with `preserveDrawingBuffer: false`
+ * (deliberately — it mirrors the shipping engine exactly, generative-
+ * background.js's own context attributes). That means the drawing buffer
+ * is CLEARED once the compositor has run — so a `readPixels()` (or a
+ * screenshot taken via a separate round-trip) done AFTER the browser has
+ * composited the frame reads back all zeros, even though the canvas
+ * rendered perfectly and looked completely normal moments earlier. This
+ * is not hypothetical: it produced a false "opaque: 0 across 66,659
+ * samples — completely blank" result during this very review, on a page
+ * that was rendering correctly; drawing and reading within the SAME
+ * JS/`page.evaluate()` turn gave the correct ~37% painted. A capture
+ * MUST either use `page.screenshot()` (which captures the actual
+ * composited pixels, same technique `capture-render.mjs` already uses)
+ * OR call `__drawAtRawTime()` and read the canvas back within the SAME
+ * evaluate turn — never draw in one turn and read in a later one.
+ *
+ * ⚠ M6 — `__ready` means SETTLED, not SUCCEEDED. It becomes `true` on
+ * both a working render AND every terminal failure this page can hit (no
+ * WebGL2, palette fetch failure, engine construction failure) — see
+ * `failObservably()` below. A driver MUST check `window.__err` (should be
+ * `undefined`/falsy) before trusting anything `__glstate()`/`__utime()`/
+ * `__frustum()`/`__drawAtRawTime()` return. Waiting on `__ready` alone and
+ * assuming success is the exact bug this contract exists to prevent.
+ *
+ * Query parameters (matching the rig's vocabulary):
+ *   ?t=<n>     — sets the shader's u_time uniform directly (see
+ *                __drawAtRawTime below for the unit conversion this needs).
+ *                No ?t= at all defaults to 2.0 (NOT the rig's own animated
+ *                default — the rig runs a live rAF loop absent ?t=; this
+ *                page always draws exactly one static frame, so it picks a
+ *                fixed default instead of animating). Validated against the
+ *                same `[0-9.]+` shape the rig's own regex uses
+ *                (index.html:471); anything else is ignored and the
+ *                default is used.
+ *   ?pal=<name> — loads .claude/scratch/stripe-hero-poc/assets/<name>.png
+ *                 as the textureSource. Default 'palette-a', matching the
+ *                 rig's own default (index.html:250). This PNG is a
+ *                 measurement fixture only: never referenced from
+ *                 plugins/ runtime code, never committed, never deployed.
+ *   ?ground=<r>,<g>,<b> — sRGB 0-1 triple passed through as
+ *                 `opts.groundColour`. Without this, createGenerativeBackground()
+ *                 falls to its own DEFAULT_GROUND = [0.98,0.98,0.97] — a
+ *                 hardcoded near-white that production NEVER actually uses.
+ *                 In production, `fx-generative-background.js` reads the
+ *                 LIVE `--sgs-genbg-ground` custom property (resolved by
+ *                 `includes/fx-generative-background.php` from the client's
+ *                 own theme token, e.g. `surface`), which this bare-engine
+ *                 page — deliberately bypassing that whole boot module —
+ *                 never sets. Left unset, this page renders against a ground
+ *                 colour production never actually ships, which is a real
+ *                 divergence source distinct from the shape/geometry
+ *                 question this harness otherwise exists to answer. A driver
+ *                 wanting an apples-to-apples comparison MUST resolve the
+ *                 same token production resolves and pass it here explicitly
+ *                 — see fidelity-compare.mjs's GROUND_COLOUR constant.
+ *   ?silhouette=1 — DEBUG-ONLY (systematic-debugging, 2026-09-03). Sets
+ *                 `opts.silhouetteDebug`, which makes the engine paint a flat
+ *                 white silhouette wherever the folded mesh (layers 1-3)
+ *                 rasterises, bypassing every fragment-level effect (grading,
+ *                 glow-gate, striation, depth-fade, grain). Used by
+ *                 silhouette-probe.mjs to isolate geometry/twist coverage
+ *                 from fragment-shading coverage — never set by anything
+ *                 shipped.
+ */
+import {
+	createGenerativeBackground,
+	TIME_SCALE,
+} from '../../src/shared/effects/webgl/generative-background.js';
+
+const q   = new URLSearchParams( location.search );
+const PAL = ( q.get( 'pal' ) || 'palette-a' ).replace( /[^a-z0-9-]/gi, '' );
+const SILHOUETTE_DEBUG = q.get( 'silhouette' ) === '1';
+const GROUND_MATCH = ( q.get( 'ground' ) || '' ).match(
+	/^([0-9.]+),([0-9.]+),([0-9.]+)$/
+);
+const GROUND_COLOUR = GROUND_MATCH
+	? [ parseFloat( GROUND_MATCH[ 1 ] ), parseFloat( GROUND_MATCH[ 2 ] ), parseFloat( GROUND_MATCH[ 3 ] ) ]
+	: undefined; // undefined, not null — createGenerativeBackground()'s own
+	// `Array.isArray(opts.groundColour) ? opts.groundColour : DEFAULT_GROUND`
+	// check only falls through to its default on a non-array, so leaving this
+	// unset (rather than guessing a value) preserves the existing behaviour
+	// exactly when no ?ground= is supplied.
+const T_MATCH = location.search.match( /[?&]t=([0-9.]+)/ );
+// I1 fix: the rig's own [0-9.]+ shape matches a string of dots alone (e.g.
+// "?t=..."), which parseFloat() turns into NaN — T_DEFAULT was previously
+// assumed to always be finite on the strength of the regex alone, which is
+// false. Falling back to 2.0 here is the FIRST of two independent guards
+// (the second is at the call site below); either one closes the hang on
+// its own, but both together mean this can never regress silently if one
+// is ever refactored out.
+const T_PARSED  = T_MATCH ? parseFloat( T_MATCH[ 1 ] ) : NaN;
+const T_DEFAULT = Number.isFinite( T_PARSED ) ? T_PARSED : 2.0;
+
+const canvas = document.getElementById( 'c' );
+const DPR = 1; // Pinned on both sides of the comparison — see the resize() call below.
+
+/**
+ * Define every contract member as a null-returning stub. Called immediately
+ * so the contract's SHAPE always exists from the very first tick, even if
+ * everything after this fails — a driver that (correctly, per the contract)
+ * waits for __ready before calling e.g. __glstate() must never hit a
+ * TypeError because a failure path left a member undefined.
+ *
+ * @return {void}
+ */
+function installStubContract() {
+	window.__drawAtRawTime = () => null;
+	window.__utime         = () => null;
+	window.__glstate       = () => null;
+	window.__frustum       = () => null;
+}
+installStubContract();
+
+/**
+ * Fail OBSERVABLY: set __err with a diagnostic string and flip __ready so a
+ * driver polling __ready never hangs forever on a load it cannot recover
+ * from. The contract-shape stubs above are already in place, so calling any
+ * of the four functions after this returns null rather than throwing.
+ *
+ * @param {string} message What went wrong.
+ * @return {void}
+ */
+function failObservably( message ) {
+	window.__err   = message;
+	window.__ready = true;
+}
+
+/*
+ * ── flipY resolution (Task 1's must-resolve item) ───────────────────────
+ *
+ * Determined by a committed, reproducible probe —
+ * `scripts/generative-background/flip-probe.mjs` — NOT by rendering either
+ * page. (An earlier attempt compared whole-page hues against a screenshot
+ * of the reference rig; that was rejected on review because the reference's
+ * own render passes through an FBO + angular-blur + grain post-process
+ * that is itself a Y-flip site and injects hue noise, so a hue comparison
+ * against it cannot isolate the flip question from blend/post-process/
+ * geometry all at once.)
+ *
+ * The probe uploads palette-a.png to a bare WebGL2 texture, attaches it to
+ * an FBO, and reads rows straight back via gl.readPixels — no shader, no
+ * geometry, no blending — then compares each row against the SAME PNG
+ * decoded through a 2D canvas, with a negative-control separation gate
+ * (both settings must disagree, and the winning diff must be >=10x smaller
+ * than the losing one) so a degenerate result cannot masquerade as a
+ * confident one.
+ *
+ * I3 (numbers need provenance, not just a value): the exact mean-abs-diff
+ * figures are NOT restated here on purpose — a number copied into a
+ * comment has no GPU/driver/PNG-hash attached to it and rots the moment
+ * anyone re-runs the probe on different hardware or a different palette
+ * copy. The probe itself prints full provenance (unmasked GPU
+ * renderer/vendor, Chromium version, palette-a.png SHA-256) alongside
+ * every number it reports. Re-run it to get the current, provenanced
+ * result: node scripts/generative-background/flip-probe.mjs
+ *
+ * Last run's result (2026-08-29, ANGLE/NVIDIA GeForce RTX 2060, Chromium
+ * 145.0.7632.6, palette-a.png sha256=8124d14ca383a1f830ff18f65b554a0c9677a
+ * 8bda33f9ad6471c835d69bf62f1): flipY=true puts the PNG's own TOP row at
+ * v=1 (texel row max) with an EXACT match (diff 0.000) against a losing
+ * diff of 29.73 — well past the 10x separation gate; flipY=false is the
+ * mirror image. That is a driver-level fact only — it says nothing on its
+ * own about which setting is CORRECT for this shader. The second,
+ * independent, also non-rendered fact closes that gap:
+ * generative-background-transform.js `buildFoldedGeometry()` assigns
+ * `uvs[...v] = iy / segmentsY` against `restY = (v - 0.5) * height`, i.e.
+ * v=0 is the BOTTOM of the local plane and v=1 the TOP — the same v-up
+ * convention three.js's own PlaneGeometry uses (which is exactly the
+ * convention the reference rig's `THREE.TextureLoader` flipY:true default
+ * exists to serve).
+ *
+ * Combining both: v=1 must sample the PNG's TOP row to match that
+ * convention, and the probe shows that only flipY=true does that.
+ */
+const FLIP_Y = true;
+
+// Pre-create the WebGL2 context ourselves, with the SAME context-creation
+// attributes createGenerativeBackground() uses (generative-background.js,
+// createGenerativeBackground()'s `canvas.getContext( 'webgl2', {...} )`
+// call). `HTMLCanvasElement.getContext()` returns the SAME context object
+// on every subsequent call for a given canvas — attributes are only
+// honoured on the FIRST successful call — so this lets us set
+// UNPACK_FLIP_Y_WEBGL before the engine's own texImage2D upload runs,
+// without touching src/.
+const gl = canvas.getContext( 'webgl2', {
+	antialias: false,
+	alpha: true,
+	depth: true,
+	powerPreference: 'low-power',
+	failIfMajorPerformanceCaveat: true,
+} );
+
+if ( ! gl ) {
+	failObservably( 'no WebGL2 context available' );
+} else {
+	gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, FLIP_Y );
+
+	const paletteUrl = '../../../../.claude/scratch/stripe-hero-poc/assets/' + PAL + '.png';
+	const img = new Image();
+
+	// C1 fix: an onerror here (e.g. the palette 403s under a server rooted
+	// at plugins/sgs-blocks — see the header comment) used to reject an
+	// un-caught top-level await, which HALTED the module script before
+	// __err or __ready were ever set — a silent hang for any driver polling
+	// __ready. Now caught below and turned into an observable failure
+	// instead, and the rest of this block is skipped via `paletteOk` rather
+	// than relying on control flow the catch can't safely express at
+	// module top level.
+	let paletteOk = true;
+	try {
+		await new Promise( ( resolve, reject ) => {
+			img.onload  = resolve;
+			img.onerror = () => reject( new Error( 'palette fetch failed: ' + paletteUrl ) );
+			img.src = paletteUrl;
+		} );
+	} catch ( err ) {
+		paletteOk = false;
+		failObservably( err.message );
+		// Also a plain console error, so it shows up in a driver's captured
+		// console log even if it never reads __err.
+		console.error( err );
+	}
+
+	if ( ! paletteOk ) {
+		// Nothing further to do — installStubContract() already gave every
+		// contract member a safe null-returning shape, and failObservably()
+		// has set __err + __ready above.
+	} else {
+	// speed:1 is load-bearing, not a stylistic default — it makes
+	// draw(seconds) apply ONLY its own internal TIME_SCALE (no extra
+	// client-facing multiplier), so the live uniform is uTime*TIME_SCALE,
+	// matching the assertion in __drawAtRawTime() below.
+	//
+	// ⚠ HISTORY (kept — the failure mode this file exists to prevent
+	// recurring). Two DIFFERENT bugs have lived on this exact line, in
+	// OPPOSITE directions. C1 (2026-08-29): this comment once claimed
+	// __drawAtRawTime's argument needed no scaling at all, because "our
+	// shader consumes u_time raw" — true at the time, but the ENGINE
+	// itself (not just this diagnostic page) was missing the reference's
+	// internal `u_time * u_speed` scaling (shaders/68467.glsl:230,
+	// u_speed=4e-5), which is also why the live production effect ran
+	// ~25,000x faster in EFFECTIVE phase than intended. D930 (2026-09-03,
+	// Bean: "ours is super fast") fixed that at the source — draw() now
+	// applies its own `TIME_SCALE = 0.04` (the reference's ms-to-real-
+	// second-equivalent factor) before every upload. This diagnostic page
+	// and fidelity-compare.mjs's `oursTimeFor()` were updated to match:
+	// this driver no longer needs to pre-apply RIG_SPEED itself (the
+	// engine does the reference-matched scaling now), just a plain
+	// ms->seconds unit conversion.
+	const handle = await createGenerativeBackground( canvas, {
+		textureSource: img,
+		speed: 1,
+		groundColour: GROUND_COLOUR,
+		silhouetteDebug: SILHOUETTE_DEBUG,
+	} );
+
+	if ( ! handle ) {
+		failObservably( 'createGenerativeBackground returned null' );
+	} else {
+		let lastFrustum = { width: 1393, height: 761 };
+		handle.resize( lastFrustum.width, lastFrustum.height, DPR );
+
+		/**
+		 * Read the u_time value ACTUALLY sitting in the linked program's
+		 * uniform right now, via gl.getUniform() — not the value we asked
+		 * draw() to set. draw() leaves its program bound (gl.useProgram()
+		 * with no later gl.useProgram( null )), so CURRENT_PROGRAM is a
+		 * live handle onto the exact program object draw() used.
+		 *
+		 * @return {number|null} The live u_time uniform value, or null if no
+		 *                       program is currently bound (i.e. no draw has
+		 *                       landed yet).
+		 */
+		function readLiveUTime() {
+			const program = gl.getParameter( gl.CURRENT_PROGRAM );
+			if ( ! program ) {
+				return null;
+			}
+			const loc = gl.getUniformLocation( program, 'u_time' );
+			return gl.getUniform( program, loc );
+		}
+
+		let lastUTime = null;
+
+		/**
+		 * Deterministic single-frame draw at an ABSOLUTE u_time value —
+		 * the same semantics as the rig's own ?t= handling.
+		 *
+		 * M5 fix: this doc previously claimed a uniform "null on a
+		 * non-finite input OR a failed draw" contract that the code never
+		 * actually implemented — a failed handle.draw() always returned
+		 * `lastUTime` (the previous known-good value), not `null`. Aligned
+		 * to what the code does, which is the more useful behaviour: a
+		 * live draw failure (context lost mid-session) preserves the last
+		 * good reading rather than wiping it out from under a driver that
+		 * already trusted it.
+		 *
+		 * @param {number} uTime The exact u_time value to render.
+		 * @return {number|null} `null` on a non-finite input (nothing is
+		 *                       drawn) OR when the post-draw live readback
+		 *                       itself comes back null (no program bound —
+		 *                       should not happen after a successful
+		 *                       draw, but not assumed away). The PREVIOUS
+		 *                       `lastUTime` (which may itself still be
+		 *                       `null` if no draw has ever landed) when
+		 *                       `handle.draw()` returns false. Otherwise
+		 *                       the live u_time uniform value read back
+		 *                       after the draw (see readLiveUTime above) —
+		 *                       asserted equal to `uTime`, not merely
+		 *                       assumed. `window.__err` is set on every
+		 *                       null-ish path so the reason is always
+		 *                       diagnosable.
+		 */
+		window.__drawAtRawTime = ( uTime ) => {
+			// NaN guard: an invalid ?t= (e.g. "abc") used to parseFloat to
+			// NaN, which was still handed to draw() — the readback would
+			// also be NaN, and Math.abs(NaN - NaN) > 1e-6 is FALSE, so the
+			// mismatch assertion below passed silently on a garbage frame.
+			// Guard first.
+			if ( ! Number.isFinite( uTime ) ) {
+				window.__err = '__drawAtRawTime called with a non-finite value: ' + uTime;
+				return null;
+			}
+
+			const ok = handle.draw( uTime );
+			if ( ! ok ) {
+				// Do NOT report __ready on a draw that did not land (e.g.
+				// the context was lost). Leave __ready exactly as it was
+				// — true if an earlier draw already succeeded, still
+				// unset if this is the very first attempt — but always
+				// leave a diagnostic. Returns the PREVIOUS lastUTime
+				// (possibly still null) rather than wiping out a value a
+				// driver may already be relying on.
+				window.__err = 'handle.draw(' + uTime + ') returned false (context lost?)';
+				return lastUTime;
+			}
+
+			lastUTime = readLiveUTime();
+			if ( lastUTime === null ) {
+				// M7 fix: this used to fall through and set __ready=true
+				// regardless, even when the live readback itself failed
+				// (no program bound) — reporting "ready" alongside a
+				// value that is not actually valid. __ready now only
+				// flips inside the genuine success branch below.
+				window.__err =
+					'readLiveUTime() returned null immediately after a successful draw(' +
+						uTime + ') — no program bound?';
+				return null;
+			}
+
+			// D930: draw()'s own internal TIME_SCALE (0.04, reference-matched —
+			// see its declaration comment in generative-background.js) now
+			// applies BEFORE upload, so the live uniform is uTime*TIME_SCALE*
+			// speed, not uTime raw. speed is pinned to 1 above.
+			const expectedUTime = uTime * TIME_SCALE;
+			if ( Math.abs( lastUTime - expectedUTime ) > 1e-6 ) {
+				console.error(
+					'ASSERTION FAILED: __drawAtRawTime requested u_time=' +
+						uTime + ' (expected live uniform ' + expectedUTime +
+						' after TIME_SCALE) but the live uniform reads ' + lastUTime +
+						' — the seconds*TIME_SCALE*speed conversion (speed pinned to 1) ' +
+						'did not land as expected.'
+				);
+			}
+			window.__ready = true;
+			return lastUTime;
+		};
+
+		window.__utime = () => lastUTime;
+
+		/**
+		 * I3 fix: assert the frustum inputs, not just report intent.
+		 * resize() builds the projection from its own width/height
+		 * arguments (generative-background.js resize(), CSS-box branch) —
+		 * cssWidth/cssHeight/backingWidth/backingHeight are all read LIVE
+		 * from the canvas/context, not recomputed, so a divergence between
+		 * "what we told resize()" and "what the canvas/context actually
+		 * has" is caught rather than assumed away. This also closes the
+		 * DPR assertion the brief calls for: backingWidth/Height should
+		 * equal cssWidth/Height * DPR (DPR pinned to 1 above), and a
+		 * mismatch here would mean the pin did not take.
+		 *
+		 * @return {Object} { width, height, cssWidth, cssHeight, backingWidth, backingHeight }
+		 */
+		window.__frustum = () => {
+			const cssWidth      = canvas.clientWidth;
+			const cssHeight     = canvas.clientHeight;
+			const backingWidth  = gl.drawingBufferWidth;
+			const backingHeight = gl.drawingBufferHeight;
+			const result = {
+				width: lastFrustum.width,
+				height: lastFrustum.height,
+				cssWidth,
+				cssHeight,
+				backingWidth,
+				backingHeight,
+			};
+			if ( Math.abs( lastFrustum.width - cssWidth ) > 0.5 || Math.abs( lastFrustum.height - cssHeight ) > 0.5 ) {
+				console.error(
+					'ASSERTION FAILED: __frustum() width/height diverges from canvas.clientWidth/Height.',
+					result
+				);
+			}
+			const expectedBackingWidth  = Math.round( cssWidth * DPR );
+			const expectedBackingHeight = Math.round( cssHeight * DPR );
+			if ( backingWidth !== expectedBackingWidth || backingHeight !== expectedBackingHeight ) {
+				console.error(
+					'ASSERTION FAILED: __frustum() backing store does not match cssWidth/Height * DPR(' +
+						DPR + ') — the DPR pin did not take.',
+					result
+				);
+			}
+			return result;
+		};
+
+		// Wrap resize() so __frustum() can report the CSS width/height the
+		// projection was actually built from.
+		window.__resize = ( width, height, dpr ) => {
+			lastFrustum = { width, height };
+			handle.resize( width, height, dpr );
+		};
+
+		window.__glstate = () => ( {
+			blend:            gl.getParameter( gl.BLEND ),
+			blendSrcRGB:      gl.getParameter( gl.BLEND_SRC_RGB ),
+			blendDstRGB:      gl.getParameter( gl.BLEND_DST_RGB ),
+			depthTest:        gl.getParameter( gl.DEPTH_TEST ),
+			cullFace:         gl.getParameter( gl.CULL_FACE ),
+			unpackFlipY:      gl.getParameter( gl.UNPACK_FLIP_Y_WEBGL ),
+			contextAttributes: gl.getContextAttributes(),
+		} );
+
+		window.__handle = handle;
+
+		// Initial deterministic draw so a bare load already satisfies the
+		// "done when" criterion without requiring a caller to invoke
+		// __drawAtRawTime first.
+		//
+		// I1 fix: this is a TERMINAL init path — unlike a later
+		// __drawAtRawTime() call from a driver, there is no next line of
+		// page script that will ever run after this one, so if it returns
+		// null (T_DEFAULT's own guard above should prevent that, but is
+		// not trusted blindly — see the comment there) __ready would never
+		// flip and a driver polling it would hang exactly like C1's
+		// original bug, just on a different path. Route it through
+		// failObservably() the same as every other terminal failure.
+		if ( window.__drawAtRawTime( T_DEFAULT ) === null ) {
+			failObservably( window.__err || 'initial __drawAtRawTime( ' + T_DEFAULT + ' ) failed with no __err set' );
+		}
+	}
+	}
+}
+</script>
+</body>
+</html>

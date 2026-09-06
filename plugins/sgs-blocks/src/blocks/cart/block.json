@@ -37,6 +37,20 @@
 			"iconPicker": true,
 			"headerEssential": true,
 			"imageControls": false,
+			"colourExemptions": {
+				"badgeBackground": {
+					"rule": "states",
+					"reason": "The cart-icon badge is a status indicator nested inside .sgs-cart__trigger, not itself a click target — no :hover CSS targets it anywhere in style.css. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"panelBackground": {
+					"rule": "states",
+					"reason": "The flyout/drawer panel surface is not a click target — its child close/view/checkout buttons carry their own separate colour attributes. No :hover CSS targets the panel background anywhere. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix. The mini-cart item thumbnail (WooCommerce product image, hydrated client-side by panel-render.js/item-row-template.js from the Store API) now routes its object-fit through the shared media-element atom layer instead of a style.css literal. This is a NEW client control — no pre-existing object-fit picker on this block. render.php (always PHP-rendered, even before JS hydration) emits the atom's --sgs-media-object-fit custom property scoped to the block wrapper; item-row-template.js appends the shared .sgs-media-el marker class to the thumbnail <img> it builds at runtime — the custom property inherits down regardless of when that element is added to the DOM. style.css no longer hardcodes object-fit on .sgs-cart__item-thumb, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default).",
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
+			],
 			"boxFamilies": {
 				"margin": [
 					"marginTablet",
@@ -63,7 +77,15 @@
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconSize is a real attribute but is not a css:font-size (sets width/height, not text size) — no cluster member exists, so it is an honest ORPHAN (FR-35-4). `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php). iconColourHover/iconColourHoverGradient (2026-09-06, colour-conformance closeout) mirror sgs/icon's own hover states shape exactly — resolved via sgs_icon_gradient_css() on .sgs-cart__trigger:hover."
 				},
 				"badge": {
 					"label": "Item-count badge",
@@ -72,9 +94,11 @@
 					"prefix": "badge",
 					"attrMap": {
 						"css:background-color": "badgeColour",
-						"css:color": "badgeTextColour"
+						"css:background-image": "badgeColourGradient",
+						"css:color": "badgeTextColour",
+						"css:color-gradient": "badgeTextColourGradient"
 					},
-					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1."
+					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings added 2026-09-04: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text."
 				},
 				"panel": {
 					"label": "Mini-cart panel",
@@ -83,9 +107,11 @@
 					"prefix": "panel",
 					"attrMap": {
 						"css:background-color": "panelBg",
-						"css:color": "panelTextColour"
+						"css:background-image": "panelBgGradient",
+						"css:color": "panelTextColour",
+						"css:color-gradient": "panelTextColourGradient"
 					},
-					"_note": "FR-36-19 Phase 2 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer."
+					"_note": "FR-36-19 Phase 2 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings added 2026-09-04, same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry)."
 				}
 			}
 		}
@@ -120,13 +146,30 @@
 			"default": "",
 			"description": "CSS gradient string painting the cart icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the cart icon's stroke on hover instead of a flat colour. Non-empty wins over iconColourHover at render time."
+		},
 		"badgeColour": {
 			"type": "string",
 			"default": "accent"
 		},
+		"badgeColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"badgeTextColour": {
 			"type": "string",
 			"default": "accent-text"
+		},
+		"badgeTextColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"ariaLabel": {
 			"type": "string",
@@ -180,9 +223,17 @@
 			"type": "string",
 			"default": "base"
 		},
+		"panelBgGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"panelTextColour": {
 			"type": "string",
 			"default": "contrast"
+		},
+		"panelTextColourGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

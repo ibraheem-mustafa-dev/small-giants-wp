@@ -43,14 +43,14 @@
 }
 
 .wc-block-mini-cart__button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
 
 /* Badge — brand primary colour (token, not hardcoded) */
 :where(.wc-block-mini-cart__badge) {
-	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--surface, #fff);
 }
 
@@ -68,6 +68,16 @@
    Default 420px; collapses to 100vw on narrow viewports. */
 :root {
 	--sgs-mini-cart-drawer-width: 420px;
+
+	/* Elevation tokens — palette-agnostic panel-vs-page separation.
+	   Mixed toward `text`, NOT toward black, so a DARK palette automatically
+	   gets a LIGHTER panel (mixing toward black would darken an already-dark
+	   surface and make the problem worse). Framework-default bug fix: on the
+	   stock theme.json defaults, --wp--preset--color--surface and
+	   --surface-alt sit at ~1.06:1 contrast — visually identical — so a panel
+	   background alone is not a reliable separator on any palette. */
+	--sgs-elevation-1: color-mix(in oklab, var(--wp--preset--color--surface) 92%, var(--wp--preset--color--text) 8%);
+	--sgs-elevation-line: color-mix(in oklab, var(--wp--preset--color--surface) 78%, var(--wp--preset--color--text) 22%);
 }
 
 .wc-block-components-drawer {
@@ -97,7 +107,7 @@
 }
 
 .wc-block-components-button.wc-block-components-drawer__close:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -133,9 +143,9 @@ h2.wc-block-mini-cart__title {
 /* Footer CTA buttons — primary brand token */
 .wc-block-mini-cart__footer-checkout.wc-block-components-button,
 .wc-block-mini-cart__footer-checkout.wp-element-button {
-	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--surface, #fff);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
+	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-weight: 600;
 	min-height: 44px;
@@ -151,7 +161,7 @@ h2.wc-block-mini-cart__title {
 
 .wc-block-mini-cart__footer-checkout.wc-block-components-button:focus-visible,
 .wc-block-mini-cart__footer-checkout.wp-element-button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -159,8 +169,8 @@ h2.wc-block-mini-cart__title {
 .wc-block-mini-cart__footer-cart.wc-block-components-button,
 .wc-block-mini-cart__footer-cart.wp-element-button {
 	background-color: transparent;
-	color: var(--wp--preset--color--primary, #0f7e80);
-	border: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-weight: 600;
 	min-height: 44px;
@@ -170,13 +180,13 @@ h2.wc-block-mini-cart__title {
 
 .wc-block-mini-cart__footer-cart.wc-block-components-button:hover,
 .wc-block-mini-cart__footer-cart.wp-element-button:hover {
-	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--surface, #fff);
 }
 
 .wc-block-mini-cart__footer-cart.wc-block-components-button:focus-visible,
 .wc-block-mini-cart__footer-cart.wp-element-button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -209,9 +219,9 @@ h2.wc-block-mini-cart__title {
 /* Proceed to checkout button — primary brand */
 .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button,
 .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button {
-	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--surface, #fff);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
+	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-weight: 600;
 	min-height: 44px;
@@ -228,7 +238,7 @@ h2.wc-block-mini-cart__title {
 
 .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button:focus-visible,
 .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -293,8 +303,8 @@ h2.wc-block-mini-cart__title {
 .wc-block-components-text-input input:focus,
 .wc-block-components-text-input select:focus,
 .wc-block-components-select select:focus {
-	border-color: var(--wp--preset--color--primary, #0f7e80);
-	box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 20%, transparent);
+	border-color: var(--wp--preset--color--primary);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary) 20%, transparent);
 	outline: none;
 }
 
@@ -307,9 +317,9 @@ h2.wc-block-mini-cart__title {
 /* Place order CTA — primary brand */
 .wc-block-components-checkout-place-order-button.wc-block-components-button,
 .wp-block-woocommerce-checkout-actions-block .wp-element-button {
-	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--surface, #fff);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
+	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-weight: 600;
 	min-height: 44px;
@@ -326,7 +336,7 @@ h2.wc-block-mini-cart__title {
 
 .wc-block-components-checkout-place-order-button.wc-block-components-button:focus-visible,
 .wp-block-woocommerce-checkout-actions-block .wp-element-button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -359,13 +369,13 @@ h2.wc-block-mini-cart__title {
 }
 
 .wc-block-components-quantity-selector__button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
 /* Remove from cart link */
 .wc-block-cart-item__remove-link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
@@ -438,7 +448,33 @@ h2.wc-block-mini-cart__title {
 
 /* ── 8a. Shop layout grid ── */
 
-.sgs-shop-layout {
+/* Specificity note (2026-08-23) — the compound selector is REQUIRED, not decorative.
+ * This element is an sgs/container, and every sgs/container instance emits its own
+ * per-instance rule `.sgs-container-<uid> { display:flex }` (its flow-mode default,
+ * since this instance carries no `layout` key) via the shared wrapper's scoped
+ * `<style>` block. That rule is a SINGLE class, (0,1,0) — the exact same specificity
+ * tier as a plain `.sgs-shop-layout` selector — but it is emitted LATER in source
+ * order (inline, per-instance, always after this stylesheet), so on a tie it wins
+ * the cascade. Measured live: the element computed `display:flex` with
+ * `grid-template-columns` sitting inert (that property does nothing on a flex
+ * container), so the filters aside rendered as a full-width block stacked ABOVE the
+ * product grid instead of a 260px rail beside it.
+ *
+ * `.wp-block-sgs-container.sgs-shop-layout` is TWO classes, (0,2,0) — it beats the
+ * per-instance flex rule outright, on specificity, regardless of source order. This
+ * mirrors the SAME two-class compound the container block's own generated CSS uses
+ * for its supports/state selectors (see plugins/sgs-blocks/src/blocks/container/
+ * render.php:102,192 — `.` + uid + `.wp-block-sgs-container`), so this is the
+ * established pattern for beating a container's own scoped rule, not a one-off.
+ * `.wp-block-sgs-container` is WP's own block-wrapper class, always present
+ * alongside the custom `className` — no template change needed to rely on it.
+ *
+ * !important was rejected: it wins the same fight while hiding which rule it is
+ * fighting, and the next per-instance property WC/SGS scopes onto this element
+ * would have to out-!important it too. Do NOT collapse this back to a bare
+ * `.sgs-shop-layout` in a tidy-up — that silently reintroduces the bug with no
+ * error, because the per-instance rule still ties it on specificity. */
+.wp-block-sgs-container.sgs-shop-layout {
 	display: grid;
 	grid-template-columns: 260px 1fr;
 	gap: var(--wp--preset--spacing--50, 2rem);
@@ -450,23 +486,109 @@ h2.wc-block-mini-cart__title {
 
 @media ( max-width: 781px ) {
 	/* Mobile: single column; aside sits above grid (no-JS fallback) */
-	.sgs-shop-layout {
+	.wp-block-sgs-container.sgs-shop-layout {
 		display: block;
+	}
+
+	/* Reserve space for the sticky filter trigger (8d-ii) so its reveal never
+	   occludes the last product row. Reserved unconditionally (not only while
+	   visible) to avoid a layout shift when it fades in on scroll. */
+	body.is-enhanced .sgs-shop-layout {
+		padding-bottom: calc(48px + var(--wp--preset--spacing--30, 1rem) * 2 + env(safe-area-inset-bottom, 0px));
 	}
 }
 
 /* ── 8b. Filter sidebar / drawer ── */
 
+/* Specificity note (2026-08-21) — the ID selector is REQUIRED, not decorative.
+ * Deleting it in a tidy-up silently kills the sticky sidebar again, with no error.
+ *
+ * WHAT WINS, AND WHY. This element is an sgs/container, so it is matched by the
+ * container block's own overlay-stacking guard in
+ * plugins/sgs-blocks/src/blocks/container/style.css:63 —
+ *   .sgs-container > *:not(.sgs-container__overlay):not(.sgs-hero__overlay)
+ *                     :not(.sgs-cta-section__overlay):not(.sgs-fx-path-route)
+ *                     :not(.sgs-fx-shape-visual):not(.sgs-fx-shape-target)
+ *   { position: relative; z-index: 1 }
+ * `:not()` contributes no specificity ITSELF but counts its ARGUMENT at full
+ * weight, so those six chained class arguments plus the leading class make that
+ * selector (0,7,0). It is one of SEVEN sibling guards in that file carrying 4-7
+ * :not() clauses each. A class-based rule here — even the `.sgs-container
+ * .sgs-shop-filters` compound this file carried until today, at (0,2,0) — loses
+ * to it outright, on specificity, regardless of source order.
+ *
+ * CONSEQUENCE WHEN IT LOSES: `position` computes to `relative`, so the sticky
+ * sidebar is not sticky at all — measured live at 1440px, the panel scrolled from
+ * top 421.9px to -178.1px on a 600px scroll, i.e. straight off with the page. The
+ * surviving `top: 24px` then acts as a plain offset on a relative element, sitting
+ * the panel 24px BELOW the first product card instead of level with it.
+ *
+ * An ID is (1,0,0) and beats (0,7,0) on the class column alone. The template
+ * already sets "anchor":"sgs-shop-filters" (archive-product.html:44) and that
+ * anchor is verified to render as a real id on this element, so the hook costs
+ * nothing new. !important was rejected: it wins the same fight while hiding which
+ * rule it is fighting.
+ *
+ * ⚠ CORRECTION TO THIS FILE'S OWN EARLIER NOTE. The version committed hours
+ * earlier blamed a tie between `.sgs-container` and `.sgs-shop-filters`, both
+ * (0,1,0), broken by source order, and "fixed" it with a (0,2,0) compound. That
+ * diagnosis was WRONG — read off a selector string truncated to 70 characters,
+ * which hid four of the six :not() clauses and understated the real specificity.
+ * The compound shipped and changed nothing. Rule 63 was always the winner.
+ *
+ * ⚠ NOT the cause, audited live and ruled out: no ancestor of this element up to
+ * <html> has overflow other than visible, any transform, any filter, any contain,
+ * or a fixed height — so the sticky containing-block chain is sound. And
+ * `align-self: start` is NOT needed: line 455 already sets align-items:start on
+ * the grid container, so every item shrink-wraps. The filters column matches the
+ * grid height because it is the TALLEST item, not because it stretches.
+ */
+#sgs-shop-filters,
 .sgs-shop-filters {
 	position: sticky;
-	top: var(--wp--preset--spacing--40, 1.5rem);
-	background: var(--wp--preset--color--surface, #fff);
-	border: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	/* When the header block has "Sticky" turned on, it pins itself to
+	   top:0 and publishes its own live height as --sgs-header-height
+	   (plugins/sgs-blocks/src/header-behaviours/view.js, F1 mechanism —
+	   the same property that already fixes anchor-link scroll-padding).
+	   Without adding it here, this panel's flat 24px offset put its top
+	   edge underneath the pinned header on any page with sticky on —
+	   confirmed live on the shop archive (header carries
+	   data-sgs-header-sticky="1"). The property defaults to 0px when
+	   unpublished (header not sticky, or JS not yet run), so this is a
+	   no-op everywhere the bug did not exist. */
+	top: calc(var(--sgs-header-height, 0px) + var(--wp--preset--spacing--40, 1.5rem));
+
+	/* ── Filter skin (brand-derived, palette-agnostic) ──
+	 * Every value is mixed FROM the client's own primary/surface tokens, so a
+	 * law firm's navy palette and a bakery's pink palette both get a panel that
+	 * reads as theirs. No client hex appears here — this file is framework.
+	 * `--sgs-elevation-*` (P1-7) stays the generic elevation system and still
+	 * supplies the shadow; the panel FILL is brand-tinted rather than the
+	 * near-invisible neutral it was. */
+	--sgs-filter-surface: color-mix(in oklab, var(--wp--preset--color--primary) 12%, var(--wp--preset--color--surface));
+	--sgs-filter-line: color-mix(in oklab, var(--wp--preset--color--primary) 42%, var(--wp--preset--color--surface));
+	--sgs-filter-heading: var(--wp--preset--color--text);
+	--sgs-filter-label: 0.9375rem;
+
+	background: var(--sgs-filter-surface);
+	border: 1px solid var(--wp--preset--color--border, #e0e0e0);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	padding: var(--wp--preset--spacing--40, 1.5rem);
+	/* Survives ANY palette — the elevation-line token alone can be too subtle
+	   at extreme contrast ratios, so a fixed-alpha shadow backstops it. */
+	box-shadow: 0 1px 3px rgb(0 0 0 / .08), 0 0 0 1px var(--sgs-elevation-line);
 }
 
 /* Filters heading */
+/* `dialog.show()` (the desktop, non-modal path) moves focus INTO the dialog, so
+ * the heading - which carries tabindex="-1" so the mobile sheet can focus it -
+ * received focus on page load and painted a ring around the word "Filters" for
+ * mouse users who had not interacted at all. Suppressed only for
+ * :focus-without-:focus-visible, so a keyboard user still gets the ring. */
+.sgs-shop-filters__heading:focus:not(:focus-visible) {
+	outline: none;
+}
+
 .sgs-shop-filters__heading {
 	font-size: 1rem;
 	font-weight: 700;
@@ -498,7 +620,7 @@ h2.wc-block-mini-cart__title {
 }
 
 .sgs-shop-filters__close:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
@@ -557,12 +679,22 @@ h2.wc-block-mini-cart__title {
 		   uses (scope bridge — see block comment above) ── */
 		min-height: 44px;
 		padding: 0.5em 1.25em;
-		border-radius: var(--wp--custom--border-radius--medium, 8px);
+		border-radius: var(--wp--custom--border-radius--pill, 9999px);
 		font-weight: 600;
 		font-size: 0.9375rem;
 		cursor: pointer;
 		background: var(--wp--preset--color--primary, #E68A95);
-		color: var(--sgs-product-card-btn-text, #3A2E26);
+		/* Text ON the primary fill, so it takes the palette's own `primary-text`
+		   (#fffaf5) — the token that exists for exactly this pairing. Was
+		   `--sgs-product-card-btn-text` (#3A2E26), which is body-text brown and
+		   matched no other primary control on the site.
+		   ⚠ CORRECTION to an earlier comment here, which claimed the client's
+		   tokens were inconsistent because `button-presets--primary--text` is
+		   also brown. That was a misreading, not a defect: `primary` is the brand
+		   colour itself, `primary-text` is the text that sits on it, and the
+		   button-preset entry is a separate setting again. Nothing to fix in the
+		   theme snapshot. */
+		color: var(--wp--preset--color--primary-text, #fffaf5);
 		border: 2px solid var(--wp--preset--color--primary, #E68A95);
 		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
@@ -579,24 +711,139 @@ h2.wc-block-mini-cart__title {
 	}
 }
 
-/* ── 8d. Off-canvas drawer (mobile, JS-enhanced) ── */
+/* ── 8d. Native <dialog> bottom sheet (mobile, JS-enhanced) ──
+ *
+ * `.sgs-shop-filters` is now a <dialog> element (converted at runtime by
+ * sgs-shop-filters.js — the template still authors a plain <aside>). Two
+ * presentations, one DOM:
+ *   - Desktop (≥782px): opened NON-MODALLY via `.show()` — renders in-flow,
+ *     using the SAME sticky-sidebar rules above (`.sgs-shop-filters`), no
+ *     ::backdrop, no top layer.
+ *   - Mobile (<781px): opened via `.showModal()` — promoted to the browser's
+ *     TOP LAYER, which is what lets it sit above `sgs/container`'s
+ *     `position:relative;z-index:1` rule (container/style.css:63) without a
+ *     z-index fight. Only styled while `:modal` (i.e. genuinely in the top
+ *     layer) so the desktop static-open state is untouched.
+ * A CLOSED dialog (no `open` attribute) is `display:none` by the UA
+ * stylesheet — zero tabbable descendants by construction, not by a
+ * transform/z-index rule that can silently stop applying.
+ */
+
+dialog.sgs-shop-filters {
+	/* Neutralise UA <dialog> chrome (border/inset/background) so both
+	   presentations render purely from the .sgs-shop-filters rules above. */
+	border: 0;
+	max-width: none;
+	max-height: none;
+	color: inherit;
+
+	/* The UA stylesheet also gives <dialog> `width: fit-content`, so on desktop
+	   the sidebar shrank to whatever its widest visible row happened to be —
+	   measured 248px inside its own 260px grid track, and it narrowed further
+	   as accordion groups closed, because closed groups expose only their short
+	   labels. The track already defines the width; the panel must simply fill it. */
+	width: 100%;
+
+	/* The UA stylesheet gives <dialog> `margin: auto`. As a GRID ITEM that
+	   resolves to auto margins on both axes, which centres the sidebar in its
+	   track and silently overrides the parent's `align-items: start` - measured
+	   live 2026-08-20 at 1309px: the filter panel's top sat 112px BELOW the
+	   first product card. It is not a spacing bug and no amount of align-items
+	   fixes it; auto margins win. Introduced by the <aside> -> <dialog>
+	   conversion, so it is corrected here at the source. */
+	margin: 0;
+}
+
+.sgs-shop-filters__scroll {
+	min-height: 0;
+}
 
 @media ( max-width: 781px ) {
-	body.is-enhanced .sgs-shop-filters {
-		/* Off-canvas: positioned fixed, slides in from the left */
+	dialog#sgs-shop-filters:modal {
+		/* Bottom sheet: full width, ~85vh, anchored to the viewport bottom. */
 		position: fixed;
-		inset: 0;
-		width: min(320px, 90vw);
-		height: 100%;
-		z-index: 9999;
+		inset: auto 0 0 0;
+		margin: 0;
+		width: 100%;
+		max-width: 100vw;
+		/* FULL height, not 85vh (Bean, 2026-08-20). The sheet is anchored to the
+		   bottom edge and the filter set is tall enough to fill the screen, so a
+		   15vh letterbox of dimmed page above it bought nothing and cost a whole
+		   filter group of visible space. `dvh` not `vh` so the mobile browser's
+		   collapsing address bar does not leave a gap or force an inner scroll. */
+		height: 100dvh;
+		max-height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		/* No top rounding at full height - a rounded corner against the very top
+		   of the viewport reads as a rendering fault, not a sheet. */
+		border-radius: 0;
+		padding: var(--wp--preset--spacing--40, 1.5rem) var(--wp--preset--spacing--40, 1.5rem) 0;
+	}
+
+	/* ── Sheet motion: enter AND exit (Tier V — CSS only, no JS, no library) ──
+	 *
+	 * A keyframe `animation` can only play on ENTER: by the time the dialog
+	 * closes the element is already `display:none`, so the old
+	 * `animation: sgs-sheet-in` gave a sheet that slid up gracefully and then
+	 * vanished instantly. The pair that makes exit possible is `@starting-style`
+	 * (the state to animate FROM on first paint) plus `transition-behavior:
+	 * allow-discrete` on `display`/`overlay`, which keeps the element painted in
+	 * the top layer for the duration of the transition.
+	 *
+	 * Keyed on `[open]` rather than `:modal` deliberately — `:modal` stops
+	 * matching the instant `close()` is called, which would kill the exit
+	 * transition. Inside this media query `[open]` implies modal anyway, because
+	 * the non-modal `show()` path only runs at >=782px.
+	 *
+	 * Easing is a decelerate curve, not `ease`: a bottom sheet should arrive fast
+	 * and settle, the way a physical panel does. */
+	dialog.sgs-shop-filters {
+		translate: 0 100%;
+		opacity: 0;
+		transition:
+			translate 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+			opacity 0.2s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open] {
+		translate: 0 0;
+		opacity: 1;
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open] {
+			translate: 0 100%;
+			opacity: 0;
+		}
+	}
+
+	dialog.sgs-shop-filters::backdrop {
+		background: rgb(0 0 0 / 0);
+		transition:
+			background 0.32s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open]::backdrop {
+		background: rgb(0 0 0 / 0.45);
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open]::backdrop {
+			background: rgb(0 0 0 / 0);
+		}
+	}
+
+	dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll {
+		flex: 1 1 auto;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		border-radius: 0;
-		border: none;
-		border-right: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
-		box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
-		transform: translateX(-100%);
-		transition: transform 0.28s ease;
+		padding-bottom: var(--wp--preset--spacing--30, 1rem);
 	}
 
 	body.is-enhanced .sgs-shop-filters__close {
@@ -604,27 +851,140 @@ h2.wc-block-mini-cart__title {
 	}
 }
 
-/* Open state */
+/* ── 8d-i. Sheet footer — sticky primary action + lighter "Clear all" ──
+ * Injected by sgs-shop-filters.js as the dialog's last child (outside the
+ * scrollable region), so it stays pinned to the sheet's bottom edge.
+ * Desktop: hidden — the static sidebar has no sheet footer. */
+
+.sgs-shop-filters__sheet-footer {
+	display: none;
+}
+
 @media ( max-width: 781px ) {
-	body.is-enhanced .sgs-shop-filters.is-open {
-		transform: translateX(0);
+	dialog.sgs-shop-filters:modal .sgs-shop-filters__sheet-footer {
+		display: flex;
+		align-items: center;
+		gap: var(--wp--preset--spacing--30, 1rem);
+		flex-shrink: 0;
+		padding: var(--wp--preset--spacing--30, 1rem) 0;
+		padding-bottom: calc(var(--wp--preset--spacing--30, 1rem) + env(safe-area-inset-bottom, 0px));
+		/* The footer sits INSIDE the sheet, so it takes the sheet's own surface.
+		   It previously used --sgs-elevation-1, the generic neutral introduced
+		   before the panel had a brand skin — against the now brand-tinted panel
+		   that read as a grey slab pasted onto pink. The border still separates
+		   it; the fill no longer contradicts it. */
+		border-top: 1px solid var(--sgs-filter-line, var(--sgs-elevation-line));
+		background: var(--sgs-filter-surface, var(--sgs-elevation-1));
 	}
 }
 
-/* Backdrop */
-.sgs-shop-filters__backdrop {
-	display: none;
-	position: fixed;
-	inset: 0;
-	z-index: 9998;
-	background: rgba(0, 0, 0, 0.45);
-	opacity: 0;
-	transition: opacity 0.28s ease;
+.sgs-shop-filters__apply {
+	flex: 1 1 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.75em 1.25em;
+	background: var(--wp--preset--color--primary);
+	color: #ffffff;
+	border: 2px solid var(--wp--preset--color--primary);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	font-weight: 600;
+	font-size: 0.9375rem;
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.sgs-shop-filters__backdrop.is-visible {
-	display: block;
-	opacity: 1;
+.sgs-shop-filters__apply:hover {
+	background: var(--wp--preset--color--primary-dark);
+	border-color: var(--wp--preset--color--primary-dark);
+}
+
+.sgs-shop-filters__apply:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 3px;
+}
+
+.sgs-shop-filters__clear-all {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0.75em 1em;
+	background: transparent;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	border: none;
+	font-weight: 500;
+	font-size: 0.875rem;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.sgs-shop-filters__clear-all:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+/* ── 8d-ii. Sticky mobile filter trigger — scroll-revealed, shows count ──
+ * Appended to <body> by JS. Height is reserved unconditionally at mobile
+ * (8a-i below) so its reveal never occludes the last product row. */
+
+.sgs-shop-filters__sticky-trigger {
+	position: fixed;
+	left: var(--wp--preset--spacing--30, 1rem);
+	right: var(--wp--preset--spacing--30, 1rem);
+	bottom: var(--wp--preset--spacing--30, 1rem);
+	z-index: 20;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
+	min-height: 48px;
+	padding: 0.65em 1.25em;
+	background: var(--wp--preset--color--primary, #E68A95);
+	color: var(--sgs-product-card-btn-text, #3A2E26);
+	border: none;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	font-weight: 600;
+	font-size: 0.9375rem;
+	cursor: pointer;
+	transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.sgs-shop-filters__sticky-trigger[hidden] {
+	display: none;
+}
+
+.sgs-shop-filters__sticky-trigger:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, #E68A95);
+	outline-offset: 2px;
+}
+
+.sgs-shop-filters__sticky-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 0.35em;
+	background: var(--sgs-product-card-btn-text, #3A2E26);
+	color: var(--wp--preset--color--primary, #E68A95);
+	border-radius: 9999px;
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.sgs-shop-filters__sticky-count[hidden] {
+	display: none;
+}
+
+@media ( min-width: 782px ) {
+	.sgs-shop-filters__sticky-trigger {
+		display: none !important;
+	}
 }
 
 /* Scroll lock — applied to body by JS when drawer is open */
@@ -667,11 +1027,11 @@ body.sgs-scroll-locked {
 	align-items: center;
 	gap: 0.35em;
 	padding: 0.25em 0.625em;
-	background: color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 12%, transparent);
-	border: 1px solid var(--wp--preset--color--primary, #0f7e80);
+	background: color-mix(in srgb, var(--wp--preset--color--primary) 12%, transparent);
+	border: 1px solid var(--wp--preset--color--primary);
 	border-radius: 9999px;
 	font-size: 0.8125rem;
-	color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--primary);
 	white-space: nowrap;
 }
 
@@ -693,7 +1053,7 @@ body.sgs-scroll-locked {
 
 .wc-block-product-filter-active__remove:focus-visible,
 .wc-block-components-filter-reset-button__remove:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 1px;
 	border-radius: 2px;
 }
@@ -701,10 +1061,15 @@ body.sgs-scroll-locked {
 /* ── 8f. Reduced motion — drawer + backdrop transitions ── */
 
 @media ( prefers-reduced-motion: reduce ) {
-	body.is-enhanced .sgs-shop-filters,
-	.sgs-shop-filters__backdrop,
-	.sgs-shop-filters__toggle {
+	/* Keyed WITHOUT :modal — the sheet's transition now also runs on EXIT, when
+	   :modal has already stopped matching, so a :modal-scoped guard would let the
+	   close animation play at full duration for a reduced-motion user. */
+	dialog.sgs-shop-filters,
+	dialog.sgs-shop-filters::backdrop,
+	.sgs-shop-filters__toggle,
+	.sgs-shop-filters__sticky-trigger {
 		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
 	}
 }
 
@@ -957,6 +1322,402 @@ body.woocommerce-cart .with-empty-cart-icon,
 	width: 100%;
 }
 
+/* ── 10a/10b. Grid gutters + INTRINSIC column count (S1-3/S1-5) ──
+ *
+ * The column count is NOT set here, and must not be. Cards declare a minimum
+ * readable width and the row fits as many as it can — so stacking is automatic,
+ * driven by the CONTAINER, not by a viewport breakpoint or a column class.
+ *
+ * ⛔ Why forcing a count is wrong, measured 2026-08-23. A first pass forced 2-up
+ * below 768px, on the reasoning that 7 of 8 benchmarked reference archives are
+ * 2-up on mobile. That read the observation and missed the actual rule: those
+ * references land their cards at **167-195px**, and 2-up is merely what that
+ * produces on their layouts. On ours — which has a narrower content band and a
+ * card carrying image + title + description + price ladder + CTA — forcing 2-up
+ * gave a **138px card with a 65px text column**: the product title wrapped to
+ * SIX lines, the description to NINE, and one card stood 792px tall in an 844px
+ * viewport. It also barely saved any scrolling. "2-up" was never the requirement;
+ * a readable card width was, and the column count follows from it.
+ *
+ * `flex: 1 1 var(--sgs-shop-card-min)` means: want at least the minimum, grow to
+ * share whatever is left, wrap when you no longer fit. At a 293px mobile band
+ * that yields 1-up; at the 955px band beside the filter rail, 3-up; on a
+ * full-width archive, 4-up — which is the benchmark's own desktop default,
+ * reached without a single breakpoint.
+ *
+ * The gutter and the fit are ONE decision (see the regression note below), so
+ * both read `--sgs-shop-col-gap`. Change either variable and the layout
+ * re-derives itself.
+ *
+ * ⚠ Earlier regression worth keeping in view: 10a once set a 24px gap while
+ * leaving the cards at the width WooCommerce had computed from ITS narrower gap.
+ * 3 x 305 + 2 x 24 = 963px in a 955px row — over by 8px, so the third card
+ * wrapped and a columns-3 grid silently rendered 2-up with ~320px of dead space.
+ * Nothing errored. Intrinsic sizing removes that failure mode entirely: there is
+ * no hardcoded width left to fall out of step with the gap.
+ */
+/* ⛔ auto-FILL, never auto-FIT. `auto-fit` COLLAPSES the empty trailing tracks and
+ * reproduces the exact last-row-stretch bug this replaced: a final row of 2 would
+ * share out the leftover space and render 482px cards beside a full row's 313px.
+ * The two keywords differ only here, and only on the last row.
+ *
+ * Measured on the canary 2026-08-24, 5 products, before → after:
+ *   1440px (988px row):  3 x 313.3 then 2 x 482.0  →  5 x 313.3, no stretch
+ *    768px (705px row):  4 x 340.5 then 1 x 705.0  →  5 x 340.5, no stretch
+ *    375px (327px row):  5 x 327.0 (already 1-up)  →  5 x 327.0, unchanged
+ *
+ * The intrinsic column count is preserved — it still derives from
+ * --sgs-shop-card-min, so no column number is hardcoded and mobile still resolves
+ * to one full-width readable card with no breakpoint involved. */
+.sgs-shop-layout .wc-block-product-template {
+	--sgs-shop-col-gap: 24px;
+	--sgs-shop-card-min: 240px;
+
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--sgs-shop-card-min), 1fr));
+	column-gap: var(--sgs-shop-col-gap);
+	row-gap: 40px;
+}
+
+/*
+ * ⛔ THE TRIPLED `.is-flex-container` IS LOAD-BEARING. Do not "tidy" it to one or
+ * two — the item collapses to 91px and the whole grid silently breaks.
+ *
+ * WooCommerce ships this rule in an INLINE <style>, inside a @media block:
+ *
+ *   @media (min-width: 600px) {
+ *     .wc-block-product-template.is-flex-container.is-flex-container.columns-3 > li
+ *       { width: calc(33.3333% - 0.83333em); }
+ *   }
+ *
+ * It doubles `.is-flex-container` deliberately to buy specificity — (0,4,1).
+ *
+ * Under FLEX that rule was harmless: our `flex: 1 1 <min>` set a definite
+ * flex-basis, and flex-basis beats `width` on a flex item, so WooCommerce's
+ * declaration never applied. Under GRID, flex-basis means nothing, WooCommerce's
+ * `width` takes over — and its PERCENTAGE resolves against the GRID AREA (the
+ * 313.328px track) instead of the row. Measured 2026-08-24, exact to 4dp:
+ *
+ *   313.328 x 0.333333 - 0.83333 x 16px = 91.1093px   (actual: 91.1094px)
+ *
+ * That is the whole of the "91px cards in a correct 313px track" incident, and it
+ * is also why an INLINE width:100% read 313px while the same declaration from our
+ * stylesheet read 91px — inline is (1,0,0,0) and wins; our rule was (0,3,1) and lost.
+ * The declarations were identical in TEXT, never in CASCADE WEIGHT.
+ *
+ * ⛔ Two classes is NOT enough. `.sgs-shop-layout .wc-block-product-template
+ * .is-flex-container.is-flex-container > li` is (0,4,1) — a TIE with WooCommerce,
+ * decided by source order, and their rule is an inline <style> while ours is a
+ * linked file. Proven by negative control on the canary: the tie selector loaded
+ * BEFORE WooCommerce's leaves the item at 91px; the tripled selector loaded before
+ * it still gives 313px. Three classes = (0,5,1) and wins on specificity alone,
+ * which is the only thing we control.
+ *
+ * `min-width: 0` is the standard grid-item override: without it `min-width: auto`
+ * lets a long unbroken product title push its track past 1fr and desync the columns. */
+.sgs-shop-layout .wc-block-product-template.is-flex-container.is-flex-container.is-flex-container > li {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+}
+
+/* Surfaces where WooCommerce did NOT add `.is-flex-container` (it only does so for
+ * its own flex layout mode) never hit the rule above, so they only need the
+ * grid-item guards. Kept separate so the specificity note stays honest. */
+.sgs-shop-layout .wc-block-product-template > li {
+	max-width: 100%;
+	min-width: 0;
+}
+
+/* ── 10d. HORIZONTAL card when the grid resolves to ONE column ──────────────
+ *
+ * A single column of tall vertical cards makes a phone shop page enormously
+ * long and reads as a stack of unrelated boxes. IKEA's mobile shop reshapes
+ * each card into a horizontal strip — image left, text beside it — so a
+ * product occupies one tidy band instead of a full screen. Measured on their
+ * live mobile shop: a 360px row with a 174px image and the text alongside.
+ *
+ * ⛔ THIS MUST BE A CONTAINER QUERY, NOT A MEDIA QUERY, AND NOT A WIDTH RULE
+ * ON THE CARD. Two ways to get this wrong, both measured on our own canary:
+ *
+ *   1. The CARD's own width does not identify the 1-up case. It is 327px at
+ *      375px viewport (1-up) and 313px at 1440px (3-up) — 14px apart. Any
+ *      card-width rule that goes horizontal on a phone also goes horizontal
+ *      on desktop.
+ *   2. A device-tier media query does not match the 1-up case either. At a
+ *      768px viewport the row is 705px and the grid is already 2-up, so
+ *      `max-width: 767px` would flip cards horizontal while they are still
+ *      side by side. 1-up does not begin until the ROW is narrow.
+ *
+ * The row is the only thing that knows the column count, so the row is what
+ * we query. `auto-fill minmax(<min>, 1fr)` fits a second column as soon as
+ * the row can hold `2 x --sgs-shop-card-min + --sgs-shop-col-gap`, so 1-up is
+ * exactly "row narrower than that sum":
+ *
+ *     2 x 240px + 16px = 496px   ->   1-up at <= 495px
+ *
+ * ⛔ THE GAP IN THAT SUM IS THE **SMALLEST** GAP, NOT THE BASE ONE. This rule
+ * shipped broken for ~40 minutes on 2026-08-24 because it used the base 24px
+ * gap and gave 503px, while `--sgs-shop-col-gap` drops to 16px below 767px
+ * (see the @media block further down THIS FILE). That opened a window where
+ * the grid had already gone 2-up while the container query was still turning
+ * cards horizontal. Measured live at a 563px viewport:
+ *
+ *     row 500px, gap 16px -> TWO 242px columns, cards still horizontal
+ *     -> body 108px, usable text 68px, title 5 lines, cards 365px tall
+ *
+ * That is the same failure the 10a/10b comment above documents as the reason
+ * not to force a column count ("a 138px card with a 65px text column"). The
+ * guard three lines up — "if either variable changes, recompute" — was written
+ * and then broken in the same edit, by an override 90 lines below it.
+ *
+ * ⚠ Container-query conditions cannot read custom properties, so 495px is
+ * written literally. It is DERIVED, not chosen. If EITHER variable changes,
+ * recompute against the smallest gap any media query sets.
+ *
+ * There is no dead band. The 24px gap only applies above a 767px viewport,
+ * where the row is already >= 705px and this query cannot match anyway — so
+ * the 16px regime is the only one in which the threshold is ever consulted. */
+.sgs-shop-layout .wc-block-product-template {
+	container: sgs-shop-grid / inline-size;
+}
+
+@container sgs-shop-grid (max-width: 495px) {
+
+	.sgs-shop-layout .product-card {
+		flex-direction: row;
+		align-items: flex-start;
+
+		/* Containing block for the stretched title link below. */
+		position: relative;
+	}
+
+	/* ── Card-as-link ────────────────────────────────────────────────────
+	 * 6 of 6 measured reference rows (IKEA, eBay, Tesco, Sainsbury's,
+	 * Waitrose, Deliveroo) carry NO navigational "view product" button. eBay
+	 * and IKEA make the whole row the target. Ours spent 53px — 21% of the
+	 * card — duplicating the one destination the card already has.
+	 *
+	 * This needs NO markup change: the title is already an anchor, so its
+	 * ::after is stretched over the card. That keeps the accessible name as
+	 * the product title (not "View product"), keeps one link per card in a
+	 * screen reader's link list, and keeps middle-click / open-in-new-tab /
+	 * context menu working — none of which an onclick handler would.
+	 *
+	 * ⚠ Accepted costs, both real: text inside the card can no longer be
+	 * selected, and ANY other interactive control added here in future must
+	 * be raised with `position:relative; z-index:1` or the overlay will eat
+	 * it. Nothing else is interactive in this mode today — the CTA and the
+	 * thumb strip are both hidden below. */
+	.sgs-shop-layout .product-card .product-card__title-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	/* The stretched anchor is invisible, so the focus ring has to be drawn on
+	   the card instead or keyboard users get no visible focus at all (WCAG
+	   2.4.7). `:focus-visible` inside keeps it off mouse clicks. */
+	.sgs-shop-layout .product-card:has( .product-card__title-link:focus-visible ) {
+		outline: 2px solid var( --wp--preset--color--primary-text, #3a2e26 );
+		outline-offset: 2px;
+	}
+
+	/* ── Square media, top-aligned ───────────────────────────────────────
+	 * 6 of 6 reference rows use a FIXED, SQUARE image. Ours stretched to the
+	 * card height, so the crop box was 132 x 203-247 — a 0.53-0.65 portrait
+	 * slice of landscape food photography, AND a different crop on every card
+	 * because the height came from the text beside it.
+	 *
+	 * `aspect-ratio: 1` + `align-self: flex-start` also deletes the whole
+	 * stretch chain this file used to need (align-self:stretch, height:auto,
+	 * min-height:0 on three elements, and a flex container on the img link).
+	 * That chain contained a (0,3,0) specificity TIE against the block's own
+	 * `.product-card--live .product-card__media .product-card-img{height:100%}`
+	 * which was decided by stylesheet load order — the same class of latent
+	 * bug as the 91px incident. Removing the chain removes the tie. */
+	/* ⛔ `overflow: hidden` and `min-height: 0` are LOAD-BEARING, not tidiness.
+	 * `aspect-ratio` only governs while the box is free to take that size — a
+	 * child taller than the square wins over it when the height is auto.
+	 * Measured live 2026-08-24: the no-image SVG placeholder is a fixed 220px,
+	 * so one card's media box rendered 132 x 220 and the card stood at 222px
+	 * beside neighbours at 134px. The card next to it clipped correctly ONLY
+	 * because the block's own CSS happens to put `overflow:hidden` on the
+	 * `.product-card__media` class and not on `.sgs-product-card__media-wrap`
+	 * — i.e. it was right by accident, on one of the two markup paths. */
+	.sgs-shop-layout .product-card .product-card__media,
+	.sgs-shop-layout .product-card .sgs-product-card__media-wrap {
+		flex: 0 0 132px;
+		align-self: flex-start;
+		aspect-ratio: 1;
+		height: auto;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	.sgs-shop-layout .product-card .product-card__img-link {
+		display: block;
+		height: 100%;
+	}
+
+	.sgs-shop-layout .product-card .product-card-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	/* The no-image placeholder is authored at a fixed 220px for the vertical
+	   card. Told to fill the square box instead of setting its own height, so
+	   a product without a photo occupies the same footprint as one with. */
+	.sgs-shop-layout .product-card .product-card__no-image {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* The description is what makes one strip tower over its neighbours — a
+	   card carrying one measured 290px against 203px for a card without. Two
+	   lines keeps the strips close to uniform, which is the whole point of the
+	   horizontal treatment; the full text is on the product page. */
+	.sgs-shop-layout .product-card .product-desc {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	/* ── Body ────────────────────────────────────────────────────────────
+	 * `min-width: 0` is required: without it a long unbroken product title
+	 * sets the body's min-content width and shoves the image column out.
+	 *
+	 * Padding is SPLIT by axis. 20px on all four sides is a vertical-card
+	 * habit: in a ~200px strip it spends 40px of the height, and it steals
+	 * width from a column with none to spare. Every measured reference row
+	 * uses 16px or less (Deliveroo 16, Tesco 16, Waitrose 16, IKEA 16/14,
+	 * Sainsbury's 16/8). Horizontal padding stays the larger of the two — it
+	 * is what keeps the text off the card edge.
+	 *
+	 * Text is TOP-aligned. 6 of 6 reference rows top-align; none centre it and
+	 * none use space-between to pin the price to the bottom. */
+	.sgs-shop-layout .product-card .product-card-body {
+		flex: 1 1 auto;
+		min-width: 0;
+		padding: 14px 16px;
+		justify-content: flex-start;
+	}
+
+	/* Title. Every measured reference row sits at 14-16px (IKEA/eBay/
+	   Sainsbury's 14, Tesco/Waitrose/Deliveroo 16). Ours was 20px — above the
+	   entire observed range — which is what pushed most names onto a second
+	   line in a 153px measure. 17px keeps Fraunces feeling deliberate while
+	   fitting ~18 characters per line instead of ~14. */
+	.sgs-shop-layout .product-card .sgs-product-card__title,
+	.sgs-shop-layout .product-card .product-card__title-link {
+		font-size: 17px;
+		line-height: 1.3;
+	}
+
+	/* Price was 28px — larger and heavier than the title, making the price the
+	   visual subject of a row whose subject should be the product. Median
+	   across the six reference rows is ~19px. Kept in Fraunces 700 so it still
+	   reads as a value rather than as data. */
+	.sgs-shop-layout .product-card .price {
+		font-size: 20px;
+	}
+
+	/* The CTA is dropped here — the whole card is the link (see above). 0 of 6
+	   reference rows carry a navigational button; where a button exists at all
+	   it is transactional ("Add"), a genuinely different action that would earn
+	   its own control rather than inheriting this one. */
+	.sgs-shop-layout .product-card .product-card__add-to-cart {
+		display: none;
+	}
+
+	/* An empty flex child still consumes its gap. This live region is correct
+	   a11y practice and must NOT be deleted from the DOM — it has to exist
+	   before text is injected or the announcement is missed — but while empty
+	   it cost 8px on every card. Measured: body 244.6 -> 236.6px.
+	   ⚠ It is also why positional selectors (:last-child, :nth-last-child)
+	   against .product-card-body are off by one. Section 9 already hit this. */
+	.sgs-shop-layout .product-card .product-card__cart-status:empty {
+		display: none;
+	}
+
+	/* The thumbnail strip is a horizontal row designed to sit UNDER a
+	   full-width image. Inside a 132px column it wraps to several lines and
+	   drags the strip taller than the image it belongs to.
+	   ⚠ These are GALLERY buttons ("Image 1", "Image 2" — render.php ~1042),
+	   NOT variant pickers: hiding them costs a shopper the second photo on the
+	   listing, not the ability to choose a size or flavour. That is what IKEA,
+	   Amazon and Waitrose all do on a mobile list. `display:none` correctly
+	   removes them from the tab order and the accessibility tree. */
+	.sgs-shop-layout .product-card .product-card__thumbs {
+		display: none;
+	}
+}
+
+/* Mobile keeps a tighter gutter; the column count still resolves itself from the
+ * minimum card width above, so a phone gets one full-width readable card rather
+ * than two squashed ones. No column count is stated here either. */
+@media ( max-width: 767px ) {
+	.sgs-shop-layout .wc-block-product-template {
+		--sgs-shop-col-gap: 16px;
+
+		row-gap: 24px;
+	}
+}
+
+/* ── 10c. Product card surface (S1-4, 2026-08-23) ──
+ * Measured live at 1440px: background rgba(0,0,0,0), border 0px, radius 0px,
+ * box-shadow none, padding 0px — the card renders as bare content floating on
+ * the page background. Every benchmarked reference reserves a card surface.
+ *
+ * `sgs/product-card` DOES delegate through `SGS_Container_Wrapper` (see the
+ * block's own render.php docblock, "WS-4 composite-mirror") despite being a
+ * content-KIND composite — so it carries the SAME per-instance-scoped-`<style>`
+ * source-order risk as 8b/the shop-layout grid fix above: a per-instance rule
+ * from the wrapper is injected inline, always AFTER this stylesheet, so a tie
+ * on specificity goes to the wrapper. The block's own base rule in
+ * plugins/sgs-blocks/src/blocks/product-card/style.css (`.product-card{
+ * background:var(--sgs-product-card-bg,#fff);border-radius:16px;...}`) is a
+ * SINGLE class, (0,1,0) — exactly the tier that loses a source-order tie.
+ * `.sgs-shop-layout .product-card` (the selector 10 above already uses, and
+ * already relies on the SAME assumption for height/display) is (0,2,0) —
+ * still only ONE tier higher, and could still tie a two-class per-instance
+ * rule. Scoped one tier higher again, to (0,3,0), via the existing
+ * `.post-type-archive-product` body-class scope this file already uses at
+ * §"Shop archive: equal-height SGS product cards" above — decisive against
+ * any (0,1,0) or (0,2,0) contender without needing !important.
+ *
+ * Deliberately NO box-shadow: the theme now ships has-shadow-sm/md/lg
+ * utilities, and a bespoke shadow here would diverge from that system. */
+.post-type-archive-product .sgs-shop-layout .product-card {
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+
+	/* Clip the media to the card's rounded corners. Required for the full-bleed
+	   image below — without it the image's square corners poke past the radius. */
+	overflow: hidden;
+}
+
+/*
+ * ⛔ NO PADDING ON THE CARD ITSELF. The product image is FULL BLEED: it spans
+ * the card edge to edge at the top, and the card's own radius + overflow:hidden
+ * clip it. That is the treatment every benchmarked reference archive uses (END.,
+ * Gymshark, Uniqlo, IKEA, Rapha) and it is what `sgs/product-card` is built for.
+ *
+ * The first version of this rule (2026-08-23) added `padding: 1rem` here as part
+ * of giving the card a surface. Measured live afterwards: the image sat inset
+ * 16.9px on every side — a framed thumbnail, not a bleed. Bean caught it by eye.
+ *
+ * The padding was also pure duplication: `.product-card-body` already carries its
+ * own 20px, which is the correct place for it — text needs the inset, the image
+ * does not. Removing the card-level padding restores the bleed AND removes the
+ * double inset in one go; nothing needed adding anywhere.
+ *
+ * If a card ever needs breathing room, put it on `.product-card-body`, never here.
+ */
+
 /* product-card-body grows to absorb remaining space */
 .sgs-shop-layout .product-card .product-card-body {
 	display: flex;
@@ -1001,9 +1762,32 @@ body.woocommerce-cart .with-empty-cart-icon,
 	display: none;
 }
 
-/* The overlay wrapper: render as normal flow, not a fixed dialog */
+/* The overlay wrapper: render as normal flow, not a fixed dialog.
+ *
+ * ⛔ `pointer-events` is LOAD-BEARING, do not drop it. WooCommerce ships
+ * `:where(.wc-block-product-filters) .wc-block-product-filters__overlay {
+ * pointer-events: none }` and only re-enables it by adding `is-overlay-opened`
+ * from its OWN overlay trigger — which we hide, because the SGS drawer owns the
+ * mobile UX. Without this line every filter control inside the drawer is inert:
+ * proven live on the canary 2026-08-20, where the label for the "Out of stock"
+ * filter computed `pointer-events: none` at 390px and `auto` at 1440px, and no
+ * click could reach it. The block above neutralised WC's overlay POSITIONING but
+ * never its pointer-events, so the drawer looked perfect and filtered nothing. */
+/* ⛔ THE SECOND SCROLLBAR. WooCommerce ships
+ * `.wc-block-product-filters__overlay-content { overflow-y: scroll }` — `scroll`,
+ * not `auto`, so it paints a scrollbar permanently even with nothing to scroll,
+ * nested INSIDE our own `.sgs-shop-filters__scroll`. Two containers, two bars.
+ * They reset it to `visible` themselves at >=601px, which is why it only ever
+ * showed on mobile. We own the scrolling here, so it is neutralised at every
+ * width and the padding comes back to us too. */
+.sgs-shop-filters .wc-block-product-filters__overlay-content {
+	overflow: visible;
+	padding: 0;
+}
+
 .sgs-shop-filters .wc-block-product-filters__overlay,
 .sgs-shop-filters .wc-block-product-filters__overlay-dialog {
+	pointer-events: auto;
 	position: static;
 	inset: auto;
 	width: auto;
@@ -1017,6 +1801,65 @@ body.woocommerce-cart .with-empty-cart-icon,
 	padding: 0;
 	margin: 0;
 }
+
+/* ── Group headings ──
+ * WooCommerce does NOT render the `heading` attribute set on each filter block
+ * in the template. It emits `<legend class="screen-reader-text">Flavour</legend>`
+ * instead, so the labels existed but were spoken only to screen readers and were
+ * invisible on screen (verified live 2026-08-20 on every group except Price,
+ * which gets no label at all).
+ *
+ * ⛔ DO NOT try to reveal that legend - it was tried and reverted on 2026-08-20.
+ * WordPress core declares `.screen-reader-text { position: absolute !important }`,
+ * so a plain `position: static` loses: every other property applied (clip, width,
+ * flex all took effect and were measured doing so) and ONLY position did not,
+ * leaving the label absolutely positioned on top of the first chip. Winning it
+ * back needs `!important` purely to fight core, and the legend must stay the
+ * accessible name regardless.
+ *
+ * So the visible label is authored explicitly as `sgs/heading` in
+ * templates/archive-product.html, one before each filter group. The legend stays
+ * screen-reader-only and remains the accessible name; the heading is the visual
+ * one. They carry identical text, so they cannot disagree. */
+
+/* The group label itself.
+ *
+ * Specificity note: `sgs/heading` emits its own scoped rule
+ * (`.sgs-hdg-<uid>.wp-block-sgs-heading`, two classes) which set these labels to
+ * 24px Fraunces in primary pink - correct for a page heading, far too loud for a
+ * filter label. The element-qualified `h3.` here outweighs it without resorting
+ * to !important. The theme's heading FONT is deliberately kept: it is what makes
+ * the panel read as part of the brand rather than as plugin chrome.
+ *
+ * ⛔ Do not fold this into the rule below it - that one styles WooCommerce's own
+ * `h3.wp-block-heading` output, which this block replaced. */
+.sgs-shop-filters h3.sgs-shop-filters__group-heading {
+	margin: 0 0 var(--wp--preset--spacing--20, 0.75rem) 0;
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--sgs-filter-heading, var(--wp--preset--color--text));
+}
+
+/* The divider belongs BETWEEN groups, never between a group's heading and its
+ * own controls. `sgs/heading` sits as a sibling immediately BEFORE each filter
+ * group, so that group's `border-top` otherwise draws a line directly under the
+ * label and above its own slider or chips - which reads as a broken rule rather
+ * than a separator. */
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-price,
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-attribute,
+.sgs-shop-filters .sgs-shop-filters__group-heading + .wp-block-woocommerce-product-filter-rating {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+/* The divider between groups is owned by `.sgs-shop-filters__group` (the
+ * <details> wrapper the accordion builds), NOT by the heading. It used to live
+ * here, on `:not(:first-of-type)`. When the accordion landed, the wrapper gained
+ * its own border-top and the two stacked into a double rule. One owner only —
+ * and the wrapper is the right one, because it is the thing being separated.
+ * Kept as a note rather than deleted silently, so nobody re-adds it here. */
 
 /* ── Individual filter group headings ── */
 .sgs-shop-filters h3.wp-block-heading,
@@ -1038,7 +1881,10 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wp-block-woocommerce-product-filter-status,
 .sgs-shop-filters .wp-block-woocommerce-product-filter-rating {
 	padding-top: var(--wp--preset--spacing--30, 1rem);
-	border-top: 1px solid var(--wp--preset--color--surface-alt, #e0e0e0);
+	/* Was `surface-alt` - on a warm cream panel that is near-white on near-white
+	   and effectively invisible. `--sgs-filter-line` is mixed from the client's
+	   own primary, so the separator is visible against the panel it sits on. */
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
 	margin-top: var(--wp--preset--spacing--20, 0.75rem);
 }
 
@@ -1052,9 +1898,20 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-price-filter__range-input-wrapper {
 	position: relative;
 	height: 4px;
-	background: var(--wp--preset--color--surface-alt, #e0e0e0);
+	/* Was `surface-alt` (near-white) - invisible on the panel. */
+	background: color-mix(in oklab, var(--wp--preset--color--primary) 22%, var(--wp--preset--color--surface));
 	border-radius: 9999px;
 	margin: 1.5rem 0 0.5rem;
+}
+
+/* WooCommerce paints its OWN track on `__range` (the element carrying the
+ * --low/--high custom properties) in an unthemed near-black. Left alone it sits
+ * directly under ours: that is the "doubled up" slider, two bars, one branded
+ * and one black. Ours is the themed one, so theirs is made transparent - the
+ * element is KEPT because it is the positioning context for the thumbs and the
+ * filled region, and removing it would break both. */
+.sgs-shop-filters .wc-block-product-filter-price-slider__range {
+	background: transparent;
 }
 
 /* Filled track region (WC uses inline style on the progress element) */
@@ -1062,7 +1919,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 .sgs-shop-filters .wc-block-price-filter__progress {
 	position: absolute;
 	height: 100%;
-	background: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--preset--color--primary);
 	border-radius: 9999px;
 }
 
@@ -1086,9 +1943,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
-	background: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--preset--color--primary);
 	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary, #0f7e80);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
 	cursor: pointer;
 	pointer-events: all;
 }
@@ -1098,16 +1955,16 @@ body.woocommerce-cart .with-empty-cart-icon,
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
-	background: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--preset--color--primary);
 	border: 2px solid var(--wp--preset--color--surface, #fff);
-	box-shadow: 0 0 0 1px var(--wp--preset--color--primary, #0f7e80);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
 	cursor: pointer;
 	pointer-events: all;
 }
 
 .sgs-shop-filters .wc-block-product-filter-price-slider__range-input:focus-visible::-webkit-slider-thumb,
 .sgs-shop-filters .wc-block-price-filter__range-input:focus-visible::-webkit-slider-thumb {
-	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -1125,7 +1982,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters .wc-block-product-filter-price-slider__amount:focus-visible,
 .sgs-shop-filters .wc-block-price-filter__amount:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
@@ -1146,47 +2003,84 @@ body.woocommerce-cart .with-empty-cart-icon,
 	list-style: none;
 }
 
+/* SELECTOR CORRECTION 2026-08-20 - the selectors below assumed a <button>
+ * NESTED INSIDE `.wc-block-product-filter-chips__item`. WooCommerce 11 puts the
+ * class ON the button itself (`<button class="wc-block-product-filter-chips__item"
+ * role="checkbox" aria-checked="false">`), so the descendant selector matched
+ * NOTHING and every chip fell back to UA styling - measured live: 2px radius,
+ * transparent background, 12.8px text. That single mismatch is why the chips
+ * looked unstyled. Both shapes are kept: the element-qualified form catches the
+ * current markup, the descendant form stays for older WooCommerce.
+ *
+ * Colour comes from the SAME six custom properties `sgs/button` uses
+ * (src/blocks/button/style.css), so a filter chip and a real SGS button cannot
+ * drift apart, and a client who re-skins their buttons re-skins these for free. */
+.sgs-shop-filters button.wc-block-product-filter-chips__item,
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item,
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button,
 .sgs-shop-filters .wc-block-product-filter-chips__item button,
 .sgs-shop-filters .wc-block-components-product-filter-chips__button {
+	/* Unselected = the `outline` preset's token set. */
+	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));
+	--sgs-btn-bg: var(--wp--custom--button-presets--outline--background, transparent);
+	--sgs-btn-border: var(--wp--custom--button-presets--outline--border, var(--sgs-filter-line));
+
 	display: inline-flex;
 	align-items: center;
 	gap: 0.3em;
 	min-height: 44px;
-	padding: 0.375em 0.875em;
-	background: var(--wp--preset--color--surface-alt, #f5f5f5);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 25%, transparent);
-	border-radius: 9999px;
-	font-size: 0.8125rem;
-	color: var(--wp--preset--color--text, #1e1e1e);
+	padding: 0.375em 1em;
+	background: var(--sgs-btn-bg);
+	border: 1px solid var(--sgs-btn-border);
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	font-family: inherit;
+	font-size: 0.875rem;
+	line-height: 1.2;
+	color: var(--sgs-btn-color);
 	cursor: pointer;
 	white-space: nowrap;
 	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
+.sgs-shop-filters button.wc-block-product-filter-chips__item:hover,
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item:hover,
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button:hover,
 .sgs-shop-filters .wc-block-product-filter-chips__item button:hover,
 .sgs-shop-filters .wc-block-components-product-filter-chips__button:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 10%, transparent);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
-	color: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--custom--button-presets--outline--hover-background, color-mix(in oklab, var(--wp--preset--color--primary) 14%, transparent));
+	border-color: var(--wp--custom--button-presets--outline--hover-border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--outline--hover-text, var(--wp--preset--color--text));
 }
 
-/* Selected chip — primary teal fill, white text (contrast verified: primary #0f7e80 vs white = 4.8:1 ✓) */
+/* Selected chip = the `primary` preset's token set.
+ *
+ * STATE-SELECTOR CORRECTION 2026-08-20 - the previous rule keyed on
+ * `[aria-pressed="true"]` and `.is-active`. The live chip is `role="checkbox"`
+ * and reports `aria-checked`, NEVER aria-pressed, so the selected style could
+ * not apply and a chosen filter looked identical to an unchosen one.
+ * `aria-checked` is listed FIRST as the real one; the others are retained only
+ * as legacy fallbacks.
+ *
+ * Text colour comes from the preset token rather than a literal #ffffff, so
+ * contrast tracks whatever the client sets their primary button text to instead
+ * of assuming white is legible on their brand colour. */
+.sgs-shop-filters button.wc-block-product-filter-chips__item[aria-checked="true"],
+.sgs-shop-filters button.wc-block-components-product-filter-chips__item[aria-checked="true"],
+.sgs-shop-filters .wc-block-product-filter-chips__item button[aria-checked="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-product-filter-chips__item button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__button[aria-pressed="true"],
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button.is-active,
 .sgs-shop-filters .wc-block-product-filter-chips__item button.is-active {
-	background: var(--wp--preset--color--primary, #0f7e80);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
-	color: #ffffff;
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
 }
 
 .sgs-shop-filters .wc-block-components-product-filter-chips__item button:focus-visible,
 .sgs-shop-filters .wc-block-product-filter-chips__item button:focus-visible,
 .sgs-shop-filters .wc-block-components-product-filter-chips__button:focus-visible {
-	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
@@ -1239,8 +2133,17 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:checked,
 .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:checked {
-	background: var(--wp--preset--color--primary, #0f7e80);
-	border-color: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--primary);
+}
+
+/* WooCommerce renders its OWN check mark (an unstyled near-black SVG) as a
+ * sibling of the input, and the rule below draws a second, themed one on the
+ * input itself — so a ticked box showed TWO ticks stacked, one black and one
+ * white. Ours is the themed one and wins the design call; theirs is removed
+ * rather than both being left to overlap. */
+.sgs-shop-filters .wc-block-product-filter-checkbox-list__mark {
+	display: none;
 }
 
 /* Checkmark via pseudo-element on the checked input */
@@ -1255,7 +2158,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:focus-visible,
 .sgs-shop-filters .wc-block-product-filter-checkbox-list input[type="checkbox"]:focus-visible {
-	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
@@ -1276,9 +2179,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 	justify-content: center;
 	min-height: 44px;
 	padding: 0.5em 1.25em;
-	background: var(--wp--preset--color--primary, #0f7e80);
+	background: var(--wp--preset--color--primary);
 	color: #ffffff;
-	border: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	border: 2px solid var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-size: 0.9375rem;
 	font-weight: 600;
@@ -1289,13 +2192,13 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters .wc-block-product-filters__apply-button:hover,
 .sgs-shop-filters .wc-block-product-filter-clear-button:hover {
-	background: var(--wp--preset--color--primary-dark, #0b6668);
-	border-color: var(--wp--preset--color--primary-dark, #0b6668);
+	background: var(--wp--preset--color--primary-dark);
+	border-color: var(--wp--preset--color--primary-dark);
 }
 
 .sgs-shop-filters .wc-block-product-filters__apply-button:focus-visible,
 .sgs-shop-filters .wc-block-product-filter-clear-button:focus-visible {
-	outline: 3px solid var(--wp--preset--color--primary, #0f7e80);
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 3px;
 }
 
@@ -1306,5 +2209,518 @@ body.woocommerce-cart .with-empty-cart-icon,
 	.sgs-shop-filters .wc-block-product-filters__apply-button,
 	.sgs-shop-filters .wc-block-product-filter-clear-button {
 		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ── 8g. Filter-group accordion + the panel's own scrollbar ──
+ * Built at runtime by sgs-shop-filters.js (see buildAccordion). Styling lives
+ * here rather than inline so both presentations — desktop sidebar and mobile
+ * sheet — share exactly one source. */
+
+.sgs-shop-filters__group {
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	padding-top: var(--wp--preset--spacing--20, 0.75rem);
+	margin-top: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* The first group sits directly under the panel header, which already separates
+   it — a divider there would be separating nothing. */
+.sgs-shop-filters__group:first-of-type {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.sgs-shop-filters__group-summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	/* 44px keeps the tap target at the WCAG 2.2 / SGS floor even though the
+	   heading text alone is shorter. */
+	min-height: 44px;
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+}
+
+/* Both halves are required: `display:none` on the WebKit pseudo-element and
+   `list-style:none` above kill Safari's and Firefox's default markers
+   respectively. Removing either brings one browser's triangle back. */
+.sgs-shop-filters__group-summary::-webkit-details-marker {
+	display: none;
+}
+
+/* The heading keeps its own type styles; the summary only lays it out. */
+.sgs-shop-filters__group-summary .sgs-shop-filters__group-heading {
+	margin: 0;
+}
+
+/* Chevron drawn in CSS rather than shipped as an icon — it is two borders, and
+   an inline SVG per group would be bytes for no gain. currentColor so it tracks
+   the heading colour on any palette. */
+.sgs-shop-filters__group-summary::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 0.5em;
+	height: 0.5em;
+	margin-right: 0.25em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg) translate(-0.125em, -0.125em);
+	transition: transform 0.18s ease;
+}
+
+.sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after {
+	transform: rotate(-135deg) translate(-0.2em, -0.2em);
+}
+
+.sgs-shop-filters__group-summary:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-shop-filters__group-summary::after {
+		transition-duration: 0.01ms;
+	}
+}
+
+/* ── The panel's scrollbar ──
+ * Brand-derived like the rest of the panel: mixed from the client's own primary,
+ * so a navy palette gets a navy thumb without a line of per-client CSS. Styled
+ * rather than hidden — this is a scroll region a shopper needs to know is
+ * scrollable, unlike the carousels elsewhere in the framework, which hide theirs
+ * precisely because they have their own arrows and snap points. */
+.sgs-shop-filters__scroll {
+	/* A 2px horizontal overflow (scrollWidth 342 vs clientWidth 340, measured
+	   live) was enough to paint a full-width horizontal scrollbar across the
+	   panel — the grey bar under the last filter group. No child is actually
+	   wider than the container; it is sub-pixel rounding, so there is nothing to
+	   "fix" upstream. A filter panel never scrolls sideways by design, so the
+	   axis is simply turned off. */
+	overflow-x: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: var(--sgs-filter-line, var(--wp--preset--color--border)) transparent;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar {
+	width: 8px;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-thumb {
+	background: var(--sgs-filter-line, var(--wp--preset--color--border));
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	/* Inset the thumb from the track edge without a second element. */
+	border: 2px solid transparent;
+	background-clip: padding-box;
+}
+
+.sgs-shop-filters__scroll::-webkit-scrollbar-thumb:hover {
+	background: var(--wp--preset--color--primary, currentColor);
+	background-clip: padding-box;
+}
+
+/* ── 8h. Two things WooCommerce paints that the panel must own ──
+
+ * 1. THE SLIDER'S FILLED BAR.
+ *
+ * WooCommerce renders `.range-bar` and paints it with an INLINE
+ * `linear-gradient(...)` written by its Interactivity JS, resolved to the theme
+ * TEXT colour — measured live as rgb(58,46,38) on a warm pink panel, which is
+ * the "slider is randomly black" report. There is no CSS rule to override: a
+ * CSSOM scan for rules matching that element returns NOTHING, because the value
+ * is on the element's own style attribute.
+ *
+ * `!important` is therefore load-bearing here, not laziness — it is the only way
+ * an author stylesheet beats an inline style, short of running our own JS after
+ * theirs on every slider interaction.
+ *
+ * The gradient is REBUILT rather than replaced with a flat colour, because the
+ * stops carry the meaning: --low and --high are set by WooCommerce on the parent
+ * `__range` element and inherit down, so re-using them keeps the filled region
+ * tracking the handles exactly as before. Only the colour changes.
+ *
+ * ⚠ An earlier pass here styled `__range-input-wrapper` and `__progress`. Those
+ * elements DO NOT EXIST in WooCommerce 11 — same dead-selector class as the
+ * chips. Kept only as a note so nobody re-adds them believing they do something. */
+.sgs-shop-filters .range-bar {
+	background-image: linear-gradient(
+		to right,
+		transparent var(--low, 0%),
+		var(--wp--preset--color--primary) var(--low, 0%),
+		var(--wp--preset--color--primary) var(--high, 100%),
+		transparent var(--high, 100%)
+	) !important;
+}
+
+/* 2. WOOCOMMERCE'S OWN APPLY BUTTON.
+ *
+ * `.wc-block-product-filters__apply` renders mid-panel in raw accent yellow and
+ * does the same job as the sheet footer's "Show results", which we build and
+ * style. Two controls for one action, one of them off-brand and in the wrong
+ * place. The SGS drawer owns this UX — the same reasoning that already hides
+ * their open-overlay trigger and overlay header. */
+.sgs-shop-filters .wc-block-product-filters__apply {
+	display: none;
+}
+
+/* 3. AND THE FOOTER THAT HELD IT.
+ *
+ * Hiding the Apply button left WooCommerce's `__overlay-footer` as an EMPTY
+ * strip still carrying `box-shadow: 0 -4px 8px rgba(0,0,0,.1)` — which painted a
+ * grey band across the sheet just above our own footer. Found by hit-testing the
+ * pixels rather than reading the stylesheet: nothing opaque sat there, and the
+ * only thing at those coordinates was a shadow with no visible owner.
+ *
+ * Their header was already hidden for the same reason; the footer simply got
+ * missed, and stayed invisible as a fault until its own contents went away. */
+.sgs-shop-filters .wc-block-product-filters__overlay-footer {
+	display: none;
+}
+
+/* ── 8i. Making WooCommerce's own controls look like they belong here ──
+ *
+ * Everything below styles markup WooCommerce renders and we do not control.
+ * Form controls are the recurring theme: a <select>, an <input type=range> and a
+ * chip <li> do NOT inherit font from their ancestors, so each one arrives in the
+ * browser's default face at the browser's default size unless told otherwise.
+ * That is why the panel read as "unstyled" even though its own headings and
+ * chips were already themed. */
+
+/* (5) Font inheritance for every control WooCommerce renders inside the panel.
+ * One rule rather than per-control repetition — form elements are the only
+ * things in the subtree that need telling. */
+.sgs-shop-filters select,
+.sgs-shop-filters input,
+.sgs-shop-filters button,
+.sgs-shop-filters textarea {
+	font-family: inherit;
+	color: inherit;
+}
+
+/* (1) The sort dropdown. Measured before: Arial 14px with a grey browser border
+ * and square corners, sitting next to fully-themed SGS controls. It lives in the
+ * toolbar rather than the filter panel, hence the separate scope. */
+.sgs-shop-toolbar select,
+select.orderby,
+.wc-block-product-sort-select select,
+.wp-block-woocommerce-product-sort-select select {
+	font-family: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
+	border: 1px solid var(--wp--preset--color--border);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	padding: 0.5em 2em 0.5em 0.75em;
+	min-height: 44px;
+	cursor: pointer;
+	/* Chevron drawn as a background image so the control keeps a consistent
+	   arrow across platforms once `appearance` is removed. currentColor is not
+	   available inside a data URI, so this tracks the text token instead. */
+	appearance: none;
+	background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+	background-position: calc(100% - 1.1em) 55%, calc(100% - 0.75em) 55%;
+	background-size: 0.35em 0.35em, 0.35em 0.35em;
+	background-repeat: no-repeat;
+}
+
+.sgs-shop-toolbar select:focus-visible,
+select.orderby:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+/* (2) The Filter toggle is styled by `body.is-enhanced .sgs-shop-filters__toggle`
+ * above, NOT here. A rule was briefly added at this point and lost silently: that
+ * one is (0,2,0) and this scope is (0,1,0). Two owners for one button is the
+ * problem, not the specificity — so the original was corrected in place and this
+ * one deleted rather than out-specified. */
+
+/* (3) The slider's handles escaped the panel. The track spans the full content
+ * width, and each handle is a 20px circle CENTRED on the track's end — so half a
+ * handle sat outside the box at each end. Insetting the slider by the handle's
+ * radius puts both circles fully inside without shortening the usable range. */
+.sgs-shop-filters .wc-block-product-filter-price-slider {
+	padding-inline: 10px;
+}
+
+/* (4) The handles themselves.
+ * ⚠ An earlier pass styled `__range-input::-webkit-slider-thumb`. The inputs are
+ * actually `class="min"` and `class="max"` — that selector matched NOTHING, which
+ * is why the handles kept the browser's default black-bordered circle while the
+ * bar beside them was brand pink. Targeted by element+type instead, so a future
+ * WooCommerce class rename cannot silently un-style them again. */
+.sgs-shop-filters input[type="range"]::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters input[type="range"]::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--primary);
+	border: 2px solid var(--wp--preset--color--surface, #fff);
+	box-shadow: 0 0 0 1px var(--wp--preset--color--primary);
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.sgs-shop-filters input[type="range"]:focus-visible::-webkit-slider-thumb {
+	outline: 3px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 3px;
+}
+
+/* (6) "Filters" is the panel's title and the group labels sit beneath it, but
+ * both measured 16px, so the hierarchy read flat. */
+.sgs-shop-filters .sgs-shop-filters__heading {
+	font-size: 1.25rem;
+	line-height: 1.2;
+}
+
+/* (8) The clear-all button measured 198x61 at 18px with 16px/36px padding —
+ * a page-level call to action inside a sidebar. It is a secondary, low-frequency
+ * control and should read as one. */
+.sgs-shop-filters .wp-block-woocommerce-product-filter-clear-button .sgs-button,
+.sgs-shop-filters__sheet-footer .sgs-shop-filters__clear-all {
+	font-size: 0.875rem;
+	padding: 0.5em 1.25em;
+	min-height: 44px;
+}
+
+/* (9) The active-filter chips — the ones carrying an x to remove a filter.
+ * ⚠ These are `wc-block-product-filter-REMOVABLE-chips__item`, a DIFFERENT class
+ * from the selectable `wc-block-product-filter-chips__item` styled earlier, so
+ * they were never covered and kept the browser's 2px-radius default. They also
+ * sat flush against the clear-all button — measured gap: 0. */
+.sgs-shop-filters .wc-block-product-filter-removable-chips__items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	min-height: 32px;
+	padding: 0.25em 0.75em;
+	background: var(--wp--custom--button-presets--outline--background, transparent);
+	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	border-radius: var(--wp--custom--border-radius--pill, 9999px);
+	font-size: 0.8125rem;
+	line-height: 1.2;
+	color: inherit;
+	list-style: none;
+}
+
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item:hover {
+	border-color: var(--wp--preset--color--primary);
+	background: color-mix(in oklab, var(--wp--preset--color--primary) 12%, transparent);
+}
+
+/* The remove control inside each chip — a 24px hit area rather than a bare
+ * glyph, which is the smallest that stays comfortably tappable inside a 32px
+ * chip without forcing the chip taller. */
+.sgs-shop-filters .wc-block-product-filter-removable-chips__item button,
+.sgs-shop-filters .wc-block-product-filter-removable-chips__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	min-height: 24px;
+	padding: 0;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+}
+
+/* The gap the chips row never had beneath it. */
+.sgs-shop-filters .wp-block-woocommerce-product-filter-removable-chips {
+	margin-bottom: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* ── Filter panel headings use the BODY font (2026-08-24) ──
+ * Bean: "Filters text still doesn't match website global set fonts."
+ * Swept every text element in the filter region: nothing foreign — it is all Inter or
+ * Fraunces, both site fonts. The mismatch is that the four filter GROUP headings render
+ * in Fraunces serif 16px while every control beside them is Inter 14px. A serif heading
+ * in a panel of sans-serif controls reads as a different typeface even though both are
+ * "the site's fonts".
+ *
+ * These are UI labels for a control group, not editorial headings, so they take the body
+ * font. Scoped to the class the template already authors on them
+ * (`sgs/heading ... className:"sgs-shop-filters__group-heading"`), so no other heading
+ * anywhere is affected and the block keeps its own inspector controls. */
+.sgs-shop-filters__group-heading {
+	font-family: var(--wp--preset--font-family--body, inherit);
+}
+
+/* ─── 11. PDP RELATED-PRODUCTS RAIL — PEEK-SCROLL ────────────────────────────
+ *
+ * The related rail was a WRAPPING GRID: at 375px it fitted two 155px cards per
+ * row and pushed the rest down the page. Six best-in-class PDPs were measured
+ * live at 375px (John Lewis, M&S, REI, Crate & Barrel, IKEA, plus Deliveroo's
+ * menu) and every one of them scrolls this rail horizontally — 5 of 5 with a
+ * deliberately PARTIAL next card as the swipe cue. None wrap.
+ *
+ * Measured rail card widths: John Lewis 140, Crate & Barrel 141, REI 139,
+ * M&S 131. Our 140px default sits on that mean. At a 327px rail that yields
+ * ~2.15 cards in view, so the third is half-showing — which is the affordance.
+ * NN/g: half images and incomplete words are what signal more content sideways;
+ * dots are "generally weak signifiers".
+ *
+ * ⚠ Card width is driven by --sgs-rail-card-width so it is ONE value to change.
+ * A client-facing control for it needs a block-level home and is NOT built yet —
+ * see D765. Do not hardcode 140px into the rules below.
+ *
+ * KEYBOARD: the rail is not given tabindex. Every card contains a real anchor,
+ * so Tab moves through them and the browser scrolls each into view — the
+ * scroll region is reachable by construction. Do NOT add tabindex="0" as well;
+ * that creates a focus stop that announces nothing.
+ *
+ * SPECIFICITY: WooCommerce sets the track at
+ * `.wc-block-product-template__responsive.columns-4` (0,2,0). The rules below
+ * are (0,3,0) — they win outright rather than on source order. That distinction
+ * is what D760 and D764 were both about; do not reduce these selectors.
+ */
+.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive {
+	--sgs-rail-card-width: 140px;
+	--sgs-rail-gap: 12px;
+
+	display: flex;
+	flex-wrap: nowrap;
+	gap: var(--sgs-rail-gap);
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+
+	/* ⛔ `width: 0` + `min-width: 100%` is LOAD-BEARING. Without it the rail
+	 * does not scroll — it GROWS, and drags every ancestor with it.
+	 *
+	 * Measured live 2026-08-24 at a 375px viewport: with `flex-wrap: nowrap`
+	 * the row's max-content width is 4 x 140 + 3 x 12 = 596px, and each
+	 * ancestor up to the 327px `.sgs-container__inner` sized itself to that
+	 * 596px instead of constraining it. `overflow-x: auto` did NOT stop the
+	 * propagation on its own, and neither did `min-width: 0` on the chain,
+	 * `width: 100%` on the rail, nor `overflow: hidden` on it — all four were
+	 * tested live and all four were no-ops.
+	 *
+	 * `width: 0` removes the row's max-content contribution entirely, so the
+	 * ancestors collapse back to 327px; `min-width: 100%` then refills it to
+	 * whatever the (now correct) parent is. One rule, on this element only —
+	 * no ancestor styling and no :has(), both of which were also tested and
+	 * work but reach outside the rail to do it.
+	 *
+	 * Verified after: row 327px, scrollWidth 596px, scrolls = true. */
+	width: 0;
+	min-width: 100%;
+
+	/* Trims the browser's default scrollbar gutter on desktop without hiding
+	   the scrollbar from anyone who relies on it as an affordance. */
+	padding-bottom: 4px;
+}
+
+.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive > li {
+	flex: 0 0 var(--sgs-rail-card-width);
+	max-width: none;
+	min-width: 0;
+	scroll-snap-align: start;
+}
+
+/* Square media, matching the shop treatment and 6/6 of the measured references. */
+.sgs-product-rail .product-card .product-card__media,
+.sgs-product-rail .product-card .sgs-product-card__media-wrap {
+	aspect-ratio: 1;
+	height: auto;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.sgs-product-rail .product-card .product-card__no-image,
+.sgs-product-rail .product-card .product-card__img-link {
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-product-rail .product-card .product-card-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Same reasoning as the shop card: 0 of 6 measured rails carry a navigational
+   button, and a full-width one inside a 140px card is most of the card. The
+   whole card becomes the link via the title anchor's stretched ::after. */
+.sgs-product-rail .product-card {
+	position: relative;
+}
+
+.sgs-product-rail .product-card .product-card__title-link::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+.sgs-product-rail .product-card:has( .product-card__title-link:focus-visible ) {
+	outline: 2px solid var( --wp--preset--color--primary-text, #3a2e26 );
+	outline-offset: 2px;
+}
+
+.sgs-product-rail .product-card .product-card__add-to-cart,
+.sgs-product-rail .product-card .product-card__thumbs {
+	display: none;
+}
+
+.sgs-product-rail .product-card .product-card__cart-status:empty {
+	display: none;
+}
+
+/* Typography scaled to a 140px card. Measured reference rail titles are 14-16px
+   (John Lewis 14, M&S 14, REI 14, Deliveroo 16); the shop card's 17px is too
+   large once the card is 140px rather than 327px wide. */
+.sgs-product-rail .product-card .sgs-product-card__title,
+.sgs-product-rail .product-card .product-card__title-link {
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+.sgs-product-rail .product-card .price {
+	font-size: 17px;
+}
+
+.sgs-product-rail .product-card .product-card-body {
+	padding: 12px;
+}
+
+/* The description has no room at 140px and is not present on any measured rail. */
+.sgs-product-rail .product-card .product-desc {
+	display: none;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+
+	.sgs-product-rail .wc-block-product-template.wc-block-product-template__responsive {
+		scroll-behavior: auto;
 	}
 }

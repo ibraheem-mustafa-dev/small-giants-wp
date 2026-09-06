@@ -27,6 +27,21 @@ const { makeFinding } = require( '../core/finding' );
 const IMG_TAG_RE = /<img\b/;
 const DECORATIVE_ATTR_RE = /decorative|arialabel|alttext/i;
 
+// S1 fix (2026-09-02): an attribute literally named `ariaLabel` (exact
+// case-sensitive name) is the D647 LANDMARK-LABEL convention — confirmed by
+// reading render.php in hero/cta-section/trust-bar/container/site-header/
+// site-footer: it is applied ONLY to the section root, gated on
+// `tag === 'nav' || 'aside'`, never to any <img>. It coincidentally matched
+// the /arialabel/i branch of DECORATIVE_ATTR_RE, false-clearing 3 blocks that
+// genuinely render an <img> with no real decorative/alt mechanism of their
+// own (hero, cta-section, trust-bar — each confirmed via a literal `<img` or
+// `<MediaPicker` in edit.js). `container` also carries this exact attr but
+// renders no <img> in edit.js at all, so excluding it here is a no-op for
+// container specifically (moot, not a 4th real case). A DIFFERENTLY-NAMED
+// attribute (e.g. `imageAriaLabel`) still satisfies the rule as before —
+// only this one exact landmark name is excluded.
+const LANDMARK_LABEL_ATTR = 'ariaLabel';
+
 function imageWrappingComponentNames( ctx ) {
 	const names = [];
 	if ( ctx.components && ctx.components.ok ) {
@@ -69,9 +84,30 @@ module.exports = {
 		const blockJson = ctx.json( blockJsonFile );
 		if ( ! blockJson.ok ) return []; // malformed/absent block.json is a different rule's concern
 
-		const attrNames = Object.keys( blockJson.data.attributes || {} );
-		const hasDecorativeAttr = attrNames.some( ( a ) => DECORATIVE_ATTR_RE.test( a ) );
+		const attributes = blockJson.data.attributes || {};
+		const attrNames = Object.keys( attributes );
+		const hasDecorativeAttr = attrNames.some(
+			( a ) => a !== LANDMARK_LABEL_ATTR && DECORATIVE_ATTR_RE.test( a )
+		);
 		if ( hasDecorativeAttr ) return [];
+
+		// A repeater block (an array-typed attribute whose items are objects,
+		// e.g. `logos`/`items`/`images`) stores its image PER-ITEM, so the
+		// decorative flag legitimately lives at `items.properties.decorative`
+		// rather than as a top-level attribute — the correct shape (D918/S8's
+		// {element}Decorative convention scoped to the item, not the block),
+		// confirmed live across sgs/brand-strip, sgs/card-grid, sgs/gallery and
+		// sgs/trust-bar (2026-09-03 batch) all independently reporting this
+		// exact false-positive. Recurse one level into each array attribute's
+		// item schema before concluding no decorative mechanism exists.
+		const hasNestedDecorativeAttr = attrNames.some( ( a ) => {
+			const attr = attributes[ a ];
+			if ( ! attr || attr.type !== 'array' ) return false;
+			const itemProps = attr.items && attr.items.properties;
+			if ( ! itemProps || typeof itemProps !== 'object' ) return false;
+			return Object.keys( itemProps ).some( ( p ) => DECORATIVE_ATTR_RE.test( p ) );
+		} );
+		if ( hasNestedDecorativeAttr ) return [];
 
 		return [
 			makeFinding( {
@@ -88,7 +124,15 @@ module.exports = {
 	},
 	selfTest: {
 		fixture: 'fixtures/18-decorative-image-aria',
-		mustFlag: [ 'image-no-decorative-toggle', 'image-via-shared-component' ],
-		mustNotFlag: [ 'image-with-decorative-toggle', 'no-image-at-all' ],
+		mustFlag: [
+			'image-no-decorative-toggle',
+			'image-via-shared-component',
+			'image-via-repeater-without-decorative',
+		],
+		mustNotFlag: [
+			'image-with-decorative-toggle',
+			'no-image-at-all',
+			'image-via-repeater-with-decorative',
+		],
 	},
 };

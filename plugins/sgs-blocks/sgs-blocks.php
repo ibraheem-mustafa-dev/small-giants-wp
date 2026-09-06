@@ -8,7 +8,7 @@
  * Author URI:  https://smallgiants.studio
  * Text Domain: sgs-blocks
  * Domain Path: /languages
- * Requires at least: 6.7
+ * Requires at least: 6.9
  * Requires PHP: 8.0
  * License:     GPL-2.0-or-later
  *
@@ -206,6 +206,7 @@ Css_Output_Settings::register();
 // stops rejecting them with "Invalid parameter(s): attributes". Attribute list
 // is generated from the extension JS by scripts/generate-extension-attributes.js.
 require_once SGS_BLOCKS_PATH . 'includes/extension-attrs-rest-register.php';
+require_once SGS_BLOCKS_PATH . 'includes/media-element-attrs-register.php';
 
 // Parallax scroll — server-side class, custom property, and data-attribute injection.
 require_once SGS_BLOCKS_PATH . 'includes/parallax.php';

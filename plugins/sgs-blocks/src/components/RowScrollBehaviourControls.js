@@ -226,7 +226,7 @@ export default function RowScrollBehaviourControls( {
 				}
 			>
 				<ToolsPanelItem
-					label={ __( 'Transparent until scrolled', 'sgs-blocks' ) }
+					label={ __( 'Row background transparent', 'sgs-blocks' ) }
 					hasValue={ () =>
 						!! rowTransparent &&
 						Object.keys( rowTransparent ).length > 0
@@ -236,11 +236,11 @@ export default function RowScrollBehaviourControls( {
 				>
 					<ResponsiveTriStateControl
 						label={ __(
-							'Transparent until scrolled',
+							'Row background transparent',
 							'sgs-blocks'
 						) }
 						help={ __(
-							'This row starts see-through, then becomes solid once the visitor scrolls. Independent of any other row.',
+							'This row’s own background turns see-through, then solid once the visitor scrolls. It changes this row’s background colour only — the header itself stays put. Independent of every other row.',
 							'sgs-blocks'
 						) }
 						value={ rowTransparent }
@@ -252,7 +252,7 @@ export default function RowScrollBehaviourControls( {
 				</ToolsPanelItem>
 
 				<ToolsPanelItem
-					label={ __( 'Hide on scroll', 'sgs-blocks' ) }
+					label={ __( 'Collapse this row on scroll', 'sgs-blocks' ) }
 					hasValue={ () =>
 						!! rowHideOnScroll &&
 						Object.keys( rowHideOnScroll ).length > 0
@@ -263,9 +263,9 @@ export default function RowScrollBehaviourControls( {
 					isShownByDefault
 				>
 					<ResponsiveTriStateControl
-						label={ __( 'Hide on scroll', 'sgs-blocks' ) }
+						label={ __( 'Collapse this row on scroll', 'sgs-blocks' ) }
 						help={ __(
-							'This row slides off the top once the visitor scrolls down, and slides back in on scroll up. Independent of any other row.',
+							'This row slides away once the visitor scrolls down, and slides back in on scroll up. While the header is pinned the row collapses to nothing, closing the gap it leaves. Independent of every other row.',
 							'sgs-blocks'
 						) }
 						value={ rowHideOnScroll }
@@ -277,7 +277,7 @@ export default function RowScrollBehaviourControls( {
 				</ToolsPanelItem>
 
 				<ToolsPanelItem
-					label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+					label={ __( 'Reduce this row’s padding on scroll', 'sgs-blocks' ) }
 					hasValue={ () =>
 						( !! rowShrink &&
 							Object.keys( rowShrink ).length > 0 ) ||
@@ -292,9 +292,9 @@ export default function RowScrollBehaviourControls( {
 					isShownByDefault
 				>
 					<ResponsiveTriStateControl
-						label={ __( 'Shrink on scroll', 'sgs-blocks' ) }
+						label={ __( 'Reduce this row’s padding on scroll', 'sgs-blocks' ) }
 						help={ __(
-							'This row becomes shorter once the visitor scrolls, freeing up screen space. Independent of any other row.',
+							'Reduces the empty space above and below this row once the visitor scrolls, freeing up screen height. Independent of every other row.',
 							'sgs-blocks'
 						) }
 						value={ rowShrink }
@@ -325,7 +325,7 @@ export default function RowScrollBehaviourControls( {
 					{ shrinkIsOn && ! hasVerticalPadding && (
 						<Notice status="warning" isDismissible={ false }>
 							{ __(
-								'Shrink on scroll needs some empty space around the row (padding) to shrink from. Right now this row has none, so switching this on won’t visibly do anything yet.',
+								'This needs some empty space around the row (padding) to reduce. Right now this row has none, so switching it on won’t visibly do anything yet.',
 								'sgs-blocks'
 							) }
 						</Notice>

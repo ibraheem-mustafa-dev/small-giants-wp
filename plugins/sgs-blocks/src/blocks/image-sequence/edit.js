@@ -13,7 +13,7 @@ import {
 import { useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import MediaPicker from '../../components/MediaPicker';
-import { ResponsiveControl } from '../../components';
+import { ResponsiveControl, MEDIA_SIZING_RATIO_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -27,14 +27,14 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  */
 const MAX_FRAME_COUNT = 200;
 
-const ASPECT_RATIO_OPTIONS = [
-	{ label: __( 'Widescreen (16:9)', 'sgs-blocks' ), value: '16 / 9' },
-	{ label: __( 'Ultra-wide (21:9)', 'sgs-blocks' ), value: '21 / 9' },
-	{ label: __( 'Standard (4:3)', 'sgs-blocks' ), value: '4 / 3' },
-	{ label: __( 'Square (1:1)', 'sgs-blocks' ), value: '1 / 1' },
-	{ label: __( 'Portrait (3:4)', 'sgs-blocks' ), value: '3 / 4' },
-	{ label: __( 'Tall (9:16)', 'sgs-blocks' ), value: '9 / 16' },
-];
+// C19 ratio-mode adoption (2026-08-27) — this list used to be a hand-rolled
+// duplicate of the exact six values render.php:54-57 whitelists (same
+// values, different labels). It is now imported from MediaSizingPanel's
+// exported RATIO_OPTIONS — the JS-side single source of truth — leaving
+// only ONE remaining copy of the value set in the codebase: render.php's
+// PHP whitelist (PHP cannot import a JS constant, so it stays a
+// byte-identical array there; see render.php's own comment on that array).
+const ASPECT_RATIO_OPTIONS = MEDIA_SIZING_RATIO_OPTIONS;
 
 // Must stay in sync with `$allowed_ext` in render.php AND the `enum` on the three
 // *FrameExt attrs in block.json — all three now list the same five values. They did
@@ -209,6 +209,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		thumbnail,
 		thumbnailAlt,
+		thumbnailDecorative,
 		aspectRatio,
 		desktopFramesUrl,
 		desktopFrameCount,
@@ -254,15 +255,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Agency-managed block', 'sgs-blocks' ) }>
-					<Notice status="warning" isDismissible={ false }>
-						{ __(
-							'This block is hidden from the block inserter (agency-only) because setting it up needs a command-line tool with ffmpeg installed — not something a client is expected to do. This existing instance still works normally; you can still edit its settings here. To add this effect to a NEW section, ask Small Giants Studio to prepare the frames and place the block.',
-							'sgs-blocks'
-						) }
-					</Notice>
-				</PanelBody>
-
 				<PanelBody title={ __( 'Thumbnail', 'sgs-blocks' ) }>
 					<p>
 						{ __(
@@ -276,6 +268,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						onRemove={ onRemovePoster }
 						allowedTypes={ [ 'image' ] }
 						label={ __( 'Select thumbnail image', 'sgs-blocks' ) }
+					/>
+					<ToggleControl
+						label={ __(
+							'Decorative — hide from screen readers',
+							'sgs-blocks'
+						) }
+						checked={ Boolean( thumbnailDecorative ) }
+						onChange={ ( value ) =>
+							setAttributes( { thumbnailDecorative: value } )
+						}
+						help={
+							thumbnailDecorative
+								? __(
+										'Screen readers will skip this thumbnail entirely — use only when it carries no information the sequence itself doesn’t already convey.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Turn on when the thumbnail is decoration rather than information.',
+										'sgs-blocks'
+								  )
+						}
+						__nextHasNoMarginBottom
 					/>
 					{ /* Art direction (2026-08-07). The canvas sequence already
 					     art-directs itself per device (the three frame pipelines
@@ -330,14 +344,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 					<TextControl
 						label={ __( 'Thumbnail alt text', 'sgs-blocks' ) }
-						help={ __(
-							'Describes the sequence for screen readers and no-JS visitors.',
-							'sgs-blocks'
-						) }
+						help={
+							thumbnailDecorative
+								? __(
+										'Disabled — the thumbnail is set to decorative above, so no alt text is rendered.',
+										'sgs-blocks'
+								  )
+								: __(
+										'Describes the sequence for screen readers and no-JS visitors.',
+										'sgs-blocks'
+								  )
+						}
 						value={ thumbnailAlt }
 						onChange={ ( value ) =>
 							setAttributes( { thumbnailAlt: value } )
 						}
+						disabled={ thumbnailDecorative }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -412,6 +434,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</p>
 					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Responsive frame sources', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

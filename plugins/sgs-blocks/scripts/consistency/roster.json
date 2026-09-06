@@ -19,6 +19,19 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 10,
+        "replacedCoreSupports": [
+          "anchor",
+          "ariaLabel",
+          "border",
+          "color",
+          "interactivity",
+          "layout",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -34,6 +47,17 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "interactivity",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -49,6 +73,13 @@
         "link": true,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 11,
+        "replacedCoreSupports": [
+          "anchor",
+          "spacing"
+        ]
       }
     },
     {
@@ -64,6 +95,10 @@
         "link": true,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 10,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -79,6 +114,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 15,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -94,6 +133,16 @@
         "link": true,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -106,9 +155,13 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": true,
-        "media": true,
+        "link": false,
+        "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 17,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -124,6 +177,18 @@
         "link": true,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 6,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "dimensions",
+          "spacing",
+          "splitting",
+          "typography"
+        ]
       }
     },
     {
@@ -139,6 +204,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 27,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -154,6 +223,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 21,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -169,6 +242,10 @@
         "link": false,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 13,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -184,6 +261,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 2,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -199,6 +280,20 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 2,
+        "replacedCoreSupports": [
+          "anchor",
+          "ariaLabel",
+          "border",
+          "color",
+          "dimensions",
+          "layout",
+          "position",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -214,6 +309,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -229,6 +328,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -244,6 +347,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 27,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -259,6 +366,10 @@
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -274,6 +385,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -289,6 +404,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -304,6 +423,15 @@
         "link": true,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 52,
+        "replacedCoreSupports": [
+          "anchor",
+          "color",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -319,6 +447,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -334,6 +466,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -349,6 +485,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -364,6 +504,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -379,6 +523,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -394,6 +542,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -409,6 +561,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -424,6 +580,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -439,6 +599,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -454,6 +618,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -469,6 +637,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -484,6 +656,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -499,6 +675,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -514,6 +694,10 @@
         "link": false,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -529,6 +713,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -544,6 +732,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -559,6 +751,15 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 23,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing"
+        ]
       }
     },
     {
@@ -574,6 +775,10 @@
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 38,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -589,6 +794,18 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 2,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "className",
+          "color",
+          "spacing",
+          "splitting",
+          "typography"
+        ]
       }
     },
     {
@@ -601,9 +818,20 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 3,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "dimensions",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -619,6 +847,16 @@
         "link": true,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "dimensions",
+          "spacing"
+        ]
       }
     },
     {
@@ -634,6 +872,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 3,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -649,6 +891,10 @@
         "link": true,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -661,9 +907,13 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -679,6 +929,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 6,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -694,6 +948,15 @@
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 13,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "interactivity",
+          "spacing"
+        ]
       }
     },
     {
@@ -709,6 +972,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -724,6 +991,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -739,6 +1010,10 @@
         "link": false,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 14,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -754,6 +1029,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 18,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -769,6 +1048,16 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -779,11 +1068,15 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": false,
-        "media": false,
+        "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 6,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -799,6 +1092,17 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 11,
+        "replacedCoreSupports": [
+          "anchor",
+          "ariaLabel",
+          "inserter",
+          "interactivity",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -814,6 +1118,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 10,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -829,6 +1137,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 26,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -844,6 +1156,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -859,6 +1175,16 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 40,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -874,6 +1200,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 39,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -889,6 +1219,10 @@
         "link": false,
         "media": false,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 8,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -904,6 +1238,10 @@
         "link": true,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 40,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -919,6 +1257,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 5,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -934,6 +1276,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -944,11 +1290,15 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 25,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -964,6 +1314,17 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "dimensions",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -974,11 +1335,18 @@
       "replaces": "core/site-logo",
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
-        "colour": false,
+        "styling": false,
+        "colour": true,
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "spacing"
+        ]
       }
     },
     {
@@ -994,6 +1362,14 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "color",
+          "spacing"
+        ]
       }
     },
     {
@@ -1009,6 +1385,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1024,6 +1404,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1039,6 +1423,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1054,6 +1442,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1069,6 +1461,15 @@
         "link": false,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 13,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing"
+        ]
       }
     },
     {
@@ -1084,6 +1485,10 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1099,6 +1504,16 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "color",
+          "layout",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -1114,6 +1529,17 @@
         "link": true,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 4,
+        "replacedCoreSupports": [
+          "anchor",
+          "ariaLabel",
+          "border",
+          "color",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -1129,6 +1555,16 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 15,
+        "replacedCoreSupports": [
+          "anchor",
+          "color",
+          "interactivity",
+          "spacing",
+          "typography"
+        ]
       }
     },
     {
@@ -1144,6 +1580,10 @@
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 10,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1156,9 +1596,13 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 16,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1172,8 +1616,12 @@
         "styling": true,
         "colour": true,
         "link": false,
-        "media": true,
+        "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 15,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1189,6 +1637,17 @@
         "link": false,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": [
+          "anchor",
+          "border",
+          "color",
+          "spacing",
+          "splitting",
+          "typography"
+        ]
       }
     },
     {
@@ -1204,6 +1663,10 @@
         "link": false,
         "media": true,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1219,6 +1682,10 @@
         "link": false,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1234,6 +1701,10 @@
         "link": true,
         "media": true,
         "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 25,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1249,6 +1720,10 @@
         "link": true,
         "media": false,
         "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 3,
+        "replacedCoreSupports": []
       }
     }
   ]

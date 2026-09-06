@@ -81,15 +81,19 @@ these paths (each mirrored from check-dead-controls.js's own hard-won rules):
 
 BASELINE + FLAGS
 -----------------
-  python scripts/audit-block-file-consistency.py            # human report
-  python scripts/audit-block-file-consistency.py --json      # machine-readable
-  python scripts/audit-block-file-consistency.py --check     # same report; still
-                                                               exits 0 (see below)
+  python scripts/audit-block-file-consistency.py                 # human report, always exits 0
+  python scripts/audit-block-file-consistency.py --json           # machine-readable, always exits 0
+  python scripts/audit-block-file-consistency.py --check          # exits 1 if any NET-NEW finding
+                                                                    # (not in the baseline); 0 otherwise
+  python scripts/audit-block-file-consistency.py --update-baseline # accepts every CURRENT finding into
+                                                                    # the baseline and exits 0
 
-WARN-ONLY: this script exits 0 ALWAYS, regardless of findings or --check. It is
-diagnostic, not a build gate. Baseline file (scripts/block-file-consistency-
-baseline.json, default {}) is supported for future net-new-only comparison but
-does not change the exit code. NOT wired into prebuild.
+GATE-CAPABLE (fixed 2026-08-18): `--check` now returns a real non-zero exit code when any
+finding is not already in the baseline (scripts/block-file-consistency-baseline.json). A
+baseline of the count present at the time this gate was made real is committed alongside
+this change so introducing the gate does not red-line the build; only a NEW finding beyond
+that baseline fails `--check`. Plain (no-flag) and `--json` runs remain diagnostic-only and
+always exit 0 — only `--check` is a gate. Still NOT wired into prebuild by this change.
 
 Never crashes: a missing/unparseable file is logged as a per-block problem and
 the run continues over the rest of the roster.
@@ -890,6 +894,27 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
         if word_present(attr, full_corpus):
             continue
 
+        # The shared media-atom layer (src/components/media/atoms/,
+        # includes/media/atoms/) never writes the camelCase attr name as a
+        # literal — every read is a COMPUTED key built from a PascalCase
+        # "base" string via mediaAttrName()/mediaStoredAttrName() (JS) or
+        # sgs_media_element_attr()/sgs_media_element_stored_attr() (PHP), e.g.
+        # mediaStoredAttrName( blockSlug, '', 'VideoMuted' ) -> 'videoMuted'
+        # at runtime. A block wiring an atom via block.json's
+        # `supports.sgs.mediaElements` (not a literal control in edit.js)
+        # therefore never appears as its own camelCase name anywhere in the
+        # corpus — checking the PascalCase base form this convention actually
+        # uses is what recognises it as consumed. Found live 2026-09-01: this
+        # gate flagged 13 sgs/media attrs (mediaSizing/videoMuted*/overlay*/
+        # border*) as orphaned the moment their controls moved from literal
+        # JSX in edit.js into the atom dispatch layer — verified NOT dead via
+        # the dedicated atom-parity gates (test-media-atom-parity,
+        # check-media-attributes-parity, test-media-injection-parity, all
+        # green) before concluding this was a detector gap, not a real one.
+        pascal_base = attr[:1].upper() + attr[1:]
+        if pascal_base != attr and word_present(pascal_base, full_corpus):
+            continue
+
         findings.append({
             'type': 'orphan_attr',
             'block': block.slug,
@@ -922,15 +947,39 @@ def check_undeclared_render_refs(block, extension_attrs):
                 continue
             if attr in NATIVE_ATTRS or attr in block.support_injected or is_extension_attr(attr, extension_attrs):
                 continue
+            if filename == 'render.php':
+                # ⚠ CORRECTED 2026-08-20 — PHP does NOT discard an undeclared
+                # attribute before render.php runs (WP_Block_Type::
+                # prepare_attributes_for_render() `continue`s past an
+                # unrecognised key, it does not `unset()` it — unset is only
+                # for a DECLARED attr failing schema validation). A value
+                # hand-authored into a theme pattern/template block comment
+                # (as opposed to saved through the block editor, which filters
+                # to the registered schema before writing post_content)
+                # genuinely reaches this read. This is NOT proven dead —
+                # sgs/container's own `backgroundColor` read is the live
+                # counter-example (undeclared, still paints a real class).
+                # Flagged as a schema-authoring gap (the attr should probably
+                # be declared, or the read removed with a verified before/
+                # after), not as a confirmed-dead read.
+                reason = (
+                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
+                    'PHP does NOT drop an undeclared attribute before render.php runs, so this read '
+                    'may still be live (e.g. from a hand-authored theme pattern/template); verify '
+                    'against the actual render before treating it as dead'
+                )
+            else:
+                reason = (
+                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
+                    "the editor's getBlockAttributes() only builds the registered schema, so this "
+                    'value never reaches the JS attributes object and this read is dead'
+                )
             findings.append({
                 'type': 'undeclared_render_ref',
                 'block': block.slug,
                 'attr': attr,
                 'file': filename,
-                'reason': (
-                    f'{filename} reads {attr!r} from attributes but block.json does not declare it — '
-                    'WP silently discards an undeclared attribute at parse time, so this read is dead'
-                ),
+                'reason': reason,
             })
     return findings
 
@@ -1021,6 +1070,13 @@ def load_baseline():
 
 def finding_key(f):
     return f"{f.get('type')}:{f.get('block')}:{f.get('attr', '')}:{f.get('file', '')}"
+
+
+def save_baseline(all_findings):
+    """Write every CURRENT finding into the baseline as 'accepted' (the ONLY
+    sanctioned way to grow the baseline — mirrors the sibling gates' pattern)."""
+    payload = {'accepted': all_findings}
+    BASELINE_FILE.write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
 
 
 # ---------------------------------------------------------------------------
@@ -1123,10 +1179,11 @@ def main():
         sys.exit(self_test())
 
     as_json = '--json' in sys.argv
-    # --check is accepted for CLI-shape consistency with sibling gates, but per
-    # this script's WARN-ONLY design it never changes the exit code (see module
-    # docstring). Left as a no-op flag rather than silently rejected.
-    _check = '--check' in sys.argv  # noqa: F841
+    # --check is a REAL gate (fixed 2026-08-18, see module docstring): exits 1
+    # if any finding is not already in the baseline. --update-baseline accepts
+    # every current finding and exits 0.
+    is_check = '--check' in sys.argv
+    is_update_baseline = '--update-baseline' in sys.argv
 
     slugs, roster_err = load_roster()
     file_problems = []
@@ -1196,6 +1253,11 @@ def main():
         per_block_findings[slug] = {'findings': findings, 'problems': block.problems}
         all_findings.extend(findings)
 
+    if is_update_baseline:
+        save_baseline(all_findings)
+        print(f'[audit-block-file-consistency] Baseline updated — {len(all_findings)} finding(s) accepted.')
+        sys.exit(0)
+
     baseline = load_baseline()
     net_new = [f for f in all_findings if finding_key(f) not in baseline]
     accepted = [f for f in all_findings if finding_key(f) in baseline]
@@ -1220,7 +1282,7 @@ def main():
             'accepted': accepted,
             'per_block': per_block_findings,
         }, indent=2) + '\n')
-        sys.exit(0)
+        sys.exit(1 if (is_check and net_new) else 0)
 
     print('[audit-block-file-consistency] Whole-block cross-file consistency audit (WARN-ONLY)\n')
     if file_problems:
@@ -1267,7 +1329,10 @@ def main():
                 print(f'    - {p}')
         print()
 
-    print('WARN-ONLY: this script always exits 0. Not wired into prebuild.')
+    if is_check and net_new:
+        print(f'[audit-block-file-consistency] --check FAILED: {len(net_new)} net-new finding(s) not in baseline.')
+        sys.exit(1)
+    print('Plain/--json runs are diagnostic-only and always exit 0; --check is the gate. Not wired into prebuild.')
     sys.exit(0)
 
 

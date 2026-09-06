@@ -20,20 +20,11 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	TypographyControls,
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
-	SgsColourPanel,
-	ShadowControl,
-	resolveColourToken,
-} from '../../components';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
+import { backgroundPaintPreview, textPaintPreview } from '../../utils';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -71,13 +62,6 @@ const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
 	{ label: __( 'Overline', 'sgs-blocks' ), value: 'overline' },
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
 
 const EASING_OPTIONS = [
@@ -147,8 +131,7 @@ function parseUnit( raw, currentUnit ) {
 // <ResponsiveOverride> exposes.
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		style,
+	const { padding, margin,
 		label,
 		url,
 		linkId,
@@ -186,24 +169,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		lineHeight,
 		letterSpacing,
 		colourText,
+		colourTextGradient,
 		colourTextHover,
+		colourTextHoverGradient,
 		colourBackground,
 		colourBackgroundGradient,
 		colourBackgroundHover,
 		colourBackgroundHoverGradient,
-		colourBorder,
-		colourBorderGradient,
-		colourBorderHover,
-		colourBorderHoverGradient,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		borderRadiusTablet,
-		borderRadiusMobile,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		scaleHover,
 		transitionDuration,
 		transitionEasing,
@@ -216,8 +195,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const hasIcon = !! icon;
 
 	// LINK contract popover (Spec 35 §2 / D609 row-opens-popover shape) — ONE
-	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`,
-	// the shared standard promoted from this block's own pilot 2026-08-13),
+	// popover (`LinkPopoverContent`, `../../components/LinkPopoverControl.js`),
 	// its anchor swapped between the toolbar link button and the sidebar's
 	// compact link row so both triggers open the SAME surface. Button needs
 	// its OWN dual-trigger orchestration (this state) rather than the
@@ -278,14 +256,60 @@ export default function Edit( { attributes, setAttributes } ) {
 	};
 
 	const previewStyle = {};
-	if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
-	if ( colourBackground ) previewStyle.backgroundColor = resolveColourToken( colourBackground, palette );
-	if ( colourBorder ) previewStyle.borderColor = resolveColourToken( colourBorder, palette );
+
+	// colourTextGradient/colourBackgroundGradient real mechanism (render.php,
+	// D636 + the button-specific "Real text gradient" precondition,
+	// CLAUDE.md): a gradient BACKGROUND is a `--sgs-btn-bg-image` custom-
+	// property value consumed by style.css — the same technique
+	// `backgroundPaintPreview()` already mirrors. A gradient TEXT colour needs
+	// `background-clip:text` (`textPaintPreview()`), but `.sgs-button` paints
+	// its OWN background on the exact same selector a text colour targets —
+	// clipping would erase the button's fill. The frontend solves this by
+	// moving the background onto a `::after` layer ONLY when a text gradient
+	// is actually set; this mirrors that with a real sibling DOM layer (React
+	// has no way to target `::after` via inline style) rather than the
+	// generic backgroundPaintPreview merge.
+	const hasValidTextGradient = !! ( colourTextGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( colourTextGradient ) );
+	const bgPaintPreview = backgroundPaintPreview( colourBackground, colourBackgroundGradient, palette );
+	let backgroundLayerStyle = null;
+
+	if ( hasValidTextGradient ) {
+		// Neutralise the element's own background (moves to a sibling layer)
+		// and establish the stacking context the layer needs — mirrors
+		// render.php's `position:relative;isolation:isolate;background-color:
+		// transparent;background-image:none` on the strengthened selector.
+		previewStyle.position = 'relative';
+		previewStyle.isolation = 'isolate';
+		previewStyle.backgroundColor = 'transparent';
+		previewStyle.backgroundImage = 'none';
+		if ( bgPaintPreview.backgroundColor || bgPaintPreview.backgroundImage ) {
+			backgroundLayerStyle = {
+				position: 'absolute',
+				inset: 0,
+				zIndex: -1,
+				borderRadius: 'inherit',
+				pointerEvents: 'none',
+				...bgPaintPreview,
+			};
+		}
+		Object.assign( previewStyle, textPaintPreview( colourText, colourTextGradient, palette ) );
+	} else {
+		Object.assign( previewStyle, bgPaintPreview );
+		if ( colourText ) previewStyle.color = resolveColourToken( colourText, palette );
+	}
+
+	if ( borderColour ) previewStyle.borderColor = resolveColourToken( borderColour, palette );
+	// A gradient border renders frontend as a masked ::before ring, which cannot
+	// be reproduced in a plain inline style — approximate it with the gradient as
+	// a border-image so the canvas at least shows that a gradient is applied.
+	if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+		previewStyle.borderImage = `${ borderColourGradient } 1`;
+	}
 	if ( borderStyle ) previewStyle.borderStyle = borderStyle;
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
 	if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
 	if ( fontWeight ) previewStyle.fontWeight = fontWeight;
@@ -315,9 +339,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( boxShadowPreview ) {
 		previewStyle.boxShadow = boxShadowPreview;
 	}
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
 	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
@@ -389,12 +413,18 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: colourText,
 								onChange: ( val ) => setAttributes( { colourText: val ?? '' } ),
+								gradientValue: colourTextGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourTextGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
 								value: colourTextHover,
 								onChange: ( val ) => setAttributes( { colourTextHover: val ?? '' } ),
+								gradientValue: colourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { colourTextHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -419,30 +449,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: colourBackgroundHoverGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { colourBackgroundHoverGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
-						key: 'border',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: colourBorder,
-								onChange: ( val ) => setAttributes( { colourBorder: val ?? '' } ),
-								gradientValue: colourBorderGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { colourBorderGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: colourBorderHover,
-								onChange: ( val ) => setAttributes( { colourBorderHover: val ?? '' } ),
-								gradientValue: colourBorderHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { colourBorderHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -647,6 +653,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 											<RangeControl
 												label={ __( 'Icon size (px)', 'sgs-blocks' ) }
+												hideLabelFromVision
 												value={ ownValue || ( inherited ? effectiveValue : 16 ) || 16 }
 												onChange={ ( val ) => setOwnValue( val ) }
 												min={ 8 }
@@ -704,7 +711,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										__next40pxDefaultSize
 									/>
 									{ 'custom' === typeVal && (
-										<UnitControl
+										<SgsLengthControl
+											presets={ false }
 											label={ __( 'Custom width', 'sgs-blocks' ) }
 											value={ composeUnit( numVal, unitVal ) }
 											units={ CUSTOM_WIDTH_UNITS }
@@ -715,9 +723,7 @@ export default function Edit( { attributes, setAttributes } ) {
 													customWidthUnit: { ...unitObj, [ tier ]: unit },
 												} );
 											} }
-											__nextHasNoMarginBottom
 											style={ { marginTop: '8px' } }
-											__next40pxDefaultSize
 										/>
 									) }
 								</>
@@ -736,7 +742,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { minHeight: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeUnit(
@@ -752,8 +759,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										setAttributes( { [ minHeightUnitAttr ]: unit } );
 									}
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -775,6 +780,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							showSize={ true }
 							showWeight={ true }
 							showStyle={ true }
+							showFontFamily={ true }
 							showLineHeight={ false }
 							showResponsive={ true }
 						/>
@@ -794,8 +800,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ ( { ownValue, setOwnValue } ) => {
 								const lineHeightUnit = attributes.lineHeightUnit !== undefined ? attributes.lineHeightUnit : '';
 								return (
-									<UnitControl
+									<SgsLengthControl
+										presets={ false }
 										label={ __( 'Line height', 'sgs-blocks' ) }
+										hideLabelFromVision
 										value={ composeUnit( ownValue, lineHeightUnit ) }
 										units={ LINE_HEIGHT_UNITS }
 										onChange={ ( raw ) => {
@@ -803,8 +811,6 @@ export default function Edit( { attributes, setAttributes } ) {
 											setOwnValue( num );
 											setAttributes( { lineHeightUnit: unit } );
 										} }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 								);
 							} }
@@ -837,6 +843,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ ( { ownValue, setOwnValue } ) => (
 								<RangeControl
 									label={ __( 'Letter spacing (px)', 'sgs-blocks' ) }
+									hideLabelFromVision
 									value={ ownValue || 0 }
 									onChange={ ( val ) => setOwnValue( val ) }
 									min={ -5 }
@@ -878,78 +885,84 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
-				   no tiers); border-radius routes to WP-native style.border.radius
-				   (base) + borderRadiusTablet/Mobile object attrs (tiers). The button
-				   declares __experimentalBorder.__experimentalSkipSerialization itself
-				   (block.json) so base radius serialises scoped, not inline — this is
-				   the spacing skipSerialization pattern container proves, applied to
-				   border here (container skip-serialises spacing, not border). */ }
+				   no tiers); borderRadius is a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, read directly by render.php. */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Border style', 'sgs-blocks' ) }
-							value={ borderStyle }
-							options={ BORDER_STYLE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							values={ { base: borderWidth ?? {} } }
-							showResponsive={ false }
-							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
-						/>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							values={ {
-								base: style?.border?.radius ?? {},
-								tablet: borderRadiusTablet ?? {},
-								mobile: borderRadiusMobile ?? {},
+												{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
+						   (width/style/colour) mirroring native's BorderBoxControl layout,
+						   matching sgs/product-card + sgs/quote. Border-radius is unchanged
+						   (stays WP-native). */ }
+						<SgsBorderControl
+							widthValues={ borderWidth ?? {} }
+							onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+							widthPresets={ [ '10', '20', '30' ] }
+							styleValue={ borderStyle }
+							onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+							colourStates={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: borderColour,
+									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+									gradientValue: borderColourGradient,
+									onGradientChange: ( val ) =>
+									setAttributes( { borderColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: borderColourHover,
+									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+									gradientValue: borderColourHoverGradient,
+									onGradientChange: ( val ) =>
+									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+								},
+							] }
+							radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
 							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-								} else {
-									setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
+							onRadiusChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 							} }
 						/>
 					</PanelBody>
 
-				{ /* Spacing — Box-object interface contract §1/§5: padding/margin base
-				   routes to WP-native style.spacing (mirrors sgs/container); tiers are
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs. */ }
+				{ /* Spacing — padding/margin are each a single block-owned tier-object
+				   attr { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Effects */ }
@@ -991,17 +1004,21 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						value={ boxShadow }
-						onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
-						colour={ boxShadowColour }
-						onColourChange={ ( val ) => setAttributes( { boxShadowColour: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadow',
+							colour: 'boxShadowColour',
+						} }
 					/>
 					<ShadowControl
 						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						value={ boxShadowHover }
-						onChange={ ( val ) => setAttributes( { boxShadowHover: val } ) }
-						colour={ boxShadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { boxShadowHoverColour: val } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadowHover',
+							colour: 'boxShadowHoverColour',
+						} }
 					/>
 				</PanelBody>
 
@@ -1027,6 +1044,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			   The label is now RichText on-canvas (matching core/button) instead of a
 			   sidebar TextControl. */ }
 			<span { ...blockProps }>
+				{ backgroundLayerStyle && (
+					<span aria-hidden="true" style={ backgroundLayerStyle } />
+				) }
 				{ hasIcon && iconPosition === 'before' && iconPlaceholder }
 				{ iconPosition !== 'only' && (
 					<RichText

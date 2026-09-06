@@ -19,6 +19,18 @@
 	"textdomain": "sgs-blocks",
 	"icon": "building",
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"displayType": {
 			"type": "string",
 			"default": "phone",
@@ -41,15 +53,12 @@
 		"labelCollapse": {
 			"type": "string",
 			"default": "none",
-			"enum": [ "none", "mobile", "tablet", "all" ]
-		},
-		"linkPhone": {
-			"type": "boolean",
-			"default": true
-		},
-		"linkEmail": {
-			"type": "boolean",
-			"default": true
+			"enum": [
+				"none",
+				"mobile",
+				"tablet",
+				"all"
+			]
 		},
 		"iconColour": {
 			"type": "string",
@@ -60,37 +69,118 @@
 			"default": "",
 			"description": "CSS gradient string painting the icon's stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
+		"iconColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of iconColourGradient. Non-empty wins over iconColourHover on :hover/:focus-visible."
+		},
 		"textColour": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the value text instead of a flat colour (background-clip:text). Non-empty wins over textColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"labelColour": {
 			"type": "string",
 			"default": ""
 		},
-		"linkHoverBackgroundImage": {
+		"labelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the label text (currently only visible on .sgs-business-hours__day) instead of a flat colour. Non-empty wins over labelColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
+		},
+		"attributionHoverColour": {
 			"type": "string",
 			"default": ""
 		},
-		"linkHoverTextColour": {
+		"attributionHoverColourFallback": {
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"variations": [
@@ -99,90 +189,204 @@
 			"title": "Website Credit",
 			"description": "The agency attribution link. Framework-owned, not client data — the text and URL are constants, so a client cannot blank the backlink. Place it anywhere in the footer bottom row.",
 			"icon": "admin-links",
-			"keywords": [ "attribution", "credit", "built by", "website by", "agency", "backlink" ],
-			"attributes": { "displayType": "attribution" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"attribution",
+				"credit",
+				"built by",
+				"website by",
+				"agency",
+				"backlink"
+			],
+			"attributes": {
+				"displayType": "attribution"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "phone",
 			"title": "Business Phone",
 			"description": "The business phone number from Business Details — click-to-call.",
 			"icon": "phone",
-			"keywords": [ "phone", "tel", "call", "contact", "number" ],
-			"attributes": { "displayType": "phone" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"phone",
+				"tel",
+				"call",
+				"contact",
+				"number"
+			],
+			"attributes": {
+				"displayType": "phone"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "email",
 			"title": "Business Email",
 			"description": "The business email address from Business Details — click-to-email.",
 			"icon": "email",
-			"keywords": [ "email", "mail", "contact", "address" ],
-			"attributes": { "displayType": "email" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"email",
+				"mail",
+				"contact",
+				"address"
+			],
+			"attributes": {
+				"displayType": "email"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "address",
 			"title": "Business Address",
 			"description": "The business postal address from Business Details.",
 			"icon": "location",
-			"keywords": [ "address", "location", "postal", "where" ],
-			"attributes": { "displayType": "address" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"address",
+				"location",
+				"postal",
+				"where"
+			],
+			"attributes": {
+				"displayType": "address"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "hours",
 			"title": "Opening Hours",
 			"description": "The weekly opening hours from Business Details.",
 			"icon": "clock",
-			"keywords": [ "hours", "opening", "times", "schedule", "open" ],
-			"attributes": { "displayType": "hours" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"hours",
+				"opening",
+				"times",
+				"schedule",
+				"open"
+			],
+			"attributes": {
+				"displayType": "hours"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "socials",
 			"title": "Social Links",
 			"description": "The social profile links from Business Details, as icons.",
 			"icon": "share",
-			"keywords": [ "social", "socials", "facebook", "instagram", "links" ],
-			"attributes": { "displayType": "socials" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"social",
+				"socials",
+				"facebook",
+				"instagram",
+				"links"
+			],
+			"attributes": {
+				"displayType": "socials"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "copyright",
 			"title": "Copyright Line",
 			"description": "The copyright / trademark line from Business Details.",
 			"icon": "editor-textcolor",
-			"keywords": [ "copyright", "trademark", "legal", "footer" ],
-			"attributes": { "displayType": "copyright" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"copyright",
+				"trademark",
+				"legal",
+				"footer"
+			],
+			"attributes": {
+				"displayType": "copyright"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "description",
 			"title": "Business Tagline",
 			"description": "The short business tagline / description from Business Details.",
 			"icon": "editor-paragraph",
-			"keywords": [ "tagline", "description", "strapline", "about", "slogan" ],
-			"attributes": { "displayType": "description" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"tagline",
+				"description",
+				"strapline",
+				"about",
+				"slogan"
+			],
+			"attributes": {
+				"displayType": "description"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		},
 		{
 			"name": "map",
 			"title": "Business Map",
 			"description": "An embedded map link to the business location from Business Details.",
 			"icon": "location-alt",
-			"keywords": [ "map", "directions", "google maps", "location" ],
-			"attributes": { "displayType": "map" },
-			"isActive": [ "displayType" ],
-			"scope": [ "inserter", "transform" ]
+			"keywords": [
+				"map",
+				"directions",
+				"google maps",
+				"location"
+			],
+			"attributes": {
+				"displayType": "map"
+			},
+			"isActive": [
+				"displayType"
+			],
+			"scope": [
+				"inserter",
+				"transform"
+			]
 		}
 	],
 	"supports": {
@@ -195,71 +399,123 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"fontFamily": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Info box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"text"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
-					}
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:font-size": "fontSize",
+						"css:font-family": "fontFamily",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
+					},
+					"_note_typography": "Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track) — root prefix '' (fontSize/fontSizeUnit/fontFamily/fontWeight/fontStyle/lineHeight/lineHeightUnit). render.php applies the rule to $root_sel, the whole `.{uid}` wrapper div (there is no `selectors.typography` override), so it was already root-scoped under native supports — this migration keeps that scope unchanged, only the mechanism moves. fontFamily control (showFontFamily) preserved to match the pre-migration native `supports.typography.fontFamily:true` capability."
 				},
 				"text": {
 					"label": "Value text",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "text",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:font-family": "native:typography.fontFamily"
-					}
+						"css:color": "textColour",
+						"css:background-image": "textColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note_gradient": "textColourGradient (2026-09-04) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. Finishes the text-colour gradient rollout 778879732 started and explicitly left open.",
+					"_note_ownership": "css:color -> textColour added explicitly 2026-09-04 (rule 41-co2 fix pass) — without it, placement-reach's cluster fallback misrouted textColour to the 'icon' element (icon also declares the 'text' cluster for its own iconColour), because textColour had no explicit claim of its own despite its gradient sibling being explicitly mapped. Found live: moving Icon's own colour attrs into a dedicated panel (closing a genuine CO-2 scatter) surfaced this as a NEW scatter on Icon (owned attrs falsely including textColour). Grounded fix, not a guess — textColour is this element's own base colour, sibling to the already-explicit textColourGradient.",
+					"_note_hover": "textColourHover/textColourHoverGradient added 2026-09-05 (user-identified design flaw fix) — the top SgsColourPanel's 'Text colour' row previously exposed only a single 'normal' state despite the framework's 2-state standard (sgs_text_states_css()) being available. render.php now emits both states via that shared helper, scoped to the same wrapper selector as the base colour."
 				},
 				"label": {
 					"label": "Label",
 					"order": 3,
-					"clusters": [ "text" ],
-					"prefix": "label"
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:background-image": "labelColourGradient"
+					},
+					"_note_gradient": "labelColourGradient (2026-09-04) is the text-colour gradient sibling to labelColour, same background-clip:text mechanism. labelColour currently only paints .sgs-business-hours__day (the 'hours' displayType) — the gradient sibling follows the same real paint target."
 				},
 				"icon": {
 					"label": "Icon",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					},
+					"_note": "iconColour resolves via css:color (style.css:42 `color: var(--sgs-bi-icon-colour, currentColor)`) — mirrors sgs/icon's own icon element + sgs/accordion's toggle-icon element, which use the same css:color/attrMap convention for a functional icon colour (Spec 35 vocabulary fix). showIcon remains an unmapped bespoke toggle, not a style-cluster member. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
+					"_note_hover": "iconColourHover/iconColourHoverGradient added 2026-09-05, mirroring sgs/button's icon element exactly (same Lucide stroke-based icon painted via ancestor `color:`, same helpers-svg-gradient.php stroke-gradient mechanism) — see block.json's button icon element for the identical states.hover shape."
 				},
 				"link": {
 					"label": "Link",
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types (render.php:118,138,319). Added 2026-08-15 — this attribute had no manifest home at all, causing an undeclared-element orphan. `linkHoverColour` (single attribute) was SPLIT 2026-08-16 (D643) into `linkHoverBackgroundImage` + `linkHoverTextColour` — ground-truthed against style.css:86-121: the resolved colour feeds TWO genuinely different CSS mechanisms on `.sgs-business-attribution .sgs-business-info__link` — (1) one gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (the primary path, modern browsers), and (2) a plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers with no text-clip support). A single flat-colour attribute happened to serve both today because they render the SAME visual outcome via different techniques, but a `color:` declaration can never legally hold a CSS gradient — so the pair had to split before either could gain a gradient option. Declaring either under `states.hover` was tried first but rejected — FR-35-5's STATE_WITHOUT_BASE check runs independent of `clusters`, so a hover-only colour with no resting counterpart always trips it, and this project's baseline may only ever go DOWN, never up for a genuinely-accepted new instance (unlike sgs/post-grid's pre-existing, already-baselined case). `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery."
+					"_note": "The `<a class=\"sgs-business-info__link\">` rendered for phone/email/map/attribution display types — every phone/email instance now ALWAYS renders as a link (the `linkPhone`/`linkEmail` toggles were removed 2026-09-05; there was no real use case for an unclickable phone number or email address). `linkHoverBackgroundImage`/`linkHoverTextColour` (D643, 2026-08-16) were renamed to `attributionHoverColour`/`attributionHoverColourFallback` the same day, because they only ever paint the attribution/website-credit hover sweep on `.sgs-business-attribution .sgs-business-info__link` (style.css:99-134) — the old names implied a general phone/email link-hover control, but no phone/email CSS ever consumed them, and the editor exposed them under a 'Link Options' panel gated on displayType being phone/email, where they visibly did nothing. The two mechanisms are unchanged: `attributionHoverColour` feeds the gradient colour-stop inside the `background-image:linear-gradient(...)` text-clip sweep (modern browsers); `attributionHoverColourFallback` feeds the plain `color:` declaration inside the `@supports not (background-clip:text)` fallback (older browsers). A `color:` declaration can never legally hold a CSS gradient, so the pair stays split. Both are now exposed ONLY on a displayType==='attribution' control in edit.js. `prefix: \"\"` is the documented explicit opt-out from orphan-scanning (see resolveMember's `!== undefined` contract) — correct here because there is nothing else on this element for the scan to usefully claim; the css_element-drift audit this element exists to satisfy only checks that the KEY `link` resolves, not that every attribute funnels through the cluster/state machinery.",
+					"attrMap": {
+						"css:background-image": "attributionHoverColour",
+						"css:color": "attributionHoverColourFallback"
+					}
 				}
 			}
 		}
@@ -268,8 +524,15 @@
 		"root": ".wp-block-sgs-business-info"
 	},
 	"styles": [
-		{ "name": "text", "label": "Text", "isDefault": true },
-		{ "name": "button", "label": "Button" }
+		{
+			"name": "text",
+			"label": "Text",
+			"isDefault": true
+		},
+		{
+			"name": "button",
+			"label": "Button"
+		}
 	],
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

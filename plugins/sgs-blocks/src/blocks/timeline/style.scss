@@ -4,8 +4,29 @@
 
 // ── CSS custom property defaults ──────────────────────────────────────────────
 
+// ⛔ THE LIST RESET IS LOAD-BEARING — do not remove it as redundant boilerplate.
+//
+// Until Step 4a the block ROOT was the `<ol>`, and `.sgs-timeline--vertical`'s
+// own `padding: … 0` / `margin: 0` / `list-style: none` killed the browser's
+// default list styling as a side effect. The root is now a `<div>` and the
+// `<ol>` moved inside it, so those resets no longer land on the list and the UA
+// default `padding-inline-start: 40px` came back.
+//
+// It is not a cosmetic 40px. Measured live on the canary immediately after the
+// restructure: entry columns went 688.5px -> 668.5px and the node centre moved
+// to 732.5 while the rail stayed at 712.5 — the dot sitting 20px off its own
+// line, which is the same "two halves disagree" defect the mobile rail fix
+// (Addendum 6) existed to close. Structure and accessibility checks all passed;
+// only a geometry comparison against the pre-change baseline caught it.
+.sgs-timeline__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
 .sgs-timeline {
-	--sgs-connector-colour: var(--wp--preset--color--border-subtle, #0d5557);
+	--sgs-connector-colour: var(--wp--preset--color--border, #0d5557);
+	--sgs-timeline-fill-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-date-colour: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-node-size: 16px;
 	--sgs-connector-width: 2px;
@@ -14,11 +35,352 @@
 	--sgs-reveal-easing: ease-out;
 }
 
+// ── FR-38-35 — scroll-driven progress connector (Tier V) ──────────────────────
+//
+// THE CONTRACT. ONE driver — view.js's rAF loop — writes ONE number,
+// `--sgs-timeline-fill-progress` (0 -> 1), on every browser, and this block is
+// the only consumer. There used to be a second, native `@supports
+// (animation-timeline: view())` branch here that the JS driver deferred to;
+// it is gone (Step 2), so nothing below this file animates the property —
+// it is only ever set via JS inline style.
+
+// An UNREGISTERED custom property has computed type "token stream" and CANNOT
+// be animated — CSS interpolates it as a discrete 0->1 jump in every browser,
+// so the fill would silently not be progressive while every gate still passed.
+// Registering it makes the browser resolve it to a real number at
+// computed-value time. Same reasoning as `assets/css/fx-motion-path.css`.
+// Support: 94.21% (Chrome/Edge 85+, Firefox 128+, Safari 16.4+).
+@property --sgs-timeline-fill-progress {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 0;
+}
+
+// The always-drawn ::before is suppressed on the ATTRIBUTE-driven CLASS, never
+// on @supports — an @supports-keyed hide would leave a DOUBLED line for every
+// visitor on the JS driver.
+.sgs-timeline--connector-progress::before {
+	display: none;
+}
+
+.sgs-timeline__progress {
+	// Positioning container ONLY — deliberately unmasked. The mask lives on the
+	// child layers because a mask applies to an element's pseudo-elements and
+	// children too: masking here would clip the head dot in half exactly at the
+	// progress boundary, which is the one place it must be whole.
+	position: absolute;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	pointer-events: none;
+}
+
+// The two masked layers share ONE mask declaration via this placeholder, so the
+// glow and the crisp fill can never drift out of sync with each other.
+%sgs-progress-masked {
+	position: absolute;
+	inset: 0;
+	-webkit-mask-image: var(--sgs-timeline-fill-mask);
+	mask-image: var(--sgs-timeline-fill-mask);
+}
+
+.sgs-timeline__progress-fill {
+	@extend %sgs-progress-masked;
+	background-color: var(--sgs-timeline-fill-colour);
+	background-image: var(--sgs-timeline-fill-colour-gradient, none);
+}
+
+// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,
+// 2026-09-06) — `.sgs-timeline__progress` (the ancestor `<li>`) is
+// `pointer-events: none`, so this layer can never receive its OWN `:hover`;
+// keyed on the block root instead, matching hovering-the-timeline the way the
+// connector-line rules above do.
+.sgs-timeline:hover .sgs-timeline__progress-fill,
+.sgs-timeline:focus-within .sgs-timeline__progress-fill {
+	background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+	background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
+}
+
+.sgs-timeline__progress-glow {
+	@extend %sgs-progress-masked;
+	// ⛔ The blur radius is set ONCE and never animated. Animating `filter` or a
+	// `box-shadow` blur per frame is a documented jank source across engines
+	// (WebKit #22102 "box-shadow causes awful scroll/resize/redraw performance";
+	// Mozilla #1514384, where an animated drop-shadow is CLIPPED mid-animation
+	// on off-main-thread animations; Safari drop-shadow flicker, mdn/browser-
+	// compat-data #17726). Only the MASK moves, which is cheap.
+	// Width, blur and opacity are the three knobs that decide whether the trail
+	// READS. Measured live 2026-08-29: a 14px box at blur(5px)/0.75 rendered
+	// correctly and was still effectively invisible against a cream background
+	// next to the head's own box-shadow halo — "only a glow around the dot" was
+	// the owner's verdict, and he was right. Widened and strengthened; exposed
+	// as custom properties so a client build can tune them without a rebuild.
+	filter: blur(var(--sgs-timeline-glow-blur, 9px));
+	opacity: var(--sgs-timeline-glow-opacity, 1);
+}
+
+// The head — a bright point at the current progress position. Its halo is a
+// STATIC box-shadow on a small fixed-size dot, which is the cheap shape: repaint
+// cost scales with blur radius x area, so a halo belongs on a 12px dot, never
+// smeared down a full-height trail.
+.sgs-timeline__progress::after {
+	content: '';
+	position: absolute;
+	width: var(--sgs-timeline-head-size, 12px);
+	height: var(--sgs-timeline-head-size, 12px);
+	border-radius: 50%;
+	background: radial-gradient(
+		circle,
+		#fff 0%,
+		var(--sgs-timeline-fill-colour) 55%,
+		transparent 72%
+	);
+	box-shadow: 0 0 10px 3px var(--sgs-timeline-fill-colour);
+}
+
+// ── Orientation ───────────────────────────────────────────────────────────────
+//
+// Each orientation sets the mask AXIS and the head's travel axis. Everything
+// else is shared. Both axes are stated explicitly on every rule.
+
+.sgs-timeline--vertical .sgs-timeline__progress {
+	--sgs-timeline-fill-mask: linear-gradient(
+		to bottom,
+		#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+		transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+	);
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: var(--sgs-connector-width);
+	height: 100%;
+
+	.sgs-timeline__progress-glow {
+		// Widen the BOX rather than the blur radius — see the note above.
+		inset: 0 calc(-1 * var(--sgs-timeline-glow-spread, 14px));
+		background: linear-gradient(
+			to right,
+			transparent,
+			var(--sgs-timeline-fill-colour),
+			transparent
+		);
+	}
+
+	&::after {
+		left: 50%;
+		top: calc(var(--sgs-timeline-fill-progress) * 100%);
+		transform: translate(-50%, -50%);
+	}
+}
+
+// Single-column layout moves the line to the left edge, mirroring the ::before
+// variant this replaces. (Task 3a: the old align-centre sibling selector here
+// is deleted, not renamed — centre folded into single-column, D-Task-3a brief.)
+.sgs-timeline--vertical.sgs-timeline--content-single-column .sgs-timeline__progress {
+	left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
+	transform: none;
+}
+
+.sgs-timeline--horizontal .sgs-timeline__progress {
+	--sgs-timeline-fill-mask: linear-gradient(
+		to right,
+		#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+		transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+	);
+	// The SAME offset as the base track — a second literal is how the two
+	// silently drift apart.
+	top: var(--sgs-timeline-h-line-top);
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: var(--sgs-connector-width);
+
+	.sgs-timeline__progress-glow {
+		// Symmetric, on BOTH sides of the bar. With the bar back on the node
+		// row there is roughly 24px of clear space above (to the date) and
+		// below (to the heading), so it fits without touching either. Kept
+		// tighter than vertical, which has the whole column height to breathe.
+		--sgs-timeline-glow-spread: 10px;
+		--sgs-timeline-glow-blur: 6px;
+
+		inset: calc(-1 * var(--sgs-timeline-glow-spread, 10px)) 0;
+		background: linear-gradient(
+			to bottom,
+			transparent,
+			var(--sgs-timeline-fill-colour),
+			transparent
+		);
+	}
+
+	&::after {
+		top: 50%;
+		left: calc(var(--sgs-timeline-fill-progress) * 100%);
+		transform: translate(-50%, -50%);
+	}
+}
+
+// ── Sparks (FR-38-35) ─────────────────────────────────────────────────────────
+//
+// Short-lived elements appended by view.js at the head, ONLY while progress is
+// actually changing. Deliberately not a particle library: tsparticles is
+// 20-100KB against a 50KB page budget, and canvas-confetti is built for one-shot
+// bursts rather than a continuous trail. Transform + opacity only, so each spark
+// is compositor-work, and each removes itself on `animationend`.
+// ⛔ TWICE-WRONG BEFORE THIS, both recorded so neither recurs:
+//   1. These were 3px dots of pure `#fff` on a cream page — measured
+//      rgb(255,255,255) on rgb(251,243,220), about 1.06:1. Spawning perfectly,
+//      invisible by construction. A decorative mote keyed to a hardcoded white
+//      disappears on ANY light ground; key it to the CLIENT's own colour.
+//   2. They drifted outward in random directions over 600ms and read as
+//      BUBBLES rather than sparks. A spark is a fast, bright, RADIAL flick with
+//      a hot core — not a slow floating circle.
+.sgs-timeline__spark {
+	position: absolute;
+	// SPARKLER, not firework. 11px/1100ms was tuned for a 7-spark burst thrown
+	// off a milestone dot; the owner's verdict was that it read as too much and
+	// covered the halo ring it was meant to celebrate. A sparkler throws MANY
+	// small, fast, short-lived motes from a burning tip, so the size and life
+	// both come down and the emitter is continuous instead of per-milestone.
+	width: var(--sgs-timeline-spark-size, 6px);
+	height: var(--sgs-timeline-spark-size, 6px);
+	border-radius: 50%;
+	// Hot white core reading against the client's colour, which in turn reads
+	// against the page. Neither alone is enough on a light ground.
+	// ⛔ NO WHITE CORE. This was `#fff 0% / #fff 25%` and measured
+	// rgb(254,252,249) against a cream ground of rgb(251,243,220) — a contrast
+	// of 1.04:1, i.e. invisible, which is the SAME failure as the original 3px
+	// white dot re-introduced inside a gradient stop. On a LIGHT page a light
+	// spark can never read; it has to go DARKER than the ground, not brighter.
+	// The core is therefore a darkened mix of the client's own colour, which
+	// also keeps it on-brand rather than an arbitrary dark.
+	//
+	// This is the owner's own standing rule applied literally: a mid-luminance
+	// brand accent is a GROUND, not an indicator.
+	background: radial-gradient(
+		circle,
+		color-mix(in oklch, var(--sgs-timeline-fill-colour) 62%, #000) 0%,
+		var(--sgs-timeline-fill-colour) 48%,
+		color-mix(in oklch, var(--sgs-timeline-fill-colour) 70%, transparent) 72%,
+		transparent 82%
+	);
+	box-shadow: 0 0 12px 3px var(--sgs-timeline-fill-colour);
+	pointer-events: none;
+	// Above the dot and the connector, or a burst can be hidden by its own
+	// anchor — the node paints a filled circle at z-index 1.
+	z-index: 3;
+	// Travel is set per-spark in JS as a distance along a RADIAL angle, so the
+	// burst reads as thrown outward from the dot rather than drifting.
+	// ⛔ EASING MATTERS AS MUCH AS SIZE HERE. A front-loaded curve
+	// (cubic-bezier(.15,.9,.3,1)) spent ~85% of the travel in the first
+	// quarter of the life, so by the time a spark was anywhere visible it was
+	// already scaled down and fading — 21 live sparks measured in the DOM and
+	// none legible on screen. `ease-out` keeps them large and opaque through
+	// the readable part of the flight.
+	animation: sgs-timeline-spark var(--sgs-timeline-spark-life, 520ms) ease-out
+		forwards;
+}
+
+@keyframes sgs-timeline-spark {
+	from {
+		transform: translate(-50%, -50%) scale(0.4);
+		opacity: 0;
+	}
+
+	12% {
+		transform: translate(-50%, -50%) scale(1.2);
+		opacity: 1;
+	}
+
+	// Hold it bright and big through the middle of the flight — this is the
+	// only part a human actually sees.
+	62% {
+		transform: translate(
+				calc(-50% + var(--sgs-spark-dx) * 0.72),
+				calc(-50% + var(--sgs-spark-dy) * 0.72)
+			)
+			scale(0.85);
+		opacity: 0.85;
+	}
+
+	to {
+		transform: translate(
+				calc(-50% + var(--sgs-spark-dx)),
+				calc(-50% + var(--sgs-spark-dy))
+			)
+			scale(0.3);
+		opacity: 0;
+	}
+}
+
+// The dot itself flashes as the fill reaches it — the burst's anchor, so the
+// sparks read as coming OFF the milestone rather than appearing near it.
+.sgs-timeline__node.is-lit::after {
+	content: '';
+	position: absolute;
+	inset: -4px;
+	border-radius: 50%;
+	border: 2px solid var(--sgs-timeline-fill-colour);
+	pointer-events: none;
+	animation: sgs-timeline-node-pulse 620ms ease-out forwards;
+}
+
+@keyframes sgs-timeline-node-pulse {
+	from {
+		transform: scale(0.6);
+		opacity: 0.9;
+	}
+
+	to {
+		transform: scale(2.1);
+		opacity: 0;
+	}
+}
+
+// C7 — reduced motion shows the line FULLY FILLED, never empty. The block's own
+// convention is "show the end state, skip the animation"; an empty line would
+// misrepresent a journey as not yet begun. Stated HERE rather than in either
+// driver so it holds identically on both, and `animation: none` is required
+// because an animation outranks a plain declaration in the cascade.
+@media (prefers-reduced-motion: reduce) {
+	.sgs-timeline--connector-progress,
+	.sgs-timeline--connector-progress .sgs-timeline__progress,
+	.sgs-timeline--connector-progress .sgs-timeline__progress-fill,
+	.sgs-timeline--connector-progress .sgs-timeline__progress-glow {
+		--sgs-timeline-fill-progress: 1;
+		animation: none !important;
+	}
+
+	// Sparks are pure decoration with no informational content, so they are the
+	// one layer that switches OFF entirely rather than simplifying. The glow and
+	// head stay: they carry the journey's state, and removing them would be
+	// `degrade-to-more-content-never-less` in reverse.
+	.sgs-timeline__spark,
+	.sgs-timeline__node.is-lit::after {
+		display: none;
+	}
+}
+
+
+// The rAF driver in view.js is the ONLY thing that writes
+// `--sgs-timeline-fill-progress` (Task 2, Step 2). It runs on every browser —
+// there is no native `animation-timeline: view()` branch here any more; that
+// CSS-only driver and the JS capability gate that shadowed it were both
+// removed together, because deleting one without the other left Chrome and
+// Safari with no driver at all (nothing writing the property) while Firefox
+// still looked correct.
+
 // ── Scroll-reveal state ────────────────────────────────────────────────────────
 
 // Default hidden state (overridden immediately for reduced motion).
 // Only applies when the timeline has data-reveal-on-scroll set.
-.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+//
+// ⛔ GATED ON `.is-js` FOR THE SAME REASON AS THE CONNECTOR REVEAL (:1354) — with
+// no JS, an entry hidden by a plain attribute-keyed rule is unreachable FOREVER.
+// The attribute is authored into the markup, so it matches whether or not view.js
+// ever runs; `.is-js` is added BY view.js, so it cannot. Default state is VISIBLE
+// and only a running script opts an entry into being hidden.
+.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
 	opacity: 0;
 	transform: translateY(20px);
 }
@@ -32,7 +394,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+	// Carries `.is-js` to stay specificity-MATCHED with the hidden state above
+	// (both (0,5,0)). Without it this rule would sit at (0,4,0), lose the cascade,
+	// and leave reduced-motion users looking at permanently hidden entries — a
+	// losing rule is indistinguishable from an absent one.
+	.sgs-timeline[data-reveal-on-scroll].is-js .sgs-timeline__entry:not(.is-revealed) {
 		opacity: 1;
 		transform: none;
 	}
@@ -62,17 +428,26 @@
 		transform: translateX(-50%);
 		width: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling (2026-09-06, colour-conformance
+		// closeout) — the dashed/dotted variants below already override with a
+		// full `background:` shorthand, so this is naturally superseded there.
+		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
-	// Left-aligned: line sits on the left edge.
-	&.sgs-timeline--align-left::before {
-		left: var(--sgs-node-size);
-		transform: none;
+	// connectorColourHover/HoverGradient (colour-conformance FILL closeout,
+	// 2026-09-06) — fallback chain hover -> resting -> default, same shape as
+	// before-after's handleColour. Naturally superseded on the dashed/dotted
+	// variants below exactly as the resting rule is (their `background:`
+	// shorthand wins on both states, equal specificity + later source order).
+	&:hover::before,
+	&:focus-visible::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
 	}
 
-	// Centre-aligned: line sits on the left edge (entries all right-side).
-	&.sgs-timeline--align-centre::before {
-		left: var(--sgs-node-size);
+	// Single column: line sits on the left edge.
+	&.sgs-timeline--content-single-column::before {
+		left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
 		transform: none;
 	}
 }
@@ -110,7 +485,10 @@
 	grid-template-rows: auto;
 	align-items: start;
 	gap: 0 var(--wp--preset--spacing--30, 1.5rem);
-	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+	// Task 3 (2026-08-30) — entryGap. Unset falls back to today's exact
+	// hardcoded value, so an unset timeline renders byte-identical to before.
+	// NOT gated to desktop — spacing between milestones applies everywhere.
+	margin-bottom: var(--sgs-timeline-entry-gap, var(--wp--preset--spacing--40, 2rem));
 	list-style: none;
 
 	&:last-child {
@@ -119,7 +497,7 @@
 }
 
 // Alternating: odd entries — date left, content right.
-.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(odd) {
+.sgs-timeline--vertical.sgs-timeline--content-alternating .sgs-timeline__entry:nth-child(odd) {
 	.sgs-timeline__date {
 		grid-column: 1;
 		text-align: right;
@@ -139,12 +517,70 @@
 }
 
 // Alternating: even entries — content left, date right.
-.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(even) {
+.sgs-timeline--vertical.sgs-timeline--content-alternating .sgs-timeline__entry:nth-child(even) {
 	.sgs-timeline__date {
 		grid-column: 3;
 		grid-row: 1;
 		text-align: left;
 		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+	}
+}
+
+// ── Same-side (Task 3b) ─────────────────────────────────────────────────────
+//
+// Two-sided, like alternating, but every row uses the SAME date/content
+// assignment instead of flipping per row (the owner's original ask). The two
+// row shapes below are NOT a new grid — they are alternating's own odd-row
+// and even-row blocks above, applied to EVERY entry instead of every-other
+// one. Both rules restate grid-column/row + text-align + BOTH paddings (not
+// just the one each side needs) because, unlike alternating, both rules can
+// legally apply to the same entry at once (base + `--side-start` modifier) —
+// an omitted padding would leak the other rule's value instead of resetting.
+//
+// contentSide: end (default) — mirrors alternating's ODD-row placement: date
+// left, content right. No modifier class needed; this is the base rule.
+.sgs-timeline--vertical.sgs-timeline--content-same-side .sgs-timeline__entry {
+	.sgs-timeline__date {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+		padding-right: var(--wp--preset--spacing--20, 1rem);
+		padding-left: 0;
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+	}
+}
+
+// contentSide: start — mirrors alternating's EVEN-row placement: content
+// left, date right. One extra class (0,4,0) out-ranks the base rule (0,3,0)
+// above on the same properties, so no `!important` is needed.
+.sgs-timeline--vertical.sgs-timeline--content-same-side.sgs-timeline--side-start .sgs-timeline__entry {
+	.sgs-timeline__date {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+		padding-right: 0;
 	}
 
 	.sgs-timeline__node {
@@ -160,80 +596,211 @@
 }
 
 // Left-aligned: date | node | content all on left side.
-.sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__entry {
-	grid-template-columns: auto auto 1fr;
-
-	.sgs-timeline__date {
-		grid-column: 1;
-		grid-row: 1;
-		text-align: right;
-		padding-right: var(--wp--preset--spacing--20, 1rem);
-		min-width: 100px;
-	}
-
-	.sgs-timeline__node {
-		grid-column: 2;
-		grid-row: 1;
-	}
-
-	.sgs-timeline__content {
-		grid-column: 3;
-		grid-row: 1;
-		text-align: left;
-	}
-}
-
-// Centre-aligned: single-column layout with centred node line.
-.sgs-timeline--vertical.sgs-timeline--align-centre .sgs-timeline__entry {
+// ── content-single-column ────────────────────────────────────────────────────────────────
+//
+// TWO SHAPES, chosen by an axis of its own rather than by the alignment value.
+// Researched 2026-08-29 against MUI (`TimelineOppositeContent`), Ant Design
+// (`label`), PrimeReact (`opposite`) and Vuetify (`opposite` slot): 4 of 4 model
+// "which side the content sits on" and "does the date get its own gutter" as
+// SEPARATE controls, and NONE forces a gutter when you pick `left`.
+//
+// This block used to weld them together — `left` always drew a date column — so
+// a single row of `left` was the same shape as a row of `alternating`, and the
+// variant earned nothing. Measured before the split: alternating row 1 had
+// date 0->689 / content 737->1425; content-single-column had date 0->180 / content
+// 228->1425. Same idea, different column widths.
+//
+// DEFAULT (no gutter) — the rail is hard left and EVERYTHING sits to its right,
+// date stacked above the title. This is Flowbite's and Preline's default
+// timeline, it is what every variant collapses to on mobile anyway, and it keeps
+// DOM order identical to visual order on every row (WCAG 1.3.2), which the
+// side-flipping gutter is exactly the thing that tempts you to break.
+.sgs-timeline--vertical.sgs-timeline--content-single-column .sgs-timeline__entry {
 	grid-template-columns: auto 1fr;
-	grid-template-rows: auto auto;
-
-	.sgs-timeline__date {
-		grid-column: 2;
-		grid-row: 1;
-		text-align: left;
-		padding-left: var(--wp--preset--spacing--20, 1rem);
-	}
 
 	.sgs-timeline__node {
 		grid-column: 1;
-		grid-row: 1 / 3;
+		grid-row: 1 / -1;
 		align-self: start;
 	}
 
+	// Date, media and content flow down column 2 in DOM order. Left to
+	// auto-placement deliberately: the media slot is only present on some
+	// entries, so pinning explicit row numbers here would leave a gap on the
+	// entries without it.
+	.sgs-timeline__date,
+	.sgs-timeline__media-slot,
 	.sgs-timeline__content {
 		grid-column: 2;
-		grid-row: 2;
 		text-align: left;
 	}
+
+	.sgs-timeline__date {
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__content,
+	.sgs-timeline__media-slot {
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
 }
+
+// The rail sits on the NODE, which is now column 1.
+.sgs-timeline--vertical.sgs-timeline--content-single-column {
+	--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
+}
+
+// OPT-IN (`datePosition: own-column`) — the "opposite content" pattern: the date in its own
+// fixed column on every row, content in another, rail between. Named
+// `oppositeContent` by MUI and shipped as a separate variant ("Side timestamps")
+// by Preline. Use it when the dates must be scannable on their own — a
+// changelog, an audit log, a project history.
+.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter {
+	// Back to the node column's centre, since the date column is in front of it.
+	--sgs-timeline-rail-offset: calc(
+		var(--sgs-timeline-gutter-width, 100px) +
+		var(--wp--preset--spacing--30, 1.5rem) +
+		var(--sgs-node-size) / 2
+	);
+
+	.sgs-timeline__entry {
+		grid-template-columns: minmax(0, var(--sgs-timeline-gutter-width, 100px)) auto 1fr;
+
+		.sgs-timeline__date {
+			grid-column: 1;
+			grid-row: 1;
+			text-align: right;
+			padding-left: 0;
+			padding-right: var(--wp--preset--spacing--20, 1rem);
+		}
+
+		.sgs-timeline__node {
+			grid-column: 2;
+			grid-row: 1 / -1;
+		}
+
+		.sgs-timeline__content {
+			grid-column: 3;
+			grid-row: 1;
+			text-align: left;
+			padding-left: 0;
+		}
+	}
+}
+
+// Task 3a: the old align-centre single-column entry rule (a near-duplicate of
+// content-single-column, differing only by the rail-offset bug) is DELETED here, not
+// renamed — centre folds into content-single-column, which reuses the
+// content-single-column shape below.
 
 // =============================================================================
 // HORIZONTAL orientation
 // =============================================================================
 
 .sgs-timeline--horizontal {
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-	gap: 0;
+	// ⛔ THE ROW LIVES ON `.sgs-timeline__list`, NOT HERE — do not move it back.
+	//
+	// Step 4a moved the `<ol class="sgs-timeline__list">` inside the root so a
+	// horizontal scroll effect can resolve it as a direct child. The entries are
+	// therefore GRANDCHILDREN of this element: a
+	// `display: flex` here lays out the single track div and nothing else, so
+	// every entry stacks vertically at full width.
+	//
+	// That regression shipped in the step-4a commit and was caught live —
+	// measured at 1440px: track 394px wide, list `display: block`, four 394px
+	// entries stacked, `scrollWidth === clientWidth`. The carousel had the
+	// identical coupling and was re-pointed in the same commit; this one was
+	// missed because only the carousel was looked for.
+	//
+	// What stays HERE is what belongs to the root box: `position: relative` (the
+	// ::before rail and `.sgs-timeline__progress` are positioned against it),
+	// the padding, and `--sgs-timeline-h-line-top`, which INHERITS down to both.
 	position: relative;
 	list-style: none;
 	margin: 0;
 	padding: var(--wp--preset--spacing--30, 1.5rem) 0;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	-webkit-overflow-scrolling: touch;
+
+	// ⛔ THE CONNECTOR SITS ON THE NODE ROW, and the offset must be derived from
+	// the ACTUAL stacking order. The horizontal entry is a flex COLUMN ordered
+	// date(1) -> node(2) -> content(3), but this offset used to read
+	// `calc(node-size/2 + spacing-30)` — i.e. it assumed the NODE came first,
+	// which is only true in the vertical/mobile layout. The line therefore
+	// landed on the date text and ran straight through it (owner-reported
+	// 2026-08-29). PRE-EXISTING: the progress bar merely inherited it.
+	//
+	// Derived from the same tokens the entry rules use, with the one value CSS
+	// cannot read — the date's own line box — exposed so a client build with a
+	// larger date type can correct it without a rebuild.
+	--sgs-timeline-h-line-top: calc(
+		var(--wp--preset--spacing--30, 1.5rem) +
+			var(--sgs-timeline-date-line, 1.25rem) +
+			var(--wp--preset--spacing--20, 1rem) + var(--sgs-node-size) / 2
+	);
 
 	// Horizontal connecting line.
 	&::before {
 		content: '';
 		position: absolute;
-		top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
+		top: var(--sgs-timeline-h-line-top);
 		left: 0;
 		right: 0;
 		height: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling — see the vertical connector rule above.
+		background-image: var(--sgs-connector-colour-gradient, none);
+	}
+
+	// connectorColourHover/HoverGradient — see the vertical connector rule above.
+	&:hover::before,
+	&:focus-visible::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+	}
+
+	// The row itself. The entries are this element's children, so the flex
+	// context and the native horizontal scroller belong here.
+	.sgs-timeline__list {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+	}
+}
+
+// ⛔ 'pinned-horizontal' AND THE NATIVE SCROLLER ARE MUTUALLY EXCLUSIVE.
+//
+// The horizontal timeline is normally its own `overflow-x: auto` scroller, which
+// is what meets SC 2.5.7 without any JS. `fx-horizontal-panel` instead PINS the
+// block and TRANSLATES the list, so the two mechanisms compete for the same
+// overflow: with the scroller left on, the list's box stays viewport-width and
+// clips its own panels, so GSAP slides a box whose content cannot follow.
+//
+// Keyed on the effect's own attribute rather than a new modifier class — the
+// attribute is already emitted and is the single source of truth for "this
+// timeline is being driven by the horizontal effect".
+//
+// `width: max-content` is what actually gives the effect something to move:
+// `getTravelDistance()` measures first-to-last panel offset, and the root's
+// `overflow: hidden` is the window the translated row slides behind.
+// ⛔ GATED TO ≥768px, and the gate is about CONTENT LOSS, not tidiness. The
+// effect never runs below 768px (fx-horizontal-panel self-gates on the same
+// query), but these two declarations are CSS and would apply anyway: measured
+// at 375px, `width: max-content` made the list 461px inside a 375px viewport
+// and the root's `overflow: hidden` clipped the excess — 86px of every
+// milestone cut off, with no scrollbar to reach it. Degrade to MORE content,
+// never less.
+@media (min-width: 768px) {
+	.sgs-timeline--horizontal[data-sgs-fx='horizontal-panel'] {
+		overflow: hidden;
+
+		.sgs-timeline__list {
+			width: max-content;
+			overflow-x: visible;
+			scroll-snap-type: none;
+		}
 	}
 }
 
@@ -314,13 +881,87 @@
 		inset: 0;
 		border-radius: 50%;
 		background-color: var(--sgs-connector-colour);
+		// connectorColourGradient sibling — see the connector-line rules above.
+		background-image: var(--sgs-connector-colour-gradient, none);
 		border: 3px solid var(--wp--preset--color--surface, #fff);
 		box-sizing: border-box;
+	}
+
+	// connectorColourHover/HoverGradient — see the connector-line rules above.
+	// Excluded from `.is-reached` (below), which owns its own fill-colour hover.
+	&:hover:not(.is-reached)::before,
+	&:focus-visible:not(.is-reached)::before {
+		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+		background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+	}
+
+	// A milestone the reader has already passed keeps the fill colour, so the
+	// journey reads as built rather than merely drawn. Set by view.js's
+	// milestone observer, which runs on BOTH drivers (native + rAF) — a
+	// reached-state written from inside the rAF driver would have been invisible
+	// on Chrome, Edge and Safari, where the driver returns early.
+	//
+	// Reuses `--sgs-timeline-fill-colour` (the connectorFillColour attribute)
+	// rather than adding a control: the dot and the fill that reached it are one
+	// idea, and a second colour picker for it would be a control the client has
+	// to keep in sync by hand.
+	//
+	// Compound `.sgs-timeline__node.is-reached::before` is (0,2,1) against the
+	// bare `.sgs-timeline__node::before` at (0,1,1), so it wins on specificity
+	// and not on source order.
+	&.is-reached::before {
+		background-color: var(--sgs-timeline-fill-colour);
+		background-image: var(--sgs-timeline-fill-colour-gradient, none);
+	}
+
+	// connectorFillColourHover/HoverGradient (colour-conformance FILL closeout,
+	// 2026-09-06) — the reached dot IS directly hoverable (unlike the
+	// pointer-events:none progress-fill layer below), so this uses self-hover
+	// rather than the ancestor-hover pattern.
+	&.is-reached:hover::before,
+	&.is-reached:focus-visible::before {
+		background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+		background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
 	}
 
 	// When a Lucide icon is present, hide the default circle.
 	&:has(.sgs-timeline__node-icon)::before {
 		display: none;
+	}
+
+	// ⛔ …which is exactly why the icon circle needs its OWN reached rule. An
+	// icon milestone hides `::before` entirely, so the rule above paints a
+	// hidden pseudo-element and an icon-bearing timeline would show no reached
+	// state at all — the "fixed one instance, left the class broken" shape.
+	// The paint moves to `.sgs-timeline__node-icon`, whose resting background
+	// is the same `--sgs-connector-colour` the dot uses.
+	&.is-reached .sgs-timeline__node-icon {
+		background-color: var(--sgs-timeline-fill-colour);
+		background-image: var(--sgs-timeline-fill-colour-gradient, none);
+	}
+
+	// connectorFillColourHover/HoverGradient — see the reached-dot rule above.
+	// The icon itself is directly hoverable (default pointer-events), so this
+	// too uses self-hover rather than the ancestor-hover pattern.
+	&.is-reached .sgs-timeline__node-icon:hover,
+	&.is-reached .sgs-timeline__node-icon:focus-visible {
+		background-color: var(--sgs-timeline-fill-colour-hover, var(--sgs-timeline-fill-colour));
+		background-image: var(--sgs-timeline-fill-colour-hover-gradient, var(--sgs-timeline-fill-colour-gradient, none));
+	}
+}
+
+// The reached colour eases in so a dot lighting up reads as an event rather
+// than a repaint. Property-scoped, not `all` — the dot also animates a scale
+// ring under `.is-lit` and a blanket transition would fight it.
+.sgs-timeline__node::before,
+.sgs-timeline__node-icon {
+	transition: background-color 320ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-timeline__node::before,
+	.sgs-timeline__node-icon {
+		transition: none;
 	}
 }
 
@@ -332,7 +973,21 @@
 	height: 32px;
 	border-radius: 50%;
 	background-color: var(--sgs-connector-colour);
+	// connectorColourGradient sibling — see the connector-line rules above.
+	background-image: var(--sgs-connector-colour-gradient, none);
 	margin: -8px;
+}
+
+// connectorColourHover/HoverGradient — see the connector-line rules above. The
+// `.is-reached` rule above is always more specific (2 ancestor classes) so it
+// wins regardless of source order — no `:not()` guard needed here.
+.sgs-timeline__node-icon:hover,
+.sgs-timeline__node-icon:focus-visible {
+	background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
+	background-image: var(--sgs-connector-colour-hover-gradient, var(--sgs-connector-colour-gradient, none));
+}
+
+.sgs-timeline__node-icon {
 
 	svg {
 		width: 16px;
@@ -444,9 +1099,14 @@
 @media (max-width: 767px) {
 	// Horizontal becomes a vertical scroll-snap list.
 	.sgs-timeline--horizontal {
-		flex-direction: column;
-		overflow-x: visible;
-		scroll-snap-type: none;
+		// These three UNDO the desktop row, which since Step 4a lives on
+		// `.sgs-timeline__list` (the entries' actual parent) rather than on this
+		// root — so the undo has to follow it there or the row never collapses.
+		.sgs-timeline__list {
+			flex-direction: column;
+			overflow-x: visible;
+			scroll-snap-type: none;
+		}
 
 		&::before {
 			top: 0;
@@ -455,6 +1115,47 @@
 			right: auto;
 			width: var(--sgs-connector-width);
 			height: auto;
+		}
+
+		// FR-38-35 — the progress connector follows the same re-layout: the
+		// horizontal path is swapped for the vertical one and the SVG box is
+		// re-anchored to match the ::before above.
+		.sgs-timeline__progress {
+			top: 0;
+			bottom: 0;
+			left: calc(var(--sgs-node-size) / 2);
+			right: auto;
+			width: var(--sgs-connector-width);
+			// NOT `auto` — see the intrinsic-ratio note on the base rule.
+			height: 100%;
+		}
+
+		// The horizontal timeline re-lays out VERTICALLY here, so the mask axis
+		// and the head's travel axis must both flip with it. Re-declared rather
+		// than inherited: the base horizontal rule sets these on the same element,
+		// and a media-query rule at equal specificity wins on source order.
+		.sgs-timeline__progress {
+			--sgs-timeline-fill-mask: linear-gradient(
+				to bottom,
+				#000 0 calc(var(--sgs-timeline-fill-progress) * 100%),
+				transparent calc(var(--sgs-timeline-fill-progress) * 100%)
+			);
+
+			.sgs-timeline__progress-glow {
+				inset: 0 calc(-1 * var(--sgs-timeline-glow-spread, 14px));
+				background: linear-gradient(
+					to right,
+					transparent,
+					var(--sgs-timeline-fill-colour),
+					transparent
+				);
+			}
+
+			&::after {
+				left: 50%;
+				top: calc(var(--sgs-timeline-fill-progress) * 100%);
+				transform: translate(-50%, -50%);
+			}
 		}
 	}
 
@@ -485,10 +1186,36 @@
 		padding: 0;
 	}
 
-	// Vertical alternating collapses to left-aligned on mobile.
-	.sgs-timeline--vertical.sgs-timeline--align-alternating {
+	// Vertical alternating/same-side both collapse to the same left-aligned
+	// mobile shape. Reused rather than duplicated (Task 3b brief) — below
+	// 768px there is no second column left to be "the same side" of, so
+	// same-side's contentSide axis is inert here exactly like alternating's
+	// odd/even flip is.
+	//
+	// ⛔ THE RAIL HAS TWO HALVES AND BOTH MUST MOVE. The static line is this
+	// element's `::before`; the animated fill is a SEPARATE element
+	// (`.sgs-timeline__progress`). Until 2026-08-29 this block moved only the
+	// `::before`, so the fill kept the base vertical rule (`left:50%`) and the two
+	// halves of one rail sat 171px apart at 375px — measured live: line at x=16,
+	// fill at x=179, dots at x=8. A second literal is how they drift (the same
+	// note guards the horizontal rule at :159), so the offset is declared ONCE
+	// here and both halves read it.
+	//
+	// The value is HALF the node, not a whole node: column 1 is `auto`, sized to
+	// the 16px node, so the dots' centre is at 8px. `content-single-column` already derives
+	// it this way (:589). The old `var(--sgs-node-size)` put the line on the
+	// node's right EDGE, 8px off the dots it is meant to thread.
+	.sgs-timeline--vertical.sgs-timeline--content-alternating,
+	.sgs-timeline--vertical.sgs-timeline--content-same-side {
+		--sgs-timeline-rail-offset: calc(var(--sgs-node-size) / 2);
+
 		&::before {
-			left: var(--sgs-node-size);
+			left: var(--sgs-timeline-rail-offset);
+			transform: none;
+		}
+
+		.sgs-timeline__progress {
+			left: var(--sgs-timeline-rail-offset);
 			transform: none;
 		}
 
@@ -513,6 +1240,557 @@
 				grid-row: 1;
 				text-align: left;
 				padding-left: var(--wp--preset--spacing--20, 1rem);
+			}
+		}
+	}
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MILESTONE MEDIA, A/B ROW BANDS, CONNECTOR-TRIGGERED REVEAL
+//
+// ⭐ THE SAFETY PROPERTY FOR THIS WHOLE SECTION: every rule below is keyed on
+// `--has-media`, `--row-stripes` or `--reveal-connector`. A timeline using none
+// of them must render byte-identically to before, and that is an acceptance
+// criterion, not an aspiration — the entry grid is shared with the connector,
+// the fill mask and the spark positions, so an unconditional change here moves
+// the milestone dots and silently breaks FR-38-35.
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── The media element itself ──────────────────────────────────────────────────
+//
+// `sgs_tier_media_render()` emits `.sgs-timeline__media` plus a type modifier
+// (`--image` / `--video` / `--svg`). Size and radius target the TYPE-AGNOSTIC
+// base so a video or an SVG milestone is sized identically to an image — scoping
+// them to the `--image` class is the exact bug sgs/hero shipped and had to fix.
+.sgs-timeline__media-slot {
+	display: block;
+	width: 100%;
+	max-width: var(--sgs-timeline-media-width, 180px);
+	min-width: 0;
+}
+
+.sgs-timeline__media {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+// object-fit only means anything on a replaced element, so it is scoped to the
+// two types that HAVE intrinsic dimensions. An inline SVG is not replaced.
+.sgs-timeline__media--image,
+.sgs-timeline__media--video {
+	object-fit: cover;
+}
+
+.sgs-timeline__media--svg svg {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+// ── Milestone media placement: media UNDER the date ───────────────────────────
+// (the only placement — the "date over media" overlay option was removed
+// 2026-08-30; media always renders under the date now.)
+//
+// The entry gains a second row. The node and the content must be given an
+// explicit row span or they auto-place into row 2 and the layout collapses.
+//
+// ⛔ SCOPED TO DESKTOP ON PURPOSE (min-width: 768px). Below 768px the vertical
+// alternating grid is collapsed to a single column by the mobile rule at
+// :1054-1090, which re-places `.sgs-timeline__date` at `grid-area: 2 / 2`. This
+// block's odd/even children carried no media query at all and out-ranked that
+// collapse on specificity alone (one extra class, (0,6,0) vs (0,5,0)), so the
+// date kept `grid-area: 1 / 1` at 375px and the content column was squeezed to
+// ~76px. Placement here now yields to the collapse below 768px; the dedicated
+// mobile re-placement for has-media entries lives further down in the
+// `@media (max-width: 767px)` block.
+@media (min-width: 768px) {
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating,
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side {
+		.sgs-timeline__entry--has-media {
+			grid-template-rows: auto auto;
+
+			.sgs-timeline__node {
+				grid-row: 1 / span 2;
+			}
+
+			.sgs-timeline__content {
+				grid-row: 1 / span 2;
+			}
+		}
+	}
+
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-alternating {
+		// ODD — date + media on the LEFT, content on the right.
+		.sgs-timeline__entry--has-media:nth-child(odd) {
+			.sgs-timeline__date {
+				grid-column: 1;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 1;
+				grid-row: 2;
+				justify-self: end;
+			}
+		}
+
+		// EVEN — mirrored. The media follows the DATE, not the content, because
+		// the brief is "media opposite the content, on the date's side".
+		.sgs-timeline__entry--has-media:nth-child(even) {
+			.sgs-timeline__date {
+				grid-column: 3;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 3;
+				grid-row: 2;
+				justify-self: start;
+			}
+		}
+	}
+
+	// Same-side — every entry uses ONE of the two placements above instead of
+	// alternating between them, same reuse rule as the base entry grid.
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side {
+		// contentSide: end (default) — mirrors the ODD placement. No modifier
+		// class needed, matching the base same-side rule.
+		.sgs-timeline__entry--has-media {
+			.sgs-timeline__date {
+				grid-column: 1;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 1;
+				grid-row: 2;
+				justify-self: end;
+			}
+		}
+	}
+
+	// contentSide: start — mirrors the EVEN placement. Extra class out-ranks
+	// the block above on the same properties (0,5,0) vs (0,4,0).
+	.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-same-side.sgs-timeline--side-start {
+		.sgs-timeline__entry--has-media {
+			.sgs-timeline__date {
+				grid-column: 3;
+				grid-row: 1;
+			}
+
+			.sgs-timeline__media-slot {
+				grid-column: 3;
+				grid-row: 2;
+				justify-self: start;
+			}
+		}
+	}
+}
+
+// ── Task 3 (2026-08-30): full-height milestones ────────────────────────────
+//
+// "Make the media sit like the hero split block" needs no new DOM: an entry
+// is already four flat grid children in `1fr auto 1fr`, `align-items: start`,
+// `grid-template-rows: auto` (the rule at the top of this file) — a hero
+// split with a rail through it. This block only makes the row tall and lets
+// the media fill its column; it does not touch grid-column/grid-row
+// placement, which the media-under block above already owns.
+//
+// ⛔ WRITTEN FIRST, INSIDE `@media (min-width: 768px)` ON PURPOSE — D894 was
+// caused by exactly the opposite: a placement rule at (0,6,0) with NO media
+// query out-ranking a mobile collapse rule at (0,5,0). Every rule here is
+// scoped so it cannot reach mobile at all; phones always render compact.
+@media (min-width: 768px) {
+	.sgs-timeline--milestone-full-height .sgs-timeline__entry {
+		min-height: var(--sgs-timeline-milestone-min-height, 80vh);
+	}
+
+	// ⛔ SPECIFICITY IS THE WHOLE POINT OF THIS SELECTOR — do not simplify it.
+	//
+	// `min-height` alone grows the entry but NOT the media. An entry with media
+	// is laid out by `.sgs-timeline--media-under.sgs-timeline--vertical
+	// .sgs-timeline--content-{alternating|same-side} .sgs-timeline__entry--has-media`
+	// at (0,4,0), which pins `grid-template-rows: auto auto` — a date row and a
+	// media row, both content-sized. `align-self: stretch` on the media then
+	// stretches it to its ROW, not to the entry.
+	//
+	// Measured live, 1440x900, 80vh: entry 720px but media 544px, with the
+	// surplus 176px absorbed by the DATE's row — the date stranded at the top of
+	// a gap. Two weaker fixes were tried against the live page first and BOTH
+	// changed nothing, because a losing rule is indistinguishable from an absent
+	// one: `align-content: stretch` (no free space to distribute — the tracks
+	// already summed to 720) and this same `auto 1fr` at (0,2,0) (out-ranked).
+	// Enumerating every rule that matched the element found the real owner.
+	//
+	// The class is repeated ONCE to reach (0,5,0) — a deterministic one-class
+	// margin over that (0,4,0) rule. Matching it at (0,4,0) and relying on
+	// source order would work today and silently flip the day any rule is
+	// appended elsewhere. Repeating the class also avoids hand-listing every
+	// content-layout combination, so `same-side` is covered by construction.
+	// Same device, same reason, as the carousel block lower in this file.
+	.sgs-timeline--milestone-full-height.sgs-timeline--milestone-full-height.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
+		// Date row stays content-sized; the media row takes everything left, so
+		// the media fills the entry's full height minus the date.
+		grid-template-rows: auto 1fr;
+	}
+
+	.sgs-timeline--milestone-full-height .sgs-timeline__media-slot {
+		align-self: stretch;
+		// milestoneMediaWidth is ignored here — the media fills its column
+		// rather than sitting at a fixed thumbnail width (design doc §3.4).
+		max-width: none;
+
+		.sgs-timeline__media {
+			height: 100%;
+		}
+
+		.sgs-timeline__media--image,
+		.sgs-timeline__media--video {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.sgs-timeline--milestone-full-height .sgs-timeline__content {
+		align-self: center;
+	}
+}
+
+// content-single-column: column 1 is `auto` and sized to the date text, so media dropped
+// into it would be squeezed to the width of "2019". Widen column 1 to the media
+// width — and ONLY when the timeline actually has media, so a plain content-single-column
+// timeline keeps its tight date column.
+.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter:has(.sgs-timeline__entry--has-media) {
+	// In GUTTER mode the media shares the date's column, so that column has to be
+	// wide enough for a picture rather than for the word "2019".
+	--sgs-timeline-gutter-width: var(--sgs-timeline-media-width, 180px);
+
+	// ⛔ THE RAIL MUST MOVE WITH THE COLUMN, or the picture is drawn straight
+	// across the connector. Measured on the canary before this rule: the line sat
+	// at x=16 while the media spanned x=0-180 and the dots sat at x=196 — the
+	// owner's report was "the picture has been placed in a really weird place on
+	// the left so it overlaps the progress line", and he was exactly right.
+	//
+	// The offset is the NODE COLUMN'S CENTRE, derived from the same three values
+	// that define the grid — column 1's width, the column gap, and half the node —
+	// so it cannot drift from the layout the way a magic number would.
+	//
+	// ⚠ Scoped to the has-media case ON PURPOSE. Without media, column 1 is `auto`
+	// and there is no expression for its width, so the rail keeps its existing
+	// position and its existing (pre-existing, separately reported) misalignment
+	// rather than being moved on a guess.
+	--sgs-timeline-rail-offset: calc(
+		var(--sgs-timeline-media-width, 180px) +
+		var(--wp--preset--spacing--30, 1.5rem) +
+		var(--sgs-node-size) / 2
+	);
+}
+
+// Gutter mode only: the media joins the DATE in column 1, under it. Without the
+// gutter there is no second column to be opposite, and the media simply flows
+// down the single content column in DOM order — which the base content-single-column rule
+// already does, with no placement needed here.
+.sgs-timeline--media-under.sgs-timeline--vertical.sgs-timeline--content-single-column.sgs-timeline--date-gutter {
+	.sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto;
+
+		.sgs-timeline__date {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 1;
+			grid-row: 2;
+		}
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 2;
+		}
+
+		.sgs-timeline__content {
+			grid-row: 1 / span 2;
+		}
+	}
+}
+
+// Task 3a: the old align-centre milestone-media rule (three-row media-between-
+// date-and-content layout) is DELETED here, not renamed — centre folds into
+// content-single-column, which uses the media-under-date shape above instead.
+
+// ── Alternating A/B row bands ─────────────────────────────────────────────────
+//
+// The band paints on the ENTRY, which is the full width of the block, so the
+// stripe reads as a row across the page rather than a card behind the text.
+// `transparent` is a real, useful value for stripe A: banding only the even rows
+// lets a sectioned page show through on the odd ones.
+//
+// ⛔ `:nth-child` here counts ALL <ol> children, and the progress <li> is one of
+// them — it is emitted LAST precisely so it never shifts the entries' parity.
+// Scoping to `.sgs-timeline__entry` keeps that true even if another child is
+// ever added.
+.sgs-timeline--row-stripes {
+	.sgs-timeline__entry:nth-child(odd) {
+		background-color: var(--sgs-timeline-stripe-a, transparent);
+		background-image: var(--sgs-timeline-stripe-a-gradient, none);
+	}
+
+	.sgs-timeline__entry:nth-child(even) {
+		background-color: var(--sgs-timeline-stripe-b, transparent);
+		background-image: var(--sgs-timeline-stripe-b-gradient, none);
+	}
+
+	// rowStripeColourA/BHover(Gradient) (colour-conformance FILL closeout,
+	// 2026-09-06) — each row IS its own real `<li>`, directly hoverable, unlike
+	// the connector/fill layers above; `:focus-within` (not `:focus-visible`)
+	// because the row itself never receives focus, only content inside it can.
+	.sgs-timeline__entry:nth-child(odd):hover,
+	.sgs-timeline__entry:nth-child(odd):focus-within {
+		background-color: var(--sgs-timeline-stripe-a-hover, var(--sgs-timeline-stripe-a, transparent));
+		background-image: var(--sgs-timeline-stripe-a-hover-gradient, var(--sgs-timeline-stripe-a-gradient, none));
+	}
+
+	.sgs-timeline__entry:nth-child(even):hover,
+	.sgs-timeline__entry:nth-child(even):focus-within {
+		background-color: var(--sgs-timeline-stripe-b-hover, var(--sgs-timeline-stripe-b, transparent));
+		background-image: var(--sgs-timeline-stripe-b-hover-gradient, var(--sgs-timeline-stripe-b-gradient, none));
+	}
+
+	// Bands butt against each other, so the entries need their own breathing
+	// room — without this the text sits hard on the colour change.
+	.sgs-timeline__entry {
+		padding-block: var(--wp--preset--spacing--20, 1rem);
+	}
+}
+
+// ── Connector-triggered reveal ────────────────────────────────────────────────
+//
+// ⛔ THE ACCESSIBILITY FLOOR COMES FIRST, and it is why the hidden state is
+// declared under `.is-js` rather than plainly. Hiding content until a scroll
+// position is reached is `degrade-to-more-content-never-less` pointed the wrong
+// way: with no JS, or if the observer ever fails to run, an entry hidden by a
+// plain CSS rule is unreachable FOREVER and the page silently loses its content.
+// So the default state is VISIBLE, and only a running view.js opts an entry into
+// being hidden. A broken script degrades to "everything shown", never to a blank
+// timeline.
+.sgs-timeline--reveal-connector.is-js {
+	.sgs-timeline__entry:not(.is-revealed) {
+		opacity: 0;
+		// Rises INTO place as its dot lights up, rather than sliding sideways —
+		// a sideways slide fights the alternating layout, where the two sides
+		// would have to travel in opposite directions.
+		transform: translateY(14px);
+	}
+
+	.sgs-timeline__entry {
+		transition:
+			opacity 420ms ease-out,
+			transform 420ms ease-out;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	// Show the end state, skip the animation — the same convention the fill
+	// itself follows. An entry must never be left hidden here.
+	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry:not(.is-revealed) {
+		opacity: 1;
+		transform: none;
+	}
+
+	.sgs-timeline--reveal-connector.is-js .sgs-timeline__entry {
+		transition: none;
+	}
+}
+
+// ── Mobile: the two-sided grid does not exist below 768px ─────────────────────
+//
+// The base rules at :913-941 give odd and even entries IDENTICAL placement and
+// drop the date BELOW the content, so "the same side as the date" has no meaning
+// here. The media therefore takes its own row at the bottom of the stack and
+// spans the full content column.
+@media (max-width: 767px) {
+	.sgs-timeline--media-under.sgs-timeline--vertical .sgs-timeline__entry--has-media {
+		grid-template-rows: auto auto auto;
+
+		.sgs-timeline__node {
+			grid-row: 1 / span 3;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-column: 2;
+			grid-row: 3;
+			justify-self: start;
+			max-width: 100%;
+		}
+	}
+}
+
+// =============================================================================
+// mobileLayout: carousel — native scroll-snap card row, ≤767px ONLY (Task 2)
+// =============================================================================
+//
+// ⛔ GATED ON BOTH `@media (max-width: 767px)` AND `.sgs-timeline--mobile-carousel`
+// (Spec-brief R4). `mobileLayout: stacked` (the default) never carries either
+// half of that gate, so it is untouched by anything below — this section is
+// pure addition, not a rewrite of the stacked path above.
+//
+// WCAG 1.4.10 Reflow via Sufficient Technique G225 (a contained horizontal
+// scroller inside a vertically-scrolling page): each card fits within 320 CSS
+// px (`flex: 0 0 min(85%, 320px)`) and nothing outside the scroller is pushed
+// off-axis. SC 2.5.7 Dragging is met by NATIVE `overflow-x: auto` +
+// `scroll-snap-type: x mandatory` — no JS-driven scroll hijack, no GSAP.
+// SC 2.1.1 Keyboard is met by `tabindex`/`role`/`aria-label`, added and
+// removed by view.js on a matching `matchMedia('(max-width: 767px)')`
+// listener rather than declared here — those are HTML attributes and cannot
+// be media-queried, and must exist ONLY while the element actually scrolls.
+//
+// The rail/fill machinery does not transfer to a horizontal scroller (R4):
+// no continuous rail, no FR-38-35 scroll-driven fill. Each card instead gets
+// a plain top border in the connector colour — the per-card equivalent of
+// the rail this mode replaces.
+//
+// The class is repeated FIVE TIMES in the entry/media selectors below,
+// deliberately — not a typo, and not (0,4,0) vs the ENTRY selector either
+// (a figure this comment used to state and got wrong). The real ceiling to
+// beat is a DESCENDANT selector, not the entry selector itself: the
+// alternating mobile collapse at :1041
+// (`.sgs-timeline--vertical.sgs-timeline--content-alternating` (2 classes)
+// ` .sgs-timeline__entry:nth-child(odd|even)` (2) ` .sgs-timeline__date` (1)
+// = **(0,5,0)**). A 4x-repeated carousel selector + `.sgs-timeline__date`
+// is ALSO (0,5,0) — an exact tie, resolved only by this block being
+// physically last in the file, which a single appended rule anywhere else
+// could silently flip. Repeating the carousel class a 5th time raises the
+// descendant ceiling to (0,6,0), a real one-class margin instead of a
+// source-order accident. Carousel mode must still win over EVERY
+// orientation/alignment combination without hand-listing each one — hence
+// raising past that ceiling by construction rather than chasing every
+// existing rule's exact selector one at a time.
+//
+// Media-query scoping gives NO cascade advantage here: every competing rule
+// above is already inside `@media (max-width: 767px)`, so don't "fix" the
+// tie by adding a `:not(.sgs-timeline--mobile-carousel)` guard to those
+// rules instead — that raises every one of them by (0,1,0), can flip a tie
+// against a THIRD rule, and risks the `stacked` byte-identity acceptance
+// criterion for zero gain.
+@media (max-width: 767px) {
+	.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
+		// Step 4a — the root no longer IS the scroller. The markup now nests
+		// `<ol class="sgs-timeline__list">` inside the root (so the GSAP
+		// horizontal-panel effect can resolve it as a direct child), so the
+		// layout/scroll properties that used to sit directly on this selector
+		// now target the `<ol>` — the element that actually scrolls.
+		// Everything else below (entries, nodes, dates, media) stays a plain
+		// descendant selector and matches exactly as it did before.
+		.sgs-timeline__list {
+			display: flex;
+			flex-direction: row;
+			align-items: stretch;
+			overflow-x: auto;
+			overflow-y: hidden;
+			scroll-snap-type: x mandatory;
+			gap: var(--wp--preset--spacing--20, 1rem);
+			padding: var(--wp--preset--spacing--30, 1.5rem) var(--wp--preset--spacing--20, 1rem);
+		}
+
+		// No continuous rail — the rail pseudo-element is drawn on the ROOT
+		// itself (`.sgs-timeline--connector-progress::before` etc.), not on
+		// the scrolling `<ol>`, so this stays targeted at the root unchanged.
+		&::before {
+			display: none;
+		}
+
+		// FR-38-35's fill tracks ONE number for the whole timeline's scroll
+		// position; that has no meaning once the timeline is N independent
+		// cards, so the whole element is suppressed rather than left
+		// mis-animating.
+		.sgs-timeline__progress {
+			display: none;
+		}
+
+		// ⛔ THE CONNECTOR REVEAL MUST BE OPTED OUT OF, NOT JUST LEFT UNDRIVEN.
+		// `revealTrigger: connector` hides every entry at :1322 until view.js
+		// adds `.is-revealed`, and view.js deliberately does NOT run the reveal
+		// driver in carousel mode (there is no travelling vertical fill to reach
+		// each dot). Without this rule the hidden state never lifts: measured
+		// live 2026-08-30, all four cards sat at `opacity: 0` with an empty
+		// carousel painting nothing but a scrollbar.
+		//
+		// That is the precise failure the `.is-js` gate at :1316-1321 exists to
+		// prevent — "a broken script degrades to everything shown, never to a
+		// blank timeline". A DELIBERATELY not-run driver leaves `.is-js` on the
+		// root, so the hiding rule still matches and nothing un-hides it.
+		// Suppressing a driver therefore obliges you to suppress the hidden
+		// state it was the only thing capable of lifting.
+		//
+		// (0,6,0) here — five repetitions plus `.sgs-timeline__entry` — against
+		// the hiding rule's (0,4,0), so this wins on specificity, not order.
+		.sgs-timeline__entry {
+			opacity: 1;
+			transform: none;
+		}
+
+		.sgs-timeline__entry {
+			display: block;
+			// The conformance-required panel width (Sufficient Technique G225):
+			// 85% deliberately leaves a peek of the next card, which is the
+			// discoverability cue for the scroller — dot indicators are a weaker
+			// cue by comparison and are deliberately not added.
+			flex: 0 0 min(85%, 320px);
+			scroll-snap-align: start;
+			margin-bottom: 0;
+			padding: var(--wp--preset--spacing--20, 1rem) 0 0;
+			// The per-card connector indicator this mode replaces the rail
+			// with — filled in the connector colour, one border per card
+			// rather than one continuous scrubbing fill.
+			border-top: 3px solid var(--sgs-connector-colour);
+
+			// F1 — the horizontal analogue of `.sgs-timeline__node.is-reached`
+			// (:802). `is-reached` used to be toggled only on `.sgs-timeline__node`,
+			// which is `display:none` in carousel mode (:1465) — dead decoration
+			// with no paint surface. view.js's `initCarouselA11y` now toggles this
+			// class on each entry as its left edge scrolls past the scroller's
+			// current position; see the scroll listener there.
+			&.is-reached {
+				border-top-color: var(--sgs-timeline-fill-colour);
+			}
+		}
+
+		// The decorative dot sat ON the rail; without a rail under it, it has
+		// nothing to anchor to. The border above is this mode's connector
+		// indicator instead.
+		.sgs-timeline__node {
+			display: none;
+		}
+
+		.sgs-timeline__date,
+		.sgs-timeline__media-slot,
+		.sgs-timeline__content {
+			grid-column: auto;
+			grid-row: auto;
+			text-align: left;
+			padding-left: 0;
+			padding-right: 0;
+		}
+
+		.sgs-timeline__media-slot {
+			max-width: 100%;
+		}
+	}
+
+	// Gated separately (Spec: "gate scroll-behavior: smooth behind
+	// prefers-reduced-motion: no-preference"). SCSS nests this into a combined
+	// `@media (max-width: 767px) and (prefers-reduced-motion: no-preference)`.
+	// Step 4a — `scroll-behavior` only means something on the element that
+	// actually scrolls, so this moves onto `.sgs-timeline__list` with the
+	// rest of the scroll-container properties above.
+	@media (prefers-reduced-motion: no-preference) {
+		.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel.sgs-timeline--mobile-carousel {
+			.sgs-timeline__list {
+				scroll-behavior: smooth;
 			}
 		}
 	}

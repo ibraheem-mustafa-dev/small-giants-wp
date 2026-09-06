@@ -149,9 +149,11 @@ discriminator as check-tier-storage-shape.py, deliberately, so gate and codemod 
 """
 
 import argparse
+import functools
 import io
 import json
 import re
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -166,11 +168,167 @@ BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 INCLUDES_DIR = REPO / 'plugins' / 'sgs-blocks' / 'includes'
 TIERS = ('Tablet', 'Mobile')
 
+# The framework DB. A DERIVED COPY of block.json, repopulated by /sgs-update — never the
+# source of truth (migrate-core-blocks/driver.py:78 says so explicitly). That is exactly why
+# declared_siblings() below reads it AND crosschecks it against disk instead of trusting it.
+SGS_DB = Path.home() / '.claude' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db'
+NEWLINE = chr(10)  # keeps the parity message readable without escapes in f-strings
 
-def classify(attrs: dict, prop: str):
-    """Return (kind, sibling_names). kind in FLAT|BLENDED|OBJECT|ASSET|ABSENT."""
-    spec = attrs.get(prop)
-    if not isinstance(spec, dict):
+# The immutable commit whose class-sgs-container-wrapper.php still carries the pre-fix
+# minHeight shape (RAW + two DELETED_SIBLING_READ). Used by self_test() as a historical
+# fixture. NEVER replace this with a moving ref — see the note in self_test().
+_PRE_FIX_WRAPPER_SHA = 'e7f28b0fd'
+
+
+def _base_attr_spec(attrs: dict, prop: str):
+    """The base attribute's OWN declaration dict, or `None` if it isn't declared at all.
+
+    ⛔ **The base declaration is not always the bare `prop` key.** Three families
+    (`sgs/brand-strip.columns`, `sgs/hero.textAlign`, `sgs/whatsapp-cta.showOn`) declare
+    their desktop-tier attribute as `<prop>Desktop` instead of bare `<prop>` — the same
+    two-name ambiguity `programme-progress.py`'s `classify_families()` already had to
+    handle for the DB-derived view (see that function's `base_bare`/`base_desktop`/
+    `base_name` — this mirrors that logic exactly, disk-side). A bare-only lookup
+    (`attrs.get(prop)`) sees no dict at either of these three, classifies ABSENT, and the
+    census silently drops them — verified 2026-08-25: DB-derived flat families = 37,
+    disk-derived (pre-fix) = 34, a 3-family gap entirely explained by this ambiguity.
+    Prefer the bare name when BOTH exist (there is no known case of that today, but bare
+    is the eventual/canonical target shape post-migration, so it wins ties). Shared by
+    `classify()` (the FLAT/BLENDED/OBJECT/ASSET/ABSENT gate) and `survey()`'s own
+    `default`/`base_type` report fields, so the two can never quietly disagree about
+    which key IS the base."""
+    base_bare = attrs.get(prop)
+    if isinstance(base_bare, dict):
+        return base_bare
+    base_desktop = attrs.get(prop + 'Desktop')
+    if isinstance(base_desktop, dict):
+        return base_desktop
+    return None
+
+
+def _base_attr_key(attrs: dict, prop: str):
+    """The actual JSON key holding the base declaration — `prop` or `prop + 'Desktop'`
+    (see `_base_attr_spec` above for why). Returns None if neither is declared.
+
+    S4 fix (2026-09-02, uniformity sweep): `apply_block_json` used to subscript
+    `attrs[prop]` directly, assuming the bare key always exists — it doesn't for the
+    three `<prop>Desktop`-base families (columns/textAlign/showOn), so `--fix` crashed
+    with an uncaught KeyError the moment it reached one, aborting the whole batch.
+    Callers now resolve the real key through this helper first."""
+    if isinstance(attrs.get(prop), dict):
+        return prop
+    if isinstance(attrs.get(prop + 'Desktop'), dict):
+        return prop + 'Desktop'
+    return None
+
+
+# S4 fix (2026-09-02, uniformity sweep): a SHAPE test alone (base + all responsive
+# siblings are scalars of the same type) cannot distinguish a genuine flat-scalar fold
+# candidate (columns/textAlign/backgroundOverlayOpacity/showOn) from an art-directed
+# MEDIA REFERENCE (imageId/imageUrl/videoUrl/svgContent/...), which Bean's C19 ruling
+# forbids ever folding into a per-breakpoint object — each tier's image/video/SVG is a
+# genuinely independent piece of content, not a responsive VALUE of one property.
+# Universal file-reference NAME test, not a hardcoded attr list (R-31-1): an attribute
+# whose bare name ends in one of these suffixes IS the file reference by construction —
+# a WP attachment ID, a URL, or raw embedded content. Verified against the live tree
+# (2026-09-02): matches all 17 known art-directed media attrs across
+# decorative-image/media/responsive-logo/before-after/hero, and does NOT match any of
+# columns/textAlign/backgroundOverlayOpacity/showOn/videoAutoplay/videoControls/
+# videoLazyLoad/videoLoop/videoMuted/videoPlaysInline/splitMediaObjectPosition/
+# splitMediaType/splitMediaWidth — the negative control this fix requires.
+_FILE_REFERENCE_SUFFIXES = ('Id', 'Url', 'Content')
+
+
+def _is_file_reference_attr(prop: str) -> bool:
+    return prop.endswith(_FILE_REFERENCE_SUFFIXES)
+
+
+# C19 companion-field fix (2026-09-06, tier-object migration Phase 2). The suffix test
+# above protects `splitImageUrl`/`splitImageId` themselves, but missed the mistake that
+# actually shipped: `splitImageAlt` doesn't end in Id/Url/Content, so it fell through to
+# FLAT and got folded — wrong, because it's alt text describing whichever image is
+# rendering at that tier, not an independent value of its own (see hero/render.php's
+# `$sgs_hero_resolve_split_image()`, which reads `splitImageAlt<suffix>` alongside
+# `splitImageUrl<suffix>`/`splitImageId<suffix>` as one unit per tier).
+#
+# Structural detection, not a second hardcoded attr list (R-31-1): a companion field
+# shares a PascalCase name STEM with a real, declared file-reference attribute on the
+# same block (`splitImageAlt` stems from `splitImageUrl`'s "splitImage"), with a capital
+# letter immediately after the stem so a coincidental substring match (e.g. an unrelated
+# "imageQualityHint" attr merely containing "image") can't false-positive.
+def _companion_media_stem(attrs: dict, prop: str) -> bool:
+    """True if `prop` travels alongside an already-declared file-reference attribute
+    on the same block — same name stem, PascalCase word boundary."""
+    for other in attrs:
+        if other == prop or not _is_file_reference_attr(other):
+            continue
+        for suffix in _FILE_REFERENCE_SUFFIXES:
+            if other.endswith(suffix):
+                stem = other[: -len(suffix)]
+                break
+        else:
+            continue
+        if stem and prop.startswith(stem) and len(prop) > len(stem) and prop[len(stem)].isupper():
+            return True
+    return False
+
+
+# Phase 2 fix (2026-09-06, tier-object migration): classify()'s ASSET branch could not
+# distinguish a genuine per-tier ASSET family (backgroundImage/backgroundImageTablet/
+# backgroundImageMobile — three independent media references, correctly NOT a migration
+# target) from a BOX-OF-SIDES family declared three times, once per device
+# (padding/paddingTablet/paddingMobile — a box_family attribute that SHOULD fold into one
+# tier-of-boxes object, exactly the shape contentBandPadding already uses). Both shapes are
+# "object base + object siblings of the same type" at the block.json level, so the old
+# ASSET test reported both as "correct as-is" — verified live: `--survey --property padding`
+# reported "0 block(s) to migrate" against a real 63-block unmigrated surface (Ship-PM,
+# adversarial council, 2026-09-06).
+#
+# The discriminator is the DB's `box_family` column — the SAME column the converter's
+# `box_family_for()`/`tier_object_base()` already treat as the sole legitimate gate for
+# this exact question (R-31-1: never re-derive from the attr NAME). A read-only,
+# structural check: does ANY of this family's siblings carry a non-null box_family? A
+# genuine box-of-sides family's siblings DO (measured: sgs/container.paddingTablet ->
+# box_family='padding'); a genuine per-tier ASSET family's siblings do NOT (measured:
+# sgs/container.backgroundImageTablet -> box_family=None).
+#
+# ⛔ Deliberately a lightweight read-only sqlite3 query here, NOT an import of
+# `converter/db/db_lookup.py` — that module runs schema-migration side effects on import
+# (confirmed live this session: importing it deleted 2 stale `roles.json`-orphaned rows as
+# an "intended reconciliation" the module docstring never surfaces to a caller expecting a
+# read). A survey/census tool must never become a writer as a side effect of being run.
+@functools.lru_cache(maxsize=4096)
+def _sibling_box_family(block_slug: "str | None", sibling_attr: str) -> "str | None":
+    """Read-only: the DB's `box_family` for one sibling attr, or None if unknown/absent.
+
+    Returns None immediately (no DB hit) when `block_slug` is unavailable — every existing
+    self-test fixture calls `classify()` with a synthetic dict and no real block slug, and
+    must keep classifying exactly as before this fix (ASSET, not BOX_FLAT) rather than
+    silently querying a real block's DB row for a fabricated attribute name."""
+    if not block_slug or not SGS_DB.exists():
+        return None
+    con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        row = con.execute(
+            'SELECT box_family FROM block_attributes WHERE block_slug = ? AND attr_name = ?',
+            (block_slug, sibling_attr),
+        ).fetchone()
+    finally:
+        con.close()
+    return row[0] if row and row[0] else None
+
+
+def classify(attrs: dict, prop: str, block_slug: "str | None" = None):
+    """Return (kind, sibling_names). kind in
+    FLAT|BLENDED|OBJECT|ASSET|BOX_FLAT|ABSENT|ART_DIRECTED_MEDIA.
+
+    `block_slug` is optional (defaults to None, preserving every existing self-test
+    fixture's behaviour byte-for-byte) — pass the real block slug from `survey()`'s own
+    disk scan to enable the BOX_FLAT discrimination below.
+
+    See `_base_attr_spec()` for why the base lookup isn't a plain `attrs.get(prop)`."""
+    spec = _base_attr_spec(attrs, prop)
+    if spec is None:
         return 'ABSENT', []
     base_type = spec.get('type')
     sibs = [prop + t for t in TIERS if isinstance(attrs.get(prop + t), dict)]
@@ -179,25 +337,52 @@ def classify(attrs: dict, prop: str):
             return 'OBJECT', []
         # Sibling type must DIFFER from the base for this to be half-migrated.
         if all(attrs[s].get('type') == 'object' for s in sibs):
+            if any(_sibling_box_family(block_slug, s) for s in sibs):
+                # A box_family-tagged sibling means THIS is padding/margin/borderRadius's
+                # shape: the same box declared once per device tier, not a genuine
+                # per-tier asset. It needs the box-of-sides -> tier-of-boxes fold (a
+                # separate codemod — this kind is deliberately excluded from every
+                # MIGRATABLE filter in THIS script, same construction as
+                # ART_DIRECTED_MEDIA, so it is reported, never silently folded here).
+                return 'BOX_FLAT', sibs
             return 'ASSET', sibs          # consistent per-tier object family — correct as-is
         return 'BLENDED', sibs
-    return ('FLAT', sibs) if sibs else ('ABSENT', [])
+    if not sibs:
+        return 'ABSENT', []
+    if _is_file_reference_attr(prop) or _companion_media_stem(attrs, prop):
+        # C19-protected: would otherwise classify FLAT (scalar base + scalar siblings),
+        # but every MIGRATABLE filter in this script checks kind in ('FLAT', 'BLENDED')
+        # only, so this kind is excluded from every --survey/--fix/--check operation by
+        # construction — never folded, never silently dropped from the report either.
+        return 'ART_DIRECTED_MEDIA', sibs
+    return 'FLAT', sibs
 
 
-def reads_attr_directly(block_dir: Path, prop: str) -> int:
+def reads_attr_directly(block_dir: Path, prop: str, base_key: str = None) -> int:
+    """`base_key` is the actual JSON key holding the base declaration (`_base_attr_key`) —
+    `prop` for the common case, `prop + 'Desktop'` for the three families whose base
+    declares suffixed (see `_base_attr_spec`). Defaults to `prop` so every existing call
+    site (self-test fixtures included) is unchanged when the caller doesn't have it."""
     rp = block_dir / 'render.php'
     if not rp.exists():
         return 0
     src = rp.read_text(encoding='utf-8', errors='replace')
-    return len(re.findall(r"\[['\"]" + re.escape(prop) + r"(?:Tablet|Mobile)?['\"]\]", src))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
+    return len(re.findall(
+        r"\[['\"](?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]\]", src))
 
 
-def edit_refs(block_dir: Path, prop: str) -> int:
+def edit_refs(block_dir: Path, prop: str, base_key: str = None) -> int:
+    """See `reads_attr_directly`'s `base_key` note — same widening, same default."""
     ej = block_dir / 'edit.js'
     if not ej.exists():
         return 0
     src = ej.read_text(encoding='utf-8', errors='replace')
-    return len(re.findall(r"\b" + re.escape(prop) + r"(?:Tablet|Mobile)?\b", src))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
+    return len(re.findall(
+        r"\b(?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)\b", src))
 
 
 # Added D574 (2026-08-11) — see the module docstring's "WHAT IT DOES DO — PART 2" section.
@@ -214,18 +399,14 @@ def shared_include_files():
     return sorted(INCLUDES_DIR.rglob('*.php'))
 
 
-def union_declared_siblings(prop: str) -> set:
-    """Which `<prop>Tablet` / `<prop>Mobile` suffixes are STILL declared by ANY block.json
-    right now — derived live from every block's attributes, the same way `classify()`
-    derives its own sibling list, so the two can never quietly disagree.
+def _disk_declared_siblings(prop: str) -> set:
+    """The DISK half. Which `<prop>Tablet` / `<prop>Mobile` suffixes are declared by ANY
+    block.json on disk right now — derived the same way `classify()` derives its own sibling
+    list, so the two can never quietly disagree.
 
-    A shared include has no single "owning" block, so a literal read of `<prop>Tablet` in
-    e.g. class-sgs-container-wrapper.php is legitimate as long as AT LEAST ONE block.json
-    still declares that sibling (some other block may still be flat for this prop, mid
-    property-by-property migration). Only once EVERY block has migrated does the read
-    become provably dead — which is exactly the state `minHeight` was in when the wrapper
-    kept reading `minHeightTablet`/`minHeightMobile` and got `''` back from an attribute
-    that no longer existed anywhere."""
+    This used to BE the answer (as `declared_siblings`). It is now the GUARD: the answer
+    comes from the DB (R-31-1, DB-first), and this walk is what proves the DB has not gone
+    stale against the tree. See `declared_siblings()`."""
     declared = set()
     for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
         try:
@@ -237,6 +418,158 @@ def union_declared_siblings(prop: str) -> set:
             if (prop + t) in attrs:
                 declared.add(t)
     return declared
+
+
+def _db_declared_siblings(prop: str) -> set:
+    """The DB half. Same question, asked of `block_attributes` in one SELECT.
+
+    ⛔ `source='sgs'` IS LOAD-BEARING, and its absence is the trap this function exists to
+    document. `block_attributes` also holds 507 `native_wp` rows for CORE blocks, which have
+    no directory under `src/blocks/` at all — so an unfiltered SELECT returns a set that is
+    WIDER than disk, not narrower. Measured 2026-08-24: `isStackedOnMobile` on `core/columns`
+    and `core/media-text` are the only two such rows in the tier-sibling space, and both would
+    have leaked in. Every documented caveat about this table warns of OMISSIONS; this is the
+    opposite failure and nothing warned about it.
+
+    Raises rather than falling back to disk on a missing/unreadable DB: a silent fallback
+    would make the DB read decorative and the DB-first claim untrue."""
+    if not SGS_DB.exists():
+        raise RuntimeError(
+            f'framework DB not found at {SGS_DB} — cannot answer DB-first. '
+            'Run /sgs-update to build it. (Refusing to fall back to the disk walk: a silent '
+            'fallback makes the DB read decorative and the R-31-1 claim false.)')
+    names = [prop + t for t in TIERS]
+    placeholders = ','.join('?' * len(names))
+    try:
+        con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    except sqlite3.Error as exc:
+        raise RuntimeError(f'framework DB at {SGS_DB} could not be opened read-only: {exc}')
+    try:
+        rows = con.execute(
+            'SELECT DISTINCT attr_name FROM block_attributes '
+            "WHERE source = 'sgs' AND block_slug NOT LIKE 'core/%' "
+            f'AND attr_name IN ({placeholders})', names).fetchall()
+    except sqlite3.Error as exc:
+        raise RuntimeError(f'framework DB query failed: {exc}')
+    finally:
+        con.close()
+    found = {r[0] for r in rows}
+    return {t for t in TIERS if (prop + t) in found}
+
+
+class TierSiblingParityError(RuntimeError):
+    """The DB and the tree disagree about which tier siblings are declared."""
+
+
+def declared_siblings(prop: str) -> set:
+    """Which `<prop>Tablet` / `<prop>Mobile` suffixes are STILL declared by ANY block.
+
+    Answered from `block_attributes` (R-31-1, DB-first) and CROSSCHECKED against the tree,
+    failing closed on disagreement.
+
+    ⛔ Why not DB-only. `sgs-framework.db` is a DERIVED COPY repopulated by /sgs-update, and
+    `classify()` still reads block.json directly. A DB-only answer here could therefore
+    disagree with `classify()` silently — and `--fix --apply` WRITES block.json, so the DB
+    goes stale the moment the fixer runs and stays stale until the next reseed. That is the
+    exact D575 shape: the wrapper kept reading `minHeightTablet`/`minHeightMobile` after every
+    block had migrated, got `''` back, and shipped `min-height:Array` to 73 live declarations.
+
+    A shared include has no single "owning" block, so a literal read of `<prop>Tablet` in e.g.
+    class-sgs-container-wrapper.php is legitimate as long as AT LEAST ONE block still declares
+    that sibling (some other block may still be flat, mid property-by-property migration).
+    Only once EVERY block has migrated does the read become provably dead."""
+    db = _db_declared_siblings(prop)
+    disk = _disk_declared_siblings(prop)
+    if db != disk:
+        raise TierSiblingParityError(
+            NEWLINE.join([
+                f'tier-sibling parity FAILED for "{prop}":',
+                f'  DB   ({SGS_DB.name}) says: {sorted(db) or "none"}',
+                f'  disk (src/blocks/*/block.json) says: {sorted(disk) or "none"}',
+                'The framework DB is a derived copy — this almost always means '
+                '/sgs-update has not been run since a block.json changed. Reseed, then '
+                're-run. Refusing to guess which side is right: a wrong answer here marks '
+                'a LIVE dead-sibling read as legitimate (D575).',
+            ]))
+    return db
+
+
+def _disk_tier_pairs() -> set:
+    """Every (block_slug, attr_name) on disk whose attr ends in a tier suffix."""
+    pairs = set()
+    for bj in sorted(BLOCKS_DIR.glob('*/block.json')):
+        try:
+            data = json.loads(bj.read_text(encoding='utf-8'))
+        except json.JSONDecodeError:
+            continue
+        slug = data.get('name', bj.parent.name)
+        for attr in data.get('attributes', {}):
+            if attr.endswith(TIERS):
+                pairs.add((slug, attr))
+    return pairs
+
+
+def _db_tier_pairs() -> set:
+    """The same set, from block_attributes. `source='sgs'` filter as per _db_declared_siblings."""
+    if not SGS_DB.exists():
+        raise RuntimeError(f'framework DB not found at {SGS_DB} — run /sgs-update.')
+    con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        rows = con.execute(
+            'SELECT block_slug, attr_name FROM block_attributes '
+            "WHERE source = 'sgs' AND block_slug NOT LIKE 'core/%'").fetchall()
+    finally:
+        con.close()
+    return {(s, a) for s, a in rows if a.endswith(TIERS)}
+
+
+def all_tier_properties() -> list:
+    """Every base property with at least one declared tier sibling, DB-first and crosschecked.
+
+    This is the property roster `--all-properties` iterates. It is derived from the same two
+    sources as declared_siblings() so the two can never disagree about what exists."""
+    check_db_parity(quiet=True)
+    bases = set()
+    for _slug, attr in _db_tier_pairs():
+        for t in TIERS:
+            if attr.endswith(t):
+                bases.add(attr[:-len(t)])
+                break
+    return sorted(b for b in bases if b)
+
+
+def check_db_parity(quiet: bool = False) -> int:
+    """Gate: the framework DB and the tree must agree about every declared tier sibling.
+
+    ⛔ Compares (block_slug, attr_name) PAIRS, not suffix sets. A suffix-level comparison
+    passes whenever both sides are non-empty — so the DB could claim `gapTablet` on five
+    blocks while disk has four and the check would still go green. The pair level is the
+    level at which a stale row actually misleads.
+
+    Exit 0 = agree. Exit 1 = disagree, with both sides named. This gate is GREEN from the day
+    it is registered, which is NOT the shape THE-MIGRATION-METHOD.md Step 8 describes (it
+    assumes a gate that is red until the migration lands). This one guards a derived copy
+    against its source; there is nothing for it to be red about until /sgs-update lags."""
+    try:
+        db = _db_tier_pairs()
+    except RuntimeError as exc:
+        print(f'FAIL  {exc}')
+        return 1
+    disk = _disk_tier_pairs()
+    only_db = sorted(db - disk)
+    only_disk = sorted(disk - db)
+    if not only_db and not only_disk:
+        if not quiet:
+            print(f'OK  tier-sibling parity: {len(db)} (block, attr) pairs, DB and tree agree.')
+        return 0
+    print('FAIL  tier-sibling parity: the framework DB and the tree disagree.')
+    print(f'      DB pairs: {len(db)}   disk pairs: {len(disk)}')
+    for slug, attr in only_db:
+        print(f'      in DB, NOT on disk : {slug:32} {attr}   (stale row — reseed?)')
+    for slug, attr in only_disk:
+        print(f'      on disk, NOT in DB : {slug:32} {attr}   (unseeded — run /sgs-update)')
+    print('      A stale row here marks a LIVE dead-sibling read as legitimate (D575).')
+    return 1
 
 
 def _has_working_object_path(src: str, prop: str) -> bool:
@@ -561,7 +894,7 @@ def survey_shared_includes(prop: str):
     wrapper had, and `render_state()`'s literal-key regex is blind to the computed-key
     alias shape, so it would otherwise miss exactly the helpers-typography.php-style bug
     if it ever showed up directly inside a block's own render.php."""
-    declared = union_declared_siblings(prop)
+    declared = declared_siblings(prop)
     # Computed ONCE per prop (same efficiency pattern as `declared`) and passed to every
     # `file_hazard_state` call below, rather than each call recomputing its own scan of
     # every block.json.
@@ -645,18 +978,25 @@ def _strip_php_comments(src: str) -> str:
     return re.sub(r'/\*.*?\*/|//[^\n]*', _blank_but_keep_lines, src, flags=re.DOTALL)
 
 
-def render_state(block_dir: Path, prop: str) -> str:
-    """Classify how render.php currently reads `prop`. See module docstring."""
+def render_state(block_dir: Path, prop: str, base_key: str = None) -> str:
+    """Classify how render.php currently reads `prop`. See module docstring.
+
+    `base_key` (see `reads_attr_directly`'s note) lets the three `<prop>Desktop`-based
+    families (D777) be recognised by their ACTUAL declared key — without it, a block
+    reading only `$attributes['columnsDesktop']` (never bare `$attributes['columns']`)
+    read as DELEGATED/UNCLEAR because every pattern below anchored on the bare name."""
     rp = block_dir / 'render.php'
     if not rp.exists():
         return 'DELEGATED'
     src = _strip_php_comments(rp.read_text(encoding='utf-8', errors='replace'))
+    base = re.escape(base_key or prop)
+    prop_re = re.escape(prop)
     # A bare \bprop\b also matches plain-English prose — a docblock listing "gap" as a
     # feature, or "a real WCAG 2.1 gap" — which is not a code usage. Require a code-like
     # marker ($, ' or ") immediately before the token: `$gap`, `$attributes['gap']`,
     # `"gap"`. Confirmed against form/render.php:8,301, which mention "gap" only in
     # prose and correctly fall through to DELEGATED once this gate is applied.
-    if not re.search(r"[\$'\"]" + re.escape(prop) + r"\b", src):
+    if not re.search(r"[\$'\"](?:" + base + r"|" + prop_re + r")\b", src):
         return 'DELEGATED'
     # NORMALISED: the object is read through the shared normaliser. Real call shape
     # (confirmed against gallery/render.php:58) is POSITIONAL —
@@ -664,23 +1004,32 @@ def render_state(block_dir: Path, prop: str) -> str:
     # never takes the property name as a string argument, only the already-indexed
     # value. Anchor on the bracket-indexed argument, not a string-literal parameter.
     if re.search(r"sgs_responsive_normalise_object\(\s*\$attributes\[['\"]"
-                 + re.escape(prop) + r"['\"]\]", src):
+                 + base + r"['\"]\]", src):
         return 'NORMALISED'
-    # RAW: the OLD flat-scalar bracket read — `$attributes['prop']` or `['propTablet']`,
-    # the exact pattern that PHP array-to-string-coerces to "Array" when the attr is
-    # actually object-typed (D569/D570's root cause).
-    if re.search(r"\[['\"]" + re.escape(prop) + r"(?:Tablet|Mobile)?['\"]\]", src):
+    # RAW: the OLD flat-scalar bracket read — `$attributes['prop']` (or its Desktop-
+    # suffixed base form) or `['propTablet']`/`['propMobile']` — the exact pattern that
+    # PHP array-to-string-coerces to "Array" when the attr is actually object-typed
+    # (D569/D570's root cause).
+    if re.search(r"\[['\"](?:" + base + r"|" + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]\]", src):
         return 'RAW'
     return 'UNCLEAR'
 
 
-def edit_state(block_dir: Path, prop: str) -> str:
-    """Classify how edit.js currently wires the control for `prop`. See module docstring."""
+def edit_state(block_dir: Path, prop: str, base_key: str = None) -> str:
+    """Classify how edit.js currently wires the control for `prop`. See module docstring.
+
+    `base_key` (see `reads_attr_directly`'s note) — without it, hero's real
+    `desktop: 'textAlignDesktop'` attrMap entry matches neither the LEGACY pattern
+    (which only recognised `textAlign`/`textAlignTablet`/`textAlignMobile`) nor the bare
+    fallback (`\\btextAlign\\b` never matches inside `textAlignDesktop` — there is no word
+    boundary between the shared "textAlign" and "Desktop"), so the block misclassified
+    UNCLEAR/NONE despite genuinely having a wired control."""
     ej = block_dir / 'edit.js'
     if not ej.exists():
         return 'NONE'
     src = ej.read_text(encoding='utf-8', errors='replace')
     prop_re = re.escape(prop)
+    base = re.escape(base_key or prop)
     has_shared_import = bool(_SHARED_CONTROL_IMPORT_RE.search(src))
     # A local <ResponsiveOverride ... value={attributes.prop} ...
     #   onChange={... setAttributes({ prop: ... })} pattern — the DONE shape, matching
@@ -695,24 +1044,27 @@ def edit_state(block_dir: Path, prop: str) -> str:
         # file (site-footer-row/site-header-row's pattern) — both are equally DONE, the
         # variable's origin doesn't change the wiring's correctness.
         value_bound = (
-            re.search(r'\battributes(?:\.|\[[\'"])' + prop_re + r'\b', block_src)
+            re.search(r'\battributes(?:\.|\[[\'"])' + base + r'\b', block_src)
             or (
-                re.search(r'value=\{\s*' + prop_re + r'\s*\}', block_src)
-                and re.search(r'\b' + prop_re + r'\s*,?\s*\}\s*=\s*attributes\b'
-                               r'|\{[^{}]*\b' + prop_re + r'\b[^{}]*\}\s*=\s*attributes\b',
+                re.search(r'value=\{\s*' + base + r'\s*\}', block_src)
+                and re.search(r'\b' + base + r'\s*,?\s*\}\s*=\s*attributes\b'
+                               r'|\{[^{}]*\b' + base + r'\b[^{}]*\}\s*=\s*attributes\b',
                                src)
             )
         )
         if not value_bound:
             continue
-        if re.search(r'setAttributes\(\s*\{\s*(?:\[[^\]]*\]|' + prop_re + r')\s*:', block_src):
+        if re.search(r'setAttributes\(\s*\{\s*(?:\[[^\]]*\]|' + base + r')\s*:', block_src):
             return 'OVERRIDDEN'
     # LEGACY: the old flat-attrMap-inside-<ResponsiveControl> bridging pattern (what
     # site-footer-row's gridTemplateRows looked like before pass 3b) — a plain object
-    # literal mapping breakpoint names to `prop`/`propTablet`/`propMobile` string values.
-    if re.search(r"(?:desktop|tablet|mobile)\s*:\s*['\"]" + prop_re + r"(?:Tablet|Mobile)?['\"]", src):
+    # literal mapping breakpoint names to `prop`/`propTablet`/`propMobile` string values,
+    # OR — the Desktop-suffixed base form (`desktop: 'textAlignDesktop'`, hero's real
+    # shape) via `base`.
+    if re.search(r"(?:desktop|tablet|mobile)\s*:\s*['\"](?:" + base + r"|"
+                 + prop_re + r"Tablet|" + prop_re + r"Mobile)['\"]", src):
         return 'LEGACY'
-    if re.search(r"\b" + prop_re + r"\b", src):
+    if re.search(r"\b(?:" + base + r"|" + prop_re + r")\b", src):
         return 'SHARED' if has_shared_import else 'UNCLEAR'
     return 'SHARED' if has_shared_import else 'NONE'
 
@@ -725,24 +1077,90 @@ def survey(prop: str):
         except json.JSONDecodeError:
             continue
         attrs = data.get('attributes', {})
-        kind, sibs = classify(attrs, prop)
+        slug = data.get('name', bj.parent.name)
+        kind, sibs = classify(attrs, prop, block_slug=slug)
         if kind in ('ABSENT',):
             continue
         d = bj.parent
+        base_spec = _base_attr_spec(attrs, prop) or {}
+        base_key = _base_attr_key(attrs, prop)
         out.append({
             'slug': data.get('name', d.name),
             'dir': d,
             'kind': kind,
             'siblings': sibs,
-            'default': attrs.get(prop, {}).get('default'),
-            'base_type': attrs.get(prop, {}).get('type'),
-            'render_reads': reads_attr_directly(d, prop),
-            'edit_refs': edit_refs(d, prop),
-            'render_state': render_state(d, prop),
-            'edit_state': edit_state(d, prop),
+            'default': base_spec.get('default'),
+            'base_type': base_spec.get('type'),
+            'render_reads': reads_attr_directly(d, prop, base_key),
+            'edit_refs': edit_refs(d, prop, base_key),
+            'render_state': render_state(d, prop, base_key),
+            'edit_state': edit_state(d, prop, base_key),
         })
     return out
 
+
+def survey_all_properties(json_out: bool = False) -> int:
+    """Census EVERY property with a declared tier sibling, in one pass.
+
+    WHY: 34 of 40 tier properties touch only 1-2 blocks each. Under property-by-property a
+    one-block property carries the same ceremony as a 41-block one. This answers "what is
+    actually left, and how big is each" in a single command, so the batching decision is made
+    from a census rather than from recall.
+
+    ⛔ It reports THREE populations and they are NOT interchangeable. Conflating them is how
+    three different totals for "how many properties" got into circulation:
+      declared   - has a <prop>Tablet/<prop>Mobile attr somewhere (the all_tier_properties roster)
+      migratable - at least one block is FLAT or BLENDED for it (what a migration would touch)
+      done       - declared, but every block is already OBJECT/ASSET (nothing to migrate)
+    """
+    rows = []
+    for prop in all_tier_properties():
+        survey_rows = survey(prop)
+        targets = [r for r in survey_rows if r["kind"] in ("FLAT", "BLENDED")]
+        rows.append({
+            "property": prop,
+            "blocks_declaring": len(survey_rows),
+            "migratable_blocks": len(targets),
+            "kinds": {k: sum(1 for r in survey_rows if r["kind"] == k)
+                      for k in ("FLAT", "BLENDED", "OBJECT", "ASSET")},
+            "render_followup": sum(1 for r in survey_rows
+                                   if r["render_state"] in ("RAW", "UNCLEAR")),
+            "edit_followup": sum(1 for r in survey_rows
+                                 if r["edit_state"] in ("LEGACY", "UNCLEAR")),
+        })
+    migratable = [r for r in rows if r["migratable_blocks"] > 0]
+    done = [r for r in rows if r["migratable_blocks"] == 0]
+
+    if json_out:
+        print(json.dumps({"declared": len(rows), "migratable": len(migratable),
+                          "done": len(done), "properties": rows}, indent=2))
+        return 0
+
+    print("")
+    print(f"DECLARED tier properties: {len(rows)}   "
+          f"(MIGRATABLE {len(migratable)} - already done {len(done)})")
+    print("")
+    header = "property"
+    print(f'  {header:34} {"declaring":>9} {"migratable":>10}   kinds')
+    for r in sorted(rows, key=lambda x: (-x["migratable_blocks"], -x["blocks_declaring"],
+                                         x["property"])):
+        kinds = " ".join(f"{k}={v}" for k, v in r["kinds"].items() if v)
+        flag = "" if r["migratable_blocks"] else "   (done)"
+        print(f'  {r["property"]:34} {r["blocks_declaring"]:>9} '
+              f'{r["migratable_blocks"]:>10}   {kinds}{flag}')
+
+    band_1_2 = [r for r in migratable if r["migratable_blocks"] <= 2]
+    band_3up = sorted([r for r in migratable if r["migratable_blocks"] > 2],
+                      key=lambda x: -x["migratable_blocks"])
+    big = ", ".join(f'{r["property"]}({r["migratable_blocks"]})' for r in band_3up)
+    print("")
+    print(f"BATCHING SHAPE (of the {len(migratable)} MIGRATABLE properties):")
+    print(f"  1-2 blocks : {len(band_1_2)}")
+    print(f"  3+  blocks : {len(band_3up)}   {big}")
+    total_touches = sum(r["migratable_blocks"] for r in migratable)
+    print(f"  total block-touches remaining: "
+          f"{total_touches}")
+    return 0
 
 def build_object_default(rows) -> dict:
     """Preserve the authored default as the DESKTOP tier — dropping it would silently
@@ -766,6 +1184,10 @@ def apply_block_json(entry, prop: str, apply: bool):
     data = json.loads(raw)
     attrs = data['attributes']
 
+    base_key = _base_attr_key(attrs, prop)
+    if base_key is None:
+        return False, None, f'no base declaration for "{prop}" or "{prop}Desktop" — refused'
+
     sib_defaults = {}
     for t in TIERS:
         name = prop + t
@@ -779,9 +1201,9 @@ def apply_block_json(entry, prop: str, apply: bool):
     # but it WOULD be printed as the proposed change, and a human approving a diff
     # reads the description, not the code path. So compute it honestly per kind.
     if entry['kind'] == 'BLENDED':
-        new_default = attrs[prop].get('default')
+        new_default = attrs[base_key].get('default')
     else:
-        new_default = build_object_default({'default': attrs[prop].get('default'),
+        new_default = build_object_default({'default': attrs[base_key].get('default'),
                                             'sib_defaults': sib_defaults})
 
     out = raw
@@ -797,11 +1219,15 @@ def apply_block_json(entry, prop: str, apply: bool):
         out = new
 
     if entry['kind'] == 'FLAT':
-        # Retype the base and swap its default for the tier object.
-        pat = re.compile(r'"' + re.escape(prop) + r'":\s*\{[^{}]*\}')
+        # Retype the base and swap its default for the tier object. Search on
+        # base_key (which may be "<prop>Desktop" for the 3 Desktop-base families —
+        # see _base_attr_key) but WRITE the bare `prop` name: bare is the canonical
+        # post-migration target shape (_base_attr_spec's own docstring), so this also
+        # completes the Desktop -> bare rename as part of the fold, in one pass.
+        pat = re.compile(r'"' + re.escape(base_key) + r'":\s*\{[^{}]*\}')
         m = pat.search(out)
         if not m:
-            return False, None, f'could not locate base "{prop}" declaration'
+            return False, None, f'could not locate base "{base_key}" declaration'
         indent = '\t\t\t'
         body = f'"{prop}": {{\n{indent}"type": "object",\n{indent}"default": ' \
                + json.dumps(new_default) + f'\n\t\t}}'
@@ -1144,7 +1570,7 @@ def self_test() -> int:
               'fire RAW_CAST (comment-stripped before scanning, same as render_state)',
               state8 == 'DELEGATED' and not hazards8)
 
-        # --- shared_include_files() + union_declared_siblings() sanity, against the REAL
+        # --- shared_include_files() + declared_siblings() sanity, against the REAL
         # repo tree (not a fixture) — these two feed survey_shared_includes() directly ---
         real_includes = shared_include_files()
         check('shared_include_files(): the real class-sgs-container-wrapper.php is in scope '
@@ -1152,8 +1578,8 @@ def self_test() -> int:
               any(p.name == 'class-sgs-container-wrapper.php' for p in real_includes))
         check('shared_include_files(): the real helpers-typography.php is in scope',
               any(p.name == 'helpers-typography.php' for p in real_includes))
-        real_declared = union_declared_siblings('minHeight')
-        check('union_declared_siblings(\'minHeight\') against the REAL repo returns a plain '
+        real_declared = declared_siblings('minHeight')
+        check('declared_siblings(\'minHeight\') against the REAL repo returns a plain '
               'set (empty or populated, but never a truthy non-set) — proves it queries '
               'live block.json data rather than returning a hardcoded stub',
               isinstance(real_declared, set))
@@ -1209,13 +1635,23 @@ def self_test() -> int:
               any(h['line'] == 8 for h in hazards_ml))
 
         # --- end-to-end proof against REAL git history: the wrapper's actual pre-fix
-        # commit content (captured via `git show HEAD:...`, not reverting the live fix)
+        # commit content (captured via `git show <sha>:...`, not reverting the live fix)
+        #
+        # ⛔ PIN THE SHA, NEVER `HEAD`. This block used to read `HEAD:` and asserted the
+        # result was the PRE-FIX shape. That was true only while HEAD *was* the pre-fix
+        # commit. Once the wrapper fix landed, `HEAD:` started returning the FIXED file,
+        # which correctly classifies NORMALISED — so both assertions below inverted and
+        # --self-test went red on main. It stayed red unnoticed because this script is not
+        # in gates.json, so nothing ever ran it. A fixture asserting HISTORICAL content
+        # must name an immutable object; a moving ref is not a fixture.
+        # e7f28b0fd verified 2026-08-24: state=RAW, kinds=2x DELETED_SIBLING_READ.
         # must classify RAW with both minHeightTablet and minHeightMobile findings, and
         # the CURRENT (already-fixed) working-tree file must classify clean for minHeight.
         import subprocess
         try:
             pre_fix_src = subprocess.run(
-                ['git', 'show', 'HEAD:plugins/sgs-blocks/includes/class-sgs-container-wrapper.php'],
+                ['git', 'show', f'{_PRE_FIX_WRAPPER_SHA}:plugins/sgs-blocks/includes/'
+                 'class-sgs-container-wrapper.php'],
                 cwd=REPO, capture_output=True, text=True, check=True, encoding='utf-8',
             ).stdout
         except Exception as exc:  # pragma: no cover — environment without git history
@@ -1288,7 +1724,7 @@ def self_test() -> int:
         # --- end-to-end: --check itself must now PASS for all three coordinator-cited
         # properties, using the REAL repo tree (not a fixture) ---
         for real_prop in ('gap', 'contentWidth', 'gridTemplateColumns'):
-            declared_real = union_declared_siblings(real_prop)
+            declared_real = declared_siblings(real_prop)
             all_findings = survey_shared_includes(real_prop)
             live_only = [
                 f for f in all_findings
@@ -1351,7 +1787,7 @@ def self_test() -> int:
         check('_block_slug_for_path resolves nav-menu/render.php to its real block.json '
               'name ("sgs/nav-menu")', nav_menu_slug == 'sgs/nav-menu')
         nav_state, nav_hazards = file_hazard_state(
-            nav_menu_rp, 'gap', declared_siblings=union_declared_siblings('gap'))
+            nav_menu_rp, 'gap', declared_siblings=declared_siblings('gap'))
         check('coordinator-fix #2: the REAL nav-menu/render.php no longer classifies RAW '
               'for "gap" (its own schema declares gap as a plain string — the '
               '(string) cast at line 1501 is correct code, not a hazard)',
@@ -1404,6 +1840,307 @@ def self_test() -> int:
               'other live hazard was masked by the scope gate)',
               len(gap_live) == 0)
 
+    # ================================================================================
+    # declared_siblings() — DB-first + disk crosscheck. Fixtures per
+    # THE-MIGRATION-METHOD.md Step 6 (positive / negative control / edge / idempotence /
+    # corpus control), plus a fixture for the source='sgs' trap.
+    # ================================================================================
+
+    # --- CORPUS CONTROL. Runs FIRST and everything below depends on it.
+    # ⛔ This gate has a unique vacuity mode: check_db_parity() compares two sets, so if BOTH
+    # collapse to empty it reports "agree" and exits 0 — a detector that has stopped detecting,
+    # indistinguishable from a clean tree. Neither side may be empty, and both must be within
+    # a band derived from a SECOND, dumber enumeration (count block.json files on disk) rather
+    # than from a number this author chose.
+    _db_pairs = _db_tier_pairs()
+    _disk_pairs = _disk_tier_pairs()
+    _n_blockjson = len(list(BLOCKS_DIR.glob('*/block.json')))
+    check('corpus control: the DISK tier-pair enumeration is non-empty '
+          f'(got {len(_disk_pairs)}) — an empty one would make parity vacuously green',
+          len(_disk_pairs) > 0)
+    check('corpus control: the DB tier-pair enumeration is non-empty '
+          f'(got {len(_db_pairs)}) — ditto',
+          len(_db_pairs) > 0)
+    check('corpus control: the block.json corpus itself did not collapse '
+          f'(found {_n_blockjson} block.json files, expected > 50) — the marker-file/ROOT '
+          'failure that silently scanned 4 files instead of 380',
+          _n_blockjson > 50)
+
+    # --- POSITIVE. A property known to declare both tiers.
+    check('positive: declared_siblings("margin") returns both tiers from the DB, '
+          'crosschecked against the tree',
+          declared_siblings('margin') == {'Tablet', 'Mobile'})
+
+    # --- NEGATIVE CONTROL. A property that exists nowhere returns empty — and the assertion
+    # can distinguish that from the positive case above, so it is not vacuous.
+    check('negative control: a property declared nowhere returns the EMPTY set',
+          declared_siblings('sgsPropertyThatDoesNotExistAnywhere') == set())
+    check('negative control is not vacuous: the positive case above returns a NON-empty set, '
+          'so "empty" is a real signal rather than what this function always returns',
+          declared_siblings('margin') != set())
+
+    # --- IDEMPOTENCE / determinism. Two calls agree; a set built from an unordered DB read
+    # plus a glob walk is exactly the shape that has produced non-determinism here before
+    # (extract-signatures.py's css_tier was randomised by set iteration + hash salting).
+    check('idempotence: declared_siblings("padding") returns the same set on two calls',
+          declared_siblings('padding') == declared_siblings('padding'))
+
+    # --- THE source='sgs' TRAP. block_attributes also holds native_wp rows for CORE blocks,
+    # which have no directory under src/blocks/ at all — so an UNFILTERED query returns a set
+    # WIDER than disk. Every documented caveat about this table warns of omissions; this is the
+    # opposite failure. This fixture fails the moment someone drops the filter.
+    _con = sqlite3.connect(f'file:{SGS_DB}?mode=ro', uri=True)
+    try:
+        _unfiltered = {(s, a) for s, a in
+                       _con.execute('SELECT block_slug, attr_name FROM block_attributes')
+                       if a.endswith(TIERS)}
+    finally:
+        _con.close()
+    check("source='sgs' is load-bearing: an UNFILTERED block_attributes query returns MORE "
+          f'tier pairs ({len(_unfiltered)}) than the filtered one ({len(_db_pairs)}), so '
+          'dropping the filter would silently widen the answer past what exists on disk',
+          len(_unfiltered) > len(_db_pairs))
+    check("source='sgs': every pair the filter removes is a core/ block with no src/blocks/ "
+          'directory — i.e. the filter removes exactly the rows that cannot exist on disk',
+          all(s.startswith('core/') and not (BLOCKS_DIR / s.split('/', 1)[1]).exists()
+              for s, _a in (_unfiltered - _db_pairs)))
+
+    # --- DIVERGENCE. The whole point of the crosscheck: when the derived DB disagrees with the
+    # tree, this must RAISE, not quietly return one side. Injected by swapping the DB half for
+    # a stub, so nothing on disk or in the DB is touched.
+    _orig_db_fn = globals()['_db_declared_siblings']
+    globals()['_db_declared_siblings'] = lambda prop: {'Tablet'}
+    try:
+        declared_siblings('margin')
+        _raised = False
+    except TierSiblingParityError:
+        _raised = True
+    finally:
+        globals()['_db_declared_siblings'] = _orig_db_fn
+    check('divergence: when the DB and the tree disagree, declared_siblings RAISES '
+          'TierSiblingParityError rather than returning either side — a silent pick would '
+          'mark a LIVE dead-sibling read as legitimate (D575)',
+          _raised)
+    check('divergence fixture restored the real DB function (the stub did not leak into the '
+          'rest of the suite)',
+          globals()['_db_declared_siblings'] is _orig_db_fn
+          and declared_siblings('margin') == {'Tablet', 'Mobile'})
+
+    # --- THE GATE ITSELF. check_db_parity must return 0 on the real repo right now.
+    check('gate: check_db_parity() returns 0 against the real repo (DB and tree agree)',
+          check_db_parity(quiet=True) == 0)
+
+    # ================================================================================
+    # classify() — the `<prop>Desktop` base-name fix (2026-08-25). Three real families
+    # (sgs/brand-strip.columns, sgs/hero.textAlign, sgs/whatsapp-cta.showOn) declare their
+    # desktop tier as `<prop>Desktop` rather than bare `<prop>`; classify() must still see
+    # them as FLAT, or --all-properties/--check silently drop them (measured pre-fix: 34
+    # disk-derived migratable block-touches vs 37 DB-derived — exactly this 3-family gap).
+    # ================================================================================
+
+    # --- positive: a synthetic Desktop-named base + both tier siblings classifies FLAT,
+    # not ABSENT. Mirrors the real sgs/brand-strip.columns shape (columnsDesktop/
+    # columnsTablet/columnsMobile, all plain-scalar), synthetic so the fixture doesn't
+    # depend on any one block.json's exact declaration surviving future edits.
+    _desktop_attrs = {
+        'widgetProp': {'type': 'string'},          # unrelated attr, must not confuse classify()
+        'widgetPropDesktop': {'type': 'number', 'default': 3},
+        'widgetPropTablet': {'type': 'number', 'default': 2},
+        'widgetPropMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_desktop, _sibs_desktop = classify(_desktop_attrs, 'widgetProp')
+    check('positive: a <prop>Desktop base + Tablet/Mobile siblings classifies FLAT '
+          f'(got {_kind_desktop!r}), not ABSENT — the exact shape of the 3 real families '
+          'this fix restores to the census',
+          _kind_desktop == 'FLAT')
+    check('positive: FLAT sibling list still names the Tablet/Mobile attrs correctly',
+          set(_sibs_desktop) == {'widgetPropTablet', 'widgetPropMobile'})
+
+    # --- negative control: tier siblings present, but NO base under EITHER name (bare or
+    # Desktop) — must still classify ABSENT. Proven non-vacuous by first checking that the
+    # SAME attrs dict WITH a Desktop base added (above) does NOT classify ABSENT — so this
+    # isn't a fixture that would report ABSENT no matter what classify() does.
+    _no_base_attrs = {
+        'widgetPropTablet': {'type': 'number', 'default': 2},
+        'widgetPropMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_no_base, _sibs_no_base = classify(_no_base_attrs, 'widgetProp')
+    check('negative control: siblings with NO base declared under either "widgetProp" or '
+          f'"widgetPropDesktop" classifies ABSENT (got {_kind_no_base!r})',
+          _kind_no_base == 'ABSENT' and _sibs_no_base == [])
+    check('negative control is not vacuous: the SAME sibling attrs, with a Desktop base '
+          'added, classify FLAT (not ABSENT) — so ABSENT above is a real signal, not '
+          "classify()'s answer regardless of input",
+          _kind_desktop == 'FLAT' and _kind_no_base == 'ABSENT')
+
+    # --- regression: a normal bare-base family classifies exactly as before this fix.
+    # Sourced from a real family (`sgs/container.gap` — bare "gap" base + both tier
+    # siblings, all plain-scalar pre-migration shape) rather than another synthetic one,
+    # so the regression check is grounded in the real repo, not just this fixture's own
+    # internal consistency.
+    _bare_bj = BLOCKS_DIR / 'container' / 'block.json'
+    _bare_data = json.loads(_bare_bj.read_text(encoding='utf-8'))
+    _bare_attrs = _bare_data.get('attributes', {})
+    check('regression: sgs/container.gap has a bare "gap" base declared (fixture premise '
+          'still holds against the real repo)',
+          isinstance(_bare_attrs.get('gap'), dict))
+    _kind_bare, _sibs_bare = classify(_bare_attrs, 'gap')
+    check(f'regression: a normal bare-base family (sgs/container.gap) still classifies '
+          f'{_kind_bare!r} exactly as it did before this fix (OBJECT/ASSET/BLENDED — '
+          'gap is already migrated on this block, not FLAT)',
+          _kind_bare in ('OBJECT', 'ASSET', 'BLENDED'))
+    check('regression: the bare-base fixture does NOT also match on "gapDesktop" (proves '
+          'the bare-name branch is taken, not a Desktop fallback masking it)',
+          'gapDesktop' not in _bare_attrs)
+
+    # --- end-to-end: --all-properties now sees all three real Desktop-based families as
+    # non-ABSENT for their own block, matching the doc-block's verified figures.
+    _real_cases = [
+        ('brand-strip', 'columns'),
+        ('hero', 'textAlign'),
+        ('whatsapp-cta', 'showOn'),
+    ]
+    for _slug, _prop in _real_cases:
+        _bj = BLOCKS_DIR / _slug / 'block.json'
+        _data = json.loads(_bj.read_text(encoding='utf-8'))
+        _attrs = _data.get('attributes', {})
+        check(f'end-to-end: sgs/{_slug}.{_prop} (declared as "{_prop}Desktop" on disk) no '
+              f'longer classifies ABSENT',
+              classify(_attrs, _prop)[0] != 'ABSENT')
+
+    # ================================================================================
+    # classify() — the C19 art-directed-media exemption (2026-09-02, uniformity sweep).
+    # ART_DIRECTED_MEDIA must be reachable (positive), must not overmatch a real
+    # migratable property (negative control), and the negative control must not be
+    # vacuous (same fixture shape, differing only in the name it tests).
+    # ================================================================================
+    _media_attrs = {
+        'imageId': {'type': 'integer', 'default': 0},
+        'imageIdTablet': {'type': 'integer', 'default': 0},
+        'imageIdMobile': {'type': 'integer', 'default': 0},
+    }
+    _kind_media, _sibs_media = classify(_media_attrs, 'imageId')
+    check(f'positive: "imageId" (scalar base + scalar Tablet/Mobile siblings) classifies '
+          f'ART_DIRECTED_MEDIA (got {_kind_media!r}), never FLAT — C19 forbids folding a '
+          'per-device media identity into a responsive object',
+          _kind_media == 'ART_DIRECTED_MEDIA')
+    check('ART_DIRECTED_MEDIA sibling list still names the Tablet/Mobile attrs (excluded '
+          'from migration, not silently dropped from the report)',
+          set(_sibs_media) == {'imageIdTablet', 'imageIdMobile'})
+
+    # --- companion-field fix (2026-09-06): a field that travels WITH a file-reference
+    # attr, but doesn't itself end in Id/Url/Content, must also be exempted — this is the
+    # exact shape that let `splitImageAlt` get folded by mistake in the prior session.
+    _companion_attrs = {
+        'splitImageUrl': {'type': 'string', 'default': ''},
+        'splitImageAlt': {'type': 'string', 'default': ''},
+        'splitImageAltTablet': {'type': 'string', 'default': ''},
+        'splitImageAltMobile': {'type': 'string', 'default': ''},
+    }
+    _kind_companion, _ = classify(_companion_attrs, 'splitImageAlt')
+    check('positive: "splitImageAlt" (shares the "splitImage" stem with the declared '
+          f'file-reference attr "splitImageUrl") classifies ART_DIRECTED_MEDIA '
+          f'(got {_kind_companion!r}), never FLAT — this is the real splitImageAlt '
+          'mistake this fix exists to close',
+          _kind_companion == 'ART_DIRECTED_MEDIA')
+
+    # --- negative control: a coincidental substring match with NO capital-letter word
+    # boundary must NOT be treated as a companion (proves the stem test isn't a bare
+    # `.startswith()`, which would false-positive on any prop merely containing the stem)
+    _boundary_attrs = {
+        'imageId': {'type': 'integer', 'default': 0},
+        'images': {'type': 'string', 'default': ''},
+        'imagesTablet': {'type': 'string', 'default': ''},
+        'imagesMobile': {'type': 'string', 'default': ''},
+    }
+    _kind_boundary, _ = classify(_boundary_attrs, 'images')
+    check('negative control: "images" (a coincidental lowercase-continuation substring '
+          f'of "imageId", not a real companion) still classifies FLAT (got '
+          f'{_kind_boundary!r}) — the companion test requires a PascalCase word boundary, '
+          'not a bare substring match',
+          _kind_boundary == 'FLAT')
+
+    _opacity_attrs = {
+        'backgroundOverlayOpacity': {'type': 'number', 'default': 1},
+        'backgroundOverlayOpacityTablet': {'type': 'number', 'default': 1},
+        'backgroundOverlayOpacityMobile': {'type': 'number', 'default': 1},
+    }
+    _kind_opacity, _ = classify(_opacity_attrs, 'backgroundOverlayOpacity')
+    check('negative control: "backgroundOverlayOpacity" (same scalar-base/scalar-sibling '
+          f'shape as imageId, but not a file-reference name) still classifies FLAT '
+          f'(got {_kind_opacity!r}) — a real migration target must not be caught by the '
+          'C19 exemption',
+          _kind_opacity == 'FLAT')
+    check('negative control is not vacuous: the SAME fixture shape classifies '
+          'ART_DIRECTED_MEDIA for "imageId" and FLAT for "backgroundOverlayOpacity" — the '
+          'suffix test is doing the discriminating, not classify() ignoring the name',
+          _kind_media == 'ART_DIRECTED_MEDIA' and _kind_opacity == 'FLAT')
+
+    # --- end-to-end: the 17 real art-directed media attrs in the live tree are excluded
+    # from the MIGRATABLE population (--all-properties reported 32 before this fix, 15
+    # after — exactly 32 - 17).
+    _real_media_cases = [
+        ('decorative-image', 'imageId'), ('decorative-image', 'imageUrl'),
+        ('media', 'videoUrl'), ('media', 'svgContent'), ('media', 'thumbnailId'),
+        ('responsive-logo', 'logoId'), ('responsive-logo', 'logoUrl'),
+        ('before-after', 'beforeImageId'), ('before-after', 'afterImageUrl'),
+        ('hero', 'splitImageId'), ('hero', 'splitSvgContent'),
+        ('hero', 'splitImageAlt'),
+    ]
+    for _slug, _prop in _real_media_cases:
+        _bj = BLOCKS_DIR / _slug / 'block.json'
+        _data = json.loads(_bj.read_text(encoding='utf-8'))
+        _attrs = _data.get('attributes', {})
+        check(f'end-to-end: sgs/{_slug}.{_prop} classifies ART_DIRECTED_MEDIA, not FLAT '
+              '(would have been silently folded into a responsive object pre-fix)',
+              classify(_attrs, _prop)[0] == 'ART_DIRECTED_MEDIA')
+
+    # ================================================================================
+    # classify() — BOX_FLAT discrimination (2026-09-06, Phase 2 tier-object migration).
+    # Must be REACHABLE (positive: a real box-of-sides family, box_family-tagged in the
+    # DB), must NOT overmatch a genuine per-tier ASSET family (negative control, same
+    # object-base+object-siblings shape), must NOT overmatch an ALREADY-migrated
+    # tier-of-boxes family (second negative control), and the block_slug=None fallback
+    # (every synthetic self-test fixture above this point) must keep classifying exactly
+    # as before this fix — proving the DB check never fires without a real slug.
+    # ================================================================================
+    _kind_no_slug, _ = classify(
+        {'padding': {'type': 'object'}, 'paddingTablet': {'type': 'object'},
+         'paddingMobile': {'type': 'object'}},
+        'padding',
+    )
+    check('negative control: classify() called with NO block_slug (every synthetic '
+          f'fixture in this suite) still classifies ASSET (got {_kind_no_slug!r}), never '
+          'BOX_FLAT — the DB check must not fire on a fabricated attribute name',
+          _kind_no_slug == 'ASSET')
+
+    _bj_container = json.loads((BLOCKS_DIR / 'container' / 'block.json').read_text(encoding='utf-8'))
+    _attrs_container = _bj_container.get('attributes', {})
+    _kind_padding, _sibs_padding = classify(_attrs_container, 'padding', block_slug='sgs/container')
+    check(f'positive: sgs/container.padding (a real box-of-sides family, box_family '
+          f'tagged on its Tablet/Mobile siblings) classifies BOX_FLAT (got {_kind_padding!r}), '
+          'not ASSET — this is the exact "--survey reports 0 to migrate" defect the '
+          'adversarial council proved live this session',
+          _kind_padding == 'BOX_FLAT')
+    check('BOX_FLAT sibling list still names the Tablet/Mobile attrs (reported, not '
+          'silently absorbed into ASSET)',
+          set(_sibs_padding) == {'paddingTablet', 'paddingMobile'})
+
+    _kind_bg, _ = classify(_attrs_container, 'backgroundImage', block_slug='sgs/container')
+    check(f'negative control: sgs/container.backgroundImage (same object-base + '
+          f'object-siblings SHAPE as padding, but a genuine per-tier ASSET, not a box '
+          f'family) still classifies ASSET (got {_kind_bg!r}), never BOX_FLAT — the '
+          'box_family DB column is doing the discriminating, not classify() treating '
+          'every consistent object family as a box',
+          _kind_bg == 'ASSET')
+
+    _kind_cbp, _ = classify(_attrs_container, 'contentBandPadding', block_slug='sgs/container')
+    check('negative control is not vacuous: sgs/container.contentBandPadding (already '
+          f'migrated to the tier-of-boxes shape, no Tablet/Mobile siblings declared) '
+          f'classifies OBJECT (got {_kind_cbp!r}), not BOX_FLAT — an already-done family '
+          'must not be re-flagged',
+          _kind_cbp == 'OBJECT')
+
     if failures:
         print(f'\n{len(failures)} FAILURE(S): {failures}')
         return 1
@@ -1419,19 +2156,32 @@ def main() -> int:
     ap.add_argument('--fix', action='store_true', help='propose; writes nothing without --apply')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true', help='exit 1 if any FLAT/BLENDED remain')
+    ap.add_argument('--all-properties', action='store_true',
+                     help='iterate every property with a declared tier sibling instead of one '
+                          '--property; census only (combine with --survey)')
+    ap.add_argument('--check-db-parity', action='store_true',
+                     help='gate: exit 1 if the framework DB and the tree disagree about any '
+                          'declared tier sibling; no --property needed')
+    ap.add_argument('--json', action='store_true',
+                     help='with --all-properties: emit the census as JSON for a durable artefact')
     ap.add_argument('--self-test', action='store_true',
                      help='run the built-in regression fixture and exit; no --property needed')
     args = ap.parse_args()
     if args.self_test:
         return self_test()
+    if args.check_db_parity:
+        return check_db_parity()
+    if args.all_properties:
+        return survey_all_properties(json_out=args.json)
     if not args.property:
-        ap.error('--property is required unless --self-test is given')
+        ap.error('--property is required unless --self-test, --check-db-parity or '
+                 '--all-properties is given')
     prop = args.property
     rows = survey(prop)
     shared_findings = survey_shared_includes(prop)
 
     if args.survey or not (args.fix or args.check):
-        for kind in ('FLAT', 'BLENDED', 'OBJECT', 'ASSET'):
+        for kind in ('FLAT', 'BLENDED', 'OBJECT', 'ASSET', 'BOX_FLAT'):
             group = [r for r in rows if r['kind'] == kind]
             if not group:
                 continue
@@ -1441,6 +2191,15 @@ def main() -> int:
                       f"render={r['render_state']:10} edit={r['edit_state']}")
         targets = [r for r in rows if r['kind'] in ('FLAT', 'BLENDED')]
         print(f'\n{len(targets)} block(s) to migrate for "{prop}" (block.json shape).')
+        box_targets = [r for r in rows if r['kind'] == 'BOX_FLAT']
+        if box_targets:
+            print(f'\n⚠ {len(box_targets)} block(s) declare "{prop}" as a box-of-sides family '
+                  '(padding/margin/borderRadius-shaped: this box, once per device tier) that '
+                  'is NOT migrated by this tool\'s --fix — it needs the separate box-of-sides '
+                  '-> tier-of-boxes fold (Phase 2, Step 6):')
+            for r in box_targets:
+                print(f"   {r['slug']:28} default={json.dumps(r['default']):26} "
+                      f"render={r['render_state']:10} edit={r['edit_state']}")
         # S2/S3 follow-up applies to EVERY block carrying the prop, not just S1 targets —
         # an OBJECT-kind block (block.json already done) can still have LEGACY edit.js or
         # RAW render.php, which is exactly what pass 3b's wasted re-discovery was about.

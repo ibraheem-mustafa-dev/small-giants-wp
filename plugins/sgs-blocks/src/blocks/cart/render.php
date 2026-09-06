@@ -51,7 +51,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // as CLOSURES on local variables (never `function foo(){}` at file scope:
 // WP `require`s this file fresh per render, and a top-level function would
 // fatal with "Cannot redeclare" the moment two sgs/cart instances render on
-// one page) — matches the $sgs_css_length pattern established below.
+// one page) — matches the sgs_css_length_value() pattern established below.
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 FR-32-4, D345): margin is a WP-native
@@ -63,10 +63,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // `.{uid}.wp-block-sgs-cart{…}` rule — the root carries ZERO inline
 // `style="…"`.
 
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Attribute resolution ──────────────────────────────────────────────────────
 $allowed_display_modes = array( 'link', 'flyout', 'drawer' );
 $display_mode          = in_array( $attributes['displayMode'] ?? 'link', $allowed_display_modes, true )
@@ -76,12 +72,14 @@ $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attribut
 $icon_size             = absint( $attributes['iconSize'] ?? 24 );
 $icon_colour           = $attributes['iconColour'] ?? 'primary';
 // D636/D644 icon/SVG gradient sibling — non-empty wins over iconColour above.
-$icon_colour_gradient  = $attributes['iconColourGradient'] ?? '';
-$badge_colour          = $attributes['badgeColour'] ?? 'accent';
-$badge_text_colour     = $attributes['badgeTextColour'] ?? 'accent-text';
-$aria_label            = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
-$show_zero             = ! empty( $attributes['showZero'] );
-$hide_when_empty       = ! empty( $attributes['hideWhenEmpty'] );
+$icon_colour_gradient       = $attributes['iconColourGradient'] ?? '';
+$icon_colour_hover          = $attributes['iconColourHover'] ?? '';
+$icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
+$badge_colour               = $attributes['badgeColour'] ?? 'accent';
+$badge_text_colour          = $attributes['badgeTextColour'] ?? 'accent-text';
+$aria_label                 = sanitize_text_field( $attributes['ariaLabel'] ?? __( 'View your cart', 'sgs-blocks' ) );
+$show_zero                  = ! empty( $attributes['showZero'] );
+$hide_when_empty            = ! empty( $attributes['hideWhenEmpty'] );
 
 // FR-36-19 Phase 2 panel attrs.
 $panel_heading      = sanitize_text_field( $attributes['panelHeading'] ?? __( 'Your cart', 'sgs-blocks' ) );
@@ -127,13 +125,7 @@ $ssr_count = 0;
 $sgs_cart_vars = array(
 	'--sgs-cart-icon-size:' . $icon_size . 'px',
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
-	'--sgs-cart-badge-colour:' . sgs_colour_value( $badge_colour ),
-	'--sgs-cart-badge-text-colour:' . sgs_colour_value( $badge_text_colour ),
 );
-if ( $has_panel ) {
-	$sgs_cart_vars[] = '--sgs-cart-panel-bg:' . sgs_colour_value( $panel_bg_slug );
-	$sgs_cart_vars[] = '--sgs-cart-panel-text:' . sgs_colour_value( $panel_text_slug );
-}
 
 // ── Margin — WP-native style.spacing.margin object (skip-serialised), NOT
 // auto-inlined. Tiers are SGS custom object attrs, hand-built shorthand. ─────
@@ -148,17 +140,6 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 $margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
 $margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
 
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
 // ── uid/selector — CLASS pattern mirrors sgs/label/sgs/heading/sgs/container.
 $uid       = 'sgs-cart-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sel       = '.' . $uid . '.wp-block-sgs-cart';
@@ -167,7 +148,7 @@ $drawer_id = $uid . '-drawer';
 
 $scoped_css = array();
 
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_obj ) ) {
+if ( ! empty( $base_margin_obj ) ) {
 	$base_margin_styles = wp_style_engine_get_styles(
 		array( 'spacing' => array( 'margin' => $base_margin_obj ) ),
 		array( 'selector' => $sel )
@@ -177,8 +158,8 @@ if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $base_margin_ob
 	}
 }
 
-$margin_tab_val = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val = $sgs_box_shorthand( $margin_mobile_obj );
+$margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
 
 if ( null !== $margin_tab_val ) {
 	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{margin:{$margin_tab_val};}}";
@@ -187,11 +168,86 @@ if ( null !== $margin_mob_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{margin:{$margin_mob_val};}}";
 }
 
-// ── Cart custom-property VALUES (icon size/colour, badge colours, panel
-// bg/text) — scoped rule on the SAME uid selector, NOT inline (Spec 32
-// FR-32-4 as amended 2026-07-18 / D345). ────────────────────────────────────
+// ── Cart custom-property VALUES (icon size/colour) — scoped rule on the
+// SAME uid selector, NOT inline (Spec 32 FR-32-4 as amended 2026-07-18 /
+// D345). Badge/panel colours moved off this mechanism 2026-09-04 (below) —
+// each pairs a fill (background) and text colour on the SAME element, which
+// a text gradient's background-clip:text would otherwise clip, so the fill
+// half now routes through its own ::after layer. ───────────────────────────
 if ( $sgs_cart_vars ) {
 	$scoped_css[] = $sel . '{' . implode( ';', $sgs_cart_vars ) . '}';
+}
+
+// Badge: badgeColour (fill) / badgeTextColour (text) share .sgs-cart__badge.
+// HAND-BUILT ::after, NOT sgs_block_background_layer_css() — the badge is
+// already `position:absolute` (style.css, positions it top:2px/right:2px on
+// the icon), and that helper hardcodes `position:relative` on the same
+// selector, which would silently break the badge's own positioning (the
+// exact trap sgs/pricing-table's popularBadgeBackground already documents).
+$badge_sel             = $sel . ' .sgs-cart__badge';
+$badge_colour_gradient = (string) ( $attributes['badgeColourGradient'] ?? '' );
+$badge_bg_paint        = sgs_background_paint_decl( $badge_colour, $badge_colour_gradient );
+if ( '' !== $badge_bg_paint ) {
+	$scoped_css[] = $badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $badge_bg_paint . ';}';
+}
+$badge_text_gradient  = (string) ( $attributes['badgeTextColourGradient'] ?? '' );
+$badge_text_effective = sgs_resolve_text_colour_or_gradient( $badge_text_colour, $badge_text_gradient );
+if ( '' !== $badge_text_effective ) {
+	$badge_text_decl = sgs_text_colour_decl( $badge_text_effective );
+	if ( '' !== $badge_text_decl ) {
+		$scoped_css[] = $badge_sel . '{' . $badge_text_decl . ';}';
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel, $badge_text_effective );
+}
+
+// Panel: panelBg (fill) / panelTextColour (text) share .sgs-cart__panel —
+// same split, only rendered when $has_panel (flyout|drawer displayMode).
+// Also HAND-BUILT: the panel's own `--flyout`/`--drawer` modifier classes
+// declare `position:absolute`/`position:fixed` respectively, at the SAME
+// (0,2,0) specificity as a uid-scoped rule here would carry — relying on
+// sgs_block_background_layer_css()'s `position:relative` to win on source
+// order is exactly the kind of silent, unprovable win/loss this file's own
+// discipline avoids. The panel is always positioned by one of those two
+// modifiers whenever it renders, so `::after` has a positioning context
+// without this code adding one.
+if ( $has_panel ) {
+	$panel_sel         = $sel . ' .sgs-cart__panel';
+	$panel_bg_gradient = (string) ( $attributes['panelBgGradient'] ?? '' );
+	$panel_bg_paint    = sgs_background_paint_decl( $panel_bg_slug, $panel_bg_gradient );
+	if ( '' !== $panel_bg_paint ) {
+		$scoped_css[] = $panel_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $panel_bg_paint . ';}';
+	}
+	$panel_text_gradient  = (string) ( $attributes['panelTextColourGradient'] ?? '' );
+	$panel_text_effective = sgs_resolve_text_colour_or_gradient( $panel_text_slug, $panel_text_gradient );
+	if ( '' !== $panel_text_effective ) {
+		$panel_text_decl = sgs_text_colour_decl( $panel_text_effective );
+		if ( '' !== $panel_text_decl ) {
+			$scoped_css[] = $panel_sel . '{' . $panel_text_decl . ';}';
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $panel_sel, $panel_text_effective );
+	}
+}
+
+// ── Media-element atom layer (rule 37-media-no-handroll fix) — item-thumbnail
+// object-fit only. The thumbnail <img> itself is added to the DOM later by
+// panel-render.js/item-row-template.js (Store API hydration), never by this
+// file — but the CSS custom property is set here, on the PHP-rendered wrapper
+// ($uid is already a class on it, see $wrapper_classes above), and inherits
+// down to the .sgs-media-el marker item-row-template.js appends regardless of
+// when that element is inserted. `class_exists()` guards a class the plugin
+// loader always registers; kept for the same "never fatal if load order
+// changes" reason sgs/gallery/sgs/hero guard it.
+if ( $has_panel && class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_cart_media_css = SGS_Media_Element::style(
+		$attributes,
+		'',
+		'sgs/cart',
+		$uid,
+		array( 'object-fit' )
+	);
+	if ( '' !== $sgs_cart_media_css ) {
+		$scoped_css[] = $sgs_cart_media_css;
+	}
 }
 
 // ── Wrapper classes ───────────────────────────────────────────────────────────
@@ -220,10 +276,22 @@ $wrapper_attributes = get_block_wrapper_attributes(
 $icon_svg = sgs_get_lucide_icon( $icon_name );
 // D636/D644 icon/SVG gradient — non-empty gradient wins over iconColour's
 // flat currentColor paint (helpers-svg-gradient.php).
-$sgs_cart_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_cart_stroke_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_gradient, $uid . '-ig', "{$sel} .sgs-cart__icon svg" );
 if ( '' !== $sgs_cart_stroke_grad['defs'] ) {
 	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_stroke_grad['defs'] );
 	$scoped_css[] = "{$sel} .sgs-cart__icon svg{" . $sgs_cart_stroke_grad['css'] . ';}';
+}
+
+// Icon hover — flat-or-gradient, via the shared sgs_icon_gradient_css()
+// composer (2026-09-06). This block's icon is always Lucide (no source
+// picker), so the composer always takes the SVG stroke-gradient branch;
+// using it anyway keeps every icon-hosting block on one call site.
+$sgs_cart_icon_hover_grad = sgs_icon_gradient_css( 'lucide', $icon_colour_hover_gradient, $uid . '-igh', "{$sel} .sgs-cart__icon svg" );
+if ( '' !== $sgs_cart_icon_hover_grad['css'] ) {
+	$icon_svg     = sgs_svg_inject_defs( $icon_svg, $sgs_cart_icon_hover_grad['defs'] );
+	$scoped_css[] = sgs_hover_state_rules( "{$sel} .sgs-cart__trigger", $sgs_cart_icon_hover_grad['css'], ':focus-visible', ' .sgs-cart__icon svg' );
+} elseif ( '' !== $icon_colour_hover ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$sel} .sgs-cart__trigger", 'color:' . sgs_colour_value( $icon_colour_hover ), ':focus-visible', ' .sgs-cart__icon svg' );
 }
 
 // ── Accessible label with count ───────────────────────────────────────────────

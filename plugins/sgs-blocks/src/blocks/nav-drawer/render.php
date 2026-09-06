@@ -25,11 +25,10 @@
  * ZERO inline property declarations and no divergence from the wrapper's computed
  * behaviour (the D294 block-private-when-no-grid/section-machinery pattern).
  *
- * NO-INLINE (Spec 32): the rendered subtree carries ZERO inline CSS property
- * declarations. drawerBg + WCAG-computed foreground, drawerAlign, drawerGap,
- * drawerPadding, close-button colour and the skip-serialised __experimentalBorder
- * support are all emitted into this block's OWN scoped `.{uid}` <style> at CLASS
- * specificity (never `#uid`, D303).
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+ * drawerBg + WCAG-computed foreground, drawerAlign, drawerGap, drawerPadding, close-button colour, the background-image media layer
+ * (`.{uid}::before`) and the skip-serialised __experimentalBorder support are all emitted into this block's OWN scoped `.{uid}` <style>
+ * at CLASS specificity (never `#uid`, D303).
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    InnerBlocks HTML (menu, logo, CTA).
@@ -41,21 +40,14 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-tokens.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (for free-text keyword attrs
 // concatenated into raw CSS inside the scoped <style>). Mirrors sgs/hero.
-$sgs_nd_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS length/unit sanitiser — digits, dot, %, unit letters only.
-$sgs_nd_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Legacy HTML-anchor salt (WP core's `supports.anchor` feature) for the uid
 // hash below. Vestigial: block.json declares `supports.anchor:false`, so WP
 // never populates this key for the CORE feature — but block.json now ALSO
@@ -87,9 +79,7 @@ $root_sel  = '.' . $uid . '.wp-block-sgs-nav-drawer';
 $body_sel  = $root_sel . ' .sgs-nav-drawer__body';
 $close_sel = $root_sel . ' .sgs-nav-drawer__close';
 
-// ── Geometry — desktop-variant anchors (design gate 2026-07-28, supersedes the
-// retired `edge`/`width` scalars; zero stored instances carried either, so this
-// is a clean cut, not a migration). `anchor` is a per-device object
+// ── Geometry — desktop-variant anchors. `anchor` is a per-device object
 // { desktop, tablet, mobile } of full-screen|header|trigger|centred, resolved
 // via the shared sgs_resolve_tier() cascade (identical semantics to every
 // other §S9 responsive-object attribute — 'inherit'/null/absent = inherit
@@ -105,10 +95,9 @@ $sgs_nd_allowed_anchors = array( 'full-screen', 'header', 'trigger', 'centred' )
  * width beneath it; `trigger` anchors BELOW the actual burger, reading the
  * `--sgs-drawer-trigger-top` / `--sgs-drawer-trigger-right` values store.js
  * measures from the live trigger rect at open time (same measure-and-write
- * pattern as the header offset) and falling back to the old 16px/16px corner
- * only when JS has not run — the previous CSS-only literal could not track an
- * arbitrary trigger location at all; `centred` is the modal-card geometry `sgs/modal`
- * already uses (margin:auto within a fixed inset).
+ * pattern as the header offset), falling back to 16px/16px only when JS has
+ * not run; `centred` is the modal-card geometry `sgs/modal` already uses
+ * (margin:auto within a fixed inset).
  *
  * @param string $anchor_value Resolved anchor keyword for this tier.
  * @param string $panel_size   Resolved, pre-sanitised panelSize length for this tier (may be '').
@@ -162,7 +151,7 @@ $align_items_map = array(
 );
 // Logical text-align equivalents of the same pick, for descendants whose BOX is
 // full-width (so align-items can move nothing) and whose LABEL is what must move.
-$text_align_map  = array(
+$text_align_map = array(
 	'left'   => 'start',
 	'center' => 'center',
 	'right'  => 'end',
@@ -176,9 +165,25 @@ $drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attri
 $drawer_bg_hex  = '' !== $drawer_bg_slug ? sgs_resolve_palette_hex( $drawer_bg_slug, '' ) : '';
 $drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $drawer_bg_hex ) : '';
 
+// ── Drawer TEXT colour — the OPERATOR'S choice, which wins outright.
+// $drawer_fg_hex above is a FALLBACK, not a control: the WCAG pairing applies
+// only while the client has not chosen a text colour. Contrast guidance is
+// advisory (an editor notice), never an override — WordPress core's own
+// ContrastChecker warns and never enforces, and sgs/site-header follows the
+// same rule (D681-D684). Before this, the computed value was the SOLE author of
+// the drawer's text colour and no attribute existed to override it.
+$drawer_text_effective = sgs_resolve_text_colour_or_gradient(
+	$attributes['drawerTextColour'] ?? '',
+	$attributes['drawerTextColourGradient'] ?? ''
+);
+
 // ── Close-icon colour (toggleCloseColour, slug). Empty = inherit the drawer's
 // computed foreground (style.css sets the × to color:inherit).
-$close_colour_slug = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+// D956 — toggleCloseColourGradient is the gradient sibling (778879732 rollout,
+// Phase 3); gradient wins when set+valid, mirrors drawerTextColourGradient above.
+$close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
+$close_colour_gradient   = $attributes['toggleCloseColourGradient'] ?? '';
+$close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
 
 // ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
 // block.json `providesContext` (`sgs/navDrawerSubmenuModel`, mapped from this
@@ -196,6 +201,44 @@ $submenu_model = in_array( $attributes['submenuModel'] ?? 'accordion', array( 'a
 	? (string) $attributes['submenuModel']
 	: 'accordion';
 
+// ── Background image (backgroundImage + size/position/repeat/attachment).
+// Mirrors sgs/container's own media-LAYER pattern (class-sgs-container-wrapper.php,
+// "Background image — section kind only" block): the image paints on a
+// `.{uid}::before` pseudo-element, never on the dialog root itself, because the
+// root already carries drawerBg/drawerBgGradient (a `background-image` here
+// would simply overwrite the gradient rather than layering with it) and a
+// dedicated layer lets a future opacity/blend control dim the picture without
+// dimming the drawer's editable InnerBlocks content painted above it.
+// `.wp-block-sgs-nav-drawer` uses neither `::before` nor `::after` anywhere in
+// style.css, so the layer is free to claim (confirmed by reading the file).
+$bg_image     = $attributes['backgroundImage'] ?? array();
+$has_bg_image = ! empty( $bg_image['url'] );
+
+// Spec 35 item 18 — see block.json's own comment on backgroundImageDecorative
+// for why this is aria-describedby rather than aria-label: the dialog root's
+// aria-label is already claimed for the drawer's own accessible name.
+$bg_image_decorative = (bool) ( $attributes['backgroundImageDecorative'] ?? true );
+$bg_image_alt        = $has_bg_image ? sanitize_text_field( $bg_image['alt'] ?? '' ) : '';
+$bg_image_needs_note = $has_bg_image && ! $bg_image_decorative && '' !== $bg_image_alt;
+
+$bg_size          = $attributes['backgroundSize'] ?? 'cover';
+$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
+if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
+	$bg_size = 'cover';
+}
+$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
+$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', (string) $bg_position );
+$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
+$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
+if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
+	$bg_repeat = 'no-repeat';
+}
+$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
+$allowed_attachments = array( 'scroll', 'fixed' );
+if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
+	$bg_attachment = 'scroll';
+}
+
 // ── Custom CSS escape hatch (non-device-breakpoint rules only, per contract).
 $custom_css = isset( $attributes['sgsCustomCss'] ) ? (string) $attributes['sgsCustomCss'] : '';
 
@@ -207,10 +250,43 @@ $css = '';
 // Background + WCAG foreground on the dialog root.
 if ( '' !== $drawer_bg_slug ) {
 	$decls = 'background-color:var(--wp--preset--color--' . $drawer_bg_slug . ');';
+	// A background GRADIENT layers OVER the flat colour rather than replacing it.
+	// The canonical helper is gradient-wins (sgs_background_paint_value), but a drawer
+	// is an OVERLAY panel: if the gradient carries alpha, dropping the solid base makes
+	// the page behind it show through. Keeping both is what CSS layering already does,
+	// and the value still goes through the canonical sanitiser.
+	// No background-clip is involved here, so this does NOT hit the clipping problem
+	// that keeps the TEXT gradient off this element (see the body rule below).
+	$drawer_bg_gradient = sgs_css_gradient_value( $attributes['drawerBgGradient'] ?? '' );
+	if ( '' !== $drawer_bg_gradient ) {
+		$decls .= 'background-image:' . $drawer_bg_gradient . ';';
+	}
 	if ( '' !== $drawer_fg_hex ) {
+		// FALLBACK only — the WCAG pairing applies while the client has not
+		// chosen a text colour, and is overridden below when they have.
 		$decls .= 'color:' . esc_attr( $drawer_fg_hex ) . ';';
 	}
 	$css .= $root_sel . '{' . $decls . '}';
+}
+
+// ── Operator's text colour — painted on the BODY, never on the dialog root.
+//
+// ⛔ THE ROOT IS THE ONE PLACE THIS CANNOT GO. A text gradient is a
+// `background-image` plus `background-clip:text`, and background-clip clips the
+// element's WHOLE background painting area to the glyph shapes — background-COLOUR
+// included, not just the image. On the dialog root, which carries the drawer's own
+// background-color above, a gradient would clip the panel's fill to the letters and
+// the drawer would lose its background.
+//
+// `.sgs-nav-drawer__body` carries no background of its own, so both work at once:
+// the panel keeps its fill, the text keeps its gradient. This is a DOM-shape
+// constraint, not a CSS limit — the same reason sgs/button IS exempt (D288 makes
+// the <a> itself the block root, so it has no inner element to move the text to).
+if ( '' !== $drawer_text_effective ) {
+	$css .= $body_sel . '{' . sgs_text_colour_decl( $drawer_text_effective ) . '}';
+	// @supports fallback so a browser without background-clip:text still gets a
+	// readable flat colour rather than transparent glyphs.
+	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel, $drawer_text_effective );
 }
 
 /*
@@ -268,8 +344,22 @@ if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['draw
 }
 
 // Close-icon colour override (else inherits the computed foreground).
-if ( '' !== $close_colour_slug ) {
-	$css .= $close_sel . '{color:' . sgs_colour_value( $close_colour_slug ) . ';}';
+// D956 — sibling gradient wins when set+valid, same resolve/decl/fallback
+// shape as the drawer text colour above.
+$close_colour_effective = sgs_resolve_text_colour_or_gradient( $close_colour_slug, $close_colour_gradient );
+if ( '' !== $close_colour_effective ) {
+	$close_colour_decl = sgs_text_colour_decl( $close_colour_effective );
+	if ( '' !== $close_colour_decl ) {
+		$css .= $close_sel . '{' . $close_colour_decl . ';}';
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $close_sel, $close_colour_effective );
+}
+
+// The close button IS an interactive target, so it carries a real hover state —
+// it is NOT a candidate for a states exemption. :focus-visible is paired with
+// :hover so keyboard users get the same affordance.
+if ( '' !== $close_colour_hover_slug ) {
+	$css .= sgs_hover_state_rules( $close_sel, 'color:' . sgs_colour_value( $close_colour_hover_slug ), ':focus-visible' );
 }
 
 // ── Anchor geometry (desktop variants). Guard on "is either attribute
@@ -294,8 +384,8 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	// character set while still stripping anything that could break out of the
 	// declaration).
 	$sgs_nd_panel_desktop = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'desktop', '' )['value'] );
-	$sgs_nd_panel_tablet   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
-	$sgs_nd_panel_mobile   = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
+	$sgs_nd_panel_tablet  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'tablet', '' )['value'] );
+	$sgs_nd_panel_mobile  = sgs_responsive_sanitise_css_value( (string) sgs_resolve_tier( $panel_size_attr_raw, 'mobile', '' )['value'] );
 
 	$sgs_nd_geom_desktop = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_desktop, $sgs_nd_panel_desktop );
 	$sgs_nd_geom_tablet  = $sgs_nd_geometry_for_anchor( $sgs_nd_anchor_tablet, $sgs_nd_panel_tablet );
@@ -319,7 +409,7 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 // existing default) emits nothing extra so an untouched drawer is unaffected.
 $sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
 $sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
-$sgs_nd_surface_blur    = $sgs_nd_css_length( $attributes['surfaceBlur'] ?? '' );
+$sgs_nd_surface_blur    = sgs_css_length_value( $attributes['surfaceBlur'] ?? '' );
 
 if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 	$sgs_nd_surface_decls = '';
@@ -327,8 +417,8 @@ if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 		// color-mix() keeps the resolved token as the SOURCE colour (a palette
 		// change still recolours the translucent panel) while expressing the
 		// operator's chosen opacity — no separate alpha-channel attribute needed.
-		$sgs_nd_pct             = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
-		$sgs_nd_pct             = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
+		$sgs_nd_pct            = rtrim( rtrim( number_format( $sgs_nd_surface_opacity * 100, 2 ), '0' ), '.' );
+		$sgs_nd_pct            = '' !== $sgs_nd_pct ? $sgs_nd_pct : '0';
 		$sgs_nd_surface_decls .= 'background-color:color-mix(in srgb, var(--wp--preset--color--' . $drawer_bg_slug . ') ' . $sgs_nd_pct . '%, transparent);';
 	}
 	if ( '' !== $sgs_nd_surface_blur ) {
@@ -339,53 +429,139 @@ if ( $sgs_nd_surface_opacity < 1.0 || '' !== $sgs_nd_surface_blur ) {
 	}
 }
 
+// ── Background image media layer (`.{uid}::before`). z-index:-1 keeps it below
+// the dialog's own background-colour/gradient paint and below the real
+// `.sgs-nav-drawer__body`/close-button children (both default z-index:auto,
+// which stacks above a negative-z sibling) — the drawer's editable content
+// always stays visible over the picture, mirroring sgs/container's identical
+// media-layer contract (class-sgs-container-wrapper.php).
+if ( $has_bg_image ) {
+	$sgs_nd_media_decls   = array();
+	$sgs_nd_media_decls[] = 'content:""';
+	$sgs_nd_media_decls[] = 'position:absolute';
+	$sgs_nd_media_decls[] = 'inset:0';
+	$sgs_nd_media_decls[] = 'z-index:-1';
+	$sgs_nd_media_decls[] = 'pointer-events:none';
+	$sgs_nd_media_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
+	$sgs_nd_media_decls[] = 'background-size:' . esc_attr( $bg_size );
+	$sgs_nd_media_decls[] = 'background-position:' . esc_attr( $bg_position );
+	$sgs_nd_media_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
+	if ( 'fixed' === $bg_attachment ) {
+		$sgs_nd_media_decls[] = 'background-attachment:fixed';
+	}
+	$css .= $root_sel . '::before{' . implode( ';', $sgs_nd_media_decls ) . '}';
+}
+
 // ── Skip-serialised WP-native __experimentalBorder support → scoped rule
 // (Spec 32 no-inline). block.json declares __experimentalBorder with
 // __experimentalSkipSerialization:true, so get_block_wrapper_attributes() never
 // auto-inlines it; read the resolved values from $attributes['style']['border']
 // and emit them into this block's own scoped <style>.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		// Sanitised via sgs_colour_value() (route-by-role, D301/D302): resolves a
-		// preset slug to var(), passes a hex/rgba through. Defence-in-depth: strip
-		// any structural CSS chars so no declaration/selector injection can ride in.
-		$border_args['color'] = preg_replace( '/[;{}<>]/', '', sgs_colour_value( (string) $attributes['style']['border']['color'] ) );
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$border_args['style'] = $sgs_nd_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$border_args['width'] = $sgs_nd_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-			$border_args['radius'] = $sgs_nd_css_length( $radius_raw );
-		} elseif ( is_array( $radius_raw ) ) {
-			$radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $radius_raw[ $corner ] ) ) {
-					$radius_clean[ $corner ] = $sgs_nd_css_length( $radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $radius_clean ) ) {
-				$border_args['radius'] = $radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $border_args ) ) {
-		$border_scoped = wp_style_engine_get_styles(
-			array( 'border' => $border_args ),
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $border_scoped['css'] ) ) {
-			$css .= $border_scoped['css'];
-		}
+
+$border_args = array();
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width. Gated together via the shared helper (helpers-box.php)
+// so this rule is applied identically everywhere, not per block.
+if ( ! empty( $border_args ) ) {
+	$border_scoped = wp_style_engine_get_styles(
+		array( 'border' => $border_args ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_scoped['css'] ) ) {
+		$css .= $border_scoped['css'];
 	}
 }
 
 // Custom CSS escape hatch — appended verbatim (sanitised of a </style> breakout
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // by wp_strip_all_tags below alongside the rest of $css).
 if ( '' !== $custom_css ) {
 	$css .= $custom_css;
@@ -404,10 +580,7 @@ if ( '' !== $custom_css ) {
  * fade-drop (no class, so an untouched drawer is unaffected), header expands
  * down, trigger scales/fades from its corner, centred scales up like a
  * modal. `fade` is an explicit opacity-only override available at every
- * anchor. `top`/`right`/`bottom`/`left` directional slides were RETIRED
- * (design gate 2026-07-28) — zero stored instances carried anything but
- * `auto`, verified via grep across theme/sgs-theme/patterns/, so this is a
- * clean cut. All rules live inside the CSS's `prefers-reduced-motion:
+ * anchor. All rules live inside the CSS's `prefers-reduced-motion:
  * no-preference` block, so a reduced-motion user is unaffected regardless.
  */
 $sgs_nd_allowed_anims = array( 'auto', 'fade' );
@@ -460,12 +633,11 @@ if ( '' !== $sgs_nd_anim_class ) {
 	$classes[] = $sgs_nd_anim_class;
 }
 
-// ── variantPreset (Task-3 discriminator, design gate 2026-07-28) — the
-// variation slug this instance was inserted from. No CSS behaviour depends on
-// it (each variation's LOOK comes entirely from the attrs it sets, per the
-// binding variant principle), but rendering it as a class makes the attribute
-// non-dead (check-dead-controls.js) and gives per-preset CSS a hook should a
-// future need arise.
+// ── variantPreset — the variation slug this instance was inserted from. No
+// CSS behaviour depends on it (each variation's LOOK comes entirely from the
+// attrs it sets, per the binding variant principle), but rendering it as a
+// class makes the attribute non-dead (check-dead-controls.js) and gives
+// per-preset CSS a hook should a future need arise.
 $variant_preset_slug = isset( $attributes['variantPreset'] ) ? sanitize_html_class( (string) $attributes['variantPreset'] ) : '';
 if ( '' !== $variant_preset_slug ) {
 	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
@@ -475,8 +647,17 @@ $wrapper_args       = array(
 	'class'               => implode( ' ', $classes ),
 	'id'                  => $drawer_ref,
 	'data-sgs-nav-drawer' => '',
-	'aria-label'          => esc_attr__( 'Navigation menu', 'sgs-blocks' ),
+	// The dialog's accessible name. Operator-settable because this block supports
+	// MULTIPLE drawers on one site (that is what the Drawer ID exists for), and two
+	// dialogs both announced as "Navigation menu" cannot be told apart by a screen
+	// reader. Falls back to the generic name when unset, so nothing regresses.
+	'aria-label'          => '' !== ( $attributes['ariaLabel'] ?? '' )
+		? esc_attr( $attributes['ariaLabel'] )
+		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
+if ( $bg_image_needs_note ) {
+	$wrapper_args['aria-describedby'] = $drawer_ref . '-bg-note';
+}
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 // ── The × close button — FIXED CHROME (FR-36-6). Rendered as a SIBLING of
@@ -497,6 +678,18 @@ $close_html = sprintf(
 	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text-swap) or trusted static markup (burger-morph spans / Lucide SVG).
 );
 
+// Spec 35 item 18 — the visually-hidden note the aria-describedby above
+// points at, only emitted when the operator marked the background image
+// non-decorative and supplied alt text (see block.json comment).
+$bg_image_note_html = '';
+if ( $bg_image_needs_note ) {
+	$bg_image_note_html = sprintf(
+		'<span id="%s" class="screen-reader-text">%s</span>',
+		esc_attr( $drawer_ref . '-bg-note' ),
+		esc_html( $bg_image_alt )
+	);
+}
+
 // ── Emit the scoped <style> then the dialog. wp_strip_all_tags (NOT esc_html)
 // blocks a </style> breakout while leaving CSS combinators intact; every value
 // reaching $css is pre-sanitised (sanitize_html_class slugs / $sgs_nd_css_*
@@ -508,9 +701,10 @@ if ( '' !== $css ) {
 }
 
 printf(
-	'<dialog %1$s>%2$s<div class="sgs-nav-drawer__body">%3$s</div></dialog>',
+	'<dialog %1$s>%2$s%3$s<div class="sgs-nav-drawer__body">%4$s</div></dialog>',
 	$wrapper_attributes,
 	$close_html,
+	$bg_image_note_html,
 	$content
 );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

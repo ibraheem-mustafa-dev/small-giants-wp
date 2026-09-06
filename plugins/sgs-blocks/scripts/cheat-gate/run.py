@@ -19,8 +19,9 @@ Baseline file
     repo immediately after --update-baseline.  The legacy convert.py violations
     are baselined, not removed — they vanish as the modular rebuild progresses.
 
-7 Checks implemented
---------------------
+8 Checks implemented (count corrected 2026-08-24 — this said 7 while the file
+loaded, ordered and ran EIGHT check modules; read _CHECK_ORDER, not this prose)
+------------------------------------------------------------------------------
 1. slug_literal      — per-block slug literals (whole-tree + indirect forms)
 2. hardcoded_dict    — hardcoded CSS-property→attr dict literals (R-31-1)
 3. important_render  — !important over a faithful property in PHP/CSS render surface

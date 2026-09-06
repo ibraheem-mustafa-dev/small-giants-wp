@@ -1,0 +1,144 @@
+# PHPStan baseline for the render-template undefined-variable gate.
+#
+# 18 pre-existing findings, frozen 2026-08-21 so the gate could ship the same day it was
+# written. Deliberately SMALL and reviewable — this is a triage list, not a dumping
+# ground. Every entry was read before it was frozen; the triage is below. If this file
+# ever grows past ~25 entries, something is being hidden rather than recorded.
+#
+# ⚠ `count:` is load-bearing. A SECOND `$bwt` defect in heading/render.php raises the
+# count to 2 and FAILS the gate. Baselined does not mean unguarded.
+#
+# TRIAGE — what each group is, and what is owed:
+#
+#   FALSE POSITIVE (correlated guards PHPStan cannot track) — 2 entries
+#     heading/render.php:501, icon-list/render.php:458 — `$has_border_width ? $bwt : '1px'`.
+#     `$bwt` is assigned inside `if ( $has_border_width )`, so it exists whenever it is
+#     read. PHPStan does not correlate the two conditions. Verified by reading both
+#     sites 2026-08-21. Nothing owed.
+#
+#   INHERITED SCOPE (a partial included from its parent) — 5 entries
+#     buybox/notify-form.php — `$buybox_post_id`, `$notify_me_label` come from the
+#     including render.php. Genuinely undefined in isolation. NOT covered by the
+#     render.php ignoreErrors, on purpose: it is a real (if benign today) coupling, and
+#     burying it in a blanket rule would hide the next partial that gets it wrong.
+#     OWED: give the partial an explicit contract (extract() guard or a docblock).
+#
+#   MISSING THIRD-PARTY SYMBOLS (WooCommerce not installed locally) — 6 entries
+#     wc_get_product / wc_get_cart_url / wc_get_checkout_url / WC_Product. All are
+#     already runtime-guarded in the blocks. OWED: add `php-stubs/woocommerce-stubs`
+#     to require-dev; that retires all six honestly rather than by suppression.
+#
+#   MISSING OWN CONSTANT — 2 entries
+#     google-reviews/render.php — SGS_BLOCKS_PATH is defined in sgs-blocks.php (line 28)
+#     but behind a guard PHPStan does not enter. OWED: a `constants:` declaration.
+#
+#   DEAD DEFENSIVE CODE (PHPStan is right, the code is redundant) — 3 entries
+#     before-after:433, brand-strip:273, container:196 — `empty()`/`??` on values that
+#     always exist. Harmless, but each is a guard that reads as protection and protects
+#     nothing. OWED: delete the redundant guards.
+#
+# Regenerate (and re-triage — regeneration DROPS this header):
+#   php vendor/bin/phpstan analyse -c phpstan-render.neon #       --generate-baseline=phpstan-render-baseline.neon --memory-limit=1G
+
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Variable \$sgs_slot_tiers in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/before-after/render.php
+
+		-
+			message: '#^Variable \$css_vars in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/brand-strip/render.php
+
+		-
+			message: '#^Variable \$buybox_post_id might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: src/blocks/buybox/notify-form.php
+
+		-
+			message: '#^Variable \$notify_me_label might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/blocks/buybox/notify-form.php
+
+		-
+			message: '#^Class WC_Product not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/blocks/buybox/render.php
+
+		-
+			message: '#^Function wc_get_product not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: src/blocks/buybox/render.php
+
+		-
+			message: '#^Function wc_get_cart_url not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: src/blocks/cart/render.php
+
+		-
+			message: '#^Variable \$sgs_container_supports_css on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: src/blocks/container/render.php
+
+		-
+			message: '#^Constant SGS_BLOCKS_PATH not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: src/blocks/google-reviews/render.php
+
+		-
+			message: '#^Variable \$bwt might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/blocks/heading/render.php
+
+		-
+			message: '#^Variable \$bwt might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/blocks/icon-list/render.php
+
+		-
+			message: '#^Function wc_get_checkout_url not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: src/blocks/product-card/render.php
+
+		# Shape-B border migration (2026-08-30): guards left dead because the
+		# migration removed their only populator. These say "always exists" --
+		# the OPPOSITE of the undefined-variable defect this gate catches. Not
+		# deleted: each guard's BODY assigns variables used further down.
+
+		-
+			message: '#^Variable \$base_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/before-after/render.php
+
+		-
+			message: '#^Variable \$hero_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/hero/render.php
+
+		-
+			message: '#^Variable \$border_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/nav-drawer/render.php
+
+		-
+			message: '#^Variable \$sf_style_engine_args in empty\(\) always exists and is always falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/blocks/site-footer/render.php

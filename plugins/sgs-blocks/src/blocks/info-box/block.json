@@ -21,67 +21,66 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
-			"text": true,
-			"link": true,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
+			"background": false,
+			"text": false,
+			"link": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"containerKind": "content",
-			"presetSelectors": [ "cardStyle", "effectHover" ],
-			"enabledExtensions": [ "blockLink" ],
+			"presetSelectors": [
+				"cardStyle",
+				"effectHover"
+			],
+			"enabledExtensions": [
+				"blockLink",
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": true,
+				"focusRing": true
+			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"box": {
 					"label": "Card box",
 					"order": 1,
-					"clusters": [ "fill", "layout", "animation" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "native:shadow",
+						"css:border-color-gradient": "borderColourGradient",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing"
@@ -90,7 +89,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:box-shadow": "shadowHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
@@ -101,7 +102,9 @@
 				"content": {
 					"label": "Card content",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:width": "width"
 					},
@@ -121,17 +124,17 @@
 		"typography": ".wp-block-sgs-info-box"
 	},
 	"attributes": {
-		"mediaType": {
-			"type": "string",
-			"default": "icon",
-			"enum": [
-				"icon",
-				"emoji",
-				"image"
-			]
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		},
-		"image": {
-			"type": "object"
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		},
 		"iconPosition": {
 			"type": "string",
@@ -141,10 +144,6 @@
 				"left",
 				"right"
 			]
-		},
-		"icon": {
-			"type": "string",
-			"default": "star-filled"
 		},
 		"heading": {
 			"type": "string",
@@ -180,6 +179,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the hover border instead of a flat colour. Non-empty wins over borderColourHover at render time (D636)."
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING border instead of the native __experimentalBorder.color flat colour. Non-empty wins over the native border colour at render time (mirrors the borderColourHoverGradient pattern, D636)."
 		},
 		"transitionDuration": {
 			"type": "string",
@@ -224,21 +228,117 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "RESTING background colour — block-private replacement for the retired native supports.color.background (D744)."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING background instead of the flat backgroundColour. Non-empty wins over backgroundColour at render time (mirrors the borderColourGradient/borderColourHoverGradient pattern, D636)."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "RESTING text colour — block-private replacement for the retired native supports.color.text (D744)."
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING text colour instead of the flat textColour. Non-empty wins over textColour at render time (background-clip:text)."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the HOVER text colour instead of the flat textColourHover. Non-empty wins over textColourHover at render time (background-clip:text)."
+		},
+		"linkColour": {
+			"type": "string",
+			"default": "",
+			"description": "RESTING descendant-link colour — block-private replacement for the retired native supports.color.link Elements API (D744)."
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Descendant-link colour GRADIENT (background-clip:text). Sibling to linkColour; keeps the link row at the same flat-or-gradient parity as the text row."
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "HOVER/focus descendant-link colour GRADIENT. Sibling to linkColourHover."
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "HOVER/focus descendant-link colour — no native equivalent existed; new sibling to linkColour."
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right"
+			],
+			"default": ""
+		},
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -247,7 +347,6 @@
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"icon": "star",
 			"heading": "Your Compelling Headline Goes Here",
 			"description": "A brief supporting statement that explains your value proposition.",
 			"cardStyle": "elevated"

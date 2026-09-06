@@ -1,0 +1,16 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/nowhere-selector",
+	"title": "Fixture: typography selector class appears nowhere — must flag (dead selector)",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-nowhere-selector",
+		"typography": ".sgs-nowhere-selector__stale"
+	},
+	"attributes": {}
+}

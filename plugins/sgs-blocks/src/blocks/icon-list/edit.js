@@ -13,9 +13,16 @@ import {
   IconPicker,
   IconPreview,
   ResponsiveBoxControl,
-  ResponsiveBorderRadiusControl,
   TypographyControls,
   SgsColourPanel,
+  fillRow,
+  textRow,
+  SgsBorderControl,
+  ResponsiveOverride,
+  BOX_UNITS,
+  normaliseResponsiveBox,
+  SgsBoxControl,
+  GradientCapableColourControl,
 } from "../../components";
 import { colourVar, spacingVar } from "../../utils";
 import { ToggleGroupControl, ToggleGroupControlOption } from "../../components/primitives";
@@ -59,18 +66,6 @@ const GAP_OPTIONS = [
   { label: __("Normal", "sgs-blocks"), value: "20" },
   { label: __("Relaxed", "sgs-blocks"), value: "30" },
   { label: __("Spacious", "sgs-blocks"), value: "40" },
-];
-
-const BORDER_STYLE_OPTIONS = [
-  { label: __("None", "sgs-blocks"), value: "none" },
-  { label: __("Solid", "sgs-blocks"), value: "solid" },
-  { label: __("Dashed", "sgs-blocks"), value: "dashed" },
-  { label: __("Dotted", "sgs-blocks"), value: "dotted" },
-  { label: __("Double", "sgs-blocks"), value: "double" },
-  { label: __("Groove", "sgs-blocks"), value: "groove" },
-  { label: __("Ridge", "sgs-blocks"), value: "ridge" },
-  { label: __("Inset", "sgs-blocks"), value: "inset" },
-  { label: __("Outset", "sgs-blocks"), value: "outset" },
 ];
 
 // Legacy per-item slug → Lucide name (for items authored before the visual picker).
@@ -141,6 +136,32 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
         __nextHasNoMarginBottom
       	__next40pxDefaultSize
       />
+      <GradientCapableColourControl
+        label={__("Icon colour (this item)", "sgs-blocks")}
+        states={[
+          {
+            key: "normal",
+            label: __("Normal", "sgs-blocks"),
+            value: item.iconColour || "",
+            onChange: (val) => onChange({ ...item, iconColour: val ?? "" }),
+            linked: true,
+            gradientValue: item.iconColourGradient || "",
+            onGradientChange: (val) =>
+              onChange({ ...item, iconColourGradient: val ?? "" }),
+          },
+          {
+            key: "hover",
+            label: __("Hover", "sgs-blocks"),
+            value: item.iconColourHover || "",
+            onChange: (val) => onChange({ ...item, iconColourHover: val ?? "" }),
+            linked: true,
+            gradientValue: item.iconColourGradientHover || "",
+            onGradientChange: (val) =>
+              onChange({ ...item, iconColourGradientHover: val ?? "" }),
+          },
+        ]}
+        clearable
+      />
       <Button
         variant="secondary"
         isDestructive
@@ -155,22 +176,21 @@ function ItemEditor({ item, fallback, onChange, onRemove }) {
 }
 
 export default function Edit({ attributes, setAttributes }) {
-  const {
+  const { padding, margin,
     items,
     icon: defaultIconName,
     defaultIconSource,
+    backgroundColour,
+    backgroundColourGradient,
     iconColour,
+    iconColourHover,
     iconColourGradient,
+    iconColourHoverGradient,
     iconSize,
+    dividers,
     textColour,
     gap,
     style,
-    paddingTablet,
-    paddingMobile,
-    marginTablet,
-    marginMobile,
-    borderRadiusTablet,
-    borderRadiusMobile,
     borderWidth,
     borderColour,
     borderColourGradient,
@@ -182,6 +202,15 @@ export default function Edit({ attributes, setAttributes }) {
     menuRef,
     renderLandmark,
   } = attributes;
+
+  // Contrast check for border — warn if border fails WCAG contrast against
+  // the block's own background. When there's no background set or a gradient
+  // is active, skip the check entirely.
+  const iconListContrastAgainst =
+    attributes.backgroundColour && ! attributes.backgroundColourGradient
+      ? attributes.backgroundColour
+      : '';
+
 
   const resolvedSource = source || "typed";
 
@@ -215,9 +244,9 @@ export default function Edit({ attributes, setAttributes }) {
   // Editor-canvas preview only (contract §A note above) — mirrors render.php's
   // scoped output so the canvas matches the frontend.
   const previewStyle = {};
-  const paddingPreview = boxShorthand(style?.spacing?.padding, ["top", "right", "bottom", "left"]);
+  const paddingPreview = boxShorthand(padding?.desktop, ["top", "right", "bottom", "left"]);
   if (paddingPreview) previewStyle.padding = paddingPreview;
-  const marginPreview = boxShorthand(style?.spacing?.margin, ["top", "right", "bottom", "left"]);
+  const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
   if (marginPreview) previewStyle.margin = marginPreview;
   const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
   if (radiusPreview) previewStyle.borderRadius = radiusPreview;
@@ -229,6 +258,12 @@ export default function Edit({ attributes, setAttributes }) {
     previewStyle.borderStyle = borderStyle;
     if (borderColour) {
       previewStyle.borderColor = /^#|^rgb|^hsl/.test(borderColour) ? borderColour : colourVar(borderColour);
+    }
+    // A gradient border renders frontend as a masked ::before ring, which cannot
+    // be reproduced in a plain inline style — approximate it with the gradient as
+    // a border-image so the canvas at least shows that a gradient is applied.
+    if (borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test(borderColourGradient)) {
+      previewStyle.borderImage = `${borderColourGradient} 1`;
     }
   }
 
@@ -279,7 +314,7 @@ export default function Edit({ attributes, setAttributes }) {
             style={iconStyle}
             aria-hidden="true"
           >
-            <IconPreview source={resolved.source} name={resolved.name} size={20} />
+            <IconPreview source={resolved.source} name={resolved.name} size={20} gradient={iconColourGradient} />
           </span>
         )}
         <span className="sgs-icon-list__text" style={textStyle}>
@@ -330,7 +365,6 @@ export default function Edit({ attributes, setAttributes }) {
   }
 
   const showIconColourRow = ["icon", "emoji"].includes(resolvedMarkerType);
-  const showBorderColourRow = borderStyle !== "none";
 
   return (
     <>
@@ -343,6 +377,18 @@ export default function Edit({ attributes, setAttributes }) {
          links to the theme palette (D619). */}
       <SgsColourPanel
         rows={[
+          fillRow({
+            key: "background",
+            label: __("Background colour", "sgs-blocks"),
+            attrs: {
+              base: "backgroundColour",
+              hover: "backgroundColourHover",
+              gradient: "backgroundColourGradient",
+              hoverGradient: "backgroundColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
           showIconColourRow && {
             key: "icon",
             label: __("Icon colour", "sgs-blocks"),
@@ -357,37 +403,30 @@ export default function Edit({ attributes, setAttributes }) {
                 onGradientChange: (val) =>
                   setAttributes({ iconColourGradient: val ?? "" }),
               },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: iconColourHover,
+                onChange: (val) => setAttributes({ iconColourHover: val ?? "" }),
+                linked: true,
+                gradientValue: iconColourHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourHoverGradient: val ?? "" }),
+              },
             ],
           },
-          {
+          textRow({
             key: "text",
             label: __("Text colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: textColour,
-                onChange: (val) => setAttributes({ textColour: val ?? "" }),
-                linked: true,
-              },
-            ],
-          },
-          showBorderColourRow && {
-            key: "border",
-            label: __("Border colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: borderColour,
-                onChange: (val) => setAttributes({ borderColour: val ?? "" }),
-                linked: true,
-                gradientValue: borderColourGradient,
-                onGradientChange: (val) =>
-                  setAttributes({ borderColourGradient: val ?? "" }),
-              },
-            ],
-          },
+            attrs: {
+              base: "textColour",
+              hover: "textColourHover",
+              gradient: "textColourGradient",
+              hoverGradient: "textColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
         ]}
       />
       <InspectorControls>
@@ -505,23 +544,6 @@ export default function Edit({ attributes, setAttributes }) {
           </PanelBody>
         )}
 
-        {"typed" === resolvedSource && (
-          <PanelBody title={__("Items", "sgs-blocks")}>
-            {items.map((item, index) => (
-              <ItemEditor
-                key={index}
-                item={item}
-                fallback={fallback}
-                onChange={(updated) => updateItem(index, updated)}
-                onRemove={() => removeItem(index)}
-              />
-            ))}
-            <Button variant="secondary" onClick={addItem}>
-              {__("Add item", "sgs-blocks")}
-            </Button>
-          </PanelBody>
-        )}
-
         <PanelBody title={__("Appearance", "sgs-blocks")} initialOpen={false}>
           {/* Spec 35 Part B: 2–5 short options → ToggleGroupControl, not a Select. */}
           <ToggleGroupControl
@@ -569,7 +591,34 @@ export default function Edit({ attributes, setAttributes }) {
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
+          <ToggleControl
+            label={__("Dividers between items", "sgs-blocks")}
+            checked={!!dividers}
+            onChange={(val) => setAttributes({ dividers: val })}
+            __nextHasNoMarginBottom
+          />
         </PanelBody>
+
+      </InspectorControls>
+
+      {/* ── Styles tab ─────────────────────────────────────────────── */}
+      <InspectorControls group="styles">
+        {"typed" === resolvedSource && (
+          <PanelBody title={__("Items", "sgs-blocks")}>
+            {items.map((item, index) => (
+              <ItemEditor
+                key={index}
+                item={item}
+                fallback={fallback}
+                onChange={(updated) => updateItem(index, updated)}
+                onRemove={() => removeItem(index)}
+              />
+            ))}
+            <Button variant="secondary" onClick={addItem}>
+              {__("Add item", "sgs-blocks")}
+            </Button>
+          </PanelBody>
+        )}
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
           <TypographyControls
@@ -579,41 +628,38 @@ export default function Edit({ attributes, setAttributes }) {
           />
         </PanelBody>
 
-        {/* Box-object interface contract §B/§E: padding/margin base routes to
-           WP-native style.spacing.* (skip-serialised → scoped, not inline);
-           tiers are the paddingTablet/paddingMobile + marginTablet/
-           marginMobile object attrs. */}
+        {/* padding/margin are each a single block-owned tier-object attr
+           { desktop, tablet, mobile }, written via ResponsiveOverride +
+           SgsBoxControl; read directly by this block's render.php. */}
         <PanelBody title={__("Spacing", "sgs-blocks")} initialOpen={false}>
-          <ResponsiveBoxControl
-            label={__("Padding", "sgs-blocks")}
-            values={{
-              base: style?.spacing?.padding ?? {},
-              tablet: paddingTablet ?? {},
-              mobile: paddingMobile ?? {},
-            }}
-            onChange={(tier, next) => {
-              if ("base" === tier) {
-                setAttributes({ style: { ...style, spacing: { ...style?.spacing, padding: next } } });
-              } else {
-                setAttributes({ [`padding${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
-              }
-            }}
-          />
-          <ResponsiveBoxControl
-            label={__("Margin", "sgs-blocks")}
-            values={{
-              base: style?.spacing?.margin ?? {},
-              tablet: marginTablet ?? {},
-              mobile: marginMobile ?? {},
-            }}
-            onChange={(tier, next) => {
-              if ("base" === tier) {
-                setAttributes({ style: { ...style, spacing: { ...style?.spacing, margin: next } } });
-              } else {
-                setAttributes({ [`margin${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
-              }
-            }}
-          />
+          <ResponsiveOverride
+          	value={ attributes.padding }
+          	onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Padding', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
+          <ResponsiveOverride
+          	value={ attributes.margin }
+          	onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Margin', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
         </PanelBody>
 
         {/* Box-object interface contract §1/§5: borderWidth is an SGS custom
@@ -621,36 +667,40 @@ export default function Edit({ attributes, setAttributes }) {
            base-only contract); border-radius routes to WP-native
            style.border.radius + SGS tier objects (skip-serialised → scoped). */}
         <PanelBody title={__("Border", "sgs-blocks")} initialOpen={false}>
-          <SelectControl
-            label={__("Border style", "sgs-blocks")}
-            value={borderStyle}
-            options={BORDER_STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ borderStyle: val })}
-            __nextHasNoMarginBottom
-          	__next40pxDefaultSize
-          />
-          {borderStyle !== "none" && (
-            <ResponsiveBoxControl
-              label={__("Border width", "sgs-blocks")}
-              values={{ base: borderWidth ?? {} }}
-              showResponsive={false}
-              onChange={(tier, next) => setAttributes({ borderWidth: next })}
-            />
-          )}
-          <ResponsiveBorderRadiusControl
-            label={__("Border radius", "sgs-blocks")}
-            values={{
-              base: style?.border?.radius ?? {},
-              tablet: borderRadiusTablet ?? {},
-              mobile: borderRadiusMobile ?? {},
-            }}
-            onChange={(tier, next) => {
-              if ("base" === tier) {
-                setAttributes({ style: { ...style, border: { ...style?.border, radius: next } } });
-              } else {
-                setAttributes({ [`borderRadius${"tablet" === tier ? "Tablet" : "Mobile"}`]: next });
-              }
-            }}
+          {/* One composite Width/Style/Colour row, mirroring native's
+              BorderBoxControl layout (Task 0). Style, width and colour used to
+              be split three ways here: a standalone style dropdown, a width
+              control hidden unless a style was picked, and a colour row in the
+              panel above that vanished on style "none". Bean's call
+              (2026-08-29): mount the composite unconditionally. Picking "none"
+              still paints nothing — CSS suppresses a border with no style — so
+              nothing is lost by keeping every control reachable, and a client
+              can no longer switch a border off and be unable to find it again.
+              Border radius stays WP-native, below. */}
+          <SgsBorderControl
+            widthValues={borderWidth ?? {}}
+            onWidthChange={(next) => setAttributes({ borderWidth: next })}
+            widthPresets={ [ '10', '20', '30' ] }
+            styleValue={borderStyle}
+            onStyleChange={(val) => setAttributes({ borderStyle: val })}
+            colourLabel={__("Border colour", "sgs-blocks")}
+            colourValue={borderColour}
+            onColourChange={(val) => setAttributes({ borderColour: val ?? "" })}
+            colourGradientValue={borderColourGradient}
+            onColourGradientChange={(val) =>
+              setAttributes({ borderColourGradient: val ?? "" })
+            }
+            colourLinked={true}
+            contrastAgainst={ iconListContrastAgainst }
+            radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+            onRadiusChange={ ( tier, next ) => {
+            	const key = tier === 'base' ? 'desktop' : tier;
+            	setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+            } }
           />
         </PanelBody>
       </InspectorControls>

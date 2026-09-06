@@ -107,15 +107,27 @@ export default function CustomGradientBar( {
 
 	return (
 		<div
-			className={ clsx( 'sgs-gradient-picker__gradient-bar', {
-				'has-gradient': hasGradient,
-			} ) }
+			className={ clsx(
+				// Core's class carries the ACTUAL styling (height:48px, width,
+				// positioning). WordPress enqueues wp-components in the editor,
+				// so wearing core's class means the fork is styled for free —
+				// the same arrangement the sibling colour-picker fork already
+				// relies on. The sgs- class stays as our own styling hook.
+				// Without core's class this bar had no height or width at all:
+				// invisible bar, collapsed popover.
+				'components-custom-gradient-picker__gradient-bar',
+				'sgs-gradient-picker__gradient-bar',
+				{ 'has-gradient': hasGradient }
+			) }
 			onMouseEnter={ onMouseEnterAndMove }
 			onMouseMove={ onMouseEnterAndMove }
 			onMouseLeave={ onMouseLeave }
 		>
 			<div
-				className="sgs-gradient-picker__gradient-bar-background"
+				className={ clsx(
+					'components-custom-gradient-picker__gradient-bar-background',
+					'sgs-gradient-picker__gradient-bar-background'
+				) }
 				style={ {
 					background,
 					opacity: hasGradient ? 1 : 0.4,
@@ -123,7 +135,10 @@ export default function CustomGradientBar( {
 			/>
 			<div
 				ref={ gradientMarkersContainerDomRef }
-				className="sgs-gradient-picker__markers-container"
+				className={ clsx(
+					'components-custom-gradient-picker__markers-container',
+					'sgs-gradient-picker__markers-container'
+				) }
 			>
 				{ ! disableInserter &&
 					( isMovingInserter || isInsertingControlPoint ) && (

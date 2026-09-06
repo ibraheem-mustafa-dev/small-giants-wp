@@ -184,16 +184,21 @@
 
 .sgs-option-picker--outlined .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg, transparent);
+	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
 	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
 }
 
-/* Considering state (hover / focus-within on the label) */
+/* Considering state (hover / focus-within on the label). --sgs-op-*-hover
+   (2026-09-03) is a real client-configurable override; unset falls through
+   the same chain as before (--sgs-op-bg/text, then the hardcoded default),
+   so an instance with nothing configured renders byte-identically. */
 .sgs-option-picker--outlined .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--outlined .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6));
+	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--secondary, #f3f4f6)));
+	background-image: var(--sgs-op-bg-hover-gradient, var(--sgs-op-bg-gradient, none));
 	border-color:     var(--sgs-op-border, var(--wp--preset--color--primary, currentColor));
-	color:            var(--sgs-op-text, var(--wp--preset--color--primary, currentColor));
+	color:            var(--sgs-op-text-hover, var(--sgs-op-text, var(--wp--preset--color--primary, currentColor)));
 }
 
 /* Selected state — CSS-only via :checked sibling */
@@ -234,13 +239,15 @@
 
 .sgs-option-picker--filled .sgs-option-picker__pill {
 	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #e5e7eb));
+	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
 	border: 2px solid transparent;
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--filled .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db));
+	background-color: var(--sgs-op-bg-hover, var(--sgs-op-bg, var(--wp--preset--color--surface-alt, #d1d5db)));
+	background-image: var(--sgs-op-bg-hover-gradient, var(--sgs-op-bg-gradient, none));
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
@@ -271,7 +278,8 @@
 
 .sgs-option-picker--ghost .sgs-option-picker__option:hover  .sgs-option-picker__pill,
 .sgs-option-picker--ghost .sgs-option-picker__option:focus-within .sgs-option-picker__pill {
-	background-color: var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05));
+	background-color: var(--sgs-op-bg-hover, var(--wp--preset--color--secondary, rgba(0, 0, 0, 0.05)));
+	background-image: var(--sgs-op-bg-hover-gradient, none);
 }
 
 .sgs-option-picker--ghost .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
@@ -379,11 +387,16 @@
 /* ── Image swatch ────────────────────────────────────────────────── */
 
 .sgs-option-picker__swatch--image {
-	/* Constrain to a consistent square; the <img> fills it via object-fit. */
+	/* Constrain to a consistent square; the <img> fills it via the shared
+	   media-element atom layer's object-fit (rule 37-media-no-handroll) —
+	   the <img> carries `.sgs-media-el` (render.php), which resolves
+	   `object-fit: var(--sgs-media-object-fit, cover)` from
+	   assets/css/media-atoms/object-fit.css. Byte-identical resting crop to
+	   the old local hardcode; block.json's "Swatch image" panel (prefix
+	   'swatch') now lets a client override it per instance. */
 	width: 2rem;
 	height: 2rem;
 	border-radius: 4px;
-	object-fit: cover;
 	/* F4 (visual-polish): 0.15 keyline matches the colour-chip keyline so a
 	   pale/off-white product photo (live-caught: coconut swatch) never
 	   disappears against a white pill. */
@@ -443,10 +456,37 @@
      R2) + dark text + NO tick when selected.
    ================================================================ */
 
+/* ⛔ RESTING STATE HAS A CONTRAST FLOOR — do not re-point these at `primary`.
+ *
+ * Measured on the Mama's Munches canary 2026-08-24, where primary is a pale pink
+ * (#e68a95) and the buybox band behind the picker is surface-alt (#fff9f0):
+ *   resting fill  `transparent`      -> 1.00 vs the container. It IS the container.
+ *   resting border `primary` #e68a95 -> 2.38:1, BELOW the WCAG 3.0 UI-boundary floor.
+ * Net effect: an unselected capsule had no fill and a near-invisible outline. Bean
+ * reported it by eye; three separate contrast probes of mine had missed it because
+ * they measured TEXT contrast (fine, 12.55:1) and never fill-vs-container.
+ *
+ * The preset was not "broken" — it had no floor. `primary` is a token, so the resting
+ * look inherits whatever the client's palette gives it: ~4.8:1 on the framework's dark
+ * teal default, 2.38:1 on a pale client primary. Any light-primary client got an
+ * unusable picker.
+ *
+ * Fix: the RESTING state uses neutral tokens that cannot fall below the floor —
+ * `text` for the outline (12.55:1 on the same canary) and `surface` for the fill.
+ * `primary` still owns the SELECTED state below, where it is a solid FILL rather than
+ * a hairline, so the brand colour is where it carries weight and passes contrast.
+ * That is what "solid" names: a solidly-filled selected pill.
+ *
+ * ⚠ The fill can only do so much on a low-contrast palette. On this canary every
+ * palette colour sits within 1.4:1 of the container (surface 1.06, border 1.36), so
+ * the OUTLINE is what defines the capsule. A client wanting a stronger resting fill
+ * should add a mid-tone to their palette, not re-point this token.
+ *
+ * Per-client override is unchanged: set --wp--custom--option-picker-presets--solid--*. */
 .sgs-option-picker--solid {
-	--sgs-op-bg: var(--wp--custom--option-picker-presets--solid--bg, transparent);
+	--sgs-op-bg: var(--wp--custom--option-picker-presets--solid--bg, var(--wp--preset--color--surface, #ffffff));
 	--sgs-op-text: var(--wp--custom--option-picker-presets--solid--text, var(--wp--preset--color--text, currentColor));
-	--sgs-op-border: var(--wp--custom--option-picker-presets--solid--border, var(--wp--preset--color--primary, #1F7A7A));
+	--sgs-op-border: var(--wp--custom--option-picker-presets--solid--border, var(--wp--preset--color--text, currentColor));
 	--sgs-op-sel-bg: var(--wp--custom--option-picker-presets--solid--sel-bg, var(--wp--preset--color--primary, #1F7A7A));
 	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--solid--sel-text, #ffffff);
 	--sgs-op-sel-border: var(--wp--custom--option-picker-presets--solid--sel-border, var(--wp--custom--option-picker-presets--solid--sel-bg, var(--wp--preset--color--primary, #1F7A7A)));

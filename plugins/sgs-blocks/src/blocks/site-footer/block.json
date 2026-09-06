@@ -23,24 +23,13 @@
 			"full"
 		],
 		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
+			"background": false,
+			"text": false,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"containerKind": "section",
 			"hideExtensions": [
 				"fx"
@@ -49,14 +38,17 @@
 				"background"
 			],
 			"boxFamilies": {
-				"contentBandPadding": [ "contentBandPadding" ],
+				"contentBandPadding": [
+					"contentBandPadding"
+				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -72,14 +64,15 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
@@ -88,9 +81,19 @@
 						"css:background-repeat": "backgroundRepeat",
 						"css:background-size": "backgroundSize",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour/spacing/border ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient"
+							}
+						}
+					},
+					"_note": "The rendered <footer>/<div> element (containerKind=section, rendered through SGS_Container_Wrapper per the composite-mirror rule R-31-9). Colour is now SGS-OWNED (backgroundColour/textColour + Gradient/Hover siblings, D294/D684 pattern — mirrors sgs/site-header's already-migrated shape) rather than riding native WP supports; spacing/border still ride the native supports, all serialised SCOPED via __experimentalSkipSerialization (Spec 32). The typography members are honest GAPs: this block declares no `supports.typography` and no font-* attributes. anim:preset/easing/stagger/trigger are honest GAPs too (no sgsAnimation*/stagger attributes); bgKenBurns is a Ken-Burns preset toggle with no animation-cluster member, so it stays unmapped exactly as on sgs/container."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -102,12 +105,11 @@
 					"attrMap": {
 						"css:grid-template-columns": "columns",
 						"css:justify-content": "justifyContent",
-						"css:align-content": "alignContent",
 						"css:align-items": "alignItems",
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap"
 					},
-					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247 reads alignItems||alignItems). display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
+					"_note": "Arrangement members map explicitly because this element declares no `prefix`. css:grid-template-columns maps to the `columns` COUNT attribute (SGS_Container_Wrapper expands it to repeat(N,1fr)) — this block has no explicit gridTemplateColumns ratio attribute, unlike sgs/container. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247 reads alignItems||alignItems). `alignContent` was REMOVED (2026-09-03, Bean-directed): the shared wrapper only ever emits align-content in its GRID branch (class-sgs-container-wrapper.php ~1297) and this block's `layout` is fixed to 'flex' with no picker to reach grid, so the attribute could never produce CSS — genuinely dead schema, not a gap. display / justify-items / order / overflow / grid-template-rows / grid-auto-rows have no attribute on this block and remain honest GAPs."
 				},
 				"content-band": {
 					"label": "Content band",
@@ -135,42 +137,64 @@
 		"sgs/site-footer-row"
 	],
 	"attributes": {
+		"layout": {
+			"type": "string",
+			"default": "flex",
+			"description": "Fixed to 'flex' — the footer shell is always a vertical flex stack of its rows. No client-facing picker (mirrors sgs/container's layout enum only in that it is the same attribute name the shared wrapper reads via class-sgs-container-wrapper.php's elseif('flex'===$layout) branch); declaring it here is what makes flexDirection/flexWrap (below) actually reach rendered CSS instead of being dead attributes (21-render-without-control)."
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
 		},
 		"contentWidth": {
 			"type": "object",
-			"default": {"desktop": "full"}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"default": {
+				"desktop": "full"
+			}
 		},
 		"backgroundAttachment": {
 			"type": "string",
@@ -191,6 +215,12 @@
 		},
 		"backgroundOverlayColour": {
 			"type": "string"
+		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -281,15 +311,22 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"flexDirection": {
 			"type": "string",
-			"default": "",
+			"default": "column",
+			"description": "Default 'column' (not the CSS-initial 'row'/''): this block's THREE rows (top/columns/bottom) must keep stacking vertically once `layout` starts resolving to 'flex' and the shared wrapper actually emits display:flex on the content band. A '' default here would flip the rows to sit side-by-side by row-axis default — a visual regression this attribute's own addition would otherwise cause. flexWrap's column-axis invariant (class-sgs-container-wrapper.php) then coerces wrap->nowrap for this direction, matching the pre-existing block-flow stacking exactly.",
 			"enum": [
 				"",
 				"row",
@@ -300,9 +337,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap",
 				"wrap-reverse"
@@ -329,6 +365,32 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
+		},
 		"shadow": {
 			"type": "string"
 		},
@@ -350,7 +412,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomInvert": {
 			"type": "boolean",
@@ -374,24 +439,52 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopInvert": {
 			"type": "boolean",
 			"default": false
 		},
-		"tagName": {
-			"type": "string",
-			"enum": [
-				"footer",
-				"div",
-				"section"
-			],
-			"default": "footer"
-		},
 		"alignItems": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

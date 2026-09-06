@@ -17,6 +17,12 @@
 	"icon": "welcome-view-site",
 	"supports": {
 		"sgs": {
+			"colourExemptions": {
+				"modal-background-colour": {
+					"rule": "states",
+					"reason": "The dialog panel is a static content container — view.js's click-to-close handler explicitly treats a click landing INSIDE this element's box as normal content interaction (does nothing); the interactive affordance belongs to the backdrop (overlayColour, which already has hover). Already correctly painted with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"containerKind": "section",
 			"containerMirror": false,
 			"elements": {
@@ -28,7 +34,19 @@
 						"fill"
 					],
 					"prefix": "trigger",
-					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline."
+					"attrMap": {
+						"css:background-image": "triggerBackgroundGradient",
+						"css:color-gradient": "triggerColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "triggerBackgroundHover",
+								"css:background-image": "triggerBackgroundHoverGradient"
+							}
+						}
+					},
+					"_note": "triggerColour/triggerBackground resolve via the default {prefix}{suffix} convention (Colour/Background suffixes). Rendered as a scoped rule `.uid .sgs-modal__trigger{...}` (render.php:37-43,73-75), not inline. triggerBackgroundGradient's attrMap entry added 2026-09-03 (the default convention has no Gradient-suffix awareness, so the gradient sibling floated as an unclaimed orphan). triggerColourGradient's attrMap entry added D956 (778879732 rollout, Phase 3) -- text-colour gradient sibling to triggerColour, background-clip:text mechanism; the D942 comment in render.php already anticipated and freed this slot by cancelling the class default's background-color when no explicit triggerBackground is set. triggerBackgroundHover/triggerBackgroundHoverGradient (2026-09-06, colour-conformance closeout, Case C) -- the trigger is a genuinely interactive element whose static `.sgs-modal__trigger--primary:hover` class default (style.css) never adapted to a custom triggerBackground; migrated the fill to sgs_fill_states_css() (render.php), which out-specifies the class default via the same selector-compounding already proven for the normal state (D942 comment above)."
 				},
 				"dialog": {
 					"label": "Dialog",
@@ -41,7 +59,7 @@
 					"attrMap": {
 						"css:background-color": "modalBackground"
 					},
-					"_note": "This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely — every declaration is block-private, scoped via render.php:37-79. maxWidth resolves via the bare-prefix default convention (case-insensitive `MaxWidth` -> `maxWidth`, render.php:21,95); modalBackground is mapped explicitly since the bare prefix + Background/Bg suffixes do not match its 'modal' name segment."
+					"_note": "This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely — every declaration is block-private, scoped via render.php:37-79. maxWidth resolves via the bare-prefix default convention (case-insensitive `MaxWidth` -> `maxWidth`, render.php:21,95); modalBackground is mapped explicitly since the bare prefix + Background/Bg suffixes do not match its 'modal' name segment. NO hover sibling (checked 2026-09-06, colour-conformance closeout, Case C): the dialog panel is a static content container -- view.js's closeOnOverlay click handler treats a click LANDING INSIDE this element's box as normal content interaction (does nothing), so there is no interaction affordance to hang a :hover rule off; already correctly wired via sgs_background_paint_decl() (render.php) for its flat+gradient pair, so no wiring fix was needed either."
 				},
 				"backdrop": {
 					"label": "Backdrop / overlay",
@@ -52,9 +70,44 @@
 					"prefix": "overlay",
 					"attrMap": {
 						"css:background-color": "overlayColour",
+						"css:background-image": "overlayColourGradient",
 						"css:opacity": "overlayOpacity"
 					},
-					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "overlayColourHover",
+								"css:background-image": "overlayColourHoverGradient"
+							}
+						}
+					},
+					"_note": "overlayColour/overlayOpacity drive `--sgs-modal-backdrop-colour`/`--sgs-modal-backdrop-opacity` custom-property VALUES on the wrapper (render.php:54-66), allowed inline per contract §A since they are variable values, not real property declarations. Mapped explicitly — overlayColour doesn't carry a Colour/BackgroundColour suffix match under the default convention. overlayColourGradient (2026-09-06, colour-conformance closeout) is its gradient sibling, same custom-property-gradient shape as tabBgColour/panelBgColour (sgs_custom_property_gradient_decls()) — non-empty wins over the flat overlayColour. overlayColourHover/overlayColourHoverGradient (2026-09-06, same closeout, Case Task-1) — the native `::backdrop` box IS a real interaction target: view.js's closeOnOverlay handler attaches its click-to-close listener to the whole dialog element and treats any click OUTSIDE the visible panel (i.e. on the backdrop) as a close action, so the backdrop is genuinely interactive, not purely decorative. `::backdrop:hover` is valid CSS (Chromium + Firefox track pointer state on generated boxes), so style.css gained `.sgs-modal__dialog::backdrop:hover` reading `--sgs-modal-backdrop-colour-hover(-gradient)` with fallback to the resting var — same 5-arg sgs_custom_property_gradient_decls() shape already proven on sgs/before-after's handleColour. Rarely visually obvious (the backdrop fills the whole viewport outside the panel, so it is 'hovered' whenever the pointer isn't over the dialog content) but the control is real, not inert."
+				},
+				"close": {
+					"label": "Close button",
+					"order": 4,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "close",
+					"attrMap": {
+						"css:background-color": "closeColourBackground",
+						"css:background-image": "closeColourBackgroundGradient",
+						"css:color": "closeColourText",
+						"css:color-gradient": "closeColourTextGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "closeColourBackgroundHover",
+								"css:background-image": "closeColourBackgroundHoverGradient",
+								"css:color": "closeColourTextHover",
+								"css:color-gradient": "closeColourTextHoverGradient"
+							}
+						}
+					},
+					"_note": "The dialog close button (.sgs-modal__close). Added 2026-09-03 alongside the hover-colour migration off a hardcoded style.css :hover rule -- render.php calls sgs_button_element_style_css() with prefix 'close', which reads exactly this attrMap shape by $prefix.'Suffix' concatenation. closeColourTextGradient/closeColourTextHoverGradient added 2026-09-04 (helpers-button-style.php D942/D956 gate) -- keyed css:color-gradient, distinct from the fill's css:background-image, since this element's real .sgs-modal__close background lives on a separate ::after pseudo-element (style.css:180), not this selector, so a text gradient here only ever competes with the OPERATOR-set closeColourBackground(Gradient), never the CSS-authored default. sgs_button_element_style_css() only paints the gradient when that operator background is unset (per-state)."
 				}
 			},
 			"hideExtensions": [
@@ -89,6 +142,10 @@
 		"triggerColour": {
 			"type": "string"
 		},
+		"triggerColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"triggerBackground": {
 			"type": "string"
 		},
@@ -114,9 +171,74 @@
 			"type": "string",
 			"default": "text"
 		},
+		"overlayColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the dialog backdrop scrim via a background-image custom-property sibling (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over overlayColour."
+		},
+		"overlayColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of overlayColour — the ::backdrop box is a real click-to-close target (view.js), so this is a genuine, if rarely obvious, hover state."
+		},
+		"overlayColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of overlayColourGradient. Non-empty wins over overlayColourHover."
+		},
 		"overlayOpacity": {
 			"type": "number",
 			"default": 50
+		},
+		"closeColourBackground": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourBackgroundHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeColourTextHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerBackgroundHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of triggerBackground — painted via sgs_fill_states_css() (render.php), out-specifying the static .sgs-modal__trigger--{style}:hover class default."
+		},
+		"triggerBackgroundHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of triggerBackgroundGradient. Non-empty wins over triggerBackgroundHover."
+		},
+		"modalBackgroundGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

@@ -49,16 +49,35 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (per-block no-inline migration contract): a CSS-length sanitiser
 // for hand-built box shorthand values (mirrors sgs/label + sgs/heading).
 // ---------------------------------------------------------------------------
-
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
 
 // -------------------------------------------------------------------------
 // Attributes.
@@ -147,6 +166,75 @@ $sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 
 $sgs_scoped_css = array();
 
+// --- Border (Block Customisation Standard — wrapper-level border control).
+// Keyed on the BARE uid class (not $sgs_style_sel's wrapper-qualified form),
+// for the SAME reason as the colour overrides below: view.js reparents the
+// <dialog> in overlay/command-palette display modes out of the wrapper, and
+// the dialog carries this uid class directly so the rule keeps matching it.
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers. Colour resolution (flat vs
+// gradient, base + hover) is delegated to sgs_border_states_css(). ---
+$sgs_ps_border_sel       = '.' . $sgs_style_uid;
+$sgs_ps_border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$sgs_ps_border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$sgs_ps_border_width_top = sgs_css_length_value( $sgs_ps_border_width_obj['top'] ?? '' );
+$sgs_ps_border_width_rgt = sgs_css_length_value( $sgs_ps_border_width_obj['right'] ?? '' );
+$sgs_ps_border_width_bot = sgs_css_length_value( $sgs_ps_border_width_obj['bottom'] ?? '' );
+$sgs_ps_border_width_lft = sgs_css_length_value( $sgs_ps_border_width_obj['left'] ?? '' );
+$sgs_ps_has_border_width = ( '' !== $sgs_ps_border_width_top || '' !== $sgs_ps_border_width_rgt || '' !== $sgs_ps_border_width_bot || '' !== $sgs_ps_border_width_lft );
+
+$sgs_ps_border_base_decls = array();
+if ( $sgs_ps_has_border_width ) {
+	$sgs_ps_bwt                 = '' !== $sgs_ps_border_width_top ? $sgs_ps_border_width_top : '0';
+	$sgs_ps_bwr                 = '' !== $sgs_ps_border_width_rgt ? $sgs_ps_border_width_rgt : '0';
+	$sgs_ps_bwb                 = '' !== $sgs_ps_border_width_bot ? $sgs_ps_border_width_bot : '0';
+	$sgs_ps_bwl                 = '' !== $sgs_ps_border_width_lft ? $sgs_ps_border_width_lft : '0';
+	$sgs_ps_border_base_decls[] = "border-width:{$sgs_ps_bwt} {$sgs_ps_bwr} {$sgs_ps_bwb} {$sgs_ps_bwl}";
+	if ( $sgs_ps_border_style_raw && 'solid' !== $sgs_ps_border_style_raw ) {
+		$sgs_ps_border_base_decls[] = 'border-style:' . $sgs_ps_border_style_raw;
+	}
+}
+if ( $sgs_ps_border_base_decls ) {
+	$sgs_scoped_css[] = "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border_base_decls ) . ';}';
+}
+
+$sgs_ps_border_colour_css = sgs_border_states_css(
+	$sgs_ps_border_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $sgs_ps_has_border_width && '' !== $sgs_ps_border_width_top ? $sgs_ps_border_width_top : '1px',
+	)
+);
+if ( '' !== $sgs_ps_border_colour_css ) {
+	$sgs_scoped_css[] = $sgs_ps_border_colour_css;
+}
+
+$sgs_ps_border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$sgs_ps_border_radius_base       = $sgs_ps_border_radius_tiers['base'];
+$sgs_ps_border_radius_tablet_obj = $sgs_ps_border_radius_tiers['tablet'];
+$sgs_ps_border_radius_mobile_obj = $sgs_ps_border_radius_tiers['mobile'];
+if ( null !== $sgs_ps_border_radius_base ) {
+	$sgs_ps_border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $sgs_ps_border_radius_base ) ),
+		array( 'selector' => $sgs_ps_border_sel )
+	);
+	if ( ! empty( $sgs_ps_border_radius_scoped['css'] ) ) {
+		$sgs_scoped_css[] = $sgs_ps_border_radius_scoped['css'];
+	}
+}
+$sgs_ps_border_radius_tab_val = sgs_corner_object_shorthand( $sgs_ps_border_radius_tablet_obj );
+$sgs_ps_border_radius_mob_val = sgs_corner_object_shorthand( $sgs_ps_border_radius_mobile_obj );
+if ( null !== $sgs_ps_border_radius_tab_val ) {
+	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{border-radius:{$sgs_ps_border_radius_tab_val};}}";
+}
+if ( null !== $sgs_ps_border_radius_mob_val ) {
+	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{border-radius:{$sgs_ps_border_radius_mob_val};}}";
+}
+
 // --- Colour overrides — scoped custom-property VALUES (no-inline contract:
 // this is a <style> rule, not an inline style="" attribute), only emitted
 // when at least one of the 5 rows has a client-set value. style.css consumes
@@ -159,51 +247,55 @@ if ( $sgs_ps_colour_decls ) {
 	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_colour_decls ) . ';}';
 }
 
+// --- Result thumbnail object-fit (37-media-no-handroll remediation,
+// 2026-09-03) — the shared media-atom system computes the custom-property
+// VALUE server-side, keyed on $sgs_style_uid (the same no-inline
+// scoped-styling uid class already on the wrapper for every display mode).
+// view.js adds the matching `sgs-media-el` + $sgs_style_uid marker classes
+// to each thumbnail <img> it builds at fetch time (there is no
+// server-rendered <img> here to attach classes to directly — the results
+// list is JS-built from a live REST response). style.css no longer
+// hardcodes object-fit:cover on the result-row thumbnail. ---
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_ps_fit_css = SGS_Media_Element::style( $attributes, '', 'sgs/product-search', $sgs_style_uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_ps_fit_css ) {
+		$sgs_scoped_css[] = $sgs_ps_fit_css;
+	}
+}
+
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
 // in block.json → not auto-inlined by get_block_wrapper_attributes()).
 // Emitted scoped via the stable core style engine. ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$sgs_spacing_args = array();
-	if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-		$sgs_spacing_args['padding'] = $attributes['style']['spacing']['padding'];
-	}
-	if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-		$sgs_spacing_args['margin'] = $attributes['style']['spacing']['margin'];
-	}
-	if ( ! empty( $sgs_spacing_args ) ) {
-		$sgs_base_scoped = wp_style_engine_get_styles(
-			array( 'spacing' => $sgs_spacing_args ),
-			array( 'selector' => $sgs_style_sel )
-		);
-		if ( ! empty( $sgs_base_scoped['css'] ) ) {
-			$sgs_scoped_css[] = $sgs_base_scoped['css'];
-		}
+
+$sgs_spacing_args = array();
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	$sgs_spacing_args['padding'] = $sgs_tor_padding_desktop;
+}
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	$sgs_spacing_args['margin'] = $sgs_tor_margin_desktop;
+}
+if ( ! empty( $sgs_spacing_args ) ) {
+	$sgs_base_scoped = wp_style_engine_get_styles(
+		array( 'spacing' => $sgs_spacing_args ),
+		array( 'selector' => $sgs_style_sel )
+	);
+	if ( ! empty( $sgs_base_scoped['css'] ) ) {
+		$sgs_scoped_css[] = $sgs_base_scoped['css'];
 	}
 }
 
 // --- Responsive padding/margin tiers — SGS custom object attrs, hand-built
 // shorthand, scoped @media on the SAME selector (contract: tablet
 // max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
+$sgs_padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$sgs_padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$sgs_margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$sgs_margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$sgs_padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$sgs_padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$sgs_margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$sgs_margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
-
-$sgs_padding_tab_val = $sgs_box_shorthand( $sgs_padding_tablet_obj );
-$sgs_padding_mob_val = $sgs_box_shorthand( $sgs_padding_mobile_obj );
-$sgs_margin_tab_val  = $sgs_box_shorthand( $sgs_margin_tablet_obj );
-$sgs_margin_mob_val  = $sgs_box_shorthand( $sgs_margin_mobile_obj );
+$sgs_padding_tab_val = sgs_box_object_shorthand( $sgs_padding_tablet_obj );
+$sgs_padding_mob_val = sgs_box_object_shorthand( $sgs_padding_mobile_obj );
+$sgs_margin_tab_val  = sgs_box_object_shorthand( $sgs_margin_tablet_obj );
+$sgs_margin_mob_val  = sgs_box_object_shorthand( $sgs_margin_mobile_obj );
 
 $sgs_tablet_decls = array();
 if ( null !== $sgs_padding_tab_val ) {
@@ -428,9 +520,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 		'drawerRef' => $dialog_id,
 	);
 
-	$overlay_context_attr = function_exists( 'wp_interactivity_data_wp_context' )
-		? wp_interactivity_data_wp_context( $overlay_context )
-		: sprintf( "data-wp-context='%s'", esc_attr( (string) wp_json_encode( $overlay_context ) ) );
+	$overlay_context_attr = wp_interactivity_data_wp_context( $overlay_context );
 
 	// command-palette's trigger carries the same aria-label as full-screen-
 	// overlay's, plus a spoken keyboard-shortcut hint (Ctrl/Cmd+K), since it
@@ -495,7 +585,7 @@ if ( $sgs_ps_is_dialog_mode ) {
 // -------------------------------------------------------------------------
 ?>
 <?php if ( $sgs_scoped_css ) : ?>
-<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via $sgs_css_length / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
+<style><?php echo wp_strip_all_tags( implode( '', $sgs_scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> breakout. ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from get_block_wrapper_attributes() and esc_* functions. ?>>
 <?php if ( 'icon-expand' === $display ) : ?>

@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "source": "stripe-hero-poc/index.html window.__matrices()",
+    "preset": "light",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "note": "Ground truth for verify-transform.mjs. `frustumSize` — NOT `viewport` — is the load-bearing figure: the rig sizes its orthographic frustum from canvas.clientWidth/clientHeight, which is smaller than the viewport because of page layout. Verify against frustumSize or the projection comparison is meaningless."
+  },
+  "modelViewMatrix": [
+    -2.591275657399799,
+    7.59769852298332,
+    -4.069430871906334,
+    0,
+    -7.584522933203167,
+    -2.543309727183159,
+    0.08116346056434481,
+    0,
+    -0.6759144177895055,
+    2.1579867133811987,
+    4.459398282806155,
+    0,
+    380.1459784057182,
+    -301.7,
+    -5004.499200229925,
+    1
+  ],
+  "projectionMatrix": [
+    0.0014357501794687725,
+    0,
+    0,
+    0,
+    0,
+    0.002628120893561104,
+    0,
+    0,
+    0,
+    0,
+    -0.00020002000200020003,
+    0,
+    0,
+    0,
+    -1.0002000200020003,
+    1
+  ],
+  "frustumSize": {
+    "width": 1393,
+    "height": 761
+  }
+}

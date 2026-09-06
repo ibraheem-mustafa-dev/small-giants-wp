@@ -49,11 +49,7 @@ PRESENTATION of the utility pieces it composes with** — cart, search, social, 
 Store-API logic remains WooCommerce's.) The **single canonical home** for navigation
 (Phase 6 consolidates all scattered nav content here — §1a lists the pointers to repoint).
 
-**AMENDED 2026-07-21 — this spec now ALSO owns the Site-Info data store.** The previous text read
-*"the Site-Info option store remains Spec 17's — nav owns the rendering of Site-Info-driven pieces, not
-the data store"*, and listed the data store under does-NOT-own. **Spec 17 has been deleted** (superseded by
-Spec 37), so that disclaimer pointed at a document that no longer exists — leaving `sgs_site_info` with no
-owner at all. The premise expired; the decision is therefore updated, not overruled.
+**This spec owns the Site-Info data store** (moved from the deleted Spec 17, 2026-07-21).
 **Now owned here:** the `sgs_site_info` option store, the `sgs/site-info` block-bindings source (including
 its context-gated empty-value hints — operators see a hint, public visitors see an empty string), and the
 Site Info admin page with its server-side validation and reserved-key denylist (ex-Spec 17 FR-S4-1/2/3).
@@ -73,12 +69,9 @@ binding + starter-picker. The nav adapts to these. Schema JSON-LD → `seo-schem
 `sgs/mobile-nav`. New `sgs/nav-menu` is a from-scratch rebuild under the same slug; old-shape posts are
 re-cloned, not migrated (D270). Spec 34 DELETED in Phase 6.
 
-**⛔ "Footer menus use the native WP core menu" is SUPERSEDED (2026-07-23).** That sentence stood
-here and is now unbuildable: `core/navigation` was restored to the banned-core-block list on
-2026-07-23 (`sgs/nav-menu` declares it in `block-replacements.json`), so a footer can no longer use
-the core menu block at all. The ban had silently lapsed when `sgs/adaptive-nav` — the only block
-declaring the replacement — was deleted at D362; restoring it closed a real hole, and closing it
-invalidated this line. **Footer menus are now served by FR-36-26.**
+**Footer menus cannot use the native WP core menu** — `core/navigation` is on the banned-core-block
+list (`sgs/nav-menu` declares it in `block-replacements.json`, restored 2026-07-23 after a gap
+opened when `sgs/adaptive-nav` was deleted at D362). **Footer menus are served by FR-36-26.**
 
 **Non-goals — DEFERRED to Phase 3 (§7):** the **block-based `wp_navigation` menu system** (classic menus
 are the primary/MVP path; block-menu support is a follow-on extra — Bean 2026-07-18, "not essential, not
@@ -393,22 +386,12 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
   `store('sgs/nav')`. ⛔ Beware STOP-DIALOG-DISPLAY-GATE (D338) when adding per-device geometry.
 - **Naming rule (binding): descriptive names, never studio names.** This ships to a restaurant, a law
   firm and a charity. Provenance belongs in the block.json `_note`.
-- **~~⚠ OPEN QUESTION~~ — ANSWERED 2026-07-28 session 2 (see the shipped block above): flat value
-  holds; lamalama derives the header's width so mobile is free; lusion = per-device `anchor`.**
-  Original question kept for the reasoning trail: does each variant PERSIST on mobile? All reference geometry was measured at 1440×900 only. If the compact panels
-  collapse to full-screen on small screens, then `header-attached` / `trigger-anchored` are desktop
-  PRESENTATIONS rather than device-spanning variants, and `variant` needs a per-device dimension (or
-  a declared per-variant mobile fallback) — a flat `variant` string would be the wrong shape.
-  **Scope is ALL EIGHT measured sites** (lamalama · lusion · dogstudio · fantasy · buck · resn ·
-  studionamma · wearecollins), not just the two compact ones: every variant traces to a real site,
-  and the six full-screen references are NOT assumed identical on mobile — mobile is the case this
-  block already implements, so variation among them (submenu model, animation, close placement,
-  scrolling) may deserve capturing rather than flattening. Cheapest outcome to test first:
-  lamalama's panel derives its width from a 438px pill header, so **if that header goes full-width
-  on mobile, `header-attached` already handles mobile correctly with no extra attribute.**
-- **~~⚠ `side-panel` has NO reference site~~ — RESOLVED 2026-07-28 session 2: DROPPED.** The
-  Task-1 pass confirmed zero of the 8 references uses an edge-anchored partial-width slide-in at
-  ANY width; the half-built `edge:left/right` CSS was retired with the `edge` attr (D404).
+- **ANSWERED 2026-07-28 session 2 (see the shipped block above): flat value holds; lamalama
+  derives the header's width so mobile is free; lusion = per-device `anchor`.** Measured across
+  all eight sites — `reports/2026-07-28-drawer-code-extraction/`.
+- `side-panel` is DROPPED (2026-07-28) — zero of the 8 references uses an edge-anchored
+  partial-width slide-in at any width; the half-built `edge:left/right` CSS was retired with
+  the `edge` attr (D404).
 - **Lateral (STILL unresolved after the 2026-07-28 build):** `sgs/modal` hand-rolls its own
   `showModal()` while the drawer delegates to `store('sgs/nav')` — two `<dialog>` engines remain.
   The variants build MIRRORED the modal's centred-card geometry model (the `centred` anchor:
@@ -425,6 +408,31 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
 | Content alignment | `drawerAlign` | enum `left`/`center`/`right` (CSS keyword — US spelling is the syntax, UK-rule exempt) | `left` | maps to align-items on the drawer body; children may override |
 | Inner element spacing | `drawerGap` | object `{desktop,tablet,mobile}` | `{desktop:"20px"}` | gap between child rows |
 | Popup padding | `drawerPadding` | object `{desktop:{top,right,bottom,left},…}` | `{}` | replaces any hardcoded padding; emitted via `sgs_emit_responsive_css` |
+
+**Editor-canvas preview is collapsed by default, never opened by `isSelected` (2026-08-22, `fa2fb79d` + `6425f728`).**
+`edit.js` cannot render the real `<dialog>` — a closed `<dialog>` cannot host an editable InnerBlocks region and
+`<ServerSideRender>` cannot host one at all — so it renders a `<div>` preview shell instead. That is deliberate and
+unchanged. What changed is the shell's SIZE. `style.css`'s real-dialog `width:100vw` / `height:100dvh` also land on
+the shell inside the editor canvas, because WP enqueues a block's `style` there too and `useBlockProps` puts
+`wp-block-sgs-nav-drawer` on the shell alongside `sgs-nav-drawer__editor`. With no opposing height/width in
+`editor.css`, the shell filled the entire canvas fold — measured 771px against a 771px viewport, i.e. exactly 100dvh.
+`min-height` cannot fix this; it loses to an explicit `height`.
+
+The fix mirrors what `core/navigation` does for its own overlay (collapsed in BOTH `style.scss` and `editor.scss`,
+opened by an explicit control and deliberately NOT by `isSelected`, which would reflow the canvas every time the
+operator selects a different block):
+
+- **Collapsed (default)** — a summary strip carrying the existing "Mobile drawer (preview)" label. The body is
+  hidden with CSS, never unmounted, so the drawer's children cannot be dropped and stay reachable in List View.
+- **Expanded** — an InspectorControls `ToggleControl` labelled **"Preview drawer open"**; the shell is bounded to
+  420px with its own scroll, plus the height/width neutralisers that cancel `style.css`'s viewport sizing.
+
+**The toggle is component state (`useState`), not a block attribute — it must never serialise into saved content;
+an editor preview is not a property of the page.** `editor.css` compiles to `index.css` (`editorStyle`) and never
+reaches the frontend, and no `display` is added to the dialog's base rule, so STOP-DIALOG-DISPLAY-GATE stays intact.
+
+Deliberately NOT given its own FR-ID: this is an editor-UX correction inside FR-36-6's existing scope (the drawer
+block's own behaviour), not a new capability.
 
 ### FR-36-7 — Shared nav plumbing utility (framework-reusable)
 One `viewScriptModule` + `store('sgs/nav', …)` (public API — the established SGS pattern; NOT core-nav's
@@ -466,16 +474,12 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   default; never a gate — FR-36-12).
 - **Per-device visibility:** **reuse the BUILT Responsive-Visibility extension** (device show/hide, Spec 35 /
   sgs-blocks) + `ResponsiveControl` for tiered values + the BUILT **`labelCollapse`** (Spec 37 §3.8 / FR-S9-8, live
-  on button/business-info — collapse an item's label to icon-only per tier). **⚠ Cross-spec conflict RESOLVED
-  2026-07-23 — do not re-litigate:** Spec 37 §3.8 previously said `labelCollapse` was "not carried forward as-is",
-  directly contradicting this instruction and FR-36-23's. Bean's rule (keep an operator TOGGLE, bin an AUTOMATIC
-  behaviour) settled it; code confirms it is a toggle (`button/edit.js:347`, `business-info/edit.js:88` — a
-  `SelectControl` defaulting to `'none'`), and the per-device cascade Spec 37 would have deferred to is Spec 35's.
-  *(Status corrected 2026-07-28, D400/D405: the cascade MECHANISM — canonical `resolveTier()` + tri-state control +
-  scoped emission — is now BUILT and live-proven, `b9c5f6d1`/`ac0c30eb`/`eb255f06`; the §3.8 header-CONTENT-hiding
-  FEATURE that would consume it remains open, and per D363's revisit condition `labelCollapse` should be re-tested
-  against it whenever that feature ships.)* **`labelCollapse` is RETAINED**; Spec 37 §3.8 + §8.2 were amended in the
-  same commit. Note the two mechanisms are not interchangeable: the cascade HIDES an element at a tier,
+  on button/business-info — collapse an item's label to icon-only per tier). **`labelCollapse` is RETAINED**
+  (Bean's rule: keep an operator TOGGLE, bin an AUTOMATIC behaviour; code confirms it is a toggle —
+  `button/edit.js:347`, `business-info/edit.js:88`). Full reasoning: Spec 37 §3.8. The per-device cascade this
+  would have deferred to (Spec 35's `resolveTier()`) is BUILT; the feature that would consume it to hide
+  equivalent elements per device is not — revisit `labelCollapse` against it whenever that feature ships.
+  Note the two mechanisms are not interchangeable: the cascade HIDES an element at a tier,
   `labelCollapse` KEEPS the element and its link while collapsing its label to icon-only. The
   `ResponsiveTriStateControl` (on/off/inherit tri-state, P2 §4.1) is **BUILT (2026-07-28, `ac0c30eb`)** — adopt it,
   never invent a parallel control (R-31-9). Full per-device model + ownership split: FR-36-24.
@@ -712,31 +716,14 @@ it; the semantic HTML is what actually earns the SEO and AI-crawl benefit. Keep 
 Inherited free from FR-36-17, NOT restated as new work: server-rendered, no AJAX, no lazy-load,
 descriptive anchor text.
 
-> **⛔ RETRACTED 2026-07-23 (same day) — the "conformance gap" recorded here NEVER EXISTED, and the
-> fix written for it was a REGRESSION, now reverted. Do not re-apply it.**
->
-> **What this note used to claim:** that `sgs/nav-menu` emitted *zero* `<nav>` elements and passed
-> `navLabel` to a roleless `<div>`, so the label "named nothing".
->
-> **Both premises were false.** The block's root has ALWAYS been a `<nav>`: `render.php` calls
-> `SGS_Container_Wrapper::render( …, array( 'tag' => 'nav', … ) )`, and the pre-existing
-> `'extra_attrs' => array( 'aria-label' => … navLabel … )` put the label ON that `<nav>`. Verified at
-> `git show bb11cd1e^:…/nav-menu/render.php` — lines 516 and 524. It was a correctly-named
-> navigation landmark.
->
-> **How the false diagnosis was reached:** `grep -c "<nav" nav-menu/render.php` returns 0, because the
-> `<nav>` is emitted by `includes/class-sgs-container-wrapper.php` — a different file the grep never
-> read. This is `STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING`, committed while writing the
-> fix for the previous instance of it.
->
-> **What the "fix" actually did, measured live on the canary:** added a SECOND `<nav>` nested inside
-> the existing one around the SAME four links, and DELETED the outer one's `aria-label` — leaving an
-> unnamed outer landmark wrapping a named inner one. Below the collapse point the outer `<nav>`
-> stayed `display:flex` with zero visible links. `axe` still reported `landmark-unique`.
->
-> **Reverted 2026-07-23** to one `<nav>` per instance carrying one label. Live-verified on
-> `/t1-nav/`: `navCount: 2` (bar + drawer, was 4), `nested: false` on both, links visible at 1440,
-> burger-only at 375, drawer opens with all four links.
+> `sgs/nav-menu`'s root has always been a `<nav>` with `navLabel` on it
+> (`SGS_Container_Wrapper::render(..., array('tag' => 'nav', ...))`). One `<nav>` per instance,
+> one label — verified live on `/t1-nav/` (`navCount: 2`, `nested: false` on both). A 2026-07-23
+> same-day fix that added a second nested `<nav>` was a REGRESSION and has been reverted — do
+> not re-apply it. That fix was built on a false diagnosis reached via
+> `grep -c "<nav" nav-menu/render.php` returning 0 — the `<nav>` tag is emitted from
+> `class-sgs-container-wrapper.php`, a file the grep never read
+> (`STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING`).
 >
 > **The one REAL bug in this area — found by the same live test, now fixed.** `navLabel` defaulted to
 > `'Primary'` in `block.json`, so `$nav_label` was never empty and the `wp_get_nav_menu_object()`
@@ -1002,7 +989,7 @@ in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks �
 | **36-5** mega CPT + native attach + real-position | `LIVE-VERIFIED 2026-07-25` | Seam = `attrs['type']==='sgs_mega_menu'` + `attrs['id']` (from `blocks_from_classic_menu`), reuses the verified resolver. Renders at real position (structurally impossible to render last). **CF-1 recursion guard** (`includes/helpers-mega-render.php`, static-set + depth-cap 3 + `finally`) — multi-instance no-fatal PROVEN on canary (D374 class). **CF-2 escaping** — injection (`panelBg:'red;}</style><script>'`) neutralised on a REAL render. Instance-scoped panel DOM ids (no duplicate-id) |
 | **36-10** disclosure-not-menu | `LIVE-VERIFIED 2026-07-25` | Probe on canary: `<button aria-expanded>`, `[data-sgs-mega-trigger]`/`[data-sgs-mega-panel]`, NO `role=menu`. `store('sgs/mega')` is a disclosure not a modal (no scroll-lock/inert/showModal/reparent, CF-3 — drawer store untouched); Tab-off closes (no trap), ESC returns focus |
 | **36-13** no-inline (mega) | `DONE` | `audit-inline-styling.js` = 0 INLINE-via-render across the mega blocks; scoped per-uid `<style>`, content-addressed uid (STOP-NO-KSORT) |
-| **mega-panel presets** (parent-paints-child) | `FIXED + LIVE-VERIFIED 2026-07-25 (D382, `b5f2ee02`)` | render.php emits distinct Columns/Cards/Minimal layouts per `data-mega-style`. **⛔ THE PREVIOUS TEXT HERE WAS FALSE ON THREE COUNTS — do NOT act on it if you find it quoted elsewhere.** It claimed (a) the FRONTEND worked "by construction", (b) that WP 7.0's iframed editor canvas ignores this block's `editor.css`, and (c) prescribed a "PROVEN FIX (not yet landed): move the preset rules into style.css". **All three were wrong.** `b5f2ee02` proves the two REAL causes, and they broke BOTH surfaces: **(1) SELF-NESTED SELECTORS** — render.php prepended `$root_sel` to `$content_sel`/`$group_sel`, which already begin with `$root_sel`, producing an impossible "panel inside itself" selector that matched nothing, so the FRONTEND was broken too; **(2) BROKEN style-handle FILENAME** — block.json named the SOURCE files (`file:./style.css`, `file:./editor.css`) while the build emits `style-index.css`/`index.css`, so WP registered a handle pointing at a non-existent file and SILENTLY enqueued nothing, reaching neither the frontend nor the canvas. The same block.json bug was swept from 4 other blocks in the same commit. **The iframe/editorStyle diagnosis is RETRACTED** (also retracted in CC memory `feedback_wp_iframe_canvas_ignores_editorstyle_use_style_css.md`); the prescribed style.css move addressed a cause that never existed and was never applied. Corrected 2026-07-27 after `git show b5f2ee02` contradicted this row. |
+| **mega-panel presets** (parent-paints-child) | `FIXED + LIVE-VERIFIED 2026-07-25 (D382, `b5f2ee02`)` | render.php emits distinct Columns/Cards/Minimal layouts per `data-mega-style`. Two real causes broke BOTH the frontend and the editor canvas: **(1) self-nested selectors** — render.php prepended `$root_sel` to `$content_sel`/`$group_sel`, which already began with `$root_sel`, producing an impossible selector that matched nothing; **(2) broken style-handle filename** — block.json named the source files (`file:./style.css`/`file:./editor.css`) while the build emits `style-index.css`/`index.css`, so WP silently enqueued nothing on either surface. The same block.json bug was swept from 4 other blocks in the same commit. An earlier "WP 7.0's iframed editor canvas ignores this block's editor.css" diagnosis for this bug is FALSE — do not cite it; full retraction in CC memory `feedback_wp_iframe_canvas_ignores_editorstyle_use_style_css.md`. |
 | **mega starter patterns** | `LIVE-VERIFIED 2026-07-25` | Inserting a starter was initially broken ("Block contains unexpected or invalid content" — mega-group/aside were STATIC with a save/pattern mismatch); FIXED by making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real editable columns + aside. Aside media capped (170px) so an empty/large image doesn't dominate |
 | 36-8, 36-17, 36-9a (mega) | **`LIVE-VERIFIED 2026-07-28 (D401)`** | **GATE 3 CLOSED.** Fixture: canary panel **1745** populated, menu **100** (mega at position 2), page **1842** `/gate3-mega-nav/`. Every owed item discharged: **axe 0 on the OPEN mega AND the OPEN drawer** · crawl assertion (all 7 panel links + 3 headings + aside copy in the pre-JS HTML) · **live recursion test** (a panel embedding a nav on its own menu → plain link, HTTP 200, no nested panel; fixture restored) · drawer no-regression · keyboard no-trap + ESC/focus-return · reduced-motion full end state at 120ms · **Bean's R-31-13 eye sign-off GIVEN** on the geometry pass. 36-8's collapse control is now the **Burger Menu** preset (see FR-36-8) |
 | **36-6** drawer desktop variants | `BUILT + probe-verified 2026-07-28 (D403/D404)` | Per-device `anchor`/`panelSize`/surface/`closeStyle`/`variantPreset` + 7 variations + nav-menu `listColumns` + backdrop-click-to-close (`store('sgs/nav')`), commits `faa14924`/`69dfbaf9`. Council-fixed (9 findings pre-commit); defaults render property-identical (page 1648); centred/full-screen anchors + backdrop-close verified live; variation insert + `isActive` verified in the real editor. DB seeded (`variant_attr='variantPreset'`; `variant_slots` weak by construction — value-differentiated variants, see FR-36-6 note). **⛔ Task 5 RAN 2026-07-29 AND WAS REJECTED (D411).** Mechanical half PASSED (21/21 cells + D374 multi-instance + both hand-set anchors + `listColumns` canvas visibility CONFIRMED). Fidelity half FAILED on Bean's eye — *"night and day"*; the variants reproduce structure + copy, not design. Two defects OPEN: `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (1:1 contrast, 6 elements, 2 variants) · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. **Next = block-vs-CPT design gate (Bean, separate session); no block-path rework before it.** Deliberate simplifications recorded: burger-morph static icon; trigger anchor CSS approximation |
@@ -1076,7 +1063,7 @@ so the check is otherwise vacuous). Cache: clear the CDN/LiteSpeed cache FIRST (
 `wp litespeed-purge all`) or you measure the stale `?ver`.
 
 ### FR-36-18 — Cutover for the LIVE production instances (mirror P2 §6c) + light rollback
-`sgs/adaptive-nav` is live on Mama's (sandybrown) + Indus (palestine-lives). Before deleting the old blocks:
+**Historical — the pre-deletion checklist.** At the time, `sgs/adaptive-nav` was live on both client sites. It was DELETED at Phase-1 close (2026-07-20); `sgs/nav-menu` + `sgs/nav-drawer` replace it. The checks that were run before deleting:
 re-author both live headers onto the new blocks **via the editor** (never WP-CLI `post_content` — D270),
 **canary-first**, before/after computed check both menus render + collapse. **Light rollback (do not
 over-engineer):** keep the retired block registrations **DORMANT briefly post-cutover** (a fast revert path if

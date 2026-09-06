@@ -1,11 +1,9 @@
 /**
  * SGS Testimonial Slider — editor component.
  *
- * FR-22-6 InnerBlocks migration (2026-05-30):
- * The previous custom repeater (testimonials array + TextareaControl rows)
- * is replaced with useInnerBlocksProps. Operators add/remove/reorder
- * sgs/testimonial blocks natively via the block inserter and drag handles.
- * All slider CONFIG controls (layout, autoplay, speed, dots/arrows, card style,
+ * Uses useInnerBlocksProps. Operators add/remove/reorder sgs/testimonial
+ * blocks natively via the block inserter and drag handles. All slider
+ * CONFIG controls (layout, autoplay, speed, dots/arrows, card style,
  * colours, hover) remain in the inspector panel.
  */
 import { __ } from '@wordpress/i18n';
@@ -13,8 +11,6 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -22,9 +18,12 @@ import {
 	RangeControl,
 	ToggleControl,
 	TextControl,
-	Button,
 } from '@wordpress/components';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow, textRow,
+	SgsBorderControl,
+	TypographyControls,
+	resolveColourToken,
+} from '../../components';
 import { colourVar } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -34,11 +33,6 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
-];
-
-const LAYOUT_OPTIONS = [
-	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
-	{ label: __( 'Split (image + slider)', 'sgs-blocks' ), value: 'split' },
 ];
 
 // Options mirror the 7 sgs/testimonial variants (block.json supports.sgs.variants),
@@ -74,8 +68,6 @@ const SLIDER_TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		layout,
-		sideImage,
 		autoplay,
 		autoplaySpeed,
 		showDots,
@@ -83,9 +75,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		slidesVisible,
 		cardStyle,
 		backgroundColour,
-		textColour,
-		backgroundColourHover,
-		textColourHover,
+		backgroundColourGradient,
 		borderColourHover,
 		borderColourHoverGradient,
 		effectHover,
@@ -94,11 +84,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 	} = attributes;
 
-	const isSplit = layout === 'split';
-
 	const className = [
 		'sgs-testimonial-slider',
-		isSplit ? 'sgs-testimonial-slider--split' : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -106,15 +93,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( {
 		className,
 		style: {
-			'--sgs-hover-bg': backgroundColourHover
-				? colourVar( backgroundColourHover )
-				: undefined,
-			'--sgs-hover-text': textColourHover
-				? colourVar( textColourHover )
-				: undefined,
-			'--sgs-hover-border': borderColourHover
-				? colourVar( borderColourHover )
-				: undefined,
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -141,65 +119,41 @@ export default function Edit( { attributes, setAttributes } ) {
 	// state per row (background/text), matching quote/heading. Border stays
 	// hover-only — no border-colour base attr exists on this block.
 	//
-	// UPDATED (2026-08-16): previously the normal state here read/wrote
-	// native `style.color.background`/`.text` with `supports.color`
-	// left `true`, because flipping that flag off broke the element-manifest
+	// The normal state reads/writes flat `backgroundColour`/`textColour`
+	// attrs (the same pattern quote/heading/card-grid/text already use), not
+	// native `style.color.background`/`.text` — the element-manifest
 	// checker's BASE resolution for this element's declared `states.hover`
-	// (`attrMap` pointed at `native:color.background`/`native:color.text`,
-	// which the checker only resolves when `supports.color.*` is `true` —
-	// measured: gate rose from 1 to 5, `npm run audit:element-manifest`).
-	// Fixed at the root by moving the manifest's base `attrMap` onto flat
-	// `backgroundColour`/`textColour` attrs (the same pattern quote/heading/
-	// card-grid/text already use) — `supports.color.background`/`.text` are
-	// now `false` and the native Text/Background panel no longer renders.
+	// only resolves an `attrMap` pointing at `native:color.*` when
+	// `supports.color.*` is `true`, so `supports.color.background`/`.text`
+	// stay `false` and the native Text/Background panel does not render.
 	return (
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) =>
-									setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'border',
 						label: __( 'Border colour', 'sgs-blocks' ),
@@ -220,81 +174,6 @@ export default function Edit( { attributes, setAttributes } ) {
 				] }
 			/>
 			<InspectorControls>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						value={ layout || 'full' }
-						options={ LAYOUT_OPTIONS }
-						onChange={ ( val ) => setAttributes( { layout: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-
-				{ isSplit && (
-					<PanelBody
-						title={ __( 'Side Image', 'sgs-blocks' ) }
-						initialOpen={ true }
-					>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										sideImage: {
-											id: media.id,
-											url: media.url,
-											alt: media.alt,
-										},
-									} )
-								}
-								allowedTypes={ [ 'image' ] }
-								value={ sideImage?.id }
-								render={ ( { open } ) => (
-									<div>
-										{ sideImage?.url ? (
-											<>
-												<img
-													src={ sideImage.url }
-													alt=""
-													style={ {
-														maxWidth: '100%',
-														marginBottom: '8px',
-														borderRadius: '4px',
-													} }
-												/>
-												<Button
-													variant="secondary"
-													onClick={ () =>
-														setAttributes( {
-															sideImage:
-																undefined,
-														} )
-													}
-													isDestructive
-												>
-													{ __(
-														'Remove image',
-														'sgs-blocks'
-													) }
-												</Button>
-											</>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Select side image',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
-					</PanelBody>
-				) }
 
 				{ /* Outer PanelBody removed 2026-08-13 — it duplicated this
 				   ToolsPanel's own "Slider Settings" title with no
@@ -568,13 +447,69 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					{ (() => {
+						const sliderContrastAgainst =
+							backgroundColour && ! backgroundColourGradient
+								? backgroundColour
+								: '';
+						return (
+							<SgsBorderControl
+								widthValues={ attributes.borderWidth ?? {} }
+								onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+								widthPresets={ [ '10', '20', '30' ] }
+								styleValue={ attributes.borderStyle }
+								onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+								colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+								colourValue={ attributes.borderColour }
+								onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+								colourGradientValue={ attributes.borderColourGradient }
+								onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+								colourLinked={ true }
+								contrastAgainst={ sliderContrastAgainst }
+								radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+								onRadiusChange={ ( tier, next ) => {
+									const key = tier === 'base' ? 'desktop' : tier;
+									setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+								} }
+							/>
+						);
+					} )() }
+				</PanelBody>
 			</InspectorControls>
-			{ /* showLayout={false}: this block owns its own Layout control above
-			     (Full / Split). The shared one writes stack/flex/grid into the
-			     same `layout` attr, whose enum here is full|split — so every
-			     write from it was accepted in the editor, stored, then SILENTLY
-			     reverted to "full" by WordPress enum coercion. Same defect and
-			     same fix as sgs/gallery. */ }
+			{ /* ── Styles tab ─────────────────────────────────────────────
+			   Typography — replaces the old WP-native supports.typography
+			   (fontSize/lineHeight only) with the shared TypographyControls
+			   component + sgs_typography_css_rule() render.php helper
+			   (D971/D972 full-replacement track). Root prefix "" — the
+			   quote text itself is child-owned by sgs/testimonial, but the
+			   slider root scopes its own text-colour/typography styling. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+					/>
+				</PanelBody>
+			</InspectorControls>
+			{ /* showLayout={false}: this block builds its OWN internal structure
+			     (__stage > __track, slide count driven by --sgs-slides-visible), so a
+			     container layout control would be a SECOND owner of one behaviour.
+			     History: the block used to declare its own `layout` attr with an
+			     enum of full|split, colliding with the container vocabulary the
+			     shared control writes (stack/flex/grid). Every such write was
+			     accepted in the editor, stored, then SILENTLY reverted by WordPress
+			     enum coercion — and the CONVERTER hit the same collision on a path
+			     this workaround never covered, emitting layout:"grid" and collapsing
+			     a cloned slider to zero width. The attr (and the redundant split
+			     shell, which a container composes better) was removed 2026-08-25;
+			     hiding the control is now a statement about ownership, not a
+			     workaround for a name clash. Same collision family as sgs/gallery. */ }
 			<ContainerWrapperControls
 				attributes={ attributes }
 				setAttributes={ setAttributes }
@@ -583,15 +518,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 
 			<div { ...blockProps }>
-				{ isSplit && sideImage?.url && (
-					<div className="sgs-testimonial-slider__side-image">
-						<img
-							src={ sideImage.url }
-							alt={ sideImage.alt || '' }
-							className="sgs-testimonial-slider__side-img"
-						/>
-					</div>
-				) }
 				{ /*
 				 * useInnerBlocksProps renders the .sgs-testimonial-slider__track
 				 * directly with the InnerBlocks appender inside. Each sgs/testimonial
@@ -600,13 +526,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				 * wraps each inner block in .sgs-testimonial-slider__slide so view.js
 				 * querySelectorAll finds them correctly.
 				 */ }
-				{ isSplit ? (
-					<div className="sgs-testimonial-slider__slider-content">
-						<div { ...innerBlocksProps } />
-					</div>
-				) : (
-					<div { ...innerBlocksProps } />
-				) }
+				<div { ...innerBlocksProps } />
 			</div>
 		</>
 	);

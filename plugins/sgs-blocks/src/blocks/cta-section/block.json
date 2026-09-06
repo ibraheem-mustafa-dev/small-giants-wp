@@ -17,6 +17,7 @@
 	"icon": "megaphone",
 	"supports": {
 		"sgs": {
+			"_comment_overlayNotAdopted": "backgroundImage/Size/Position/Repeat/Attachment, backgroundOverlay*, bgVideo*/bgSvg*/bgParallax/bgKenBurns are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
 			"imageControls": false,
 			"is_section_root": true,
 			"containerKind": "section",
@@ -25,26 +26,21 @@
 				"layout",
 				"background",
 				"shapeDividers",
-				"gridItems"
+				"hover"
 			],
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
 				],
-				"gridItemPadding": [
-					"gridItemPadding"
-				],
-				"gridItemBorderRadius": [
-					"gridItemBorderRadius"
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -52,45 +48,67 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout", "animation" ],
+					"clusters": [
+						"fill",
+						"layout",
+						"animation"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "backgroundColour",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
 						"css:box-shadow": "shadow",
+						"css:box-shadow-color": "shadowColour",
 						"anim:parallax": "bgParallax",
-						"anim:duration": "bgAnimationDuration"
+						"anim:duration": "bgAnimationDuration",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade, while typography (fontSize/lineHeight/etc) is re-selectored to .sgs-cta-section__headline — see the 'headline' element below for that half of the split.",
-					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block."
+					"_note": "block.json's own Selectors API deliberately splits colour: color.background/color.text are scoped to the wrapper root (.wp-block-sgs-cta-section) so buttons/body/ribbon inherit text colour by cascade. Typography (fontSize/lineHeight/etc) was migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972) and is ALSO emitted on the wrapper root, matching core/group's inheritance-only approach — the 'headline' element's attrMap below documents which bare attributes paint it, not a distinct selector.",
+					"_note_animation": "FR-35-6 — anim:parallax/anim:duration resolve via bgParallax/bgAnimationDuration (explicit attrMap; no `prefix` declared, per ROLLOUT REQUIREMENT 1). bgKenBurns is a separate preset toggle with no animation-cluster member and stays unmapped. anim:preset/anim:easing/anim:stagger/anim:trigger are honest gaps — no sgsAnimation*/staggerDelay/scroll-trigger attrs on this block.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"headline": {
 					"label": "Headline",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:font-size": "native:typography.fontSize",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign"
-					}
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:line-height": "lineHeight",
+						"css:letter-spacing": "letterSpacing",
+						"css:font-style": "fontStyle",
+						"css:text-transform": "textTransform",
+						"css:text-align": "textAlign"
+					},
+					"_note_textcolour": "css:color intentionally UNMAPPED. It previously pointed at native:color.text, which was switched off here so the native colour UI would not compete with the block's SgsColourPanel text row (rule 31). Leaving the pointer would have recreated the dead binding fixed on sgs/container in 0f2c167f. The headline now INHERITS the root text colour the wrapper sets (D713) — a real gap report on this element is honest, a wrong mapping is not."
 				},
 				"body": {
 					"label": "Body text",
 					"order": 3,
 					"clusters": [],
-					"_note": "The body attribute has no dedicated typography/colour attrs of its own — it inherits the wrapper's native text colour and the theme's body typography by cascade, mirroring quote's 'quote-body' pattern."
+					"_note": "Rendered by the InnerBlocks sgs/text child (.sgs-cta-section__body). It has no dedicated typography/colour attrs of its own on this block — it inherits the wrapper's native text colour and the theme's body typography by cascade, mirroring quote's 'quote-body' pattern."
 				},
 				"ribbon": {
 					"label": "Ribbon",
@@ -108,7 +126,9 @@
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 6,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -127,35 +147,13 @@
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 7,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:width": "contentWidth"
-					}
-				},
-				"grid-item": {
-					"label": "Grid item (stats)",
-					"layer": "GRID_AREA",
-					"order": 8,
-					"clusters": [ "text", "fill", "layout" ],
-					"prefix": "gridItem",
-					"attrMap": {
-						"css:background-color": "gridItemBackground",
-						"css:padding": "gridItemPadding",
-						"css:border-radius": "gridItemBorderRadius",
-						"css:border-width": "gridItemBorder",
-						"css:border-style": "gridItemBorder",
-						"css:border-color": "gridItemBorder",
-						"css:border-color-gradient": "gridItemBorderGradient",
-						"css:box-shadow": "gridItemShadow",
-						"css:color": "gridItemTextColour"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:border-color-gradient": "gridItemBorderGradientHover"
-							}
-						}
 					}
 				},
 				"decorative": {
@@ -183,31 +181,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"text": true,
+			"text": false,
 			"background": false,
 			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -220,21 +196,60 @@
 		"spacing": {
 			"padding": ".wp-block-sgs-cta-section",
 			"margin": ".wp-block-sgs-cta-section"
-		},
-		"typography": {
-			"root": ".wp-block-sgs-cta-section"
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"textAlign": {
 			"type": "string"
 		},
-		"headline": {
-			"type": "string",
-			"default": "",
-			"role": "content"
+		"fontSize": {
+			"type": "object",
+			"default": {}
 		},
-		"body": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"letterSpacing": {
+			"type": "number"
+		},
+		"letterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"headline": {
 			"type": "string",
 			"default": "",
 			"role": "content"
@@ -247,11 +262,11 @@
 			"type": "string",
 			"default": ""
 		},
-		"backgroundColor": {
+		"backgroundColour": {
 			"type": "string",
 			"default": "accent"
 		},
-		"textColor": {
+		"textColour": {
 			"type": "string",
 			"default": "text"
 		},
@@ -267,6 +282,11 @@
 		"backgroundImageOpacity": {
 			"type": "number",
 			"default": 30
+		},
+		"backgroundImageDecorative": {
+			"type": "boolean",
+			"default": true,
+			"_comment": "Spec 35 item 18 / {element}Decorative convention. render.php paints this image purely as a CSS background-image (never a frontend <img> tag), which is inherently decorative to assistive tech with no alt attribute involved — default true documents that. The only literal <img> is the operator-only MediaPicker preview thumbnail in edit.js's InspectorControls, which this attribute drives directly."
 		},
 		"stats": {
 			"type": "array",
@@ -319,7 +339,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridTemplateColumns": {
 			"type": "object",
@@ -369,9 +393,41 @@
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
+		"backgroundOverlayOpacity": {
+			"type": "object",
+			"default": {
+				"desktop": 30
+			}
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundOverlayColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundOverlayBlendMode": {
+			"type": "string",
+			"default": "normal",
+			"enum": [
+				"normal",
+				"multiply",
+				"screen",
+				"overlay",
+				"darken",
+				"lighten",
+				"color-dodge",
+				"color-burn",
+				"soft-light",
+				"hard-light",
+				"difference",
+				"exclusion"
+			]
 		},
 		"bgVideo": {
 			"type": "object"
@@ -400,6 +456,10 @@
 		"shadowColour": {
 			"type": "string"
 		},
+		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
@@ -426,7 +486,10 @@
 		},
 		"shapeDividerTopScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerTopFlip": {
 			"type": "boolean",
@@ -450,7 +513,10 @@
 		},
 		"shapeDividerBottomScale": {
 			"type": "object",
-			"default": { "x": 100, "y": 100 }
+			"default": {
+				"x": 100,
+				"y": 100
+			}
 		},
 		"shapeDividerBottomFlip": {
 			"type": "boolean",
@@ -502,40 +568,6 @@
 		"bgSvgTextShadow": {
 			"type": "boolean",
 			"default": false
-		},
-		"gridItemPadding": {
-			"type": "object",
-			"default": {"desktop": {}}
-		},
-		"gridItemBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderRadius": {
-			"type": "object",
-			"default": {}
-		},
-		"gridItemBorder": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemBorderGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's resting border with a masked ring instead of a flat colour (D636 border-gradient rollout, residual scope). Non-empty wins over gridItemBorder's colour component; width/style still come from gridItemBorder."
-		},
-		"gridItemBorderGradientHover": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the grid item's hover-state border (D636 border-gradient rollout, residual scope). Non-empty wins on :hover/:focus-within; empty means no hover change."
-		},
-		"gridItemShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"gridItemTextColour": {
-			"type": "string",
-			"default": ""
 		},
 		"gridTemplateRows": {
 			"type": "object",
@@ -591,9 +623,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -602,25 +633,11 @@
 			"type": "object",
 			"default": {}
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"contentBandPadding": {
 			"type": "object",
-			"default": { "desktop": {} }
+			"default": {
+				"desktop": {}
+			}
 		},
 		"tagName": {
 			"type": "string",
@@ -639,6 +656,60 @@
 		"ariaLabel": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty WINS over textColour at render time, mirroring sgs/hero and sgs/container."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient for the hover root text colour. Non-empty wins over textColourHover."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Raw CSS gradient override for the resting root background, alongside the backgroundColour theme-preset-swatch picker. Non-empty WINS over backgroundColour at render time, bypassing the has-{slug}-background-color preset class entirely and painting background-image directly on the block's own scoped root rule instead."
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-within."
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -648,7 +719,6 @@
 	"example": {
 		"attributes": {
 			"headline": "Your Compelling Headline Goes Here",
-			"body": "A brief supporting statement that explains your value proposition.",
 			"layout": "centred",
 			"buttons": [
 				{

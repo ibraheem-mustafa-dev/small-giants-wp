@@ -25,39 +25,31 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"button": {
 					"label": "Button",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -68,17 +60,18 @@
 						"css:text-transform": "textTransform",
 						"css:text-decoration": "textDecoration",
 						"css:color": "colourText",
+						"css:color-gradient": "colourTextGradient",
 						"css:background-color": "colourBackground",
 						"css:background-image": "colourBackgroundGradient",
 						"css:width": "customWidth",
 						"css:min-height": "minHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
-						"css:border-color": "colourBorder",
-						"css:border-color-gradient": "colourBorderGradient",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:font-family": "fontFamily"
 					},
@@ -86,10 +79,11 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "colourTextHover",
+								"css:color-gradient": "colourTextHoverGradient",
 								"css:background-color": "colourBackgroundHover",
 								"css:background-image": "colourBackgroundHoverGradient",
-								"css:border-color": "colourBorderHover",
-								"css:border-color-gradient": "colourBorderHoverGradient",
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "boxShadowHover"
 							}
 						}
@@ -98,7 +92,10 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
@@ -117,6 +114,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Click Here",
@@ -165,7 +174,9 @@
 		},
 		"widthType": {
 			"type": "object",
-			"default": {"desktop": "fit"}
+			"default": {
+				"desktop": "fit"
+			}
 		},
 		"customWidth": {
 			"type": "object",
@@ -173,11 +184,12 @@
 		},
 		"customWidthUnit": {
 			"type": "object",
-			"default": {"desktop": "px", "tablet": "px", "mobile": "px"}
+			"default": {
+				"desktop": "px",
+				"tablet": "px",
+				"mobile": "px"
+			}
 		},
-
-
-
 		"minHeight": {
 			"type": "object",
 			"default": {}
@@ -193,22 +205,6 @@
 		"minHeightMobileUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"fontFamily": {
 			"type": "string",
@@ -266,9 +262,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"colourTextGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the button's TEXT via background-clip:text instead of a flat colourText. Non-empty (and valid) wins at render time. Precondition: sgs/button paints its own background on the SAME selector as its text, so this instance's background paint moves onto a private `::after` layer only when this (or colourTextHoverGradient) is set — see plugins/sgs-blocks/CLAUDE.md 'Real text gradient'. Every button with no gradient set is unaffected."
+		},
 		"colourTextHover": {
 			"type": "string",
 			"default": ""
+		},
+		"colourTextHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of colourTextGradient. Non-empty (and valid) wins over colourTextHover on :hover/:focus-visible."
 		},
 		"colourBackground": {
 			"type": "string",
@@ -286,23 +292,23 @@
 			"type": "string",
 			"default": ""
 		},
-		"colourBorder": {
+		"borderColour": {
 			"type": "string",
 			"default": ""
 		},
-		"colourBorderGradient": {
+		"borderColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the button border instead of a flat colour. Non-empty wins over colourBorder at render time (D636)."
+			"description": "CSS gradient string painting the button border instead of a flat colour. Non-empty wins over borderColour at render time (D636)."
 		},
-		"colourBorderHover": {
+		"borderColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"colourBorderHoverGradient": {
+		"borderColourHoverGradient": {
 			"type": "string",
 			"default": "",
-			"description": "Hover-state sibling of colourBorderGradient. Non-empty wins over colourBorderHover on :hover/:focus-visible."
+			"description": "Hover-state sibling of borderColourGradient. Non-empty wins over borderColourHover on :hover/:focus-visible."
 		},
 		"borderStyle": {
 			"type": "string",
@@ -312,13 +318,11 @@
 			"type": "object",
 			"default": {}
 		},
-		"borderRadiusTablet": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"boxShadow": {
 			"type": "string",

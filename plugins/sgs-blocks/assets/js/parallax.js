@@ -4,7 +4,10 @@
  * Activates only when CSS Scroll-Driven Animations are NOT supported
  * (i.e. pre-Chrome 115, pre-Firefox 135, Safari < 18).
  *
- * Uses background-position (background variant) or translateY (element variant).
+ * Uses translateY on the element. ('background' variant — background-
+ * position on the block's own background image — was RETIRED 2026-08-19;
+ * BackgroundPanel's own bgKenBurns/bgParallax pair is the real, working
+ * background-motion mechanism.)
  * All scroll work is batched through requestAnimationFrame for smooth 60fps
  * performance. Only blocks near the viewport (±1 viewport height) are updated
  * each frame to keep the CPU cost negligible on long pages.
@@ -68,11 +71,7 @@
 			// Map 0–1 progress to an offset of -(strength/2) → +(strength/2).
 			var offset = ( progress - 0.5 ) * strength;
 
-			if ( 'background' === type ) {
-				// Shift background-position-y. Block must have a background image
-				// set — otherwise this property has no visible effect.
-				el.style.backgroundPositionY = ( 50 + offset * 0.5 ) + '%';
-			} else if ( 'element' === type ) {
+			if ( 'element' === type ) {
 				el.style.transform = 'translateY(' + offset + 'px)';
 			}
 		} );

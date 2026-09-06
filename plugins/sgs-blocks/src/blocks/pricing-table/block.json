@@ -29,17 +29,36 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"toggle-label-hover": {
+					"rule": "states",
+					"reason": "toggleLabelHoverColour is HOVER-ONLY by design — no toggleLabelColour resting sibling exists anywhere in this block. Same shape as sgs/gallery's overlayColourHover (noBaseByDesign, just undeclared via that marker here). Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
+			},
+			"enabledExtensions": [
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": false,
+				"focusRing": true
+			},
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"collection": true,
 			"iconPicker": true,
 			"imageControls": false,
@@ -49,28 +68,33 @@
 					"label": "Wrapper",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "native:color.text",
 						"css:background-color": "native:color.background",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
-						"css:max-width": "maxWidth"
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:max-width": "maxWidth",
+						"css:border-color-gradient": "borderColourGradient"
 					},
-					"_note": "Mirrors sgs/container's wrapper/grid split. Only fontSize+lineHeight are declared under `typography` (no letterSpacing/textTransform/fontWeight/fontStyle/textAlign/fontFamily) — the remaining text members are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
+					"_note": "Mirrors sgs/container's wrapper/grid split. Typography (fontSize/lineHeight) migrated OFF this element's WP-native support onto the `title` element's own titleFontSize*/titleLineHeight* attrs (D971/D972 full-replacement track) — the native support always rendered onto `.sgs-pricing-table__name` via `selectors.typography`, not the wrapper, so this was a mis-scoped mapping being corrected, not a capability removed. The remaining text-cluster members (letterSpacing/textTransform/textAlign/fontFamily) are honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
@@ -88,52 +112,109 @@
 				"title": {
 					"label": "Plan name",
 					"order": 3,
-					"clusters": [ "text" ],
+					"prefix": "title",
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "titleColour",
+						"css:background-image": "titleColourGradient",
 						"tag": "headingLevel"
 					},
-					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` also targets the back-compat `.sgs-pricing-table__title` alias). Only colour is block-level and independently controlled — no titleFontSize/Weight exists, an honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:379/381) but this element has no `prefix` declared, so it needs an explicit map."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover"
+							}
+						}
+					},
+					"_note": "Rendered once per plan into `.sgs-pricing-table__name` (block.json `selectors.typography` used to also target the back-compat `.sgs-pricing-table__title` alias, before the native support this element hosted was retired). `prefix: title` added 2026-09-05 (D971/D972 full-replacement track) so titleFontSize/titleFontSizeUnit/titleFontWeight/titleFontStyle/titleLineHeight/titleLineHeightUnit resolve via the standard {prefix}{Suffix} convention with no explicit attrMap entry needed (mirrors sgs/counter's `label` element) — this element previously had no font-size/weight control at all; that gap is now closed. `attrMap.tag` stays explicit — `headingLevel` sets the rendered tag on this element (render.php:379/381) and does not follow the typography-suffix convention. titleColourGradient (cluster A Task 2) is the text-colour gradient sibling to titleColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. The rendered declaration paints onto a comma-joined selector pair (`.sgs-pricing-table__name,.sgs-pricing-table__title`) — see render.php's `$title_sel`. 2026-09-05: `states.hover.css:color`->titleColourHover declared explicitly (render.php:610-616 -- `sgs_emit_state_colour_css( $title_sel, array(), array( 'color:…' ) )`, whose third argument is the HOVER decl list, emitted via `sgs_hover_state_rules()` on `:hover, :focus-visible`, helpers-tokens.php:1351-1363). Without it titleColourHover derived to state=NULL and collided with ctaColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot."
 				},
 				"price": {
 					"label": "Price",
 					"order": 4,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "priceColour",
 						"css:background-image": "priceColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap. priceColourGradient (D636 Task 1b) is the text-colour gradient sibling to priceColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "priceColourHover"
+							}
+						}
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__price` — no priceFontSize/Weight exists, an honest gap. priceColourGradient (D636 Task 1b) is the text-colour gradient sibling to priceColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member. `states.hover.attrMap` added 2026-09-03 — without it priceColourHover cross-attributed to css_element='toggle-label' via the CSS-scan signal (a genuine classifier confusion, same class as the option-picker pillBgColour bug fixed earlier this session; explicit attrMap is always authoritative over the derived signal)."
 				},
 				"feature": {
 					"label": "Feature list item",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
-						"css:color": "featureColour"
+						"css:color": "featureColour",
+						"css:background-image": "featureColourGradient"
 					},
-					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "featureColourHover"
+							}
+						}
+					},
+					"_note": "Only colour is block-level and independently controlled for `.sgs-pricing-table__feature` — no featureFontSize/Weight exists, an honest gap. featureColourGradient (cluster A Task 2) is the text-colour gradient sibling to featureColour — background-clip:text mechanism, same recipe as priceColour/priceColourGradient; the 'fill' cluster was added solely to place this member. 2026-09-05: `states.hover.css:color`->featureColourHover declared explicitly (render.php:621-626 -- `sgs_emit_state_colour_css()` on `$root_sel . ' .sgs-pricing-table__feature'`, the same selector this element's base attrMap paints, third argument = hover decls). Without it featureColour and featureColourHover both derived to (color, feature, state=NULL) and collided on one routing slot."
 				},
 				"cta": {
 					"label": "CTA button",
 					"order": 6,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "ctaColour",
-						"css:background-color": "ctaBackground"
+						"css:color-gradient": "ctaColourGradient",
+						"css:background-color": "ctaBackground",
+						"css:background-image": "ctaBackgroundGradient"
 					},
-					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "ctaColourHover"
+							}
+						}
+					},
+					"_note": "`ctaStyle` (accent/outline/etc. preset) is a variant/behaviour field, not an independent style control, so it is not mapped. No independent CTA font-size/border/padding attrs exist — honest gaps. ctaColourGradient (2026-09-04, D956) is the text-colour gradient sibling to ctaColour, safe unconditionally since ctaBackground already paints on a separate ::after layer (render.php sgs_block_background_layer_css()). ctaBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to ctaBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer. 2026-09-05: `states.hover.css:color`->ctaColourHover declared explicitly (render.php:585-590 -- `sgs_emit_state_colour_css( $pt_cta_sel, array(), array( 'color:…' ) )`, `$pt_cta_sel` at render.php:563 being the same `.sgs-pricing-table__cta` selector this element's base attrMap paints). Without it ctaColourHover derived to state=NULL and collided with titleColourHover/popularBadgeColourHover on the (color, element=NULL, state=NULL) slot. `ctaBackgroundHover` is NOT declared here -- it was not among the gate's findings and its emission was not audited in this pass."
 				},
 				"badge": {
 					"label": "Popular badge",
 					"order": 7,
 					"prefix": "popularBadge",
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "popularBadgeColour",
-						"css:background-color": "popularBadgeBackground"
+						"css:color-gradient": "popularBadgeColourGradient",
+						"css:background-color": "popularBadgeBackground",
+						"css:background-image": "popularBadgeBackgroundGradient"
 					},
-					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "popularBadgeColourHover"
+							}
+						}
+					},
+					"_note": "`popularBadgeText` (the badge copy) is a content field, not a style control — it correctly surfaces as an ORPHAN under this element's `popularBadge` prefix, matching the FR-35-4 pattern (wired to a real attribute, invisible to cluster-coherence, no separate note needed to suppress it). popularBadgeColourGradient (2026-09-04, D936/D937) is the text-colour gradient sibling, safe unconditionally since popularBadgeBackground paints on the badge's own `::after` layer (render.php), not this selector. popularBadgeBackgroundGradient (2026-09-04) is the fill-colour gradient sibling to popularBadgeBackground -- non-empty wins, resolved via sgs_background_paint_decl() on that same ::after layer. 2026-09-05: `states.hover.css:color`->popularBadgeColourHover declared explicitly (render.php:489-495 -- `sgs_emit_state_colour_css( $pt_badge_sel, array(), array( 'color:…' ) )`, `$pt_badge_sel` at render.php:472 being the same `.sgs-pricing-table__badge` selector this element's base attrMap paints). This resolves BOTH gate findings for the attribute: the (color, element=NULL, state=NULL) three-way collision with titleColourHover/ctaColourHover, and the UNDECLARED sub-element paint -- the paint is on the badge element itself, not a sub-element, so the correct fix is this declaration rather than a new element key. `popularBadgeBackgroundHover` is NOT declared here -- it was not among the gate's findings and its emission was not audited in this pass."
 				},
 				"ribbon": {
 					"label": "Per-plan ribbon",
@@ -150,7 +231,9 @@
 				"behaviour": {
 					"label": "Toggle + animation behaviour",
 					"order": 10,
-					"clusters": [ "animation" ],
+					"clusters": [
+						"animation"
+					],
 					"attrMap": {
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
@@ -159,23 +242,20 @@
 					"_note": "billingToggle/toggleStyle/billingToggleMonthlyLabel/billingToggleYearlyLabel (toggle configuration) are content/behaviour fields, not style-cluster members. sgsAnimation/sgsAnimationDuration/sgsAnimationEasing (scroll-reveal preset) now resolve via the FR-35-6 `animation` cluster (anim:preset/anim:duration/anim:easing) — this block has no staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs on this block)."
 				}
 			}
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-pricing-table__title' (never emitted by any rendered markup) to '.sgs-pricing-table__name' (render.php:364, the block's real per-plan title element). Removed 2026-09-05 (D971/D972) — the WP-native typography support this selector redirected is gone; the `title` element now owns titleFontSize*/titleLineHeight* as block-private attrs rendered via sgs_typography_css_rule(), which targets its own selector directly (render.php's `$title_sel`) and needs no Block Selectors API redirection.",
 	"selectors": {
-		"root": ".wp-block-sgs-pricing-table",
-		"typography": ".sgs-pricing-table__title"
+		"root": ".wp-block-sgs-pricing-table"
 	},
 	"attributes": {
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"billingToggle": {
 			"type": "string",
@@ -384,18 +464,53 @@
 				}
 			}
 		},
-		"style": {
+		"pricingTableStyle": {
 			"type": "string",
 			"default": "card"
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"titleColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"priceColour": {
 			"type": "string",
@@ -409,6 +524,10 @@
 			"type": "string",
 			"default": "text"
 		},
+		"featureColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"ctaStyle": {
 			"type": "string",
 			"default": "accent"
@@ -416,8 +535,18 @@
 		"ctaColour": {
 			"type": "string"
 		},
+		"ctaColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over ctaColour. Safe unconditionally -- ctaBackground already paints on a separate ::after layer (sgs_block_background_layer_css())."
+		},
 		"ctaBackground": {
 			"type": "string"
+		},
+		"ctaBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the CTA's background-fill instead of a flat colour, on the same `::after` layer as ctaBackground (D956-shape rollout). Non-empty wins over ctaBackground. Safe unconditionally -- the layer already sits behind ctaColour/ctaColourGradient's text paint, never on the same selector."
 		},
 		"popularBadgeText": {
 			"type": "string",
@@ -427,9 +556,27 @@
 			"type": "string",
 			"default": "text"
 		},
+		"popularBadgeColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the popular badge's text with a background-clip:text mechanism instead of a flat colour (D936/D937 text-colour gradient rollout). Non-empty wins over popularBadgeColour. Safe unconditionally -- popularBadgeBackground already paints on the badge's own ::after layer."
+		},
 		"popularBadgeBackground": {
 			"type": "string",
 			"default": "accent"
+		},
+		"popularBadgeBackgroundGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the popular badge's background-fill instead of a flat colour, on the badge's own `::after` layer (D956-shape rollout). Non-empty wins over popularBadgeBackground. Safe unconditionally -- the layer already sits behind popularBadgeColour/popularBadgeColourGradient's text paint, never on the same selector."
+		},
+		"toggleLabelHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleLabelHoverColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"sgsAnimation": {
 			"type": "string",
@@ -453,6 +600,12 @@
 		},
 		"layout": {
 			"type": "string",
+			"enum": [
+				"",
+				"flex",
+				"stack",
+				"grid"
+			],
 			"default": ""
 		},
 		"alignItems": {
@@ -509,9 +662,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -527,6 +679,68 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"priceColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"featureColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"popularBadgeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"popularBadgeBackgroundHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -537,7 +751,7 @@
 	"example": {
 		"attributes": {
 			"columns": 3,
-			"style": "card",
+			"pricingTableStyle": "card",
 			"billingToggle": true
 		}
 	}

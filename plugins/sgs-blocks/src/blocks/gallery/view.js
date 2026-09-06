@@ -21,11 +21,29 @@
  * prefers-reduced-motion: all transitions and carousel autoplay are disabled.
  */
 
-import { store, getContext } from '@wordpress/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
 const REDUCED_MOTION = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
 // ==========================================================================
+/**
+ * Resolve THIS gallery's lightbox dialog from the element that triggered the
+ * action.
+ *
+ * ⛔ Deliberately NOT `document.querySelector( '.sgs-gallery__lightbox' )`:
+ * that returns the FIRST lightbox in the document, so on a page with two
+ * galleries clicking the second one's tile would open the first one's dialog.
+ * Scoping to the interactive root keeps one gallery's actions inside its own
+ * instance.
+ *
+ * @param {Element|undefined} ref Element the action fired on.
+ * @return {HTMLDialogElement|null} This gallery's lightbox, or null.
+ */
+function lightboxFor( ref ) {
+	const root = ref?.closest?.( '[data-wp-interactive="sgs/gallery"]' );
+	return root ? root.querySelector( '.sgs-gallery__lightbox' ) : null;
+}
+
 // Interactivity API store — lightbox
 // ==========================================================================
 
@@ -96,22 +114,37 @@ store( 'sgs/gallery', {
 			// property — style.css defines body.sgs-gallery-lightbox-open.
 			document.body.classList.add( 'sgs-gallery-lightbox-open' );
 
-			// Move focus to the lightbox close button after opening.
-			const galleryEl = document.querySelector(
-				'[data-wp-interactive="sgs/gallery"] .sgs-gallery__lightbox--open .sgs-gallery__lightbox-close'
-			);
-			if ( galleryEl ) {
-				galleryEl.focus();
+			// Promote to the TOP LAYER (D806). A z-index cannot escape the
+			// `z-index:1` stacking context that .entry-content puts on every
+			// page, so the site header painted over the open lightbox. Only
+			// showModal() escapes it. It also supplies the focus trap and
+			// Escape handling, which is why the manual .focus() call that used
+			// to live here is gone — the UA moves focus to the first focusable
+			// child (the close button) by itself, and the old call queried for
+			// a class that had not been applied yet at this tick.
+			const dialogEl = lightboxFor( getElement()?.ref );
+			if ( dialogEl && ! dialogEl.open && 'function' === typeof dialogEl.showModal ) {
+				dialogEl.showModal();
 			}
 		},
 
 		/**
 		 * Close the lightbox and restore scroll.
+		 *
+		 * Also bound to the dialog's own `close` event, so the UA's built-in
+		 * Escape handling cannot leave the state (and the body scroll lock)
+		 * out of step with what is on screen. Re-entrant by design: close()
+		 * on an already-closed dialog is a no-op.
 		 */
 		closeLightbox() {
 			const ctx = getContext();
 			ctx.lightboxOpen          = false;
 			document.body.classList.remove( 'sgs-gallery-lightbox-open' );
+
+			const dialogEl = lightboxFor( getElement()?.ref );
+			if ( dialogEl && dialogEl.open && 'function' === typeof dialogEl.close ) {
+				dialogEl.close();
+			}
 		},
 
 		/**
@@ -145,11 +178,11 @@ store( 'sgs/gallery', {
 			if ( ! ctx.lightboxOpen ) {
 				return;
 			}
-			if ( 'Escape' === event.key ) {
-				event.preventDefault();
-				const { actions } = store( 'sgs/gallery' );
-				actions.closeLightbox();
-			} else if ( 'ArrowRight' === event.key ) {
+			// Escape is deliberately NOT handled here: a native modal dialog
+			// closes on Escape itself and fires `close`, which render.php binds
+			// to actions.closeLightbox. Handling it here as well would make two
+			// writers for one transition (D806).
+			if ( 'ArrowRight' === event.key ) {
 				event.preventDefault();
 				const { actions } = store( 'sgs/gallery' );
 				actions.nextImage();

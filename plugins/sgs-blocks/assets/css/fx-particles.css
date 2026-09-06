@@ -1,0 +1,71 @@
+/**
+ * SGS motion — pointer-trail particles (Spec 38 §3.4, FR-38-32). Tier V.
+ *
+ * Spec 32: positioning lives here, not in JS inline styles. The boot module
+ * (`fx-particles.js` / `particles.js`) sets only the canvas's `width`/
+ * `height` ATTRIBUTES — the pixel buffer size — never its `style`.
+ *
+ * ── ABOVE CONTENT, NEVER BLOCKING IT ───────────────────────────────────────
+ * A trail is meant to be SEEN painting over whatever it crosses (text, an
+ * image, a button label), so the canvas sits above the block's own content
+ * in the stacking order. `pointer-events: none` is what makes that safe —
+ * the canvas can never intercept a click, a hover, or a focus that belongs
+ * to the content underneath it.
+ *
+ * ── FAIL-OPEN BY CONSTRUCTION ─────────────────────────────────────────────
+ * `fx-particles.js` creates NO canvas at all under `prefers-reduced-motion`,
+ * on an all-touch device, or with JS blocked — there is no element for any
+ * rule below to ever match in those cases, so there is nothing to override
+ * and no second code path to keep in sync (§1.6).
+ */
+
+[data-sgs-fx="particles"] {
+	/* The canvas is positioned `absolute` against this box — it must be a
+	   positioning context. `inline-block` on request, same reasoning
+	   `fx-magnet.js` documents for its own selector: a transform/absolute
+	   child cannot escape an inline (non-replaced) ancestor's box. */
+	position: relative;
+}
+
+[data-sgs-fx="particles"]:where( a, span, em, strong, label, code ) {
+	display: inline-block;
+}
+
+/*
+ * ── WHERE THE TRAIL'S COLOUR COMES FROM (D846) ────────────────────────────
+ * `particles.js` reads the canvas's own computed `color`, NOT the emitter's,
+ * and this one line is why. The override custom property is set by
+ * `includes/fx-particles.php` as `var(--wp--preset--color--<slug>)` so the
+ * client's palette token stays LIVE — but a custom property read back with
+ * `getPropertyValue()` returns that `var(...)` text UNRESOLVED, and a canvas
+ * cannot paint with a string. Declaring it on a REAL property here forces the
+ * cascade to resolve it, so `getComputedStyle( canvas ).color` is always a
+ * concrete `rgb()`.
+ *
+ * The `inherit` fallback is the shipped default: with no override set the
+ * canvas inherits the emitter's text colour, exactly as before D846. That is
+ * what keeps this change opt-in and every existing instance byte-identical.
+ */
+.sgs-particles__canvas {
+	color: var( --sgs-fx-particle-colour, inherit );
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	/*
+	 * SUPPRESS (§10). Belt-and-braces kill switch, matching the house
+	 * pattern in `fx-magnet.css`: the JS already refuses to create a
+	 * `.sgs-particles__canvas` under `reduce`, so this rule has nothing to
+	 * override in normal operation — it exists so the contract holds even
+	 * if a future driver forgets its own gate.
+	 */
+	.sgs-particles__canvas {
+		display: none;
+	}
+}

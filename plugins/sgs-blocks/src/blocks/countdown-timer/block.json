@@ -28,60 +28,55 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true,
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Timer box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:font-size": "fontSize",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
+						"css:line-height": "lineHeight",
+						"css:text-align": "textAlign"
 					},
-					"_note": "No selectors.typography is declared (only selectors.root), so block-level typography.fontSize/textAlign serialise as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size."
+					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). No selectors.typography is declared (only selectors.root), so the root-level typography serialises as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size. textAlign stays a plain (non-supports) attribute with its own SelectControl since TypographyControls does not offer a text-align field."
 				},
 				"number": {
 					"label": "Number",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "number",
 					"attrMap": {
 						"css:background-image": "numberColourGradient"
@@ -91,8 +86,13 @@
 				"label": {
 					"label": "Label",
 					"order": 3,
-					"clusters": [ "text" ],
-					"prefix": "label"
+					"clusters": [
+						"text"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:color-gradient": "labelColourGradient"
+					}
 				}
 			}
 		}
@@ -101,6 +101,18 @@
 		"root": ".wp-block-sgs-countdown-timer"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"targetDate": {
 			"type": "string",
 			"default": ""
@@ -137,6 +149,22 @@
 			"type": "boolean",
 			"default": true
 		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"numberColour": {
 			"type": "string",
 			"default": "primary"
@@ -149,6 +177,10 @@
 			"type": "string",
 			"default": "text-muted"
 		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"cardStyle": {
 			"type": "string",
 			"default": "elevated"
@@ -157,29 +189,75 @@
 			"type": "string",
 			"default": "simple"
 		},
-		"paddingTablet": {
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
 			"type": "object",
 			"default": {}
 		},
-		"marginTablet": {
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+		"textAlign": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"description": "Migrated off WP-native supports.typography.textAlign (D971/D972 full-replacement track) — plain attribute + own SelectControl, since typography.fontSize was the only native flag TypographyControls replaces."
 		}
 	},
 	"editorScript": "file:./index.js",

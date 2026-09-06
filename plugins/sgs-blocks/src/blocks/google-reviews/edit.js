@@ -17,8 +17,15 @@ import {
 	RangeControl,
 	TextControl,
 	Notice,
+	ToolsPanel,
+	ToolsPanelItem,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel } from '../../components';
+import { ResponsiveOverride,
+	SgsBorderControl,
+	resolveColourToken,
+	DesignTokenPicker,
+} from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -39,6 +46,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		theme,
 		cardStyle,
 		starColour,
+		starColourGradient,
+		starColourHover,
 		autoplay,
 		autoplaySpeed,
 		showDots,
@@ -46,6 +55,30 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		writeReviewColourBackground,
+		writeReviewColourBackgroundHover,
+		writeReviewColourBackgroundGradient,
+		writeReviewColourBackgroundHoverGradient,
+		writeReviewColourText,
+		writeReviewColourTextHover,
+		writeReviewColourTextGradient,
+		writeReviewColourTextHoverGradient,
+		arrowColourBackground,
+		arrowColourBackgroundHover,
+		arrowColourBackgroundGradient,
+		arrowColourBackgroundHoverGradient,
+		arrowColourText,
+		arrowColourTextHover,
+		arrowColourTextGradient,
+		arrowColourTextHoverGradient,
+		arrowColourBorder,
+		arrowColourBorderHover,
+		arrowColourBorderGradient,
+		arrowColourBorderHoverGradient,
+		dotColour,
+		dotColourHover,
+		dotColourGradient,
+		dotColourHoverGradient,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -54,35 +87,199 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so
-			   it sits at the top of the inspector. Replaces the "Star
-			   Colour" `SelectControl` that used to sit in the "Appearance"
-			   panel below. That control offered only 3 fixed slugs
-			   (accent/primary/success); render.php resolves `starColour`
-			   through `sgs_colour_value()` — the same slug-or-hex resolver
-			   every other SgsColourPanel row uses — so it is a genuine free
-			   colour setting, not a true enum, and now gets the full
-			   palette picker like every other colour on this block.
-			   `supports.color` sub-flags are now false so WordPress
-			   generates no native colour UI to overlap with this panel. No
-			   hover pair exists for this attribute. */ }
-			<SgsColourPanel
-				rows={ [
-					{
-						key: 'star',
-						label: __( 'Star colour', 'sgs-blocks' ),
-						states: [
+			{ /* Spec 35 THE PLACEMENT RULE (D537) — the single mixed "Colour"
+			   panel is split per declared element: star fill -> "Star icon";
+			   arrow text/fill/border+hover -> "Slider arrow"; write-review
+			   text/fill+hover -> "Write-review button". Built directly with
+			   DesignTokenPicker (mirrors what SgsColourPanel does internally)
+			   since SgsColourPanel has no per-caller title override and each
+			   element needs its own panel name. `dotColour` (the slider
+			   pagination dot) has NO declared element in block.json's
+			   supports.sgs.elements — an unclaimed `fill`-family attribute —
+			   so it keeps its own small property-family panel rather than
+			   being folded into an element it doesn't belong to. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Star icon', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Star colour', 'sgs-blocks' ) }
+						states={ [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: starColour,
 								onChange: ( val ) => setAttributes( { starColour: val || 'accent' } ),
+								gradientValue: starColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { starColourGradient: val ?? '' } ),
 								linked: true,
 							},
-						],
-					},
-				] }
-			/>
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: starColourHover,
+								onChange: ( val ) => setAttributes( { starColourHover: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Slider arrow', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Slider arrow background', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourBackground,
+								onChange: ( val ) => setAttributes( { arrowColourBackground: val ?? '' } ),
+								gradientValue: arrowColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { arrowColourBackgroundHover: val ?? '' } ),
+								gradientValue: arrowColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Slider arrow icon colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourText,
+								onChange: ( val ) => setAttributes( { arrowColourText: val ?? '' } ),
+								gradientValue: arrowColourTextGradient,
+								onGradientChange: ( val ) => setAttributes( { arrowColourTextGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourTextHover,
+								onChange: ( val ) => setAttributes( { arrowColourTextHover: val ?? '' } ),
+								gradientValue: arrowColourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourTextHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Slider arrow border', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: arrowColourBorder,
+								onChange: ( val ) => setAttributes( { arrowColourBorder: val ?? '' } ),
+								gradientValue: arrowColourBorderGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBorderGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: arrowColourBorderHover,
+								onChange: ( val ) => setAttributes( { arrowColourBorderHover: val ?? '' } ),
+								gradientValue: arrowColourBorderHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { arrowColourBorderHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Write-review button', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Write-review button background', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourBackground,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackground: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourBackgroundHover: val ?? '' } ),
+								gradientValue: writeReviewColourBackgroundHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourBackgroundHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Write-review button text', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: writeReviewColourText,
+								onChange: ( val ) => setAttributes( { writeReviewColourText: val ?? '' } ),
+								gradientValue: writeReviewColourTextGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourTextGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: writeReviewColourTextHover,
+								onChange: ( val ) => setAttributes( { writeReviewColourTextHover: val ?? '' } ),
+								gradientValue: writeReviewColourTextHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { writeReviewColourTextHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{ /* dotColour — unclaimed `fill`-family attribute, no declared
+			   element. Kept as its own minimal property-family panel rather
+			   than folded into an element panel it does not belong to. */ }
+			<InspectorControls group="styles">
+				<PanelBody title={ __( 'Fill', 'sgs-blocks' ) } className="sgs-colour-panel">
+					<DesignTokenPicker
+						label={ __( 'Slider pagination dot colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dotColour,
+								onChange: ( val ) => setAttributes( { dotColour: val ?? '' } ),
+								gradientValue: dotColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dotColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: dotColourHover,
+								onChange: ( val ) => setAttributes( { dotColourHover: val ?? '' } ),
+								gradientValue: dotColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dotColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
 			<InspectorControls>
 				<ContainerWrapperControls attributes={ attributes } setAttributes={ setAttributes } kind="layout" />
 				<PanelBody title={ __( 'Variant', 'sgs-blocks' ) }>
@@ -116,8 +313,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
+				{ /* INNER element (block.json's `inner`, the grid/flex layout —
+				   Spec 35 THE PLACEMENT RULE TIER 1) — `columns` is its only
+				   content control today. Was a generic "Layout" panel; renamed
+				   so it reads as the element it actually belongs to rather
+				   than a catch-all. */ }
 				{ [ 'grid', 'slider', 'wall' ].includes( variant ) && (
-					<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
+					<PanelBody title={ __( 'Inner', 'sgs-blocks' ) }>
 						{ /*
 							  columns is a TIER OBJECT — ONE attr holding
 							  {desktop,tablet,mobile} (Spec 35 pass 4). It must
@@ -229,6 +431,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { showAvatar: value } ) }
 					/>
 
+					{ showAvatar && (
+						<MediaElementPanel
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							blockSlug="sgs/google-reviews"
+							insertion="element"
+							atoms={ [ 'object-fit' ] }
+							mediaType="image"
+						/>
+					) }
+
 					<ToggleControl
 						label={ __( 'Show dates', 'sgs-blocks' ) }
 						checked={ showDate }
@@ -279,36 +492,74 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ variant === 'slider' && (
-					<PanelBody title={ __( 'Slider Settings', 'sgs-blocks' ) } initialOpen={ false }>
-						<ToggleControl
+					<ToolsPanel
+						label={ __( 'Slider Settings', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								autoplay: false,
+								autoplaySpeed: 5000,
+								showDots: true,
+								showArrows: true,
+								dragToScroll: false,
+								dragMomentum: true,
+								loopCarousel: false,
+							} )
+						}
+					>
+						<ToolsPanelItem
 							label={ __( 'Autoplay', 'sgs-blocks' ) }
-							checked={ autoplay }
-							onChange={ ( value ) => setAttributes( { autoplay: value } ) }
-						/>
+							hasValue={ () => autoplay !== false }
+							onDeselect={ () => setAttributes( { autoplay: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Autoplay', 'sgs-blocks' ) }
+								checked={ autoplay }
+								onChange={ ( value ) => setAttributes( { autoplay: value } ) }
+							/>
+						</ToolsPanelItem>
 
 						{ autoplay && (
-							<RangeControl
+							<ToolsPanelItem
 								label={ __( 'Autoplay Speed (ms)', 'sgs-blocks' ) }
-								value={ autoplaySpeed }
-								onChange={ ( value ) => setAttributes( { autoplaySpeed: value } ) }
-								min={ 2000 }
-								max={ 10000 }
-								step={ 500 }
-								__next40pxDefaultSize
-							/>
+								hasValue={ () => autoplaySpeed !== 5000 }
+								onDeselect={ () => setAttributes( { autoplaySpeed: 5000 } ) }
+							>
+								<RangeControl
+									label={ __( 'Autoplay Speed (ms)', 'sgs-blocks' ) }
+									value={ autoplaySpeed }
+									onChange={ ( value ) => setAttributes( { autoplaySpeed: value } ) }
+									min={ 2000 }
+									max={ 10000 }
+									step={ 500 }
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
 						) }
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show dots', 'sgs-blocks' ) }
-							checked={ showDots }
-							onChange={ ( value ) => setAttributes( { showDots: value } ) }
-						/>
+							hasValue={ () => showDots !== true }
+							onDeselect={ () => setAttributes( { showDots: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show dots', 'sgs-blocks' ) }
+								checked={ showDots }
+								onChange={ ( value ) => setAttributes( { showDots: value } ) }
+							/>
+						</ToolsPanelItem>
 
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Show arrows', 'sgs-blocks' ) }
-							checked={ showArrows }
-							onChange={ ( value ) => setAttributes( { showArrows: value } ) }
-						/>
+							hasValue={ () => showArrows !== true }
+							onDeselect={ () => setAttributes( { showArrows: true } ) }
+						>
+							<ToggleControl
+								label={ __( 'Show arrows', 'sgs-blocks' ) }
+								checked={ showArrows }
+								onChange={ ( value ) => setAttributes( { showArrows: value } ) }
+							/>
+						</ToolsPanelItem>
 
 						{ /*
 						 * Draggable + Inertia opt-in (Spec 38 FR-38-13),
@@ -317,30 +568,43 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * renders — touch keeps its native scroll either way,
 						 * so no "touch" caveat belongs in the help text.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
-							checked={ dragToScroll }
-							onChange={ ( value ) =>
-								setAttributes( { dragToScroll: value } )
-							}
-							help={ __(
-								'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
-								'sgs-blocks'
-							) }
-						/>
-
-						{ dragToScroll && (
+							hasValue={ () => dragToScroll !== false }
+							onDeselect={ () => setAttributes( { dragToScroll: false } ) }
+							isShownByDefault
+						>
 							<ToggleControl
-								label={ __( 'Momentum', 'sgs-blocks' ) }
-								checked={ dragMomentum }
+								label={ __( 'Drag to scroll (desktop)', 'sgs-blocks' ) }
+								checked={ dragToScroll }
 								onChange={ ( value ) =>
-									setAttributes( { dragMomentum: value } )
+									setAttributes( { dragToScroll: value } )
 								}
 								help={ __(
-									'Slider keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+									'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
 									'sgs-blocks'
 								) }
 							/>
+						</ToolsPanelItem>
+
+						{ dragToScroll && (
+							<ToolsPanelItem
+								label={ __( 'Momentum', 'sgs-blocks' ) }
+								hasValue={ () => dragMomentum !== true }
+								onDeselect={ () => setAttributes( { dragMomentum: true } ) }
+							>
+								<ToggleControl
+									label={ __( 'Momentum', 'sgs-blocks' ) }
+									checked={ dragMomentum }
+									onChange={ ( value ) =>
+										setAttributes( { dragMomentum: value } )
+									}
+									help={ __(
+										'Slider keeps coasting briefly after the visitor releases the drag, like a real scroll flick.',
+										'sgs-blocks'
+									) }
+								/>
+							</ToolsPanelItem>
 						) }
 
 						{ /*
@@ -352,19 +616,54 @@ export default function Edit( { attributes, setAttributes } ) {
 						 * keyboard/arrows/dots still loop with drag off).
 						 * Default off, same as drag.
 						 */ }
-						<ToggleControl
+						<ToolsPanelItem
 							label={ __( 'Loop', 'sgs-blocks' ) }
-							checked={ loopCarousel }
-							onChange={ ( value ) =>
-								setAttributes( { loopCarousel: value } )
-							}
-							help={ __(
-								'Scrolling, dragging or using the arrows past the last review continues into the first, and back again — never a dead end.',
-								'sgs-blocks'
-							) }
-						/>
-					</PanelBody>
+							hasValue={ () => loopCarousel !== false }
+							onDeselect={ () => setAttributes( { loopCarousel: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Loop', 'sgs-blocks' ) }
+								checked={ loopCarousel }
+								onChange={ ( value ) =>
+									setAttributes( { loopCarousel: value } )
+								}
+								help={ __(
+									'Scrolling, dragging or using the arrows past the last review continues into the first, and back again — never a dead end.',
+									'sgs-blocks'
+								) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				) }
+				{ /* WRAPPER element (isWrapper:true) — border/radius resolve to its
+				   TIER-2 Layout property family (block.json attrMap: css:border-*
+				   -> borderWidth/Style/Colour/Radius on the `layout` cluster).
+				   Was a generic "Border" catch-all panel; renamed to the family
+				   name per THE PLACEMENT RULE. */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

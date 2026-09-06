@@ -66,16 +66,19 @@ def test_composite_sole_passthrough_folds_content_width_and_resolves_var():
     attrs = _root_attrs(build_block_markup(rec, node, media_map={}, css_rules=css_rules))
     assert rec.slug == "sgs/trust-bar"
     # contentWidth folds AND resolves var() -> literal (not 'var(--content-width)').
-    assert attrs.get("contentWidth") == "1100px"
+    # sgs/trust-bar.contentWidth/.gap/.gridTemplateColumns are MIGRATED tier-object
+    # attrs (Spec 35 / D802-class fix extended to CONTENT+GRID, this fix) — the
+    # Base-tier value lands in each object's 'desktop' key.
+    assert attrs.get("contentWidth") == {"desktop": "1100px"}
     # gap (L3 arrangement) folds too — and so does the arrangement that makes it
     # mean anything. Spec 31 §2.4 names this exact case: arrangement CSS lands on
     # the direct parent of the items, "folded up from a sole arrangement inner —
     # brand, trust-bar". Until 2026-08-01 `display` was dropped as a GAP-3
     # exclusion with nothing re-homing it, so the trust-bar cloned with gap +
     # contentWidth onto a wrapper still rendering display:block.
-    assert attrs.get("gap") == "16px 12px"
+    assert attrs.get("gap") == {"desktop": "16px 12px"}
     assert attrs.get("layout") == "grid"
-    assert attrs.get("gridTemplateColumns") == "1fr 1fr"
+    assert attrs.get("gridTemplateColumns") == {"desktop": "1fr 1fr"}
 
 
 # --- default-container full-band fold + inheritable text-align ----------------
@@ -102,7 +105,7 @@ def test_default_container_folds_text_align_to_native_textalign():
     rec = recognise_section(node)
     attrs = _root_attrs(build_block_markup(rec, node, media_map={}, css_rules=css_rules))
     assert rec.slug == "sgs/container"
-    assert attrs.get("contentWidth") == "960px"
+    assert attrs.get("contentWidth") == {"desktop": "960px"}
     assert attrs.get("textAlign") == "center"
 
 
@@ -125,7 +128,7 @@ def test_composite_bem_less_inner_folds_via_css_signature_fallback():
     rec = recognise_section(node)
     attrs = _root_attrs(build_block_markup(rec, node, media_map={}, css_rules=css_rules))
     assert rec.slug == "sgs/trust-bar"
-    assert attrs.get("contentWidth") == "1000px"
+    assert attrs.get("contentWidth") == {"desktop": "1000px"}
 
 
 def test_default_container_content_width_unregressed():
@@ -148,6 +151,6 @@ def test_default_container_content_width_unregressed():
     rec = recognise_section(node)
     attrs = _root_attrs(build_block_markup(rec, node, media_map={}, css_rules=css_rules))
     assert rec.slug == "sgs/container"
-    assert attrs.get("contentWidth") == "1040px"
+    assert attrs.get("contentWidth") == {"desktop": "1040px"}
     # margin:0 auto has no container attr destination -> NOT mis-lifted as a margin attr.
     assert "margin" not in attrs

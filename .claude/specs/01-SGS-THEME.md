@@ -63,7 +63,12 @@ sgs-theme/
 │
 ├── templates/
 │   ├── index.html               # Default fallback template
-│   ├── front-page.html          # Homepage template
+│   ├── front-page.html          # Static front page (show_on_front=page). NOT the blog listing
+│   ├── home.html                # Blog posts index — the page assigned as page_for_posts.
+│   │                            #   h1 is a LITERAL "Blogs" (sgs/heading), not core/query-title:
+│   │                            #   query-title type="archive" returns EMPTY on a posts index,
+│   │                            #   because core gates it on is_archive() and a posts page is
+│   │                            #   is_home(). Added 2026-08-25.
 │   ├── page.html                # Standard page template
 │   ├── single.html              # Single post template
 │   ├── archive.html             # Archive/blog listing template
@@ -73,7 +78,7 @@ sgs-theme/
 │   └── single-product.html      # WooCommerce PDP — composes sgs-pdp-* template parts (Spec 30, D210)
 │
 ├── parts/
-│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/adaptive-nav), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs)
+│   ├── header.html                 # Consolidated site header — search-free default. Already hosts sgs/site-header (+ sgs/nav-menu; `sgs/adaptive-nav` was DELETED at Spec 36 Phase-1 close 2026-07-20), BUILT + LIVE (D323-D333, §S9 11/11; see §Header/Footer/Nav Block System below; Spec 37 owns the block FRs)
 │   ├── header-shrink.html          # Header variant: shrink-on-scroll
 │   ├── header-sticky.html          # Header variant: always sticky
 │   ├── header-transparent.html     # Header variant: transparent with scroll reveal
@@ -151,9 +156,6 @@ sgs-theme/
 │   └── mega-menu-two-column.php
 │
 └── styles/                         # EMPTIED (RETIRED 2026-05-21 — see §Per-site theme.json model)
-    #                               # Per-client variation files deleted by Decision 18.
-    #                               # Per-client snapshots now live at sites/<client>/theme-snapshot.json
-    #                               # and are pushed to specific sites via push-theme-snapshot.py.
 ```
 
 ---
@@ -354,9 +356,9 @@ Standard header with:
 - Navigation menu (centre or right, configurable via block settings)
 - CTA button (right, accent colour)
 - Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
-- Mobile: hamburger menu with slide-out drawer (`sgs/mobile-nav`, off-canvas drawer)
+- Mobile: hamburger menu with slide-out drawer (`sgs/nav-drawer`; the old `sgs/mobile-nav` was deleted at D337, 2026-07-14, commit `7c60b8ff`)
 - Announcement bar slot above header (optional, toggled via customiser or block)
-- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/adaptive-nav` inside it — see §Header/Footer/Nav Block System.
+- **Once P1/P2 land** (design-approved 2026-07-13, build-pending), the header content will be composed of `sgs/site-header` (3 named rows: top utility / middle primary / bottom message) + `sgs/nav-menu` inside it (`sgs/adaptive-nav` was DELETED 2026-07-20) — see §Header/Footer/Nav Block System.
 
 ### Footer Template Part (`parts/footer.html`)
 
@@ -381,14 +383,14 @@ The theme continues to provide the header/footer as WordPress **template parts**
 |---|---|---|
 | `sgs/site-header` | Header shell — 3 optional named rows (top utility / middle primary / bottom message) | `SGS_Container_Wrapper` (KIND: section) |
 | `sgs/site-footer` | Footer shell — named rows + up-to-N columns | `SGS_Container_Wrapper` (KIND: section) |
-| `sgs/adaptive-nav` | One nav-bar↔burger menu, 4-tier breakpoint | `SGS_Container_Wrapper` (KIND: layout) + nav logic |
-| `sgs/mobile-nav` (reused) | Off-canvas drawer — P0 unclickable-drawer bug fixed 2026-07-13 | existing block, hardened |
+| `sgs/nav-menu` | One nav-bar↔burger menu, 4-tier breakpoint (replaced `sgs/adaptive-nav`, DELETED 2026-07-20) | `SGS_Container_Wrapper` (KIND: layout) + nav logic |
+| `sgs/nav-drawer` | Off-canvas drawer (replaced `sgs/mobile-nav`, DELETED at D337 2026-07-14, commit `7c60b8ff`) | own render.php |
 
 A block that *subsumes* the template-part/Site-Info/rules system remains forbidden (the `no-header-footer-block.py` hook still blocks bare `header`/`footer`/`nav` block slugs); it now allow-lists `src/blocks/{site-header,site-footer,adaptive-nav}/` for these three specialised containers only.
 
 ### Theme-owned defaults — global styles + Site Info
 
-Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/adaptive-nav` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
+Every element in `sgs/site-header`, `sgs/site-footer`, and `sgs/nav-menu` defaults from two theme-owned sources, so branding/contact data is entered once and stays consistent across header AND footer:
 
 1. **Global style tokens** — this file's `theme.json` settings (§Design Tokens above) and, for cloned sites, the Spec 33 draft-extracted `sites/<client>/theme-snapshot.json`. Colours, typography, and spacing flow to header/footer elements as defaults; per-instance overrides remain available in the block inspector.
 2. **SGS Site Info store** (Spec 36, `sgs_site_info` `wp_options` via the `sgs/site-info` block-bindings source) — logo, phone, email, address, hours, socials, copyright, attribution link. Both header and footer bind to the same store.
@@ -593,9 +595,9 @@ Behaviour:
 
 `/sgs-clone` Stage 10 invokes `push-theme-snapshot` automatically via the auto-derived `--client` flag (Decision 16′).
 
-### Live-style precedence: `wp_global_styles` SUPERSEDES `theme.json` (2026-06-03, D156)
+### Live-style precedence (see Spec 26 for the canonical mental model)
 
-> **SUPERSEDED + corrected by [Spec 26 — SGS Global Styles & Per-Client Theming](26-SGS-GLOBAL-STYLES-AND-THEMING.md) (2026-06-03).** The "override precedence" framing below is imprecise: the `wp_global_styles` user layer is simply **where a site's global styles live**; `theme.json` is the factory-default seed. It is a data-layer merge, not a CSS override. Spec 26 is the canonical target architecture (variation-delta per client + `wp_global_styles` REST sync + the corrected mental model). Read Spec 26 for the current design; the note below is retained for continuity.
+> **Framing note:** this section originally called it "override precedence"; [Spec 26](26-SGS-GLOBAL-STYLES-AND-THEMING.md) corrected that to a data-layer merge — `wp_global_styles` is simply where a site's live styles live, `theme.json` is the factory-default seed, not a thing being overridden. The operational facts below (post wins wherever both define a property) are still accurate and still the day-to-day guidance; read Spec 26 for the conceptual model.
 
 **Critical (caught live on sandybrown).** WordPress compiles the page's `global-styles-inline-css` by merging the `wp_global_styles` post (the Site-Editor USER layer) **on top of** `theme.json`. Wherever both define a property, **the post wins**. On sandybrown the post is ID 7. Consequence: a change written ONLY to `theme.json` on disk — including a `push-theme-snapshot.py` push — has **no live effect** for any property the post also defines. (This corrects the "conflicts are rare" framing above: it is not a conflict, it is a deterministic override.)
 
@@ -622,6 +624,4 @@ WP 7.0 (released 2026-05-14) adds native pseudo-element support for `core/button
 
 ### Style variation sections RETIRED
 
-The following sections describing the `active_theme_style` theme_mod and style variation activation flow are retired by Decision 18:
-
-**§ Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.2):** The `styles/*.json` per-client overlay system that shipped all client variations to every install is deleted. Replaced by per-site `theme-snapshot.json` + push CLI. The example `styles/indus-foods.json` shown above is now `sites/indus-foods/theme-snapshot.json` and is never shipped in a framework deploy.
+See §Style Variations above (retired 2026-05-21 by Decision 18) — not repeated here.

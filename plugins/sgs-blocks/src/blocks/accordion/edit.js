@@ -3,6 +3,7 @@ import {
   useBlockProps,
   useInnerBlocksProps,
   InspectorControls,
+  useSettings,
 } from "@wordpress/block-editor";
 import {
   PanelBody,
@@ -10,7 +11,7 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import { SgsColourPanel, IconPicker, ResponsiveBoxControl } from "../../components";
+import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
@@ -34,12 +35,21 @@ export default function Edit({ attributes, setAttributes }) {
     allowMultiple,
     defaultOpen,
     iconPosition,
-    style: accordionStyle,
+    accordionStyle,
+    borderWidth,
+    borderStyle,
+    borderColour,
+    borderColourGradient,
     faqSchema,
     headerColour,
     headerBackground,
+    headerBackgroundGradient,
+    headerBackgroundHover,
+    headerBackgroundHoverGradient,
     iconColour,
     iconColourGradient,
+    iconColourHover,
+    iconColourHoverGradient,
     openIcon,
     closeIcon,
   } = attributes;
@@ -54,7 +64,41 @@ export default function Edit({ attributes, setAttributes }) {
   // block.json — this composite already restricts children to its own
   // structural child block (`sgs/accordion-item`) below; a generic preset
   // would only conflict with that fixed relationship.
-  const blockProps = useBlockProps({ className });
+  // Editor-canvas preview for the block-private border legs (Shape B).
+  // Mirrors sgs/button's pattern: colours are stored as theme token SLUGS, which
+  // are invalid CSS, so the preview MUST resolve them against the live palette or
+  // picking a palette colour looks like a no-op. render.php resolves the same
+  // slugs via sgs_colour_value(). Editor-only — the frontend contract (Spec 32,
+  // no inline styling) governs render.php's output, not the canvas.
+  const [ palette ] = useSettings( "color.palette" );
+
+  const borderWidthPreview = ( () => {
+    if ( ! borderWidth || "object" !== typeof borderWidth ) return undefined;
+    const sides = [ "top", "right", "bottom", "left" ];
+    if ( ! sides.some( ( side ) => borderWidth[ side ] ) ) return undefined;
+    return sides.map( ( side ) => borderWidth[ side ] || "0" ).join( " " );
+  } )();
+
+  const previewStyle = {};
+  if ( borderStyle && "none" !== borderStyle ) {
+    // G5 (Bean, 2026-08-26): a style with no width means NO border — never fall
+    // through to the browser's initial `medium`. Same gate as render.php.
+    if ( borderWidthPreview ) {
+      previewStyle.borderStyle = borderStyle;
+      previewStyle.borderWidth = borderWidthPreview;
+    }
+    if ( borderColour ) {
+      previewStyle.borderColor = resolveColourToken( borderColour, palette );
+    }
+    // A gradient border renders frontend as a masked ::before ring, which cannot
+    // be reproduced in a plain inline style — approximate it with the gradient as
+    // a border-image so the canvas at least shows that a gradient is applied.
+    if ( borderColourGradient ) {
+      previewStyle.borderImage = `${ borderColourGradient } 1`;
+    }
+  }
+
+  const blockProps = useBlockProps({ className, style: previewStyle });
   const innerBlocksProps = useInnerBlocksProps(blockProps, {
     allowedBlocks: ["sgs/accordion-item"],
     template: TEMPLATE,
@@ -85,27 +129,26 @@ export default function Edit({ attributes, setAttributes }) {
           {
             key: "headerBackground",
             label: __("Header background colour", "sgs-blocks"),
+            gradientCapable: true,
             states: [
               {
                 key: "normal",
                 label: __("Normal", "sgs-blocks"),
                 value: headerBackground,
                 onChange: (val) => setAttributes({ headerBackground: val }),
-              },
-            ],
-          },
-          {
-            key: "icon",
-            label: __("Icon colour", "sgs-blocks"),
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: iconColour,
-                onChange: (val) => setAttributes({ iconColour: val }),
-                gradientValue: iconColourGradient,
+                gradientValue: headerBackgroundGradient,
                 onGradientChange: (val) =>
-                  setAttributes({ iconColourGradient: val ?? "" }),
+                  setAttributes({ headerBackgroundGradient: val ?? "" }),
+              },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: headerBackgroundHover,
+                onChange: (val) =>
+                  setAttributes({ headerBackgroundHover: val ?? "" }),
+                gradientValue: headerBackgroundHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ headerBackgroundHoverGradient: val ?? "" }),
               },
             ],
           },
@@ -117,64 +160,12 @@ export default function Edit({ attributes, setAttributes }) {
           setAttributes={ setAttributes }
           kind="layout"
         />
-        {/* Responsive spacing (padding + margin) — box-object interface contract
-            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
-            writes to the WP-native style.spacing object (also visible in the Styles >
-            Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
-            and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
-        <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
-          <ResponsiveBoxControl
-            label={ __( "Padding", "sgs-blocks" ) }
-            values={ {
-              base: attributes.style?.spacing?.padding ?? {},
-              tablet: attributes.paddingTablet ?? {},
-              mobile: attributes.paddingMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, padding: next },
-                  },
-                } );
-              } else {
-                setAttributes( {
-                  [ tier === "tablet" ? "paddingTablet" : "paddingMobile" ]: next,
-                } );
-              }
-            } }
-          />
-          <hr style={ { margin: "16px 0" } } />
-          <ResponsiveBoxControl
-            label={ __( "Margin", "sgs-blocks" ) }
-            values={ {
-              base: attributes.style?.spacing?.margin ?? {},
-              tablet: attributes.marginTablet ?? {},
-              mobile: attributes.marginMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, margin: next },
-                  },
-                } );
-              } else {
-                setAttributes( {
-                  [ tier === "tablet" ? "marginTablet" : "marginMobile" ]: next,
-                } );
-              }
-            } }
-          />
-        </PanelBody>
         <PanelBody title={__("Accordion Settings", "sgs-blocks")}>
           <SelectControl
             label={__("Style", "sgs-blocks")}
             value={accordionStyle}
             options={STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ style: val })}
+            onChange={(val) => setAttributes({ accordionStyle: val })}
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
           />
@@ -185,6 +176,29 @@ export default function Edit({ attributes, setAttributes }) {
             onChange={(val) => setAttributes({ iconPosition: val })}
             __nextHasNoMarginBottom
           	__next40pxDefaultSize
+          />
+          <DesignTokenPicker
+            label={__("Icon colour", "sgs-blocks")}
+            states={[
+              {
+                key: "normal",
+                label: __("Normal", "sgs-blocks"),
+                value: iconColour,
+                onChange: (val) => setAttributes({ iconColour: val }),
+                gradientValue: iconColourGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourGradient: val ?? "" }),
+              },
+              {
+                key: "hover",
+                label: __("Hover", "sgs-blocks"),
+                value: iconColourHover,
+                onChange: (val) => setAttributes({ iconColourHover: val }),
+                gradientValue: iconColourHoverGradient,
+                onGradientChange: (val) =>
+                  setAttributes({ iconColourHoverGradient: val ?? "" }),
+              },
+            ]}
           />
           <IconPicker
             label={__("Open icon", "sgs-blocks")}
@@ -237,6 +251,92 @@ export default function Edit({ attributes, setAttributes }) {
             checked={faqSchema}
             onChange={(val) => setAttributes({ faqSchema: val })}
             __nextHasNoMarginBottom
+          />
+        </PanelBody>
+
+      </InspectorControls>
+
+      {/* ── Styles tab ─────────────────────────────────────────────── */}
+      <InspectorControls group="styles">
+        {/* Typography — replaces the old WP-native supports.typography
+            (fontSize/lineHeight only) with the shared TypographyControls
+            component + sgs_typography_css_rule() render.php helper (D971/D972
+            full-replacement track). Root prefix "" since this is a
+            single-target block; defaults also expose weight/style, which
+            native typography never offered here. */}
+        <PanelBody title={ __( "Typography", "sgs-blocks" ) } initialOpen={ false }>
+          <TypographyControls
+            attributes={ attributes }
+            setAttributes={ setAttributes }
+            prefix=""
+          />
+        </PanelBody>
+        {/* Responsive spacing (padding + margin) — box-object interface contract
+            (.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
+            writes to the WP-native style.spacing object (also visible in the Styles >
+            Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
+            and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
+        <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
+          <ResponsiveOverride
+          	value={ attributes.padding }
+          	onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Padding', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
+          <hr style={ { margin: "16px 0" } } />
+          <ResponsiveOverride
+          	value={ attributes.margin }
+          	onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Margin', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
+        </PanelBody>
+        {/* Border — block-private width/style/colour attrs (Shape B, 2026-08-30).
+            Radius is deliberately NOT mounted here: it stays a WP-native support
+            (`__experimentalBorder.radius`) with its own control in the Styles >
+            Border panel, and accordion had no radius control of its own to move.
+            Pairing radius into this control across all 10 migrated blocks is its
+            own decision — see Task 2. */}
+        <PanelBody title={ __( "Border", "sgs-blocks" ) } initialOpen={ false }>
+          <SgsBorderControl
+            widthValues={ borderWidth ?? {} }
+            onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+            widthPresets={ [ "10", "20", "30" ] }
+            styleValue={ borderStyle }
+            onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+            colourLabel={ __( "Border colour", "sgs-blocks" ) }
+            colourValue={ borderColour }
+            onColourChange={ ( val ) => setAttributes( { borderColour: val ?? "" } ) }
+            colourGradientValue={ borderColourGradient }
+            onColourGradientChange={ ( val ) =>
+              setAttributes( { borderColourGradient: val ?? "" } )
+            }
+            colourLinked={ true }
+            radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+            onRadiusChange={ ( tier, next ) => {
+            	const key = tier === 'base' ? 'desktop' : tier;
+            	setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+            } }
           />
         </PanelBody>
 

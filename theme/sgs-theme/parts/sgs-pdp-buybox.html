@@ -1,7 +1,28 @@
 <!-- wp:woocommerce/breadcrumbs /-->
 
-<!-- wp:post-title {"level":1,"isDescendentOfSingleProductTemplate":true,"textColor":"text"} /-->
+<!-- wp:post-title {"level":1,"isDescendentOfSingleProductTemplate":true,"textColor":"text","fontSize":"xx-large"} /-->
 
-<!-- wp:woocommerce/product-rating {"isDescendentOfSingleProductBlock":true} /-->
+<!-- wp:woocommerce/product-rating {"isDescendentOfSingleProductTemplate":true} /-->
 
 <!-- wp:sgs/buybox /-->
+
+<!-- Trust copy — S2-3. Benchmarked PDPs (Nike, Gymshark, Uniqlo, Rapha, Glossier) all
+     carry delivery + returns INSIDE the buybox; Baymard finds 44% of sites never
+     surface the return policy while 60% of users look for it on the product page.
+     It cannot render inside the configurator column — sgs/buybox has no InnerBlocks
+     slot (render.php is fully server-rendered, no child mount point) — so it sits
+     immediately below in document flow, the closest achievable placement without a
+     block change. Closing that properly is a recorded block candidate.
+
+     ⛔ THIS COPY IS A PLACEHOLDER AND MUST BE REPLACED PER CLIENT, exactly like the
+     Allergens tab in sgs-pdp-content.html. The first version of this block shipped
+     "Free delivery on qualifying orders" / "Satisfaction guaranteed" as default
+     framework copy. Those are COMMERCIAL CLAIMS. A framework template ships to every
+     client, so a hardcoded offer asserts something false on the product page of any
+     client who does not offer it — a consumer-law exposure, not a design nitpick.
+     State only what the client actually offers, or delete the block.
+
+     Note: sgs/icon-list declares NO fontSize attribute (checked block.json). WordPress
+     silently DISCARDS an attribute a block does not declare, so do not add one here —
+     it would look correct and do nothing. Size comes from the block's own styling. -->
+<!-- wp:sgs/icon-list {"items":[{"iconSource":"lucide","iconName":"truck","text":"Delivery: replace with this client's delivery terms"},{"iconSource":"lucide","iconName":"rotate-ccw","text":"Returns: replace with this client's returns window"},{"iconSource":"lucide","iconName":"shield-check","text":"Replace or remove — do not ship an unverified guarantee"}],"textColour":"text-muted","iconColour":"text-muted","iconSize":"small"} /-->

@@ -172,7 +172,7 @@ final class Sgs_Active_Layout {
 		}
 
 		$content = self::get_active_content( $area );
-		if ( '' === $content || ! function_exists( 'do_blocks' ) ) {
+		if ( '' === $content ) {
 			return null;
 		}
 
@@ -343,7 +343,7 @@ final class Sgs_Active_Layout {
 		self::$preview_id[ $area ] = 0;
 
 		$expected_type = self::post_type( $area );
-		if ( '' === $expected_type || ! function_exists( 'get_post' ) ) {
+		if ( '' === $expected_type ) {
 			return 0;
 		}
 
@@ -383,7 +383,7 @@ final class Sgs_Active_Layout {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
-		if ( function_exists( 'nocache_headers' ) && ! headers_sent() ) {
+		if ( ! headers_sent() ) {
 			\nocache_headers();
 		}
 
@@ -430,7 +430,7 @@ final class Sgs_Active_Layout {
 		}
 
 		$expected_type = self::post_type( $area );
-		if ( '' === $expected_type || ! function_exists( 'get_post' ) ) {
+		if ( '' === $expected_type ) {
 			return 0;
 		}
 

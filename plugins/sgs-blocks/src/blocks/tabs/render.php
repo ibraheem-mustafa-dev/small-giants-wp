@@ -10,13 +10,14 @@
  * from the inner sgs/tab child blocks. Handles deep linking via data attributes
  * consumed by view.js.
  *
- * NO-INLINE (contract §A, 2026-07-09): color/spacing/__experimentalBorder all
- * declare __experimentalSkipSerialization in block.json. Base spacing/border-
- * radius/max-width/grid stay the WRAPPER's own scoped mechanism (SGS_Container_
- * Wrapper already emits those scoped internally — do NOT duplicate here). This
- * block owns emitting its WP color + border supports into ITS OWN scoped
- * `.{uid}` <style> (composite caveat: these must NOT ride through the wrapper's
- * `extra_styles`, which inlines). Mirrors sgs/hero exactly.
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check. Base spacing/border-radius/max-width/grid stay the WRAPPER's own
+ * scoped mechanism (SGS_Container_Wrapper already emits those scoped
+ * internally — do NOT duplicate here). This block owns emitting its WP color
+ * + border supports into ITS OWN scoped `.{uid}` <style> (composite caveat:
+ * these must NOT ride through the wrapper's `extra_styles`, which inlines).
+ * Mirrors sgs/hero exactly.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (not used — we render manually).
@@ -32,17 +33,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (border-style). Letters + hyphen only. Mirrors sgs/hero.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so a border-width/radius value can never break out of its
 // declaration. Mirrors sgs/hero.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 $orientation = $attributes['orientation'] ?? 'horizontal';
 $tab_style   = $attributes['tabStyle'] ?? 'underline';
 $tab_align   = $attributes['tabAlignment'] ?? 'left';
@@ -62,9 +55,8 @@ foreach ( $block->inner_blocks as $inner_block ) {
 			: __( 'Tab', 'sgs-blocks' ),
 		// Render the EXISTING WP_Block instance — it carries the inherited
 		// block context (postId/postType). Re-constructing from parsed_block
-		// without passing context stripped it, so context-dependent children
-		// (core/post-content in the PDP details tab) rendered EMPTY.
-		// Root-caused live on the canary 2026-06-11.
+		// without passing context strips it, so context-dependent children
+		// (core/post-content in the PDP details tab) render EMPTY.
 		'content' => $inner_block->render(),
 	);
 }
@@ -83,13 +75,11 @@ $css_vars = array();
 
 $colour_props = array(
 	'tabTextColour'            => '--sgs-tab-text',
-	'tabBgColour'              => '--sgs-tab-bg',
 	'tabActiveTextColour'      => '--sgs-tab-active-text',
 	'tabActiveBgColour'        => '--sgs-tab-active-bg',
 	'tabIndicatorColour'       => '--sgs-tab-indicator',
 	'tabActiveIndicatorColour' => '--sgs-tab-active-indicator',
 	'tabHoverBgColour'         => '--sgs-tab-hover-bg',
-	'panelBgColour'            => '--sgs-panel-bg',
 	'panelBorderColour'        => '--sgs-panel-border',
 );
 
@@ -102,6 +92,15 @@ foreach ( $colour_props as $attr => $prop ) {
 	}
 }
 
+// tabBgColour/panelBgColour gradient siblings (2026-09-06, colour-conformance
+// closeout) — same custom-property-gradient shape already proven on
+// brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker
+// (helpers-tokens.php:953); style.css carries the matching
+// background-image:var(--sgs-tab-bg[/panel]-gradient,none) line next to the
+// existing background-color/background rule.
+$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-tab-bg', $attributes['tabBgColour'] ?? '', $attributes['tabBgColourGradient'] ?? '' ) );
+$css_vars = array_merge( $css_vars, sgs_custom_property_gradient_decls( 'sgs-panel-bg', $attributes['panelBgColour'] ?? '', $attributes['panelBgColourGradient'] ?? '', (string) ( $attributes['panelBgColourHover'] ?? '' ), (string) ( $attributes['panelBgColourHoverGradient'] ?? '' ) ) );
+
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
 // D636 border-colour gradient rollout — resting/active tab indicator + panel
@@ -111,6 +110,15 @@ $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 // as every other border-colour attribute. Non-empty gradient wins over the
 // flat colour; each state uses its own selector (not `:hover`) so the ring
 // only appears on the tab actually in that state.
+// D948-follow-up (2026-09-05) — resting tab TEXT colour/gradient. tabTextColour
+// resolves to css:color in the DB (a genuine text row, not border), so it takes
+// the text-colour/gradient primitive rather than the masked-ring border
+// mechanism above. Resting state only (`:not([aria-selected='true'])`) — mirrors
+// the D636 indicator scoping so this override never clobbers the ALREADY-
+// selected tab, which stays governed by tabActiveTextColour (untouched here).
+$tab_text_effective = sgs_resolve_text_colour_or_gradient( $attributes['tabTextColour'] ?? '', $attributes['tabTextColourGradient'] ?? '' );
+$tab_text_decl      = sgs_text_colour_decl( $tab_text_effective );
+
 $tab_indicator_gradient        = sgs_css_gradient_value( $attributes['tabIndicatorColourGradient'] ?? '' );
 $tab_active_indicator_gradient = sgs_css_gradient_value( $attributes['tabActiveIndicatorColourGradient'] ?? '' );
 $panel_border_gradient         = sgs_css_gradient_value( $attributes['panelBorderColourGradient'] ?? '' );
@@ -150,61 +158,33 @@ if ( '' !== $tabs_preset_bg_slug ) {
 // <style> via the stable core API. Mirrors sgs/hero exactly; spacing/max-width/
 // grid stay the wrapper's own scoped mechanism (not duplicated here).
 $tabs_responsive_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$tabs_style_engine_args = array();
 
-	$tabs_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$tabs_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$tabs_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$tabs_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $tabs_color_args ) ) {
-		$tabs_style_engine_args['color'] = $tabs_color_args;
-	}
+$tabs_style_engine_args = array();
 
-	$tabs_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$tabs_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$tabs_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$tabs_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$tabs_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $tabs_radius_raw ) && '' !== $tabs_radius_raw ) {
-			$tabs_border_args['radius'] = $sgs_css_length( $tabs_radius_raw );
-		} elseif ( is_array( $tabs_radius_raw ) ) {
-			$tabs_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-				if ( ! empty( $tabs_radius_raw[ $corner ] ) ) {
-					$tabs_radius_clean[ $corner ] = $sgs_css_length( $tabs_radius_raw[ $corner ] );
-				}
-			}
-			if ( ! empty( $tabs_radius_clean ) ) {
-				$tabs_border_args['radius'] = $tabs_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $tabs_border_args ) ) {
-		$tabs_style_engine_args['border'] = $tabs_border_args;
-	}
+$tabs_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$tabs_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$tabs_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$tabs_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $tabs_color_args ) ) {
+	$tabs_style_engine_args['color'] = $tabs_color_args;
+}
 
-	if ( ! empty( $tabs_style_engine_args ) ) {
-		$tabs_scoped_styles = wp_style_engine_get_styles(
-			$tabs_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $tabs_scoped_styles['css'] ) ) {
-			$tabs_responsive_css .= $tabs_scoped_styles['css'];
-		}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
+
+if ( ! empty( $tabs_style_engine_args ) ) {
+	$tabs_scoped_styles = wp_style_engine_get_styles(
+		$tabs_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $tabs_scoped_styles['css'] ) ) {
+		$tabs_responsive_css .= $tabs_scoped_styles['css'];
 	}
 }
 
@@ -234,6 +214,17 @@ if ( '' !== $panel_border_gradient ) {
 		null,
 		'1px'
 	);
+}
+
+// Resting tab TEXT colour/gradient override (D948-follow-up) — scoped rule
+// beats the compiled stylesheet's `color: var( --sgs-tab-text, … )` default by
+// source order (this <style> is enqueued after style-index.css) at
+// equal-or-greater specificity. `:not([aria-selected='true'])` keeps this from
+// ever painting the active tab, which stays governed by tabActiveTextColour.
+if ( '' !== $tab_text_decl ) {
+	$tab_text_sel         = "{$root_sel} .sgs-tabs__tab:not([aria-selected='true'])";
+	$tabs_responsive_css .= "{$tab_text_sel}{{$tab_text_decl};}";
+	$tabs_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tab_text_sel, $tab_text_effective );
 }
 
 // $css_vars (CSS custom-property VALUES only, e.g. --sgs-tab-text:…) stay
@@ -304,8 +295,96 @@ $inner_html = $nav_html . $panels_html;
 // Output the block's own scoped color/border CSS (if any). wp_strip_all_tags
 // (NOT esc_html) blocks a </style> breakout while leaving CSS combinators
 // like `>` intact (contract §D — matches SGS_Container_Wrapper + sgs/hero).
-// Every value reaching $tabs_responsive_css is pre-sanitised ($sgs_css_length /
-// $sgs_css_keyword / wp_style_engine_get_styles), so nothing un-sanitised
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$tabs_responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$tabs_responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$tabs_responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$tabs_responsive_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$tabs_responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$tabs_responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
+// Every value reaching $tabs_responsive_css is pre-sanitised (sgs_css_length_value() /
+// sgs_css_keyword_sanitise() / wp_style_engine_get_styles), so nothing un-sanitised
 // survives to here.
 if ( $tabs_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below.

@@ -32,25 +32,23 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
+			"_comment_mediaElements": "37-media-no-handroll close-out (2026-09-03). The post-thumbnail <img> is ONE element rendered by Post_Grid_REST::render_card() (class sgs-post-grid__img) regardless of layout mode -- the two hardcoded object-fit:cover rules in style.css (grid-mode .sgs-post-grid__img and list-mode .sgs-post-grid--list .sgs-post-grid__image img) both target that same element via different ancestor-scoped selectors, never two elements. Unprefixed/single-slot, mirrors sgs/decorative-image's adoption shape. Only object-fit adopted (in scope for this pass) -- no attribute hand-declared, matching every existing adopter (decorative-image/before-after/media/hero): the runtime injection filter (src/blocks/extensions/media-elements.js) supplies objectFit/objectFitTablet/objectFitMobile, and the atom's own CSS var() chain already resolves to 'cover' when unset (assets/css/media-atoms/object-fit.css), matching this block's prior hardcoded default with zero attribute-default duplication.",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"elements": {
 				"grid": {
 					"label": "Grid",
@@ -69,10 +67,10 @@
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -84,7 +82,8 @@
 						"css:flex-wrap": "flexWrap",
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing"
+						"anim:easing": "sgsAnimationEasing",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "No `display`/`align-items`/`order`/`overflow` attribute exists on this block — honest GAPs.",
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) resolves via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). This block has NO staggerDelay attribute, so anim:stagger is an honest gap; anim:parallax/anim:trigger are also honest gaps (no bgParallax/scroll-trigger attrs)."
@@ -97,22 +96,34 @@
 					],
 					"prefix": "card",
 					"attrMap": {
-						"css:background-color": "cardBgColour"
+						"css:background-color": "cardBgColour",
+						"css:box-shadow": "shadow",
+						"css:background-image": "cardBgColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:border-color": "borderColourHover",
 								"css:transform": "scaleHover",
 								"css:box-shadow": "shadowHover"
-							}
+							},
+							"noBaseByDesign": [
+								"css:transform",
+								"css:border-color"
+							],
+							"_noBaseByDesignNote": "css:transform (scaleHover) legitimately has NO resting counterpart: a card's resting scale is 1 by definition, so a 'resting scale' control would be clutter rather than capability. Bean-ruled 2026-08-20. NOT a suppression hatch — css:box-shadow was ALSO hover-only on this element and was fixed by BUILDING the resting control (shadow/shadowColour), not by adding it here. Use only where the resting value is genuinely implicit. css:border-color (borderColourHover) added 2026-09-03: same shape — no cardBorderColour base attribute exists on this element at all, hover-only by the same original design as scaleHover."
 						}
 					},
-					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto. shadowHover added to this attrMap 2026-08-16 (shadow-architecture migration off the preset-only picker, matching sgs/card-grid's card-tile 'css:box-shadow':'shadowHover' hover mapping) — shadowHoverColour (the sibling colour attr) is classified via scripts/attr-classification-overrides.json, same pattern as the other shadow-colour companion attrs (D621/D622)."
+					"_note": "cardStyle (card/flat/overlay/minimal) is a preset, not a Layout-cluster control; no static border/padding/radius attrs exist for the card — background/shadow are client-overridable (cardBgColour/shadow+shadowColour), the rest hover-only (backgroundColourHover/borderColourHover/shadowHover), same shape as sgs/card-grid's card-tile gap. scaleHover is declared here (css:transform on the card element's :hover) so the generator seeds it css_property='transform' / css_element='card' / css_state='hover' — fixing the derived-classifier smell (was 'background-color,transform' / css_state NULL) at SOURCE (R-31-1 declarative channel) and giving the per-element state-lift a clean row to route the draft's `.sgs-post-grid__card:hover{transform:scale(N)}` onto. shadowHover added to this attrMap 2026-08-16 (shadow-architecture migration off the preset-only picker, matching sgs/card-grid's card-tile 'css:box-shadow':'shadowHover' hover mapping) — shadowHoverColour (the sibling colour attr) is classified via scripts/attr-classification-overrides.json, same pattern as the other shadow-colour companion attrs (D621/D622). shadow/shadowColour added 2026-08-20 to close a STATE_WITHOUT_BASE conformance gap (client could style shadowHover but had no resting shadow attribute) — mirrors the hover pair exactly, on the BASE attrMap rather than a state. An unset shadow is an honest gap: style.css's `--sgs-card-shadow` custom property keeps its existing hardcoded default (the cardStyle preset's look), and render.php only emits an inline override of that same property when shadow is non-empty, so the preset is unchanged until the client sets a value. shadowColour is the companion colour attr, same pattern as shadowHoverColour."
 				},
 				"image": {
 					"label": "Post image",
 					"order": 3,
 					"clusters": [],
+					"attrMap": {
+						"css:aspect-ratio": "aspectRatio"
+					},
 					"_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling for imageZoomHover (transform) - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage/imageZoomHover govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it."
 				},
 				"title": {
@@ -122,7 +133,22 @@
 						"text"
 					],
 					"prefix": "title",
-					"_note": "css:color resolves via the default convention (titleColour). No font-size/weight attrs exist — honest GAPs."
+					"_note": "css:color resolves via the default convention (titleColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below for the one-attr/four-elements ancestor-hover shape this closes. titleColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php rather than via the block's --sgs-pg-* custom-property chain (which cannot carry a gradient). Typography (font-size/weight/style/line-height) migrated off WP-native `supports.typography` onto the shared TypographyControls/sgs_typography_css_rule() mechanism 2026-09-05 (D971/D972) -- this element was the native support's actual target (block.json `selectors.typography` pointed at `.sgs-post-grid__title`, not the block root), so prefix 'title' carries the new attrs cleanly via the default {prefix}{Suffix} convention.",
+					"attrMap": {
+						"css:color": "titleColour",
+						"css:color-gradient": "titleColourGradient",
+						"css:font-size": "titleFontSize",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
+						"css:line-height": "titleLineHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
+					}
 				},
 				"excerpt": {
 					"label": "Post excerpt",
@@ -131,7 +157,18 @@
 						"text"
 					],
 					"prefix": "excerpt",
-					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member."
+					"_note": "css:color resolves via the default convention (excerptColour). excerptLength is a content-length control, not a style member. states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. excerptColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+					"attrMap": {
+						"css:color": "excerptColour",
+						"css:color-gradient": "excerptColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
+					}
 				},
 				"meta": {
 					"label": "Meta (date/author)",
@@ -140,7 +177,18 @@
 						"text"
 					],
 					"prefix": "meta",
-					"_note": "css:color resolves via the default convention (metaColour)."
+					"_note": "css:color resolves via the default convention (metaColour). states.hover.attrMap added 2026-09-04 (D956) -- see the shared note on 'read-more' below. metaColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+					"attrMap": {
+						"css:color": "metaColour",
+						"css:color-gradient": "metaColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
+					}
 				},
 				"category-badge": {
 					"label": "Category badge",
@@ -151,9 +199,19 @@
 					],
 					"prefix": "categoryBadge",
 					"attrMap": {
+						"css:color": "categoryBadgeColour",
+						"css:color-gradient": "categoryBadgeColourGradient",
 						"css:background-color": "categoryBadgeBgColour"
 					},
-					"_note": "css:color resolves via the default convention (categoryBadgeColour)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "categoryBadgeBgColourHover",
+								"css:background-image": "categoryBadgeBgColourHoverGradient"
+							}
+						}
+					},
+					"_note": "css:color resolves via the default convention (categoryBadgeColour). categoryBadgeColourGradient (2026-09-05) is the text-colour gradient sibling, same D956-shape recipe as title/meta/readMore on this block -- emitted as a direct decl targeting both .sgs-post-grid__badge and .sgs-post-grid__category in render.php (the two mutually-exclusive elements this one block-level attribute drives, per cardStyle). Hover background/gradient (categoryBadgeBgColourHover/categoryBadgeBgColourHoverGradient) follow the same pattern as sgs/before-after's handleColourHover: emitted as custom properties via sgs_custom_property_gradient_decls() in card_vars_decls(), consumed by style.css hover rules with fallback chain so unset hover is byte-identical to before."
 				},
 				"read-more": {
 					"label": "Read more link",
@@ -162,7 +220,18 @@
 						"text"
 					],
 					"prefix": "readMore",
-					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style."
+					"_note": "css:color resolves via the default convention (readMoreColour). readMoreText is content, not style. states.hover.attrMap added 2026-09-04 (D956): textColourHover is ONE attribute that paints FOUR descendant elements (title link/excerpt/meta/read-more) simultaneously on the CARD's hover -- render.php's own comment calls this an 'ancestor-hover shape' (the card receives :hover/:focus-within; each descendant already carries its own resting colour, so the rule targets them individually via sgs_hover_state_rules()'s $suffix param). It previously resolved css_element=NULL/derived_selector=NULL (an undeclared sub-element paint, F6 Check #8) because the manifest's attrMap model has no established one-attr-many-elements shape -- declared here on all 4 real target elements' states.hover, since that is what genuinely happens, not a workaround. No other block in this codebase currently needs this shape (checked); if a second one appears, consider whether the manifest schema itself should grow a first-class 'targets multiple elements' declaration rather than repeating this pattern by hand a third time. readMoreColourGradient (778879732 rollout, Phase 3) is the text-colour gradient sibling, emitted as a direct decl in render.php.",
+					"attrMap": {
+						"css:color": "readMoreColour",
+						"css:color-gradient": "readMoreColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover"
+							}
+						}
+					}
 				},
 				"inner": {
 					"label": "Scroll track",
@@ -181,12 +250,17 @@
 					"draggable"
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
+			},
+			"colourExemptions": {},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-post-grid",
-		"typography": ".sgs-post-grid__title"
+		"root": ".wp-block-sgs-post-grid"
 	},
 	"attributes": {
 		"postType": {
@@ -247,15 +321,21 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "30px"}
+			"default": {
+				"desktop": "30px"
+			}
 		},
 		"aspectRatio": {
 			"type": "string",
-			"default": "16/10"
+			"default": "16 / 9"
 		},
 		"imageSize": {
 			"type": "string",
@@ -264,6 +344,11 @@
 		"showImage": {
 			"type": "boolean",
 			"default": true
+		},
+		"imageDecorative": {
+			"type": "boolean",
+			"default": false,
+			"description": "Block-level (not per-post): every post's featured image in this grid is dynamically pulled from WordPress, so a per-item toggle would be meaningless as the query result changes. When true, each card's featured image renders with an empty alt attribute and aria-hidden, so screen readers skip it entirely instead of announcing the media library's per-post alt text."
 		},
 		"showTitle": {
 			"type": "boolean",
@@ -319,29 +404,85 @@
 			"type": "string",
 			"default": "primary"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"excerptColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"excerptColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"metaColour": {
 			"type": "string",
 			"default": "text-muted"
 		},
+		"metaColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"categoryBadgeColour": {
 			"type": "string",
 			"default": "text-inverse"
+		},
+		"categoryBadgeColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"categoryBadgeBgColour": {
 			"type": "string",
 			"default": "primary"
 		},
+		"categoryBadgeBgColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"categoryBadgeBgColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"readMoreColour": {
 			"type": "string",
 			"default": "primary"
 		},
+		"readMoreColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"cardBgColour": {
 			"type": "string",
 			"default": "surface"
+		},
+		"cardBgColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"backgroundColourHover": {
 			"type": "string"
@@ -349,12 +490,24 @@
 		"textColourHover": {
 			"type": "string"
 		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the card's descendant text (title link/excerpt/meta/read-more) on hover with a masked text-clip gradient instead of a flat colour (D636 text-gradient rollout). Non-empty wins over textColourHover."
+		},
 		"borderColourHover": {
 			"type": "string"
 		},
 		"scaleHover": {
 			"type": "string",
 			"default": ""
+		},
+		"shadow": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowColour": {
+			"type": "string"
 		},
 		"shadowHover": {
 			"type": "string",
@@ -469,9 +622,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -487,6 +639,40 @@
 				"space-between",
 				"space-around"
 			]
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

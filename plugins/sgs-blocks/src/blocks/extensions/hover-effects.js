@@ -5,7 +5,7 @@
  * easing, duration, focus ring, block link and click-ripple controls.
  *
  * Default model: opted-in blocks start with EMPTY/FALSE defaults (no hover
- * lift). A small opt-in list of card-like blocks gets subtle lift defaults.
+ * lift). A block declaring `supports.sgs.hoverDefaults` gets those defaults.
  *
  * `hover` and `blockLink` are OPT-IN (D551): disconnected from every block by
  * default, attached only when a block declares
@@ -51,57 +51,58 @@ try {
 }
 
 /**
- * Blocks that receive scale + shadow + image-zoom defaults by default.
- * All other blocks default to empty/false so they don't look interactive.
+ * Resolve per-block hover defaults from the BLOCK'S OWN DECLARATION.
  *
- * Special cases:
- *   sgs/whatsapp-cta — scale + shadow only (no image zoom; no image present)
- *   sgs/gallery      — image zoom only (no scale on tiles)
- */
-const SCALE_SHADOW_DEFAULT_BLOCKS = new Set( [
-	'sgs/card-grid',
-	'sgs/info-box',
-	'sgs/cta-section',
-	'sgs/team-member',
-	'sgs/pricing-table',
-	'sgs/post-grid',
-	'sgs/google-reviews',
-	'sgs/process-steps',
-	'sgs/icon',
-	// Special: scale + shadow but no image zoom.
-	'sgs/whatsapp-cta',
-	// Special: image zoom only, no scale.
-	'sgs/gallery',
-] );
-
-// Blocks that get scale+shadow but explicitly NO image zoom.
-const NO_IMAGE_ZOOM_BLOCKS = new Set( [ 'sgs/whatsapp-cta' ] );
-
-// Blocks that get image zoom only (no scale, no shadow).
-const IMAGE_ZOOM_ONLY_BLOCKS = new Set( [ 'sgs/gallery' ] );
-
-/**
- * Resolve per-block attribute defaults based on the opt-in lists above.
+ * Mirrors resolve_hover_defaults() in includes/hover-effects.php — both read
+ * the same `supports.sgs.hoverDefaults` object, so there is ONE declaration
+ * per block and no roster to keep in step.
  *
- * @param {string} blockName Block name (e.g. 'sgs/card-grid').
+ * ⛔ REPLACED three hardcoded block-name Sets (D805) for the reason recorded in
+ * the PHP twin: those Sets named 11 blocks, nothing gated the PHP half, and
+ * eight of the 11 therefore received injected hover motion with the panel
+ * switched off and no control to change it.
+ *
+ * The caller already gates on isExtensionEnabled( settings, 'hover' ), so a
+ * declaration on a block with no hover panel is never reached here — the same
+ * two-condition rule the PHP enforces explicitly.
+ *
+ * @param {Object} settings Block settings from blocks.registerBlockType.
  * @return {{ scalePreset: string, shadow: string, imageZoom: boolean, focusRing: boolean }} Defaults.
  */
-function resolveBlockDefaults( blockName ) {
-	const isOptIn         = SCALE_SHADOW_DEFAULT_BLOCKS.has( blockName );
-	const isNoZoom        = NO_IMAGE_ZOOM_BLOCKS.has( blockName );
-	const isImageZoomOnly = IMAGE_ZOOM_ONLY_BLOCKS.has( blockName );
+function resolveBlockDefaults( settings ) {
+	const declared = settings?.supports?.sgs?.hoverDefaults;
 
-	if ( isImageZoomOnly ) {
-		return { scalePreset: '', shadow: '', imageZoom: true, focusRing: true };
+	if ( ! declared || 'object' !== typeof declared ) {
+		return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
 	}
-	if ( isNoZoom ) {
-		return { scalePreset: '1.02', shadow: 'raised', imageZoom: false, focusRing: true };
-	}
-	if ( isOptIn ) {
-		return { scalePreset: '1.02', shadow: 'raised', imageZoom: true, focusRing: true };
-	}
-	// All other blocks: default OFF.
-	return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
+
+	return {
+		scalePreset: 'string' === typeof declared.scalePreset ? declared.scalePreset : '',
+		shadow:      'string' === typeof declared.shadow ? declared.shadow : '',
+		imageZoom:   !! declared.imageZoom,
+		focusRing:   !! declared.focusRing,
+	};
+}
+
+/**
+ * Resolve a block's declared hover-control exclusions.
+ *
+ * Gate A cleanup (D808 follow-up, 2026-08-27): mirrors
+ * resolve_hover_excluded_controls() in includes/hover-effects.php — both read
+ * the same `supports.sgs.hoverExcludeControls` array declared in the block's
+ * own block.json, so there is ONE declaration and no named-block array in
+ * either shared file (same discipline D805 already enforced for
+ * hoverDefaults). pricing-table / google-reviews / whatsapp-cta declare
+ * `["imageZoom", "grayscale"]` — they are root-hover blocks (D808) with no
+ * image element for those two toggles to bind to; leaving them present but
+ * inert is the D805 failure shape this suppresses.
+ *
+ * @param {Object} settings Block settings (registered type or registerBlockType settings).
+ * @return {string[]} Excluded control keys, e.g. [ 'imageZoom', 'grayscale' ].
+ */
+function resolveHoverExcludedControls( settings ) {
+	const excluded = settings?.supports?.sgs?.hoverExcludeControls;
+	return Array.isArray( excluded ) ? excluded : [];
 }
 
 const SHADOW_OPTIONS = [
@@ -146,8 +147,9 @@ const EASING_OPTIONS = [
 /**
  * Add hover attributes to all blocks.
  *
- * Per-block defaults are resolved from resolveBlockDefaults() so that
- * the opt-in list gets subtle-lift defaults and everything else starts off.
+ * Per-block defaults come from each block's own `supports.sgs.hoverDefaults`
+ * declaration via resolveBlockDefaults(); a block that declares nothing
+ * starts fully off. There is no roster here and no roster in the PHP twin.
  * A block that hides an extension (supports.sgs.hideExtensions) does NOT get
  * that extension's attributes registered.
  */
@@ -161,7 +163,7 @@ addFilter(
 			return settings;
 		}
 
-		const defaults = resolveBlockDefaults( settings.name );
+		const defaults = resolveBlockDefaults( settings );
 
 		// Declarative per-block opt-IN (D551, Phase 2.1 — see ./hide-extensions.js).
 		// 'hover' and 'blockLink' are DISCONNECTED by default: a block must list
@@ -172,21 +174,17 @@ addFilter(
 		// hideExtensions DENYLIST until its own usage derivation lands.
 		const hoverAttributes = isExtensionEnabled( settings, 'hover' )
 			? {
-				// Colour overrides on hover.
-				sgsHoverBgColour:     { type: 'string',  default: '' },
-				sgsHoverTextColour:   { type: 'string',  default: '' },
-				sgsHoverBorderColour: { type: 'string',  default: '' },
 				// Scale transform — fine-grained slider (0 = off).
 				sgsHoverScale:        { type: 'number',  default: 0 },
-				// Named scale preset — resolved from opt-in list.
+				// Named scale preset — from the block's own hoverDefaults.
 				sgsHoverScalePreset:  { type: 'string',  default: defaults.scalePreset },
-				// Shadow elevation preset — resolved from opt-in list.
+				// Shadow elevation preset — from the block's own hoverDefaults.
 				sgsHoverShadow:       { type: 'string',  default: defaults.shadow },
 				// Duration slug — maps to var(--wp--custom--duration--{slug}).
 				sgsHoverDuration:     { type: 'string',  default: 'medium' },
 				// Easing slug — maps to var(--wp--custom--easing--{slug}).
 				sgsHoverEasing:       { type: 'string',  default: 'default' },
-				// Image zoom on hover — resolved from opt-in list.
+				// Image zoom on hover — from the block's own hoverDefaults.
 				sgsHoverImageZoom:    { type: 'boolean', default: defaults.imageZoom },
 				// Stagger animation delay in ms (applied to direct children).
 				sgsStaggerDelay:      { type: 'number',  default: 0 },
@@ -259,10 +257,16 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 		const hideBlockLink = ! isExtensionEnabled( name, 'blockLink' );
 		const hideClick = isExtensionHidden( name, 'clickEffects' );
 
+		// Gate A cleanup (D808 follow-up): suppress ONLY the two toggles a
+		// block has declared as excluded (no image element to bind to) —
+		// every other Hover Effects control (scale, shadow, duration,
+		// easing, stagger, focus ring) still applies. See
+		// resolveHoverExcludedControls() above + the PHP twin.
+		const excludedHoverControls = resolveHoverExcludedControls( type );
+		const hideImageZoom = excludedHoverControls.includes( 'imageZoom' );
+		const hideGrayscale = excludedHoverControls.includes( 'grayscale' );
+
 		const {
-			sgsHoverBgColour,
-			sgsHoverTextColour,
-			sgsHoverBorderColour,
 			sgsHoverScale,
 			sgsHoverShadow,
 			sgsHoverDuration,
@@ -319,8 +323,17 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * only.
 				 * ⛔ This whole extension is SCHEDULED FOR REMOVAL (design
 				 * §4, Bean 2026-08-08): hover belongs to the element, not to
-				 * a universal filter. 48 blocks rely on it SOLELY, so the
-				 * element-hover capability lands BEFORE any deletion.
+				 * a universal filter. CORRECTED 2026-08-19 — "48 blocks rely
+				 * on it SOLELY" was true only under the PRE-D551 universal/
+				 * opt-out gating this note was written against. D551
+				 * (2026-08-10) flipped `hover` to opt-in via
+				 * `supports.sgs.enabledExtensions`, and MEASURED live reach
+				 * is now **0** — no block.json opts in (verified by scanning
+				 * every block's `enabledExtensions` array, 2026-08-19). The
+				 * element-hover capability this note calls a precondition for
+				 * deletion is therefore no longer blocked on migrating 48
+				 * blocks off this filter; re-check before removal whether
+				 * that precondition still applies at all.
 				 */ }
 				<InspectorControls group="styles">
 					{ ! hideHover && (
@@ -328,27 +341,6 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						title={ __( 'Hover Effects', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
-						{ DesignTokenPicker ? (
-							<>
-								<DesignTokenPicker
-									label={ __( 'Hover background', 'sgs-blocks' ) }
-									value={ sgsHoverBgColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverBgColour: val || '' } ) }
-								/>
-								<DesignTokenPicker
-									label={ __( 'Hover text colour', 'sgs-blocks' ) }
-									value={ sgsHoverTextColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverTextColour: val || '' } ) }
-								/>
-								<DesignTokenPicker
-									label={ __( 'Hover border colour', 'sgs-blocks' ) }
-									value={ sgsHoverBorderColour }
-									onChange={ ( val ) => setAttributes( { sgsHoverBorderColour: val || '' } ) }
-								/>
-							</>
-						) : (
-							<p>{ __( 'Colour controls not available.', 'sgs-blocks' ) }</p>
-						) }
 						<SelectControl
 							label={ __( 'Hover scale', 'sgs-blocks' ) }
 							help={ __( 'Scale the block up on hover using a preset value.', 'sgs-blocks' ) }
@@ -377,18 +369,22 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						{ ! hideImageZoom && (
 						<ToggleControl
 							label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
 							help={ __( 'Gently scales any image inside the block when hovered.', 'sgs-blocks' ) }
 							checked={ sgsHoverImageZoom }
 							onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
 						/>
+						) }
+						{ ! hideGrayscale && (
 						<ToggleControl
 							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
 							help={ __( 'Desaturates images at rest; restores colour on hover.', 'sgs-blocks' ) }
 							checked={ sgsHoverGrayscale }
 							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
 						/>
+						) }
 						<ToggleControl
 							label={ __( 'Border accent line on hover', 'sgs-blocks' ) }
 							help={ __( 'Adds a coloured line at the bottom that scales in on hover.', 'sgs-blocks' ) }
@@ -447,10 +443,18 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						{ /* Spec 35 §2 LINK standard (promoted from `sgs/button`'s
 						   Bean-approved popover 2026-08-13) — replaces the raw
-						   TextControl (type url) this panel used to render
-						   (67-block reach via this ONE extension; the highest-
-						   leverage single fix in the LINK rollout). `showRel`
-						   stays off + `enableInternalResolution` stays off:
+						   TextControl (type url) this panel used to render.
+						   ⚠ CORRECTED 2026-08-19 — "67-block reach via this ONE
+						   extension" described the PRE-D551 legacy state, when
+						   `blockLink` was still denylist/universal (attached to
+						   every block unless opted out). D551 (2026-08-10) flipped
+						   it to opt-in via `supports.sgs.enabledExtensions`;
+						   MEASURED current reach is **3 blocks** (scan of every
+						   block.json's `enabledExtensions`, 2026-08-19) — this fix
+						   was the highest-leverage single fix in the LINK rollout
+						   at the time it shipped, not a description of today's
+						   reach. `showRel` stays off + `enableInternalResolution`
+						   stays off:
 						   `sgsBlockLink` has no rel attribute and no ID-resolution
 						   consumer in `includes/hover-effects.php` — only
 						   `url`/`linkTarget` exist on the wire. The accessible-

@@ -15,26 +15,10 @@
 	width: 100%;
 }
 
-/* ===== Editor media layer (Phase 1, 2026-08-08) =====
-   Mirrors the frontend: the background image paints on a ::before layer, not on
-   the element, so a dimmed colour/gradient overlay above it doesn't dim the
-   client's content too.
-
-   Gated on .sgs-container--has-bg-media (added by edit.js only when an image is
-   set) so no other container in the canvas gains a pseudo-element. */
-.sgs-container--has-bg-media {
-	position: relative;
-}
-
-.sgs-container--has-bg-media::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: -1;
-	pointer-events: none;
-	background-image: var( --sgs-ed-bg-image );
-	background-size: var( --sgs-ed-bg-size, cover );
-	background-position: var( --sgs-ed-bg-position, center center );
-	background-repeat: var( --sgs-ed-bg-repeat, no-repeat );
-	background-attachment: var( --sgs-ed-bg-attachment, scroll );
-}
+/* ===== Editor media/overlay layers (Phase 1, 2026-08-08 / P2-4b, 2026-08-22) =====
+   Moved to the SHARED editor stylesheet (assets/css/extensions.css) on
+   2026-08-26 — the `.sgs-ed-has-bg-media`/`.sgs-ed-has-overlay` rules now live
+   there, keyed on the same marker classes `src/utils/background-preview.js`
+   applies for EVERY block mounting `BackgroundPanel` (container included), so
+   there is exactly one copy of this CSS instead of one per adopting block.
+   Do not re-add a private copy here — see CLAUDE.md's composite-mirror rule. */

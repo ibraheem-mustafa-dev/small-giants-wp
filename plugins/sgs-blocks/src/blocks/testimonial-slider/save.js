@@ -11,7 +11,7 @@
  * WordPress silently dropping InnerBlocks from post_content on save.
  * (See CLAUDE.md gotcha B4.)
  *
- * The previous null-save shape is preserved as v2 in deprecated.js with a
+ * The previous null-save shape is NOT preserved (deprecations deleted at D271); the former v2 had a
  * migrate() that converts the testimonials array into sgs/testimonial blocks.
  */
 import { InnerBlocks } from '@wordpress/block-editor';

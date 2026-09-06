@@ -1,0 +1,248 @@
+{
+  "_meta": {
+    "generated": "2026-08-27",
+    "generator": "check-enum-control-shape.py --json (this file's own output)",
+    "why": "Known-debt baseline for the D812 enum control-shape gate. These are 2-5-option enums whose RENDERED LABEL (not slug) is <=12 chars but which currently render as SelectControl instead of ToggleGroupControl. Ratchet: --check fails on any NEW violation, never on these. NOT a fix-immediately list -- see decisions.md D812 + this branch's session notes for why the gate's own count (45) differs from D812's slug-derived estimate (85).",
+    "design_exempt_note": "Entries carrying a 'reason' field are NOT debt -- they are correctly-resolved D812 violations that conflict with a separate, more specific Bean-locked rule and are baselined permanently, not pending conversion. quote.attributionFontStyle: its real control lives in the shared TypographyControls component (prefix='attribution', showStyle), whose font-style row is explicitly SelectControl per CLAUDE.md's Bean-locked R-22-13 ('weight + style = SelectControl dropdowns') -- converting it to ToggleGroupControl would violate that rule, which governs every TypographyControls adopter, not just this one block.",
+    "dispositionVocabulary": [
+      "by-design",
+      "accepted-debt",
+      "detector-limitation",
+      "blocked"
+    ],
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+  },
+  "violations": [
+    {
+      "block": "quote",
+      "attr": "attributionFontStyle",
+      "reason": "TypographyControls font-style row is Bean-locked SelectControl (R-22-13) -- see _meta.design_exempt_note",
+      "disposition": "by-design"
+    },
+    {
+      "block": "audio",
+      "attr": "audioPreload",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "logoFit",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "nameTextAlign",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "scrollDirection",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "brand-strip",
+      "attr": "tileShape",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "button",
+      "attr": "textDecorationHover",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "card-grid",
+      "attr": "source",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "container",
+      "attr": "textAlign",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "google-reviews",
+      "attr": "cardStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "google-reviews",
+      "attr": "theme",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "heading",
+      "attr": "textDecoration",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "hero",
+      "attr": "variant",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "icon",
+      "attr": "textAlign",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "icon-list",
+      "attr": "defaultIconSource",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "info-box",
+      "attr": "iconPosition",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "info-box",
+      "attr": "textAlign",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "label",
+      "attr": "fontStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "media",
+      "attr": "alignment",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundAttachment",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundRepeat",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "nav-drawer",
+      "attr": "backgroundSize",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "dismissBehaviour",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "displayMode",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "notice-banner",
+      "attr": "stickyPosition",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "pricing-table",
+      "attr": "toggleStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaBorderStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "product-card",
+      "attr": "ctaWidthType",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "product-faq",
+      "attr": "headingLevel",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "product-faq",
+      "attr": "iconPosition",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTag",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTextDecoration",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "quote",
+      "attr": "attributionTextTransform",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "separator",
+      "attr": "alignment",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "separator",
+      "attr": "contentIconSource",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "separator",
+      "attr": "contentMode",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "separator",
+      "attr": "widthUnit",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "tabs",
+      "attr": "orientation",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "tabs",
+      "attr": "tabAlignment",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "tabs",
+      "attr": "tabStyle",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "text",
+      "attr": "textAlign",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "text",
+      "attr": "textDecoration",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "text",
+      "attr": "textTransform",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "trust-bar",
+      "attr": "autoScrollSpeed",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "trust-bar",
+      "attr": "badgeSize",
+      "disposition": "accepted-debt"
+    }
+  ]
+}

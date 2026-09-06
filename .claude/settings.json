@@ -53,6 +53,15 @@
             "type": "command",
             "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/spec-drift-commit-gate.py",
             "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/detector-first-commit-gate.py"
+          },
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/truncation-commit-gate.py",
+            "timeout": 15
           }
         ]
       }

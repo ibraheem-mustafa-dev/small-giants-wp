@@ -59,10 +59,13 @@
 	place-items: center;
 	color: var( --wp--preset--color--text-inverse, #fff );
 	background: var( --sgs-audio-accent, #c9821f );
+	background-image: var( --sgs-audio-accent-gradient, none );
 	transition: transform 0.12s ease;
 }
 .sgs-audio__play:hover {
 	transform: scale( 1.05 );
+	background: var( --sgs-audio-accent-hover, var( --sgs-audio-accent, #c9821f ) );
+	background-image: var( --sgs-audio-accent-hover-gradient, var( --sgs-audio-accent-gradient, none ) );
 }
 .sgs-audio__play:focus-visible {
 	outline: 2px solid var(--sgs-focus-color, currentColor);
@@ -92,6 +95,7 @@
 	height: 15px;
 	border-radius: 50%;
 	background: var( --sgs-audio-accent );
+	background-image: var( --sgs-audio-accent-gradient, none );
 	border: 2px solid var( --wp--preset--color--text-inverse, #fff );
 	cursor: pointer;
 }
@@ -101,6 +105,7 @@
 	border: 2px solid var( --wp--preset--color--text-inverse, #fff );
 	border-radius: 50%;
 	background: var( --sgs-audio-accent );
+	background-image: var( --sgs-audio-accent-gradient, none );
 	cursor: pointer;
 }
 .sgs-audio__seek:focus-visible {

@@ -6,13 +6,11 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import {
-	ResponsiveBoxControl,
-	ResponsiveOverride,
-	SgsColourPanel,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import MediaElementPanel from '../../components/MediaElementPanel';
+import { borderPaintPreview } from '../../utils';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -38,21 +36,66 @@ export default function Edit( { attributes, setAttributes } ) {
 		placeholder,
 		buttonLabel,
 		maxResults,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		inputBorderColour,
 		focusRingColour,
 		listboxBackgroundColour,
 		resultHoverBackgroundColour,
 		matchHighlightColour,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
 	} = attributes;
+
+	// Editor-canvas mirror of the wrapper border block (width/style/colour+
+	// gradient/radius) — render.php emits these on the block's own top-level
+	// selector even though it isn't wrapper-qualified (see this file's own
+	// border-colour rows below); the canvas preview approximates the same
+	// visual on the root element regardless of the exact frontend selector.
+	const borderPreviewStyle = {};
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const bw = [ 'top', 'right', 'bottom', 'left' ];
+		if ( borderWidth && bw.some( ( k ) => borderWidth[ k ] ) ) {
+			borderPreviewStyle.borderWidth = bw.map( ( k ) => borderWidth[ k ] || '0' ).join( ' ' );
+		}
+		borderPreviewStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			borderPreviewStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			borderPreviewStyle.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-product-search',
+		style: borderPreviewStyle,
 	} );
+
+	// CHECK A: inputBorderColour paints `.sgs-product-search__input` directly
+	// (style.css:37 — border, var(--sgs-ps-input-border, fallback)). No
+	// gradient sibling attribute exists on this block, so only the flat-colour
+	// branch of the shared helper ever fires.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const inputPreviewStyle = borderPaintPreview( inputBorderColour, '', colourPalette );
+
+	// CHECK A: listboxBackgroundColour paints `.sgs-product-search__results`
+	// (style.css:86 — var(--sgs-ps-listbox-bg, fallback)); matchHighlightColour
+	// paints `.sgs-product-search__result-title mark` (style.css:160). Neither
+	// element ever exists in render.php's static markup — view.js builds the
+	// listbox + result rows only after a live REST search fires — so the
+	// static editor mock below is the only way either colour can be seen on
+	// canvas without wiring real search logic into the editor.
+	const listboxBgPreview = resolveColourToken(
+		listboxBackgroundColour,
+		colourPalette
+	);
+	const markBgPreview = resolveColourToken(
+		matchHighlightColour,
+		colourPalette
+	);
 
 	const resolvedPlaceholder =
 		placeholder || __( 'Search products…', 'sgs-blocks' );
@@ -295,63 +338,90 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 					</ResponsiveOverride>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* 37-media-no-handroll remediation (2026-09-03) — the result-row
+				   product thumbnail's crop mode is a genuine client control now
+				   (style.css no longer hardcodes object-fit:cover; the shared
+				   media-atoms stylesheet paints the same default). The thumbnail
+				   only exists in the live results list (view.js), never in this
+				   static editor preview, so this mounts its own panel rather than
+				   nesting inside an existing preview-bound control. */ }
+				<MediaElementPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix=""
+					blockSlug="sgs/product-search"
+					insertion="root"
+					group="styles"
+					atoms={ [ 'object-fit' ] }
+					mediaType="image"
+					scope="element"
+					title={ __( 'Result thumbnail', 'sgs-blocks' ) }
+				/>
 
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											padding: next,
-										},
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `padding${
-										'tablet' === tier ? 'Tablet' : 'Mobile'
-									}` ]: next,
-								} );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											margin: next,
-										},
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `margin${
-										'tablet' === tier ? 'Tablet' : 'Mobile'
-									}` ]: next,
-								} );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -412,6 +482,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								type="search"
 								className="sgs-product-search__input"
 								disabled
+								style={ inputPreviewStyle }
 								placeholder={ resolvedPlaceholder }
 							/>
 							<button
@@ -444,6 +515,56 @@ export default function Edit( { attributes, setAttributes } ) {
 								</svg>
 							</button>
 						</div>
+						{ /* CHECK A mock — a static stand-in for the live results
+						   listbox view.js builds at runtime on a real keystroke.
+						   Permanently shown (the editor cannot simulate typing);
+						   markup mirrors render.php's `<ul role="listbox">` +
+						   view.js's per-row `result-info`/`result-title`/`<mark>`
+						   structure exactly, using placeholder copy, so
+						   listboxBackgroundColour and matchHighlightColour are
+						   both visible on canvas. */ }
+						<ul
+							className="sgs-product-search__results"
+							role="listbox"
+							aria-label={ __(
+								'Product suggestions',
+								'sgs-blocks'
+							) }
+							style={ {
+								position: 'static',
+								marginTop: '0.25rem',
+								...( listboxBgPreview
+									? { background: listboxBgPreview }
+									: {} ),
+							} }
+						>
+							<li role="option">
+								<div className="sgs-product-search__result-info">
+									<span className="sgs-product-search__result-title">
+										<mark
+											style={
+												markBgPreview
+													? { background: markBgPreview }
+													: undefined
+											}
+										>
+											Ex
+										</mark>
+										ample Product
+									</span>
+								</div>
+							</li>
+							<li role="option">
+								<div className="sgs-product-search__result-info">
+									<span className="sgs-product-search__result-title">
+										{ __(
+											'Another Result',
+											'sgs-blocks'
+										) }
+									</span>
+								</div>
+							</li>
+						</ul>
 						<p className="sgs-product-search__editor-hint">
 							{ __(
 								'Live product search — works on the published site.',

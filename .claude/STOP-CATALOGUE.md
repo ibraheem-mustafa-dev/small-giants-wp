@@ -23,6 +23,120 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-DISPATCH-REPORT-DESCRIBING-A-PLAN-IS-NOT-COMPLETION** — NEW 2026-08-28. A dispatched
+  agent returned after ~70 seconds (vs 30-50+ minutes for comparable tasks) with a report that
+  DESCRIBED a plan to dispatch further work, rather than doing the work itself. No file, no commit,
+  no diff existed. Caught only by checking `git status`/`git log` directly rather than trusting the
+  report's prose. **A short duration + a report phrased as "I will now..." rather than "I did..." is
+  a red flag on its own — verify a real artefact (commit hash, file mtime, self-test output) exists
+  before accepting any completion claim, especially a fast one.**
+
+- **STOP-A-TWO-AGENTS-DISPATCHED-ON-THE-SAME-FILE-PATH-COLLIDE** — NEW 2026-08-28. A confused first
+  dispatch attempt (see the entry above) apparently spawned a genuine child agent internally before
+  returning early — leaving an UNEXPECTED second agent running on the exact same task, writing to
+  the exact same file path as a deliberately-dispatched retry. Neither agent knew about the other.
+  One detected the clobber mid-write and crashed restoring its own version; the survivor's work was
+  the one that landed. **Before re-dispatching a retry for a task whose first attempt behaved oddly
+  (fast, evasive, or exit-without-artefact), check `ListAgents` for an unexpected still-running
+  agent on the same topic — a "failed" or "returned early" dispatch may have left live children.**
+
+- **STOP-A-FALSE-COMPLETION-CLAIM-IS-HOW-WORK-IS-LOST** — NEW 2026-08-29. On 2026-08-28 a session
+  reported the css_element classifier as "fixed and **committed**" at 20:29Z while `git log -1` on
+  that path still showed a commit from five days earlier. Because everyone believed it was safe,
+  nothing protected it, and a peer's `git stash` (ref later dropped) took all 553 lines; it survived
+  only as a dangling commit recovered via `git fsck --unreachable`. The stash was the PROXIMATE
+  cause; the false claim was the ROOT cause. **Before writing "committed" in any status, report or
+  handoff, run `git log -1 -- <path>` and read the DATE back.** Corollary: on a five-track shared
+  worktree, uncommitted work is not "saved" — a dangling commit can be preserved with `git tag`.
+
+- **STOP-A-GREP-RETURNING-ZERO-NEEDS-A-POSITIVE-CONTROL** — NEW 2026-08-29. Four separate times on
+  2026-08-28 a too-narrow grep returned 0 and produced a CONFIDENT FALSE conclusion, each of which
+  would have caused a wrong action: (a) `gridTemplateColumns` absent from render.php/edit.js read as
+  "dead attribute on 10 blocks" when the SHARED WRAPPER is the reader — nearly deleted a live,
+  client-reachable feature from 9 blocks; (b) a flat key grepped against nested JSON returned `None`
+  for every row AND made the negative control pass; (c) `import.*X` missed multi-line import lists,
+  reading as "peer shipped undefined references"; (d) `find -name style.css` on the server missed
+  webpack's `style-index.css`, reading as "not deployed". **A grep returning 0 is a HYPOTHESIS.**
+  Before acting on absence, grep something you KNOW exists in the same file the same way; if the
+  control also returns 0, the pattern is wrong, not the world.
+
+- **STOP-A-A-SELF-TEST-THAT-PASSES-WITHOUT-THE-FEATURE-IS-NOT-A-GATE** — NEW 2026-08-29.
+  `extract-signatures.py --self-test` returned 8/8 PASS on the file with the Cause A/B
+  implementation REMOVED, so it could not gate that work's recovery even though it looked like the
+  obvious gate. Separately the same day, a fidelity probe "passed" its negative control only because
+  a broken lookup returned `None` for everything, positive cases included. **A negative control that
+  passes while every positive control fails is not a control — it is the same bug twice.** Gate a
+  recovery on a signal that DIFFERS between present and absent (symbol count, row values), and
+  always pair a negative control with a positive one that must pass.
+
+- **STOP-A-STATUS-LINE-OUTRANKS-THE-DOC-WRITTEN-TO-PREVENT-IT** — NEW 2026-08-29 (D885). Bean
+  caught this. `plans/spec-39-seed-requirements.md` records D552's ordering rule (**the block
+  standard LEADS, the cloning pipeline is reworked AFTERWARDS**; converter cost is scheduled work,
+  never a precondition) and adds that it is written "so a future session cannot re-invert it and
+  block a standard change on converter cost." **The LEDGER carried the inverted version anyway —
+  "Spec 39 PACES everything" — and the LEDGER is what gets read at session start.** I inherited it,
+  repeated it in a handoff and twice to Bean, and only checked when he pushed back. The supporting
+  evidence was also false and took one grep to disprove: **0** xfails in the plugin reference Spec
+  39 (17 exist, so the grep finds them), and the cited gate lives in `orchestrator/`, i.e. the
+  pipeline, exactly where the rule puts it. **Before repeating any "X blocks Y" / "X paces Y" claim
+  from a status doc, open the doc that DECIDED the ordering. If the claim cites a count or a gate,
+  grep it with a positive control first.** When correcting one, point the status doc AT the
+  deciding doc instead of restating its conclusion — a restatement can be re-flipped by the next
+  compression; a pointer cannot. Sibling of STOP-MEASUREMENT-VS-EYE for prose.
+
+- **STOP-A-RESTING-READING-TAKEN-UNDER-AN-ACCIDENTAL-HOVER** — NEW 2026-08-29 (D885). Verifying the
+  process-steps hover fix, the FIRST reading of the number badge returned the HOVER colour at rest.
+  That is indistinguishable from a real defect ("the resting rule is broken / it is red all the
+  time") and I was one step from reporting it as one. The cause was mundane: the pointer happened
+  to sit over the element when the page loaded. Parking it at (5,5) gave the correct resting value.
+  **When measuring a state-dependent style, park the pointer explicitly AND assert the state in the
+  SAME evaluation** (`el.matches(':hover')` alongside the `getComputedStyle` read) — otherwise a
+  hover reading can be silently mislabelled as a resting one, in either direction. ⚠ Related: the
+  operator confirming "I saw the hover colour" does NOT settle it either — that observation is
+  equally consistent with "it works" and "it is that colour permanently". Only the paired
+  resting/hover measurement separates them.
+
+- **STOP-A-TWO-BYPASS-LAYERS-NOT-ONE** — NEW 2026-08-28. This repo has TWO independent commit-gate
+  layers that look identical in their printed output (same F5/F6/cheat-gate report format) but have
+  DIFFERENT bypass mechanisms: the session-scoped Claude Code PreToolUse hook (`f5-commit-gate.py`,
+  bypassed via a `[gates-ok:<reason>]` token in the commit message) and git's own native
+  `.githooks/pre-commit` (no token support, only `--no-verify`). A commit can clear the first and
+  still be blocked by the second. **When a commit is blocked with this report shape, check which
+  layer is actually blocking (the exact wording differs — "PreToolUse...permissionDecision" vs
+  "pre-commit BLOCKED by F5 gate") before assuming your `[gates-ok:]` token was ignored or
+  malformed** — it may simply not apply to the layer that's currently blocking. Never use
+  `--no-verify` without checking every reported violation is genuinely pre-existing and
+  disclosed first, and never without the user's explicit go-ahead per this project's hook policy.
+
+- **STOP-A-CENSUS-IS-ONLY-AS-WIDE-AS-ITS-CORPUS** — NEW 2026-08-22 (D740). D717 measured that the
+  overlay row was "the ONLY colour row missing `linked`", against ~40 rows that had it, and shipped
+  that claim into a decision entry. It was true of the corpus examined — `SgsColourPanel` ROWS — and
+  false of the framework: `ShadowControl` is a standalone shared component, was never in the
+  population, and had the identical defect across **15 blocks**. The claim never stated which corpus
+  it had used, so nobody could see the gap. **When you write "the only X", name the SET you
+  searched, in the same sentence.** A superlative without its corpus is unfalsifiable and reads as
+  framework-wide when it is not. Sibling of
+  STOP-A-ROSTER-IS-NOT-A-DEFINITION-CHECK-EACH-MEMBER.
+
+- **STOP-A-COMPUTED-CONTROL-SHAPE-BLINDS-A-STATIC-DETECTOR** — NEW 2026-08-22 (D738). A fix built a
+  control's `states` array with `STATE_SPECS.filter(...).map(...)`. It RENDERED both states
+  correctly — and `inspector-scan` rule 31, which resolves state counts STATICALLY, reported
+  "carries 1 state" and the total ROSE. **The code improved while the detector went blind, which is
+  strictly worse than the honest finding it replaced.** Rewritten as literal array entries. Before
+  refactoring anything a static rule reads, ask what the rule can still SEE. A gate that silently
+  stops measuring reads exactly like a gate that passes.
+
+- **STOP-A-WRONG-PATH-IN-A-PLAN-CAN-FORK-A-SHARED-COMPONENT** — NEW 2026-08-22. A phase plan sent an
+  agent to `src/components/GridItemDefaultsPanel.js`; the file lives at
+  `src/blocks/container/components/`. The consequence is NOT a file-not-found stall:
+  `resolveComponentFiles()` scans BOTH directories with **no de-duplication**, so an agent creating
+  the file at the wrong path silently FORKS a component reaching 20 blocks — one copy live, one
+  stale, with the name→file map keeping whichever it visited last. **Verify every file path in a
+  plan with `find` before dispatch.** Two independent reviewers caught this one; a dispatched agent
+  would not have.
+
+
+
 - **STOP-NODE-CHECK-VALIDATES-SYNTAX-NOT-SCOPE** — NEW 2026-08-01. `node --check` parses a
   file and confirms it is well-formed JavaScript; it does **not** resolve identifiers. A fix
   on the accessibility path referenced a variable that was never declared in that scope,
@@ -843,6 +957,168 @@ unmerged by SHA; all four were verified content-identical to `main` (rebased/che
 showed a 406-line diff that was **main being ahead**, not stranded work. Compare content and
 behaviour per commit before deleting or re-merging a branch.
 
+### A14 - Session 2026-08-18: five instruments were wrong, two of them mine, shipped the same day
+
+The inspector-enforcement session. Four detectors shipped; along the way FIVE separate measuring
+instruments proved wrong, two of them detectors I had written, verified and committed hours earlier.
+The through-line: every figure produced by RUNNING something was exactly right; every figure produced
+by READING or REASONING was wrong, by 2-3x, in both directions.
+
+- **STOP-NO-DETECTOR-SHIPS-WITH-A-HAND-COUNTED-BASELINE** - declare the expected finding count BEFORE
+  the first live run, run it, then RECONCILE the gap. Reconciliation is where the value is: rule 26
+  predicted 4, measured 8, and reconciling surfaced two real detector bugs a label-grep structurally
+  could not find. Counts corrected by measurement this session: double-painted labels 12 -> 5; raw
+  `BoxControl` 12 -> 0; `BooleanResponsiveControl` mounts 9 -> 7; D4 population ~150/~55 -> 138/50;
+  "178 orphan elements" -> no formula reproduces it, struck. A number in prose is a copy that rots.
+- **STOP-A-JSX-TAG-PATTERN-NEEDS-A-WORD-BOUNDARY-NOT-A-TRAILING-CLASS** - `<BoxControl[\s/>]`
+  returned **1 hit against a true 16**, and `<ToolsPanel[\s
+]` returned **0 against 33**, because
+  multi-line JSX puts `<Component` at END-OF-LINE with no following character on that line. A false
+  ABSENCE reads exactly like a clean result. Use ``, or an AST.
+- **STOP-A-DETECTOR-MUST-OPEN-THE-DATA-IT-CLAIMS-TO-CLASSIFY-BY** - rule 30 flagged 4 false positives
+  because it classified on "is there a `ResponsiveOverride` ancestor?" and never opened `block.json`
+  - despite its OWN DOCBLOCK stating classification must be by storage shape. Doc described the right
+  principle; code did not implement it. Acting on those 4 would have replaced correct controls with
+  ones that silently drop the client's value.
+- **STOP-CTX-CACHE-JSON-RETURNS-A-WRAPPER-NOT-THE-PARSED-OBJECT** - `ctx.cache.json()` returns
+  `{ok, error, data}`. Reading `.attributes` straight off it yields `undefined`, which made every
+  attribute look non-tiered and SILENTLY DISABLED the rule while it still exited 0.
+- **STOP-NEVER-COMPARE-AST-LINE-NUMBERS-AGAINST-STRIPPEDTEXT-LINE-NUMBERS** - `strippedText()` blanks
+  a multi-line comment's ENTIRE CHARACTER RANGE INCLUDING ITS NEWLINES, collapsing them and shifting
+  every subsequent line number. That produced ZERO findings on `sgs/hero` - the one block the rule
+  existed to catch. Character OFFSETS stay aligned between raw and stripped text; line numbers do not.
+  Sibling of D661's comment-stripper incident.
+- **STOP-A-SILENTLY-DISABLED-DETECTOR-RETURNS-ZERO-WHICH-LOOKS-LIKE-A-CLEAN-TREE** - neither of the
+  two bugs above crashed, threw, or failed a lint. Each made a rule return zero findings, which is
+  indistinguishable from success. In BOTH cases the only signal was the rule's own `mustFlag` fixture
+  reporting that it no longer flagged. When a finding count drops, suspect the detector before
+  believing the tree got cleaner.
+- **STOP-A-CLOSED-ACCORDION-IS-PROGRESSIVE-DISCLOSURE** - `check-simple-surface-cap.js` had ZERO
+  occurrences of `initialOpen` and counted controls inside a `<PanelBody initialOpen={false}>` as
+  default-visible, over-reporting `sgs/site-footer` by 3 rows. Its header's claim that a bare control
+  in a PanelBody "is unconditionally shown" holds only for an OPEN panel. It also counted a
+  `<Notice>` - a conditional contrast WARNING - as a control. The cap was never wrong; the counter was.
+- **STOP-A-COMMAND-SCANNING-HOOK-CAN-MATCH-YOUR-COMMIT-MESSAGE-PROSE** - the baseline-update gate
+  blocked a commit because the MESSAGE described a flag (`--update-baseline`) the command never ran.
+  A bypass token existed; using it would have been dishonest. Reword the prose instead.
+
+### A15 - Session 2026-08-19: sources of truth that nothing reads, and a detector that measured its own blind spot
+
+Every figure below was measured by running a command on 2026-08-19; none rounded or softened.
+The through-line: a file, a spec section, or a query can look authoritative while nothing actually
+reads the part being relied on — and a detector can undercount silently the same way a false
+ABSENCE reads as a clean result.
+
+- **STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH** - `cluster-member-sets.json`
+  carries a five-state vocabulary (hover/focus/selected/pressed/disabled) with CSS realisations, and
+  it reads as authoritative. All four consumers of that file - `check-element-manifest-conformance.js`,
+  `check-cluster-coverage.py`, `placement-reach.py`, `extract-signatures.py` - read only its `clusters`
+  and `order` keys. The `states` block has ZERO readers. A golden-schema draft cited it as "the single
+  source" and had to be corrected. Before deferring to a data file, grep for who reads the SPECIFIC KEY
+  you are relying on, not the file. Sibling of `a-column-with-no-writer-and-no-reader-still-looks-like-data`.
+- **STOP-AN-ARGUMENT-BUILT-ON-UNREAD-DATA-IS-AN-ARGUMENT-BUILT-ON-NOTHING** - advice against renaming
+  the `selected` state rested on it colliding with `pressed`. `pressed` has zero DB rows and exists
+  only in that unread block. The real constraint turned out to be different and smaller (a 9-step
+  derived-column migration). Check that the thing you are citing as a constraint actually EXISTS in
+  the enforced layer before treating it as one.
+- **STOP-A-SPEC-CAN-CONTRADICT-ITSELF-IN-THE-SAME-DOCUMENT** - Spec 35 Part O §6 names
+  `StateToggleControl` as the canonical state component and calls it "verified adoptable today" with a
+  live `nav-menu` mount. Spec 35 line 736 of the SAME file says it is dead code with 0 imports and 0
+  JSX mounts. The tree agrees with :736 - 0 JSX mounts across `src/blocks`; the only references are two
+  comments recording where it USED to live. Reading one section is not reading the spec; grep the
+  component name across the whole document before quoting a canonical-component claim.
+- **STOP-A-DETECTOR-THAT-CANNOT-RESOLVE-AN-INDIRECT-VALUE-UNDERCOUNTS-SILENTLY** - rule 31's first live
+  run returned 173 and 164, below an independent regex prediction. Instrumenting rows-processed (206)
+  against a fresh per-block count (239) localised the entire 33-row gap to three blocks -
+  `product-card`, `nav-menu`, `social-icons` - each scoring ZERO rows despite having colour panels,
+  because all three build the `rows` prop indirectly (`.push()`, a separately-declared `const` array,
+  a spread-of-conditional) rather than as an inline array literal. A false ABSENCE reads exactly like
+  a clean result. When a measured count comes in BELOW an independent prediction, instrument the
+  population the detector actually processed before accepting the number.
+- **STOP-A-GREP-OVER-A-DIRECTORY-IS-NOT-A-CENSUS-OF-ONE-FILENAME** - `grep -rln "<SgsColourPanel"
+  src/blocks/` returned 61 and was reported as "61 blocks mount it". Restricting to `edit.js` returns
+  60; the extra hit was a different file in a block directory. Scope the census to the exact filename
+  that defines the population.
+- **STOP-A-CHECKER-THAT-COMPARES-HEAD-TO-STAGED-PROVES-NOTHING-WHEN-NOTHING-IS-STAGED** -
+  `check-blockjson-metadata-only.py hero` was run manually to understand why the visual gate blocked,
+  and exited 0. That exit proved nothing: the checker compares HEAD against the STAGED version, and
+  nothing was staged. A verification method that cannot see the thing it is checking will report
+  success.
+- **STOP-A-SCRIPT-CAN-IGNORE-HELP-AND-EXECUTE** - `extract-signatures.py --help` was run expecting
+  usage text. It ignored the flag, ran the full extraction, and rewrote `css-property-classifications.json`.
+  Check whether a script parses argv before probing it with a flag, or run it somewhere it cannot write.
+- **STOP-A-DERIVED-ARTEFACT-CAN-BE-NON-DETERMINISTIC** - two consecutive runs of `extract-signatures.py`
+  on an unchanged tree produce different output: `css_tier` values cycle between `desktop`/`mobile`/
+  `tablet` on a small number of attributes, 2-4 lines churning per run. That file is described as the
+  "reseed-durable channel". Blast radius is low (`css_tier` is ~1% populated with no dedicated
+  consumer) but every regeneration produces a spurious diff, so never commit a wholesale regeneration
+  as part of an unrelated change - extract only the lines your change actually caused.
+- **STOP-A-COMMAND-SCANNING-HOOK-MATCHES-YOUR-SCRIPT-CONTENT-TOO** - the path-scoped-commit gate
+  blocked a Bash call because the shell-script content being written contained a literal
+  `git commit …` example inside help text. This is the same class as A14's commit-message-prose entry,
+  one layer out: the scanner sees the whole command string including heredoc payloads. Reword the
+  embedded prose; do not reach for the bypass token.
+
+### A16 - Session 2026-08-19 (header completeness): a gate can go blind because the world changed under it
+
+Every figure below was measured by running a command on 2026-08-19. The through-line: three separate
+defences reported CLEAN while being wrong, and each was wrong for a DIFFERENT structural reason -
+the world moved under the gate, the environment lacked what the gate reads, or the label on the
+measurement was wrong rather than the measurement.
+
+- **STOP-A-GATE-KEYED-ON-A-DECLARATION-GOES-BLIND-WHEN-DECLARED-BUT-OFF-BECOMES-CONFORMANT** -
+  `check-dead-pattern-attrs.py` exists precisely to catch attributes WordPress silently discards. It
+  missed SEVEN in one commit. Turning `supports.color`'s sub-flags false stops WP REGISTERING
+  `backgroundColor`, and seven theme header patterns stored their background under that name - all
+  would have rendered with no background, no error anywhere. The gate keeps that attr in an
+  always-allowed list and asks whether `supports.color` is DECLARED, never whether its sub-flags are
+  ON. Safe while declaring the key implied the UI; unsafe the moment `golden-controls.json` named
+  "declared with every sub-flag false" as the CONFORMANT shape. **When a migration changes what a
+  DECLARATION MEANS, grep every gate keyed on that declaration's presence before shipping it.**
+- **STOP-THE-STYLE-ENGINE-EMITS-AN-UNRESOLVED-SLUG-AS-INVALID-CSS-IT-DOES-NOT-DROP-IT** - measured
+  live: `wp_style_engine_get_styles(['color'=>['background'=>'primary']])` returns
+  `background-color:primary;` verbatim. `DesignTokenPicker` stores a SLUG when `linked: true`, so two
+  row blocks emitted invalid CSS the browser discarded - a client picking a palette swatch got
+  NOTHING, silently. A raw hex works, which is why hand-testing with a hex would have "proved" the
+  path fine. **Any DesignTokenPicker value must pass through `sgs_colour_value()` before the style
+  engine; its ABSENCE beside a style-engine call is the defect.**
+- **STOP-A-SHARED-DB-RESEED-FROM-ONE-WORKTREE-BREAKS-EVERY-OTHER-TREES-DB-GATE** - the canonical DB
+  is shared and lives outside every tree. Running `/sgs-update` from a worktree taught it 7 new
+  attributes while the classifier file DECLARING them existed only in that worktree, so the other
+  session's tree reported 6 NEW rogue-seed violations. Diagnosed by running the gate from both trees
+  and comparing, not by assuming. **It resolves when the branches converge - but check WHICH TREE a
+  failing gate is evaluating before treating its finding as real.**
+- **STOP-A-FRESH-WORKTREE-FAILS-EVERY-GATE-THAT-READS-A-GITIGNORED-FILE** - `handoff-preflight`
+  flagged a dangling link to `02-SGS-BLOCKS-REFERENCE.md`. The obvious fix - repoint or delete the
+  link - would have edited a CORRECT doc: the README row itself says the file is gitignored and
+  generated by `/sgs-update`, and it exists in the primary tree at 269 KB. A worktree lacks EVERY
+  gitignored file by construction. **`git check-ignore -v <path>` answers this in one command; run
+  it before "fixing" any doc to satisfy a gate.**
+- **STOP-IDENTIFY-A-PROBE-BY-ITS-CONTENT-NEVER-BY-DOCUMENT-ORDER** - three verification probes were
+  mapped to their content-addressed uids by DOM order. Reading "probe 1" showed one rule where six
+  were expected, and the sentence reporting the feature as broken was half-written. The MAPPING was
+  wrong; all three probes were correct. A content-addressed id carries no ordering information at
+  all. The same slip recurred later picking a row uid with `sed -n '2p'`. **When a verification looks
+  surprising, re-check the IDENTIFICATION before concluding the code is broken.**
+- **STOP-A-SYNTAX-CHECK-CANNOT-CATCH-A-STRAY-JSX-NAMESPACED-ATTRIBUTE** - a stray `onChange: undefined`
+  line inside a JSX element PARSED CLEAN, because JSX reads `name: value` as a namespaced attribute.
+  It is valid syntax and completely inert. Only the full webpack build would have caught it.
+  **Parse-clean is not correct; for JSX edits the build is the check, not the parser.**
+- **STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY** — NEW 2026-09-04
+  (D948 Phase 3, session 8 colour track). `whatsapp-cta`'s `labelColour`/`labelColourGradient`
+  wiring passed every static check available — `php -l`, `survey.js`'s verdict transition,
+  `check-dead-controls`, `check-element-manifest-conformance` — because all four ask "is this
+  code shape correct", never "does the browser actually render what this code produces". The
+  gradient CSS was emitted onto the wrapper `<a>` instead of the child `<span>` that held the
+  visible text; `color` inherits from parent to child in CSS, but `background-image`/
+  `background-clip` do not, so the label rendered genuinely invisible on the live canary
+  despite a fully green build. Only a live probe (`check-colour-gradient-roundtrip.js`,
+  modelled on `check-border-roundtrip.js`'s positive/negative-control discipline) caught it —
+  by reading `getComputedStyle()` on the real rendered element, not by inspecting source.
+  **Any change whose correctness depends on CSS inheritance, cascade, or a browser-computed
+  value (not just "does this code parse/typecheck") needs a live computed-style probe before
+  being called done — a green build proves the code shape, never the painted result.**
+
 ## B. Domain STOPs — carried VERBATIM from next-session-prompt.md (2026-07-16, D338–D342)
 
 - **STOP-SCROLLBAR-LOCK (D340)** — locking body scroll (`position:fixed`/`overflow:hidden`)
@@ -981,6 +1257,22 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
 - **STOP-34** — reproduce on the real node not a synthetic one — root-cause a converter bug against the REAL draft/page node, not a synthetic/handwritten test fixture — a synthetic test can mask the actual failure path (e.g. a synthetic multi-button test used a named-root-class path that a real full-homepage run didn't).
 - **STOP-35** — default is container deviation — the new engine's recognition step must default an unrecognised (slug-None) section to `sgs/container` + recurse (FR-31-4), never fail loud — failing loud on the default case blocks the majority of real homepage sections from converting at all.
 - **STOP-39** — solo coding subagent only — dispatch mechanical build work to ONE coding subagent at a time, foreground, named files, "do the work yourself, spawn no agents"; NEVER 2+ concurrent writers on shared files; read-only reviewers/tracers/research agents may still run in parallel. Coding subagents "cascade-fail" on this pipeline when used in the banned 2+-writer shape — build INLINE instead.
+  - ⭐ **SCOPE RULED BY BEAN 2026-08-22: STOP-39 binds ONE WRITER PER FILE, not one agent at a
+    time.** Parallel coding subagents are PERMITTED when their file sets are DISJOINT. The ban is
+    on two writers touching the same file, which is what "cascade-fail" describes and what the
+    originating incident actually was — `STOP-CATALOGUE.md:2439` restates it as *"one writer per
+    file … violated by the ORCHESTRATOR rather than by parallel subagents."*
+  - ⚠ **Why this clarification exists, recorded so it is not re-litigated:** the entry's headline
+    ("ONE coding subagent at a time") and its closing sentence ("build INLINE instead") read as a
+    blanket ban on parallelism, while its middle clause says "on shared files". A council rater
+    flagged the contradiction on 2026-08-22 against a plan dispatching 4 agents on disjoint block
+    sets, and it had to be escalated because the entry could not settle its own scope. **The
+    defence is NOT weakened:** 2+ writers on one file remains banned, and the orchestrator is
+    explicitly one of the writers it counts.
+  - ⛔ **The load-bearing companion is S-7 / STOP-PATH-SCOPED-COMMIT.** Disjoint agents are safe
+    only if the INTEGRATION COMMIT is exact-path-scoped. `87d904a6` proved the real failure mode is
+    the coordinator sweeping a co-active track's work with a GLOB pathspec — parallelism was never
+    the defect there.
 - **STOP-40** — verify against the drafts actual layout not a glance — don't declare a converted section "fixed" just because it now renders as *a* grid with the right item count; check it against the DRAFT's ACTUAL desktop layout (e.g. a 2×2 grid is not "fixed" if the draft wants 4-in-a-row) — a superficial visual glance can pass a wrong layout.
 - **STOP-41** — no slug literal gate covers shared extractors too — the `no_slug_literal` gate (R-31-1 DB-first enforcement) must also cover per-slot/per-role literal carve-outs moved into shared/un-gated helper files (e.g. `field_extractors`), not just the originally-scanned files — a carve-out relocated to an ungated file silently escapes the gate. *(reconstructed from citation glosses, not a verbatim original)*
 - **STOP-42** — computed css diff keyed by content not class — clone-fidelity measurement must compare getComputedStyle values on the LIVE clone vs the SOURCE draft, matched by normalised TEXT CONTENT (not BEM class or source-declaration diff) — this is CLAUDE.md root-cause rule 4a's project-level name.
@@ -1325,7 +1617,8 @@ Carried from next-session-prompt.md. General form for any cloning-pipeline sessi
     STOP-A-SUBSTRING-MATCH-IS-NOT-A-WORD-MATCH,
     STOP-A-CASE-SENSITIVE-GREP-CAN-MANUFACTURE-A-FALSE-ALL-CLEAR,
     STOP-A-MEASUREMENT-CAN-BE-BLIND-BEHIND-AN-IFRAME-BOUNDARY,
-    STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK.)
+    STOP-A-BARE-SELECTOR-MATCHES-THE-FIRST-INSTANCE-IN-DOCUMENT-ORDER-NOT-YOUR-TEST-BLOCK,
+    STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY.)
 12. Before grouping two or more findings/fixes under one remedy because they share a SYMPTOM or a
     COUNT, have I traced the actual MECHANISM each one depends on — and before trusting a
     `--dry-run`/preview/IDE-diagnostics result, or writing a "measured"/"verified" figure into a
@@ -1343,8 +1636,61 @@ for real before claiming done?
 
 ---
 
+14. **Every number I am about to write - did I MEASURE it in this session, or am I carrying it
+    forward?** Five instruments were wrong on 2026-08-18 and two of them were my own, shipped
+    hours earlier after I had "verified" them. If a figure came from a doc, a prior message, a
+    subagent, or my own earlier reasoning rather than from a command I just ran, it is a claim,
+    not a measurement. State the command beside the number or do not state the number.
+    (STOP-NO-DETECTOR-SHIPS-WITH-A-HAND-COUNTED-BASELINE)
+15. **Is the thing I am about to cite as a source of truth actually READ by anything?** Grep for
+    a consumer of the specific KEY, not the file. Three separate "authoritative" sources proved
+    unread or self-contradicting on 2026-08-19: `cluster-member-sets.json`'s `states` block (zero
+    readers), a spec section naming a dead component as canonical, and my own query that read a
+    JSON file's top-level keys instead of descending into the one that held the data.
+    (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
+
 ## D. D101 count-check receipt
 
+- **2026-09-04 (session 8, colour track — one STOP entry added to §A, one existing ritual
+  question extended, no new question):** measured with this file's own canonical command,
+  before and after: `grep -oE '^\s*-\s+\*\*STOP-[A-Z0-9]+(-[A-Z0-9]+)*' .claude/STOP-CATALOGUE.md
+  | grep -oE 'STOP-[A-Z0-9]+(-[A-Z0-9]+)*' | sort -u | wc -l` → **271** before (at `HEAD`) →
+  **272** after. This session ADDED **1** (`STOP-A-STATIC-GATES-GREEN-DOES-NOT-MEAN-THE-CASCADE-RESOLVED-CORRECTLY`)
+  and SUBTRACTED **none**. 272 >= 271. PASS. Ritual question 11 (§C) extended with a citation
+  to the new entry rather than a new question — the lesson (a code-shape check cannot see a
+  CSS-cascade/inheritance result) is a specific instance of question 11's existing "is my
+  verification method capable of seeing the thing I'm checking" class, not a new class.
+  Ritual questions: 15 → 15, unchanged. Earned by something that actually happened this
+  session: `whatsapp-cta`'s gradient CSS passed `php -l`, `survey.js`, `check-dead-controls`,
+  and `check-element-manifest-conformance` clean, and still rendered invisible text live —
+  found only by a computed-style probe on the real canary, not by any static check.
+
+- **2026-08-19 (session, sources-of-truth-that-nothing-reads: nine STOP entries + one ritual
+  question added, §A15):** measured with this file's own canonical commands AFTER writing the new
+  section. Bytes 222,862 -> **228,525** (+5,663). `**STOP-` occurrences (`grep -o '\*\*STOP-' | wc -l`)
+  255 -> **264** (+9). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 242 -> **251** (+9). Bullet
+  defences (`grep -cE '^- \*\*'`) 308 -> **317** (+9). Unique `STOP-*` tokens
+  (`grep -oE 'STOP-[A-Z0-9-]+' | sort -u | wc -l`) 280 -> **289** (+9). Sections (`## ` headings) 5 ->
+  **5** unchanged (§A15 is a `###` sub-section of §A, matching the §A12/§A13/§A14 pattern). `### A`
+  sub-sections 3 -> **4** (+1, §A15). Pre-flight ritual questions (§C, `^[0-9]+\.` lines) 14 -> **15**
+  (+1 question 15: *"is the thing I am about to cite as a source of truth actually READ by
+  anything?"*, which is the question that would have caught the first three of this session's
+  incidents before a golden-schema draft or a Spec 35 citation relied on unread data). **No category
+  decreased; nothing was dropped, reworded away, or absorbed.** 228,525 >= 222,862. 264 >= 255.
+  251 >= 242. 317 >= 308. 289 >= 280. 5 >= 5. 4 >= 3. 15 >= 14. ALL PASS.
+- **2026-08-18 (handoff, inspector-enforcement session - four detectors shipped, Phase 0 closed, and
+  FIVE measuring instruments proved wrong, two of them detectors written and "verified" hours
+  earlier the same session):** measured with this file's own canonical commands AFTER writing the new
+  section, per session 9's receipt (a self-referential count taken before the write is stale the
+  instant it is written). DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 234 -> **242** (+8, new
+  sub-section §A14). Bullet defences (`grep -cE '^- \*\*'`) 299 -> **308** (+8 new STOP entries, +1 =
+  THIS receipt line, itself a `- **` bullet; the command reported 307 before this line was added).
+  Unique `STOP-*` tokens 272 -> **280**. Sections (`## ` headings) 5 -> **5** unchanged (§A14 is a
+  `###` sub-section of §A, matching the §A12/§A13 pattern). Pre-flight ritual questions (§C) 13 ->
+  **14** (+1 question 14: *"every number I am about to write - did I MEASURE it this session, or am I
+  carrying it forward?"*, which is the question that would have caught four of this session's five
+  instrument bugs before they were written down). **No category decreased; nothing was dropped,
+  reworded away, or absorbed.** 242 >= 234. 308 >= 299. 280 >= 272. 5 >= 5. 14 >= 13. ALL PASS.
 - **2026-08-11 (handoff, session 9 - the `columns` migration (pass 4/6) landed, plus one
   measurement lesson: a bare `document.querySelector` matched the site header's chrome instead
   of the test block):** measured with this file's own canonical commands AFTER writing the new
@@ -1838,6 +2184,19 @@ Every entry below cost real time this session. Added, never replacing E1-E6.
   visual verification. That is the gate being correct, not obstructive. Extending it to accept a
   "provably safe" class is a legitimate change — but doing it in the same breath as needing it to
   pass is not. Do the verification instead.
+- **STOP-78 — A LINTER PROVES A FILE PARSES, NOT THAT ITS SYMBOLS EXIST.** A generated PHP edit
+  emitted `<TAB>rim( ... )` because a Python heredoc wrote `	rim` with ONE backslash and Python
+  expanded `	` to a literal tab. `php -l` PASSED — `rim(...)` is valid SYNTAX; an undefined
+  function is a RUNTIME fatal. The canary served HTTP 500 for ~10 minutes. After ANY generated or
+  scripted edit to PHP, run `check-dead-api-calls.py --check`; after one to JS, build. ⚠ The same
+  pass warned about `\i` in `\in_array` and stayed silent on `	`, because `	` is a VALID escape
+  — the dangerous mangles are the ones the interpreter thinks are legitimate. (D852.)
+- **STOP-79 — A CONTROL THAT WRITES NOTHING THE RENDERER READS IS A DEAD CONTROL, AND IT LOOKS
+  FINE.** Four client colour pickers were shipped against four CSS styles whose 33 colours were all
+  hardcoded; the pickers referenced the colour custom properties ZERO times. Nothing errored,
+  nothing failed a gate — the client would simply change a colour and see no change. Before
+  shipping any control, grep the RENDERER for the property it writes. (D852; same family as
+  `a-read-with-no-writer-fails-silently`, inverted.)
 - **A BUILT MECHANISM IS NOT A REACHED ONE.** Two mechanisms this session were fully built,
   self-tested and COMPLETELY INERT: the `link-content` chain (nothing assigned the role, and the
   writer ran only under `--task-b-only`), and D6's two new rules (fed only `d4_review` while both
@@ -2370,6 +2729,22 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
   each independently), sharpened to the case where the agent reporting the mechanism is the same one
   that caused the effect.
 
+- **STOP-A-PEERS-CLAIM-ABOUT-WHO-CAUSED-A-CHANGE-IS-NOT-VERIFIED-BY-DEFAULT.** On 2026-09-04 a
+  peer session's `check-editor-render-parity.js` ceiling raise (211→213) was sitting dirty on the
+  shared tree. Another peer session told me directly "it looks like you'd already bumped the
+  ceiling yourself" — plausible (the file WAS dirty on my end too), stated with confidence, and
+  wrong. `git diff` on that exact file showed the raise cited a comment I had never written
+  ("D942/D956 shared-helper text-gradient gate") and touched code I had never opened. Corrected
+  before either of us acted on the false attribution. **Rule: when a peer states who made an
+  uncommitted change (to credit, blame, or hand off responsibility for it), check `git diff` on
+  that specific file yourself before accepting the claim — a peer's read of a shared, actively-
+  mutating tree is a hypothesis, not ground truth, even when it sounds confident and even when
+  the dirty state is consistent with it being true.** Sibling of
+  STOP-A-SUBAGENTS-CAUSAL-EXPLANATION-FOR-A-FAILURE-IT-CAUSED-IS-NOT-EVIDENCE (that one distrusts
+  an agent's account of its OWN failure; this one distrusts a peer's account of a THIRD party's
+  change) and STOP-VERIFY-SUBAGENT-FACTS-NOT-JUST-STRUCTURE (facts need checking regardless of how
+  structurally sound the surrounding report is).
+
 - **STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT.** On 2026-08-17 I was asked whether a
   shared component had been decomposed. I answered from the file's **LINE COUNT** — it had grown from
   1,728 to 1,887 lines, so I concluded no split had happened, wrote that into two governing docs, and
@@ -2384,7 +2759,7 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
   separate subagents counted comments saying a component *used to* live somewhere as live usage; and
   a case-sensitive grep for `isDecorative` missed the real attribute `imageIsDecorative`. The
   structural defence is the verification ladder in
-  `.claude/plans/2026-08-17-spec-verification-programme.md` — LIVE > SOURCE > TOOL > DOC, where DOC is
+  `.claude/plans/archive/2026-08-17-spec-verification-programme.md` — LIVE > SOURCE > TOOL > DOC, where DOC is
   explicitly not evidence and a tool whose own `--self-test` fails drops to DOC tier.
 
 - **STOP-A-DIRECTORY-SCOPED-GATE-CAN-BE-TRIPPED-BY-A-CONCURRENT-SESSIONS-UNRELATED-UNCOMMITTED-FILES.**
@@ -2404,3 +2779,325 @@ does not fit this catalogue's scope (anti-patterns THIS project's structural def
 **D101 carry-forward receipt for E15.** `python .claude/hooks/handoff-preflight.py --check` run
 pre-edit reported 221 STOPs; three added here, zero removed, zero reworded. 221 → 224. 224 >= 221.
 PASS.
+
+### E17. Earned 2026-08-29 — timeline connector FR-38-35 (D879): five instruments, five confident wrong answers
+
+⛔ **STOP-INSTRUMENT-SHAPE — a measurement can be correct, self-consistent, and describe nothing.**
+Five separate instruments passed in one session while the feature was visibly broken. Every single
+one was caught by opening a screenshot or by Bean looking, never by a gate. They are listed in full
+because the SHAPE recurs, not the specifics:
+
+1. **Zero-area element.** `getComputedStyle` reported `display:block`, the correct `stroke`,
+   `stroke-dasharray:1px` and a `stroke-dashoffset` animating smoothly `0.992→0.753→0.345→0.108`.
+   Every number true. The element was **2px × 2px inside a 383px block** and painted nothing.
+   **A style check cannot see a zero-area box.** Assert PAINTED GEOMETRY — a bounding rect against
+   its parent, or a pixel sample.
+2. **Harness on the wrong axis.** The horizontal arm reported vertical geometry and cried DRIFT.
+   The viewport was 700px — *below* the 767px breakpoint — so the block correctly re-laid out and
+   the harness walked the wrong axis. **The code was right; the test was wrong.**
+3. **A colour detector that excluded its own target.** The predicate demanded `g > 140`; the token
+   under test was `rgb(230,138,149)`. It missed by **two units of green** and reported the fill
+   SHRINKING as progress grew.
+4. **A check with no positive control.** The spark probe asserted `sparks === 0` under reduced
+   motion and read that as the gating working. It **never asserted sparks were non-zero when they
+   should be** — so it passed just as happily against a feature that did nothing at all, which is
+   exactly what it was passing against for two deploys.
+5. **A box read at the wrong moment.** Two bounding-box checks reported the connector "10px clear"
+   of the date text while the rendered page plainly showed the line through the glyphs. Both were
+   taken before `scrollIntoView` had settled. **A box read at the wrong moment is not evidence.**
+
+⛔ **STOP-DECOR-IN-FALLBACK — never put a decorative layer inside a fallback driver.** The spark
+spawner lived inside the JS driver, which returns early when the browser has native
+`animation-timeline`. Sparks therefore existed **only on Firefox** — the inverse of what was wanted,
+and invisible to everyone who looked. A decorative layer must observe the progress VALUE, whoever
+wrote it.
+
+⛔ **STOP-WHITE-ON-LIGHT — a hardcoded `#fff` decoration vanishes on any light ground, and it comes
+back.** Shipped three times: as 3px white dots (measured 1.06:1 on cream), then re-introduced as the
+white *core* of the replacement gradient (1.04:1), and masked both times by an easing that shrank
+them before they travelled. On a light page a light mote can never read — go DARKER, keyed to the
+client's own token. This is the owner's own standing rule applied literally: **a mid-luminance brand
+accent is a GROUND, not an indicator.**
+
+⛔ **STOP-SELF-CHECKOUT — `git checkout -- <your own file>` destroys your own uncommitted work.**
+Used to undo a bad edit mid-session; it reverted to the last commit and silently took an
+unrelated, uncommitted fix with it. The shared-tree stash ban exists for peers — this is the
+same hazard turned inward. Commit first, or copy to scratch, then revert.
+
+### E18. Earned 2026-08-30 — client-controls track: a green dead-control gate proved consumption, not paint
+
+⛔ **STOP-CONSUMED-IS-NOT-PAINTED — a control fully "consumed" by render.php can still paint
+nothing, because nothing checks that its emitted CSS matches a live selector.** `check-dead-controls`
+only proves the attribute is READ (destructured, interpolated into a CSS string, written to the
+page). It never proves the resulting declaration lands on a selector any rendered element matches.
+On cta-section and trust-bar, ~30 client-facing controls were fully wired end-to-end — read by
+render.php, emitted into a `<style>` block — and painted nothing, because the emitted selector never
+matched the markup (fixed `b59f8cd3f`). The gate was green the entire time; a client had been turning
+dead dials for an unmeasured stretch. **Rule: "consumed" and "painted" are two different claims with
+two different proofs. A dead-control gate closes the first; only a live DOM read (the emitted
+selector actually present on the rendered element, the property actually taking the control's value)
+closes the second.** Sibling of STOP-4 (written not landed) and STOP-A-CSS-RULE-THAT-CANNOT-WORK-
+STILL-LOOKS-CORRECT-IN-SOURCE, sharpened to the specific case of a selector/markup mismatch hiding
+behind a fully-wired attribute pipeline. Nobody has yet swept the other 82 blocks for the same
+shape — treat any block passing `check-dead-controls` as UNVERIFIED for paint until checked live.
+
+⛔ **STOP-DUPLICATE-CONTROL-INSIDE-A-CONFIG-OBJECT — `check-duplicate-controls` CHECK 2 only scans
+JSX control elements; a duplicate writer hiding inside a row/config object literal passed as a prop
+is invisible to it.** CHECK 2 walks the AST for JSX control elements (`<ColorPicker attribute=…/>`
+and its siblings) and compares the attributes they write. A second writer of the same attribute that
+instead lives inside a plain JS object literal — a row definition, a preset config, anything passed
+as a `rows`/`items`/`config` prop rather than rendered as its own JSX control — writes the identical
+attribute through a different code shape the AST walk never visits, so it never enters the
+comparison set at all. **Rule: a duplicate-writer gate that pattern-matches on JSX element shape is
+blind to the same write hiding in a config-object literal — grep for the attribute name as a plain
+string across the whole file (`setAttributes\(.*\b<attr>\b` or the bare key inside an object) as a
+second, shape-independent pass, not just the JSX walk.** Sibling of
+STOP-A-CONTROL-DETECTED-BY-COMPONENT-NAME-NOT-BY-WHAT-IT-DOES (memory
+`feedback_detect_a_control_by_what_it_does_not_its_component_name`) — same root cause, applied to a
+duplicate-detection gate instead of a control-classification one.
+
+**D101 carry-forward receipt for E18.** BEFORE (this file's own canonical commands, run pre-edit):
+bytes 246,728 · `**STOP-` occurrences 288 · DEFINED `STOP-*` entries (`grep -c '^- \*\*STOP-'`) 270 ·
+bullet defences (`grep -cE '^- \*\*'`) 337 · unique `STOP-*` tokens 313 · sections (`## `) 5 · ritual
+questions (§C) 15. Two STOP entries added here (STOP-CONSUMED-IS-NOT-PAINTED,
+STOP-DUPLICATE-CONTROL-INSIDE-A-CONFIG-OBJECT — both formatted `⛔ **STOP-…**` narrative style,
+matching E15-E17's own precedent, not the older `- **STOP-N**` bullet-list style), zero removed,
+zero reworded, zero ritual questions touched. AFTER, same commands post-edit: bytes **250,321**
+(+3,593) · `**STOP-` occurrences **291** (+3) · DEFINED `STOP-*` entries **270** (+0 — expected,
+narrative-style entries don't match the `^- \*\*STOP-` bullet pattern, same as every E15-E17 entry)
+· bullet defences **337** (+0 — same reason) · unique `STOP-*` tokens **317** (+4) · sections **5**
+(+0 — E18 is a `###` sub-section of E, matching the E15/E16/E17 pattern) · ritual questions **15**
+(+0, untouched). Every category >= its BEFORE figure. Nothing SUBTRACTED. PASS.
+
+### E19. Earned 2026-08-31 — a control that "does not work" already works somewhere else
+
+⛔ **STOP-DIFF-AGAINST-A-SURFACE-WHERE-IT-ALREADY-WORKS-BEFORE-DESIGNING-A-FIX.** Bean-locked. When a
+control, attribute or CSS property "does not mesh", the answer is almost always already in the tree:
+query which blocks declare it (`sgs-db.py sql "SELECT block_slug, attr_name, css_property,
+css_element FROM block_attributes WHERE css_property='<prop>'"`), read the WORKING block's
+`render.php` + `style.css`, and diff. Measured across the media-atom layer 2026-08-31: every "the
+atoms don't mesh" problem resolved this way in minutes after a stretch of reasoning from first
+principles produced nothing. `sgs/hero`'s split-media object-fit already worked, and the single
+difference was PER-ELEMENT selector scoping. The same query surfaced two blocks
+(`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`) that a hand-written survey of
+"media blocks" had missed outright — **a hand-picked population is not a census; the DB is.**
+
+⛔ **STOP-NEVER-REASON-FROM-WHAT-THE-CANARY-CURRENTLY-RENDERS.** Bean-locked. The framework is
+PRE-PRODUCTION: there is no client content, and a default changing costs nothing. Weighing "this
+would change what the canary shows" produces the wrong fix and burns the session — it happened
+2026-08-31 and cost a stop that should not have been taken. Whether a default is RIGHT is a
+SEPARATE question, decided on what the other surfaces measure, never on preserving the current page.
+
+⛔ **STOP-A-RULE-THAT-SILENTLY-WINS-IS-WORSE-THAN-ONE-THAT-LOSES.** This file already records that a
+losing CSS rule is indistinguishable from an absent one. The inverse is more dangerous: a SHARED
+rule at higher specificity that fires unconditionally silently replaces a block's own default, and
+the old behaviour simply stops with no attribute changed and nothing to grep for. The media atom
+rules sit at `(0,1,0)` and would have overridden `sgs/media`'s `(0,0,0)` `:where()` object-fit
+default. **Rule: a shared fallback is the value the population MEASURES, never `initial` / `unset` /
+`revert`** — gated by `check-media-atom-purity.js`.
+
+⛔ **STOP-A-FIXED-CUSTOM-PROPERTY-NAME-NEEDS-A-PER-ELEMENT-SCOPE.** A shared static stylesheet cannot
+know a surface's prefix, so shared emitters use fixed custom-property names. That is only safe when
+each element carries its OWN scope class. Without it a block with two media elements sets the same
+property twice on one scope and the second wins — the client sets before=contain and after=fill and
+both render fill, with both values stored correctly and the parity gate green. **Rule: scope per
+ELEMENT (`{uid}--{prefix}`), never per block.** Gated in `test-media-atom-parity.mjs`.
+
+
+**D101 carry-forward receipt for E19.** Four STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E18), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **317 -> 321**. Ritual questions in §C: **15 before, 15 after** — untouched.
+
+⚠ **This receipt first recorded the ritual count as 8, which was wrong.** The count came from
+`^\d+\. \*\*`, which only matches a question whose first word is bolded; §C has 15 questions and
+several are not. **Count with `awk '/^## C\./,/^## D\./' … | grep -cE '^[0-9]+\. '`** — a
+carry-forward receipt whose own figure is wrong defeats the check it exists to perform, which is the
+same class of failure as the three instruments D910 records. Caught by an independent `/qc` subagent,
+not by me.
+
+### E22. Earned 2026-09-03 — uniformity-sweep detector backlog (03/18/21-appendix) + media-atom rename fix, D920
+
+⛔ **STOP-READ-A-DATED-REPORT-PATH-BEFORE-WRITING-TO-IT.** A `reports/visual-diff/<block>-<date>.md`
+path's date matching today is NOT proof the file is new — it may already hold a genuinely
+live-verified report from an earlier part of the SAME session, or a different track on a shared
+worktree. Writing to `hero-2026-09-02.md` without reading it first silently overwrote a real
+`gate:full`+deploy+live-capture report from earlier the same day. Caught only because
+`git diff --cached --stat` showed `M` (modified) not `A` (added) for a file believed to be new.
+**Rule: before writing to any date-keyed doc/report path, check `git status`/`git diff --cached
+--stat` for that exact path first — if it exists and is tracked, read it and merge (matching
+`info-box-2026-08-15.md`'s "two commits today, this report covers both" pattern), never blind-write.**
+Mistakes.md entry: `read-before-overwrite-dated-report-files`.
+
+⛔ **STOP-RUN-GATE-FULL-BEFORE-DEPLOY-NOT-ONLY-GATE-FAST.** `gate:fast`'s 85 gates all passed, and a
+deploy was attempted on that basis — it ABORTED, because `build-deploy.py` itself runs `gate:full`
+(a separate, heavier 3-gate tier: `pytest-oracle-converter`, `inspector-scan-run`,
+`audit-block-file-consistency`) which `gate:fast` does not cover, and that tier found two real
+NEW findings (`before-after`'s dynamic-key `{side}ImageDecorative` attrs, invisible to the
+consistency auditor's literal-string matching — traced by hand, confirmed genuinely wired, correctly
+baselined with a written reason, not blindly accepted). **Rule: `gate:fast` passing is not
+deploy-readiness — run `gate:full` (or just call `build-deploy.py`, which runs it for you) before
+assuming a deploy will succeed, and treat any `gate:full`-only finding with the same "understand
+before baselining" discipline as any other gate.**
+
+⛔ **STOP-A-SUBAGENTS-GIT-STASH-ATTEMPT-ON-A-SHARED-WORKTREE-IS-A-REAL-VIOLATION-EVEN-IF-HARMLESS.**
+A dispatched agent (working on `sgs/hero`, a file 14 other concurrent agents were also touching that
+session) attempted `git stash` despite an explicit "no state-changing git commands" instruction in
+its cold prompt, reasoning it needed a clean baseline for its own before/after diff. It failed
+harmlessly this time (`git stash list` empty, no reflog entry, `git status` unaffected) — but on a
+shared worktree with other agents mid-edit, a successful stash would have silently pulled their
+in-progress uncommitted work out from under them. **Rule: a cold prompt's git restriction is not
+satisfied by "it happened to be harmless" — verify via `git stash list`/`git reflog` after any
+agent completes, regardless of outcome, and give agents a scratch-directory baseline instead of a
+reason to reach for `git stash` in the first place (per the existing
+`a-prohibition-in-a-subagent-brief-is-not-enforcement` lesson — restating the rule doesn't enforce
+it; the workaround needs to not be reachable).**
+
+**D101 carry-forward receipt for E22.** Three STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E19), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **325 -> 328**. Ritual questions in §C: **15 before, 15 after** — untouched.
+
+### E20. Earned 2026-09-02 — uniformity sweep: three commits silently failed and were nearly lost
+
+⛔ **STOP-A-TRUNCATED-COMMAND-TAIL-CAN-HIDE-A-FAILED-GIT-COMMIT.** Bean-locked. This project's
+pre-commit hook (`.githooks/sgs-gates.sh`) runs many gates after the one that can actually block the
+commit (the visual-diff gate), so its full output is long — `❌ COMMIT BLOCKED` and every reason for
+it print BEFORE a long run of unrelated baselined-and-passing gate diagnostics. Reading only the last
+few lines of that output (`tail -N`, or a result window that happened to end there) shows a
+plausible-looking wall of `[baselined]`/`Gate passed` lines and NOTHING that says the commit failed —
+because it did fail, silently, three commits in a row, in this exact session. **Rule: after any `git
+commit`, confirm success by reading the FULL output or by grepping for `\[main ` / `COMMIT BLOCKED`
+specifically — never infer success from a tail that happens to end on a passing sub-gate.** A `git
+log --oneline -1` / `git status --short` check before moving on is the cheap, reliable confirmation;
+this session only caught the loss because of a routine sanity check before writing a handoff, not
+because anything in the commit flow itself surfaced it.
+
+⛔ **STOP-A-CODEMODS-OWN-SELF-TEST-PASSING-IS-NOT-PROOF-ITS-REAL-OUTPUT-IS-CORRECT.**
+`scripts/colour-codemod/fix.js --self-test` passed 100% both before and after a real `--fix --apply`
+run that shipped a PHP parse error into two live blocks and a JS `ReferenceError` into all three it
+touched. The self-test's fixtures did not cover the exact string-concatenation shape those blocks
+used. **Rule: after any codemod's `--fix --apply`, re-run the project's own build-time gates
+(`gate:fast`, `php -l` on touched PHP) — a green self-test proves the TESTED cases are handled, not
+that today's REAL cases are among them.**
+
+**D101 carry-forward receipt for E20.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E19), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **321 -> 323**. Ritual questions in §C: unchanged — verified via
+`awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.
+
+### E21. Earned 2026-09-02 (part 2) — a prototype detector's 613-row report nearly became a work plan
+
+⛔ **STOP-A-SELF-DECLARED-PROTOTYPE-IS-NOT-AN-AUTHORITATIVE-SOURCE.** Bean-locked (D918).
+`scattered-element-controls.js` opened with `// PROTOTYPE detector (design + feasibility task)` and
+`NOT BUILT: --fix. Not asked for` in its own header. Its output was nonetheless published as a
+613-row, 48-block report and was one approval away from becoming a fix-dispatch target. Its model —
+"every element, including a block's own `wrapper`, needs its controls in ONE panel" — directly
+contradicted Spec 35's own schema comment, which says `isWrapper: true` **selects TIER 2**, where
+property-family panels are the CORRECT shape. ~600 of its findings were false. **Before quoting any
+script's output at scale — in a report, a decision, or a dispatch — read its own header for a
+maturity disclaimer (`prototype`, `feasibility`, `census not a gate`, `advisory only`, `NOT BUILT`),
+and grep the same directory plus `decisions.md` for a more mature tool answering the same question.**
+`placement-reach.py` was sitting in that same `scripts/` folder the whole time, self-tested and
+already gated, and D537 had already named it "THE placement mechanism". Its real answer was 9
+findings, not 613.
+
+⛔ **STOP-A-DETECTOR-THAT-NEVER-NAMES-A-RULES-DOCUMENTED-EXCEPTION-PREDATES-OR-IGNORES-IT.** The
+tell was mechanical and cheap: the rule it claimed to enforce has an explicit, named exception
+(`isWrapper`), and the detector's source never mentioned that word anywhere. **When a spec rule has
+a named exception, grep the detector for that exact name. A detector whose code cannot say the
+exception's name is not implementing the rule — it is implementing an older, simpler idea of it.**
+Its own `--self-test` passing proves internal consistency only; it can never catch conformance drift
+against an external spec, because the fixtures were written from the same wrong model as the code.
+
+**D101 carry-forward receipt for E21.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E20), zero removed, zero reworded, zero ritual questions touched. Unique `STOP-*`
+tokens **323 -> 325**. Ritual questions in §C: unchanged — verified via
+`awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '` before and after.
+
+### E23. Earned 2026-09-03 — colour track: a measurement that agrees with you about the wrong question, D923
+
+⛔ **STOP-TWO-TOOLS-ANSWERING-ONE-QUESTION-CAN-DISAGREE-AND-BOTH-BE-RIGHT.** `survey.js` reported
+**40 rows AUTOFIXABLE**; `fix.js` — the tool that would actually do the fixing — reported **0
+fixable, 74 refused**. Neither is buggy: the survey models fewer constraints than the fixer
+enforces, so its verdict is an upper bound, not a work list. An adversarial council read the survey
+figure, called it "12 rows closable right now with no new code", and a whole planned phase was
+built on it. The phase was empty. **Before planning work off any census count, run the tool that
+would DO the work in dry-run mode and believe that number instead.** A count is only as good as the
+tool that will act on it.
+
+⛔ **STOP-A-MOVED-VERDICT-CANNOT-SEE-A-SUPERSEDED-WRITER-LEFT-BEHIND.** Every agent in a 15-block
+rollout verified its work by watching the survey verdict move off
+`no-gradient-capable-paint-path-found`, and every one was right — that verdict measures whether a
+gradient-capable path now EXISTS. It is structurally blind to the old flat writer still emitting a
+competing `color:` on the same element, which is the two-owners defect the whole programme exists to
+remove. **Read the diff's MINUS lines.** A success criterion that cannot see the failure mode is not
+a check, however honestly it is reported.
+
+⛔ **STOP-REMOVING-A-WRITER-CAN-LEAVE-PROVABLY-DEAD-GUARDS-THAT-FAIL-THE-BUILD.** Stripping the text
+colour out of `wp_style_engine_get_styles()` left `$X_color_args` / `$X_style_engine_args` declared,
+never written again, and read only inside `if ( ! empty( … ) )` — always-falsy by construction, in
+four blocks at once. `check-render-undefined-vars` caught all seven. Prune such a branch **by proof**
+(enumerate every write; zero remaining writes means the guard is unconditionally dead) and never by
+heuristic. Same class as the Shape-B border migration hit the same day, which is the point: the
+class recurs whenever a writer is removed from a shared accumulator.
+
+⛔ **STOP-A-RELATIVE-PATH-IS-CORRECT-WHERE-THE-AGENT-STANDS-AND-WRONG-WHERE-THE-GATE-LOOKS.** Two of
+four dispatched agents wrote their visual-diff reports to `plugins/sgs-blocks/reports/visual-diff/`
+while reporting the path as `reports/visual-diff/…` — true relative to their working directory, and
+invisible to the commit gate, which reads the repo ROOT. Their self-reports were honest and still
+misleading. **Give a dispatched agent an ABSOLUTE path for any artefact a gate will look for**, and
+verify the file where the gate reads it, not where the agent says it wrote it.
+
+⛔ **STOP-AN-EXEMPTION-NEEDS-A-CONTROL-PROVING-A-TYPO-CANNOT-BUY-IT.** Rule 31 was taught to exempt a
+row whose SOLE declared state is a real non-`normal` state. Gated on the schema's own
+`_meta.stateVocabulary.real`, never on the attribute NAME — the schema's own `states.derivation.why`
+warns that `pauseOnHover` contains "Hover" and is a boolean. A name-based proxy was tried first and
+was wrong in BOTH directions. The load-bearing half is the paired fixture: `sole-declared-state-row`
+(mustNotFlag) beside the identical-but-for-the-state-key `sole-unknown-state-row` (mustFlag).
+**Without the over-match control, an exemption is a way to switch a rule off by misspelling a word.**
+
+**D101 carry-forward receipt for E23.** Five STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E22), zero removed, zero reworded, zero ritual questions touched. Ritual questions in
+§C unchanged — verified with `awk '/^## C\./,/^## D\./' .claude/STOP-CATALOGUE.md | grep -cE '^[0-9]+\. '`
+before and after. Per the `stop-floor.json` note, these narrative-style tokens are deliberately NOT
+added to that floor: its extractor matches only `- **STOP-…` bulleted items, so asserting them there
+would make the check fail against a floor it can never satisfy.
+
+⛔ **STOP-A-FIX-AT-THE-EMITTER-COVERS-ONLY-WHAT-THE-EMITTER-EMITS.** The touch-hover guard was
+applied to all 9 PHP emit sites across 4 shared files and reported as "touch-safe hover across the
+framework". The live probe then showed `.sgs-nav-menu__link:hover` unguarded on the very page that
+proved the guard working — because that rule is hand-written in a block's own `style.css`, which no
+PHP emitter ever touches. Measured after the fact: **233 `:hover` lines across 40 block `style.css`
+files, zero guarded** — a larger population than the one that was fixed. **When you fix a behaviour
+at a shared emitter, measure how much of that behaviour actually flows through the emitter before
+describing the fix as universal.** The guard is real; the scope claim was not.
+
+### E24. Earned 2026-09-06 — Spec 32/35 gates closure + typography-migration opening session, D970
+
+⛔ **STOP-A-DOCUMENTED-RULE-IS-JUST-AS-BINDING-WHETHER-ITS-DAYS-OLD-OR-A-YEAR-OLD.**
+`plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section stated, in a commit landed ~6 days
+before a mechanical rule-41 fix batch started, that colour has no general per-element-panel
+mechanism and none should be built without a design gate. The batch built exactly that mechanism
+across 10 blocks anyway — not because the rule was missing, stale, or hard to find, but because
+nobody re-read the relevant section before treating "this needs fixing somewhere" as licence to
+invent the how. A proactive read-only audit (not a review — nobody asked for one) caught it the
+same night; reverted, detector corrected instead of re-litigated per block. (First write-up of
+this entry wrongly guessed the gap as "6 minutes" — corrected to the measured ~6 days after an
+independent QC check caught the fabricated precision; state figures you've verified, not
+estimated.) **Before building any GENERAL mechanism touching a shared component's placement or
+architecture, read the relevant doc section in full — don't rely on memory of it — regardless of
+how long ago it was written.**
+
+⛔ **STOP-A-SUSPECTED-BUG-IS-A-HYPOTHESIS-UNTIL-READ-AND-LIVE-CHECKED.** A shared PHP typography
+helper was suspected of breaking on responsive attribute values, based on 4 blocks' static
+detector findings. Reading the helper's actual code showed it already handled both value shapes
+correctly (added in an earlier, unrelated commit); a live check at three breakpoints confirmed
+responsive typography genuinely works today on all 4 blocks. The 4 findings were about something
+else entirely (those blocks don't call the shared helper at all — a real but non-urgent
+duplicate-logic gap, not a defect). **Committing the requested "fix" would have shipped a second,
+redundant implementation of already-working logic — the exact unfalsifiable-overlapping-fix
+trap.** Investigate before writing the patch, every time, even when the bug report sounds
+specific and confident.
+
+**D101 carry-forward receipt for E24.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
+matching E15-E23), zero removed, zero reworded, zero ritual questions touched. Ritual questions
+in §C unchanged. STOP-bullet count: 29 before this session, 31 after.

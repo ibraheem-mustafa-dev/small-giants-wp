@@ -97,7 +97,10 @@ def test_container_gap_reaches_destination_attr():
     css_rules = {".sgs-container": {"display": "grid", "gap": "24px"}}
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    assert '"gap":"24px"' in markup, (
+    # sgs/container.gap is a MIGRATED tier-object attr (Spec 35 / D802-class
+    # fix extended to GRID, this fix) — the Base value lands in the object's
+    # 'desktop' key, not a bare scalar.
+    assert '"gap":{"desktop":"24px"}' in markup, (
         f"gap must land in the `gap` attr (the wrapper-rendered destination) for a "
         f"container with no blockGap support, got: {markup}"
     )
@@ -171,10 +174,34 @@ def test_natively_consumed_property_does_not_double_emit():
     longer route `background-color` natively.
 
     ⛔ Do NOT "fix" this by restoring `"background": true` — that reinstates the
-    exact conflict D581 removed. `padding-top` is used instead: it is still
-    genuinely native-consumed (`supports.spacing.padding`), so the
-    no-double-emit invariant this test exists for is preserved on a property
-    that actually still has it.
+    exact conflict D581 removed.
+
+    ⛔ CORRECTED 2026-08-22. The 2026-08-12 rewrite above picked `padding-top` on
+    the stated premise that it "is still genuinely native-consumed
+    (`supports.spacing.padding`)". That premise was ALREADY FALSE when written:
+    `supports.spacing` was removed from container/block.json at `7422698e`
+    (D555 box-object migration), which predates the rewrite. The test passed
+    anyway because the shared DB still carried a stale `spacing.padding` row
+    that happened to agree with the wrong premise — `root_supports.py` gates the
+    native lift on the DB (`db_lookup.block_supports_for`), not on block.json.
+    The 2026-08-22 `/sgs-update` reseed purged that stale row and the false
+    premise became visible. The DB is correct; this docstring was not.
+
+    MEASURED 2026-08-22 on sgs/container: `padding-top:60px` -> emitted ONCE as
+    `contentBandPadding`; `font-size` and `letter-spacing` -> emitted ZERO times.
+    There is no longer ANY property on this block that lands in `style.*` via the
+    native lift, so the original "native leaf" form of this test has no valid
+    subject here.
+
+    What the test still guards, and what it now asserts: the NO-DOUBLE-EMIT
+    invariant — a routed property appears EXACTLY ONCE, never once natively and
+    again through process_element. That is the collision/unrouted guard this file
+    exists for, and it is destination-agnostic.
+
+    ⚠ Separately worth someone's attention (NOT fixed here, out of this change's
+    scope): container declares typography fontSize/letterSpacing as supported, yet
+    both transfer ZERO times through this path. That is either a real gap or a
+    deliberate skip-serialisation consequence; it has not been diagnosed.
     """
     node = _node('<div class="sgs-container"><h2 class="sgs-heading">Hi</h2></div>')
     rec = recognise(node)
@@ -192,8 +219,22 @@ def test_natively_consumed_property_does_not_double_emit():
         f"a natively-consumed length must appear exactly once (style.spacing."
         f"padding only), got {markup.count('60px')} occurrences: {markup}"
     )
-    assert '"spacing":{"padding":{"top":"60px"}}' in markup, (
-        f"padding-top must land in style.spacing.padding.top, got: {markup}"
+    # ⚠ CORRECTED 2026-09-06 (Phase 2 tier-object migration). The prior
+    # expectation here — `{"top":"60px"}` with no `desktop` wrapper — was
+    # itself a latent bug this fix uncovered: `contentBandPadding` IS a
+    # TIER-of-BOXES attr ({desktop,tablet,mobile}), and the converter's own
+    # merge logic (`dispatch_spine.attrs()`) could not tell that apart from a
+    # genuinely flat box family, so it merged the Base-tier write directly
+    # onto the attr with no tier nesting at all — exactly the same defect
+    # this session found and fixed for `padding`/`margin`/`borderRadius`,
+    # just never caught for `contentBandPadding` because no test exercised
+    # its Base-tier-only shape this precisely. `box_family_is_tier_shaped()`
+    # (converter/db/db_lookup.py) is the fix; this assertion reflects the
+    # now-correct output.
+    assert '"contentBandPadding":{"desktop":{"top":"60px"}}' in markup, (
+        f"padding-top must land in contentBandPadding.desktop.top — container "
+        f"has no supports.spacing since 7422698e, so there is no native "
+        f"style.spacing leaf for it to take. Got: {markup}"
     )
     # Post-D581 guard: container no longer declares supports.color.background,
     # so nothing may emit a native background leaf for it. This is the assertion

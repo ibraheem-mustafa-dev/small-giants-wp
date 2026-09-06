@@ -1053,9 +1053,18 @@ def main() -> int:
         ib = has_innerblocks_slot(slug)
         layout = layout_attrs_for(attrs)
         has_layout = bool(layout)
+        supports = bj.get("supports", {}) or {}
+        has_override = (supports.get("sgs", {}) or {}).get("containerKind") in (
+            "section", "layout", "content",
+        )
 
-        # Container-bearing = InnerBlocks OR layout attrs (criterion a or b)
-        if not (ib or has_layout):
+        # Container-bearing = InnerBlocks OR layout attrs OR an explicit operator
+        # override (criterion a, b, or c). The override is the strongest signal —
+        # derive_kind() already treats it as priority 1 — so a block relying on it
+        # alone (e.g. sgs/nav-menu: no InnerBlocks, no grid/flex attrs, just a flat
+        # `gap`) must not be silently excluded from candidacy before derive_kind()
+        # ever runs.
+        if not (ib or has_layout or has_override):
             continue
 
         kind = derive_kind(slug, bj, structural_parents)
@@ -1116,7 +1125,7 @@ def main() -> int:
             "sgs/mega-panel", "sgs/physics-canvas",
         },
         "layout": {
-            "sgs/card-grid", "sgs/content-collection", "sgs/feature-grid", "sgs/gallery",
+            "sgs/card-grid", "sgs/feature-grid", "sgs/gallery",
             "sgs/multi-button", "sgs/post-grid", "sgs/pricing-table", "sgs/trustpilot-reviews",
             "sgs/google-reviews", "sgs/form-field-tiles", "sgs/testimonial-slider",
             "sgs/tabs", "sgs/accordion", "sgs/form",
@@ -1136,6 +1145,8 @@ def main() -> int:
             # inspector rebuild gave it the grid/flex attr family. Detection was correct; the
             # roster simply had not been refreshed since that work landed.
             "sgs/brand-strip",
+            # sgs/content-collection is not in this roster: `src/blocks/content-collection/`
+            # does not exist and the DB has no `sgs/content-collection` row.
         },
         "content": {
             "sgs/info-box", "sgs/testimonial", "sgs/quote",

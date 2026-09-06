@@ -36,6 +36,10 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *   ctaColourBackgroundHover  string
 	 *   ctaColourTextHover        string
 	 *   ctaColourBorderHover      string
+	 *   ctaColourBackgroundGradient       string  (optional — resolved via
+	 *                                     sgs_background_paint_decl(), wins
+	 *                                     over the flat background when set)
+	 *   ctaColourBackgroundHoverGradient  string  (optional, hover sibling)
 	 *   ctaBorderStyle            string  (solid|dashed|dotted|none)
 	 *   ctaBorderWidth            number  (px)
 	 *   ctaBorderRadius           number  (px)
@@ -57,9 +61,22 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *                         be a comma-separated selector list (e.g. an
 	 *                         id/class-scoped selector for every render
 	 *                         branch that shares this CTA element).
+	 * @param bool   $bg_layer Opt-in (default false, preserves the pre-existing
+	 *                         same-selector emission for every other caller). When
+	 *                         true, the background paint moves onto a `::after` layer
+	 *                         via `sgs_block_background_layer_css()` instead of sharing
+	 *                         the base rule with `color:` — frees `{$prefix}ColourText`
+	 *                         for a future text-gradient sibling (D937/D938/D940 recipe).
+	 * @param bool   $bg_layer_positioned When $bg_layer is true AND the caller's own
+	 *                         selector already carries a non-static `position` in its
+	 *                         stylesheet, pass true to skip re-declaring
+	 *                         `position:relative` (would silently override the existing
+	 *                         positioning) — the caller's stylesheet must then carry
+	 *                         `isolation:isolate` itself (pricing-table badge precedent,
+	 *                         D938).
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector ): string {
+	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer = false, bool $bg_layer_positioned = false ): string {
 		$read = static function ( string $base ) use ( $attrs, $prefix ) {
 			$key = $prefix . $base;
 			return isset( $attrs[ $key ] ) ? $attrs[ $key ] : '';
@@ -71,11 +88,26 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		$colour_bg_hover     = (string) $read( 'ColourBackgroundHover' );
 		$colour_text_hover   = (string) $read( 'ColourTextHover' );
 		$colour_border_hover = (string) $read( 'ColourBorderHover' );
+		// Fill (background) gradient — delegates to the same shared primitive
+		// sgs_fill_decls() uses, so this is a swap-in, not new paint logic.
+		$colour_bg_gradient       = (string) $read( 'ColourBackgroundGradient' );
+		$colour_bg_hover_gradient = (string) $read( 'ColourBackgroundHoverGradient' );
+
+		// D942/D956 recipe — text gradient is added ONLY per-state, and ONLY
+		// when that state paints no competing background on this same
+		// selector (background-clip:text would otherwise clip a real
+		// background fill to the glyph shapes). When the operator sets an
+		// explicit ColourBackground(Hover), the text stays flat for that
+		// state — same accepted shape as sgs/modal's triggerColour and
+		// sgs/form's submitColour (D942/D956), not a silent regression.
+		$colour_text_gradient       = (string) $read( 'ColourTextGradient' );
+		$colour_text_hover_gradient = (string) $read( 'ColourTextHoverGradient' );
+
 		// D636 border-gradient rollout — sibling attributes, gradient-wins-when-set.
 		$colour_border_gradient       = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderGradient' ) ) : '';
 		$colour_border_hover_gradient = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $read( 'ColourBorderHoverGradient' ) ) : '';
-		$font_weight         = (string) $read( 'FontWeight' );
-		$width_type          = (string) $read( 'WidthType' );
+		$font_weight                  = (string) $read( 'FontWeight' );
+		$width_type                   = (string) $read( 'WidthType' );
 
 		$border_style_raw = (string) $read( 'BorderStyle' );
 		$allowed_borders  = array( 'solid', 'dashed', 'dotted', 'none' );
@@ -122,16 +154,39 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// ── Base rule ─────────────────────────────────────────────────────
 		$base_decls = array();
 
-		if ( '' !== $colour_bg ) {
-			$base_decls[] = 'background-color:' . sgs_colour_value( $colour_bg ) . ';';
+		$bg_decl = sgs_background_paint_decl( $colour_bg, $colour_bg_gradient );
+		// $bg_layer routes this paint onto a `::after` layer below instead —
+		// see the block after $hover_decls is built.
+		if ( ! $bg_layer && '' !== $bg_decl ) {
+			$base_decls[] = $bg_decl . ';';
 		}
-		if ( '' !== $colour_text ) {
+		// D942/D956: a text gradient is safe on this selector only when no
+		// competing background paints here too ($bg_layer already moved it
+		// off, or nothing was set).
+		$text_gradient_safe    = $bg_layer || '' === $bg_decl;
+		$colour_text_effective = '';
+		if ( $text_gradient_safe ) {
+			$colour_text_effective = sgs_resolve_text_colour_or_gradient( $colour_text, $colour_text_gradient );
+			if ( '' !== $colour_text_effective ) {
+				$colour_text_decl = sgs_text_colour_decl( $colour_text_effective );
+				if ( '' !== $colour_text_decl ) {
+					$base_decls[] = $colour_text_decl . ';';
+				}
+			}
+		} elseif ( '' !== $colour_text ) {
 			$base_decls[] = 'color:' . sgs_colour_value( $colour_text ) . ';';
 		}
 		if ( '' !== $colour_border ) {
 			$base_decls[] = 'border-color:' . sgs_colour_value( $colour_border ) . ';';
 		}
-		if ( '' !== $border_style ) {
+		// G5 (Bean, 2026-08-26): "border with no width should mean no border by
+		// default." A border-style set with no width falls through to the
+		// browser's initial border-width (`medium`, ~3px) — bit the hero image.
+		// $border_has_width mirrors sgs_native_border_style_width_args()'s gate
+		// (helpers-box.php) so every border emitter in the plugin applies the
+		// same rule; border-style is only ever emitted alongside a real width.
+		$border_has_width = ( null !== $border_width_shorthand || null !== $border_width );
+		if ( '' !== $border_style && $border_has_width ) {
 			$base_decls[] = 'border-style:' . $border_style . ';';
 		}
 		if ( null !== $border_width_shorthand ) {
@@ -167,14 +222,31 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		if ( ! empty( $base_decls ) ) {
 			$css .= $selector . '{' . implode( '', $base_decls ) . '}';
 		}
+		if ( $text_gradient_safe && '' !== $colour_text_effective ) {
+			$css .= sgs_text_colour_gradient_fallback_rule( $selector, $colour_text_effective );
+		}
 
 		// ── Hover / focus-visible rule ────────────────────────────────────
 		$hover_decls = array();
 
-		if ( '' !== $colour_bg_hover ) {
-			$hover_decls[] = 'background-color:' . sgs_colour_value( $colour_bg_hover ) . ';';
+		$bg_hover_decl = sgs_background_paint_decl( $colour_bg_hover, $colour_bg_hover_gradient );
+		if ( ! $bg_layer && '' !== $bg_hover_decl ) {
+			$hover_decls[] = $bg_hover_decl . ';';
 		}
-		if ( '' !== $colour_text_hover ) {
+		// Same D942/D956 gate as the base rule above, evaluated against the
+		// HOVER background — a state can be gradient-safe even when the
+		// resting state is not, and vice versa.
+		$text_gradient_hover_safe    = $bg_layer || '' === $bg_hover_decl;
+		$colour_text_hover_effective = '';
+		if ( $text_gradient_hover_safe ) {
+			$colour_text_hover_effective = sgs_resolve_text_colour_or_gradient( $colour_text_hover, $colour_text_hover_gradient );
+			if ( '' !== $colour_text_hover_effective ) {
+				$colour_text_hover_decl = sgs_text_colour_decl( $colour_text_hover_effective );
+				if ( '' !== $colour_text_hover_decl ) {
+					$hover_decls[] = $colour_text_hover_decl . ';';
+				}
+			}
+		} elseif ( '' !== $colour_text_hover ) {
 			$hover_decls[] = 'color:' . sgs_colour_value( $colour_text_hover ) . ';';
 		}
 		if ( '' !== $colour_border_hover ) {
@@ -203,7 +275,41 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 				)
 			);
 
-			$css .= $hover_selector . ',' . $focus_selector . '{' . implode( '', $hover_decls ) . '}';
+			$hover_decl_str = implode( '', $hover_decls );
+			$css           .= sgs_hover_guarded_rule( $hover_selector, $hover_decl_str );
+			$css           .= $focus_selector . '{' . $hover_decl_str . '}';
+			if ( $text_gradient_hover_safe && '' !== $colour_text_hover_effective ) {
+				$css .= sgs_hover_media_wrap( sgs_text_colour_gradient_fallback_rule( $hover_selector, $colour_text_hover_effective ) );
+				$css .= sgs_text_colour_gradient_fallback_rule( $focus_selector, $colour_text_hover_effective );
+			}
+		}
+
+		// ── Background `::after` layer (opt-in via $bg_layer) ──────────────
+		// Frees `color:` on the base rule for a future text-gradient sibling —
+		// D937/D938/D940 recipe, applied here for every caller that opts in
+		// rather than duplicated per block.
+		if ( $bg_layer && ( '' !== $bg_decl || '' !== $bg_hover_decl ) ) {
+			if ( $bg_layer_positioned ) {
+				// Caller's own selector already carries a non-static `position`
+				// in its stylesheet — skip sgs_block_background_layer_css()'s
+				// `position:relative` (would override it) and hand-compose the
+				// `::after` layer directly, comma-safe (mirrors D940's fix).
+				$after_selector = implode(
+					',',
+					array_map(
+						static function ( $part ) {
+							return trim( $part ) . '::after';
+						},
+						explode( ',', $selector )
+					)
+				);
+				$css           .= "{$after_selector}{content:\"\";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;" . $bg_decl . ';}';
+				if ( '' !== $bg_hover_decl && $bg_hover_decl !== $bg_decl ) {
+					$css .= sgs_hover_state_rules( $selector, $bg_hover_decl . ';', ':focus-within', '::after' );
+				}
+			} else {
+				$css .= sgs_block_background_layer_css( $selector, $bg_decl, $bg_hover_decl );
+			}
 		}
 
 		// ── Border gradient (D636 border builder) — masked ::before ring,
@@ -228,21 +334,48 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			);
 		} elseif ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_hover_gradient ) {
 			// Resting border stays flat/unset; only the hover state gains a
-			// gradient ring, scoped to :hover only (this call's own
-			// :focus-visible convention, matching $hover_decls above).
-			$gradient_width      = null !== $border_width_shorthand
+			// gradient ring. sgs_border_gradient_css() has no hover-only mode
+			// (empty $normal_paint short-circuits to '', and its OWN guarded
+			// branch only repaints ::before's background — the mask geometry
+			// lives in the base ::before rule, so a hover paint with no
+			// resting ring has no geometry to fill) — so the ring is painted
+			// via $normal_paint against a selector scoped to the STATE
+			// pseudo-class instead of the element. Touch-safety needs the two
+			// states split, each carrying its own guard treatment: the
+			// `:hover` half through both layers (SGS_HOVER_NOT_TOUCH for
+			// layer 2, sgs_hover_media_wrap() for layer 1 — both from
+			// helpers-hover-state.php, never hand-rolled here), the
+			// `:focus-visible` half — keyboard-reachable, matching
+			// $hover_decls above's convention — left unguarded so a keyboard
+			// user on a touchscreen laptop still sees the ring on focus.
+			$gradient_width = null !== $border_width_shorthand
 				? $border_width_shorthand
 				: ( null !== $border_width ? $border_width . 'px' : '2px' );
+			$selector_parts = array_map( 'trim', explode( ',', $selector ) );
+
 			$hover_only_selector = implode(
 				',',
 				array_map(
 					static function ( $part ) {
-						return $part . ':hover,' . $part . ':focus-visible';
+						return SGS_HOVER_NOT_TOUCH . ' ' . $part . ':hover';
 					},
-					array_map( 'trim', explode( ',', $selector ) )
+					$selector_parts
 				)
 			);
-			$css                .= sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width );
+			$focus_only_selector = implode(
+				',',
+				array_map(
+					static function ( $part ) {
+						return $part . ':focus-visible';
+					},
+					$selector_parts
+				)
+			);
+
+			$css .= sgs_hover_media_wrap(
+				sgs_border_gradient_css( $hover_only_selector, $colour_border_hover_gradient, null, $gradient_width )
+			);
+			$css .= sgs_border_gradient_css( $focus_only_selector, $colour_border_hover_gradient, null, $gradient_width );
 		}
 
 		return $css;

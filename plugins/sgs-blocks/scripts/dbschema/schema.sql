@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-08-08
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-06
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_components_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_attribute_gap_candidates_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_animation_tokens_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_excluded_properties_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_preset_implications_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_variant_composition_slots_1, sqlite_autoindex_variant_composition_attr_slots_1
 
 -- table: animation_tokens
 CREATE TABLE animation_tokens (
@@ -30,17 +30,6 @@ CREATE TABLE array_item_schema (
                 PRIMARY KEY (block_slug, array_attr, field_key)
             );
 
--- table: attribute_gap_candidates
-CREATE TABLE attribute_gap_candidates (
-    id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    block_slug     TEXT    NOT NULL,
-    attr_name      TEXT    NOT NULL,
-    stem           TEXT,
-    proposed_action TEXT,
-    created_at     TEXT    DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (block_slug, attr_name)
-);
-
 -- table: block_attributes
 CREATE TABLE block_attributes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +39,7 @@ CREATE TABLE block_attributes (
         default_value TEXT,
         enum_values TEXT,
         description TEXT,
-        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, signature_confidence REAL, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT,
+        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, attr_name)
     );
@@ -62,19 +51,6 @@ CREATE TABLE block_capabilities (
         capability TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'functional',
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, capability)
-    );
-
--- table: block_changes
-CREATE TABLE block_changes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        block_slug TEXT NOT NULL,
-        change_type TEXT NOT NULL CHECK(change_type IN (
-            'created', 'modified', 'attribute_added',
-            'attribute_removed', 'grade_changed'
-        )),
-        description TEXT NOT NULL,
-        changed_date TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (block_slug) REFERENCES blocks(slug)
     );
 
 -- table: block_composition
@@ -114,8 +90,6 @@ CREATE TABLE blocks (
         category TEXT NOT NULL,
         type TEXT NOT NULL CHECK(type IN ('static', 'dynamic')),
         status TEXT NOT NULL DEFAULT 'built',
-        grade TEXT CHECK(grade IN ('S', 'A', 'B', 'C', 'D', NULL)),
-        grade_score INTEGER,
         description TEXT,
         has_view_script INTEGER DEFAULT 0,
         has_render_php INTEGER DEFAULT 0,
@@ -125,13 +99,17 @@ CREATE TABLE blocks (
     , replaces TEXT, source TEXT NOT NULL DEFAULT 'sgs', is_stale INTEGER DEFAULT 0, tier TEXT CHECK (tier IN ('block', 'class-section', 'pattern')) DEFAULT 'block', variant_attr TEXT);
 
 -- table: components
-CREATE TABLE components (
-        name TEXT PRIMARY KEY,
-        component_type TEXT NOT NULL CHECK(component_type IN ('editor', 'util', 'extension')),
-        file_path TEXT NOT NULL,
-        description TEXT,
-        props TEXT
-    );
+CREATE TABLE "components" (
+    "name" TEXT PRIMARY KEY,
+    "component_type" TEXT NOT NULL CHECK("component_type" IN ('editor', 'util', 'extension', 'helper-function')),
+    "file_path" TEXT NOT NULL,
+    "description" TEXT,
+    "props" TEXT,
+    "family" TEXT,
+    "functionality" TEXT,
+    "adopters" INTEGER,
+    "adopter_list" TEXT
+);
 
 -- table: deploy_steps
 CREATE TABLE deploy_steps (
@@ -259,18 +237,6 @@ CREATE TABLE patterns (
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     , content_shape   TEXT, mood            TEXT, style           TEXT, fingerprint     TEXT, source          TEXT, block_composition TEXT, parent_pattern_id INTEGER, perceptual_hash TEXT);
 
--- table: pipeline_corrections
-CREATE TABLE pipeline_corrections (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            pipeline TEXT NOT NULL,
-            stage TEXT,
-            source_url TEXT,
-            technique TEXT,
-            outcome TEXT,
-            correction TEXT NOT NULL,
-            created_at TEXT DEFAULT (datetime('now'))
-        );
-
 -- table: plugins
 CREATE TABLE plugins (
         slug TEXT PRIMARY KEY,
@@ -329,7 +295,7 @@ CREATE TABLE slots (
           aliases          TEXT,
           standalone_block TEXT,
           notes            TEXT,
-          created_at       TEXT DEFAULT CURRENT_TIMESTAMP, standalone_block_default_attrs TEXT,
+          created_at       TEXT DEFAULT CURRENT_TIMESTAMP, standalone_block_default_attrs TEXT, resolves_whole_instance TEXT,
           PRIMARY KEY (slot_name, scope)
         );
 
@@ -357,12 +323,30 @@ CREATE TABLE theme_parts (
         variants TEXT
     );
 
+-- table: variant_composition_attr_slots
+CREATE TABLE variant_composition_attr_slots (
+                block_slug TEXT NOT NULL,
+                variant_value TEXT NOT NULL,
+                child_slug TEXT NOT NULL,
+                child_attr_name TEXT NOT NULL,
+                child_attr_value TEXT NOT NULL,
+                PRIMARY KEY (block_slug, variant_value, child_slug, child_attr_name, child_attr_value)
+            );
+
+-- table: variant_composition_slots
+CREATE TABLE variant_composition_slots (
+            block_slug TEXT NOT NULL,
+            variant_value TEXT NOT NULL,
+            unique_child_slug TEXT NOT NULL,
+            PRIMARY KEY (block_slug, variant_value, unique_child_slug)
+        );
+
 -- table: variant_slots
 CREATE TABLE variant_slots (
               block_slug    TEXT NOT NULL,
               variant_value TEXT NOT NULL,
               unique_slot   TEXT NOT NULL,
-              created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+              created_at    TEXT DEFAULT CURRENT_TIMESTAMP, slot_value TEXT,
               PRIMARY KEY (block_slug, variant_value, unique_slot)
             );
 
@@ -375,12 +359,6 @@ CREATE INDEX idx_block_attrs_slug ON block_attributes(block_slug);
 
 -- index: idx_block_caps_slug
 CREATE INDEX idx_block_caps_slug ON block_capabilities(block_slug);
-
--- index: idx_block_changes_date
-CREATE INDEX idx_block_changes_date ON block_changes(changed_date);
-
--- index: idx_block_changes_slug
-CREATE INDEX idx_block_changes_slug ON block_changes(block_slug);
 
 -- index: idx_block_supports_slug
 CREATE INDEX idx_block_supports_slug ON block_supports(block_slug);

@@ -30,8 +30,8 @@ import {
 import {
 	PanelBody,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption, UnitControl } from '../../components/primitives';
+import { ResponsiveBoxControl, resolveColourToken, SgsColourPanel, SgsLengthControl } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
  * Build a CSS box shorthand ("top right bottom left") from a
@@ -80,6 +80,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		asideFormat,
 		asideBg,
+		asideBgGradient,
+		asideBgHover,
+		asideBgHoverGradient,
 		asidePadding,
 		asideRadius,
 		asideBorderColour,
@@ -108,6 +111,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( asideBg ) {
 		previewStyle.backgroundColor = resolveColourToken( asideBg, palette );
 	}
+	if ( asideBgGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBgGradient ) ) {
+		previewStyle.backgroundImage = asideBgGradient;
+	}
 	if ( asideRadius ) {
 		previewStyle.borderRadius = asideRadius;
 	}
@@ -118,6 +124,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		previewStyle.borderColor = asideBorderColour
 			? resolveColourToken( asideBorderColour, palette )
 			: 'var(--sgs-mm-panel-border, rgba(0,0,0,.12))';
+		// CHECK A: asideBorderColourGradient had no canvas mirror — render.php:113-121
+		// paints it as a masked ::before ring (D636 border builder), winning over
+		// the flat border-color above. A plain inline style can't reproduce the
+		// mask, so this approximates it via border-image (same documented
+		// approximation used elsewhere this session), only when the border is
+		// actually painting (borderWidthPreview truthy, matching render.php's gate).
+		if ( asideBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourGradient ) ) {
+			previewStyle.borderImage = `${ asideBorderColourGradient } 1`;
+		}
 	}
 	const paddingPreview = boxShorthand( asidePadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
@@ -129,12 +144,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: previewStyle,
 		'data-aside-format': format,
 	} );
-	// `templateLock:'insert'`, NOT `'all'` (fixed 2026-08-17, D652, same fix as
-	// sgs/mega-group). `'all'`/`'contentOnly'` re-run WordPress's template-sync
-	// effect on every editor mount and silently discard any stored child that
-	// doesn't line up with TEMPLATE by position; `'insert'` still blocks a
-	// client from adding/removing/reordering the five fixed children but never
-	// triggers that destructive resync.
+	// `templateLock:'insert'`, NOT `'all'` (D652). `'all'`/`'contentOnly'` re-run
+	// WordPress's template-sync effect on every editor mount and silently
+	// discard any stored child that doesn't line up with TEMPLATE by position;
+	// `'insert'` still blocks a client from adding/removing/reordering the five
+	// fixed children but never triggers that destructive resync.
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {
 		template: TEMPLATE,
 		templateLock: 'insert',
@@ -161,6 +175,19 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: asideBg,
 								onChange: ( val ) => setAttributes( { asideBg: val ?? '' } ),
 								linked: true,
+								gradientValue: asideBgGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBgGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: asideBgHover,
+								onChange: ( val ) => setAttributes( { asideBgHover: val ?? '' } ),
+								linked: true,
+								gradientValue: asideBgHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBgHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -214,6 +241,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ResponsiveBoxControl
 						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
 						values={ {
 							base: asidePadding?.desktop ?? {},
 							tablet: asidePadding?.tablet ?? {},
@@ -235,7 +263,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					     the operator gets whatever unit set core happens to
 					     default to, and '%' (a pill/circle radius) may not be
 					     reachable at all. */ }
-					<UnitControl
+					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }
 						value={ asideRadius || '' }
 						onChange={ ( value ) =>
@@ -247,11 +275,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ value: 'rem', label: 'rem', default: 0.5 },
 							{ value: 'em', label: 'em', default: 0.5 },
 						] }
-						__next40pxDefaultSize
+						presets={ false }
 					/>
 
 					<ResponsiveBoxControl
 						label={ __( 'Border width', 'sgs-blocks' ) }
+						presets={ [ '10', '20', '30' ] }
 						values={ { base: asideBorderWidth ?? {} } }
 						showResponsive={ false }
 						onChange={ ( tier, next ) =>

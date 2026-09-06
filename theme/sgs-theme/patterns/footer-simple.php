@@ -12,11 +12,11 @@
 
 ?>
 
-<!-- wp:sgs/site-footer {"align":"full","backgroundColor":"primary-dark","contentWidth":{"desktop":"normal"}} -->
+<!-- wp:sgs/site-footer {"align":"full","backgroundColour":"primary-dark","contentWidth":{"desktop":"normal"}} -->
 
 <!-- wp:sgs/site-footer-row {"rowSlot":"bottom","layout":"flex","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--50)","bottom":"var(--wp--preset--spacing--50)"}}} -->
 
-<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":"small"} /-->
+<!-- wp:sgs/business-info {"displayType":"copyright","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 
 <!-- wp:sgs/multi-button {"gap":{"desktop":"12px"},"flexWrap":{"desktop":"wrap"}} -->
 <!-- wp:sgs/button {"label":"Privacy Policy","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":{"desktop":14}} /-->

@@ -23,17 +23,9 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	IconPreview,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	TypographyControls,
-	SgsColourPanel,
-	SgsGradientPicker,
-} from '../../components';
-import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -142,8 +134,7 @@ function currentIconName( attrs ) {
 // ---------------------------------------------------------------------------
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		style,
+	const { padding, margin,
 		lineStyle,
 		width,
 		widthUnit,
@@ -152,14 +143,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		colour,
 		opacity,
 		alignment,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		lineGradient,
 		contentMode,
 		contentIconSize,
 		contentColour,
+		contentColourGradient,
 		contentText,
 	} = attributes;
 
@@ -203,7 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				: undefined,
 	};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [
+	const paddingPreview = boxShorthand( padding?.desktop, [
 		'top',
 		'right',
 		'bottom',
@@ -213,7 +201,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		rootPreviewStyle.padding = paddingPreview;
 	}
 	const marginProps = alignmentMargin( alignment );
-	const marginPreview = boxShorthand( style?.spacing?.margin, [
+	const marginPreview = boxShorthand( margin?.desktop, [
 		'top',
 		'right',
 		'bottom',
@@ -290,6 +278,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'contentColour',
 						label: __( 'Content colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -297,150 +286,14 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: contentColour,
 								onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
 								linked: true,
+								gradientValue: contentColourGradient,
+								onGradientChange: ( val ) => setAttributes( { contentColourGradient: val ?? '' } ),
 							},
 						],
 					},
 				] }
 			/>
 			<InspectorControls>
-				{ /* ---- Line ---- */ }
-				<ToolsPanel
-					label={ __( 'Line', 'sgs-blocks' ) }
-					resetAll={ () =>
-						setAttributes( {
-							lineStyle: 'solid',
-							// `thickness` is a TIER OBJECT (Spec 35 pass 2) — reset
-							// to the declared default shape, not a bare scalar +
-							// undefined siblings that no longer exist as attrs.
-							thickness: { desktop: 1 },
-							thicknessUnit: 'px',
-							colour: '',
-							opacity: 100,
-							lineGradient: '',
-						} )
-					}
-				>
-					<ToolsPanelItem
-						label={ __( 'Line style', 'sgs-blocks' ) }
-						hasValue={ () => lineStyle !== 'solid' }
-						onDeselect={ () => setAttributes( { lineStyle: 'solid' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Line style', 'sgs-blocks' ) }
-							value={ lineStyle }
-							options={ LINE_STYLE_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { lineStyle: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					{ /*
-					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
-					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride> rather than the old breakpoint-keyed
-					  attrMap. The per-tier VALUE stays a bare NUMBER paired with
-					  the block-level `thicknessUnit` (tier axis and unit are
-					  separate concerns — matches sgs/responsive-logo's maxWidth).
-					*/ }
-					<ToolsPanelItem
-						label={ __( 'Thickness', 'sgs-blocks' ) }
-						hasValue={ () =>
-							!! (
-								thickness &&
-								Object.values( thickness ).some(
-									( v ) => v !== undefined && v !== null && v !== ''
-								)
-							)
-						}
-						onDeselect={ () =>
-							setAttributes( { thickness: { desktop: 1 } } )
-						}
-						isShownByDefault
-					>
-						<ResponsiveOverride
-							label={ __( 'Thickness', 'sgs-blocks' ) }
-							value={ thickness }
-							onChange={ ( obj ) =>
-								setAttributes( { thickness: obj } )
-							}
-						>
-							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-								<UnitControl
-									label={ __( 'Thickness', 'sgs-blocks' ) }
-									hideLabelFromVision
-									value={ composeUnit( ownValue, thicknessUnit ) }
-									placeholder={
-										inherited
-											? composeUnit( effectiveValue, thicknessUnit )
-											: ''
-									}
-									units={ THICKNESS_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit(
-											raw,
-											thicknessUnit
-										);
-										setOwnValue( num === undefined ? '' : num );
-										setAttributes( { thicknessUnit: unit } );
-									} }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							) }
-						</ResponsiveOverride>
-					</ToolsPanelItem>
-
-					{ /* Line colour moved to the top-level SgsColourPanel
-					   (D618/D621) — "Line colour" row. */ }
-
-					<ToolsPanelItem
-						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
-						hasValue={ () => opacity !== 100 }
-						onDeselect={ () => setAttributes( { opacity: 100 } ) }
-					>
-						<RangeControl
-							label={ __( 'Opacity (%)', 'sgs-blocks' ) }
-							value={ opacity }
-							onChange={ ( val ) =>
-								setAttributes( { opacity: val } )
-							}
-							min={ 0 }
-							max={ 100 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Gradient line', 'sgs-blocks' ) }
-						hasValue={ () => !! lineGradient }
-						onDeselect={ () => setAttributes( { lineGradient: '' } ) }
-					>
-						{ /* D643 — the 4-scalar toggle + 2 colour pickers + angle
-						   slider are replaced by the canonical SgsGradientPicker,
-						   which stores ONE complete CSS gradient string (D636
-						   storage contract; Spec 35 control-type contract field 8
-						   makes SgsGradientPicker the canonical gradient control
-						   and bans the native GradientPicker). A non-empty value
-						   IS the "on" state — the old `gradientEnabled` boolean
-						   was a second source of truth that could disagree with
-						   the colours it gated. */ }
-						<SgsGradientPicker
-							value={ lineGradient }
-							onChange={ ( val ) =>
-								setAttributes( { lineGradient: val ?? '' } )
-							}
-							enableAlpha
-							__experimentalIsRenderedInSidebar
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
-
 				{ /* ---- Size & alignment ---- */ }
 				<PanelBody
 					title={ __( 'Size & alignment', 'sgs-blocks' ) }
@@ -448,7 +301,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					{ /*
 					  `width` is a TIER OBJECT (Spec 35 pass 2) — same pattern as
-					  `thickness` above.
+					  `thickness` below.
 					*/ }
 					<ResponsiveOverride
 						label={ __( 'Width', 'sgs-blocks' ) }
@@ -456,7 +309,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { width: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								label={ __( 'Width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ composeUnit( ownValue, widthUnit ) }
@@ -474,8 +328,6 @@ export default function Edit( { attributes, setAttributes } ) {
 									setOwnValue( num === undefined ? '' : num );
 									setAttributes( { widthUnit: unit } );
 								} }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
@@ -560,69 +412,183 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
+			</InspectorControls>
 
-				{ /* ---- Spacing ---- Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (scoped, not
-				   inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. */ }
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* ---- Line ---- */ }
+				<ToolsPanel
+					label={ __( 'Line', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							lineStyle: 'solid',
+							// `thickness` is a TIER OBJECT (Spec 35 pass 2) — reset
+							// to the declared default shape, not a bare scalar +
+							// undefined siblings that no longer exist as attrs.
+							thickness: { desktop: 1 },
+							thicknessUnit: 'px',
+							colour: '',
+							opacity: 100,
+							lineGradient: '',
+						} )
+					}
+				>
+					<ToolsPanelItem
+						label={ __( 'Line style', 'sgs-blocks' ) }
+						hasValue={ () => lineStyle !== 'solid' }
+						onDeselect={ () => setAttributes( { lineStyle: 'solid' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Line style', 'sgs-blocks' ) }
+							value={ lineStyle }
+							options={ LINE_STYLE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { lineStyle: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+
+					{ /*
+					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
+					  holding {desktop,tablet,mobile}, so it uses
+					  <ResponsiveOverride> rather than the old breakpoint-keyed
+					  attrMap. The per-tier VALUE stays a bare NUMBER paired with
+					  the block-level `thicknessUnit` (tier axis and unit are
+					  separate concerns — matches sgs/responsive-logo's maxWidth).
+					*/ }
+					<ToolsPanelItem
+						label={ __( 'Thickness', 'sgs-blocks' ) }
+						hasValue={ () =>
+							!! (
+								thickness &&
+								Object.values( thickness ).some(
+									( v ) => v !== undefined && v !== null && v !== ''
+								)
+							)
+						}
+						onDeselect={ () =>
+							setAttributes( { thickness: { desktop: 1 } } )
+						}
+						isShownByDefault
+					>
+						<ResponsiveOverride
+							label={ __( 'Thickness', 'sgs-blocks' ) }
+							value={ thickness }
+							onChange={ ( obj ) =>
+								setAttributes( { thickness: obj } )
+							}
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<SgsLengthControl
+									presets={ false }
+									label={ __( 'Thickness', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ composeUnit( ownValue, thicknessUnit ) }
+									placeholder={
+										inherited
+											? composeUnit( effectiveValue, thicknessUnit )
+											: ''
+									}
+									units={ THICKNESS_UNITS }
+									onChange={ ( raw ) => {
+										const { num, unit } = parseUnit(
+											raw,
+											thicknessUnit
+										);
+										setOwnValue( num === undefined ? '' : num );
+										setAttributes( { thicknessUnit: unit } );
+									} }
+								/>
+							) }
+						</ResponsiveOverride>
+					</ToolsPanelItem>
+
+					{ /* Line colour moved to the top-level SgsColourPanel
+					   (D618/D621) — "Line colour" row. */ }
+
+					<ToolsPanelItem
+						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+						hasValue={ () => opacity !== 100 }
+						onDeselect={ () => setAttributes( { opacity: 100 } ) }
+					>
+						<RangeControl
+							label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+							value={ opacity }
+							onChange={ ( val ) =>
+								setAttributes( { opacity: val } )
+							}
+							min={ 0 }
+							max={ 100 }
+							step={ 1 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+
+					<ToolsPanelItem
+						label={ __( 'Gradient line', 'sgs-blocks' ) }
+						hasValue={ () => !! lineGradient }
+						onDeselect={ () => setAttributes( { lineGradient: '' } ) }
+					>
+						{ /* D643 — the 4-scalar toggle + 2 colour pickers + angle
+						   slider are replaced by the canonical SgsGradientPicker,
+						   which stores ONE complete CSS gradient string (D636
+						   storage contract; Spec 35 control-type contract field 8
+						   makes SgsGradientPicker the canonical gradient control
+						   and bans the native GradientPicker). A non-empty value
+						   IS the "on" state — the old `gradientEnabled` boolean
+						   was a second source of truth that could disagree with
+						   the colours it gated. */ }
+						<SgsGradientPicker
+							value={ lineGradient }
+							onChange={ ( val ) =>
+								setAttributes( { lineGradient: val ?? '' } )
+							}
+							enableAlpha
+							__experimentalIsRenderedInSidebar
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+
+				{ /* ---- Spacing ---- padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											padding: next,
-										},
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `padding${
-										'tablet' === tier ? 'Tablet' : 'Mobile'
-									}` ]: next,
-								} );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											margin: next,
-										},
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ `margin${
-										'tablet' === tier ? 'Tablet' : 'Mobile'
-									}` ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 
@@ -654,11 +620,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						{ 'text' === contentMode && (
 							<span
-								style={ {
-									color: contentColour
-										? colourVar( contentColour )
-										: undefined,
-								} }
+								style={ resolveTextColourPreviewStyle(
+									contentColour,
+									contentColourGradient,
+									colourVar
+								) }
 							>
 								{ contentText || __( 'Label…', 'sgs-blocks' ) }
 							</span>

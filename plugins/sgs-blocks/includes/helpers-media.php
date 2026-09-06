@@ -72,6 +72,33 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
 }
 
 /**
+ * Return the next 1-based index in the PAGE-WIDE background-image render order.
+ *
+ * LCP (Largest Contentful Paint) priority is a PAGE-level property, not a
+ * per-block one: `fetchpriority="high"` should land on whichever background
+ * image renders FIRST on the page, full stop. Every block that renders its
+ * own background <img> (sgs/hero, the shared SGS_Container_Wrapper used by
+ * sgs/container/cta-section/trust-bar/etc.) must therefore share ONE counter
+ * — a private `static` inside each block's own render path only knows "am I
+ * first within MY code path", not "am I first on the page". Two independent
+ * counters both returning 1 for their own first call means a page with (say)
+ * a hero background image followed by a container background image marks
+ * BOTH `fetchpriority="high"`/`loading="eager"` — prioritising two images
+ * prioritises neither, defeating the entire reason this exists.
+ *
+ * A PHP `static` local persists for the lifetime of the current request only
+ * (WordPress does not share it across requests), which is exactly the scope
+ * needed: "first background image THIS PAGE LOAD rendered."
+ *
+ * @return int 1 on the first call in this request, 2 on the second, etc.
+ */
+function sgs_next_background_image_index(): int {
+	static $sgs_bg_image_index = 0;
+	++$sgs_bg_image_index;
+	return $sgs_bg_image_index;
+}
+
+/**
  * Render inline SVG star icons for a given rating value.
  *
  * Used by star-rating, testimonial, and google-reviews blocks so star markup

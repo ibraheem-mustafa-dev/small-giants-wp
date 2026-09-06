@@ -1,0 +1,23 @@
+{
+	"name": "sgs/before-after",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "before", "context": "element", "atoms": [ "object-fit", "focal-point" ] },
+				{ "prefix": "after", "context": "element", "atoms": [ "object-fit", "focal-point" ] }
+			]
+		}
+	},
+	"attributes": {
+		"beforeMediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ]
+		},
+		"afterMediaType": {
+			"type": "string",
+			"default": "image",
+			"enum": [ "image", "video", "svg" ]
+		}
+	}
+}

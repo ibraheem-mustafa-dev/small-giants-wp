@@ -1,0 +1,4 @@
+{
+  "_fixture_purpose": "POSITIVE CONTROL (TYPE) for check_attr_schema_conformance.py. sgs/accordion's block.json declares no attribute named 'sgsBogusMadeUpAttrForTask3' — it is not a declared attribute, not a universal SGS editor-extension attribute (includes/extension-attributes.generated.php), and not a WP-core supports-injected attribute for this block. Emitting it is exactly the undeclared-shape regression the gate must catch (rule a).",
+  "block_markup": "<!-- wp:sgs/accordion {\"allowMultiple\":true,\"layout\":\"flex\",\"sgsBogusMadeUpAttrForTask3\":\"nope\"} -->\n<div class=\"wp-block-sgs-accordion\"></div>\n<!-- /wp:sgs/accordion -->"
+}

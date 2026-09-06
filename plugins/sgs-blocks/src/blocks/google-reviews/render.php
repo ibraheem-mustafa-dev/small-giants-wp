@@ -20,15 +20,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS length/unit sanitiser — for free-text attrs concatenated into raw CSS
 // declarations inside this block's scoped <style> tag. Mirrors sgs/hero's
 // proven sanitiser (strips everything except letters, digits, dot, %).
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — for free-text attrs (border-style) — letters + hyphen only.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 $variant            = $attributes['variant'] ?? 'grid';
 
 /*
@@ -221,6 +213,23 @@ $reviews = array_slice( $filtered_reviews, 0, $max_reviews );
 $gr_uid      = 'sgs-gr-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $gr_root_sel = '.' . $gr_uid . '.wp-block-sgs-google-reviews';
 
+// -------------------------------------------------------------------------
+// Media-element atom layer (rule 37-media-no-handroll fix) — reviewer avatar
+// object-fit only. `class_exists()` guards a class the plugin loader always
+// registers; kept for the same "never fatal if load order changes" reason
+// `sgs/gallery` and `sgs/before-after` guard it. Classes are appended to
+// each avatar `<img>` below (the review loop) — `.sgs-media-el` is the
+// shared marker the generated assets/css/media-atoms/object-fit.css rule
+// targets, `$gr_media_scope` is the per-instance scope the atom's
+// custom-property value below is set on. One block-wide value applies to
+// every avatar (there is no per-review styling control on this block).
+$gr_media_scope   = '';
+$gr_media_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gr_media_scope   = SGS_Media_Element::scope_class( $gr_uid, '' );
+	$gr_media_classes = SGS_Media_Element::element_classes( $gr_media_scope );
+}
+
 $gr_extra_classes = array(
 	'sgs-google-reviews',
 	$gr_uid,
@@ -240,67 +249,125 @@ $gr_extra_styles = array(
 	'--sgs-gr-star-colour:' . $sgs_gr_star,
 );
 
-// ── WP-native color / border supports — no-inline contract (§A). ──────────
-// block.json declares color/__experimentalBorder with __experimentalSkipSerialization:true,
-// so get_block_wrapper_attributes() (inside SGS_Container_Wrapper::render() below) never
-// auto-inlines them. Read the resolved values from $attributes['style'] here and emit them
-// into this block's OWN scoped <style> (do NOT pass via wrapper extra_styles — that inlines).
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// this block's OWN scoped <style> (do NOT pass via wrapper extra_styles —
+// that inlines).
 $gr_responsive_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$gr_style_engine_args = array();
 
-	$gr_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$gr_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$gr_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$gr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $gr_color_args ) ) {
-		$gr_style_engine_args['color'] = $gr_color_args;
-	}
+// Media-element atom layer — object-fit only (rule 37-media-no-handroll fix).
+// Emits `.{scope}{--sgs-media-object-fit:…}` which
+// assets/css/media-atoms/object-fit.css's `.sgs-media-el` rule consumes. No
+// value set -> no declaration -> that stylesheet's own `cover` fallback
+// applies, matching the removed style.css default exactly (style.css).
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$gr_responsive_css .= SGS_Media_Element::style(
+		$attributes,
+		'',
+		'sgs/google-reviews',
+		$gr_uid,
+		array( 'object-fit' )
+	);
+}
 
-	$gr_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$gr_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$gr_border_args['style'] = $sgs_css_keyword( $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$gr_border_args['width'] = $sgs_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$gr_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $gr_radius_raw ) && '' !== $gr_radius_raw ) {
-			$gr_border_args['radius'] = $sgs_css_length( $gr_radius_raw );
-		} elseif ( is_array( $gr_radius_raw ) ) {
-			$gr_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $gr_corner ) {
-				if ( ! empty( $gr_radius_raw[ $gr_corner ] ) ) {
-					$gr_radius_clean[ $gr_corner ] = $sgs_css_length( $gr_radius_raw[ $gr_corner ] );
-				}
-			}
-			if ( ! empty( $gr_radius_clean ) ) {
-				$gr_border_args['radius'] = $gr_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $gr_border_args ) ) {
-		$gr_style_engine_args['border'] = $gr_border_args;
-	}
+// Write-review button + slider arrow (button-shaped elements) — shared
+// helper reads the prefixed attrs and emits a fully guarded base + hover/
+// focus-visible rule in one call. Selectors match the elements' own BEM
+// classes in style.css so this replaces (not duplicates) the hardcoded
+// hover rules removed there.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-style.php';
+// bg_layer=true (D942/D956 recipe, same as sgs/modal's close button): moves
+// each element's background paint onto a `::after` layer, freeing
+// writeReviewColourText/arrowColourText for a gradient sibling.
+// `.sgs-google-reviews__write-review` has no `position` of its own in
+// style.css (static) — bg_layer_positioned=false lets the helper add its
+// own `position:relative`. `.sgs-google-reviews__arrow` already carries
+// `position:absolute` (style.css:490) — bg_layer_positioned=true skips the
+// helper's own position write so it doesn't clobber that.
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review', true, false );
+$gr_responsive_css .= sgs_button_element_style_css( $attributes, 'arrow', $gr_root_sel . ' .sgs-google-reviews__arrow', true, true );
 
-	if ( ! empty( $gr_style_engine_args ) ) {
-		$gr_scoped_styles = wp_style_engine_get_styles(
-			$gr_style_engine_args,
-			array( 'selector' => $gr_root_sel )
-		);
-		if ( ! empty( $gr_scoped_styles['css'] ) ) {
-			$gr_responsive_css .= $gr_scoped_styles['css'];
-		}
+// Review-dot indicator — not button-shaped (background-colour/fill only),
+// uses the lighter state-colour emitter instead of the button helper.
+// Fill gradient wins over the flat colour when set (same shared primitive as
+// sgs_button_element_style_css()'s background-gradient handling above), via
+// sgs_background_paint_decl() — returns a full declaration with no trailing
+// semicolon, so append one when pushing into the decls array (this file's
+// existing convention).
+$gr_dot_colour                = (string) ( $attributes['dotColour'] ?? '' );
+$gr_dot_colour_hover          = (string) ( $attributes['dotColourHover'] ?? '' );
+$gr_dot_colour_gradient       = (string) ( $attributes['dotColourGradient'] ?? '' );
+$gr_dot_colour_hover_gradient = (string) ( $attributes['dotColourHoverGradient'] ?? '' );
+$gr_dot_decls_normal          = array();
+$gr_dot_decls_hover           = array();
+$gr_dot_bg_decl               = sgs_background_paint_decl( $gr_dot_colour, $gr_dot_colour_gradient );
+if ( '' !== $gr_dot_bg_decl ) {
+	$gr_dot_decls_normal[] = $gr_dot_bg_decl . ';';
+}
+$gr_dot_bg_hover_decl = sgs_background_paint_decl( $gr_dot_colour_hover, $gr_dot_colour_hover_gradient );
+if ( '' !== $gr_dot_bg_hover_decl ) {
+	$gr_dot_decls_hover[] = $gr_dot_bg_hover_decl . ';';
+}
+if ( $gr_dot_decls_normal || $gr_dot_decls_hover ) {
+	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__dot::before', $gr_dot_decls_normal, $gr_dot_decls_hover );
+}
+
+// Star fill — hover only (normal-state fill is already handled by the
+// `--sgs-gr-star-colour` custom property + `sgs-google-reviews--star-{slug}`
+// modifier class emitted above; this adds ONLY the hover state, same lighter
+// state-colour emitter as the dot indicator immediately above).
+$gr_star_colour_hover = (string) ( $attributes['starColourHover'] ?? '' );
+$gr_star_decls_hover  = array();
+if ( '' !== $gr_star_colour_hover ) {
+	$gr_star_decls_hover[] = 'fill:' . sgs_colour_value( $gr_star_colour_hover ) . ';';
+}
+if ( $gr_star_decls_hover ) {
+	$gr_responsive_css .= sgs_emit_state_colour_css( $gr_root_sel . ' .sgs-google-reviews__star--full', array(), $gr_star_decls_hover );
+}
+
+// Star fill gradient (D636/D644 rollout) — reuses the shared SVG
+// stroke-gradient primitive, targeting `fill` instead of `stroke` since the
+// star SVGs are fill-based, not stroke-based like icon glyphs. Mirrors
+// icon-list's "one gradient, injected once, painted via a scoped CSS rule
+// that reaches every repeated instance" pattern — the star SVG markup is
+// emitted repeatedly by sgs_render_stars_svg() (aggregate rating + every
+// per-review rating), so the <defs> only need to exist once in the DOM
+// (`url(#id)` resolves document-wide) while the CSS rule below paints every
+// `.sgs-google-reviews__star--full` instance. Scoped to the SAME element the
+// flat starColour/starColourHover attrs already target (block.json star._note).
+$gr_star_colour_gradient = (string) ( $attributes['starColourGradient'] ?? '' );
+$gr_star_stroke_grad     = sgs_svg_stroke_gradient( $gr_star_colour_gradient, $gr_uid . '-star-grad', 'fill' );
+if ( '' !== $gr_star_stroke_grad['css'] ) {
+	$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__star--full{' . $gr_star_stroke_grad['css'] . ';}';
+}
+
+$gr_style_engine_args = array();
+
+$gr_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$gr_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$gr_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$gr_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $gr_color_args ) ) {
+	$gr_style_engine_args['color'] = $gr_color_args;
+}
+
+// (native border_args removed by the Shape-B migration -- width/style/colour
+//  are block-private attrs now, emitted below)
+
+if ( ! empty( $gr_style_engine_args ) ) {
+	$gr_scoped_styles = wp_style_engine_get_styles(
+		$gr_style_engine_args,
+		array( 'selector' => $gr_root_sel )
+	);
+	if ( ! empty( $gr_scoped_styles['css'] ) ) {
+		$gr_responsive_css .= $gr_scoped_styles['css'];
 	}
 }
 
@@ -352,10 +419,27 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 	 * Uses Lucide-compatible 5-point star SVG paths.
 	 * Full stars are solid; half stars use a clip-path split; empty stars are outline only.
 	 *
-	 * @param float $star_rating Rating value (0-5).
+	 * @param float  $star_rating        Rating value (0-5).
+	 * @param string $fill_gradient_defs Optional `<defs>…</defs>` markup for a
+	 *                                    star-fill gradient (D636/D644 rollout,
+	 *                                    from sgs_svg_stroke_gradient(...,'fill')).
+	 *                                    Injected into the FIRST rendered star
+	 *                                    SVG only (per call, and only once per
+	 *                                    unique defs string across all calls in
+	 *                                    this request) — `url(#id)` resolves
+	 *                                    document-wide, so a single `<defs>`
+	 *                                    paints every repeated star instance via
+	 *                                    the block's own scoped CSS rule; a
+	 *                                    duplicate `id` per block instance is
+	 *                                    avoided by tracking already-injected
+	 *                                    defs strings in a static map that
+	 *                                    persists across every call this
+	 *                                    function makes on the page.
 	 * @return string HTML for star rating.
 	 */
-	function sgs_render_stars_svg( float $star_rating ): string {
+	function sgs_render_stars_svg( float $star_rating, string $fill_gradient_defs = '' ): string {
+		static $gradient_defs_emitted = array();
+
 		$full_stars  = (int) floor( $star_rating );
 		$half_star   = ( $star_rating - $full_stars ) >= 0.5 ? 1 : 0;
 		$empty_stars = 5 - $full_stars - $half_star;
@@ -374,17 +458,37 @@ if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
 		$html = '<div class="sgs-google-reviews__stars" role="img" aria-label="' . $label . '">';
 		$uid  = wp_unique_id( 'star-half-' );
 
+		// Consume the gradient defs on the first full/half star this call
+		// renders, but only once EVER per unique defs string (guards against
+		// a duplicate `id` when this function is called repeatedly — once for
+		// the aggregate rating, once per individual review).
+		$defs_to_inject = '';
+		if ( '' !== $fill_gradient_defs && ! isset( $gradient_defs_emitted[ $fill_gradient_defs ] ) ) {
+			$defs_to_inject                               = $fill_gradient_defs;
+			$gradient_defs_emitted[ $fill_gradient_defs ] = true;
+		}
+
 		for ( $i = 0; $i < $full_stars; $i++ ) {
-			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--full" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
+			$star_svg = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--full" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
+			if ( '' !== $defs_to_inject ) {
+				$star_svg       = sgs_svg_inject_defs( $star_svg, $defs_to_inject );
+				$defs_to_inject = '';
+			}
+			$html .= $star_svg;
 		}
 
 		if ( $half_star ) {
 			// Half star: left half filled, right half outline, achieved via clipPath.
-			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
-			$html .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
-			$html .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
-			$html .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
-			$html .= '</svg>';
+			$half_svg  = '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
+			$half_svg .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
+			$half_svg .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
+			$half_svg .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
+			$half_svg .= '</svg>';
+			if ( '' !== $defs_to_inject ) {
+				$half_svg       = sgs_svg_inject_defs( $half_svg, $defs_to_inject );
+				$defs_to_inject = '';
+			}
+			$html .= $half_svg;
 		}
 
 		for ( $i = 0; $i < $empty_stars; $i++ ) {
@@ -412,10 +516,8 @@ $schema = array(
 	),
 );
 
-// One shared encoder (FR-30-9). Previously JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-// with no JSON_HEX_TAG: unescaped slashes removed PHP's default `\/` guard, so a
-// `</script>` in any schema value could close this tag. PRETTY_PRINT is dropped: it
-// only added whitespace to machine-read output.
+// One shared encoder (FR-30-9), using JSON_HEX_TAG: without it, an unescaped
+// `</script>` in any schema value could close this tag prematurely.
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-encoded ld+json via Sgs_Schema HEX flags, not HTML.
 echo \SGS\Blocks\Sgs_Schema::script_tag( $schema );
 
@@ -428,7 +530,7 @@ ob_start();
 if ( $show_aggregate && ! in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	?>
 	<div class="sgs-google-reviews__aggregate">
-		<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div class="sgs-google-reviews__aggregate-text">
 			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<?php
@@ -485,7 +587,7 @@ if ( $show_breakdown && ! in_array( $variant, array( 'badge', 'floating-badge' )
 				// sgs/social-icons' / sgs/pricing-table's per-item values) — every
 				// row renders `.sgs-google-reviews__breakdown-row` unconditionally
 				// (all 5 star tiers), so position is stable.
-				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . $sgs_css_length( $gr_pct ) . '%;}';
+				$gr_responsive_css .= $gr_root_sel . ' .sgs-google-reviews__breakdown-row:nth-child(' . $gr_star_position . ') .sgs-google-reviews__breakdown-fill{--sgs-gr-pct:' . sgs_css_length_sanitise( $gr_pct ) . '%;}';
 				?>
 				<div class="sgs-google-reviews__breakdown-row" role="row">
 					<span class="sgs-google-reviews__breakdown-label" role="cell">
@@ -513,7 +615,7 @@ endif;
 if ( in_array( $variant, array( 'badge', 'floating-badge' ), true ) ) :
 	?>
 	<div class="sgs-google-reviews__badge">
-		<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo sgs_render_stars_svg( $rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div class="sgs-google-reviews__badge-text">
 			<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 			<span><?php echo esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ); ?></span>
@@ -578,6 +680,7 @@ else :
 								loading="lazy"
 								width="48"
 								height="48"
+								<?php echo $gr_media_classes ? 'class="' . esc_attr( implode( ' ', $gr_media_classes ) ) . '"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>
 							/>
 						<?php else : ?>
 							<div class="sgs-google-reviews__avatar-initials">
@@ -597,7 +700,7 @@ else :
 						<?php endif; ?>
 					</div>
 
-					<?php echo sgs_render_stars_svg( $review_rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo sgs_render_stars_svg( $review_rating, $gr_star_stroke_grad['defs'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 					<?php if ( ! empty( $text ) ) : ?>
 						<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>
@@ -659,7 +762,95 @@ $inner_html = ob_get_clean();
 // Output responsive CSS if needed. wp_strip_all_tags (NOT esc_html) blocks a
 // </style> breakout while leaving CSS combinators like `>` intact (contract
 // §D — matches SGS_Container_Wrapper + sgs/hero + sgs/quote). Every value
-// reaching $gr_responsive_css is pre-sanitised ($sgs_css_length / $sgs_css_keyword
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$gr_responsive_css .= $gr_root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$gr_responsive_css .= sgs_border_gradient_css( $gr_root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$gr_responsive_css .= $gr_root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$gr_responsive_css .= $gr_root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $gr_root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$gr_responsive_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $gr_root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$gr_responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $gr_root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$gr_responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
+// reaching $gr_responsive_css is pre-sanitised (sgs_css_length_value() / sgs_css_keyword_sanitise()
 // / wp_style_engine_get_styles), so no un-sanitised value survives to here.
 if ( $gr_responsive_css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $gr_responsive_css built from pre-sanitised values only.

@@ -21,40 +21,45 @@
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"line": {
 					"label": "Line",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:border-width": "thickness",
 						"css:border-style": "lineStyle",
 						"css:border-color": "colour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:width": "width",
-						"css:opacity": "opacity"
+						"css:opacity": "opacity",
+						"css:border-color-gradient": "lineGradient"
 					},
-					"_note": "The visible divider — the block ROOT itself when contentMode='none' (a single <hr>, no wrapper — single-semantic-element rule), or each `.sgs-separator__line` flanking span when contentMode is 'icon'/'text' (render.php: one mechanism renders the border-bottom for both shapes, module header). `thickness`/`lineStyle`/`colour` map onto css:border-width/style/color because the visible line IS rendered as a border-bottom (render.php:140-156), not a background bar — no css:background-color member resolves (honest gap: a line has no fill). `lineGradient` is a genuine second fill mechanism (border-image) with no cluster member of its own (Spec 35 vocabulary has no gradient member for a border) — left unclaimed, not force-mapped. Note updated 2026-08-16 (D643): it previously named the gradientColourStart/End/Angle scalars, collapsed to the single `lineGradient` CSS string that session. No border-radius/box-shadow/max-width/height/gap/aspect-ratio attrs — honest gaps. No `layer` — a line has no children to arrange."
+					"_note": "The visible divider — the block ROOT itself when contentMode='none' (a single <hr>, no wrapper — single-semantic-element rule), or each `.sgs-separator__line` flanking span when contentMode is 'icon'/'text' (render.php: one mechanism renders the border-bottom for both shapes, module header). `thickness`/`lineStyle`/`colour` map onto css:border-width/style/color because the visible line IS rendered as a border-bottom (render.php:140-156), not a background bar — no css:background-color member resolves (honest gap: a line has no fill). `lineGradient` claims css:border-color-gradient (Spec 35 vocabulary fix, 2026-08-20) — renders as border-image in HTML, which is the only mechanism that preserves dashed/dotted gradients while respecting lineStyle. Note updated 2026-08-16 (D643): it previously named the gradientColourStart/End/Angle scalars, collapsed to the single `lineGradient` CSS string that session. No border-radius/box-shadow/max-width/height/gap/aspect-ratio attrs — honest gaps. No `layer` — a line has no children to arrange."
 				},
 				"content": {
 					"label": "Content (icon or text)",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "content",
 					"attrMap": {
-						"css:color": "contentColour"
+						"css:color": "contentColour",
+						"css:background-image": "contentColourGradient"
 					},
-					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php, `.sgs-separator__content`). css:color resolves to the UNIFIED `contentColour` (2026-07-23: contentIconColour + contentTextColour merged — the slot renders an icon OR text, never both, so one foreground colour serves both modes; the former two mode-split colour attrs both painted color on .sgs-separator__content and collided). Typography (contentFontSize/FontWeight/FontStyle/LineHeight) resolves via the default `content`+suffix convention. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls (honest orphans). text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps."
+					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php, `.sgs-separator__content`). css:color resolves to the UNIFIED `contentColour` (2026-07-23: contentIconColour + contentTextColour merged — the slot renders an icon OR text, never both, so one foreground colour serves both modes; the former two mode-split colour attrs both painted color on .sgs-separator__content and collided). Typography (contentFontSize/FontWeight/FontStyle/LineHeight) resolves via the default `content`+suffix convention. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls (honest orphans). text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps. `contentColourGradient` (D636 text-colour gradient rollout) is deliberately only APPLIED when contentMode='text' (render.php) — background-clip:text clips to real glyph outlines, so it is safe for the literal text span but would silently blank a lucide/wp-icon inline-SVG glyph in 'icon' mode; the flat contentColour keeps painting the icon in that mode regardless of the gradient attr's value."
 				},
 				"icon": {
 					"label": "Icon",
@@ -66,14 +71,21 @@
 		},
 		"className": true,
 		"html": false,
-		"color": false,
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		}
+		"color": false
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"lineStyle": {
 			"type": "string",
 			"enum": [
@@ -87,7 +99,9 @@
 		},
 		"width": {
 			"type": "object",
-			"default": {"desktop": 100}
+			"default": {
+				"desktop": 100
+			}
 		},
 		"widthUnit": {
 			"type": "string",
@@ -99,7 +113,9 @@
 		},
 		"thickness": {
 			"type": "object",
-			"default": {"desktop": 1}
+			"default": {
+				"desktop": 1
+			}
 		},
 		"thicknessUnit": {
 			"type": "string",
@@ -121,22 +137,6 @@
 				"right"
 			],
 			"default": "center"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"lineGradient": {
 			"type": "string",
@@ -184,6 +184,11 @@
 		"contentColour": {
 			"type": "string",
 			"default": ""
+		},
+		"contentColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the content slot's text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over contentColour — but only when contentMode='text'; in 'icon' mode this attribute is read but has no visible effect (see the content element's manifest note)."
 		},
 		"contentText": {
 			"type": "string",

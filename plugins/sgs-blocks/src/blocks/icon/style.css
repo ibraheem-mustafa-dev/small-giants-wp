@@ -6,15 +6,22 @@
 	margin-bottom: 0;
 }
 
-.wp-block-sgs-icon.aligncenter {
+/* WP's native `align` support classes (set from the block toolbar) are a
+ * SEPARATE mechanism from the `textAlign` attribute, which is the inheritable
+ * one (unset = inherit from the container). Scoped in :where() so they stay
+ * (0,0,0) low-specificity defaults: an operator's explicit textAlign, or an
+ * inherited section-level `text-align`, wins over the toolbar default rather
+ * than tying with it. Also keeps F3 honest — a literal that an attr can
+ * override is a default, not a hardcode. */
+:where(.wp-block-sgs-icon.aligncenter) {
 	text-align: center;
 }
 
-.wp-block-sgs-icon.alignright {
+:where(.wp-block-sgs-icon.alignright) {
 	text-align: right;
 }
 
-.wp-block-sgs-icon.alignleft {
+:where(.wp-block-sgs-icon.alignleft) {
 	text-align: left;
 }
 

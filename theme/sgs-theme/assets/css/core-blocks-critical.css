@@ -134,14 +134,166 @@ html {
  * colours. We zero these out at the page/post body level so adjacent sections
  * flow together without white bands. Spacing WITHIN sections is preserved via
  * padding on the section containers themselves.
+ *
+ * ⭐ `sgs/container` IS on this list (added 2026-08-27, Bean's correction).
+ * It belongs for the same reason the hero does: a container is FULL-BLEED BY
+ * DEFAULT. Its OUTER width (`maxWidth`) defaults to `{}` — unlimited — while
+ * its INNER content band (`contentWidth`) defaults to `normal`. So every
+ * top-level container is already a full-width section with constrained
+ * content, and adjacent ones with different background colours were showing
+ * the white band this rule exists to remove.
+ *
+ * ⛔ Do NOT "improve" this by detecting full-bleed at runtime and marking it
+ * with a class. That was considered and is unnecessary: containers are
+ * full-bleed by default, so there is no subset to detect, and it would mean
+ * changing the wrapper that 48 blocks share.
+ *
+ * ⭐ `sgs/site-footer` is here too (2026-08-27). MEASURED, not assumed: a real
+ * 24px gap sat between the last page section and the footer, with the body's
+ * background showing through it — the same visible band.
+ *
+ * ⚠ `sgs/site-header` and `sgs/nav-drawer` are deliberately NOT listed. Both
+ * measure 0px today, so there is no defect to fix and this codebase does not
+ * ship a fix for one that has not been shown. Note WHY the header reads 0px:
+ * it is the FIRST child, and WordPress's own layout zeroes a first child's top
+ * margin. Put a block above it and it would gain the gap — measure again then
+ * rather than pre-emptively adding it now.
+ *
+ * ⚠ Every selector here uses `>` — DIRECT CHILD ONLY. This reaches top-level
+ * page sections and nothing else; a container nested inside another container
+ * keeps its normal spacing.
+ *
+ * ⛔ DO NOT ADD `!important` BACK — same defect as the editor arm below, proven
+ * live on the FRONTEND 2026-08-26 (T1 probe, page 2848 on the sandybrown
+ * canary). WordPress's spacing support writes an operator's explicit margin
+ * as an INLINE `style="margin-top:…"` on the block's own markup — exactly the
+ * shape `!important` clobbers, because `!important` on an author rule beats
+ * even an inline declaration. Measured on a top-level `.wp-block-group.alignfull`
+ * direct child of `.entry-content`, before this change:
+ *
+ *              operator set 80px    operator set nothing
+ *   !important         0px                 0px          <- the bug
+ *   no !important      80px                0px          <- correct (verified below)
+ *
+ * The rule's PURPOSE survives without `!important` for the same reason as the
+ * editor arm: WordPress's own inter-section gap comes from
+ * `:where(.is-layout-flow) > *` — specificity (0,0,0) — while this selector
+ * (two classes, e.g. `.entry-content > .alignfull` = 0,2,0) still beats it
+ * comfortably with no `!important` needed. Without a competing inline style
+ * (operator set nothing), our rule wins on specificity alone and the gap stays
+ * suppressed.
+ *
+ * ⚠ Consolidated here 2026-08-26 (T1 fix pass): the alignfull/hero arms used
+ * to ALSO be declared with `!important` in functions.php's
+ * `enqueue_global_layout_fixes()`, as a duplicate inline `<style>` block.
+ * That second declaration is what actually won on the frontend — a
+ * `!important` duplicate isn't a specificity fight this file's fix could
+ * beat. It has been deleted from functions.php; this file is now the ONLY
+ * source. The `.wp-block-post-content >` selectors below are redundant
+ * belt-and-braces, not compensatory coverage: WP core's post-content block
+ * renders `class="entry-content wp-block-post-content"` on the SAME element
+ * (both classes, one node), so `.entry-content >` alone already matches
+ * every post-content page. They are kept only as an explicit, no-cost
+ * safety net in case a future core change ever separates the two classes.
+ *
+ * `.entry-content > .wp-block-sgs-hero` is included explicitly alongside
+ * `.entry-content > .alignfull` even though `sgs/hero` currently adds
+ * `alignfull` unconditionally (`plugins/sgs-blocks/src/blocks/hero/render.php`
+ * ~line 786) and so is already caught by the `.alignfull` arm. Naming the
+ * hero directly removes the hidden cross-file dependency: if the hero's
+ * class list ever changes, this rule still applies without anyone having to
+ * rediscover the alignfull coincidence.
  */
 .entry-content > .alignfull,
+.entry-content > .wp-block-sgs-hero,
+.entry-content > .wp-block-sgs-container,
+.wp-block-post-content > .alignfull,
+.wp-block-post-content > .wp-block-sgs-hero,
+.wp-block-post-content > .wp-block-sgs-container,
 .wp-site-blocks > .wp-block-group,
 .wp-site-blocks > .wp-block-cover,
 .wp-site-blocks > .wp-block-sgs-hero,
-body .is-root-container > .wp-block {
-	margin-block-start: 0 !important;
-	margin-block-end: 0 !important;
+.wp-site-blocks > .wp-block-sgs-container,
+.wp-site-blocks > .wp-block-sgs-site-footer {
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+
+/*
+ * EDITOR CANVAS — same intent, deliberately WITHOUT `!important`.
+ *
+ * ⛔ DO NOT ADD `!important` BACK. It silently broke every block's margin
+ * control in the editor, and the bug is invisible from the frontend.
+ *
+ * `.is-root-container` exists ONLY inside the block-editor canvas. With
+ * `!important` it out-ranked the INLINE style that `edit.js` writes for an
+ * operator's own margin, so a client set a margin, the published page
+ * honoured it, and the canvas never moved. Reported by Bean 2026-08-26.
+ *
+ * Measured in the live canary editor, both directions, before that change:
+ *
+ *              operator set 80px    operator set nothing
+ *   !important         0px                 0px          <- the bug
+ *   no !important      80px                0px          <- correct
+ *
+ * ⚠ NARROWED 2026-08-27 (T2 fix pass). This arm used to be a CATCH-ALL
+ * (`.is-root-container > .wp-block`, matching every top-level block type)
+ * while the frontend arms above name only four block-type families
+ * (alignfull / wp-block-group / wp-block-cover / wp-block-sgs-hero). That
+ * mismatch was a real, PROVEN divergence: measured live on an `sgs/container`
+ * with no explicit margin, the frontend showed `margin-top: 24px` (its
+ * WordPress blockGap, untouched because `sgs/container` isn't one of the
+ * four named types) while the canvas showed `0px` (zeroed unconditionally
+ * by the old catch-all) — the canvas rendered tighter than the published
+ * page for every block type the frontend arms don't name.
+ *
+ * Fix: name the SAME four block-type families here, translated to the
+ * editor's single `.is-root-container` root.
+ *
+ * ⚠ THIS IS A UNION, NOT A MIRROR — do not describe it as exact agreement.
+ * `.is-root-container` is the canvas root in BOTH editors and stands in for a
+ * DIFFERENT frontend root in each:
+ *   · post editor  -> `.entry-content` / `.wp-block-post-content`, under which
+ *                     the frontend names only `alignfull` and the hero;
+ *   · site editor  -> `.wp-site-blocks`, under which the frontend names
+ *                     group, cover and the hero — but not bare `alignfull`.
+ * Listing all four under one root is therefore the union of both, which CSS
+ * cannot narrow further (it cannot tell the two editors apart). KNOWN
+ * RESIDUAL, accepted: a top-level non-`alignfull` `core/group` or `core/cover`
+ * inside POST content is zeroed in the canvas but keeps its blockGap on the
+ * frontend — the same defect shape, narrowed from "every block type" to two.
+ * Not a regression: the old catch-all already zeroed those.
+ *
+ * What DID change: un-named types (e.g. `sgs/container`) now keep the same
+ * blockGap in both places, instead of the canvas alone being zeroed.
+ *
+ * Verified live (T2 probe page, sandybrown canary), before -> after:
+ *
+ *   sgs/container, no margin set     frontend 24px | editor 0px  -> 24px
+ *   sgs/container, margin set 80px   frontend 80px | editor 80px (unchanged)
+ *   sgs/hero (named type), no margin frontend 0px  | editor 0px  (unchanged)
+ *
+ * The rule's PURPOSE survives without `!important`: WordPress's own
+ * inter-section margin comes from a `:where()` layout rule at specificity
+ * (0,0,0) — `:where()` contributes zero — which all four of these selectors,
+ * each (0,2,0), beat comfortably. `add_editor_style()` has WP prefix them with
+ * `.editor-styles-wrapper`, so the effective figure in the canvas is (0,3,0).
+ * Dropping the old `body ` prefix changed the NUMBER, not any outcome.
+ * Only an explicit inline value — i.e. one the operator actually chose —
+ * now wins.
+ *
+ * ⚠ The four frontend arms above previously kept `!important`. That was
+ * PROVEN to carry the same defect (2026-08-26, T1) and has since been fixed
+ * the same way — see the comment above the frontend rule.
+ */
+.is-root-container > .alignfull,
+.is-root-container > .wp-block-group,
+.is-root-container > .wp-block-cover,
+.is-root-container > .wp-block-sgs-hero,
+.is-root-container > .wp-block-sgs-container,
+.is-root-container > .wp-block-sgs-site-footer {
+	margin-block-start: 0;
+	margin-block-end: 0;
 }
 
 /* Universal focus ring — catches anything without a specific rule.
@@ -303,8 +455,10 @@ h1, h2, h3, h4, h5, h6,
  * Base header layering. Sticky / transparent / shrink BEHAVIOURS are owned by
  * the sgs-blocks plugin (Spec 37 FR-37-13, D330) — driven by the sgs/site-header
  * block inspector. Since FR-37-15 these emit scoped per-tier `<style>` rules,
- * not body classes (only `contrastSafe` still uses a body.sgs-header-behaviour-*
- * class). The theme-side header-mode CSS was retired 2026-07-14. This rule keeps
+ * not body classes. As of 2026-08-19 that covers ALL FIVE behaviours —
+ * `contrastSafe` was the last body-class holdout and moved to scoped per-tier
+ * CSS too (FR-37-44), so no `body.sgs-header-behaviour-*` rule remains.
+ * The theme-side header-mode CSS was retired 2026-07-14. This rule keeps
  * the base z-index (dropdown/mega-menu layering) + a transition the plugin
  * behaviours reuse.
  */

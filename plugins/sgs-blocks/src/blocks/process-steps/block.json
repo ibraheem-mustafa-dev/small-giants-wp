@@ -28,26 +28,7 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
@@ -55,29 +36,37 @@
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout", "motion" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color-gradient": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
 						"css:border-style": "borderStyle",
@@ -90,50 +79,82 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
 							}
 						}
 					},
-					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead."
+					"_note": "No `layer` declared (leaf content block, no grid/flex attrs). `effectHover` is a preset picker choosing WHICH hover treatment applies (Spec 35 FR-35-5 false-friend — contains 'Hover' but is not itself a state-variant style property, so it is NOT mapped into `states.hover` and stays an honest orphan/behaviour toggle). Root native `typography` is declared in block.json but routed via `selectors.typography` to `.sgs-process-steps__title`, NOT this wrapper — see the `title` element, which owns text-cluster typography instead. backgroundColourGradient/textColourGradient added (QC-council-validated) — keyed `css:background-color-gradient`/`css:color-gradient` distinct from each other, since this wrapper paints BOTH background and text on the same root selector (info-box's `box` element precedent). render.php moves the background paint onto a `::after` layer (`sgs_block_background_layer_css()`) so it cannot be clipped by a text gradient's `background-clip:text` on the same node."
 				},
 				"title": {
 					"label": "Step title",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
-						"tag": "headingLevel"
+						"css:font-size": "titleFontSize",
+						"css:line-height": "titleLineHeight",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
+						"tag": "headingLevel",
+						"css:background-image": "titleColourGradient"
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-process-steps__title'`, so the root's native typography paints the step TITLE. titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:413, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover"
+							}
+						}
+					},
+					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), prefix 'title' (titleFontSize/titleFontWeight/titleFontStyle/titleLineHeight) — replaces the old native:typography.* attrMap entries and the block-level `selectors.typography` declaration (both removed). No letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (previously native-typography-only). titleColour is a separate design-token colour attr (resolves via default convention `title`+`Colour`). `attrMap.tag` (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php, `.sgs-process-steps__title`) but doesn't match the `title` prefix convention on its own."
 				},
 				"number": {
 					"label": "Step number badge",
 					"order": 3,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "number",
 					"attrMap": {
 						"css:color": "numberColour",
-						"css:background-color": "numberBackground"
+						"css:background-color": "numberBackground",
+						"css:background-image": "numberBackgroundGradient"
 					},
-					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "numberBackgroundHover",
+								"css:color": "numberColourHover",
+								"css:color-gradient": "numberColourHoverGradient"
+							}
+						}
+					},
+					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient (2026-09-05) mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry)."
 				},
 				"description": {
 					"label": "Step description",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "description",
 					"attrMap": {
-						"css:color": "descriptionColour"
+						"css:color": "descriptionColour",
+						"css:background-image": "descriptionColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "descriptionColourHover"
+							}
+						}
 					},
 					"_note": "Only colour is independently controlled for the description — font-size/weight/line-height are honest gaps (no per-element typography attrs declared for this element)."
 				},
@@ -146,7 +167,9 @@
 				"animation": {
 					"label": "Scroll-reveal animation",
 					"order": 6,
-					"clusters": [ "animation" ],
+					"clusters": [
+						"animation"
+					],
 					"attrMap": {
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
@@ -164,10 +187,21 @@
 		}
 	},
 	"selectors": {
-		"root": ".sgs-process-steps",
-		"typography": ".sgs-process-steps__title"
+		"root": ".sgs-process-steps"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"steps": {
 			"type": "array",
 			"default": [
@@ -191,7 +225,8 @@
 				"type": "object",
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"number": {
 						"type": "string"
@@ -207,7 +242,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"connectorStyle": {
@@ -230,25 +272,86 @@
 			"type": "string",
 			"default": "text"
 		},
+		"titleColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"descriptionColour": {
 			"type": "string",
 			"default": "text-muted"
 		},
-		"backgroundColour": {
+		"descriptionColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"descriptionColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "RESTING wrapper background colour — block-private (native supports.color.background is disabled)."
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING wrapper background instead of the flat backgroundColour. Non-empty wins over backgroundColour at render time (mirrors the borderColourGradient/numberBackgroundGradient pattern)."
 		},
 		"textColour": {
 			"type": "string",
 			"default": ""
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the RESTING wrapper text colour instead of the flat textColour. Non-empty wins over textColour at render time (background-clip:text)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the HOVER wrapper background instead of the flat backgroundColourHover. Non-empty wins over backgroundColourHover at render time."
+		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the HOVER wrapper text colour instead of the flat textColourHover. Non-empty wins over textColourHover at render time (background-clip:text)."
 		},
 		"borderColourHover": {
 			"type": "string",
@@ -263,25 +366,15 @@
 			"type": "string",
 			"default": "none"
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderStyle": {
 			"type": "string",
@@ -296,7 +389,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		},
 		"borderColour": {
 			"type": "string",
@@ -326,6 +419,22 @@
 		"sgsAnimationEasing": {
 			"type": "string",
 			"default": "ease-out"
+		},
+		"numberBackgroundGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"numberBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"numberColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"numberColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

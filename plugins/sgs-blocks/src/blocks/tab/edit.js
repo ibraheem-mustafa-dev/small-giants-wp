@@ -1,13 +1,32 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { TextControl, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow,
+	SgsBorderControl,
+	resolveColourToken,
+} from '../../components';
+import { textPaintPreview } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { label, backgroundColour, textColour } = attributes;
+	const { label, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+
+	// Contrast check for border — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the block has no background
+	// set, there's no static background to compare against, so the check is
+	// skipped. Follows the text.js pattern.
+	//
+	// `contrastAgainst` only accepts a FLAT colour/token — it is not itself
+	// gradient-aware. When `backgroundColourGradient` is set, the gradient (not
+	// the flat `backgroundColour`) is what actually paints, so comparing against
+	// the flat colour would compare against a surface that isn't rendered — skip
+	// the check entirely in that case rather than feed the raw gradient string in.
+	const tabContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	// Determine which tab index this block occupies in the parent.
 	const tabIndex = useSelect(
@@ -68,12 +87,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId, tabIndex ]
 	);
 
+	// D288/D636 pattern (mirrors sgs/container): render.php applies textColour/
+	// textColourGradient to $root_sel — the block's own root `wrapper` element
+	// (block.json attrMap css:color/css:background-image) — so the preview
+	// belongs on blockProps.style, merged with the existing active/hidden toggle.
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
 	const blockProps = useBlockProps( {
 		className: [
 			'sgs-tab',
 			isActive ? 'sgs-tab--active' : 'sgs-tab--hidden',
 		].join( ' ' ),
-		style: { display: isActive ? undefined : 'none' },
+		style: {
+			display: isActive ? undefined : 'none',
+			...textPaintPreview( textColour, textColourGradient, colourPalette ),
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -98,23 +126,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					fillRow( {
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: backgroundColour,
-								onChange: ( val ) =>
-									setAttributes( { backgroundColour: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'backgroundColour',
+							hover: 'backgroundColourHover',
+							gradient: 'backgroundColourGradient',
+							hoverGradient: 'backgroundColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -123,6 +150,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -145,6 +175,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 					kind="content"
 				/>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ tabContrastAgainst }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

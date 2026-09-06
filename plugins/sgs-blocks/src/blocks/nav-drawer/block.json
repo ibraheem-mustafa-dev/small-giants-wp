@@ -19,41 +19,107 @@
 	"icon": "menu",
 	"supports": {
 		"sgs": {
+			"colourExemptions": {
+				"drawerBg": {
+					"rule": "states",
+					"reason": "The drawer panel is a disclosure surface toggled open/closed by the burger trigger, not a hover target itself — only its own close button has :hover CSS (style.css:99). Already correctly painted with a real gradient sibling wired (drawerBgGradient, layered over the flat colour rather than replacing it, D-pending: an overlay panel keeps its solid base so alpha in the gradient doesn't let the page behind show through). Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
 			"containerKind": "content",
 			"containerMirror": false,
 			"boxFamilies": {
-				"drawerPadding": [ "drawerPadding" ]
+				"drawerPadding": [
+					"drawerPadding"
+				],
+				"borderRadius": [
+					"borderRadius"
+				]
 			},
-			"hideExtensions": [ "clickEffects", "parallax" ],
+			"hideExtensions": [
+				"clickEffects",
+				"parallax"
+			],
 			"variantAttr": "variantPreset",
 			"variants": {
-				"floating-capped-card": [ "variantPreset", "anchor", "panelSize", "surfaceOpacity", "surfaceBlur", "closeStyle", "drawerAlign", "drawerBg" ],
-				"anchored-card-stack": [ "variantPreset", "anchor", "panelSize", "closeStyle", "drawerAlign" ],
-				"editorial-ghost-list": [ "variantPreset", "surfaceOpacity", "closeStyle", "drawerAlign" ],
-				"centred-statement": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ],
-				"solid-brand-light": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ],
-				"two-column-editorial": [ "variantPreset", "drawerBg", "closeStyle" ],
-				"split-zone-serif": [ "variantPreset", "drawerBg", "drawerAlign", "closeStyle" ]
+				"floating-capped-card": [
+					"variantPreset",
+					"anchor",
+					"panelSize",
+					"surfaceOpacity",
+					"surfaceBlur",
+					"closeStyle",
+					"drawerAlign",
+					"drawerBg"
+				],
+				"anchored-card-stack": [
+					"variantPreset",
+					"anchor",
+					"panelSize",
+					"closeStyle",
+					"drawerAlign"
+				],
+				"editorial-ghost-list": [
+					"variantPreset",
+					"surfaceOpacity",
+					"closeStyle",
+					"drawerAlign"
+				],
+				"centred-statement": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				],
+				"solid-brand-light": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				],
+				"two-column-editorial": [
+					"variantPreset",
+					"drawerBg",
+					"closeStyle"
+				],
+				"split-zone-serif": [
+					"variantPreset",
+					"drawerBg",
+					"drawerAlign",
+					"closeStyle"
+				]
 			},
 			"elements": {
 				"dialog": {
 					"label": "Drawer container",
 					"layer": "OUTER",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
-						"css:background-color": "drawerBg"
+						"css:background-color": "drawerBg",
+						"css:background-image": "drawerBgGradient",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:border-radius": "borderRadius"
 					},
-					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix); border-width/style/color/radius resolve via the skip-serialised native __experimentalBorder support (nativeSupportsPath), not a flat attr. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
+					"_note": "Root `<dialog>`. Block-private (containerMirror:false, per the render.php header note — a `<dialog>` root falls outside SGS_Container_Wrapper's $allowed_tags, so this mirrors the wrapper's fill/box capability without calling it). drawerBg resolves via explicit attrMap (name doesn't carry a Colour/Background suffix). Border (width/style/colour/colour-gradient/radius) is block-private via `SgsBorderControl` in its own dedicated Border panel (Shape-B migration, matching every other SgsBorderControl-adopting block) — explicitly mapped here because `body` also declares the `layout` cluster these members belong to, and the bare (no-`prefix`) suffix convention could not otherwise tell them apart; the border paints the whole drawer surface, not just `body`'s inner padding. Geometry (position/inset/width/height) is now driven by `anchor` (per-device enum) + `panelSize` (per-device length, trigger/centred only) rather than the retired `edge`/`width` scalars — see render.php's geometry_css_for closure. The WCAG-computed foreground (drawerFgHex) has no independent client-facing attribute — it is always DERIVED from drawerBg, never set directly — so css:color (text cluster) is deliberately NOT declared here."
 				},
 				"body": {
 					"label": "Drawer content",
 					"layer": "GRID",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
+						"css:color-gradient": "drawerTextColourGradient",
+						"css:color": "drawerTextColour",
 						"css:gap": "drawerGap",
 						"css:padding": "drawerPadding",
 						"css:align-items": "drawerAlign"
@@ -63,23 +129,39 @@
 				"close": {
 					"label": "Close button",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "toggleClose",
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). toggleCloseColour resolves css:color via the default {prefix}{suffix} convention (toggleClose + Colour). The button's :hover opacity fade (style.css:90-92, opacity:0.75) and its :focus-visible outline (style.css:94-97) have NO attribute behind them — an uncontrollable-styling finding, not a manifest gap (no state is declared for this element for that reason)."
+					"attrMap": {
+						"css:color-gradient": "toggleCloseColourGradient",
+						"css:color": "toggleCloseColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "toggleCloseColourHover"
+							}
+						}
+					},
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs."
+				},
+				"decorative": {
+					"label": "Decorative background",
+					"layer": "OUTER",
+					"order": 4,
+					"clusters": [],
+					"attrMap": {
+						"css:background-image": "backgroundImage"
+					},
+					"_note": "The `.{uid}::before` pseudo-element background-media layer. Declared 2026-08-28 to resolve a routing collision: `backgroundImage` and `drawerBgGradient` BOTH resolved to css_property=background-image on css_element=wrapper, identical on every routing axis, so db-consistency reported AmbiguousLayerAttrError (cssprop:ambiguous:sgs/nav-drawer:background-image:OUTER:wrapper::) and the clone-time resolver picked by rowid. They are NOT the same target: render.php:201-210 states the image paints on `.{uid}::before` and NEVER on the dialog root, precisely because the root already carries drawerBg/drawerBgGradient and a background-image there would overwrite the gradient rather than layer with it. Mirrors sgs/container's media-LAYER pattern and reuses the `decorative` element token sgs/cta-section already declares for its identical background-media layer (cta-section.backgroundMedia -> background-image -> decorative). Only backgroundImage is claimed here; the size/position/repeat/attachment companions keep their existing routing."
 				}
 			}
 		},
 		"align": false,
 		"anchor": false,
 		"html": false,
-		"reusable": false,
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		}
+		"reusable": false
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-nav-drawer",
@@ -112,29 +194,106 @@
 		"closeStyle": {
 			"type": "string",
 			"default": "separate-x",
-			"enum": [ "separate-x", "text-swap", "burger-morph" ]
+			"enum": [
+				"separate-x",
+				"text-swap",
+				"burger-morph"
+			]
 		},
 		"animateFrom": {
 			"type": "string",
 			"default": "auto",
-			"enum": [ "auto", "fade" ]
+			"enum": [
+				"auto",
+				"fade"
+			]
 		},
 		"drawerBg": {
 			"type": "string",
 			"default": "primary"
 		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundImage": {
+			"type": "object",
+			"default": {}
+		},
+		"backgroundImageDecorative": {
+			"type": "boolean",
+			"default": true,
+			"_comment": "Spec 35 item 18 / {element}Decorative convention. render.php paints this image as a CSS background (::before layer), never a frontend <img> — the only literal <img> is the operator-only preview thumbnail in edit.js. Default true documents that. When explicitly set false with alt text on the picked image, render.php adds an aria-describedby hidden note to the dialog (the dialog's own aria-label is already claimed for the drawer's accessible name, so the image description is layered on rather than overwriting it)."
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": [
+				"cover",
+				"contain",
+				"auto"
+			]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": [
+				"no-repeat",
+				"repeat",
+				"repeat-x",
+				"repeat-y"
+			]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": [
+				"scroll",
+				"fixed"
+			]
+		},
+		"drawerTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerTextColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleCloseColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"toggleCloseColour": {
+			"type": "string",
+			"default": ""
+		},
+		"toggleCloseColourGradient": {
 			"type": "string",
 			"default": ""
 		},
 		"drawerAlign": {
 			"type": "string",
 			"default": "left",
-			"enum": [ "left", "center", "right" ]
+			"enum": [
+				"left",
+				"center",
+				"right"
+			]
 		},
 		"drawerGap": {
 			"type": "object",
-			"default": { "desktop": "20px" }
+			"default": {
+				"desktop": "20px"
+			}
 		},
 		"drawerPadding": {
 			"type": "object",
@@ -143,16 +302,62 @@
 		"submenuModel": {
 			"type": "string",
 			"default": "accordion",
-			"enum": [ "accordion", "drill-down" ]
+			"enum": [
+				"accordion",
+				"drill-down"
+			]
 		},
 		"variantPreset": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "floating-capped-card", "anchored-card-stack", "editorial-ghost-list", "centred-statement", "solid-brand-light", "two-column-editorial", "split-zone-serif" ]
+			"enum": [
+				"",
+				"floating-capped-card",
+				"anchored-card-stack",
+				"editorial-ghost-list",
+				"centred-statement",
+				"solid-brand-light",
+				"two-column-editorial",
+				"split-zone-serif"
+			]
 		},
 		"sgsCustomCss": {
 			"type": "string",
 			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

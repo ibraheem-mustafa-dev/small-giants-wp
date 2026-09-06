@@ -1,0 +1,104 @@
+/**
+ * SGS motion — "Scroll & effects" inspector panel (Spec 38 §7).
+ *
+ * Editor-only. One rule, for one real defect.
+ *
+ * ── THE DEFECT ────────────────────────────────────────────────────────────
+ * The per-page motion-budget `<Notice>` rendered at HALF the sidebar's width,
+ * squeezing "This page loads about 7.7 KB of scroll-effect code (budget: 50
+ * KB)." into a narrow column with a ragged wrap. Reported from a screenshot,
+ * 2026-08-28.
+ *
+ * ── WHY ───────────────────────────────────────────────────────────────────
+ * `ToolsPanel` lays its children out in a TWO-COLUMN CSS grid — that is how
+ * paired controls (a label and its reset, two half-width fields) sit side by
+ * side. Every `ToolsPanelItem` participates in that grid knowingly. The Notice
+ * is deliberately NOT a `ToolsPanelItem` (it is informational, has nothing for
+ * "Reset all" to clear, and should not appear in the "+" disclosure menu), so
+ * it lands in the grid as a plain child and takes ONE column.
+ *
+ * Spanning both columns is the fix. `1 / -1` spans first line to last, so it
+ * stays correct if the panel's column count ever changes.
+ *
+ * ⛔ SCOPED TO `.sgs-fx-panel`, NEVER GLOBAL. The obvious rule
+ * `.components-tools-panel > .components-notice { grid-column: 1 / -1 }` would
+ * restyle every notice in every ToolsPanel across the whole editor — core's,
+ * WooCommerce's and every other SGS panel's — to fix one of ours. The class is
+ * set on the ToolsPanel in `fx.js`.
+ */
+
+.sgs-fx-panel > .components-notice,
+.sgs-fx-panel > .components-notice-list {
+	grid-column: 1 / -1;
+
+	/*
+	 * `Notice` carries WP's own horizontal margins, which are sized for the
+	 * full-width notice areas it usually lives in and read as an indent inside
+	 * a panel that already has padding.
+	 */
+	margin-left: 0;
+	margin-right: 0;
+}
+
+/**
+ * FR-38-33 — the STATIC grid-dot lattice, editor canvas only.
+ *
+ * Paints where the dots sit at rest, at the client's chosen spacing, size and
+ * colour. It does NOT run the effect: no canvas, no pointer tracking, no engine
+ * in the editor bundle. `fx.js`'s `withGridDotsEditorPreview` sets the two
+ * custom properties and the class.
+ *
+ * The point is judgement, not fidelity. A client designing a section needs to
+ * see whether the dots are too dense, too sparse, or invisible against this
+ * background — and that last one is not hypothetical: the effect shipped with a
+ * 1.35:1 accent default precisely because nobody could see the dots until the
+ * page was live.
+ *
+ * `currentColor` resolves against the block's own inherited text colour here
+ * rather than the frontend's `--sgs-fx-grid-dot-colour`, because the render
+ * filter that emits that property never runs in the editor. It is a placement
+ * and density preview; the live colour is authoritative.
+ */
+.sgs-grid-dots-preview {
+	/*
+	 * ⛔ NOT `currentColor`. This preview painted with the block's TEXT colour
+	 * until 2026-08-28, which made it actively misleading: on the canary it
+	 * drew crisp near-black dots while the live field painted faint pink ones,
+	 * so the one question the preview exists to answer — "can I see these
+	 * against this background?" — was answered with a colour that never ships.
+	 *
+	 * The HOC now resolves the client's own dot colour (slug -> preset var, or
+	 * a raw hex/hex8 verbatim) into `--sgs-gd-colour`, mirroring what
+	 * `includes/fx-grid-dots.php` does for the frontend. The fallback chain
+	 * matches `assets/css/fx-grid-dots.css` so an unset colour previews as the
+	 * same default that will actually render.
+	 */
+	background-image: radial-gradient(
+		var(
+			--sgs-gd-colour,
+			var(--wp--preset--color--primary, #1f7a7a)
+		)
+			var(--sgs-gd-dot, 2px),
+		transparent var(--sgs-gd-dot, 2px)
+	);
+	background-size: var(--sgs-gd-cell, 40px) var(--sgs-gd-cell, 40px);
+	background-position: center center;
+
+	/*
+	 * The lattice is decoration behind the block's own content, and the editor
+	 * shows it at the resting opacity the engine uses when the pointer is far
+	 * away — so what the client sees here matches the quietest state the live
+	 * effect ever reaches, never a flattering brightest one.
+	 */
+	background-blend-mode: normal;
+	opacity: 1;
+}
+
+.sgs-grid-dots-preview::before {
+	/*
+	 * Nothing. Declared so a future author does not reach for ::before to add a
+	 * second layer here — the gradient IS the lattice, and a pseudo-element
+	 * would sit above the block's content rather than behind it.
+	 */
+	content: none;
+}

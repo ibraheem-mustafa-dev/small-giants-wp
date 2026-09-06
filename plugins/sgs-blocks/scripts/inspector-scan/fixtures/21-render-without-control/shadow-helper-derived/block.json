@@ -1,0 +1,10 @@
+{
+	"name": "sgs/shadow-helper-derived",
+	"title": "Fixture — shadowAttrKeys() call site, all four derived keys resolve",
+	"attributes": {
+		"panelShadow": { "type": "string", "default": "" },
+		"panelShadowColour": { "type": "string", "default": "" },
+		"panelShadowHover": { "type": "string", "default": "" },
+		"panelShadowColourHover": { "type": "string", "default": "" }
+	}
+}

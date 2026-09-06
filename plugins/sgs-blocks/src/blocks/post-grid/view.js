@@ -142,6 +142,10 @@ async function fetchPosts( queryData, page, filterCategory ) {
 		categoryBadgeColour:   queryData.categoryBadgeColour,
 		categoryBadgeBgColour: queryData.categoryBadgeBgColour,
 		readMoreColour:        queryData.readMoreColour,
+		// 37-media-no-handroll: round-tripped so AJAX-paginated cards' featured
+		// images carry the same media-atom marker class as the initial
+		// render's — see the $sgs_pg_uid comment in class-post-grid-rest.php.
+		uid:                   queryData.uid,
 	};
 
 	// Filter button overrides the block's base category setting.

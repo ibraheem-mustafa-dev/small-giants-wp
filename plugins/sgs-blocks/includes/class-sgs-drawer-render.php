@@ -175,7 +175,7 @@ final class Sgs_Drawer_Render {
 		}
 
 		$content = Sgs_Active_Layout::get_active_content( Sgs_Active_Layout::AREA_DRAWER );
-		if ( '' === $content || ! function_exists( 'do_blocks' ) ) {
+		if ( '' === $content ) {
 			return;
 		}
 
@@ -263,7 +263,7 @@ final class Sgs_Drawer_Render {
 	 */
 	private static function active_drawer_ref(): string {
 		$content = Sgs_Active_Layout::get_active_content( Sgs_Active_Layout::AREA_DRAWER );
-		if ( '' === $content || ! function_exists( 'parse_blocks' ) ) {
+		if ( '' === $content ) {
 			return '';
 		}
 

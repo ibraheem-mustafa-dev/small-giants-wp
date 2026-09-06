@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/shared-mount-flags",
+	"title": "Fixture: SgsLinkControl reached only via a shared component — MUST flag",
+	"category": "sgs",
+	"attributes": {}
+}

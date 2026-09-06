@@ -14,7 +14,7 @@
  *
  * @package
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -35,14 +35,20 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	DesignTokenPicker,
 	ShadowControl,
 	TypographyControls,
 	ResponsiveControl,
 	ResponsiveOverride,
-	ResponsiveBorderRadiusControl,
+	shadowAttrKeys,
+	SgsLengthControl,
+	SgsBorderControl,
+	resolveColourToken,
+	MediaElementPanel,
+	IconPicker,
 } from '../../components';
-import BooleanResponsiveControl from './BooleanResponsiveControl';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { BooleanResponsiveControl } from '../../components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -76,6 +82,12 @@ const WIDTH_UNITS = [
  *                                   thing), and rendering the field without an
  *                                   `alt`/`onAltChange` pair would put an
  *                                   uncontrolled, untypeable input on screen.
+ * @param {boolean}  [root0.disabled] Disable the alt-text field. Passed true
+ *                                    by MediaSlotPicker when this slot is
+ *                                    marked decorative — render.php blanks the
+ *                                    alt at render time either way, so the
+ *                                    field is disabled rather than hidden to
+ *                                    show the operator why it's inert.
  */
 function ImagePickerRow( {
 	label,
@@ -85,6 +97,7 @@ function ImagePickerRow( {
 	onAltChange,
 	onClear,
 	showAlt = true,
+	disabled = false,
 } ) {
 	return (
 		<div style={ { marginBottom: '16px' } }>
@@ -124,12 +137,20 @@ function ImagePickerRow( {
 					{ showAlt && (
 						<TextControl
 							label={ __( 'Alt text', 'sgs-blocks' ) }
-							help={ __(
-								'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
-								'sgs-blocks'
-							) }
+							help={
+								disabled
+									? __(
+											'Disabled — this image is marked decorative, so it renders with no alt text and is hidden from screen readers.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Required — describes this image for screen-reader and no-JS visitors, who see both images without any comparison interaction.',
+											'sgs-blocks'
+									  )
+							}
 							value={ alt }
 							onChange={ onAltChange }
+							disabled={ disabled }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
@@ -168,6 +189,8 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 	const imageUrlKey = `${ side }ImageUrl`;
 	const imageAltKey = `${ side }ImageAlt`;
 	const imageIdKey = `${ side }ImageId`;
+	const imageDecorativeKey = `${ side }ImageDecorative`;
+	const isImageDecorative = !! attributes[ imageDecorativeKey ];
 
 	const videoUrlKey = `${ side }VideoUrl`;
 	const videoAltKey = `${ side }VideoAlt`;
@@ -215,6 +238,26 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 							[ imageAltKey ]: '',
 						} )
 					}
+					disabled={ isImageDecorative }
+				/>
+			) }
+
+			{ 'image' === mediaType && (
+				<ToggleControl
+					label={ sprintf(
+						/* translators: %s: slot label, e.g. "Before" or "After". */
+						__( '%s image is decorative', 'sgs-blocks' ),
+						label
+					) }
+					checked={ isImageDecorative }
+					onChange={ ( val ) =>
+						setAttributes( { [ imageDecorativeKey ]: val } )
+					}
+					help={ __(
+						'Turn on when this picture is decoration rather than information — screen readers will skip it instead of reading the image description.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
 				/>
 			) }
 
@@ -358,6 +401,41 @@ function MediaSlotPicker( { side, label, attributes, setAttributes } ) {
 }
 
 /**
+ * ServerSideRender serialises its `attributes` prop into REST query args via
+ * `@wordpress/url`'s `addQueryArgs`, which turns a JS `null` into an EMPTY
+ * STRING in the URL (there is no way to put a real `null` in a query
+ * string). The `/wp/v2/block-renderer` endpoint then validates that empty
+ * string against THIS block's own attribute schema — and for
+ * `videoAutoplayTablet`/`videoAutoplayMobile` (typed `["boolean","null"]`,
+ * default `null`, the framework's "inherit the tier above" convention) an
+ * empty string matches neither branch. The whole preview request 400s with
+ * `rest_invalid_param`, and ServerSideRender surfaces that as the canvas
+ * error notice "Preview failed to load." — confirmed live: the REST call
+ * returns `{"code":"rest_invalid_param","data":{"params":{"attributes":
+ * "[videoAutoplayTablet] is not of type boolean,null."}}}`.
+ *
+ * Fix: omit any attribute whose value is `null` before handing attributes
+ * to ServerSideRender. An omitted query param is never validated against
+ * the schema at all, and render.php already reads every attribute through
+ * an `?? null`/`?? default` fallback (see `$video_autoplay_tablet_raw`
+ * above) — so the effective value render.php sees is identical whether the
+ * key is present-as-null or simply absent. This is a transport-layer fix,
+ * not a behaviour change.
+ *
+ * @param {Object} attrs Full block attributes.
+ * @return {Object} The same attributes with any `null`-valued key removed.
+ */
+function omitNullAttributes( attrs ) {
+	const out = {};
+	for ( const key in attrs ) {
+		if ( null !== attrs[ key ] ) {
+			out[ key ] = attrs[ key ];
+		}
+	}
+	return out;
+}
+
+/**
  * Whether a comparison slot has enough configured to render — mirrors
  * media-render.php's `has_content` check per media type, so the editor
  * placeholder/preview toggle never disagrees with what render.php will
@@ -386,21 +464,31 @@ export default function Edit( { attributes, setAttributes } ) {
 		beforeLabel,
 		afterLabel,
 		labelColour,
+		labelColourGradient,
 		labelBackgroundColour,
+		labelBackgroundColourGradient,
 		orientation,
 		reverseDirection,
 		startPosition,
 		fxDraggable,
 		dividerColour,
+		dividerColourGradient,
+		dividerColourHover,
+		dividerColourHoverGradient,
 		dividerWidth,
 		handleColour,
+		handleColourGradient,
+		handleColourHover,
+		handleColourHoverGradient,
 		handleIconColour,
+		handleIconColourGradient,
+		handleIconColourHover,
+		handleIconColourHoverGradient,
+		handleIconSource,
+		handleIconName,
 		heightUnit,
 		boxShadow,
 		boxShadowColour,
-		style,
-		borderRadiusTablet,
-		borderRadiusMobile,
 	} = attributes;
 
 	const hasBothImages =
@@ -421,60 +509,30 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'labelText',
 						label: __( 'Label text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelColour,
 								onChange: ( val ) => setAttributes( { labelColour: val } ),
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'labelBackground',
 						label: __( 'Label background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: labelBackgroundColour,
 								onChange: ( val ) => setAttributes( { labelBackgroundColour: val } ),
-							},
-						],
-					},
-					{
-						key: 'divider',
-						label: __( 'Divider colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dividerColour,
-								onChange: ( val ) => setAttributes( { dividerColour: val } ),
-							},
-						],
-					},
-					{
-						key: 'handle',
-						label: __( 'Handle colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: handleColour,
-								onChange: ( val ) => setAttributes( { handleColour: val } ),
-							},
-						],
-					},
-					{
-						key: 'handleIcon',
-						label: __( 'Handle icon colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: handleIconColour,
-								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+								gradientValue: labelBackgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { labelBackgroundColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -488,6 +546,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: boxShadowColour,
 								onChange: ( val ) => setAttributes( { boxShadowColour: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.boxShadowColourHover,
+								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
+							},
 						],
 					},
 				] }
@@ -500,11 +564,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					{ /* Wave 5b — independently-scoped fit/focal-point per slot
+					     (the falsifying case the shared atom layer's `prefix`
+					     support exists for: two media elements on one block,
+					     each with its own object-fit/object-position rather
+					     than the old shared sgsObjectFit/sgsObjectPosition
+					     pair that set both slots identically). */ }
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="before"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.beforeMediaType || 'image' }
+						scope="element"
+					/>
 					<MediaSlotPicker
 						side="after"
 						label={ __( 'After', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
+					/>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="after"
+						blockSlug="sgs/before-after"
+						insertion="element"
+						atoms={ [ 'object-fit', 'focal-point' ] }
+						mediaType={ attributes.afterMediaType || 'image' }
+						scope="element"
 					/>
 					{ ( 'video' === attributes.beforeMediaType ||
 						'video' === attributes.afterMediaType ) && (
@@ -599,6 +689,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<DesignTokenPicker
+						label={ __( 'Divider colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dividerColour,
+								onChange: ( val ) => setAttributes( { dividerColour: val } ),
+								gradientValue: dividerColourGradient,
+								onGradientChange: ( val ) => setAttributes( { dividerColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: dividerColourHover,
+								onChange: ( val ) => setAttributes( { dividerColourHover: val } ),
+								gradientValue: dividerColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dividerColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
 					<RangeControl
 						label={ __( 'Divider thickness (px)', 'sgs-blocks' ) }
 						value={ dividerWidth }
@@ -610,6 +722,65 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 1 }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Handle', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Handle colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleColour,
+								onChange: ( val ) => setAttributes( { handleColour: val } ),
+								gradientValue: handleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { handleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: handleColourHover,
+								onChange: ( val ) => setAttributes( { handleColourHover: val } ),
+								gradientValue: handleColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Handle icon colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: handleIconColour,
+								onChange: ( val ) => setAttributes( { handleIconColour: val } ),
+								gradientValue: handleIconColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleIconColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: handleIconColourHover,
+								onChange: ( val ) => setAttributes( { handleIconColourHover: val } ),
+								gradientValue: handleIconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { handleIconColourHoverGradient: val ?? '' } ),
+							},
+						] }
+					/>
+					<IconPicker
+						label={ __( 'Handle icon', 'sgs-blocks' ) }
+						value={ { source: handleIconSource, name: handleIconName } }
+						onChange={ ( { source, name } ) =>
+							setAttributes( { handleIconSource: source, handleIconName: name } )
+						}
+						sources={ [ 'lucide', 'wp-icon' ] }
 					/>
 				</PanelBody>
 
@@ -678,7 +849,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ( { tier, ownValue, effectiveValue, inherited, setOwnValue } ) => {
 							const val = inherited ? effectiveValue : ownValue;
 							return (
-								<UnitControl
+								<SgsLengthControl
+									presets={ false }
 									value={
 										null === val || undefined === val || '' === val
 											? ''
@@ -700,7 +872,6 @@ export default function Edit( { attributes, setAttributes } ) {
 										}
 									} }
 									units={ HEIGHT_UNITS }
-									__next40pxDefaultSize
 								/>
 							);
 						} }
@@ -720,32 +891,56 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
 					>
 						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<UnitControl
+							<SgsLengthControl
+								presets={ false }
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue || '' : '' }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								units={ WIDTH_UNITS }
-								__next40pxDefaultSize
 							/>
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
+			{ /*
+			  Border radius previously had TWO controls writing different storage:
+			  this panel wrote WP-native style.border.radius (undeclared in
+			  block.json, silently discarded by WordPress — check-undeclared-attrs
+			  finding), while the "Border" panel's SgsBorderControl above (D876/D881
+			  standard) already writes the real private borderRadius/Tablet/Mobile
+			  attrs render.php actually reads. Removed the duplicate rather than
+			  redirecting it to the same attrs a second control already owns.
+			*/ }
 			<InspectorControls group="styles">
 				<ToolsPanel
 					label={ __( 'Frame styling', 'sgs-blocks' ) }
 					resetAll={ () =>
-						setAttributes( {
-							boxShadow: '',
-							boxShadowColour: '',
-							style: {
-								...style,
-								border: { ...style?.border, radius: {} },
-							},
-							borderRadiusTablet: {},
-							borderRadiusMobile: {},
-						} )
+						setAttributes( { boxShadow: '', boxShadowColour: '' } )
 					}
 				>
 					<ToolsPanelItem
@@ -758,65 +953,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						<ShadowControl
 							label={ __( 'Shadow', 'sgs-blocks' ) }
-							value={ boxShadow }
-							onChange={ ( val ) =>
-								setAttributes( { boxShadow: val } )
-							}
-							colour={ boxShadowColour }
-							onColourChange={ ( val ) =>
-								setAttributes( { boxShadowColour: val } )
-							}
-						/>
-					</ToolsPanelItem>
-					<ToolsPanelItem
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						hasValue={ () =>
-							Object.keys( style?.border?.radius ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusTablet ?? {} ).length >
-								0 ||
-							Object.keys( borderRadiusMobile ?? {} ).length > 0
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								style: {
-									...style,
-									border: { ...style?.border, radius: {} },
-								},
-								borderRadiusTablet: {},
-								borderRadiusMobile: {},
-							} )
-						}
-						isShownByDefault
-					>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							values={ {
-								base: style?.border?.radius ?? {},
-								tablet: borderRadiusTablet ?? {},
-								mobile: borderRadiusMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( {
-										style: {
-											...style,
-											border: {
-												...style?.border,
-												radius: next,
-											},
-										},
-									} );
-								} else {
-									setAttributes( {
-										[ `borderRadius${
-											'tablet' === tier
-												? 'Tablet'
-												: 'Mobile'
-										}` ]: next,
-									} );
-								}
-							} }
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ shadowAttrKeys( 'boxShadow', { hoverColour: true } ) }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
@@ -846,7 +985,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						</Notice>
 						<ServerSideRender
 							block="sgs/before-after"
-							attributes={ attributes }
+							attributes={ omitNullAttributes( attributes ) }
 							LoadingResponsePlaceholder={ () => (
 								<div
 									style={ {

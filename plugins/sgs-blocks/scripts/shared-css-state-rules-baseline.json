@@ -1,4 +1,4 @@
 {
-	"_comment": "Accepted shared-CSS state-only size-literal findings (check-shared-css-state-rules.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { file, selector, property, value, reason }. To accept a finding add it here with a reason; to fix one, declare the base-selector resting value in the same file (or make the changed value per-instance) and delete the entry. Empty `accepted` = zero tolerance.",
+	"_comment": "Accepted shared-CSS state-only size-literal findings (check-shared-css-state-rules.js). Each entry is a finding the team has consciously accepted, with a reason. The guard fails the build ONLY on findings NOT listed here. Key shape: { file, selector, property, value, reason }. To accept a finding add it here with a reason; to fix one, declare the base-selector resting value in the same file (or make the changed value per-instance) and delete the entry. Empty `accepted` = zero tolerance. CRITICAL: never raise the baseline silently — any increase must include a written reason (see check-element-manifest-conformance.js:796-798).",
 	"accepted": []
 }

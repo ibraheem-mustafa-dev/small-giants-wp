@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/standalone-gradientcapable-direct-conformant",
+	"title": "Fixture: <GradientCapableColourControl> mounted DIRECTLY (not through SgsColourPanel) with a literal 2-state array, gradient on both states — mirrors sgs/card-grid edit.js:476-497 exactly. Must NOT flag (proves the widened standalone-control recognition + the correct gradientCapable=true derivation from the tag name itself)",
+	"category": "sgs",
+	"attributes": {
+		"titleColour": { "type": "string", "default": "" },
+		"titleColourGradient": { "type": "string", "default": "" },
+		"titleColourHover": { "type": "string", "default": "" }
+	}
+}

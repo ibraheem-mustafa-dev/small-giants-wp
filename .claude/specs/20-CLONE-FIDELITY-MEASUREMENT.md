@@ -52,8 +52,7 @@ scores. Every prior method had a structural blind spot, proven on the Mama's Mun
    blocks is **blind to INHERITED values**: it missed a brand-quote `16px → 18px` base-font drop
    because that `<p>` has no explicit `font-size` (it inherits the base; the clone's theme base
    lives in a global stylesheet not in any block-scoped source).
-4. **Input-side logs** (old Spec 20 + 21) — `attribute_gap_candidates` (a **cumulative** ledger,
-   ~2,380 rows across all runs) and `leftover-buckets.json` measure what the **converter could
+4. **Input-side logs** (old Spec 20 + 21, **`attribute_gap_candidates` DB table retired 2026-09-02**) — these debug artifacts measure what the **converter could
    not route** (its INTENT), NOT the rendered outcome. A value can be "emitted" per the logs yet
    render wrong (inherited base font, line-height, a variant default overriding it). Their counts
    are not a per-clone rendered-fidelity signal.
@@ -176,11 +175,10 @@ definitions (non-visual).
 and no excluded class is a silent omission.
 
 ### FR-20-7 — Supersedes the input-side diagnostic approach
-The pipeline-state artefacts (`trace.jsonl`, `leftover-buckets.json`, `attribute_gap_candidates`,
+The pipeline-state artefacts (`trace.jsonl`, `leftover-buckets.json`, **`attribute_gap_candidates` DB table retired 2026-09-02**,
 `stage-11-pixel-diff.json`) and the structured-log surfacing (old Spec 20) are DEBUG aids for the
 converter's INTENT — they MUST NOT be treated as the per-clone rendered-fidelity signal. This spec's
 computed-parity (Stage 11.6) + Bean's visual sign-off (R-31-13) are the canonical fidelity signal.
-`attribute_gap_candidates` is explicitly a **cumulative** ledger (not per-run).
 **Done when:** CLAUDE.md rule 4a states "don't trust the input-side drop-logs as a fidelity signal";
 Spec 31 §7b references this spec as the fidelity instrument; and the retired Spec 20/21 files are
 archived (not live).
@@ -248,7 +246,7 @@ header alongside the FR-20-6 limits.
 
 > **Tools for the columns below.** The *number* comes from `scripts/parity/computed-parity.js` (Stage 11.6 — it runs automatically on deploy; opt-out `--no-computed-parity`). The **"vs Bean's eye" cross-check is the other half of R-31-13 and runs through `/visual-qa`** (cropped-pair capture + the STOP-67 `reports/visual-diff/` report), not by eyeballing a screenshot ad hoc. Bespoke live probes → Playwright MCP; clear the CDN first (Hostinger MCP `hosting_clearWebsiteCacheV1`) or you measure a stale `?ver`. Behavioural rows on a small artefact → `/qc-inline`.
 >
-> **Do NOT hand-roll a fresh comparison** (CLAUDE.md rule 4a) — this tool exists precisely because source-declaration diffing is blind to inherited values and class-keyed matching misclassifies. And do not trust the input-side drop-logs (`attribute_gap_candidates`, `leftover-buckets.json`) as a rendered-fidelity signal; they are a cumulative debug ledger.
+> **Do NOT hand-roll a fresh comparison** (CLAUDE.md rule 4a) — this tool exists precisely because source-declaration diffing is blind to inherited values and class-keyed matching misclassifies. And do not trust the input-side drop-logs (**`attribute_gap_candidates` DB table retired 2026-09-02**, `leftover-buckets.json`) as a rendered-fidelity signal; they are debug artifacts only.
 
 | FR | Static / structural | Behavioural (real run) | Cross-check | Regression guard |
 |----|---------------------|------------------------|-------------|------------------|

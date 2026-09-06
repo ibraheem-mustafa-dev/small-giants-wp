@@ -173,16 +173,16 @@ A documented, repeatable pre-launch gate run before ANY client shop takes real m
 
 ## Phasing (v2.0 — all phases COMPLETE, D220)
 
-1. ~~**P1 — Working PDP + cart loop:** FR-30-0/1/2/7/4.~~ **SHIPPED** (D210, 2026-06-11). Bean R-22-13 signed off. FR-30-12 pipeline gate unblocked.
-2. ~~**P2 — Differentiators:** FR-30-8 (price coupling + value-ladder), FR-30-10 (reviews), FR-30-17 notify-me + Turnstile (D217), gallery variation-aware swap (D218).~~ **SHIPPED** (D213–D220, 2026-06-12). Merged to main via isolated temp-worktree cherry-pick.
-3. ~~**P3 — Shop:** FR-30-3 archive UX shell, FR-30-6 searchable filter, FR-30-5 product search.~~ **SHIPPED** (D213/D214, 2026-06-11/12). Live-verified on canary.
-4. ~~**P4 — Schema:** FR-30-9 (Organization/WebSite/noindex/returnPolicyCountry). FR-30-13 go-live checklist.~~ **SHIPPED** (D215 + D220, 2026-06-12). Go-live checklist at `.claude/go-live-checklist.md` (31 items).
+1. **P1 — Working PDP + cart loop:** FR-30-0/1/2/7/4. **SHIPPED** (D210, 2026-06-11). Bean R-22-13 signed off. FR-30-12 pipeline gate unblocked.
+2. **P2 — Differentiators:** FR-30-8 (price coupling + value-ladder), FR-30-10 (reviews), FR-30-17 notify-me + Turnstile (D217), gallery variation-aware swap (D218). **SHIPPED** (D213–D220, 2026-06-12). Merged to main via isolated temp-worktree cherry-pick.
+3. **P3 — Shop:** FR-30-3 archive UX shell, FR-30-6 searchable filter, FR-30-5 product search. **SHIPPED** (D213/D214, 2026-06-11/12). Live-verified on canary.
+4. **P4 — Schema:** FR-30-9 (Organization/WebSite/noindex/returnPolicyCountry). FR-30-13 go-live checklist. **SHIPPED** (D215 + D220, 2026-06-12). Go-live checklist at `.claude/go-live-checklist.md` (31 items).
 - FR-30-11 gated every phase close (Playwright responsive scripts + axe 0 per page).
 
 ## Open Questions
 
-1. ~~FR-30-7 read-path~~ — CLOSED v1.1: the shipped SEC-1 manifest + cart proxy IS the path (Reuse Inventory). No `@woocommerce/block-data` research needed.
-2. ~~FR-30-8 home~~ — CLOSED v1.1: sibling output of the configurator rendering, not a product-card attribute (preserves the D204 price invariant).
+1. FR-30-7 read-path — CLOSED v1.1: the shipped SEC-1 manifest + cart proxy IS the path (Reuse Inventory). No `@woocommerce/block-data` research needed.
+2. FR-30-8 home — CLOSED v1.1: sibling output of the configurator rendering, not a product-card attribute (preserves the D204 price invariant).
 3. **B2B price display** — Indus Foods is B2B (trade buyers): ex-VAT display vs the consumer inc-VAT default. Needs a per-client display-context decision before Indus's shop build (not blocking Mama's).
 4. **Subscriptions / reorder (council: the food-DTC deal-winner)** — repeat purchase is THE food-DTC metric; WC Subscriptions is compose-not-build territory. Parked pending Bean's call on scope + the extension licence. Sibling parked items: build-a-box bundles (a small FR-30-7 extension, phase-3 candidate), A/B price-display hooks, GA4 funnel events on the configurator.
 5. **Gateway matrix result** — FR-30-0(c) records the verified matrix for the first client at P1 entry.

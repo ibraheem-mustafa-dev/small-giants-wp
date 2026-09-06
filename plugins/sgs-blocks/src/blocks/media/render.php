@@ -2,11 +2,8 @@
 /**
  * Server-side render for the SGS Media block.
  *
- * Content media block — image or video. Styling attributes (objectFit,
- * objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend
- * via a scoped `<style>` block — NOTHING is emitted as an inline
- * `style="property:…"` declaration on the media element (no-inline styling
- * contract, Spec 32 / `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`).
+ * Content media block — image or video. Styling attributes (objectFit, objectPosition, maxWidth, borderRadius, etc.) are applied on the frontend via a scoped `<style>` block.
+ * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
  *
  * mediaType = 'image' (default): image render path with imageUrl / imageId.
  * mediaType = 'video': <video> (internal WP-library or direct MP4) or
@@ -41,71 +38,32 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ---------------------------------------------------------------------------
 // 1. Extract shared styling attributes with safe defaults.
 // ---------------------------------------------------------------------------
-// `maxWidth`, `maxHeight` AND (as of this pass) `height` are TIER OBJECTS —
-// ONE attr each holding {desktop,tablet,mobile}. Read them through the
-// shared normaliser rather than sibling attrs: `maxWidthTablet`/`maxWidthMobile`,
-// `maxHeightTablet`/`maxHeightMobile`, and `heightTablet`/`heightMobile` no
-// longer exist as declared attrs, and a `(string)` cast on the object-typed
-// base raises PHP "Array to string conversion" on EVERY render, emitting a
-// garbage `max-width:Array` / `max-height:Array` / `height:Array`.
-$max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
-$max_width        = (string) ( $max_width_tiers['desktop'] ?? '' );
-$max_width_tablet = (string) ( $max_width_tiers['tablet'] ?? '' );
-$max_width_mobile = (string) ( $max_width_tiers['mobile'] ?? '' );
-$max_width_unit   = isset( $attributes['maxWidthUnit'] ) ? (string) $attributes['maxWidthUnit'] : 'px';
-
-$max_height_tiers  = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
-$max_height        = (string) ( $max_height_tiers['desktop'] ?? '' );
-$max_height_tablet = (string) ( $max_height_tiers['tablet'] ?? '' );
-$max_height_mobile = (string) ( $max_height_tiers['mobile'] ?? '' );
-$max_height_unit   = isset( $attributes['maxHeightUnit'] ) ? (string) $attributes['maxHeightUnit'] : 'px';
-
-// Fixed CSS height (fill) — distinct from maxHeight (a cap) and imageHeight (the
-// intrinsic HTML attr). A draft `height:440px` on an image makes it FILL that
-// height with object-fit cropping. Same unit-embedded + tier-object format as
-// maxHeight above (Spec 35 pass, D563).
-$height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
-$height        = (string) ( $height_tiers['desktop'] ?? '' );
-$height_unit   = isset( $attributes['heightUnit'] ) ? (string) $attributes['heightUnit'] : 'px';
-$height_tablet = (string) ( $height_tiers['tablet'] ?? '' );
-$height_mobile = (string) ( $height_tiers['mobile'] ?? '' );
-
-// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — replaces the old
-// hand-rolled scalar `aspectRatio` attr. Read from style.dimensions.aspectRatio
-// (block.json declares __experimentalSkipSerialization on supports.dimensions so
-// WP's own wp_render_dimensions_support() emits nothing automatically — see the
-// block.json description comment for why that support can't be left to core: it
-// unconditionally inlines onto the wrapper root tag and ignores `selectors`).
-$native_aspect_ratio = isset( $attributes['style']['dimensions']['aspectRatio'] ) ? (string) $attributes['style']['dimensions']['aspectRatio'] : '';
-
+// Sizing (mediaSizing/height/width/maxWidth/maxHeight/aspectRatio), Shape
+// and Border (radius/width/style/colour) are now owned entirely by the
+// `box-shape` atom (Wave 5b, 2026-09-01) — its own custom-property CSS
+// (`--sgs-media-*`, emitted below via $sgs_media_atom_css) replaces this
+// block's old hand-rolled max-width/max-height/height responsive rules, the
+// native `style.border.radius` base + `borderRadiusTablet`/`borderRadiusMobile`
+// tier emission, and the native `style.dimensions.aspectRatio` support —
+// all three would otherwise double-write the SAME CSS properties the atom
+// now emits. See block.json's `_comment_mediaElements` for the full
+// replacement rationale.
 $allowed_object_fits = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
 $object_fit_raw      = $attributes['objectFit'] ?? 'cover';
 $object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : 'cover';
 $object_position     = isset( $attributes['objectPosition'] ) ? (string) $attributes['objectPosition'] : 'center center';
 
-// Border-radius base — WP-NATIVE style.border.radius (box-object interface
-// contract: no more custom flat/per-corner attrs). Tablet/Mobile are the SGS
-// custom tier OBJECT attrs { topLeft, topRight, bottomLeft, bottomRight }.
-// The whole border group (colour/width/style/radius) is read from
-// $attributes['style']['border'] because __experimentalBorder now carries
-// __experimentalSkipSerialization (block.json) — WP still POPULATES the attr,
-// it just stops auto-inlining it onto the wrapper.
-$native_border             = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
-$border_radius_tablet_obj  = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj  = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
-
-$box_shadow        = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
-$box_shadow_colour = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
-$opacity           = isset( $attributes['opacity'] ) ? floatval( $attributes['opacity'] ) : 1.0;
-$opacity    = max( 0.0, min( 1.0, $opacity ) );
+// opacity / box-shadow are now owned entirely by the `opacity`/`shadow`
+// atoms (Wave 5c, 2026-09-01) — their own custom-property CSS (emitted below
+// via $sgs_media_atom_css) replaces the hand-rolled $opacity/$box_shadow*
+// reads and the base+hover box-shadow rules this file used to build here.
 
 $allowed_alignments = array( 'left', 'center', 'right' );
 $alignment_raw      = $attributes['alignment'] ?? 'left';
 $alignment          = in_array( $alignment_raw, $allowed_alignments, true ) ? $alignment_raw : 'left';
 
 // `order` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding
-// {desktop,tablet,mobile}. `orderMobile`/`orderTablet` no longer exist as
-// sibling attrs; read the object through the shared normaliser so a
+// {desktop,tablet,mobile}. Read the object through the shared normaliser so a
 // legacy/malformed value can't PHP-coerce to the literal string "Array".
 $order_tiers      = sgs_responsive_normalise_object( $attributes['order'] ?? null );
 $css_order        = isset( $order_tiers['desktop'] ) && '' !== $order_tiers['desktop'] && null !== $order_tiers['desktop'] ? intval( $order_tiers['desktop'] ) : null;
@@ -117,6 +75,7 @@ $allowed_caption_tags   = array( 'figcaption', 'div' );
 $caption_tag_raw        = $attributes['captionTag'] ?? 'figcaption';
 $caption_tag            = in_array( $caption_tag_raw, $allowed_caption_tags, true ) ? $caption_tag_raw : 'figcaption';
 $caption_colour         = isset( $attributes['captionColour'] ) ? (string) $attributes['captionColour'] : '';
+$caption_colour_gradient = isset( $attributes['captionColourGradient'] ) ? (string) $attributes['captionColourGradient'] : '';
 $caption_font_size      = isset( $attributes['captionFontSize'] ) && null !== $attributes['captionFontSize'] ? absint( $attributes['captionFontSize'] ) : 0;
 $caption_font_size_unit = isset( $attributes['captionFontSizeUnit'] ) ? (string) $attributes['captionFontSizeUnit'] : 'px';
 
@@ -279,77 +238,34 @@ $id_wrap = '.' . $scope_esc;
 // ---------------------------------------------------------------------------
 $media_base_decls = array();
 
-// object-fit — only emit when explicitly set to a NON-default value (D7). The
-// default `cover` is provided as an OVERRIDABLE :where() fallback in
-// style.css, so an unset value no longer force-crops and can be overridden.
-if ( 'cover' !== $object_fit ) {
-	$media_base_decls[] = 'object-fit:' . esc_attr( $object_fit );
-}
+// object-fit is OWNED BY THE ATOM LAYER (Wave 5a) and is deliberately not
+// emitted here. This rule sat on $id_sel at (0,2,0) and therefore BEAT the
+// shared `.sgs-media-el` rule at (0,1,0) — but only once a client had set a
+// non-default value, which is exactly the case anyone testing the new control
+// would try. Leaving it would have made the atom look broken.
+// The default is unchanged: the atom stylesheet carries `cover` as its measured
+// fallback, replacing style.css's old `:where( .sgs-media__img )` rule.
 
-// object-position — only emit when explicitly set to a non-default value (D7).
-// Allow alphanumeric, %, spaces, commas, dashes (valid CSS).
-if ( '' !== $object_position && 'center center' !== $object_position
-	&& preg_match( '/^[a-zA-Z0-9%\s.,\-]+$/', $object_position ) ) {
-	$media_base_decls[] = 'object-position:' . esc_attr( $object_position );
-}
+// object-position is OWNED BY THE ATOM LAYER (focal-point atom) and is
+// deliberately not emitted here. Same as object-fit — the atom owns this property now.
 
-// opacity.
-if ( 1.0 !== $opacity ) {
-	$media_base_decls[] = 'opacity:' . esc_attr( $opacity );
-}
-
-// box-shadow — SHAPE-only string (D621/D622 colour-architecture redesign);
-// colour lives in the sibling boxShadowColour attr and is composed back in
-// at render time via sgs_shadow_value_composed().
-if ( '' !== $box_shadow ) {
-	$shadow_css = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
-	if ( '' !== $shadow_css ) {
-		$media_base_decls[] = 'box-shadow:' . $shadow_css;
-	}
-}
+// opacity and box-shadow (base + hover) are OWNED BY THE ATOM LAYER
+// (`opacity`/`shadow` atoms, Wave 5c 2026-09-01) and are deliberately not
+// emitted here — their own custom-property CSS is emitted below via
+// $sgs_media_atom_css, applied to the shared `.sgs-media-el` marker rather
+// than this file's own $id_sel.
 
 $media_base_css = '';
 if ( $media_base_decls ) {
 	$media_base_css = $id_sel . '{' . implode( ';', $media_base_decls ) . '}';
 }
 
-// Native border group (colour/width/style/radius) — base only, via the
-// stable core style-engine API (matches sgs/button + sgs/container's proven
-// pattern: WP core's own sanitisation, never hand-rolled). Applies to the
-// media element (img/video) — mirrors this block's pre-existing behaviour of
-// painting border/radius on the media element itself, not the figure.
-$border_base_css = '';
-if ( function_exists( 'wp_style_engine_get_styles' ) && ! empty( $native_border ) ) {
-	$border_base_out = wp_style_engine_get_styles(
-		array( 'border' => $native_border ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $border_base_out['css'] ) ) {
-		$border_base_css = $border_base_out['css'];
-	}
-}
-
-// Native dimensions.aspectRatio (Spec 35 wave-B, D402 ADOPT) — same stable
-// core style-engine API as the border group above, scoped to the media
-// element rather than left to core's wp_render_dimensions_support() (which
-// would inline it onto the wrong element — the wrapper — and ignore
-// `selectors`; see block.json + render.php step-1 comments for the full
-// verdict). Digits/slash validated as belt-and-braces defence in depth
-// (wp_style_engine_get_styles() sanitises internally, but this mirrors the
-// validation discipline already used elsewhere in this file).
-$aspect_ratio_css = '';
-if ( '' !== $native_aspect_ratio
-	&& preg_match( '/^[\d\s\/]+$/', $native_aspect_ratio )
-	&& function_exists( 'wp_style_engine_get_styles' )
-) {
-	$aspect_ratio_out = wp_style_engine_get_styles(
-		array( 'dimensions' => array( 'aspectRatio' => $native_aspect_ratio ) ),
-		array( 'selector' => $id_sel )
-	);
-	if ( ! empty( $aspect_ratio_out['css'] ) ) {
-		$aspect_ratio_css = $aspect_ratio_out['css'];
-	}
-}
+// Border (width/style/colour/radius) and aspect-ratio are now emitted
+// entirely by the `box-shape` atom below (`$sgs_media_atom_css`) via
+// `--sgs-media-border-*`/`--sgs-media-aspect-ratio` custom properties
+// applied to `.sgs-media-el` — the old native `style.border.radius` +
+// `style.dimensions.aspectRatio` style-engine calls that used to live here
+// are retired (Wave 5b, 2026-09-01; see block.json's `_comment_mediaElements`).
 
 // ---------------------------------------------------------------------------
 // 6. Wrapper/scope-level base declarations (alignment margin).
@@ -371,51 +287,31 @@ if ( $wrap_base_decls ) {
 // @media(max-width:767px), tablet @media(max-width:1023px).
 // ---------------------------------------------------------------------------
 
-// max-width / max-height / height — base + tablet + mobile on the SAME
-// selector (Pattern A). Values are validated through sgs_media_css_length().
-$base_rules = array();
-$mw_base    = sgs_media_css_length( $max_width, $max_width_unit );
-$mh_base    = sgs_media_css_length( $max_height, $max_height_unit );
-$h_base     = sgs_media_css_length( $height, $height_unit );
-if ( '' !== $mw_base ) {
-	$base_rules[] = 'max-width:' . $mw_base;
-}
-if ( '' !== $mh_base ) {
-	$base_rules[] = 'max-height:' . $mh_base;
-}
-if ( '' !== $h_base ) {
-	$base_rules[] = 'height:' . $h_base;
-}
+// max-width / max-height / height / aspect-ratio / border are now owned
+// entirely by the `box-shape` atom's own custom-property CSS
+// ($sgs_media_atom_css below) — the hand-rolled base/tablet/mobile rule
+// arrays this block used to build here are retired (Wave 5b, 2026-09-01).
+// Border-radius Tablet/Mobile tier emission (formerly via
+// wp_style_engine_get_styles() on $border_radius_tablet_obj/
+// $border_radius_mobile_obj) is retired the same way — see §7b below, now
+// gone, and block.json's `_comment_mediaElements`.
 
-$tablet_rules = array();
-$mw_tablet    = sgs_media_css_length( $max_width_tablet, $max_width_unit );
-$mh_tablet    = sgs_media_css_length( $max_height_tablet, $max_height_unit );
-$h_tablet     = sgs_media_css_length( $height_tablet, $height_unit );
-if ( '' !== $mw_tablet ) {
-	$tablet_rules[] = 'max-width:' . $mw_tablet;
-}
-if ( '' !== $mh_tablet ) {
-	$tablet_rules[] = 'max-height:' . $mh_tablet;
-}
-if ( '' !== $h_tablet ) {
-	$tablet_rules[] = 'height:' . $h_tablet;
-}
+// The media-element ATOM layer (Wave 5b). It contributes custom-property
+// VALUES only — every rule lives in assets/css/media-element.css, loaded in
+// both the canvas and the front end, so the editor and the page cannot drift.
+// `atoms` lists only the CSS-EMITTING atoms declared in block.json's
+// supports.sgs.mediaElements — media-type/source/meaning/video-behaviour/
+// caption/link contribute no CSS (control-only atoms), so they are
+// correctly absent here even though they are declared there for attribute
+// injection. `opacity`/`shadow`/`media-padding` (Wave 5c, 2026-09-01) join
+// the CSS-emitting set, replacing this file's old hand-rolled opacity/
+// box-shadow declarations.
+$sgs_media_atoms    = array( 'object-fit', 'focal-point', 'svg-presentation', 'motion', 'box-shape', 'overlay', 'opacity', 'shadow', 'media-padding' );
+$sgs_media_atom_css = class_exists( 'SGS_Media_Element' )
+	? SGS_Media_Element::style( $attributes, '', 'sgs/media', $scope_class, $sgs_media_atoms )
+	: '';
 
-$mobile_rules = array();
-$mw_mobile    = sgs_media_css_length( $max_width_mobile, $max_width_unit );
-$mh_mobile    = sgs_media_css_length( $max_height_mobile, $max_height_unit );
-$h_mobile     = sgs_media_css_length( $height_mobile, $height_unit );
-if ( '' !== $mw_mobile ) {
-	$mobile_rules[] = 'max-width:' . $mw_mobile;
-}
-if ( '' !== $mh_mobile ) {
-	$mobile_rules[] = 'max-height:' . $mh_mobile;
-}
-if ( '' !== $h_mobile ) {
-	$mobile_rules[] = 'height:' . $h_mobile;
-}
-
-$responsive_css  = $media_base_css . $border_base_css . $aspect_ratio_css . $wrap_base_css;
+$responsive_css  = $media_base_css . $wrap_base_css . $sgs_media_atom_css;
 
 /**
  * Art-direction tier visibility CSS — ONE implementation for every media family
@@ -486,39 +382,10 @@ $sgs_tier_visibility_css = static function ( $modifier_base, array $tiers_presen
 	return $css;
 };
 
-if ( $base_rules ) {
-	$responsive_css .= $id_sel . '{' . implode( ';', $base_rules ) . '}';
-}
-if ( $tablet_rules ) {
-	$responsive_css .= '@media(max-width:1023px){' . $id_sel . '{' . implode( ';', $tablet_rules ) . '}}';
-}
-if ( $mobile_rules ) {
-	$responsive_css .= '@media(max-width:767px){' . $id_sel . '{' . implode( ';', $mobile_rules ) . '}}';
-}
-
-// Border-radius tiers — SGS custom tier OBJECT attrs (borderRadiusTablet /
-// borderRadiusMobile), routed through the same stable core style-engine API
-// as the base rule above (box-object interface contract §B).
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	if ( ! empty( $border_radius_tablet_obj ) ) {
-		$radius_tab_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-			array( 'selector' => $id_sel )
-		);
-		if ( ! empty( $radius_tab_out['css'] ) ) {
-			$responsive_css .= '@media(max-width:1023px){' . $radius_tab_out['css'] . '}';
-		}
-	}
-	if ( ! empty( $border_radius_mobile_obj ) ) {
-		$radius_mob_out = wp_style_engine_get_styles(
-			array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-			array( 'selector' => $id_sel )
-		);
-		if ( ! empty( $radius_mob_out['css'] ) ) {
-			$responsive_css .= '@media(max-width:767px){' . $radius_mob_out['css'] . '}';
-		}
-	}
-}
+// max-width/max-height/height (all tiers) and border-radius Tablet/Mobile
+// are emitted by the `box-shape` atom (`$sgs_media_atom_css` above, folded
+// into `$responsive_css` at its assembly point) — the hand-rolled rule
+// blocks that used to sit here are retired (Wave 5b, 2026-09-01).
 
 // order — base + tablet + mobile on the SAME wrapper/scope selector (Pattern A).
 if ( null !== $css_order ) {
@@ -536,21 +403,39 @@ if ( null !== $css_order_mobile ) {
 // the caption element nested inside the scoped wrapper.
 // ---------------------------------------------------------------------------
 $caption_decls = array();
-if ( '' !== $caption_colour ) {
-	$caption_decls[] = 'color:' . sgs_colour_value( $caption_colour );
+$caption_sel   = $id_wrap . ' .sgs-media__caption';
+// D636 gap-closure — captionColour gains a gradient-capable paint path
+// (sibling attribute, matches sgs/counter's labelColour/labelColourGradient).
+// sgs_text_colour_decl() picks flat colour vs background-clip:text
+// automatically from a single resolved value; the fallback rule is the
+// mandatory companion (self-no-ops on a flat colour).
+$caption_colour_effective = sgs_resolve_text_colour_or_gradient( $caption_colour, $caption_colour_gradient );
+if ( '' !== $caption_colour_effective ) {
+	$caption_colour_decl = sgs_text_colour_decl( $caption_colour_effective );
+	if ( '' !== $caption_colour_decl ) {
+		$caption_decls[] = $caption_colour_decl;
+	}
 }
 if ( $caption_font_size > 0 ) {
 	$caption_decls[] = 'font-size:' . $caption_font_size . sgs_media_validate_unit( $caption_font_size_unit );
 }
 if ( $caption_decls ) {
-	$responsive_css .= $id_wrap . ' .sgs-media__caption{' . implode( ';', $caption_decls ) . '}';
+	$responsive_css .= $caption_sel . '{' . implode( ';', $caption_decls ) . '}';
 }
+$responsive_css .= sgs_text_colour_gradient_fallback_rule( $caption_sel, $caption_colour_effective );
 
 // ---------------------------------------------------------------------------
 // 9. Build caption element (no inline style attr — see step 8 above).
+// The `caption` atom is registered for image/video only (`registry.js`
+// `caption.types`) — svg is deliberately excluded there, and the editor
+// hides the Caption control once mediaType is svg. Media-type switching is
+// non-destructive (the stored value is preserved, not cleared), so gate the
+// FRONTEND render on the current media type too: stop painting a stale
+// caption under an svg without deleting the attribute the operator may
+// switch back to.
 // ---------------------------------------------------------------------------
 $caption_html = '';
-if ( '' !== $caption ) {
+if ( '' !== $caption && in_array( $media_type, array( 'image', 'video' ), true ) ) {
 	$caption_tag_escaped = tag_escape( $caption_tag );
 	$caption_html        = sprintf(
 		'<%1$s class="sgs-media__caption">%2$s</%1$s>',
@@ -603,7 +488,7 @@ if ( 'image' === $media_type ) {
 	// from assistive tech via both empty alt AND aria-hidden, not alt="" alone
 	// (some AT/browser combinations still expose an empty-alt image without
 	// aria-hidden). Spec 35 T3.4.
-	$image_is_decorative = ! empty( $attributes['imageIsDecorative'] );
+	$image_is_decorative = ! empty( $attributes['imageDecorative'] );
 	if ( $image_is_decorative ) {
 		$image_alt = '';
 	}
@@ -682,14 +567,20 @@ if ( 'image' === $media_type ) {
 		$tier_imgs[ strtolower( $sgs_tier ) ] = $tier_url;
 	}
 
-	$base_class = 'sgs-media__img';
+	// `sgs-media-el` is the shared atom layer's marker for the REPLACED element.
+	// It carries no appearance of its own — it is what the one shared stylesheet
+	// keys on, and it does nothing until an atom sets a custom property.
+	// ⛔ Never on the SVG wrapper: object-fit and object-position are
+	// replaced-element properties and do nothing on a <div>, so putting the
+	// marker there would claim a capability that cannot work.
+	$base_class = 'sgs-media__img sgs-media-el';
 	if ( ! empty( $tier_imgs ) ) {
 		$base_class .= ' sgs-media__img--desktop';
 	}
 
 	foreach ( $tier_imgs as $tier_key => $tier_url ) {
 		$image_html .= sprintf(
-			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media__img--%s" loading="lazy" decoding="async" />',
+			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="lazy" decoding="async" />',
 			esc_url( $tier_url ),
 			esc_attr( $image_alt ),
 			$img_aria_hidden,
@@ -742,12 +633,21 @@ if ( 'video' === $media_type ) {
 	// force an iframe reload on every resize, which is worse than the fixed
 	// desktop behaviour it would replace, so tiers are deliberately inert for
 	// the embed paths below and only wired for the direct-file branch).
-	$autoplay_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoAutoplay' );
-	$loop_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLoop' );
-	$muted_tiers    = sgs_media_resolve_tier_bool( $attributes, 'videoMuted' );
-	$controls_tiers = sgs_media_resolve_tier_bool( $attributes, 'videoControls' );
-	$inline_tiers   = sgs_media_resolve_tier_bool( $attributes, 'videoPlaysInline' );
-	$lazy_tiers     = sgs_media_resolve_tier_bool( $attributes, 'videoLazyLoad' );
+	// Autoplay/muted/playsinline are resolved TOGETHER, not independently —
+	// `sgs_media_atom_video_behaviour_requires()` (video-behaviour atom,
+	// includes/media/atoms/video-behaviour.php) enforces the registry's
+	// `VideoAutoplay: [ 'VideoMuted', 'VideoPlaysInline' ]` coupling at every
+	// device tier: a browser refuses to autoplay an unmuted video, and iOS
+	// needs playsinline or the video takes over the screen. Building these
+	// three flags independently (the old shape) served no-JS visitors markup
+	// the browser cannot play, silently "fixed" only client-side by view.js.
+	$video_behaviour = sgs_media_atom_video_behaviour_requires( $attributes, '' );
+	$autoplay_tiers  = $video_behaviour['autoplay'];
+	$muted_tiers     = $video_behaviour['muted'];
+	$inline_tiers    = $video_behaviour['plays_inline'];
+	$loop_tiers      = sgs_media_resolve_tier_bool( $attributes, 'videoLoop' );
+	$controls_tiers  = sgs_media_resolve_tier_bool( $attributes, 'videoControls' );
+	$lazy_tiers      = sgs_media_resolve_tier_bool( $attributes, 'videoLazyLoad' );
 
 	$video_autoplay = $autoplay_tiers['desktop'];
 	$video_loop     = $loop_tiers['desktop'];
@@ -1064,9 +964,50 @@ if ( 'video' === $media_type ) {
 		$tier_data_attrs .= sgs_media_tier_data_attrs( 'plays-inline', $inline_tiers );
 		$tier_data_attrs .= sgs_media_tier_data_attrs( 'lazy', $lazy_tiers );
 
+		/*
+		 * WCAG 1.2.2 Captions (Prerecorded) is LEVEL A — below the stated AA
+		 * baseline, and the framework emitted zero <track> elements anywhere.
+		 *
+		 * Scope is deliberately THIS BLOCK ONLY, and that is a measured call
+		 * rather than a shortcut: every other <video> in the plugin is emitted
+		 * through a shared helper whose callers all pass muted => true
+		 * (helpers-media.php's defaults, class-sgs-container-wrapper, hero,
+		 * before-after, cta-section). A permanently-silent decorative video has
+		 * no audio content to caption, so 1.2.2 is not engaged. `sgs/media` is
+		 * the ONLY surface exposing a client control to unmute (videoMuted,
+		 * default true) alongside real player chrome (videoControls, default
+		 * true), so it is the only place a visitor can hear speech.
+		 */
+		$captions_url = isset( $attributes['videoCaptionsUrl'] ) ? (string) $attributes['videoCaptionsUrl'] : '';
+		if ( '' === $captions_url && ! empty( $attributes['videoCaptionsId'] ) ) {
+			$captions_url = (string) wp_get_attachment_url( (int) $attributes['videoCaptionsId'] );
+		}
+
+		$track_html = '';
+		if ( '' !== $captions_url ) {
+			$captions_label = isset( $attributes['videoCaptionsLabel'] ) && '' !== $attributes['videoCaptionsLabel']
+				? (string) $attributes['videoCaptionsLabel']
+				: __( 'English', 'sgs-blocks' );
+			// A bare language subtag, per BCP 47. Anything else is dropped
+			// rather than emitted: an invalid srclang makes the track
+			// unselectable in some browsers, which fails silently and looks
+			// exactly like having no captions at all.
+			$captions_lang = isset( $attributes['videoCaptionsSrcLang'] ) ? (string) $attributes['videoCaptionsSrcLang'] : 'en';
+			if ( ! preg_match( '/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/', $captions_lang ) ) {
+				$captions_lang = 'en';
+			}
+			$track_html = sprintf(
+				'<track kind="captions" src="%s" srclang="%s" label="%s" default>',
+				esc_url( $captions_url ),
+				esc_attr( $captions_lang ),
+				esc_attr( $captions_label )
+			);
+		}
+
 		$video_html = sprintf(
-			'<video class="sgs-media__video"%s%s%s%s%s%s%s%s%s%s>' .
+			'<video class="sgs-media__video sgs-media-el"%s%s%s%s%s%s%s%s%s%s>' .
 			'<source src="%s" type="%s">' .
+			'%s' .
 			'</video>',
 			$autoplay_attr,
 			$loop_attr,
@@ -1079,7 +1020,8 @@ if ( 'video' === $media_type ) {
 			$sgs_video_tier_attrs( 'file', $resolved_video_url ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value inside is passed through esc_url()/esc_attr() by the closure.
 			' aria-label="' . esc_attr( '' !== $caption ? $caption : __( 'Video', 'sgs-blocks' ) ) . '"',
 			esc_url( $resolved_video_url ),
-			esc_attr( $resolved_video_mime )
+			esc_attr( $resolved_video_mime ),
+			$track_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled immediately above from esc_url()/esc_attr() only; srclang is additionally validated against a BCP 47 subtag pattern.
 		);
 	}
 }
@@ -1108,92 +1050,14 @@ if ( 'svg' === $media_type ) {
 	// Mirrors the identical allowlist used by SGS_Container_Wrapper for bgSvgContent.
 	// Strips: <script>, <foreignObject>, event-handler attributes (on*), external
 	// href/xlink:href. Only the shapes/structure tags below pass through.
-	$allowed_svg_tags = array(
-		'svg'      => array(
-			'xmlns'               => true,
-			'viewbox'             => true,
-			'width'               => true,
-			'height'              => true,
-			'preserveaspectratio' => true,
-			'class'               => true,
-			'id'                  => true,
-		),
-		'g'        => array(
-			'transform' => true,
-			'class'     => true,
-			'id'        => true,
-		),
-		'path'     => array(
-			'd'            => true,
-			'fill'         => true,
-			'stroke'       => true,
-			'stroke-width' => true,
-			'class'        => true,
-		),
-		'circle'   => array(
-			'cx'     => true,
-			'cy'     => true,
-			'r'      => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'rect'     => array(
-			'x'      => true,
-			'y'      => true,
-			'width'  => true,
-			'height' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'polygon'  => array(
-			'points' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'polyline' => array(
-			'points' => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'line'     => array(
-			'x1'     => true,
-			'y1'     => true,
-			'x2'     => true,
-			'y2'     => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'ellipse'  => array(
-			'cx'     => true,
-			'cy'     => true,
-			'rx'     => true,
-			'ry'     => true,
-			'fill'   => true,
-			'stroke' => true,
-			'class'  => true,
-		),
-		'text'     => array(
-			'x'           => true,
-			'y'           => true,
-			'fill'        => true,
-			'font-size'   => true,
-			'font-family' => true,
-			'class'       => true,
-		),
-		'defs'     => array(),
-		'style'    => array( 'type' => true ),
-		'animate'  => array(
-			'attributename' => true,
-			'from'          => true,
-			'to'            => true,
-			'dur'           => true,
-			'repeatcount'   => true,
-		),
-	);
+	// Sanitise SVG through the SHARED wp_kses() allowlist.
+	// Was an 86-line hand-rolled copy of sgs_allowed_svg_tags(). Verified
+	// byte-equivalent as parsed data before collapsing, with a negative
+	// control proving the comparison detects a planted difference - so this
+	// is behaviour-neutral by measurement, not by assertion.
+	// One list, one place to harden. Strips <script>, <foreignObject>,
+	// event-handler attributes (on*) and external href/xlink:href.
+	$allowed_svg_tags = sgs_allowed_svg_tags();
 
 	$sanitised_svg = wp_kses( $svg_content_raw, $allowed_svg_tags );
 
@@ -1282,6 +1146,21 @@ if ( 'svg' === $media_type ) {
 	$wrapper_classes[] = 'sgs-media--svg';
 }
 
+// The `overlay` atom paints via `.sgs-media-box::after` — it needs a real
+// container to attach the pseudo-element to (`SGS_Media_Element::
+// requires_box()`, class-sgs-media-element.php). The scope class is already
+// in $wrapper_classes above, so only the bare marker needs adding.
+//
+// VALUE-AWARE, not declaration-aware: `overlay` is declared in $sgs_media_atoms
+// for every instance of this block, but produces no box-scope CSS until an
+// operator actually sets an overlay colour/gradient — declaring it alone must
+// not force a `<figure>` wrapper nothing will use. `requires_box()` computes
+// each box atom's real CSS output for THESE attribute values before deciding.
+$sgs_media_requires_box = class_exists( 'SGS_Media_Element' ) && SGS_Media_Element::requires_box( $attributes, '', 'sgs/media', $sgs_media_atoms );
+if ( $sgs_media_requires_box ) {
+	$wrapper_classes[] = SGS_Media_Element::CLASS_BOX;
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $wrapper_classes ),
@@ -1294,18 +1173,23 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // `.sgs-foo__image` so per-class CSS rules cascade to the right element.
 // Naked-mode is image-only; video always emits a <figure> wrapper.
 // ---------------------------------------------------------------------------
-// ART-DIRECTION TIERS SUPPRESS NAKED MODE (2026-08-07). Naked mode makes the <img>
-// the block ROOT (Spec 32: no useless wrapper) by REBUILDING $image_html from scratch
-// below — which silently discarded the tier <img>s built in §11 and shipped a single
-// desktop image at every width. Caught on the live canary: 1 <img> in the DOM where 3
-// were expected, and 0 visible.
+// ART-DIRECTION TIERS SUPPRESS NAKED MODE. Naked mode makes the <img> the block ROOT
+// (Spec 32: no useless wrapper) by REBUILDING $image_html from scratch below, which
+// would discard the tier <img>s built in §11 — so naked mode is gated off whenever
+// tier images are present.
 //
 // A block root can only be ONE element, so the tier siblings need a wrapper — and with
 // two or three real images in it that wrapper is STRUCTURAL, not the useless one Spec
 // 32 bans. Falling back to the figure path also keeps ONE convention across sgs/hero
 // and sgs/media (sibling <img>s + BEM tier modifiers + breakpoint CSS), which is the
 // point of proving the routing on both a nested element and a standalone block.
-$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open ) && empty( $tier_imgs );
+//
+// A BOX ATOM ALSO SUPPRESSES NAKED MODE (Wave 5b, 2026-09-01) — `overlay`
+// paints via `.sgs-media-box::after`, and a replaced element (a naked <img>)
+// has nowhere for that pseudo-element to attach (`class-sgs-media-element.php`'s
+// own docblock names this exact scenario as the reason `requires_box()`
+// exists: "a renderer can ask the question BEFORE choosing its markup").
+$naked_mode = ( 'image' === $media_type ) && ( '' === $caption ) && empty( $link_open ) && empty( $tier_imgs ) && ! $sgs_media_requires_box;
 // SVG mode always uses the <figure> wrapper (needed for consistent sizing + caption support).
 
 if ( $naked_mode && '' !== $image_html ) {
@@ -1315,7 +1199,11 @@ if ( $naked_mode && '' !== $image_html ) {
 	// apply to this naked <img> exactly as they do to the <figure> in figure-mode.
 	preg_match( '/class="([^"]*)"/', $wrapper_attributes, $cm );
 	preg_match( '/id="([^"]*)"/', $wrapper_attributes, $im );
-	$merged_classes = trim( ( $cm[1] ?? '' ) . ' sgs-media__img' );
+	// The marker rides along here too: in naked mode this <img> IS the block
+	// root, so it carries the scope class (already in $cm[1]) and the atom
+	// marker on the same node. That is the shape sgs_media_element_scope_class()
+	// was written for.
+	$merged_classes = trim( ( $cm[1] ?? '' ) . ' sgs-media__img sgs-media-el' );
 	$id_attr        = ! empty( $im[1] ) ? ' id="' . esc_attr( $im[1] ) . '"' : '';
 
 	$image_id_attr     = isset( $attributes['imageId'] ) ? absint( $attributes['imageId'] ) : null;

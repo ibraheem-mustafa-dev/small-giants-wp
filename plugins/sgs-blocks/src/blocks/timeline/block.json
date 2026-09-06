@@ -28,42 +28,27 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
 			"iconPicker": true,
+			"fx": {
+				"providesNatively": [
+					"scrub",
+					"pin-scrub",
+					"horizontal-panel"
+				]
+			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -73,51 +58,88 @@
 				"wrapper": {
 					"label": "Wrapper",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:color": "native:color.text",
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:color": "textColour",
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow"
 					},
-					"_note": "Root <ol> — no `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
+					"_note": "Root <div> (Step 4a moved the <ol> inside it as `.sgs-timeline__list`, wrapped in `.sgs-timeline__track`, so a horizontal scroll effect can resolve a plain <div> direct child; an <ol> may only contain <li>). No `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
 				},
 				"title": {
 					"label": "Entry title",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
+					"prefix": "title",
 					"attrMap": {
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:text-align": "native:typography.textAlign",
+						"css:font-size": "titleFontSize",
+						"css:line-height": "titleLineHeight",
+						"css:font-weight": "titleFontWeight",
+						"css:font-style": "titleFontStyle",
 						"tag": "headingLevel"
 					},
-					"_note": "block.json declares `selectors.typography: '.sgs-timeline__title'`, so the root's native typography support paints the entry TITLE, not the wrapper — declared on its own element to reflect where it actually renders. No independent title colour control exists (colour is the shared wrapper `color.text`) — honest gap. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:463) and this element has no `prefix` declared, so it needs an explicit map."
+					"_note": "Typography full-replacement migration (D971/D972, 2026-09-06) — the WP-native `supports.typography` support (fontSize/lineHeight/fontWeight/fontStyle) that used to paint this element via the declared `selectors.typography: '.sgs-timeline__title'` is REMOVED; replaced by the shared `TypographyControls` component (edit.js) + `sgs_typography_css_rule()` helper (render.php), scoped to `.sgs-timeline__title` exactly as the old native selector was. `letterSpacing`/`textTransform`/`textAlign` were also native sub-flags on this block's old `supports.typography` and have NO shared-component equivalent (mirrors sgs/accordion's own declared gaps for letterSpacing/textTransform/fontFamily) — dropped as honest gaps, not carried forward. No independent title colour control exists (colour is the shared wrapper `color.text`) — pre-existing honest gap. `attrMap.tag` — `headingLevel` sets the rendered tag on this element (render.php) and this element has an explicit `prefix`, but `tag` is not a CSS property so it still needs its own map entry."
 				},
 				"connector": {
 					"label": "Connector line / node",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"attrMap": {
-						"css:background-color": "connectorColour"
+						"css:background-color": "connectorColour",
+						"css:background-image": "connectorColourGradient"
 					},
-					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorColourHover",
+								"css:background-image": "connectorColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorColour drives the `--sgs-connector-colour` custom property, painted as `background-color` on the connector line + node dot (style.scss:64, 84-96, 236, 244-256, 316, 334) — a scoped CSS-var mechanism, not a WP-native background. No prefix declared (connectorColour does not follow the `{prefix}Colour` convention for an element named `connector`) — resolved via explicit attrMap only. connectorColourGradient (2026-09-06, colour-conformance closeout) is the `--sgs-connector-colour-gradient` sibling, same `sgs_custom_property_gradient_decls()` shape already proven on brand-strip/post-grid/social-icons/form/gallery/before-after/option-picker/tabs — style.scss's solid connector-line + node-dot rules gain a matching `background-image:var(--sgs-connector-colour-gradient,none)` line; the dashed/dotted connector-style variants already override with a full `background:` shorthand, so the gradient sibling is naturally superseded there with no extra guard needed. connectorColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) are the `--sgs-connector-colour-hover`/`-hover-gradient` siblings, same `sgs_custom_property_gradient_decls()` 5-arg form proven on before-after's `handleColour`; style.scss adds a `:hover, :focus-visible` pair on each of the 4 plain background-colour consumers (vertical line, horizontal line, node dot, node icon), fallback-chaining hover -> resting -> CSS default. The dashed/dotted variants remain naturally superseded on hover exactly as on rest — no extra guard needed. ⚠ connectorFillColour used to carry a `\"css:stroke\"` entry HERE, claiming it painted an SVG path — corrected 2026-09-05/06 after reading style.scss in full: zero `stroke:` consumers exist for `--sgs-timeline-fill-colour` anywhere in the file. Its real attrMap entry moved to the new `progress` element below, both because the manifest fact was wrong (no stroke, real property is background-color/border-color/box-shadow/gradient-stop) AND because keeping it here would have collided as a literal duplicate JSON key against this element's own `css:background-color`/`css:background-image` (connectorColour/connectorColourGradient) — JSON objects silently drop the earlier of two identical keys on parse, which would have orphaned connectorColour's routing."
+				},
+				"progress": {
+					"label": "Progress fill",
+					"order": 4,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "connectorFillColour",
+						"css:background-image": "connectorFillColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "connectorFillColourHover",
+								"css:background-image": "connectorFillColourHoverGradient"
+							}
+						}
+					},
+					"_note": "connectorFillColour drives `--sgs-timeline-fill-colour`, the scroll-driven progress overlay colour — a DIFFERENT set of DOM nodes from the resting `connector` element's line/dot: `.sgs-timeline__progress-fill`/`-glow` (background-color, style.scss:89), the progress head `::after` (radial-gradient + box-shadow, :120-126), `.sgs-timeline__spark` (radial-gradient + box-shadow, :248-255), `.sgs-timeline__node.is-reached::before` and `.is-reached .sgs-timeline__node-icon` (background-color, :875,890), and the carousel-mode `.is-reached` entry border (`border-top-color`, :1671). Deliberately its own element rather than folded into `connector` — see the note on `connector` above for why a shared attrMap object there is a JSON key collision, not just a naming choice. Only the plain `background-color:` lines (:89, :875, :890) are in scope for the fill-custom-property-gradient migration; the composed gradient-stop/box-shadow/border-color consumers are left untouched as before. connectorFillColourHover/HoverGradient (2026-09-06, colour-conformance FILL closeout) follow the same scope: `.sgs-timeline__progress-fill` cannot receive pointer events directly (its `.sgs-timeline__progress` ancestor is `pointer-events:none`), so its hover rule is keyed on `.sgs-timeline:hover`/`:focus-within` instead of self-hover; the `.is-reached` dot and node-icon ARE self-hoverable and use the same pattern as `connector` above."
 				},
 				"date": {
 					"label": "Entry date",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "date",
 					"attrMap": {
 						"css:color": "dateColour"
@@ -127,8 +149,14 @@
 				"entry": {
 					"label": "Timeline entry",
 					"order": 5,
-					"clusters": [],
-					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`."
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:min-height": "milestoneMinHeight",
+						"css:margin-bottom": "entryGap"
+					},
+					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `connectorStyle`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ The design doc §8 predicted these new attributes would need a cross-track `/sgs-update` reseed. MEASURED: they do not. `check-element-manifest-conformance` failed only because this element declared `\"clusters\": []`, so an attrMap entry on it had no cluster member to be claimed by; regenerating `attr-role-map.json` alone did NOT clear it (that map derives from the DB, which does not know a brand-new attribute). Declaring the `layout` cluster took UNCLASSIFIED to 0 with no DB write at all."
 				}
 			}
 		}
@@ -138,18 +166,61 @@
 		"typography": ".sgs-timeline__title"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"orientation": {
 			"type": "string",
 			"default": "vertical"
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
-		"alignment": {
+		"contentLayout": {
 			"type": "string",
-			"default": "alternating"
+			"enum": [
+				"alternating",
+				"same-side",
+				"single-column"
+			],
+			"default": "alternating",
+			"description": "How entries line up. Replaces the old `alignment` attribute (Task 3a) — 'alternating' and 'single-column' render identically to the old 'alternating'/'left'+'centre'. 'same-side' (Task 3b) is two-sided like 'alternating' but does not flip per row — every entry places the date and content on the same side, per the `contentSide` attribute."
+		},
+		"contentSide": {
+			"type": "string",
+			"enum": [
+				"start",
+				"end"
+			],
+			"default": "end",
+			"description": "Which side the content sits on when contentLayout is 'same-side'. 'end' (default) puts content on the right, date on the left. 'start' mirrors it. Meaningless — and hidden in the editor — for 'alternating'/'single-column'."
+		},
+		"mobileLayout": {
+			"type": "string",
+			"enum": [
+				"stacked",
+				"carousel"
+			],
+			"default": "stacked",
+			"description": "How the timeline behaves at 767px and below, independently of orientation/alignment. 'stacked' is today's collapse (unchanged). 'carousel' is a native horizontal scroll-snap row, ≤767px only — inert above that width in either orientation."
 		},
 		"entries": {
 			"type": "array",
@@ -183,43 +254,192 @@
 		},
 		"connectorColour": {
 			"type": "string",
-			"default": "border-subtle"
+			"default": "border"
+		},
+		"connectorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector line + node dot background via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorColour."
+		},
+		"connectorColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Connector line/node background colour on :hover/:focus-visible (colour-conformance FILL closeout 2026-09-06). Falls back to connectorColour, then the CSS default, when unset."
+		},
+		"connectorColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the connector's :hover/:focus-visible background. Non-empty wins over connectorColourHover; falls back to connectorColourGradient, then none."
+		},
+		"connectorProgressFill": {
+			"type": "boolean",
+			"default": false
+		},
+		"connectorFillColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"connectorFillColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over connectorFillColour."
+		},
+		"connectorFillColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Progress-fill background colour on :hover/:focus-within (colour-conformance FILL closeout 2026-09-06) — hovering anywhere on the timeline, since the progress-fill layer itself sits under a pointer-events:none ancestor. Falls back to connectorFillColour, then the CSS default, when unset."
+		},
+		"connectorFillColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the progress-fill's hover background. Non-empty wins over connectorFillColourHover; falls back to connectorFillColourGradient, then none."
 		},
 		"dateColour": {
 			"type": "string",
 			"default": "accent"
 		},
+		"titleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"titleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"scrollEffect": {
+			"type": "string",
+			"enum": [
+				"basic",
+				"scrub",
+				"pinned-journey",
+				"pinned-horizontal"
+			],
+			"default": "basic",
+			"description": "A layout-MODE selector, not a CSS property — deliberately absent from any element's attrMap (see the `entry` element note). Curated wrapper around the generic GSAP scroll-effects picker: 'basic' is today's viewport/connector reveal; 'scrub' ties milestone motion directly to scroll position; 'pinned-journey' pins the timeline and reveals milestones as the connector fills (vertical only); 'pinned-horizontal' pins and slides the track sideways (horizontal only)."
+		},
 		"revealOnScroll": {
 			"type": "boolean",
 			"default": true
+		},
+		"revealTrigger": {
+			"type": "string",
+			"default": "viewport",
+			"enum": [
+				"viewport",
+				"connector"
+			]
 		},
 		"revealStagger": {
 			"type": "number",
 			"default": 100
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
+		"milestoneMediaWidth": {
+			"type": "string",
+			"default": "180px"
 		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+		"milestoneSize": {
+			"type": "string",
+			"enum": [
+				"compact",
+				"full-height"
+			],
+			"default": "compact",
+			"description": "Task 3 (2026-08-30). 'compact' is today's content-driven row height. 'full-height' gives each milestone a minimum height and lets its media fill the column, hero-split style — from tablet width (768px) up only; phones always render the compact size (there's no room for a full-height row on a 375px screen)."
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
+		"milestoneMinHeight": {
+			"type": "string",
+			"default": "80vh",
+			"description": "Only meaningful when milestoneSize is 'full-height'. A SelectControl-driven CSS length (see sgs/hero's own minHeight control) — never free text, so a non-technical client can't type an invalid value and silently break the layout."
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"entryGap": {
+			"type": "string",
+			"default": "",
+			"description": "Space between milestones. Empty inherits today's hardcoded default (var(--wp--preset--spacing--40, 2rem)) so existing timelines render byte-identical until a client sets this explicitly."
 		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
+		"datePosition": {
+			"type": "string",
+			"enum": [
+				"own-column",
+				"inline"
+			],
+			"default": "inline",
+			"description": "Replaces the old `showDateColumn` boolean (Task 3a). 'own-column' only takes effect when contentLayout is 'single-column' — on phones the date always sits above the title, so there's room for it."
 		},
-		"borderRadiusMobile": {
+		"milestoneMediaDecorative": {
+			"type": "boolean",
+			"default": false
+		},
+		"rowStripes": {
+			"type": "boolean",
+			"default": false
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rowStripeColourA": {
+			"type": "string",
+			"default": ""
+		},
+		"rowStripeColourAGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourA. No attrMap entry — rowStripeColourA/B both target the entry element's background-color via mutually exclusive :nth-child(odd)/:nth-child(even) selectors, not the declared states vocabulary, so claiming css:background-color for either would misrepresent ownership (see the entry element note in supports.sgs.elements)."
+		},
+		"rowStripeColourAHover": {
+			"type": "string",
+			"default": "",
+			"description": "Odd-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourA, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourAHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the odd row's hover background. Non-empty wins over rowStripeColourAHover; falls back to rowStripeColourAGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourB": {
+			"type": "string",
+			"default": "surface-alt"
+		},
+		"rowStripeColourBGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even-row background band via background-image (helpers-tokens.php sgs_custom_property_gradient_decls). Non-empty wins over rowStripeColourB. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHover": {
+			"type": "string",
+			"default": "",
+			"description": "Even-row background colour on that row's own :hover/:focus-within (colour-conformance FILL closeout 2026-09-06). Falls back to rowStripeColourB, then transparent, when unset. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"rowStripeColourBHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the even row's hover background. Non-empty wins over rowStripeColourBHover; falls back to rowStripeColourBGradient, then none. No attrMap entry — see rowStripeColourAGradient's description."
+		},
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",
@@ -247,7 +467,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		}
 	},
 	"render": "file:./render.php",
@@ -257,7 +477,7 @@
 	"example": {
 		"attributes": {
 			"orientation": "vertical",
-			"alignment": "alternating",
+			"contentLayout": "alternating",
 			"entries": [
 				{
 					"date": "2018-01-01",

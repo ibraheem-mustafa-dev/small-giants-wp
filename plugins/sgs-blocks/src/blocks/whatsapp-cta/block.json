@@ -18,15 +18,26 @@
 	"icon": "phone",
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [
+				"hover"
+			],
+			"hoverDefaults": {
+				"scalePreset": "1.02",
+				"shadow": "raised",
+				"imageZoom": false,
+				"focusRing": true
+			},
+			"hoverExcludeControls": [
+				"imageZoom",
+				"grayscale"
+			],
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadiusTablet",
@@ -37,15 +48,30 @@
 				"button": {
 					"label": "Button",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"prefix": "label",
-					"_note": "Contract §B3 single-semantic-element block — the <a> IS the block root (no wrapper div); it plays both the wrapper and the button/label element. labelColour/labelFontSize/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention (prefix: 'label').",
+					"_note": "Contract §B3 single-semantic-element block — the <a> IS the block root (no wrapper div); it plays both the wrapper and the button/label element. labelColour/labelFontSize/labelFontWeight/labelFontStyle resolve via the default {prefix}{suffix} convention (prefix: 'label'). labelColourGradient RE-KEYED 2026-09-06 (FILL closeout) from css:background-image to css:color-gradient — it paints a TEXT gradient via background-clip:text (sgs_resolve_text_colour_or_gradient(), scoped to the CHILD .sgs-whatsapp-cta__label span, render.php D948), the same semantic key product-card's ctaColourTextGradient already uses; the old key wrongly claimed css:background-image on this element and made the classifier think the ROOT's background-fill gradient sibling already existed when it didn't. css:background-image now correctly maps to the real button-fill gradient, backgroundColourGradient, scoped to the ROOT <a> (render.php, different selector from the label span — no runtime collision, both properties genuinely coexist).",
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:background-image": "backgroundColourGradient",
+						"css:color": "labelColour",
+						"css:color-gradient": "labelColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-radius": "native:__experimentalBorder.radius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient"
+							}
+						}
 					}
 				}
 			}
@@ -58,11 +84,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"__experimentalSkipSerialization": true
@@ -73,6 +94,18 @@
 		"typography": ".sgs-whatsapp-cta__label"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"phoneNumber": {
 			"type": "string"
 		},
@@ -89,17 +122,20 @@
 			"default": "",
 			"role": "content"
 		},
-		"showOnMobile": {
-			"type": "boolean",
-			"default": true
-		},
-		"showOnDesktop": {
-			"type": "boolean",
-			"default": true
+		"showOn": {
+			"type": "object",
+			"default": {
+				"desktop": true,
+				"mobile": true
+			}
 		},
 		"labelColour": {
 			"type": "string",
 			"default": "text"
+		},
+		"labelColourGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"labelFontSize": {
 			"type": "object",
@@ -121,21 +157,20 @@
 			"type": "string",
 			"default": "whatsapp"
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the button's resting background via background-image, scoped to the root `<a>` (colour-conformance FILL closeout 2026-09-06). Non-empty wins over backgroundColour."
 		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+		"backgroundColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Button background colour on :hover/:focus-visible — the button's own :hover rule previously only animated opacity/transform, no colour change existed. Falls back to backgroundColour, then the theme default, when unset."
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the button's :hover background via background-image. Non-empty wins over backgroundColourHover; falls back to backgroundColourGradient, then none."
 		},
 		"borderRadiusTablet": {
 			"type": "object",

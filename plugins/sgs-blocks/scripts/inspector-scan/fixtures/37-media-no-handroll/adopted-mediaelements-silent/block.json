@@ -1,0 +1,14 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/adopted-mediaelements-silent",
+	"title": "Fixture: THE critical acceptance criterion — declares supports.sgs.mediaElements AND still has a media-family attribute + a literal object-fit in style.css, must go SILENT",
+	"category": "sgs",
+	"attributes": {
+		"objectFit": { "type": "string", "default": "cover" }
+	},
+	"supports": {
+		"sgs": {
+			"mediaElements": [ "wrapper" ]
+		}
+	}
+}

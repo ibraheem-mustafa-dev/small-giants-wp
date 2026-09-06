@@ -103,12 +103,16 @@
  *      the finding even though the attribute itself is unused (false
  *      negative — this check never causes a false POSITIVE from this gap).
  *   2. Attribute renaming in destructuring (`const { foo: renamed } =
- *      attributes`) is read by its KEY name (`foo`), matching this project's
- *      "attribute name is the schema key" convention — a renamed LOCAL
- *      variable referenced in JSX under the renamed name is not currently
- *      matched back to the key. Not observed live in this codebase as of
- *      2026-08-13 (no renamed attribute-destructure found in the survey run
- *      below); documented in case it appears later.
+ *      attributes`) is read by its KEY name (`foo`) for `declaredAttrs`/
+ *      `written` membership, matching this project's "attribute name is the
+ *      schema key" convention. FIXED 2026-08-30 (D-pending) — a renamed LOCAL
+ *      variable referenced outside InspectorControls IS now matched back to
+ *      the key via `collectDestructuredAliases()`, after `sgs/pricing-table`
+ *      `pricingTableStyle: style` proved the gap live: `style` is genuinely
+ *      read at `edit.js:160` inside the wrapper className, but the finding
+ *      loop only ever checked `usedOutsideControls.has('pricingTableStyle')`,
+ *      which is never true for a renamed binding — a false positive, not a
+ *      real editor-canvas desync.
  *   3. JSX assigned to an intermediate variable before being returned
  *      (`const preview = <div>...</div>; return preview;`) IS still caught —
  *      the JSXElement/JSXFragment scan is file-wide, not anchored to a
@@ -387,6 +391,15 @@ const path = require( 'path' );
 const os = require( 'os' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
+const { resolveComponentFiles } = require( './inspector-scan/core/components' );
+
+// R3-a (2026-08-20): the shared name -> file resolver, used to widen CHECK
+// A's corpus past `edit.js` alone to also cover any shared component file it
+// mounts via JSX (e.g. `<WidthPanel .../>`) — see the R-3 register
+// (`.claude/plans/phase-shop-container-remediation.md` R3-a). Computed once;
+// resolveComponentFiles() walks the filesystem.
+const COMPONENT_FILE_MAP = resolveComponentFiles();
+const JSX_TAG_RE = /<([A-Z]\w*)\b/g;
 
 const ROOT = path.join( __dirname, '..' );
 const BLOCKS_DIR = path.join( ROOT, 'src', 'blocks' );
@@ -414,7 +427,303 @@ const BABEL_PARSE_OPTS = {
 // difference). Kept tiny and structural, same discipline as check-dead-
 // controls.js's EDITOR_ONLY_ATTRS — the primary escape hatch for a specific
 // finding is the baseline file below; this is for a genuinely universal name.
-const EDITOR_INVISIBLE_BY_DESIGN = new Set();
+//
+// Populated 2026-08-27 (11 attrs, 32 findings) from the triage register:
+// `reports/2026-08-26-check-a-triage-group-a.md` ("ARTEFACT — motion attrs
+// on a static canvas") + `reports/2026-08-26-check-a-triage-group-b.md`
+// ("Artefacts (10 findings)"). Every name here is EXACT-MATCH — deliberately
+// NOT a pattern/prefix test, so a real static property (e.g.
+// `backgroundRepeat`, this file's own worked example of a property the
+// canvas SHOULD show) can never be swept in by a loose match:
+//
+//   · bgSvgAnimation / bgSvgAnimationSpeed — motion: animation + its timing,
+//     nothing a static canvas can render.
+//   · bgParallax — motion: scroll-driven, no resting frame to show.
+//   · bgKenBurns / bgAnimationDuration — motion: animated pan/zoom + timing.
+//   · rowTransparent / rowHideOnScroll / rowShrink / rowShrinkHideTarget —
+//     scroll-gated two-state behaviour (site-header-row/site-footer-row);
+//     `rowShrink` already ships an opt-in "Show me the shrunk size" toggle —
+//     the house pattern for this class — and the other three have no single
+//     resting-state snapshot to preview (transparent-vs-solid and
+//     hidden-vs-visible ARE the whole two-state behaviour).
+//   · headerTransparentDirection — sequences which of two SCROLL-TRIGGERED
+//     states applies before/after scroll; no resting appearance of its own.
+//   · ariaLabel — screen-reader-only accessible name, correctly invisible to
+//     sighted users.
+//
+// EXTENDED 2026-08-30 (+15 names, 31 findings) — the CLIENT-SET HOVER-STATE
+// class, decided by Bean as a class rather than the single row that surfaced
+// it. The mechanism, which is the whole justification and is narrower than
+// "hover is invisible":
+//
+//   A block's `:hover` rules in its own `style.css` DO reach the editor canvas
+//   — the canvas loads that stylesheet, so a STATIC hover rule previews there
+//   and is NOT exempt. What cannot reach the canvas is a PER-INSTANCE,
+//   CLIENT-SET hover VALUE: those are emitted by `render.php` into a scoped
+//   `.{uid}` <style> at render time, and the canvas never executes render.php.
+//   The canvas's only per-instance channel is an inline style object, and an
+//   inline style cannot express `:hover` at all. So there is no mechanism by
+//   which these 15 could be previewed — they are unpreviewable, not unpreviewed.
+//
+// ⚠ Scope note for whoever extends this next: that reasoning licenses exactly
+// the client-set hover VALUES below. It does NOT license "anything with Hover
+// in the name" — which is why these are 15 exact names and not a /Hover$/ test,
+// and why the hover OVER-MATCH control in runSelfTest() asserts that an
+// unlisted `…Hover` name is still flagged.
+//
+// Surfaced when commit 18eee2666 added `quoteColourHover`, taking CHECK A to
+// 208 against a ceiling of 207 and reding the build for every session. Fixing
+// that one row alone would have encoded "hover is invisible" for one attribute
+// and "hover is previewable" for two others on the SAME block (sgs/testimonial)
+// — an inconsistency that later reads as deliberate. Measured, not inferred:
+// `--json` reported 208 net-new before, 177 after.
+const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
+	// Server-behaviour-only attrs (2026-09-05, Bean-approved). Verified by
+	// reading every consumption site: these reach NO CSS and NO markup, so
+	// there is nothing a canvas could show. `requireLogin`/`rateLimit` are read
+	// at form/render.php:77-78 and go straight into a `set_transient()`
+	// server-side config cache (form/render.php:89-99) so the submit handler
+	// can enforce them without trusting client data — they never touch output.
+	// Both are declared by `sgs/form` alone, so this name-keyed exemption
+	// cannot over-reach to another block.
+	'requireLogin',
+	'rateLimit',
+	// Accessibility-only attr (2026-09-05). `thumbnailDecorative` sets
+	// `aria-hidden="true"` on the thumbnail and nothing else
+	// (image-sequence/render.php:267-269 and :281-283) — the identical shape as
+	// `ariaLabel` already exempted below. Declared by `sgs/image-sequence`
+	// alone.
+	'thumbnailDecorative',
+	// Hover-only transform (2026-09-05). `scaleHover` emits a
+	// `transform:scale()` exclusively through `sgs_hover_state_rules()`
+	// (button/render.php:438-441) — a `:hover` rule, and the editor canvas
+	// never renders a hover state, which is the SAME doctrine already applied
+	// to the client-set hover VALUES below.
+	// ⚠ NAME-KEYED, AND THIS NAME IS NOT UNIQUE: `scaleHover` is declared by 11
+	// blocks (button, card-grid, gallery, heading, icon, info-box, post-grid,
+	// quote, team-member, testimonial, text). Only `sgs/button` has a finding
+	// today, so this also pre-emptively suppresses the other 10. That is
+	// intended — the attribute means the same thing on every one of them — but
+	// if any block ever uses `scaleHover` for a NON-hover transform, this
+	// exemption would hide a real desync there.
+	'scaleHover',
+	'bgSvgAnimation',
+	'bgSvgAnimationSpeed',
+	'bgParallax',
+	'bgKenBurns',
+	'bgAnimationDuration',
+	'rowTransparent',
+	'rowHideOnScroll',
+	'rowShrink',
+	'rowShrinkHideTarget',
+	'headerTransparentDirection',
+	'ariaLabel',
+	// Client-set hover VALUES (2026-08-30) — see the mechanism note above.
+	'backgroundColourHover',
+	'backgroundColourHoverGradient',
+	'borderColourHover',
+	'borderColourHoverGradient',
+	// Same mechanism as borderColourHover/borderColourHoverGradient above,
+	// under a `wrapper`-prefixed name (2026-09-06) — sgs/social-icons already
+	// has a per-item `iconBorderColourHover`, so its own wrapper-level border
+	// hover control needed a distinct name to avoid colliding with it.
+	// Emitted via the identical sgs_border_states_css() :hover mechanism
+	// (render.php:312-314) — unpreviewable for the same reason, not a new one.
+	'wrapperBorderColourHover',
+	'wrapperBorderColourHoverGradient',
+	'gridItemBackgroundHover',
+	'gridItemBackgroundHoverGradient',
+	'gridItemBorderGradientHover',
+	'gridItemTextColourHover',
+	'gridItemTextColourHoverGradient',
+	'groupBorderColourGradientHover',
+	'quoteColourHover',
+	'resultHoverBackgroundColour',
+	'shadowHoverColour',
+	'textColourHover',
+	'textDecorationHover',
+	// sgs/pricing-table hover-colour rows (2026-09-04) — same client-set
+	// hover-value class as above, newly VISIBLE not newly broken: these six
+	// were previously wired into the wrong element's hover CSS (gated behind
+	// an unrelated attribute, painting the billing-toggle label instead of
+	// their own element) and so were effectively dead code the checker could
+	// not classify as a genuine CSS-emission usage. Fixing the render.php
+	// wiring (each now has its own real sgs_emit_state_colour_css() call)
+	// made them recognisably real — and, like every other hover value here,
+	// genuinely un-previewable in the editor canvas, which never simulates
+	// :hover. toggleLabelHoverColour/toggleLabelHoverColourGradient are the
+	// same pre-existing pair this block's own billing-toggle hover control
+	// already used, surfaced for the same reason. Measured: 214 net-new
+	// before this fix, 222 after adding these 8 without an exemption; 214
+	// again with it.
+	'titleColourHover',
+	'featureColourHover',
+	'ctaColourHover',
+	'popularBadgeColourHover',
+	'ctaBackgroundHover',
+	'popularBadgeBackgroundHover',
+	'toggleLabelHoverColour',
+	'toggleLabelHoverColourGradient',
+	// 21-row custom-property-fed migration (2026-09-04) — same class as
+	// above: these gradient siblings paint a scoped CSS rule/::after layer
+	// render.php builds, which the editor canvas never executes.
+	'labelColourGradient',
+	'labelBackgroundColourGradient',
+	'badgeColourGradient',
+	'badgeTextColourGradient',
+	'panelBgGradient',
+	'panelTextColourGradient',
+	'captionColourGradient',
+	'captionBgColourGradient',
+	'overlayColourHoverGradient',
+	// 7-block parallel-dispatch migration (2026-09-04) — same class again.
+	// Verified these are the ONLY 6 genuinely new names (222 total - 216
+	// prior ceiling = 6): every other finding surfaced when filtering by
+	// these 6 blocks' names (requireLogin, shadow, tileBorderColour, etc.)
+	// is pre-existing debt already inside the 216 ceiling, unrelated to
+	// this dispatch — NOT added here, since exempting them would need its
+	// own verification this pass never did.
+	'linkColourGradient',
+	'separatorColourGradient',
+	'progressBarColourGradient',
+	'cardBgColourGradient',
+	'iconBackgroundGradient',
+	'iconBackgroundHoverGradient',
+	// Phase-3/4 close-out (2026-09-05, Bean-directed — reach 0). Client-set
+	// hover VALUES, verified individually this session (each grep'd against its
+	// own render.php, not assumed from the name): iconColourHover
+	// (icon-list/notice-banner, sgs_hover_state_rules), priceColourHover
+	// (pricing-table, own emission), descriptionColourHover (process-steps,
+	// sgs_hover_state_rules), roleColourHover (team-member + testimonial),
+	// summaryColourHover/nameColourHover/orgColourHover (testimonial, array-fed
+	// hover rule builder), tileBorderColourHover(Gradient)/
+	// fileLabelBorderColourHover(Gradient)/fileLabelBackgroundColourHover(Gradient)
+	// (form, mapping-table-driven hover rule builder), closeColourBackgroundHover
+	// (Gradient)/closeColourTextHover(Gradient) (modal — consumed via
+	// sgs_button_element_style_css()'s dynamic prefix+suffix key concatenation,
+	// which a literal-name grep of render.php misses; confirmed by reading the
+	// helper and its call site, not by the grep coming back empty). All same
+	// class as the existing hover-value entries above — the editor canvas never
+	// simulates `:hover`/`:focus`.
+	'iconColourHover',
+	// Same class, the gradient sibling (2026-09-06, sgs_icon_gradient_css()
+	// icon-gradient closeout): a per-instance client-set hover gradient value,
+	// emitted into the block's own scoped <style> at render time via
+	// sgs_hover_state_rules() — the canvas never executes render.php, same
+	// "unpreviewable, not unpreviewed" reasoning as every other hover-value
+	// entry here. Declared by sgs/cart and sgs/accordion (via block context).
+	'iconColourHoverGradient',
+	// sgs/before-after's equivalent pair, same mechanism, different attr name.
+	'handleIconColourHover',
+	'handleIconColourHoverGradient',
+	'priceColourHover',
+	'descriptionColourHover',
+	'roleColourHover',
+	'summaryColourHover',
+	'nameColourHover',
+	'orgColourHover',
+	'tileBorderColourHover',
+	'tileBorderColourHoverGradient',
+	'fileLabelBorderColourHover',
+	'fileLabelBorderColourHoverGradient',
+	'fileLabelBackgroundColourHover',
+	'fileLabelBackgroundColourHoverGradient',
+	'closeColourBackgroundHover',
+	'closeColourBackgroundHoverGradient',
+	'closeColourTextHover',
+	'closeColourTextHoverGradient',
+	// Motion-timing (2026-09-05) — `sgs/hero` and `sgs/text` both feed these
+	// into a CSS `transition:` DURATION/EASING declaration only (verified:
+	// text/render.php:409/562 build `transition:prop {duration}ms {easing}`
+	// strings, nothing else consumes them) — a state-CHANGE timing curve with
+	// no static rendered signature a canvas capture could ever show. Same
+	// doctrine as the existing motion-timing entries above.
+	'transitionDuration',
+	'transitionEasing',
+	// Structural state unreachable on a static canvas (2026-09-05) — each
+	// verified individually, not assumed from the attribute shape:
+	// `focusRingColour` (product-search) only emits a `:focus-visible` outline
+	// rule; `backgroundColourScrolled`/`backgroundColourScrolledGradient`/
+	// `textColourScrolled` (site-header) are gated on the REAL frontend
+	// `.is-header-scrolled` class a scroll-listener in view.js adds after the
+	// page has already rendered — confirmed by edit.js's own comment on the
+	// same attributes; `scrollEffect` (timeline) drives `data-sgs-fx`, read
+	// only by view.js's scroll listener, with no static CSS signature anywhere.
+	'focusRingColour',
+	'backgroundColourScrolled',
+	'backgroundColourScrolledGradient',
+	'textColourScrolled',
+	'scrollEffect',
+	// CORRECTION (2026-09-05, same session): `sgs/hero`'s generic grid/flex
+	// layout attrs (`justifyItems`/`alignContent`/`gridAutoRows`/
+	// `gridTemplateRows`/`justifyContent`/`flexDirection`/`flexWrap`) were
+	// exempted here as "genuinely dead on the frontend" after confirming
+	// hero/render.php never read them. That was true at the time — root-caused
+	// and then FIXED the same session (hero/render.php now reads all 7,
+	// gated exactly like `SGS_Container_Wrapper`'s own grid/flex branches:
+	// grid-track properties on the split variant, flex-axis properties on the
+	// standard variant) — and `hero/edit.js`'s canvas mirror was wired to
+	// match. Entry removed; these names are live findings again if the mirror
+	// ever regresses, which is correct.
+	// `sgs/hero.splitMediaDecorative` (2026-09-05) — confirmed a11y-only by
+	// render.php's own comment: blanks `alt` and sets `aria-hidden` on the
+	// split-media wrapper, a state never exposed to assistive tech any other
+	// way and with zero CSS/visual signature on any variant. Same shape as
+	// `thumbnailDecorative` above — not a desync, a false positive.
+	'splitMediaDecorative',
+	// `sgs/icon-list.dividers` (2026-09-05) — render.php adds the
+	// `.sgs-icon-list--dividers` class, but no CSS rule anywhere in the
+	// codebase (style.css or elsewhere) consumes it — dead on the FRONTEND,
+	// not just the editor. Real bug (missing divider CSS), tracked separately;
+	// faking a canvas preview for an effect the frontend never paints would be
+	// the same inverted-CHECK-A mistake as hero's grid attrs above.
+	'dividers',
+	// `sgs/form.prevColourBackgroundHover`/`prevColourBackgroundHoverGradient`
+	// (2026-09-05) — client-set hover VALUES, same doctrine as every other
+	// hover entry above: render.php's `sgs_button_element_style_css()` paints
+	// these via a `:hover` rule the editor canvas never simulates.
+	// ⚠ CORRECTION (same session): this entry ORIGINALLY also listed the
+	// RESTING-state `prevColourBackground`/`prevColourBackgroundGradient`,
+	// exempted as "dead on the frontend" after a literal grep of
+	// form/render.php for "prevColour" returned zero matches. That grep was a
+	// false negative — a concurrent peer session's commit (23d7ea1d7,
+	// landed the same day) had already wired the mechanism via
+	// `sgs_button_element_style_css( $attributes, 'prev', … )`, which builds
+	// its attribute keys by STRING CONCATENATION (`$prefix.'ColourBackground'`),
+	// invisible to a literal-string grep — the exact class of miss this
+	// session's `sgs/modal` fix had already flagged for the SAME helper.
+	// Verified live on the canary this time (not just re-grepped): the
+	// resting mechanism genuinely works. Removed the two resting-state names
+	// from this exemption and wired a real editor-canvas preview instead (a
+	// Previous-button element next to the existing Submit-button preview,
+	// `form/edit.js`) — see that file for the fix.
+	'prevColourBackgroundHover',
+	'prevColourBackgroundHoverGradient',
+	// `sgs/cart`'s mini-cart panel colours (2026-09-05) — `panelBg`/
+	// `panelTextColour` paint a native `<dialog>` (FR-36-10) built server-side
+	// and opened only by a frontend click; `edit.js` renders no panel preview
+	// markup on the canvas at all today. Unlike the dead-attribute cases above,
+	// this ISN'T a bug — the dialog genuinely only exists post-interaction —
+	// but it is equally unshowable without a separate feature (force-mounting
+	// the dialog open in the editor for preview purposes), which is a real,
+	// separately-scoped piece of work, not a same-shaped colour-mirror fix.
+	// (`iconColourGradient` on this block is NOT included here — that paints
+	// the cart TRIGGER icon, which the canvas always shows, so it gets the
+	// normal colour-mirror fix.)
+	'panelBg',
+	'panelTextColour',
+	// `sgs/form-field-tiles.selectedStyle` (2026-09-05) — render.php emits a
+	// `sgs-form-field--tiles-style-{border|background|checkmark}` class
+	// (~line 302), but a repo-wide grep found ZERO CSS anywhere that consumes
+	// `tiles-style-*` — the actual selected-state styling (border/background/
+	// checkmark) is applied identically via `.sgs-form-tile--selected`/
+	// `:has(input:checked)` regardless of this attribute's value. There is no
+	// real per-variant visual difference on the frontend today for the canvas
+	// to mirror — building an illustrative preview would invent behaviour
+	// that doesn't exist. Real bug (wire real per-variant CSS, or retire the
+	// control), tracked separately, not faked here.
+	'selectedStyle',
+] );
 
 // WP-native block-supports attribute names, consumed automatically by
 // useBlockProps()/WP's own serialization machinery — NOT by literal code in
@@ -1941,6 +2250,121 @@ function checkNoPreviewNoticeExemption( ast, src, declaredAttrs ) {
 const EXCLUDED_JSX_CONTAINERS = new Set( [ 'InspectorControls', 'BlockControls' ] );
 
 /**
+ * Is this JSX tag a SHARED COMPONENT whose entire rendered output is a control
+ * surface — i.e. it wraps itself in `<InspectorControls>` / `<BlockControls>`
+ * internally rather than being mounted inside one?
+ *
+ * WHY THIS EXISTS (2026-08-26)
+ * ---------------------------
+ * `collectExcludedRanges()` used to recognise a control surface ONLY by the
+ * LITERAL tag names above. `SgsColourPanel` renders its own
+ * `<InspectorControls group="styles">` internally (SgsColourPanel.js:115-137)
+ * but is mounted in edit.js under its own name, as a SIBLING of any literal
+ * `<InspectorControls>`. So its `rows={[…]}` prop was never inside an excluded
+ * range, and every attribute referenced only there counted as "used outside
+ * controls" — which the E3 exemption then treated as proof the editor canvas
+ * paints it.
+ *
+ * It does not. 65 of the 84 blocks mount this component, and a measured
+ * differential put the resulting blind spot at ~130-160 genuinely missed
+ * findings. Evidence: `reports/2026-08-26-check-a-E3-blindspot.md` (root cause
+ * 1) and `-minor-signals.md` (the same mechanism defeating the E5 signal).
+ *
+ * ⛔ THE PREDICATE IS DELIBERATELY STRICT, AND MUST STAY STRICT.
+ * A component counts ONLY when EVERY JSX value it returns is an excluded
+ * container. A component that returns control markup on one branch and CANVAS
+ * markup on another paints something, so excluding it wholesale would hide
+ * real canvas usage and manufacture false NEGATIVES — the very failure this
+ * change exists to remove. `null` returns are ignored (they render nothing);
+ * a non-JSX return disqualifies, because we cannot see what it renders.
+ *
+ * ⚠ Only returns belonging to the component's OWN top-level function count.
+ * `SgsColourPanel` also contains `visible.map( ( row ) => { return ( … ) } )`,
+ * whose return describes that CALLBACK's output, not the component's. Counting
+ * it would disqualify the component and silently restore the blind spot, so
+ * any function nested inside another is skipped.
+ *
+ * Resolution reuses the existing R3-a `COMPONENT_FILE_MAP` rather than adding a
+ * second name-to-file resolver. Derived per component, so a future shared
+ * control panel is recognised automatically — there is no hand-kept list.
+ *
+ * @param {string} name JSX tag name.
+ * @return {boolean} True when the component is a pure control surface.
+ */
+const controlSurfaceCache = new Map();
+
+function isControlSurfaceComponent( name ) {
+	if ( controlSurfaceCache.has( name ) ) {
+		return controlSurfaceCache.get( name );
+	}
+	// Seed false BEFORE recursing: a component cycle must terminate, and the
+	// safe default is "not a control surface" (report, rather than hide).
+	controlSurfaceCache.set( name, false );
+
+	const componentFile = COMPONENT_FILE_MAP.get( name );
+	if ( ! componentFile ) {
+		return false;
+	}
+	const componentSrc = readIfExists( componentFile );
+	if ( ! componentSrc ) {
+		return false;
+	}
+	const componentAst = safeParse( componentSrc );
+	if ( ! componentAst ) {
+		return false;
+	}
+
+	let sawJsxReturn = false;
+	let everyReturnIsControl = true;
+
+	const classify = ( node ) => {
+		if ( ! node ) {
+			return; // bare `return;` renders nothing
+		}
+		if ( node.type === 'NullLiteral' ) {
+			return; // `return null` renders nothing
+		}
+		if ( node.type === 'Identifier' && node.name === 'undefined' ) {
+			return;
+		}
+		if ( node.type !== 'JSXElement' ) {
+			everyReturnIsControl = false; // opaque — cannot prove it is control-only
+			return;
+		}
+		sawJsxReturn = true;
+		if ( ! EXCLUDED_JSX_CONTAINERS.has( jsxOpeningName( node.openingElement ) ) ) {
+			everyReturnIsControl = false;
+		}
+	};
+
+	traverse( componentAst, {
+		ReturnStatement( nodePath ) {
+			const fn = nodePath.getFunctionParent();
+			// Skip returns inside a nested callback — see the `.map()` note above.
+			if ( ! fn || fn.getFunctionParent() ) {
+				return;
+			}
+			classify( nodePath.node.argument );
+		},
+		ArrowFunctionExpression( nodePath ) {
+			// Concise-body arrow component: `const X = () => <InspectorControls…/>`
+			// has no ReturnStatement at all.
+			if ( nodePath.node.body.type === 'BlockStatement' ) {
+				return;
+			}
+			if ( nodePath.getFunctionParent() ) {
+				return;
+			}
+			classify( nodePath.node.body );
+		},
+	} );
+
+	const result = sawJsxReturn && everyReturnIsControl;
+	controlSurfaceCache.set( name, result );
+	return result;
+}
+
+/**
  * Check if the edit.js file contains a ServerSideRender JSX element with
  * an attributes prop that passes the attributes object (either
  * attributes={attributes} or attributes={ attributes }).
@@ -1965,13 +2389,37 @@ function hasServerSideRenderWithAttributes( ast ) {
 			if ( ! attrsNode ) {
 				return;
 			}
-			// Check if the attributes prop is a JSXExpressionContainer with an Identifier 'attributes'
-			if (
-				attrsNode.type === 'JSXExpressionContainer' &&
-				attrsNode.expression &&
-				attrsNode.expression.type === 'Identifier' &&
-				attrsNode.expression.name === 'attributes'
-			) {
+			// Accept either the bare identifier (`attributes={ attributes }`) or a
+			// single-argument PASS-THROUGH WRAPPER whose only argument is that same
+			// identifier (`attributes={ omitNullAttributes( attributes ) }`).
+			//
+			// Why the wrapper form counts (2026-09-05): `sgs/before-after` hands the
+			// whole attributes object through `omitNullAttributes()` — a transport-layer
+			// helper that strips null-valued keys so the /wp/v2/block-renderer REST call
+			// doesn't 400 on `["boolean","null"]` attrs (see that file's own header). The
+			// canvas still shows real render.php output for EVERY attribute, so the
+			// exemption's premise holds exactly as it does for the bare form — but the
+			// Identifier-only test missed it and flagged all 14 of that block's
+			// attributes as editor-canvas desyncs. Confirmed false positives.
+			//
+			// Deliberately NARROW: the call must take EXACTLY ONE argument and it must be
+			// the bare `attributes` identifier. A multi-arg or subset-picking call
+			// (`pickSome( attributes, [ 'a', 'b' ] )`) does NOT exempt, because such a
+			// helper CAN drop attributes from the preview — which is a real desync this
+			// gate must keep catching. Widening past single-arg pass-through would make
+			// the exemption unfalsifiable.
+			if ( attrsNode.type !== 'JSXExpressionContainer' || ! attrsNode.expression ) {
+				return;
+			}
+			const expr = attrsNode.expression;
+			const isBareAttributes =
+				expr.type === 'Identifier' && expr.name === 'attributes';
+			const isPassThroughWrapper =
+				expr.type === 'CallExpression' &&
+				expr.arguments.length === 1 &&
+				expr.arguments[ 0 ].type === 'Identifier' &&
+				expr.arguments[ 0 ].name === 'attributes';
+			if ( isBareAttributes || isPassThroughWrapper ) {
 				found = true;
 				nodePath.stop();
 			}
@@ -2029,6 +2477,77 @@ function collectDestructuredFromAttributes( ast ) {
 		},
 	} );
 	return names;
+}
+
+/**
+ * Collect renamed destructuring bindings for attributes pulled FROM
+ * `attributes` (`const { foo: renamed } = attributes`), in either of the two
+ * shapes `collectDestructuredFromAttributes()` recognises. Only renamed
+ * cases are recorded — `{ foo }` (key === value) is not an alias.
+ *
+ * Built 2026-08-30 after `sgs/pricing-table` proved the blind spot documented
+ * in this file's own header (CHECK A BLIND SPOTS, item 2) is real: `const {
+ * pricingTableStyle: style } = attributes` is genuinely read back via `style`
+ * outside any control, but `usedOutsideControls` only ever contains the LOCAL
+ * name (`style`), never the schema key (`pricingTableStyle`) — so the Check A
+ * finding loop, which tests `usedOutsideControls.has( attr )` against the
+ * schema key, reported a false positive. This map lets that loop also try
+ * the alias.
+ *
+ * @param {Object} ast Parsed edit.js AST.
+ * @return {Map<string,string>} attribute name (schema key) -> local alias name.
+ */
+function collectDestructuredAliases( ast ) {
+	const aliases = new Map();
+	const record = ( keyNode, valueNode ) => {
+		if (
+			valueNode &&
+			valueNode.type === 'Identifier' &&
+			valueNode.name !== keyNode.name
+		) {
+			aliases.set( keyNode.name, valueNode.name );
+		}
+	};
+	traverse( ast, {
+		// const { a: renamedA } = attributes;  /  const { a: renamedA } = props.attributes;
+		VariableDeclarator( nodePath ) {
+			const node = nodePath.node;
+			if ( node.id.type !== 'ObjectPattern' ) {
+				return;
+			}
+			const init = node.init;
+			const isAttributesInit =
+				( init && init.type === 'Identifier' && init.name === 'attributes' ) ||
+				( init && init.type === 'MemberExpression' && init.property && init.property.name === 'attributes' );
+			if ( ! isAttributesInit ) {
+				return;
+			}
+			for ( const prop of node.id.properties ) {
+				if ( prop.type === 'ObjectProperty' && prop.key && prop.key.type === 'Identifier' ) {
+					record( prop.key, prop.value );
+				}
+			}
+		},
+		// function Edit( { attributes: { a: renamedA }, setAttributes } ) { ... }
+		ObjectPattern( nodePath ) {
+			for ( const prop of nodePath.node.properties ) {
+				if (
+					prop.type === 'ObjectProperty' &&
+					prop.key &&
+					prop.key.name === 'attributes' &&
+					prop.value &&
+					prop.value.type === 'ObjectPattern'
+				) {
+					for ( const inner of prop.value.properties ) {
+						if ( inner.type === 'ObjectProperty' && inner.key && inner.key.type === 'Identifier' ) {
+							record( inner.key, inner.value );
+						}
+					}
+				}
+			}
+		},
+	} );
+	return aliases;
 }
 
 /**
@@ -2101,7 +2620,14 @@ function collectExcludedRanges( ast ) {
 	traverse( ast, {
 		JSXElement( nodePath ) {
 			const name = jsxOpeningName( nodePath.node.openingElement );
-			if ( EXCLUDED_JSX_CONTAINERS.has( name ) ) {
+			// A literal control container, OR a shared component that wraps
+			// itself in one (see isControlSurfaceComponent above — this second
+			// arm is what stops `<SgsColourPanel rows={…}>` reading as canvas
+			// code across the 65 blocks that mount it).
+			if (
+				EXCLUDED_JSX_CONTAINERS.has( name ) ||
+				isControlSurfaceComponent( name )
+			) {
 				ranges.push( [ nodePath.node.start, nodePath.node.end ] );
 				nodePath.skip();
 			}
@@ -2331,6 +2857,61 @@ function checkLiveDataPlaceholderExemption( phpSrc, editJsSrc ) {
  * @param {Set<string>} [providesContextAttrs] Attribute names sourcing a providesContext key (default empty).
  * @return {Array<Object>} Findings.
  */
+/**
+ * R3-a widening, extracted 2026-09-05 so the self-test can assert it directly.
+ *
+ * Resolves every capitalised JSX tag in `src` to the file that DEFINES it and
+ * folds that component's destructured/written attribute sets into the caller's
+ * sets, MUTATING them in place. Behaviour is byte-identical to the inline block
+ * this replaced.
+ *
+ * WHY IT IS A NAMED FUNCTION NOW. The R3-a regression test used to prove the
+ * widening worked by asserting `bgSvgContent` appeared in the FINDINGS list —
+ * even though its own comment said the findings list was NOT what it was
+ * proving ("whether or not it ends up in the findings list depends on exemption
+ * signals"). The moment `bgSvgContent` was legitimately FIXED (container now
+ * previews it, 2026-09-05), the finding correctly disappeared and the test
+ * became unpassable — a positive control that can never pass, on a green gate.
+ * That is the shape someone "fixes" by deleting the control, which would lose
+ * the only guard proving shared-component attrs are still resolved at all.
+ * Exposing the widening lets the test assert RECOGNITION, which is what it
+ * always meant to assert and which stays true regardless of whether the
+ * attribute is currently a finding.
+ *
+ * @param {string}      src          edit.js source.
+ * @param {Set<string>} destructured Mutated: gains shared components' destructured attrs.
+ * @param {Set<string>} written      Mutated: gains shared components' setAttributes writes.
+ * @return {{destructured: Set<string>, written: Set<string>}} The same sets, for convenience.
+ */
+function foldSharedComponentAttrSets( src, destructured, written ) {
+	const jsxTagNames = new Set();
+	JSX_TAG_RE.lastIndex = 0;
+	let tagMatch;
+	while ( ( tagMatch = JSX_TAG_RE.exec( src ) ) !== null ) {
+		jsxTagNames.add( tagMatch[ 1 ] );
+	}
+	for ( const tagName of jsxTagNames ) {
+		const componentFile = COMPONENT_FILE_MAP.get( tagName );
+		if ( ! componentFile ) {
+			continue;
+		}
+		const componentSrc = readIfExists( componentFile );
+		if ( ! componentSrc ) {
+			continue;
+		}
+		const componentAst = safeParse( componentSrc );
+		if ( componentAst ) {
+			for ( const n of collectDestructuredFromAttributes( componentAst ) ) {
+				destructured.add( n );
+			}
+		}
+		for ( const n of collectSetAttributesWrites( componentSrc ) ) {
+			written.add( n );
+		}
+	}
+	return { destructured, written };
+}
+
 function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContextAttrs ) {
 	providesContextAttrs = providesContextAttrs || new Set();
 	const editJsPath = path.join( dir, 'edit.js' );
@@ -2352,9 +2933,24 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 	}
 
 	const destructured = collectDestructuredFromAttributes( ast );
+	const destructuredAliases = collectDestructuredAliases( ast );
 	const written = collectSetAttributesWrites( src );
 	const excludedRanges = collectExcludedRanges( ast );
 	const usedOutsideControls = collectUsedIdentifiersOutsideExcluded( ast, excludedRanges );
+
+	// R3-a: a control can be destructured + written entirely inside a SHARED
+	// component file (e.g. `container/components/WidthPanel.js` destructures
+	// and setAttributes()-writes `contentWidth`, but edit.js only mounts
+	// `<WidthPanel .../>` and never names the attribute itself). Resolve every
+	// capitalised JSX tag in edit.js to the file that DEFINES it and fold its
+	// destructured/written sets in too, so such an attribute is correctly
+	// recognised as a real candidate for this check instead of silently never
+	// appearing in `destructured` at all. Deliberately NOT folded into
+	// `usedOutsideControls` — a shared component mounted via JSX is always
+	// InspectorControls content in the parent, so its own internal usage of
+	// the attribute doesn't prove the EDITOR CANVAS shows the attribute's
+	// effect (the exact distinction this check exists to make).
+	foldSharedComponentAttrSets( src, destructured, written );
 
 	// Exemption-signal plumbing (2026-08-13 refinement — see file header).
 	const phpSrc = readIfExists( path.join( dir, 'render.php' ) );
@@ -2382,6 +2978,10 @@ function checkEditorCanvasDesync( blockName, dir, declaredAttrs, providesContext
 		}
 		if ( usedOutsideControls.has( attr ) ) {
 			continue;
+		}
+		const alias = destructuredAliases.get( attr );
+		if ( alias && usedOutsideControls.has( alias ) ) {
+			continue; // renamed destructuring binding read back under its LOCAL name, not the schema key
 		}
 		if ( phpSrc && attributeIsNonPaintSinkOnly( phpSrc, phpMask, phpCommentMask, attr, attrVarMap, derivedVarMap ) ) {
 			continue; // SIGNAL 1 — every render.php consumption site is a non-paint sink
@@ -2807,8 +3407,17 @@ function runSurvey() {
 	return { findingsA, findingsB, blockCount: scanned };
 }
 
-function printReport( title, netNew, accepted ) {
-	process.stdout.write( `${ title } — advisory, does not fail the build:\n` );
+function printReport( title, netNew, accepted, blocksBuild = false ) {
+	// The label is DERIVED from the flag, not hardcoded. It used to read "advisory"
+	// unconditionally, so flipping a check to blocking would have left the output
+	// confidently stating the opposite of what the gate now does (R3-c, 2026-08-20).
+	process.stdout.write(
+		`${ title } — ${
+			blocksBuild
+				? 'BLOCKING: a net-new finding fails the build'
+				: 'advisory, does not fail the build'
+		}:\n`
+	);
 	if ( accepted.length ) {
 		process.stdout.write( `  ${ accepted.length } baselined finding(s) (accepted with reason).\n` );
 	}
@@ -2998,6 +3607,371 @@ function runSelfTest() {
 		'SSR positive fixture: ServerSideRender with attributes={ attributes } should exempt ALL attributes, ' +
 			'but got ' + ssrFindings.length + ' finding(s): ' +
 			ssrFindings.map( ( f ) => f.attr ).join( ', ' ),
+		failuresA
+	);
+
+	// Positive control for the PASS-THROUGH WRAPPER form (2026-09-05) — the
+	// real shape in `sgs/before-after`: `attributes={ omitNullAttributes(
+	// attributes ) }`. Before this control existed the exemption only matched a
+	// bare Identifier, so all 14 of that block's attributes were reported as
+	// editor-canvas desyncs while the canvas was in fact showing real
+	// render.php output for every one of them.
+	const ssrWrapDir = writeBlock( 'check-a-ssr-wrapper-positive', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-ssr-wrapper',
+			attributes: {
+				splitContentOrder: { type: 'string' },
+				otherAttr: { type: 'string' },
+			},
+		} ),
+		'edit.js': [
+			"import { ServerSideRender } from '@wordpress/server-side-render';",
+			"import { InspectorControls } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';",
+			'function omitNullAttributes( attrs ) {',
+			'\tconst out = {};',
+			'\tfor ( const key in attrs ) {',
+			'\t\tif ( null !== attrs[ key ] ) { out[ key ] = attrs[ key ]; }',
+			'\t}',
+			'\treturn out;',
+			'}',
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { splitContentOrder, otherAttr } = attributes;',
+			'\treturn (',
+			'\t\t<div>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ splitContentOrder } onChange={ ( v ) => setAttributes( { splitContentOrder: v } ) } />',
+			'\t\t\t\t\t<SelectControl value={ otherAttr } onChange={ ( v ) => setAttributes( { otherAttr: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<ServerSideRender',
+			'\t\t\t\tblock="sgs/fixture-a-ssr-wrapper"',
+			'\t\t\t\tattributes={ omitNullAttributes( attributes ) }',
+			'\t\t\t/>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ssrWrapMeta = readDeclaredAttrs( ssrWrapDir );
+	const ssrWrapFindings = checkEditorCanvasDesync(
+		ssrWrapMeta.name,
+		ssrWrapDir,
+		ssrWrapMeta.attrs
+	);
+	assertTrue(
+		ssrWrapFindings.length === 0,
+		'SSR pass-through-wrapper positive fixture: attributes={ omitNullAttributes( attributes ) } ' +
+			'should exempt ALL attributes, but got ' + ssrWrapFindings.length + ' finding(s): ' +
+			ssrWrapFindings.map( ( f ) => f.attr ).join( ', ' ),
+		failuresA
+	);
+
+	// NEGATIVE control for that same widening (2026-09-05) — proves the
+	// exemption did not become a blanket "any CallExpression exempts
+	// everything". A SUBSET-PICKING call can genuinely drop an attribute from
+	// the previewed payload, which is a real desync the gate must still catch.
+	// If this assertion ever starts failing, the wrapper widening has
+	// over-matched and the SSR exemption has become unfalsifiable.
+	const ssrSubsetDir = writeBlock( 'check-a-ssr-subset-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-ssr-subset',
+			attributes: {
+				splitContentOrder: { type: 'string' },
+				otherAttr: { type: 'string' },
+			},
+		} ),
+		'edit.js': [
+			"import { ServerSideRender } from '@wordpress/server-side-render';",
+			"import { InspectorControls } from '@wordpress/block-editor';",
+			"import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';",
+			'function pickSome( attrs, keys ) {',
+			'\tconst out = {};',
+			'\tkeys.forEach( ( k ) => { out[ k ] = attrs[ k ]; } );',
+			'\treturn out;',
+			'}',
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { splitContentOrder, otherAttr } = attributes;',
+			'\treturn (',
+			'\t\t<div>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<RangeControl value={ splitContentOrder } onChange={ ( v ) => setAttributes( { splitContentOrder: v } ) } />',
+			'\t\t\t\t\t<SelectControl value={ otherAttr } onChange={ ( v ) => setAttributes( { otherAttr: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<ServerSideRender',
+			'\t\t\t\tblock="sgs/fixture-a-ssr-subset"',
+			"\t\t\t\tattributes={ pickSome( attributes, [ 'splitContentOrder' ] ) }",
+			'\t\t\t/>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const ssrSubsetMeta = readDeclaredAttrs( ssrSubsetDir );
+	const ssrSubsetFindings = checkEditorCanvasDesync(
+		ssrSubsetMeta.name,
+		ssrSubsetDir,
+		ssrSubsetMeta.attrs
+	);
+	assertTrue(
+		ssrSubsetFindings.length > 0,
+		'SSR subset-picking negative control: a multi-arg subset call must NOT exempt attributes ' +
+			'(the wrapper widening would be unfalsifiable if it did), but got 0 findings',
+		failuresA
+	);
+
+	// Documented-exemption negative control (2026-08-27) — proves
+	// EDITOR_INVISIBLE_BY_DESIGN actually suppresses a finding that would
+	// otherwise fire. Same shape as the posADir positive control above
+	// (destructured + written by a control + never referenced outside its
+	// own InspectorControls binding — the exact shape that flagged
+	// `splitContentOrder`), but using `ariaLabel`, one of the 11 names in the
+	// exemption Set. If this ever starts failing, the exemption stopped
+	// suppressing and the 32 ARTEFACT findings it was built to silence would
+	// come back as noise.
+	const exemptDir = writeBlock( 'check-a-exempt-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-exempt-negative',
+			attributes: { ariaLabel: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, TextControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { ariaLabel } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<TextControl value={ ariaLabel } onChange={ ( v ) => setAttributes( { ariaLabel: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const exemptMeta = readDeclaredAttrs( exemptDir );
+	const exemptFindings = checkEditorCanvasDesync( exemptMeta.name, exemptDir, exemptMeta.attrs );
+	assertTrue(
+		! exemptFindings.some( ( f ) => f.attr === 'ariaLabel' ),
+		'documented-exemption fixture: ariaLabel is in EDITOR_INVISIBLE_BY_DESIGN and should NOT be ' +
+			'flagged (same otherwise-flaggable shape as the splitContentOrder positive control), but was',
+		failuresA
+	);
+
+	// Documented-exemption OVER-MATCH control (2026-08-27) — proves the
+	// exemption is an EXACT-NAME set, not a pattern, so a genuine static
+	// property the canvas SHOULD show is never swept in. `backgroundRepeat`
+	// is this file's own brief-cited worked example of a property the canvas
+	// should render (see reports/2026-08-26-check-a-triage-group-b.md, line
+	// 88's "canvas should show" case). Identical fixture shape to the
+	// ariaLabel exemption fixture above, differing only in the attribute
+	// name, so the ONLY thing under test is whether that name is in the
+	// exempt Set.
+	const overmatchDir = writeBlock( 'check-a-exempt-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-exempt-overmatch',
+			attributes: { backgroundRepeat: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { backgroundRepeat } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ backgroundRepeat } onChange={ ( v ) => setAttributes( { backgroundRepeat: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const overmatchMeta = readDeclaredAttrs( overmatchDir );
+	const overmatchFindings = checkEditorCanvasDesync( overmatchMeta.name, overmatchDir, overmatchMeta.attrs );
+	assertTrue(
+		overmatchFindings.some( ( f ) => f.attr === 'backgroundRepeat' ),
+		'over-match fixture: backgroundRepeat is NOT in EDITOR_INVISIBLE_BY_DESIGN and should still be ' +
+			'flagged (proves the exemption is an exact-name set, not a pattern), but it was suppressed',
+		failuresA
+	);
+
+	// HOVER-CLASS OVER-MATCH control (2026-08-30) — the 15 client-set hover
+	// names added that day are the single largest block of exemptions in the
+	// Set, and every one of them ends in a Hover-ish token. That makes a future
+	// "just make it a /Hover/ test" refactor the obvious wrong turn, and it
+	// would silently exempt real previewable properties. `panelHoverLayout` is
+	// deliberately shaped to be caught by any such pattern while NOT being a
+	// client-set colour/shadow value — a layout property the canvas genuinely
+	// should show. If this assertion ever fails, the exact-name discipline has
+	// been replaced by a pattern and the exemption is over-matching.
+	const hoverOvermatchDir = writeBlock( 'check-a-hover-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-hover-overmatch',
+			attributes: { panelHoverLayout: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { panelHoverLayout } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ panelHoverLayout } onChange={ ( v ) => setAttributes( { panelHoverLayout: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const hoverOvermatchMeta = readDeclaredAttrs( hoverOvermatchDir );
+	const hoverOvermatchFindings = checkEditorCanvasDesync(
+		hoverOvermatchMeta.name,
+		hoverOvermatchDir,
+		hoverOvermatchMeta.attrs
+	);
+	assertTrue(
+		hoverOvermatchFindings.some( ( f ) => f.attr === 'panelHoverLayout' ),
+		'hover over-match fixture: panelHoverLayout contains "Hover" but is NOT one of the 15 ' +
+			'client-set hover VALUES in EDITOR_INVISIBLE_BY_DESIGN, so it must still be flagged ' +
+			'(proves the 2026-08-30 hover exemption stayed an exact-name set and did not become a pattern)',
+		failuresA
+	);
+
+	// HOVER-CLASS positive control (2026-08-30) — the mirror of the above:
+	// proves the 15 names actually suppress. `quoteColourHover` is the exact
+	// attribute whose appearance in 18eee2666 reded the build, so this is the
+	// regression test for the incident that prompted the exemption.
+	const hoverExemptDir = writeBlock( 'check-a-hover-exempt', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-hover-exempt',
+			attributes: { quoteColourHover: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { quoteColourHover } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ quoteColourHover } onChange={ ( v ) => setAttributes( { quoteColourHover: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const hoverExemptMeta = readDeclaredAttrs( hoverExemptDir );
+	const hoverExemptFindings = checkEditorCanvasDesync(
+		hoverExemptMeta.name,
+		hoverExemptDir,
+		hoverExemptMeta.attrs
+	);
+	assertTrue(
+		! hoverExemptFindings.some( ( f ) => f.attr === 'quoteColourHover' ),
+		'hover exemption fixture: quoteColourHover is one of the 15 client-set hover VALUES and must ' +
+			'NOT be flagged (regression test for commit 18eee2666, which reded the build at 208/207), but was',
+		failuresA
+	);
+
+	// RENAMED-DESTRUCTURE negative control (2026-08-30) — regression test for
+	// `sgs/pricing-table`'s `pricingTableStyle: style` false positive (this
+	// file's own header, CHECK A BLIND SPOTS item 2, flagged this shape as
+	// unconfirmed on 2026-08-13; it has now been found live). The renamed
+	// LOCAL binding (`style`) is genuinely read outside InspectorControls, so
+	// this must NOT be flagged despite `usedOutsideControls` never containing
+	// the schema key (`pricingTableStyle`) itself.
+	const aliasNegDir = writeBlock( 'check-a-alias-negative', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-alias-negative',
+			attributes: { pricingTableStyle: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { pricingTableStyle: style } = attributes;',
+			"\tconst className = `sgs-fixture--${ style }`;",
+			'\tconst blockProps = useBlockProps( { className } );',
+			'\treturn (',
+			'\t\t<div { ...blockProps }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ style } onChange={ ( v ) => setAttributes( { pricingTableStyle: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\tHello',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const aliasNegMeta = readDeclaredAttrs( aliasNegDir );
+	const aliasNegFindings = checkEditorCanvasDesync( aliasNegMeta.name, aliasNegDir, aliasNegMeta.attrs );
+	assertTrue(
+		! aliasNegFindings.some( ( f ) => f.attr === 'pricingTableStyle' ),
+		'renamed-destructure fixture: pricingTableStyle (destructured as `style`) is read back via its ' +
+			'renamed local binding in the className, so it should NOT be flagged, but was (regression for ' +
+			'the sgs/pricing-table 178/177 false positive)',
+		failuresA
+	);
+
+	// RENAMED-DESTRUCTURE OVER-MATCH control (2026-08-30) — proves the alias
+	// fix only exempts an attribute that is ACTUALLY read via its renamed
+	// local name somewhere outside InspectorControls; a renamed binding that
+	// is never referenced anywhere else must still be flagged, same as the
+	// un-renamed positive control above.
+	const aliasOvermatchDir = writeBlock( 'check-a-alias-overmatch', {
+		'block.json': JSON.stringify( {
+			name: 'sgs/fixture-a-alias-overmatch',
+			attributes: { pricingTableStyle: { type: 'string' } },
+		} ),
+		'edit.js': [
+			"import { InspectorControls, useBlockProps } from '@wordpress/block-editor';",
+			"import { PanelBody, SelectControl } from '@wordpress/components';",
+			'export default function Edit( { attributes, setAttributes } ) {',
+			'\tconst { pricingTableStyle: style } = attributes;',
+			'\treturn (',
+			'\t\t<div { ...useBlockProps() }>',
+			'\t\t\t<InspectorControls>',
+			'\t\t\t\t<PanelBody>',
+			'\t\t\t\t\t<SelectControl value={ style } onChange={ ( v ) => setAttributes( { pricingTableStyle: v } ) } />',
+			'\t\t\t\t</PanelBody>',
+			'\t\t\t</InspectorControls>',
+			'\t\t\t<div className="preview">Hello</div>',
+			'\t\t</div>',
+			'\t);',
+			'}',
+		].join( '\n' ),
+	} );
+	const aliasOvermatchMeta = readDeclaredAttrs( aliasOvermatchDir );
+	const aliasOvermatchFindings = checkEditorCanvasDesync(
+		aliasOvermatchMeta.name,
+		aliasOvermatchDir,
+		aliasOvermatchMeta.attrs
+	);
+	assertTrue(
+		aliasOvermatchFindings.some( ( f ) => f.attr === 'pricingTableStyle' ),
+		'renamed-destructure over-match fixture: pricingTableStyle (destructured as `style`) is never ' +
+			'read anywhere outside InspectorControls, so it should still be flagged (proves the alias fix ' +
+			"doesn't over-exempt), but it was suppressed",
 		failuresA
 	);
 
@@ -3459,6 +4433,101 @@ function runSelfTest() {
 
 	fs.rmSync( tmpRoot, { recursive: true, force: true } );
 
+	// R3-a widening regression test (2026-08-20), against the REAL tree (not a
+	// synthetic fixture — resolveComponentFiles() indexes the real filesystem,
+	// so a tmp-dir fixture can't exercise it). NEGATIVE CONTROL: the OLD
+	// edit.js-only corpus genuinely misses `bgSvgContent` — it is destructured
+	// and setAttributes()-written entirely inside
+	// `container/components/BackgroundPanel.js`, mounted via `<BackgroundPanel
+	// .../>` in container/edit.js, and never named as literal text in edit.js
+	// itself. Proves the widened corpus (edit.js + resolved JSX component
+	// files) sees it where the old edit.js-only read does not.
+	log( '\n[check-editor-render-parity --self-test] R3-a resolver-widening regression test' );
+	const containerDir = path.join( BLOCKS_DIR, 'container' );
+	const containerEditSrc = readIfExists( path.join( containerDir, 'edit.js' ) );
+	const containerEditAst = safeParse( containerEditSrc );
+	const oldNarrowDestructured = containerEditAst
+		? collectDestructuredFromAttributes( containerEditAst )
+		: new Set();
+	const oldNarrowWritten = collectSetAttributesWrites( containerEditSrc );
+	// The widened corpus must at minimum RECOGNISE bgSvgContent as destructured
+	// + written. It must NOT be asserted via the findings list: whether an
+	// attribute ends up a FINDING depends on exemption signals and on whether it
+	// has since been fixed, neither of which is what this test proves.
+	//
+	// FIXED 2026-09-05. This previously read
+	// `widenedFindings.some( f => f.attr === 'bgSvgContent' )`, contradicting the
+	// comment directly above it. When `bgSvgContent` was legitimately fixed
+	// (container/edit.js now previews it via svgBackgroundPreview()), the finding
+	// correctly vanished and this positive control became UNPASSABLE — red
+	// self-test, green gate, and the obvious "fix" is to delete the control and
+	// lose the only proof that shared-component attrs are resolved at all.
+	// It now asserts RECOGNITION via the extracted foldSharedComponentAttrSets(),
+	// which stays true whether or not the attribute is currently a finding.
+	const widenedDestructured = new Set( oldNarrowDestructured );
+	const widenedWritten = new Set( oldNarrowWritten );
+	foldSharedComponentAttrSets( containerEditSrc, widenedDestructured, widenedWritten );
+	const bgSvgVisibleOld = oldNarrowDestructured.has( 'bgSvgContent' ) && oldNarrowWritten.has( 'bgSvgContent' );
+	const bgSvgFlaggedNew = widenedDestructured.has( 'bgSvgContent' ) && widenedWritten.has( 'bgSvgContent' );
+	if ( ! bgSvgVisibleOld && bgSvgFlaggedNew ) {
+		log(
+			"PASS — Test I: the old edit.js-only corpus does NOT see 'bgSvgContent' (it lives in " +
+				"BackgroundPanel.js, mounted only via JSX); the resolver-widened corpus RECOGNISES it " +
+				"as destructured + written."
+		);
+	} else {
+		log(
+			`FAIL — Test I: old-narrow sees bgSvgContent=${ bgSvgVisibleOld } (expected false), ` +
+				`widened flags bgSvgContent=${ bgSvgFlaggedNew } (expected true).`
+		);
+		pass = false;
+	}
+
+	// Control-surface predicate regression test (2026-08-26), against the REAL
+	// tree — `isControlSurfaceComponent()` reads COMPONENT_FILE_MAP, which
+	// indexes the real filesystem, so a tmp-dir fixture cannot exercise it.
+	//
+	// This pins BOTH directions, because the predicate can fail two ways and
+	// only one of them is loud:
+	//   POSITIVE — SgsColourPanel wraps its own <InspectorControls>. If this
+	//     regresses to false, the blind spot silently returns and CHECK A goes
+	//     quiet again across the 65 blocks that mount it. Measured 2026-08-26:
+	//     recognising it moved CHECK A from 208 to 288 net-new, and all 14
+	//     independently hand-verified real misses became visible.
+	//   NEGATIVE (over-match control) — ColumnShapePicker returns a
+	//     ToggleGroupControl, i.e. real rendered markup, NOT a control
+	//     container. It must stay UNRECOGNISED. If the predicate ever accepts
+	//     it, whole mounts of ordinary components get excluded and CHECK A
+	//     starts manufacturing false negatives — the exact failure this change
+	//     was made to remove.
+	log( '\n[check-editor-render-parity --self-test] control-surface predicate' );
+	const failuresCS = [];
+	assertTrue(
+		isControlSurfaceComponent( 'SgsColourPanel' ),
+		'POSITIVE: SgsColourPanel wraps its own <InspectorControls> and must be recognised as a control surface — if not, the E3 blind spot has returned',
+		failuresCS
+	);
+	assertTrue(
+		! isControlSurfaceComponent( 'ColumnShapePicker' ),
+		'NEGATIVE (over-match): ColumnShapePicker renders a ToggleGroupControl, not a control container — recognising it would wrongly exclude real canvas markup',
+		failuresCS
+	);
+	assertTrue(
+		! isControlSurfaceComponent( 'NoSuchComponentExistsHere' ),
+		'NEGATIVE (unresolvable): an unknown tag must not be treated as a control surface',
+		failuresCS
+	);
+	if ( failuresCS.length ) {
+		pass = false;
+		log( 'control-surface predicate — FAIL' );
+		failuresCS.forEach( ( f ) => log( '  - ' + f ) );
+	} else {
+		log(
+			'control-surface predicate — PASS (self-wrapping panel recognised; ' +
+				'markup-rendering component and unknown tag both correctly rejected)'
+		);
+	}
+
 	return pass ? 0 : 1;
 }
 
@@ -3486,14 +4555,311 @@ function main() {
 
 	// ADVISORY-FIRST (2026-08-13) — see file header. Flip either to `true` only
 	// after that check's backlog is triaged (fixed or baselined).
+	// R3-c, 2026-08-20 — flipped INDEPENDENTLY, on measurement, not together.
+	//
+	// CHECK B is now BLOCKING: measured 0 net-new findings immediately after R3-a widened
+	// this script's corpus to resolve shared component files, so it starts life green and
+	// any future invalid-CSS-keyword passthrough is a real regression that fails the build.
+	//
+	// CHECK A stays advisory, deliberately and with the number recorded: the SAME R3-a
+	// widening took it to 176 net-new findings (plus 27 baselined). Flipping it would red
+	// the build on the very next run. Those 176 are newly VISIBLE, not newly broken — this
+	// gate simply could not see shared-component controls before. They need per-block triage
+	// first; the register's instruction was "land behind its existing baseline, then trim".
+	// Flip this to `true` once the net-new count is 0 (or genuinely baselined with reasons).
 	const CHECK_A_BLOCKS_BUILD = false;
-	const CHECK_B_BLOCKS_BUILD = false;
+	const CHECK_B_BLOCKS_BUILD = true;
+
+	// CHECK A's RATCHET CEILING (2026-08-26).
+	//
+	// Until now CHECK A was advisory with NO numeric ceiling of any kind, which
+	// is strictly worse than the inspector-scan advisory rules — those each carry
+	// an `openBacklog` in `scripts/inspector-scan/rules.json` (rule 21 sits at
+	// 82). Without one, a brand-new desync lands green and indistinguishable from
+	// the existing backlog, which is the whole failure mode a ratchet prevents.
+	//
+	// The semantics deliberately mirror that house pattern:
+	//   · the check stays ADVISORY — the existing backlog does not red the build;
+	//   · but EXCEEDING this number DOES fail `--check`, so a 209th net-new
+	//     finding (i.e. a 236th finding overall, against the 27 baselined) is a
+	//     real regression and stops the build.
+	//
+	// ⛔ A ceiling ABOVE the live count is SLACK and lets a brand-new violation
+	// land green. Re-measure and LOWER it after every drop — including drops you
+	// did not make yourself. Never RAISE it to absorb new debt.
+	//
+	// ⚠ ONE deliberate exception to that rule, recorded so the next person does
+	// not read a raise as debt-laundering. This detector is measurably BLIND, not
+	// merely behind: a differential run on 2026-08-26 (disabling each of the
+	// eight exemption signals in turn) showed the ladder hides 683 further
+	// block+attr pairs, and a 60-pair sample of what `usedOutsideControls` alone
+	// hides classified ~28% as genuine misses. Fixing that blind spot — chiefly
+	// teaching `collectExcludedRanges()` that a shared control component such as
+	// `SgsColourPanel` IS a control surface — will make this number jump sharply.
+	// That jump is newly VISIBLE debt, not newly broken code, exactly as the R3-a
+	// widening was. Raise it ONCE, in the same commit as the blind-spot fix, with
+	// the new figure measured rather than estimated; every other movement is down.
+	//
+	// Measured, not inferred: `node scripts/check-editor-render-parity.js --json`
+	// on 2026-08-26 reported 208 net-new + 27 baselined.
+	// Triaged the same day (REAL 186 · ARTEFACT 22 · DETECTOR BUG 0):
+	//   reports/2026-08-26-check-a-triage-group-a.md
+	//   reports/2026-08-26-check-a-triage-group-b.md
+	//
+	// 208 -> 238, SAME DAY. This is the ONE sanctioned raise the note above
+	// reserves, and it is the NET of two opposing movements — recorded
+	// separately so neither is hidden inside the other:
+	//
+	//   208 -> 288  (+80) the blind-spot fix. `collectExcludedRanges()` now
+	//                     recognises a shared component that wraps its OWN
+	//                     <InspectorControls> (SgsColourPanel, mounted by 65 of
+	//                     84 blocks). These are newly VISIBLE, not newly broken.
+	//                     All 14 independently hand-verified real misses became
+	//                     visible; 0 of 23 verified-correct exemptions were
+	//                     wrongly flagged. Pinned by the control-surface
+	//                     fixture in runSelfTest(), both directions.
+	//   288 -> 238  (-50) real defects FIXED: the shared canvas background
+	//                     preview (src/utils/background-preview.js) now mirrors
+	//                     BackgroundPanel's attrs for multi-button,
+	//                     physics-canvas, site-footer, site-header and
+	//                     trust-bar, which previously showed the client nothing.
+	//                     sgs/container held at 22 findings with an IDENTICAL
+	//                     attribute set — the regression control.
+	//
+	// ⛔ From here the rule reverts: DOWN only. Re-measure and lower after every
+	// drop. The next raise needs its own recorded justification, and "the number
+	// went up" is not one.
+	//
+	// 238 -> 206 (2026-08-27): the documented-exemption class above,
+	// `EDITOR_INVISIBLE_BY_DESIGN`, was populated with the 11 attribute names
+	// (32 findings) the triage register classified ARTEFACT — motion on a
+	// static canvas, scroll-gated two-state row behaviour, and pure a11y text
+	// with no sighted-editor equivalent (full reasoning + citations on the
+	// Set's own declaration above). These are canvas-legitimately-invisible,
+	// not newly fixed defects — a REAL finding this drop would fix stays a
+	// REAL finding; this drop only removes noise. Measured, not inferred:
+	// `node scripts/check-editor-render-parity.js --json` reported
+	// `editorCanvasDesync.netNew.length === 206` (30 accepted/baselined,
+	// unchanged) immediately after the exemption landed.
+	// 206 -> 207 (2026-08-28, mega-panel accent* rename): the rename
+	// (accentBackground/accentTextColour/accentBorderColour/
+	// accentBorderColourGradient -> iconBackground/iconColour/
+	// groupBorderColour/groupBorderColourGradient, part of the validated
+	// NULL-css_element fix proposal) surfaces ONE pre-existing editor-canvas
+	// desync that was already present under the old attribute names but
+	// uncounted because the checker keys findings by attribute NAME, not by
+	// underlying defect -- the rename makes a debt class visible, it does not
+	// create it. Same class as the other 15 blocks already carrying this
+	// hover-gradient-masked-border-ring desync (not canvas-previewable).
+	// 207 -> 177 (2026-08-30, Bean): the CLIENT-SET HOVER-STATE class was added
+	// to EDITOR_INVISIBLE_BY_DESIGN (15 exact names, 31 findings) with the
+	// mechanism recorded on that Set's declaration -- these values are emitted
+	// as scoped CSS by render.php, which the editor canvas never executes, and
+	// an inline style object cannot express `:hover` at all, so there is no
+	// channel by which they could be previewed.
+	//
+	// This is a LOWERING, which is what the rule above asks for after any drop
+	// ("Re-measure and LOWER it after every drop -- including drops you did not
+	// make yourself"). It is NOT the sanctioned raise: no ceiling was raised to
+	// absorb debt. Triggered by commit 18eee2666 adding `quoteColourHover`,
+	// which took the count to 208 and reded the build for every co-active
+	// session; the owning session could not be identified from git (shared
+	// identity), so the class was settled rather than the one row -- fixing only
+	// that row would have encoded "hover is invisible" for one attribute and
+	// "hover is previewable" for two others on the same block.
+	//
+	// Measured, not inferred: `--json` reported netNew 208 before the exemption
+	// and 177 immediately after, with 0 hover-named findings remaining. Both
+	// directions are pinned in runSelfTest() by a positive control
+	// (`quoteColourHover` must be suppressed) and an over-match control
+	// (`panelHoverLayout` must still be flagged); each was verified to FAIL when
+	// deliberately broken, so neither is vacuous.
+	// 177 -> 181 (2026-09-03): the text-colour gradient rollout gave eight blocks a
+	// `textColourGradient` sibling. Each one's FLAT partner `textColour` was ALREADY
+	// inside the accepted 177 for the identical reason, so this is the sanctioned
+	// raise -- pre-existing debt this run made visible -- not a new class of defect.
+	//
+	// Why these are structurally unpreviewable rather than merely unfinished:
+	// accordion-item / collapsible-text / feature-grid / form-field-tiles /
+	// form-step / site-footer-row / site-header-row / tab are all InnerBlocks
+	// CONTAINERS. Their text colour is INHERITED by child blocks through CSS; there
+	// is no single canvas text node to paint. Painting the wrapper instead would
+	// misrepresent the rendered result, and a parent painting its children's text is
+	// the HC2 pattern this project bans outright.
+	//
+	// Measured, not inferred: 8 new gradient findings, net +4, because four blocks
+	// that DO own a text node (counter, media, product-faq, product-faq-item) gained
+	// a real `resolveTextColourPreviewStyle()` preview in the same pass and dropped
+	// out. So the rollout previewed every block that could be previewed.
+	//
+	// ⚠ RESIDUAL, named not hidden: on these eight, NEITHER the flat colour nor its
+	// gradient shows on the canvas. A client sets it and sees nothing until preview
+	// or publish. Closing it means previewing the INHERITED colour on the container's
+	// children, which is a real editor-UX piece of work, not a line in this rollout.
+	// 181 -> 203 (2026-09-03): sgs/modal and sgs/form gained fill/border colour
+	// + gradient controls on 5 elements (close button; prev button; form-tile
+	// and file-label borders), all routed through the SAME shared emitters
+	// already used elsewhere in this tree -- sgs_button_element_style_css(),
+	// sgs_fill_states_css(), sgs_border_states_css(). None of those existing
+	// adopters have canvas-preview wiring either: sgs/button's own
+	// colourBackgroundGradient/iconColourGradient and sgs/cart's
+	// iconColourGradient/panelBg/panelTextColour are ALREADY inside this exact
+	// accepted backlog for the identical reason. This is the SAME class of
+	// debt the shared helper family already carries everywhere it's adopted --
+	// not a new defect these two blocks introduced -- so it is the sanctioned
+	// raise, per this file's own precedent immediately above (177 -> 181).
+	// Closing it means building canvas-preview for the shared helper family
+	// once, benefiting every adopter -- a real piece of editor-UX work, not a
+	// per-block patch, and not something this session's task scoped in.
+	// ⛔ RAISED 203→204, 2026-09-03, AGAINST THIS GATE'S OWN "never raise to
+	// absorb new debt" rule above — recorded honestly, not laundered as the
+	// sanctioned blind-spot exception (it isn't; nobody fixed
+	// collectExcludedRanges() to earn this). Blocking an UNRELATED
+	// generative-background WebGL fidelity fix from deploying — every one
+	// of the 204 findings is in the other concurrent track's gradient-
+	// control rollout (D923/D928/D929: *ColourGradient/bgSvg* across ~20
+	// blocks), none touched by the change this raise unblocked. Bean's
+	// explicit direction, with this conflict named to him first. LOWER
+	// this back to the true count once that track's own findings are
+	// investigated and fixed — do not treat 204 as the new floor.
+	// ⛔ RAISED AGAIN 204→209, 2026-09-03, same reason, same debt class, not
+	// laundered here either. This session (D937-D943) touched only
+	// render.php/style.css/block.json across quote, pricing-table, modal,
+	// form, nav-menu, product-card, and helpers-tokens.php/helpers-button-
+	// style.php — zero edit.js edits, so it added no new CHECK A finding
+	// itself. The +5 came from the SAME gradient-rollout track continuing
+	// earlier the same day, BEFORE this session started (commits
+	// `246540f40` post-grid hover-text gradient, `b130e4600` option-picker
+	// label gradient — both landed on this branch pre-session, confirmed via
+	// `git log`). This is the first `npm run build` run since those two
+	// commits, so this is the first time the debt became visible, not new
+	// debt this session created. Still true: do not treat 209 as the new
+	// floor — the fix is building canvas-preview for the shared gradient
+	// controls once, not another raise per commit.
+	// ⛔ RAISED AGAIN 209→211, 2026-09-04, third occurrence of the identical
+	// pattern. Blocking deployment of the D946/D947 generative-background
+	// fixes (a separate track this same session), which touched only
+	// fx-generative-background.js/webgl/generative-background.js/fx.js and
+	// added zero new CHECK A findings itself (confirmed: `git log -- <the
+	// affected block edit.js files>` shows none of them touched by the
+	// generative-background commits). The +2 traces to commit `2d1acab31`
+	// ("feat(a11y): shared WCAG contrast module + opt-in gradient contrast
+	// check (pilot)"), a concurrent session's edit to the SHARED
+	// `GradientCapableColourControl.js` component — every one of the 211
+	// findings is a `*ColourGradient`/`bgSvg*` attribute across ~30 unrelated
+	// blocks (site-header, trust-bar, timeline, product-search, etc.), the
+	// same shared-gradient-control debt class as both prior raises, none
+	// touched by this raise's unblocked change. Bean's explicit direction,
+	// with this conflict named to him first (same discipline as the 204/209
+	// raises). LOWER this back to the true count once the a11y-contrast
+	// track's own findings are investigated and fixed — do not treat 211 as
+	// the new floor. The actual fix, unchanged from the last two times this
+	// was written here, is building canvas-preview for the shared gradient
+	// controls once, not a fourth raise on the next unrelated commit.
+	// RAISED 211 -> 213 (2026-09-04, D942/D956 shared-helper text-gradient
+	// gate): sgs/modal.closeColourTextGradient + closeColourTextHoverGradient.
+	// Same structural cause as the ALREADY-baselined closeColourText/
+	// closeColourTextHover/closeColourBackground(Hover)(Gradient) siblings on
+	// this same element (6 entries, pre-existing) — the modal's <dialog> is
+	// never rendered open in the editor canvas, so NO control on its close
+	// button can satisfy this check by design, gradient or not. Not a new
+	// class of debt; two more instances of the one already accepted here.
+	// (sgs/product-card.ctaColourText(Hover)Gradient did NOT need a raise —
+	// that CTA element IS canvas-previewed, so no new finding.)
+	// RAISED 213 -> 216 (2026-09-04, colour-conformance hover-state rollout):
+	// sgs/process-steps.titleColourHover/descriptionColourHover/numberColourHover.
+	// Same structural cause as this block's ALREADY-baselined
+	// numberBackgroundHover and its siblings — process-steps' editor canvas
+	// has no `:hover` preview mechanism of any kind, so no control on it can
+	// ever satisfy this check, new or old. Not a new class of debt.
+	// (sgs/product-card's 4 new gradient attrs and sgs/nav-menu.itemBgGradient
+	// did NOT need a raise — those elements ARE canvas-previewed already.)
+	// LOWERED 216 -> 196 (2026-09-05, SSR pass-through-wrapper exemption fix):
+	// widening hasServerSideRenderWithAttributes() to accept a single-argument
+	// pass-through wrapper (`attributes={ omitNullAttributes( attributes ) }`,
+	// the real shape in sgs/before-after) removed all 14 of that block's
+	// findings — they were FALSE POSITIVES: its canvas has always shown real
+	// render.php output via REST for every attribute. Measured 210 -> 196
+	// net-new, and the 14 removed were all and only sgs/before-after's. The
+	// ceiling is ratcheted to the new true count rather than left at 216, so
+	// the correction does not silently bank 20 findings' worth of slack for a
+	// future regression to hide in.
+	// RAISED 196 -> 197 (2026-09-05, D948-follow-up — sgs/tabs.tabTextColourGradient):
+	// same structural cause as this block's ALREADY-baselined tabIndicatorColourGradient/
+	// tabActiveIndicatorColourGradient/panelBorderColourGradient siblings — tabs' editor
+	// canvas cssVars preview has no gradient-rendering mechanism at all (it only maps
+	// flat colours to `--sgs-tab-*` custom properties), so no gradient control on this
+	// block can ever satisfy this check, new or old. Not a new class of debt.
+	// LOWERED 197 -> 193 (2026-09-05, this session — four exemptions added to
+	// EDITOR_INVISIBLE_BY_DESIGN above: requireLogin, rateLimit,
+	// thumbnailDecorative, scaleHover). The tabs raise directly above is KEPT and
+	// is inside this number — it is a real finding, just now counted against a
+	// lower ceiling.
+	// ⚠ Measured by diffing the finding SETS, not the counts. The raw count only
+	// moved 196 -> 193 while this change removed four, because CONCURRENT peer
+	// sessions edited the same tree during the run: they closed
+	// post-grid.categoryBadgeColour and process-steps.numberColourHover (their
+	// colour-conformance track) and added star-rating.starColourGradient +
+	// star-rating.emptyColourGradient alongside the tabs one. Trusting the counts
+	// would have mis-attributed their work to this commit.
+	// LOWERED 193 -> 156 (2026-09-05, Phase-2 session start — re-ratchet only, no
+	// code change yet). The ceiling had drifted 37 findings above the live
+	// netNew count (verified twice this session, stable across the check), left
+	// un-ratcheted overnight while 3+ peer sessions were committing concurrently.
+	// Banking that slack risks hiding a real regression before Phase 2's
+	// layout/box fixes land. Will be lowered again once Phase 2 closes its 31
+	// targeted findings.
+	// LOWERED 156 -> 128 (2026-09-05, Phase-2 close — commit daddbbb1). 28 of the
+	// 31 targeted layout/box findings closed across gallery (8), site-footer-row
+	// + site-header-row (3 each), cta-section (8) and trust-bar (4); hero closes
+	// only 2 of its 5 (backgroundRepeat/backgroundAttachment) — its
+	// justifyItems/alignContent/gridAutoRows are genuinely dead attributes on
+	// the frontend today (hero's split-grid never sets layout='grid', so the
+	// shared wrapper's grid branch that emits those properties never fires),
+	// left open pending a render.php fix rather than papered over with a fake
+	// canvas preview. Live-verified on the sandybrown canary (not just the
+	// gate): dispatching justifyItems/alignContent/gridAutoRows on a live
+	// sgs/trust-bar block and backgroundImage/backgroundRepeat/
+	// backgroundAttachment on a live sgs/hero (split variant) block both
+	// updated the actual editor-canvas DOM inline style, read via
+	// getComputedStyle, not just re-measured by this script.
+	// LOWERED 128 -> 0 (2026-09-05, Bean-directed same-session close-out).
+	// Phase 3 (colour/gradient family, ~43 findings resolved via exemption —
+	// verified hover/focus/motion-timing/scroll-state/dead-attribute per item,
+	// not assumed from name) + Phase 4 (long tail) closed the remaining 84 via
+	// 10 parallel dispatches, each required to read block.json + render.php
+	// before wiring anything and to flag (not fake) a genuinely dead attribute.
+	// Two dead-attribute families surfaced and were exempted with reasoning,
+	// same standard as Phase 2's hero grid attrs: sgs/form's entire
+	// `prevColourBackground*` (Previous-button colour never reaches
+	// render.php) and sgs/form-field-tiles' `selectedStyle` (emits a class no
+	// CSS anywhere consumes) — both real bugs, tracked separately, not
+	// papered over. sgs/container's `gridItemBorderGradient`/
+	// `gridItemTextColourGradient` (the two attrs a prior custom-property-only
+	// pass had left as an open, documented gap) were closed via a
+	// `clientId`-scoped `<style>` tag — the same escape hatch this session's
+	// `sgs/form` child-block colour fix used, since a masked-ring
+	// border/background-clip:text gradient on a CHILD element can't be
+	// expressed as a plain inline style or a simple custom property.
+	// sgs/site-footer's `textColour`/`textColourGradient` were wired together
+	// (not just the flagged `textColourGradient` alone) after discovering
+	// `textColour` only LOOKED wired — it was read inside a WCAG contrast-check
+	// `useEffect`, never actually painted, a false-wired signal this check's
+	// name-reference heuristic cannot see through.
+	const CHECK_A_OPEN_BACKLOG = 0;
+	const checkAOverCeiling = netNewA.length > CHECK_A_OPEN_BACKLOG;
 
 	if ( isJson ) {
 		process.stdout.write(
 			JSON.stringify(
 				{
-					editorCanvasDesync: { netNew: netNewA, accepted: acceptedA, blocking: CHECK_A_BLOCKS_BUILD },
+					editorCanvasDesync: {
+						netNew: netNewA,
+						accepted: acceptedA,
+						blocking: CHECK_A_BLOCKS_BUILD,
+						openBacklog: CHECK_A_OPEN_BACKLOG,
+						overCeiling: checkAOverCeiling,
+					},
 					invalidKeywordPassthrough: { netNew: netNewB, accepted: acceptedB, blocking: CHECK_B_BLOCKS_BUILD },
 					blockCount,
 				},
@@ -3503,11 +4869,25 @@ function main() {
 		);
 	} else {
 		process.stdout.write( `[check-editor-render-parity] surveyed ${ blockCount } blocks.\n\n` );
-		printReport( 'CHECK A (editor-canvas desync)', netNewA, acceptedA );
-		printReport( 'CHECK B (invalid CSS keyword passthrough)', netNewB, acceptedB );
+		printReport( 'CHECK A (editor-canvas desync)', netNewA, acceptedA, CHECK_A_BLOCKS_BUILD );
+		process.stdout.write(
+			checkAOverCeiling
+				? `  ⛔ CHECK A OVER CEILING — ${ netNewA.length } net-new against a ceiling of ` +
+				  `${ CHECK_A_OPEN_BACKLOG }. A NEW editor-canvas desync has been introduced.\n` +
+				  `     Fix it, or — only if it is genuinely pre-existing debt this run made ` +
+				  `visible — raise the ceiling in the same commit with the reason recorded.\n\n`
+				: `  ceiling: ${ netNewA.length }/${ CHECK_A_OPEN_BACKLOG } net-new ` +
+				  `(exceeding it fails --check, even though CHECK A itself is advisory).\n\n`
+		);
+		printReport( 'CHECK B (invalid CSS keyword passthrough)', netNewB, acceptedB, CHECK_B_BLOCKS_BUILD );
 	}
 
-	if ( isCheck && ( ( CHECK_A_BLOCKS_BUILD && netNewA.length ) || ( CHECK_B_BLOCKS_BUILD && netNewB.length ) ) ) {
+	if (
+		isCheck &&
+		( ( CHECK_A_BLOCKS_BUILD && netNewA.length ) ||
+			checkAOverCeiling ||
+			( CHECK_B_BLOCKS_BUILD && netNewB.length ) )
+	) {
 		process.exit( 1 );
 		return;
 	}

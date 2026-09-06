@@ -1,0 +1,13 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/native-typography-declared",
+	"title": "Fixture: still declares a real native supports.typography sub-flag — must flag (case A)",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true,
+			"__experimentalSkipSerialization": true
+		}
+	},
+	"attributes": {}
+}

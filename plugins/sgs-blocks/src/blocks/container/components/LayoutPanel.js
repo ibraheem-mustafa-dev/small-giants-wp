@@ -12,12 +12,19 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, RangeControl, TextControl } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, SpacingControl } from '../../../components';
+import {
+	ColumnShapePicker,
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+	SpacingControl,
+} from '../../../components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
 const LAYOUT_OPTIONS = [
-	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
 	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex' },
+	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
 ];
 
@@ -45,31 +52,69 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
-export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) {
+export function LayoutPanel( {
+	attributes,
+	setAttributes,
+	showLayout = true,
+	// P2-5: minColumnWidth/minColumnWidthUnit are declared ONLY on sgs/container's
+	// own block.json today. LayoutPanel is shared by ~30 blocks (see file header);
+	// rendering this control unconditionally would destructure an attribute most
+	// callers' schemas don't declare, which WordPress silently discards on save
+	// (caught live by check-undeclared-attrs.py flagging sgs/cta-section,
+	// sgs/gallery, sgs/trust-bar). Opt-in, same shape as `showLayout` above — a
+	// caller whose own block.json declares supports.sgs.intrinsicColumns passes
+	// true.
+	enableIntrinsicColumns = false,
+	// ADDITIVE OPT-IN, DEFAULTING OFF — mirrors `showLayout` above. LayoutPanel
+	// is shared by ~20 blocks via ContainerWrapperControls; shipping the
+	// ColumnShapePicker unconditionally inside "Custom column template" would
+	// hit every one of them. Bean's ruling (2026-08-27): only a caller that
+	// explicitly opts in gets the picker, so today that is `sgs/container`'s
+	// own edit.js alone. When true, the picker REPLACES the raw TextControl
+	// for the SAME `gridTemplateColumns` tier (never both) — two controls
+	// writing one attribute is the silent-data-loss trap `showLayout`'s own
+	// docblock warns about two panels up.
+	enableColumnShapePicker = false,
+} ) {
 	const {
-		layout = 'stack',
+		layout = 'flex',
 		alignItems = 'start',
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
-		// columns, gridTemplateColumns and gridTemplateRows are TIER OBJECTS
-		// (columns: pass 4; grid template props: pass 3a/3b) and are read via
-		// attributes.columns / attributes.gridTemplateColumns /
-		// attributes.gridTemplateRows at their controls below, not destructured
+		// columns, gridTemplateColumns, gridTemplateRows and minColumnWidth are
+		// TIER OBJECTS (columns: pass 4; grid template props: pass 3a/3b;
+		// minColumnWidth: P2-5) and are read via attributes.columns /
+		// attributes.gridTemplateColumns / attributes.gridTemplateRows /
+		// attributes.minColumnWidth at their controls below, not destructured
 		// with a scalar default — which would mask the object.
 		gridAutoRows = '',
 	} = attributes;
+	// minColumnWidthUnit is read inline (attributes.minColumnWidthUnit) inside the
+	// enableIntrinsicColumns-gated block below, not destructured here — it is only
+	// ever declared on a caller whose own block.json opts in (see the prop
+	// docblock above), and destructuring it unconditionally at the top of a
+	// shared component used by ~30 blocks is exactly what check-undeclared-attrs
+	// flags (caught live on sgs/cta-section, sgs/gallery, sgs/trust-bar).
 
 	return (
 		<>
 			{ showLayout && (
-				<SelectControl
+				<ToggleGroupControl
 					label={ __( 'Layout type', 'sgs-blocks' ) }
 					value={ layout }
-					options={ LAYOUT_OPTIONS }
 					onChange={ ( val ) => setAttributes( { layout: val } ) }
+					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					{ LAYOUT_OPTIONS.map( ( opt ) => (
+						<ToggleGroupControlOption
+							key={ opt.value }
+							value={ opt.value }
+							label={ opt.label }
+						/>
+					) ) }
+				</ToggleGroupControl>
 			) }
 
 			{ /*
@@ -145,9 +190,19 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 				) }
 			</ResponsiveOverride>
 
-			{ ( layout === 'flex' || layout === 'grid' ) && (
+			{ /*
+				  Vertical alignment (`align-items`) and Justify content (`justify-content`)
+				  are BOTH honoured by the shared PHP wrapper for flex AND stack — Stack fixes
+				  the axis (always column) but still reads `verticalAlign`/`justifyContent`
+				  (class-sgs-container-wrapper.php, Stack branch, ~line 1341). Flex direction
+				  and Flex wrap are flex-only: Stack's wrapper never reads `flexDirection`
+				  (the axis is fixed, not derived from it) and coerces `flex-wrap` to `nowrap`
+				  outright, so offering either control under Stack would be a dead control
+				  (`check-dead-controls.js`).
+			*/ }
+			{ ( layout === 'flex' || layout === 'stack' || layout === 'grid' ) && (
 				<SelectControl
-					label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+					label={ __( 'Align items', 'sgs-blocks' ) }
 					value={ alignItems }
 					options={ ALIGN_OPTIONS }
 					onChange={ ( val ) => setAttributes( { alignItems: val } ) }
@@ -162,8 +217,7 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						label={ __( 'Flex direction', 'sgs-blocks' ) }
 						value={ attributes.flexDirection || '' }
 						options={ [
-							{ label: __( '— default (row) —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
+							{ label: __( 'Row', 'sgs-blocks' ), value: '' },
 							{ label: __( 'Row reverse', 'sgs-blocks' ), value: 'row-reverse' },
 							{ label: __( 'Column', 'sgs-blocks' ), value: 'column' },
 							{ label: __( 'Column reverse', 'sgs-blocks' ), value: 'column-reverse' },
@@ -174,34 +228,35 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 					/>
 					<SelectControl
 						label={ __( 'Flex wrap', 'sgs-blocks' ) }
-						value={ attributes.flexWrap || '' }
+						value={ attributes.flexWrap || 'wrap' }
 						options={ [
-							{ label: __( '— default (wrap) —', 'sgs-blocks' ), value: '' },
 							{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
 							{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
-							{ label: __( 'Wrap reverse', 'sgs-blocks' ), value: 'wrap-reverse' },
 						] }
 						onChange={ ( val ) => setAttributes( { flexWrap: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
-						label={ __( 'Justify content', 'sgs-blocks' ) }
-						value={ attributes.justifyContent || '' }
-						options={ [
-							{ label: __( '— default —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
-							{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
-							{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
-							{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
-						] }
-						onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 				</>
+			) }
+
+			{ ( layout === 'flex' || layout === 'stack' ) && (
+				<SelectControl
+					label={ __( 'Justify content', 'sgs-blocks' ) }
+					value={ attributes.justifyContent || '' }
+					options={ [
+						{ label: __( '— default —', 'sgs-blocks' ), value: '' },
+						{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+						{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+						{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+						{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+						{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+						{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
+					] }
+					onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			) }
 
 			{ layout === 'grid' && (
@@ -222,25 +277,68 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 						  writing them through ResponsiveControl would save nothing
 						  (D338) while the desktop branch wrote a string into an
 						  object-typed attr and destroyed the setting (D563).
+
+						  `enableColumnShapePicker` gates which control writes this
+						  SAME attr — the raw TextControl (default, every other
+						  caller) OR the diagram picker (`sgs/container` only,
+						  FR-37-42). Never both: two controls bound to one attribute
+						  is the silent-data-loss shape `showLayout`'s docblock
+						  already warns about, and site-footer-row's own mount
+						  resolved it the same way — the picker replaces the raw
+						  field entirely rather than sitting alongside it.
 						*/ }
 					<ResponsiveOverride
 						label={ __( 'Custom column template', 'sgs-blocks' ) }
 						value={ attributes.gridTemplateColumns }
 						onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-							<TextControl
-								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
-								onChange={ ( val ) => setOwnValue( val ) }
-								help={ __(
-									"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) =>
+							enableColumnShapePicker ? (
+								<ColumnShapePicker
+									// The shape list depends on how many columns THIS
+									// tier actually shows, so read the count for the
+									// SAME tier rather than always the desktop one —
+									// a 4-column desktop and a 2-column tablet offer
+									// different shapes. Falls back to `2`, this
+									// block's own declared `columns.desktop` default
+									// (site-footer-row falls back to `3`, its own
+									// default — the fallback always mirrors the
+									// owning block's default, never a shared literal).
+									count={
+										( attributes.columns &&
+											attributes.columns[ tier ] ) ||
+										( attributes.columns &&
+											attributes.columns.desktop ) ||
+										2
+									}
+									value={
+										( inherited
+											? effectiveValue
+											: ownValue ) || ''
+									}
+									onChange={ ( track ) =>
+										setOwnValue( track || undefined )
+									}
+									// No `label` here on purpose: the wrapping
+									// <ResponsiveOverride> already renders the
+									// visible one, and two copies is a real defect
+									// (inspector-scan rule 29) — same reasoning as
+									// site-footer-row's mount.
+								/>
+							) : (
+								<TextControl
+									value={ ownValue || '' }
+									placeholder={ inherited ? effectiveValue || '' : '' }
+									onChange={ ( val ) => setOwnValue( val ) }
+									help={ __(
+										"CSS grid-template-columns e.g. '5fr 3fr' or 'repeat(3,minmax(0,1fr))'. Leave empty to use the column count above — on tablet or mobile, empty inherits the tier above.",
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							)
+						}
 					</ResponsiveOverride>
 
 					{ /*
@@ -272,6 +370,73 @@ export function LayoutPanel( { attributes, setAttributes, showLayout = true } ) 
 							/>
 						) }
 					</ResponsiveOverride>
+
+					{ enableIntrinsicColumns && (
+						<>
+							{ /*
+								  `minColumnWidth` is a TIER OBJECT (P2-5) — same shape as
+								  `gridTemplateColumns` above, so it uses ResponsiveOverride.
+								  Unlike gridTemplateColumns it pairs with a single FLAT
+								  `minColumnWidthUnit` attribute (not tiered) — mirroring
+								  sgs/feature-grid's `minItemWidth`/`minItemWidthUnit` pair —
+								  because the unit rarely needs to change per breakpoint while
+								  the numeric floor does. Sets the BASIS a client-configured
+								  auto-fit column may shrink to before one drops to the next
+								  row (`sgs_intrinsic_columns_track()`, helpers-container.php).
+								  Gated on `enableIntrinsicColumns` (see the prop docblock
+								  above) rather than rendered unconditionally, because only
+								  callers whose own block.json declares
+								  `supports.sgs.intrinsicColumns` also declare the
+								  `minColumnWidth`/`minColumnWidthUnit` attributes — currently
+								  `sgs/container` alone.
+								*/ }
+							<ResponsiveOverride
+								label={ __( 'Minimum column width', 'sgs-blocks' ) }
+								value={ attributes.minColumnWidth }
+								onChange={ ( obj ) => setAttributes( { minColumnWidth: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => {
+									const minColumnWidthUnit = attributes.minColumnWidthUnit || 'px';
+									return (
+									<SgsLengthControl
+										presets={ false }
+										value={
+											'' !== ownValue && null != ownValue
+												? `${ ownValue }${ minColumnWidthUnit }`
+												: ''
+										}
+										placeholder={
+											inherited && '' !== effectiveValue && null != effectiveValue
+												? `${ effectiveValue }${ minColumnWidthUnit }`
+												: ''
+										}
+										units={ [
+											{ value: 'px', label: 'px', default: 200 },
+											{ value: 'em', label: 'em', default: 10 },
+											{ value: 'rem', label: 'rem', default: 10 },
+										] }
+										onChange={ ( val ) => {
+											if ( ! val ) {
+												setOwnValue( undefined );
+												return;
+											}
+											const unit = val.replace( /[\d.]+/, '' ) || 'px';
+											const num = parseFloat( val );
+											setOwnValue( Number.isNaN( num ) ? undefined : num );
+											if ( unit !== minColumnWidthUnit ) {
+												setAttributes( { minColumnWidthUnit: unit } );
+											}
+										} }
+										help={ __(
+											'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
+											'sgs-blocks'
+										) }
+									/>
+									);
+								} }
+							</ResponsiveOverride>
+						</>
+					) }
 
 					<TextControl
 						label={ __( 'Auto rows', 'sgs-blocks' ) }

@@ -1,0 +1,11 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/responsivebox-control-used",
+	"title": "Fixture: proper ResponsiveBoxControl usage, no raw BoxControl anywhere (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"padding": { "type": "object", "default": {} },
+		"paddingTablet": { "type": "object", "default": {} },
+		"paddingMobile": { "type": "object", "default": {} }
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"name": "sgs/wrapper-element-not-flagged",
+	"attributes": {
+		"backgroundColour": { "type": "string" },
+		"borderColour": { "type": "string" }
+	}
+}

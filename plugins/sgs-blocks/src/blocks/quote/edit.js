@@ -44,16 +44,9 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import {
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
-	SgsColourPanel,
-	ShadowControl,
-} from '../../components';
-import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -73,69 +66,10 @@ const ATTRIB_TAG_OPTIONS = [
 	{ label: __( 'cite', 'sgs-blocks' ), value: 'cite' },
 ];
 
-const FONT_WEIGHT_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Thin (100)', 'sgs-blocks' ), value: '100' },
-	{ label: __( 'Extra-light (200)', 'sgs-blocks' ), value: '200' },
-	{ label: __( 'Light (300)', 'sgs-blocks' ), value: '300' },
-	{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-	{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-	{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-	{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-	{ label: __( 'Extra-bold (800)', 'sgs-blocks' ), value: '800' },
-	{ label: __( 'Black (900)', 'sgs-blocks' ), value: '900' },
-];
-
-const FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
-const TEXT_DECORATION_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
-];
-
-const FONT_SIZE_UNITS = [
-	{ value: 'px', label: 'px', default: 16 },
-	{ value: 'em', label: 'em', default: 1 },
-	{ value: 'rem', label: 'rem', default: 1 },
-];
-
-const LINE_HEIGHT_UNITS = [
-	{ value: 'em', label: 'em', default: 1.5 },
-	{ value: 'rem', label: 'rem', default: 1.5 },
-	{ value: 'px', label: 'px', default: 24 },
-	{ value: '', label: '—', default: 1.5 },
-];
-
 const MARGIN_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
-];
-
-const BORDER_STYLE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-	{ label: __( 'Double', 'sgs-blocks' ), value: 'double' },
-	{ label: __( 'Groove', 'sgs-blocks' ), value: 'groove' },
-	{ label: __( 'Ridge', 'sgs-blocks' ), value: 'ridge' },
-	{ label: __( 'Inset', 'sgs-blocks' ), value: 'inset' },
-	{ label: __( 'Outset', 'sgs-blocks' ), value: 'outset' },
 ];
 
 const LENGTH_UNITS = [
@@ -187,13 +121,14 @@ function boxShorthand( box, keys ) {
 // ---------------------------------------------------------------------------
 
 function buildWrapperStyle( attributes ) {
-	const {
+	const { padding, margin,
 		inheritStyle,
 		backgroundColour,
 		style,
 		borderWidth,
 		borderStyle,
 		borderColour,
+		borderColourGradient,
 		maxWidth,
 	} = attributes;
 
@@ -225,13 +160,19 @@ function buildWrapperStyle( attributes ) {
 				? borderColour
 				: colourVar( borderColour );
 		}
+		// A gradient border renders frontend as a masked ::before ring, which cannot
+		// be reproduced in a plain inline style — approximate it with the gradient as
+		// a border-image so the canvas at least shows that a gradient is applied.
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -245,30 +186,23 @@ function buildWrapperStyle( attributes ) {
 
 function buildAttribStyle( attributes ) {
 	const {
-		attributionColour, attributionFontSize, attributionFontSizeUnit,
-		attributionFontWeight, attributionFontFamily, attributionFontStyle,
-		attributionTextDecoration, attributionTextTransform,
-		attributionLineHeight, attributionLineHeightUnit,
+		attributionColour,
+		attributionColourGradient,
 		attributionMarginTop, attributionMarginUnit,
 	} = attributes;
-	const style = {};
-	if ( attributionColour ) {
-		style.color = /^#|^rgb|^hsl/.test( attributionColour )
-			? attributionColour
-			: colourVar( attributionColour );
-	}
-	// attributionFontSize / attributionMarginTop are TIER OBJECTS — the canvas
-	// preview (desktop-only; responsive tiers render via PHP) reads the
-	// desktop tier.
-	if ( attributionFontSize?.desktop ) { style.fontSize = `${ attributionFontSize.desktop }${ attributionFontSizeUnit }`; }
-	if ( attributionFontWeight ) { style.fontWeight = attributionFontWeight; }
-	if ( attributionFontFamily ) { style.fontFamily = attributionFontFamily; }
-	if ( attributionFontStyle ) { style.fontStyle = attributionFontStyle; }
-	if ( attributionTextDecoration ) { style.textDecoration = attributionTextDecoration; }
-	if ( attributionTextTransform ) { style.textTransform = attributionTextTransform; }
-	if ( attributionLineHeight != null ) {
-		style.lineHeight = `${ attributionLineHeight }${ attributionLineHeightUnit }`;
-	}
+	const style = {
+		...resolveTextColourPreviewStyle(
+			attributionColour,
+			attributionColourGradient,
+			( val ) => ( /^#|^rgb|^hsl/.test( val ) ? val : colourVar( val ) )
+		),
+	};
+	// attributionMarginTop is a TIER OBJECT — the canvas preview (desktop-only;
+	// responsive tiers render via PHP) reads the desktop tier. Typography
+	// (font-size/weight/family/style/decoration/transform/line-height) no
+	// longer gets a canvas preview here — same as sgs/testimonial's `nameStyle`
+	// (colour-only), which this now mirrors; those properties render correctly
+	// via the block's own scoped <style> on the FRONTEND only.
 	if ( attributionMarginTop?.desktop != null ) {
 		style.marginTop = `${ attributionMarginTop.desktop }${ attributionMarginUnit }`;
 	}
@@ -286,6 +220,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionTag,
 		attributionEnabled,
 		attributionColour,
+		attributionColourGradient,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -304,6 +239,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderWidth,
 		borderStyle,
 		borderColour,
+		borderColourHover,
 		borderColourGradient,
 		boxShadow,
 		boxShadowHover,
@@ -311,18 +247,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		boxShadowHoverColour,
 		scaleHover,
 		textColourHover,
+		textColourHoverGradient,
 		backgroundColourHover,
 		backgroundColourGradient,
 		backgroundColourHoverGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		inheritStyle,
 		transitionDuration,
 		transitionEasing,
 	} = attributes;
+
+	// Contrast check for border colour — warn if border fails WCAG AA contrast
+	// against the quote's own background. When the background is a gradient,
+	// comparing against the flat colour would compare against a surface that
+	// isn't rendered — skip the check entirely in that case.
+	const quoteContrastAgainst =
+		backgroundColour && ! backgroundColourGradient
+			? backgroundColour
+			: '';
 
 	// Contract §B3: NO wrapper <div> — the <blockquote> IS the block root
 	// (matches render.php). It carries the block class + the wrapper preview
@@ -437,6 +379,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'textColourHover',
 						label: __( 'Text colour (hover)', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'hover',
@@ -444,12 +387,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColourHover,
 								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'attributionColour',
 						label: __( 'Attribution colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -457,22 +404,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: attributionColour,
 								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'borderColour',
-						label: __( 'Border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: borderColour,
-								onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
-								linked: true,
-								gradientValue: borderColourGradient,
+								gradientValue: attributionColourGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourGradient: val ?? '' } ),
+									setAttributes( { attributionColourGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -510,6 +444,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				{ /* ---- Attribution slot ---- */ }
+				{ /* Object-valued (tiered) attrs are ordered LAST in this reset call
+				   below, deliberately — a shared build-time detector
+				   (check-editor-render-parity.js SIGNAL 2, checkCompanionExemption)
+				   regex-parses a setAttributes() call-site's keys and cannot see
+				   past a nested object-literal value. Keeping every scalar-valued
+				   key ahead of the two object-valued resets lets the detector
+				   correctly recognise the co-write group (attributionColour /
+				   attributionMarginTop are both used outside InspectorControls, via
+				   buildAttribStyle) and companion-exempt the rest — same runtime
+				   result either way, order-independent. */ }
 				<ToolsPanel
 					label={ __( 'Attribution', 'sgs-blocks' ) }
 					resetAll={ () =>
@@ -517,17 +461,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributionEnabled: true,
 							attributionTag: 'footer',
 							attributionColour: '',
+							attributionColourGradient: '',
 							attributionFontStyle: '',
 							attributionFontWeight: '',
-							attributionFontSize: {},
 							attributionFontSizeUnit: 'px',
 							attributionFontFamily: '',
 							attributionTextDecoration: '',
 							attributionTextTransform: '',
 							attributionLineHeight: undefined,
 							attributionLineHeightUnit: 'em',
-							attributionMarginTop: {},
 							attributionMarginUnit: 'px',
+							attributionFontSize: {},
+							attributionMarginTop: {},
 						} )
 					}
 				>
@@ -566,149 +511,53 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ToolsPanelItem>
 							{ /* Attribution text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Attribution colour" row. */ }
-							<ToolsPanelItem
-								label={ __( 'Font style', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontStyle }
-								onDeselect={ () =>
-									setAttributes( { attributionFontStyle: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Font style', 'sgs-blocks' ) }
-									value={ attributionFontStyle }
-									options={ FONT_STYLE_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionFontStyle: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Font weight', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontWeight }
-								onDeselect={ () =>
-									setAttributes( { attributionFontWeight: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Font weight', 'sgs-blocks' ) }
-									value={ attributionFontWeight }
-									options={ FONT_WEIGHT_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionFontWeight: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
 
-							{ /* Attribution font size — ResponsiveOverride + UnitControl.
-							     attributionFontSize is a TIER OBJECT (Spec 35 pass 3b)
-							     storing the bare NUMBER per tier; attributionFontSizeUnit
-							     stays a single shared unit selector across all tiers
-							     (unchanged). */ }
+							{ /* Attribution typography (font size/weight/style/family/
+							   decoration/transform/line-height) — rebuilt onto the shared
+							   TypographyControls component (Bean R-22-13), matching
+							   sgs/testimonial's `name` prefix pattern, rather than the
+							   bespoke controls this used to hand-roll. One shared UI,
+							   one shared render.php helper (sgs_typography_css_rule). */ }
 							<ToolsPanelItem
-								label={ __( 'Font size', 'sgs-blocks' ) }
+								label={ __( 'Typography', 'sgs-blocks' ) }
 								hasValue={ () =>
+									!! attributionFontFamily ||
+									!! attributionFontWeight ||
+									!! attributionFontStyle ||
+									!! attributionTextDecoration ||
+									!! attributionTextTransform ||
+									attributionLineHeight != null ||
 									attributionFontSize?.desktop != null ||
 									attributionFontSize?.tablet != null ||
 									attributionFontSize?.mobile != null
 								}
 								onDeselect={ () =>
-									setAttributes( { attributionFontSize: {} } )
+									setAttributes( {
+										attributionFontFamily: '',
+										attributionFontWeight: '',
+										attributionFontStyle: '',
+										attributionTextDecoration: '',
+										attributionTextTransform: '',
+										attributionLineHeight: undefined,
+										attributionLineHeightUnit: 'em',
+										attributionFontSize: {},
+										attributionFontSizeUnit: 'px',
+									} )
 								}
 								isShownByDefault
 							>
-								<ResponsiveOverride
-									label={ __( 'Font size', 'sgs-blocks' ) }
-									value={ attributionFontSize }
-									onChange={ ( obj ) => setAttributes( { attributionFontSize: obj } ) }
-								>
-									{ ( { ownValue, setOwnValue } ) => {
-										const unitVal = attributionFontSizeUnit || 'px';
-										return (
-											<UnitControl
-												label={ __( 'Font size', 'sgs-blocks' ) }
-												hideLabelFromVision
-												value={ composeUnit( ownValue, unitVal ) }
-												units={ FONT_SIZE_UNITS }
-												onChange={ ( raw ) => {
-													const { num, unit } = parseUnit( raw, unitVal );
-													setOwnValue( num );
-													setAttributes( { attributionFontSizeUnit: unit } );
-												} }
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										);
-									} }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-
-							<ToolsPanelItem
-								label={ __( 'Font family', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionFontFamily }
-								onDeselect={ () =>
-									setAttributes( { attributionFontFamily: '' } )
-								}
-							>
-								<TextControl
-									label={ __( 'Font family', 'sgs-blocks' ) }
-									value={ attributionFontFamily }
-									onChange={ ( val ) => setAttributes( { attributionFontFamily: val } ) }
-									placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text decoration', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionTextDecoration }
-								onDeselect={ () =>
-									setAttributes( { attributionTextDecoration: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Text decoration', 'sgs-blocks' ) }
-									value={ attributionTextDecoration }
-									options={ TEXT_DECORATION_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionTextDecoration: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Text transform', 'sgs-blocks' ) }
-								hasValue={ () => !! attributionTextTransform }
-								onDeselect={ () =>
-									setAttributes( { attributionTextTransform: '' } )
-								}
-							>
-								<SelectControl
-									label={ __( 'Text transform', 'sgs-blocks' ) }
-									value={ attributionTextTransform }
-									options={ TEXT_TRANSFORM_OPTIONS }
-									onChange={ ( val ) => setAttributes( { attributionTextTransform: val } ) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-
-							{ /* Attribution line height — UnitControl (single, no responsive) */ }
-							<ToolsPanelItem
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								hasValue={ () => attributionLineHeight != null }
-								onDeselect={ () =>
-									setAttributes( { attributionLineHeight: undefined } )
-								}
-							>
-								<UnitControl
-									label={ __( 'Line height', 'sgs-blocks' ) }
-									value={ composeUnit( attributionLineHeight, attributionLineHeightUnit ) }
-									units={ LINE_HEIGHT_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit( raw, attributionLineHeightUnit || 'em' );
-										setAttributes( { attributionLineHeight: num, attributionLineHeightUnit: unit } );
-									} }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
+								<TypographyControls
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									prefix="attribution"
+									showSize
+									showWeight
+									showStyle
+									showLineHeight
+									showFontFamily
+									showDecoration
+									showTransform
+									showResponsive
 								/>
 							</ToolsPanelItem>
 
@@ -736,7 +585,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										const unitVal = attributionMarginUnit || 'px';
 										if ( tier === 'desktop' ) {
 											return (
-												<UnitControl
+												<SgsLengthControl
 													label={ __( 'Margin-top', 'sgs-blocks' ) }
 													hideLabelFromVision
 													value={ composeUnit( ownValue, unitVal ) }
@@ -746,8 +595,7 @@ export default function Edit( { attributes, setAttributes } ) {
 														setOwnValue( num );
 														setAttributes( { attributionMarginUnit: unit } );
 													} }
-													__nextHasNoMarginBottom
-													__next40pxDefaultSize
+													presets={ false }
 												/>
 											);
 										}
@@ -771,192 +619,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</ToolsPanel>
 
-				{ /* ---- Wrapper ---- */ }
-				{ ! inheritStyle && (
-					<PanelBody
-						title={ __( 'Wrapper', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<ToolsPanel
-							className="sgs-nested-tools-panel"
-							label={ __( 'Wrapper', 'sgs-blocks' ) }
-							resetAll={ () =>
-								setAttributes( {
-									backgroundColour: '',
-									boxShadow: '',
-									boxShadowColour: '',
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											padding: {},
-											margin: {},
-										},
-									},
-									paddingTablet: {},
-									paddingMobile: {},
-									marginTablet: {},
-									marginMobile: {},
-									maxWidth: {},
-								} )
-							}
-						>
-							{ /* Background colour moved to the top-level SgsColourPanel
-							   (D618/D621) — "Background colour" row (paired with its
-							   hover state). */ }
-
-							<ToolsPanelItem
-								label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-								hasValue={ () => !! boxShadow }
-								onDeselect={ () => setAttributes( { boxShadow: '', boxShadowColour: '' } ) }
-							>
-								<ShadowControl
-									label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-									value={ boxShadow }
-									onChange={ ( val ) => setAttributes( { boxShadow: val } ) }
-									colour={ boxShadowColour }
-									onColourChange={ ( val ) => setAttributes( { boxShadowColour: val ?? '' } ) }
-								/>
-							</ToolsPanelItem>
-
-							{ /* Box-object interface contract §B/§E: padding/margin base routes
-							   to WP-native style.spacing.* (skip-serialised → scoped, not
-							   inline); tiers are the paddingTablet/paddingMobile +
-							   marginTablet/marginMobile object attrs. */ }
-							<ToolsPanelItem
-								label={ __( 'Padding', 'sgs-blocks' ) }
-								hasValue={ () =>
-									Object.keys( style?.spacing?.padding ?? {} ).length > 0 ||
-									Object.keys( paddingTablet ?? {} ).length > 0 ||
-									Object.keys( paddingMobile ?? {} ).length > 0
-								}
-								onDeselect={ () =>
-									setAttributes( {
-										style: { ...style, spacing: { ...style?.spacing, padding: {} } },
-										paddingTablet: {},
-										paddingMobile: {},
-									} )
-								}
-								isShownByDefault
-							>
-								<ResponsiveBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									values={ {
-										base: style?.spacing?.padding ?? {},
-										tablet: paddingTablet ?? {},
-										mobile: paddingMobile ?? {},
-									} }
-									onChange={ ( tier, next ) => {
-										if ( 'base' === tier ) {
-											setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-										} else {
-											setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-										}
-									} }
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'Margin', 'sgs-blocks' ) }
-								hasValue={ () =>
-									Object.keys( style?.spacing?.margin ?? {} ).length > 0 ||
-									Object.keys( marginTablet ?? {} ).length > 0 ||
-									Object.keys( marginMobile ?? {} ).length > 0
-								}
-								onDeselect={ () =>
-									setAttributes( {
-										style: { ...style, spacing: { ...style?.spacing, margin: {} } },
-										marginTablet: {},
-										marginMobile: {},
-									} )
-								}
-							>
-								<ResponsiveBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									values={ {
-										base: style?.spacing?.margin ?? {},
-										tablet: marginTablet ?? {},
-										mobile: marginMobile ?? {},
-									} }
-									onChange={ ( tier, next ) => {
-										if ( 'base' === tier ) {
-											setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-										} else {
-											setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-										}
-									} }
-								/>
-							</ToolsPanelItem>
-
-							{ /* Width — outer maxWidth (kept-scalar, responsive) + content
-							   band width (kept-scalar). Contract §C. */ }
-							<ToolsPanelItem
-								label={ __( 'Outer max-width', 'sgs-blocks' ) }
-								hasValue={ () =>
-									!! (
-										maxWidth &&
-										Object.values( maxWidth ).some(
-											( v ) => v !== undefined && v !== null && v !== ''
-										)
-									)
-								}
-								onDeselect={ () => setAttributes( { maxWidth: {} } ) }
-							>
-								<ResponsiveOverride
-									label={ __( 'Outer max-width', 'sgs-blocks' ) }
-									value={ maxWidth }
-									onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
-								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-										<UnitControl
-											label={ __( 'Max-width', 'sgs-blocks' ) }
-											hideLabelFromVision
-											value={ ownValue || '' }
-											placeholder={ inherited ? effectiveValue || '' : '' }
-											units={ LENGTH_UNITS }
-											onChange={ ( val ) => setOwnValue( val ?? '' ) }
-											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									) }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-						</ToolsPanel>
-					</PanelBody>
-				) }
-
-				{ /* ---- Border ---- Box-object interface contract §1/§5: borderWidth
-				   is an SGS custom object attr (base only, no tiers); border-radius
-				   routes to WP-native style.border.radius (base only — the block
-				   declares __experimentalBorder.__experimentalSkipSerialization so it
-				   serialises scoped, not inline). */ }
-				{ ! inheritStyle && (
-					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Border style', 'sgs-blocks' ) }
-							value={ borderStyle }
-							options={ BORDER_STYLE_OPTIONS }
-							onChange={ ( val ) => setAttributes( { borderStyle: val } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						{ /* Border colour moved to the top-level SgsColourPanel
-						   (D618/D621) — "Border colour" row. */ }
-						<ResponsiveBoxControl
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							values={ { base: borderWidth ?? {} } }
-							showResponsive={ false }
-							onChange={ ( tier, next ) => setAttributes( { borderWidth: next } ) }
-						/>
-						<ResponsiveBorderRadiusControl
-							label={ __( 'Border radius', 'sgs-blocks' ) }
-							values={ { base: style?.border?.radius ?? {} } }
-							showResponsive={ false }
-							onChange={ ( tier, next ) => setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } ) }
-						/>
-					</PanelBody>
-				) }
-
 				{ /* ---- Hover ---- */ }
 				<PanelBody
 					title={ __( 'Hover', 'sgs-blocks' ) }
@@ -975,10 +637,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					   (hover)" and "Background colour" (hover state) rows. */ }
 					<ShadowControl
 						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
-						value={ boxShadowHover }
-						onChange={ ( val ) => setAttributes( { boxShadowHover: val } ) }
-						colour={ boxShadowHoverColour }
-						onColourChange={ ( val ) => setAttributes( { boxShadowHoverColour: val ?? '' } ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadowHover',
+							colour: 'boxShadowHoverColour',
+						} }
 					/>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -1003,6 +667,195 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			<InspectorControls group="styles">
+				{ /* ---- Wrapper ---- */ }
+				{ ! inheritStyle && (
+					<PanelBody
+						title={ __( 'Wrapper', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<ToolsPanel
+							className="sgs-nested-tools-panel"
+							label={ __( 'Wrapper', 'sgs-blocks' ) }
+							resetAll={ () =>
+								setAttributes( {
+									backgroundColour: '',
+									boxShadow: '',
+									boxShadowColour: '',
+									padding: {},
+									margin: {},
+									maxWidth: {},
+								} )
+							}
+						>
+							{ /* Background colour moved to the top-level SgsColourPanel
+							   (D618/D621) — "Background colour" row (paired with its
+							   hover state). */ }
+
+							<ToolsPanelItem
+								label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+								hasValue={ () => !! boxShadow }
+								onDeselect={ () => setAttributes( { boxShadow: '', boxShadowColour: '' } ) }
+							>
+								<ShadowControl
+									label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+									attributes={ attributes }
+									setAttributes={ setAttributes }
+									attrNames={ {
+										base: 'boxShadow',
+										colour: 'boxShadowColour',
+									} }
+								/>
+							</ToolsPanelItem>
+
+							{ /* padding/margin are each a single block-owned tier-object attr
+							   { desktop, tablet, mobile }, written via ResponsiveOverride +
+							   SgsBoxControl; read directly by this block's render.php. */ }
+							<ToolsPanelItem
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								hasValue={ () =>
+									Object.keys( attributes.padding ?? {} ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { padding: {} } )
+								}
+								isShownByDefault
+							>
+								<ResponsiveOverride
+									value={ attributes.padding }
+									onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue } ) => (
+										<SgsBoxControl
+											label={ __( 'Padding', 'sgs-blocks' ) }
+											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											units={ BOX_UNITS }
+											presets
+											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								hasValue={ () =>
+									Object.keys( attributes.margin ?? {} ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { margin: {} } )
+								}
+							>
+								<ResponsiveOverride
+									value={ attributes.margin }
+									onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue } ) => (
+										<SgsBoxControl
+											label={ __( 'Margin', 'sgs-blocks' ) }
+											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											units={ BOX_UNITS }
+											presets
+											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+
+							{ /* Width — outer maxWidth (kept-scalar, responsive) + content
+							   band width (kept-scalar). Contract §C. */ }
+							<ToolsPanelItem
+								label={ __( 'Outer max-width', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! (
+										maxWidth &&
+										Object.values( maxWidth ).some(
+											( v ) => v !== undefined && v !== null && v !== ''
+										)
+									)
+								}
+								onDeselect={ () => setAttributes( { maxWidth: {} } ) }
+							>
+								<ResponsiveOverride
+									label={ __( 'Outer max-width', 'sgs-blocks' ) }
+									value={ maxWidth }
+									onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<SgsLengthControl
+											label={ __( 'Max-width', 'sgs-blocks' ) }
+											hideLabelFromVision
+											value={ ownValue || '' }
+											placeholder={ inherited ? effectiveValue || '' : '' }
+											units={ LENGTH_UNITS }
+											onChange={ ( val ) => setOwnValue( val ?? '' ) }
+											help={ __( 'Leave blank for no cap — on tablet or mobile, blank inherits the tier above.', 'sgs-blocks' ) }
+											presets={ false }
+										/>
+									) }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
+						</ToolsPanel>
+					</PanelBody>
+				) }
+
+				{ /* ---- Border ---- Box-object interface contract §1/§5: borderWidth
+				   is an SGS custom object attr (base only, no tiers); border-radius
+				   routes to WP-native style.border.radius (base only — the block
+				   declares __experimentalBorder.__experimentalSkipSerialization so it
+				   serialises scoped, not inline). */ }
+				{ ! inheritStyle && (
+					<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+						{ /* Task 0 (2026-08-27) — one composite row (width/style/colour)
+						   mirroring native's BorderBoxControl layout, matching
+						   sgs/product-card. borderColour has a Hover pair on this
+						   block (no hover-gradient attr), so the colour slot uses the
+						   multi-state form. Border-radius stays WP-native (below,
+						   unchanged) — the block declares
+						   __experimentalBorder.__experimentalSkipSerialization so it
+						   serialises scoped, not inline. */ }
+						<SgsBorderControl
+							widthValues={ borderWidth ?? {} }
+							onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+							widthPresets={ [ '10', '20', '30' ] }
+							styleValue={ borderStyle }
+							onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+							colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+							colourStates={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: borderColour,
+									onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+									linked: true,
+									gradientValue: borderColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { borderColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: borderColourHover,
+									onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+							contrastAgainst={ quoteContrastAgainst }
+							radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+							onRadiusChange={ ( tier, next ) => {
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+							} }
+						/>
+					</PanelBody>
+				) }
+
 			</InspectorControls>
 
 			{ /* Canvas — body children (InnerBlocks) + attribution (RichText) sit as

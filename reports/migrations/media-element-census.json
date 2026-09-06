@@ -1,0 +1,2326 @@
+{
+  "doc": "Wave 1 census - the unified media element build manifest.",
+  "plan": ".claude/plans/media-element-misty-squid.md",
+  "architecture": ".claude/plans/2026-08-30-media-element-architecture-v2.md",
+  "evidence": [
+    ".claude/reports/2026-08-30-media-M1-*.md",
+    ".claude/reports/2026-08-30-media-M2-*.md",
+    ".claude/reports/2026-08-30-media-M3-*.md",
+    ".claude/reports/2026-08-30-media-M4-*.md",
+    ".claude/reports/2026-08-30-media-M5-*.md"
+  ],
+  "db_available": true,
+  "db_media_roles": [
+    "image-object",
+    "svg",
+    "image-alt",
+    "scalar-media"
+  ],
+  "surfaces": {
+    "sgs/media": {
+      "prefixes": [
+        ""
+      ],
+      "context": "element",
+      "insertion": "root",
+      "mechanism": "sibling-markup",
+      "wave": 5,
+      "wire_order": 1,
+      "report": "M1",
+      "escape_hatches": [],
+      "does_better": [],
+      "notes": "First surface wired. Hand-rolls its own tier cascade past sgs_tier_media_render() via a closure taking (modifier_base, tiers_present) with the uid CLOSED OVER, against the shared helper (present, base_class, uid). The bodies are near-identical; only the argument order and one whitespace difference in the @media text diverge.",
+      "attr_count_total": 77,
+      "media_attr_count": 52,
+      "storage_shapes": [
+        "alt-string",
+        "attachment-id",
+        "boolean",
+        "number",
+        "string",
+        "svg-markup",
+        "tri-state-inherit",
+        "url-string"
+      ],
+      "storedAs": {
+        "imageAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": "image-alt",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageHeight": {
+          "shape": "number",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageId": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageIdMobile": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "imageIdTablet": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "imageIsDecorative": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageUrlMobile": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "imageUrlTablet": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "imageWidth": {
+          "shape": "number",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "mediaType": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "svgAnimation": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "svgAnimationSpeed": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "svgContent": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "svgContentMobile": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "svgContentTablet": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "thumbnail": {
+          "shape": "string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "thumbnailId": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "thumbnailIdMobile": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "thumbnailIdTablet": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "thumbnailMobile": {
+          "shape": "string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "thumbnailTablet": {
+          "shape": "string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "videoAutoplay": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoAutoplayMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoAutoplayTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoCaptionsId": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoCaptionsLabel": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoCaptionsSrcLang": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoCaptionsUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoControls": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoControlsMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoControlsTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoId": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoIdMobile": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "videoIdTablet": {
+          "shape": "attachment-id",
+          "type": "integer",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "videoLazyLoad": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoLazyLoadMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoLazyLoadTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoLoop": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoLoopMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoLoopTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoMimeType": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoMuted": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoMutedMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoMutedTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoPlaysInline": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoPlaysInlineMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoPlaysInlineTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "videoSource": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoUrlMobile": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "videoUrlTablet": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\media\\edit.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\media\\BooleanResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\svg-allowlist.generated.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "imageHeight",
+        "imageId",
+        "imageIdMobile",
+        "imageIdTablet",
+        "imageIsDecorative",
+        "imageUrlMobile",
+        "imageUrlTablet",
+        "imageWidth",
+        "mediaType",
+        "svgAnimation",
+        "svgAnimationSpeed",
+        "thumbnailId",
+        "thumbnailIdMobile",
+        "thumbnailIdTablet",
+        "videoAutoplay",
+        "videoAutoplayMobile",
+        "videoAutoplayTablet",
+        "videoCaptionsId",
+        "videoCaptionsLabel",
+        "videoCaptionsSrcLang",
+        "videoCaptionsUrl",
+        "videoControls",
+        "videoControlsMobile",
+        "videoControlsTablet",
+        "videoId",
+        "videoIdMobile",
+        "videoIdTablet",
+        "videoLazyLoad",
+        "videoLazyLoadMobile",
+        "videoLazyLoadTablet",
+        "videoLoop",
+        "videoLoopMobile",
+        "videoLoopTablet",
+        "videoMimeType",
+        "videoMuted",
+        "videoMutedMobile",
+        "videoMutedTablet",
+        "videoPlaysInline",
+        "videoPlaysInlineMobile",
+        "videoPlaysInlineTablet",
+        "videoSource",
+        "videoUrl",
+        "videoUrlMobile",
+        "videoUrlTablet"
+      ],
+      "role_covered": [
+        "imageAlt",
+        "imageUrl",
+        "svgContent",
+        "svgContentMobile",
+        "svgContentTablet",
+        "thumbnail",
+        "thumbnailMobile",
+        "thumbnailTablet"
+      ]
+    },
+    "sgs/before-after": {
+      "prefixes": [
+        "before",
+        "after"
+      ],
+      "context": "element",
+      "insertion": "element",
+      "mechanism": "sibling-markup",
+      "wave": 5,
+      "wire_order": 2,
+      "report": "M4",
+      "escape_hatches": [
+        "two-independent-instances",
+        "video-sync-layer"
+      ],
+      "does_better": [
+        "ONE parameterised MediaSlotPicker + sgs_before_after_resolve_media() drives both slots - zero drift between before/after (M4 S1).",
+        "Narrowest per-type gating of any surface: every type-specific control is wrapped in an exact equality check (M4 S2).",
+        "Emits custom-property VALUES so a scoped <style> never has two writers - a real extension of Spec 32 beyond inline style=\"\" (M4 S5)."
+      ],
+      "notes": "THE FALSIFYING SECOND SURFACE. Video and SVG sides are confirmed FLAT - no tier attrs, no tier controls, no tier resolver branches. Only the image side has tiers.",
+      "attr_count_total": 60,
+      "media_attr_count": 27,
+      "storage_shapes": [
+        "alt-string",
+        "attachment-id-union",
+        "boolean",
+        "string",
+        "svg-markup",
+        "tri-state-inherit",
+        "url-string"
+      ],
+      "storedAs": {
+        "afterImageAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": "image-alt",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterImageId": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterImageIdMobile": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "afterImageIdTablet": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "afterImageUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterImageUrlMobile": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "afterImageUrlTablet": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "afterMediaType": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "afterSvgContent": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterVideoAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterVideoId": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "afterVideoUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "beforeImageAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": "image-alt",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeImageId": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeImageIdMobile": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "beforeImageIdTablet": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "beforeImageUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeImageUrlMobile": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Mobile"
+        },
+        "beforeImageUrlTablet": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "Tablet"
+        },
+        "beforeMediaType": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "beforeSvgContent": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeVideoAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeVideoId": {
+          "shape": "attachment-id-union",
+          "type": "integer|string",
+          "db_role": null,
+          "control": "dynamic-or-absent",
+          "tier": "desktop"
+        },
+        "beforeVideoUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoAutoplay": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "videoAutoplayMobile": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "videoAutoplayTablet": {
+          "shape": "tri-state-inherit",
+          "type": "boolean|null",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\before-after\\edit.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\before-after\\BooleanResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "afterImageId",
+        "afterImageIdMobile",
+        "afterImageIdTablet",
+        "afterImageUrlMobile",
+        "afterImageUrlTablet",
+        "afterMediaType",
+        "afterVideoAlt",
+        "afterVideoId",
+        "afterVideoUrl",
+        "beforeImageId",
+        "beforeImageIdMobile",
+        "beforeImageIdTablet",
+        "beforeImageUrlMobile",
+        "beforeImageUrlTablet",
+        "beforeMediaType",
+        "beforeVideoAlt",
+        "beforeVideoId",
+        "beforeVideoUrl",
+        "videoAutoplay",
+        "videoAutoplayMobile",
+        "videoAutoplayTablet"
+      ],
+      "role_covered": [
+        "afterImageAlt",
+        "afterImageUrl",
+        "afterSvgContent",
+        "beforeImageAlt",
+        "beforeImageUrl",
+        "beforeSvgContent"
+      ]
+    },
+    "sgs/hero": {
+      "prefixes": [
+        "split",
+        "media",
+        "bg",
+        "background"
+      ],
+      "context": "element",
+      "insertion": "element",
+      "mechanism": "shared-helper",
+      "wave": 7,
+      "wire_order": null,
+      "report": "M2",
+      "escape_hatches": [
+        "two-families-one-block"
+      ],
+      "does_better": [],
+      "notes": "TWO media families on one block (split-media + background). One of only two adopters of sgs_tier_media_render(), alongside timeline.",
+      "attr_count_total": 139,
+      "media_attr_count": 25,
+      "storage_shapes": [
+        "boolean",
+        "media-object",
+        "number",
+        "string",
+        "svg-markup"
+      ],
+      "storedAs": {
+        "backgroundImage": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "backgroundImageMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "backgroundImageTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "bgSvgAnimation": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgAnimationSpeed": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgContent": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgMinHeight": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgOpacity": {
+          "shape": "number",
+          "type": "number",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgPosition": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgTextShadow": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgVideo": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgVideoMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "bgVideoTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "splitImage": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "scalar-media",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "splitImageMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "scalar-media",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "splitImageTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "splitMediaType": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "splitMediaTypeMobile": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "splitMediaTypeTablet": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "splitSvg": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "splitSvgMobile": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "splitSvgTablet": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "splitVideo": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "splitVideoMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "splitVideoTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\hero\\edit.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaPicker.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ContainerWrapperControls.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\WidthPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\LayoutPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\BackgroundPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ShapeDividersPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\GridItemDefaultsPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\_shared.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\svg-allowlist.generated.js",
+        "plugins\\sgs-blocks\\src\\blocks\\extensions\\hide-extensions.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "bgSvgAnimation",
+        "bgSvgAnimationSpeed",
+        "bgSvgMinHeight",
+        "bgSvgOpacity",
+        "bgSvgPosition",
+        "bgSvgTextShadow",
+        "splitMediaType",
+        "splitMediaTypeMobile",
+        "splitMediaTypeTablet"
+      ],
+      "role_covered": [
+        "backgroundImage",
+        "backgroundImageMobile",
+        "backgroundImageTablet",
+        "bgSvgContent",
+        "bgVideo",
+        "bgVideoMobile",
+        "bgVideoTablet",
+        "splitImage",
+        "splitImageMobile",
+        "splitImageTablet",
+        "splitSvg",
+        "splitSvgMobile",
+        "splitSvgTablet",
+        "splitVideo",
+        "splitVideoMobile",
+        "splitVideoTablet"
+      ]
+    },
+    "sgs/container": {
+      "prefixes": [
+        "bg",
+        "background"
+      ],
+      "context": "backdrop",
+      "insertion": "element",
+      "mechanism": "css-background",
+      "wave": 7,
+      "wire_order": null,
+      "report": "M3",
+      "escape_hatches": [
+        "no-media-type-enum",
+        "existence-based-precedence",
+        "shared-by-8-host-blocks"
+      ],
+      "does_better": [],
+      "notes": "BackgroundPanel is shared by 8 host blocks, so a change here reaches all 8. No media-type enum exists: image, video and svg are three parallel families switched by an editor-only TabPanel, and at render VIDEO SILENTLY BEATS IMAGE with no editor warning (M3 S1).",
+      "attr_count_total": 102,
+      "media_attr_count": 13,
+      "storage_shapes": [
+        "boolean",
+        "media-object",
+        "number",
+        "svg-markup"
+      ],
+      "storedAs": {
+        "backgroundImage": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "backgroundImageMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "backgroundImageTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "bgSvgAnimation": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgAnimationSpeed": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgContent": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": "svg",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgMinHeight": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgOpacity": {
+          "shape": "number",
+          "type": "number",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgPosition": {
+          "shape": "svg-markup",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgSvgTextShadow": {
+          "shape": "boolean",
+          "type": "boolean",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgVideo": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "bgVideoMobile": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "bgVideoTablet": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "Tablet"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\container\\edit.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ContainerWrapperControls.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\WidthPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\LayoutPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\BackgroundPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ShapeDividersPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\GridItemDefaultsPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\_shared.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\svg-allowlist.generated.js",
+        "plugins\\sgs-blocks\\src\\blocks\\extensions\\hide-extensions.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "bgSvgAnimation",
+        "bgSvgAnimationSpeed",
+        "bgSvgMinHeight",
+        "bgSvgOpacity",
+        "bgSvgPosition",
+        "bgSvgTextShadow"
+      ],
+      "role_covered": [
+        "backgroundImage",
+        "backgroundImageMobile",
+        "backgroundImageTablet",
+        "bgSvgContent",
+        "bgVideo",
+        "bgVideoMobile",
+        "bgVideoTablet"
+      ]
+    },
+    "sgs/decorative-image": {
+      "prefixes": [
+        ""
+      ],
+      "context": "backdrop",
+      "insertion": "root",
+      "mechanism": "sibling-markup",
+      "wave": 7,
+      "wire_order": null,
+      "report": "M5",
+      "escape_hatches": [
+        "naked-mode"
+      ],
+      "does_better": [],
+      "notes": "NAKED MODE: the <img> IS the block root, so tier toggles are COMPOUND selectors, never descendant - there is no ancestor to descend from. This already forced a second conditional rendering shape to accommodate ONE shared JS module that assumed a wrapper existed (M5 S3).",
+      "attr_count_total": 25,
+      "media_attr_count": 8,
+      "storage_shapes": [
+        "alt-string",
+        "attachment-id",
+        "media-object",
+        "url-string"
+      ],
+      "storedAs": {
+        "decorMedia": {
+          "shape": "media-object",
+          "type": "object",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": "image-alt",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageId": {
+          "shape": "attachment-id",
+          "type": "number",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageIdMobile": {
+          "shape": "attachment-id",
+          "type": "number",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "imageIdTablet": {
+          "shape": "attachment-id",
+          "type": "number",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        },
+        "imageUrl": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageUrlMobile": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Mobile"
+        },
+        "imageUrlTablet": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "Tablet"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\decorative-image\\edit.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "decorMedia",
+        "imageId",
+        "imageIdMobile",
+        "imageIdTablet",
+        "imageUrlMobile",
+        "imageUrlTablet"
+      ],
+      "role_covered": [
+        "imageAlt",
+        "imageUrl"
+      ]
+    },
+    "sgs/product-card": {
+      "prefixes": [
+        ""
+      ],
+      "context": "element",
+      "insertion": "element",
+      "mechanism": "bare-url",
+      "wave": 8,
+      "wire_order": null,
+      "report": "M5",
+      "escape_hatches": [
+        "bare-url-no-attachment-id",
+        "override-over-live-data"
+      ],
+      "does_better": [],
+      "notes": "Content migration ships SEPARATELY, after the abstraction is proven. Stores a bare URL with no attachment ID at all, and in bound mode the attr OVERRIDES live WooCommerce data only when explicitly set (M5 S5).",
+      "attr_count_total": 108,
+      "media_attr_count": 3,
+      "storage_shapes": [
+        "alt-string",
+        "string",
+        "url-string"
+      ],
+      "storedAs": {
+        "image": {
+          "shape": "url-string",
+          "type": "string",
+          "db_role": "image-object",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageAlt": {
+          "shape": "alt-string",
+          "type": "string",
+          "db_role": "image-alt",
+          "control": "literal",
+          "tier": "desktop"
+        },
+        "imageHeight": {
+          "shape": "string",
+          "type": "string",
+          "db_role": null,
+          "control": "literal",
+          "tier": "desktop"
+        }
+      },
+      "editor_sources_scanned": [
+        "plugins\\sgs-blocks\\src\\blocks\\product-card\\edit.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ContainerWrapperControls.js",
+        "plugins\\sgs-blocks\\src\\components\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\button\\presets.js",
+        "plugins\\sgs-blocks\\src\\components\\primitives\\index.js",
+        "plugins\\sgs-blocks\\src\\utils\\index.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\WidthPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\LayoutPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\BackgroundPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\ShapeDividersPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\GridItemDefaultsPanel.js",
+        "plugins\\sgs-blocks\\src\\blocks\\container\\components\\_shared.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveOverride.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveTriStateControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ResponsiveBoxControls.js",
+        "plugins\\sgs-blocks\\src\\components\\DesignTokenPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsColourPanel.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\fillRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\textRow.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-variants\\borderRow.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaGalleryPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientOverlayControl.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\GradientCapableColourControl.js",
+        "plugins\\sgs-blocks\\src\\components\\FocalPositionField.js",
+        "plugins\\sgs-blocks\\src\\components\\LinkPopoverControl.js",
+        "plugins\\sgs-blocks\\src\\components\\DateTimePickerField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBooleanField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsFreeTextField.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsMultiSelectField.js",
+        "plugins\\sgs-blocks\\src\\components\\ColumnShapePicker.js",
+        "plugins\\sgs-blocks\\src\\components\\ScaleAxisControl.js",
+        "plugins\\sgs-blocks\\src\\components\\ShadowControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SpacingControl.js",
+        "plugins\\sgs-blocks\\src\\components\\AnimationControl.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\RowQuickInsertAppender.js",
+        "plugins\\sgs-blocks\\src\\components\\RowScrollBehaviourControls.js",
+        "plugins\\sgs-blocks\\src\\components\\TypographyControls.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBoxControl.js",
+        "plugins\\sgs-blocks\\src\\components\\BorderStyleControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsBorderControl.js",
+        "plugins\\sgs-blocks\\src\\components\\SgsLengthControl.js",
+        "plugins\\sgs-blocks\\src\\components\\MediaSizingPanel.js",
+        "plugins\\sgs-blocks\\src\\utils\\tokens.js",
+        "plugins\\sgs-blocks\\src\\utils\\responsive.js",
+        "plugins\\sgs-blocks\\src\\utils\\icons.js",
+        "plugins\\sgs-blocks\\src\\utils\\objectPosition.js",
+        "plugins\\sgs-blocks\\src\\utils\\cssLength.js",
+        "plugins\\sgs-blocks\\src\\utils\\presetSettings.js",
+        "plugins\\sgs-blocks\\src\\utils\\background-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\spacing-preview.js",
+        "plugins\\sgs-blocks\\src\\utils\\sanitise-svg.js",
+        "plugins\\sgs-blocks\\src\\blocks\\extensions\\hide-extensions.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\palette-default.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\serializer.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPicker.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconPreview.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\icon-data.js",
+        "plugins\\sgs-blocks\\src\\utils\\svg-allowlist.generated.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-palette\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\colour-picker\\color-picker\\index.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\control-points.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\utils.js",
+        "plugins\\sgs-blocks\\src\\components\\gradient-picker\\gradient-bar\\constants.js",
+        "plugins\\sgs-blocks\\src\\components\\IconPicker\\IconGrid.js"
+      ],
+      "role_coverage_gap": [
+        "imageHeight"
+      ],
+      "role_covered": [
+        "image",
+        "imageAlt"
+      ]
+    }
+  },
+  "excluded": {
+    "sgs/responsive-logo": "Bean's call. Already good - native <picture><source media>, zero JS, genuinely per-tier with inherit-up. Forcing it onto the shared shape is a DOWNGRADE, and excluding it removes a whole mechanism variant from v1.",
+    "sgs/info-box": "Not a media surface. Its mediaType/image/icon are DEAD legacy attrs from before the FR-22-6 InnerBlocks migration; the real media lives in sgs/icon and sgs/media children (M5 S1).",
+    "sgs/image-sequence": "Agency-only (inserter:false, needs a Python/ffmpeg CLI no client can run). Its \"media\" is a canvas frame rig with a fail-open thumbnail, not a displayed image (M5 S4)."
+  },
+  "presentation": {
+    "doc": "The PRESENTATION half of the manifest — media atoms 7-10 (object-fit / focal-point / box-shape / overlay). The Wave 1 census above is SOURCE-SIDE ONLY; see this script`s docstring.",
+    "generated_by": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+    "decision": "D909",
+    "reading_instruction": "GAP ANALYSIS, not a wiring manifest. A name missing from a surface is an accidental gap, not a deliberate exclusion. `gaps` is the operative output; `surfaces` is only what exists today.",
+    "traps": [
+      {
+        "id": "maxwidth-two-owners",
+        "claim": "`maxWidth` is a media attribute",
+        "truth": "Only on sgs/media and sgs/before-after. On hero, container and product-card it is the WRAPPER max-width, paired with `contentWidth` and owned by SGS_Container_Wrapper.",
+        "how_found": "The two surfaces that own it as media have no `contentWidth` attribute at all; the three that do not, do."
+      },
+      {
+        "id": "imageheight-opposite-meanings",
+        "claim": "`imageHeight` is one concept",
+        "truth": "sgs/media declares `integer` (intrinsic, paired with imageWidth, written from the chosen media -- atom 5). sgs/product-card declares `string` (\"180px\", client-facing box-shape control). A helper keyed on the name alone breaks one of them.",
+        "how_found": "Reading the declared type per surface rather than matching the name."
+      },
+      {
+        "id": "positionxy-is-not-focal-point",
+        "claim": "decorative-image positionX/positionY are focal point",
+        "truth": "They are absolute placement of the decoration on its section. Folding them into atom 8 would move the wrong thing.",
+        "how_found": "Both are tier OBJECTS defaulting to {desktop:50} -- a percentage placement pair, not an object-position value."
+      }
+    ],
+    "disagreements": [
+      {
+        "atom": "object-fit",
+        "what": "THREE rival enums for one property",
+        "detail": {
+          "canonical-5": "cover, contain, fill, none, scale-down (MediaSizingPanel, sgs/media, helpers-media-position.php)",
+          "extension-6": "the same 5 plus \"\" = Inherit (extensions/image-controls.js)",
+          "hero-4": "cover, contain, fill, custom -- no none, no scale-down, and `custom` is a sizing mode. hero declares NO enum so it round-trips.",
+          "backdrop-3": "cover, contain, auto (backgroundSize on hero + container)"
+        },
+        "resolution": "D909 -- atom 7 is the canonical five and READS the others. `custom` is reassigned to atom 9 (box-shape)."
+      },
+      {
+        "atom": "focal-point",
+        "what": "TWO storage shapes for one value",
+        "detail": {
+          "xy-object": "sgsObjectPosition {x,y} floats 0-1 (FocalPointPicker native)",
+          "css-string": "objectPosition / splitMediaObjectPosition \"center center\""
+        },
+        "resolution": "Already bridged -- FocalPositionField takes a `format` prop (\"xy\" | \"css-string\") and src/utils/objectPosition.js converts. No new mechanism needed; coverage is the gap."
+      },
+      {
+        "atom": "box-shape",
+        "what": "Ratio format diverges, and height is modelled four ways",
+        "detail": {
+          "ratio-spaced": "\"16 / 9\" (MediaSizingPanel RATIO_OPTIONS, image-sequence)",
+          "ratio-unspaced": "\"16/10\" (card-grid, gallery, post-grid -- free text)",
+          "height-tier-object": "sgs/media, before-after `height` + heightUnit",
+          "height-flat-string": "product-card `imageHeight` = \"180px\", non-responsive"
+        },
+        "resolution": "OPEN -- atom 9 must pick one ratio format and read both."
+      },
+      {
+        "atom": "overlay",
+        "what": "THREE implementations, one bypassing the shared emitter",
+        "detail": {
+          "shared-value-emitter": "sgs_overlay_decls() (helpers-tokens.php:1003) -- 2 callers",
+          "shared-attr-wrapper": "sgs_overlay_decls_for() (helpers-colour-variants.php:316)",
+          "hero-bypass": "mediaOverlayColour / mediaOverlayGradient -- calls neither, and has no opacity, blend mode, hover or tiers"
+        },
+        "resolution": "OPEN -- routing hero`s split overlay through the shared emitter is the cheap win."
+      },
+      {
+        "atom": "overlay",
+        "what": "Inconsistent naming INSIDE one attribute family",
+        "detail": {
+          "prefixed": "backgroundOverlayColour, backgroundOverlayOpacity, backgroundOverlayBlendMode",
+          "unprefixed": "overlayGradient, overlayGradientHover"
+        },
+        "resolution": "Recorded, not fixed -- a rename is a stored-post_content migration (D338). Atom 10 reads both."
+      }
+    ],
+    "gaps": {
+      "object-fit": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero",
+          "media"
+        ],
+        "carries_via_extension": [
+          "before-after",
+          "product-card"
+        ],
+        "extension_attr": "sgsObjectFit",
+        "MISSING": [
+          "decorative-image"
+        ],
+        "coverage": "5/6",
+        "not_applicable": {}
+      },
+      "focal-point": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero",
+          "media"
+        ],
+        "carries_via_extension": [
+          "before-after",
+          "product-card"
+        ],
+        "extension_attr": "sgsObjectPosition",
+        "MISSING": [
+          "decorative-image"
+        ],
+        "coverage": "5/6",
+        "not_applicable": {}
+      },
+      "box-shape": {
+        "eligible": 6,
+        "carries_own": [
+          "before-after",
+          "container",
+          "decorative-image",
+          "hero",
+          "media",
+          "product-card"
+        ],
+        "carries_via_extension": [],
+        "extension_attr": null,
+        "MISSING": [],
+        "coverage": "6/6",
+        "not_applicable": {}
+      },
+      "overlay": {
+        "eligible": 6,
+        "carries_own": [
+          "container",
+          "hero"
+        ],
+        "carries_via_extension": [],
+        "extension_attr": null,
+        "MISSING": [
+          "before-after",
+          "decorative-image",
+          "media",
+          "product-card"
+        ],
+        "coverage": "2/6",
+        "not_applicable": {}
+      }
+    },
+    "specialised": {
+      "decorative-image": {
+        "positionX": "Absolute placement of the decoration on the page — not the position of an object within its container. Never atom 8.",
+        "positionY": "Absolute placement of the decoration on the page — not the position of an object within its container. Never atom 8."
+      }
+    },
+    "surfaces": {
+      "sgs/media": {
+        "control": "src/components/MediaSizingPanel.js (shared) + media/edit.js",
+        "renderer": "src/blocks/media/render.php:288-299",
+        "attr_count": 9,
+        "attrs": {
+          "objectFit": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "element",
+            "enum": [
+              "cover",
+              "contain",
+              "fill",
+              "none",
+              "scale-down"
+            ]
+          },
+          "objectPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "mediaSizing": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element",
+            "enum": [
+              "auto",
+              "height",
+              "ratio"
+            ]
+          },
+          "height": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "heightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxHeightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxWidth": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Bounds the media box -- sgs/media has no contentWidth."
+          },
+          "maxWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/before-after": {
+        "control": "universal image-controls extension (sgsObjectFit/sgsObjectPosition)",
+        "renderer": "src/blocks/before-after/render.php:262-278 (emits custom-property VALUES)",
+        "attr_count": 4,
+        "attrs": {
+          "height": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "desktop": 400
+            },
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "heightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "maxWidth": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Bounds the media box -- no contentWidth on this block."
+          },
+          "maxWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/hero": {
+        "control": "hero/edit.js (own rows) + FocalPositionField + BackgroundPanel (shared)",
+        "renderer": "src/blocks/hero/render.php:618-628 + :1098/:1112 (overlay)",
+        "attr_count": 25,
+        "attrs": {
+          "splitMediaObjectFit": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Declares NO enum, and carries a 4th value \"custom\" that is a SIZING MODE (explicit width/height), not a CSS fit value -- render.php:625 gates object-fit OFF for it. Reassigned to box-shape (D909)."
+          },
+          "backgroundSize": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "cover",
+              "contain",
+              "auto"
+            ]
+          },
+          "splitMediaObjectPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "The only per-tier focal point in the population. Mobile defaults to \"center 20%\", Tablet to \"\"."
+          },
+          "splitMediaObjectPositionTablet": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "",
+            "tier": "Tablet",
+            "scope": "element"
+          },
+          "splitMediaObjectPositionMobile": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center 20%",
+            "tier": "Mobile",
+            "scope": "element"
+          },
+          "backgroundPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundRepeat": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "no-repeat",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "no-repeat",
+              "repeat",
+              "repeat-x",
+              "repeat-y"
+            ]
+          },
+          "backgroundAttachment": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "scroll",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "scroll",
+              "fixed"
+            ]
+          },
+          "splitMediaHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaHeightUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "px",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaWidth": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "splitMediaWidthTablet": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "element"
+          },
+          "splitMediaWidthMobile": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "element"
+          },
+          "splitMediaWidthUnit": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "%",
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "minHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "mobile": "360px"
+            },
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "backgroundOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColourHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacity": {
+            "atom": "overlay",
+            "type": "number",
+            "default": 30,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityTablet": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityMobile": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayBlendMode": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "normal",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "darken",
+              "lighten",
+              "color-dodge",
+              "color-burn",
+              "soft-light",
+              "hard-light",
+              "difference",
+              "exclusion"
+            ]
+          },
+          "overlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "overlayGradientHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "mediaOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Split-column overlay, SEPARATE from the section overlay. Bypasses sgs_overlay_decls() -- no opacity, no blend mode, no hover, no tiers."
+          },
+          "mediaOverlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/container": {
+        "control": "src/blocks/container/components/BackgroundPanel.js (shared by 8 host blocks)",
+        "renderer": "includes/class-sgs-container-wrapper.php:1746 / :2269 (overlay)",
+        "attr_count": 13,
+        "attrs": {
+          "backgroundSize": {
+            "atom": "object-fit",
+            "type": "string",
+            "default": "cover",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "cover",
+              "contain",
+              "auto"
+            ],
+            "note": "The backdrop equivalent of object-fit, and NOT equivalent in vocabulary: cover/contain/auto only. class-sgs-container-wrapper.php:1106-1108 records the impedance mismatch in its own comment."
+          },
+          "backgroundPosition": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "center center",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundRepeat": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "no-repeat",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "no-repeat",
+              "repeat",
+              "repeat-x",
+              "repeat-y"
+            ]
+          },
+          "backgroundAttachment": {
+            "atom": "focal-point",
+            "type": "string",
+            "default": "scroll",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "scroll",
+              "fixed"
+            ]
+          },
+          "minHeight": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {},
+            "tier": "desktop",
+            "scope": "element"
+          },
+          "backgroundOverlayColour": {
+            "atom": "overlay",
+            "type": "string",
+            "default": null,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayColourHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacity": {
+            "atom": "overlay",
+            "type": "number",
+            "default": 30,
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityTablet": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Tablet",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayOpacityMobile": {
+            "atom": "overlay",
+            "type": "number",
+            "default": null,
+            "tier": "Mobile",
+            "scope": "backdrop"
+          },
+          "backgroundOverlayBlendMode": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "normal",
+            "tier": "desktop",
+            "scope": "backdrop",
+            "enum": [
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "darken",
+              "lighten",
+              "color-dodge",
+              "color-burn",
+              "soft-light",
+              "hard-light",
+              "difference",
+              "exclusion"
+            ]
+          },
+          "overlayGradient": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          },
+          "overlayGradientHover": {
+            "atom": "overlay",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "backdrop"
+          }
+        }
+      },
+      "sgs/decorative-image": {
+        "control": "decorative-image/edit.js",
+        "renderer": "sgs_responsive_image() naked mode",
+        "attr_count": 2,
+        "attrs": {
+          "width": {
+            "atom": "box-shape",
+            "type": "object",
+            "default": {
+              "desktop": 200
+            },
+            "tier": "desktop",
+            "scope": "element",
+            "note": "Naked mode -- sgs_responsive_image() emits the <img> AS the block root, so there is no ancestor to descend from. positionX/positionY on this block are ABSOLUTE PLACEMENT, not focal point. Trap 3."
+          },
+          "maxWidthPercent": {
+            "atom": "box-shape",
+            "type": "number",
+            "default": 20,
+            "tier": "desktop",
+            "scope": "element"
+          }
+        }
+      },
+      "sgs/product-card": {
+        "control": "universal image-controls extension + product-card/edit.js",
+        "renderer": "src/blocks/product-card/render.php:246 via sgs_media_position_css()",
+        "attr_count": 1,
+        "attrs": {
+          "imageHeight": {
+            "atom": "box-shape",
+            "type": "string",
+            "default": "",
+            "tier": "desktop",
+            "scope": "element",
+            "note": "string \"180px\", client-facing, drives --sgs-product-card-image-height. NOT the same concept as sgs/media imageHeight. Non-responsive. Trap 2."
+          }
+        }
+      }
+    }
+  }
+}

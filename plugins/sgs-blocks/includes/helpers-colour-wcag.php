@@ -161,10 +161,6 @@ function sgs_wcag_preferred_text_colour_for_bg( string $bg_hex, string $preferre
  * @return string Hex colour (e.g. '#e68a95') or the fallback.
  */
 function sgs_resolve_palette_hex( string $slug, string $fallback = '' ): string {
-	if ( ! function_exists( 'wp_get_global_settings' ) ) {
-		return $fallback;
-	}
-
 	$palette = wp_get_global_settings( array( 'color', 'palette' ) );
 
 	// wp_get_global_settings may return the palette keyed by origin

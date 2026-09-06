@@ -1,0 +1,10 @@
+[inert-controls] 1 INERT CONTROL(S) FOUND (0 unconditional, 1 conditional):
+
+  plugins/sgs-blocks/src/blocks/feature-grid/render.php:156
+      sgs/feature-grid -> "layout" is CONDITIONAL (MEDIUM)
+      This attribute has a control (edit.js/shared), but render.php
+      overwrites it with a hardcoded value. User edits are discarded.
+
+Fix: either (a) remove the assignment and let the wrapper/template use the
+user value, or (b) remove the control if the attribute should never be
+user-editable. A visible-but-inert control erodes user trust in the editor.

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Field texture harness — verify-field-texture.mjs</title>
+</head>
+<body>
+<!--
+  Deliberately empty. This page exists ONLY so verify-field-texture.mjs has a
+  same-origin document to navigate to before dynamically import()-ing the
+  real `fx-generative-background.js` module — a module-script import() is
+  subject to CORS when cross-origin, and about:blank has no origin to be
+  same-origin WITH. No script here: the module under test boots itself
+  (`boot()` at its own bottom), harmlessly finds zero
+  `[data-sgs-fx="generative-background"]` elements on this blank page, and
+  the test script calls its exported `buildFieldImageData()` directly via
+  the imported module object.
+-->
+</body>
+</html>

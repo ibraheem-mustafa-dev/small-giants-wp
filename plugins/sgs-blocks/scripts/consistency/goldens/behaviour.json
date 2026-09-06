@@ -1,0 +1,389 @@
+{
+ "_meta": {
+  "purpose": "Session C — MEDIA / STATE / STRUCTURE control goldens. Owns 7 of the ~24 control types: media, state, responsive-wrapper, repeater, animation, angle-position, preset. NOT a merge into golden-controls.json — a sibling file (see that file's _meta for the composer that will fold styling.json + input.json + behaviour.json together).",
+  "source": "Every figure below was either (a) re-derived from the real committed tree on 2026-08-19 via the commands cited, or (b) confirmed LIVE in the block editor on the sandybrown canary and Bean picked the canonical shape from the real screens, not from a description. Rows built from live-editor confirmation are marked verifiedLive: true.",
+  "principle_native_controls": "Bean ruling 2026-08-19: any RAW WordPress-native primitive used without an SGS wrapper (AnglePickerControl, FocalPointPicker used directly, etc.) should get a SMALL SGS WRAPPER COMPONENT modelled on LinkPopoverField's shape (src/components/LinkPopoverControl.js) — a thin, self-contained component owning label/value/onChange and the native primitive's quirks — rather than being left bare or folded into an unrelated panel. Applied below wherever a type currently has no SGS wrapper.",
+  "sessionCorrections": [
+   "The script every 'REACH' figure in golden-controls.json's other 13 rows cites (survey-control-reach.py) does not exist in this repository — verified via git log --all (zero history) and confirmed by two sibling scripts' own docblocks describing it as real. Root cause (per Bean): it was a genuine duplicate of the C1 track's own reach mechanism and was deliberately deleted after C1 merged to main. This session's rows therefore do NOT cite that script; adoption evidence here comes from survey-control-mounts.py (real, committed) plus direct source reads plus live-editor screenshots.",
+   "The 'state' type in the pre-existing golden-controls.json temp row covered ONLY the colour-hover mechanism (SgsColourPanel -> DesignTokenPicker). A second, entirely separate universal mechanism exists (hover-effects.js: scale/shadow/zoom/grayscale/focus-ring/click-ripple) and is encoded here as a second named mechanism under the same type.",
+   "Animation is not one control type wearing different labels — it is FOUR distinct, independently-wired mechanisms confirmed live in the editor (Animation / Scroll & effects / Element parallax / a block's own bespoke Background-panel toggles), two of which use the exact same UI shape (a SelectControl dropdown) while driving completely different runtimes (Tier V CSS vs Tier G GSAP). Do not collapse these on UI-shape resemblance alone.",
+   "A genuine bug was found, PROVEN, and FIXED this session: the universal parallax.js extension's 'Background parallax' toggle mounted inside `InspectorControls group=\"color\"` (WordPress's native Colour-panel slot), which only renders when a block declares `supports.color` with at least one sub-flag true. sgs/hero declares NO supports.color at all; sgs/container declares `supports.color: false`. On both, the toggle was DEAD UI — proven by reading the code, not asserted. Bean's fix decision: retire the background half of parallax.js entirely rather than relocate it, since BackgroundPanel already provides a working, reachable bgKenBurns/bgParallax pair. Shipped 2026-08-19 (see decisions.md).",
+   "A second self-correction, caught only because the fix above required re-checking: this file's FIRST pass on the animation type wrongly claimed 5 blocks 'each hand-roll their own Ken-burns/Parallax pair with ZERO shared component' — that was inferred from seeing the same attribute names in each block's live editor, never verified against the actual source. Grepping which files import BackgroundPanel shows it is ONE shared component, mounted by 8 blocks. The bannedLookalikes finding built on the wrong inference has been removed. Lesson: live-editor confirmation proves a control EXISTS and its SHAPE — it does not prove whether the code behind it is shared or duplicated; that needs a source-level check every time, even under time pressure.",
+   "Per Bean's LinkPopoverField-wrapper ruling (see principle_native_controls above): built `FocalPositionField` (src/components/FocalPositionField.js) and routed both existing raw FocalPointPicker mounts (the universal image-controls.js extension and hero's split-media object-position control) through it. The two mounts had two DIFFERENT storage shapes for the same concept (raw {x,y} floats vs a CSS object-position string) — the wrapper owns both via a `format` prop rather than forcing a storage-shape migration on either consumer's PHP side. Shipped 2026-08-19; trust-bar's unrelated 'Pending' control was also removed this session per an explicit ad hoc Bean request (see decisions.md)."
+  ]
+ },
+ "controls": {
+  "media": {
+   "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §7 (MEDIA)",
+   "decision": "ONE CONTRACT WITH TWO MODES, not two independent contracts. MediaGalleryPicker.js's own docblock states it verbatim: 'Sibling to MediaPicker.js (single-slot media)... for the BULK case.' Both wrap the identical MediaUpload+MediaUploadCheck pair; MediaGalleryPicker only differs by setting multiple/gallery props. Confirmed by reading both components' source (not by adoption count alone, which would have wrongly favoured 'two contracts' purely because gallery has 1 mount). Bean confirmed after live-editor check on 2026-08-19.",
+   "canonical": {
+    "single": {
+     "component": "MediaPicker",
+     "path": "src/components/MediaPicker.js",
+     "adoption": "13 mounts / 8 blocks (survey-control-mounts.py, 2026-08-19)"
+    },
+    "bulk": {
+     "component": "MediaGalleryPicker",
+     "path": "src/components/MediaGalleryPicker.js",
+     "adoption": "2 mounts / 1 block (sgs/gallery) (survey-control-mounts.py, 2026-08-19)",
+     "note": "Same contract as single, mode='bulk' (multiple/gallery props true)"
+    }
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "patterns": [
+     {
+      "shape": "raw MediaUpload+MediaUploadCheck instead of MediaPicker/MediaGalleryPicker",
+      "liveInstances": "10 direct blocks (35 total mounts incl. extension surfaces) per survey-control-mounts.py"
+     },
+     {
+      "shape": "per-tier duplicate media pickers instead of one ResponsiveControl-wrapped picker",
+      "why": "sgs/responsive-logo renders THREE always-visible logo slots — the D521 art-direction-tier rollout's one named exception",
+      "liveInstances": 1
+     }
+    ],
+    "matchRule": "Exact JSX-identifier Set membership"
+   },
+   "nativeUi": {
+    "_note": "block.json supports.sgs.imageControls is SGS's own extension flag (not core WP). 15 of 83 blocks declare it, 7 set it true (survey-control-mounts.py, BLOCK.JSON DERIVED section)."
+   },
+   "qualifiesWhen": {
+    "rule": "the block declares an attribute holding a WP media reference (id/url pair) or paints an <img>/<video> element per its own render.php/style.css",
+    "note": "roster.json surfaces.media (33 blocks) is usable here since it is a real declared-attribute census, not the self-fulfilling derived predicate golden-controls.json's colour row warns against"
+   },
+   "scope": {
+    "eligible": "roster.json surfaces.media === true",
+    "eligibleCount2026_08_19": 33,
+    "rosterPath": "scripts/consistency/roster.json"
+   }
+  },
+  "state": {
+   "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §6 (STATE/HOVER) — this row corrects and extends the existing golden-controls.json temp row, which covers mechanism (1) only",
+   "decision": "TWO independent mechanisms, not one. Mechanism (1) governs COLOUR under hover/current/scrolled states. Mechanism (2) governs everything else hover-related (scale, shadow, zoom, grayscale, timing, focus ring, click ripple) via a completely separate universal extension. A block can conform on one and violate the other.",
+   "canonical": {
+    "colourState": {
+     "component": "SgsColourPanel",
+     "path": "src/components/SgsColourPanel.js -> src/components/DesignTokenPicker.js",
+     "shape": "SgsColourPanel rows -> DesignTokenPicker's states prop",
+     "componentResolutionNote2026_08_20": "Verified via resolveComponentFiles() (core/components.js): SgsColourPanel resolves. Declaring it here only proves the block reaches the shared colour-infrastructure component that CAN carry a states array — it does NOT independently prove a hover/current/scrolled state was actually declared on any row (that finer fact needs the `states` field below, which activates the already-wired emission-mechanism axis). Kept as one measurable signal rather than none, but this canonical/reach axis and the colour type's OWN canonical axis will read near-identically for any given block (both test SgsColourPanel reach) — that overlap is expected, not a bug, per the note in AXIS-GAP below.",
+     "adoption": "25 of 307 declared elements carry any state (hover 22, current 3, scrolled 1) — survey-control-mounts.py, 2026-08-19",
+     "note": "Part O §6's named canonical StateToggleControl is DEAD CODE — 0 mounts anywhere, confirmed independently by survey-control-mounts.py's ZERO MOUNTS ANYWHERE line. Do not cite it.",
+     "independentlySufficient": false,
+     "independentlySufficientWhy": "MEASURED 2026-08-20: declaring this produced a state.canonical verdict IDENTICAL to colour.canonical on 67 of 83 blocks. Reaching SgsColourPanel proves the block has colour infrastructure that CAN carry a states array — it does not prove any hover/current/scrolled state was declared. Scoring it as conformance reports colour-panel reach under a state heading. The real state signal is the `states` field on this row, which activates the emission-mechanism axis (hoverMechanism): 8 CONFORMANT / 9 UNCLEAR / 66 N-A."
+    },
+    "hoverEffects": {
+     "shape": "the universal hover-effects.js extension (scale, shadow preset, image zoom, grayscale, stagger delay, easing, duration, focus ring, block link, click-ripple)",
+     "path": "src/blocks/extensions/hover-effects.js",
+     "gating": "opt-in via supports.sgs.enabledExtensions:[\"hover\"] (D551)",
+     "verifiedLive": true,
+     "note": "Confirmed live 2026-08-19: reached via the 'Click Effects' panel plus a shadow-preset SelectControl already named in golden-controls.json's own shadow row as reaching '67 blocks... invisible to any per-block scan'. Same underlying extension.",
+     "noComponentIdentifier2026_08_20": "hover-effects.js applies via a `withHoverControls` createHigherOrderComponent filter on core's BlockEdit — it injects raw PanelBody/SelectControl JSX globally from ONE file, never as a named component any block imports or mounts in its own edit.js (grepped: zero blocks reference hover-effects.js or a named hover-panel component directly). No bare identifier exists to declare; canonicalComponentNames() would find nothing here regardless, so `component` is deliberately omitted rather than naming the file or the HOC function (neither is a JSX-mountable identifier the one-hop reach scan could ever match)."
+    }
+   },
+   "states": {
+    "required": true,
+    "mechanism": "activates the already-wired hoverMechanism/emission axis (core/golden.js AXIS_FIELD.hoverMechanism -> field 'states'; evaluator axisHoverMechanism() in survey-golden-conformance.js). It reads each block's render.php and checks for the sgs_emit_state_colour_css() helper macro (CONFORMANT) vs the pre-2026-08-19 --sgs-hover-* CSS custom-property scheme (VIOLATION) vs no hover emission at all (N/A).",
+    "note2026_08_20": "This is the most precise measurable signal this type has for the colourState mechanism specifically — it tests the EMISSION side (does render.php use the canonical helper) rather than the editor-reach side (does the block mount SgsColourPanel), and is independent of the canonical.colourState axis above. Declaring it here is a reuse of an existing evaluator via the schema's own declared-axis mechanism, not a new field."
+   },
+   "bannedLookalikes": {
+    "_note": "Carried from the existing temp row (Spec 35 §6.3) — re-attributed across the two mechanisms above where the spec's own text makes the mechanism clear.",
+    "jsxComponents": [],
+    "patterns": [
+     {
+      "shape": "a separate 'Hover' panel instead of the state living inside the same control group as its base value",
+      "liveInstances": "7 blocks (spec-cited)"
+     },
+     {
+      "shape": "adjacent 'X' and 'X (hover)' sibling controls instead of one control with a state axis",
+      "liveInstances": "3 blocks (spec-cited)"
+     },
+     {
+      "shape": "a *Hover attr with no control at all",
+      "liveInstances": "8 blocks, ~27 attrs (spec-cited)"
+     },
+     {
+      "shape": "preset-only reachability",
+      "liveInstances": "1 block (spec-cited, sgs/product-card)"
+     }
+    ]
+   },
+   "nativeUi": {
+    "_note": "No core supports.* flag maps to pseudo-state UI — not applicable to either mechanism."
+   },
+   "qualifiesWhen": {
+    "colourState": "a row's required state set = ['normal'] + the states DECLARED on its element in block.json supports.sgs.elements.<el>.states — never parsed from attribute names",
+    "hoverEffects": "a block renders a `:hover`/`:focus-visible` CSS rule or is in hover-effects.js's SCALE_SHADOW_DEFAULT_BLOCKS allow-list",
+    "openFinding": "5 blocks in the LEDGER's carried Open list have `:hover` with no `:focus-visible` — this predicate must classify all 5 as MISSING/VIOLATION under the colourState mechanism; not independently re-verified against the final predicate implementation this session, flagged for the executing detector to confirm."
+   },
+   "scope": {
+    "eligible": "roster.json has no dedicated state surface for either mechanism — colourState scope: Spec 35 §6.5's 23-block query (attr_name LIKE '%Hover%' OR css_state IN (...)); hoverEffects scope: every block eligible for supports.sgs.enabledExtensions opt-in (potentially all 83, gated by opt-in not by capability)"
+   }
+  },
+  "responsive-wrapper": {
+   "specRef": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O §12 — carried forward from the existing temp row, verified not rewritten (it already has a wired prebuild gate and a genuinely binding pairing rule)",
+   "canonical": {
+    "tierPrimitive": {
+     "component": "ResponsiveControl",
+     "path": "src/components/ResponsiveControl.js",
+     "storageShape": "flat per-tier attrs (base + Tablet + Mobile siblings)",
+     "adoption": "31 mounts / 12 blocks direct (survey-control-mounts.py, 2026-08-19)"
+    },
+    "objectPrimitive": {
+     "component": "ResponsiveOverride",
+     "path": "src/components/ResponsiveOverride.js",
+     "storageShape": "one object-typed attr {desktop,tablet,mobile}",
+     "adoption": "71 mounts / 23 blocks direct (survey-control-mounts.py, 2026-08-19)"
+    },
+    "bindingRule": "THE PAIRING IS BINDING (Spec 35 §12.3): scalar-base-with-siblings -> ResponsiveControl ONLY; object-base-no-siblings -> ResponsiveOverride ONLY. A mismatch is destructive and SILENT (D563).",
+    "gate": "lint-responsive-controls.py — wired prebuild gate naming exactly these two primitives"
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [
+     "DeviceTabs"
+    ],
+    "patterns": [
+     {
+      "shape": "per-tier duplicate controls rendered side by side",
+      "liveInstances": 1
+     },
+     {
+      "shape": "a bespoke DeviceTabs mount",
+      "why": "0 mounts anywhere (survey-control-mounts.py ZERO MOUNTS)",
+      "liveInstances": 0
+     },
+     {
+      "shape": "blending ResponsiveControl with ResponsiveOverride on ONE attr family",
+      "why": "the D563 defect class",
+      "liveInstances": "0 remaining per spec text, not independently re-verified"
+     }
+    ],
+    "matchRule": "DeviceTabs banned as exact JSX identifier despite 0 live instances — still exported from components/index.js, so a future block could reintroduce it."
+   },
+   "nativeUi": {
+    "_note": "Wraps other types rather than owning a native competitor of its own."
+   },
+   "qualifiesWhen": {
+    "rule": "an attribute family declares Tablet/Mobile siblings (scalar case) OR is object-typed with {desktop,tablet,mobile} keys (object case) — this is the field the existing temp row was missing",
+    "trap": "literal-name matching MISSES brand-strip (tier keys built dynamically in PHP) and FALSE-POSITIVES on fontSizeTablet (built by computed key in JS) — Spec 35 §12.5's own warning, carried forward"
+   },
+   "scope": {
+    "eligible": "no dedicated roster.json surface — Spec 35 §12.5: block_attributes.is_responsive=1 -> 45 blocks, PLUS any attr family declaring Tablet/Mobile siblings the column has not caught"
+   }
+  },
+  "repeater": {
+   "specRef": "No Part O section exists for this type — genuinely new work this session. Spec 35's only reference is cross-cutting note CO-10.",
+   "decision": "TWO SEPARATE TYPES under one heading, not one contract with variations — confirmed with Bean 2026-08-19 after live review. (a) AUTHOR-ITEMS repeater: a client types in N custom rows (icon+label, text, etc). (b) PICK-FROM-EXISTING: search/select existing site content into an ordered list. These solve different jobs and must not be forced into one shape. Drag-reorder is explicitly OUT OF SCOPE for now — Bean: 'not worth the time because we need to launch.' No native WordPress component does this (verified: no public reusable array-repeater-with-drag-reorder API in @wordpress/components; the closest exists only as a private API inside core's own Navigation block).",
+   "canonical": {
+    "authorItems": {
+     "shape": "trust-bar's per-item editor shape (IconCircleItemEditor / GenericBadgeItemEditor pattern) — NOT YET extracted to a shared component",
+     "path": "src/blocks/trust-bar/edit.js (target shape, not yet shared)",
+     "verifiedLive": true,
+     "note": "Picked over icon-list's cruder stack as the shape to converge on (grouped PanelBody per item, icon/label/toggle fields, trailing 'Add' button). card-grid's 'Manual (custom items)' source mode ALSO renders this same job's controls (Bean, 2026-08-19) — a THIRD live instance of the same mechanism, previously mis-scoped as 'a different job' before this correction. Building the actual shared component is future work; this row names the target shape, it does not claim the work is done.",
+     "noComponentIdentifier2026_08_20": "IconCircleItemEditor and GenericBadgeItemEditor are private, non-exported `function` declarations local to trust-bar/edit.js (lines 149, 197) — confirmed via resolveComponentFiles(): both resolve to false (not found). They are not importable/mountable by any other block, so no bare identifier exists yet to declare as canonical. Do not invent one; this stays N/A on the canonical axis until the extraction happens."
+    },
+    "pickExisting": {
+     "component": "HandpickedPanel",
+     "shape": "card-grid's Collection panel (Hand-picked selection rule) — a ComboboxControl search-and-append pattern",
+     "path": "src/blocks/card-grid/components/handpicked-panel.js",
+     "verifiedLive": true,
+     "componentResolutionNote2026_08_20": "HandpickedPanel is a real, exported, resolvable component (resolveComponentFiles() -> true). It is mounted by src/blocks/card-grid/components/collection-panel.js:115, which card-grid/edit.js:551 mounts directly as <CollectionPanel> — reachable within the survey's one-hop scan (edit.js -> CollectionPanel -> HandpickedPanel). Declared as the canonical component; only card-grid currently qualifies for pickExisting, so expect this axis to read CONFORMANT for sgs/card-grid and NOT-APPLICABLE/MISSING for the other 82 blocks depending on how qualifiesFor() scopes a type with no roster.json surface.",
+     "note": "The DEFAULT mode for card-grid per Bean. A genuinely different job from authorItems — pick FROM existing published content, not author new rows."
+    }
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "patterns": [
+     {
+      "shape": "a single comma-separated TextControl standing in for an item repeater",
+      "why": "sgs/product-card packSizes — confirmed live, the weakest of the 4 shapes surveyed, no per-item fields at all",
+      "liveInstances": 1
+     },
+     {
+      "shape": "a legacy array attribute with no live control at all",
+      "why": "sgs/testimonial-slider still DECLARES a `testimonials` array attribute in block.json; its own edit.js/render.php comments confirm the custom repeater was retired in favour of sgs/testimonial InnerBlocks children — an orphan attr",
+      "liveInstances": 1
+     }
+    ],
+    "matchRule": "Structural (shape of the editor UI), not a JSX-identifier ban — no shared component exists yet to ban a lookalike of."
+   },
+   "nativeUi": {
+    "_note": "No core supports.* flag maps to array-content editing — not applicable."
+   },
+   "qualifiesWhen": {
+    "authorItems": "a declared array-typed attribute carrying an item schema (per-item sub-fields), NOT a flat enum-list array like product-card's visibleAxes",
+    "pickExisting": "a block querying/selecting from an existing post type or content collection rather than authoring standalone item objects"
+   },
+   "scope": {
+    "eligible": "24 block.json files declare at least one array-typed attribute (static grep, this session) — NOT all are item-schema repeaters in this contract's sense; each needs individual classification before counting toward scope. Known authorItems instances: trust-bar.items, icon-list.items, card-grid.items (manual mode). Known pickExisting instances: card-grid (cpt-collection/handpicked)."
+   }
+  },
+  "animation": {
+   "specRef": "No Part O section exists for this type. Spec 35's only reference is the animation extension's own docblock plus cross-cutting note about the D5xx denylist. Genuinely new work this session.",
+   "decision": "FOUR mechanisms, verified live in the editor 2026-08-19, not two as first read from code alone. Two of the four share an identical UI shape (a bare SelectControl dropdown) while driving unrelated runtimes underneath — do not collapse on UI-shape resemblance.",
+   "canonical": {
+    "scrollTriggerReveal": {
+     "shape": "AnimationControl, mounted only via the universal extension",
+     "path": "src/components/AnimationControl.js -> src/blocks/extensions/animation.js",
+     "mechanism": "Tier V (plain CSS) one-shot reveal-on-scroll — fade/slide-in, 15-17 presets, zero extra JS/CSS cost unless a preset is actually chosen",
+     "verifiedLive": true,
+     "adoption": "0 direct JSX mounts (correct — extension-injected). Applies to every sgs/* block + core/group/columns/cover/image, minus hideExtensions opt-outs.",
+     "noComponentIdentifier2026_08_20": "Although AnimationControl itself resolves as a real component (resolveComponentFiles() -> true), it is mounted ONLY from inside animation.js's global BlockEdit filter — never imported or JSX-mounted by any block's own edit.js (grepped: zero matches across src/blocks/*/edit.js). The survey's canonical-reach scan starts from each block's edit.js and only follows ONE further hop through components that edit.js mounts directly, so it structurally cannot see a filter-injected panel with no per-block mount point at all. Declaring `component: \"AnimationControl\"` here would not produce a partial/noisy signal — it would read MISSING/VIOLATION on all or nearly all 83 blocks despite the control genuinely being live and reachable in the editor for every eligible block, which is the same false-signal failure mode as an over-eager 80/83-conformant identifier, just inverted (near-universal false failure instead of false pass). Left undeclared; this is the AXIS-GAP case flagged below, not a fabricated identifier."
+    },
+    "gsapScrollEffects": {
+     "shape": "the 'Scroll & effects' panel, Tier G",
+     "path": "src/blocks/extensions/fx.js",
+     "mechanism": "GSAP-powered continuous scroll-scrubbed motion (easing curves, trigger-start position, scrub distance) — genuinely heavier, budget-gated (a KB-cost notice appears in the panel)",
+     "verifiedLive": true,
+     "note": "Looks like the same kind of dropdown as scrollTriggerReveal above but is architecturally unrelated — confirmed by reading fxOptions' actual values (GSAP easing names like power2.inOut, elastic.out) against AnimationControl's plain preset list.",
+     "noComponentIdentifier2026_08_20": "Same extension-injection shape as scrollTriggerReveal (grepped: zero fx.js/FxPanel/ScrollEffects JSX mounts across src/blocks/*/edit.js) and no exported named component in fx.js for the panel itself. Left undeclared for the same reason — a name here would produce a false near-universal MISSING, not a real signal."
+    },
+    "elementParallaxToggle": {
+     "shape": "parallax.js's Element-parallax toggle",
+     "path": "src/blocks/extensions/parallax.js",
+     "mechanism": "writes the sgsParallax enum ('none'|'element'), universal on any block supporting className, opt-out via supports.sgs.hideExtensions",
+     "verifiedLive": true,
+     "correction2026_08_19": "This row originally also named a 'Background parallax' half of this same toggle pair and flagged it as a CONFIRMED BUG (mounted inside WordPress's native Colour-panel slot — InspectorControls group=\"color\" — which never renders on a block that has migrated off native colour supports; sgs/hero declares no supports.color at all, sgs/container sets supports.color:false, so the toggle was dead UI). That diagnosis was correct, but the fix decided with Bean was to REMOVE the background half entirely rather than relocate it, because BackgroundPanel (see blockOwnBackgroundMotion below) already does this job correctly and reaches every block that needs it. parallax.js now offers element-parallax only. Retirement completed end-to-end 2026-08-19, not just the editor UI: includes/parallax.php's 'background' branch, extensions.css's .sgs-parallax-background rules (fixed-attachment + scroll-driven-animation variants), and assets/js/parallax.js's legacy-browser 'background' fallback branch are all removed. Only 'element' is a live sgsParallax value anywhere in the stack now.",
+     "noComponentIdentifier2026_08_20": "Same extension-injection shape again — the toggle is painted by parallax.js's own BlockEdit filter, not mounted from any block's edit.js (the 5 files matching a plain 'parallax' grep in src/blocks/*/edit.js reference the sgsParallax attribute/opt-outs in prose or supports declarations, not a JSX-mounted component). Left undeclared."
+    },
+    "blockOwnBackgroundMotion": {
+     "component": "BackgroundPanel",
+     "shape": "a SHARED component, not per-block hand-rolled",
+     "componentResolutionNote2026_08_20": "Verified via resolveComponentFiles() -> true, and confirmed as a real one-hop reach: 8 blocks (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) import BackgroundPanel directly in their own edit.js. This is the one animation sub-mechanism the canonical/reach axis can actually measure.",
+     "path": "src/blocks/container/components/BackgroundPanel.js",
+     "mechanism": "one Ken-burns/Parallax mutually-exclusive toggle pair (bgKenBurns/bgParallax), scoped to whichever background image/video is active",
+     "verifiedLive": true,
+     "correction2026_08_19": "The FIRST pass of this row wrongly claimed 5 blocks (hero, container, cta-section, trust-bar, site-header) each independently hand-roll this pair with 'ZERO shared component' — that was never verified, only inferred from seeing the same attribute names appear in each block's live editor. Grepping which files actually IMPORT BackgroundPanel shows 8 blocks (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar) all mount the ONE shared component — this is already the correct, working, reachable implementation, not a duplication finding. The bannedLookalikes entry this correction replaces was itself wrong and has been removed.",
+     "independentlySufficient": false,
+     "independentlySufficientWhy": "MEASURED 2026-08-20: declaring this alone scored 24 blocks CONFORMANT for `animation`. BackgroundPanel is ONE of this row's FOUR declared mechanisms (background motion) — the other three are extension-injected and structurally invisible to a one-hop reach scan. A block with a background Ken-Burns/parallax pair and no scroll-trigger animation at all would read 'conformant on animation', which is a false pass. Measurable, but not independently sufficient. Closing this properly needs PER-MECHANISM axes, not one OR'd verdict per type — recorded as the named gap."
+    }
+   },
+   "bannedLookalikes": {
+    "_note": "No live violations found for this type after the correction above — BackgroundPanel is already the single shared implementation for background motion, reached by all 8 eligible blocks.",
+    "jsxComponents": [],
+    "patterns": []
+   },
+   "nativeUi": {
+    "_note": "No core supports.* flag maps to scroll animation/parallax — not applicable."
+   },
+   "qualifiesWhen": {
+    "scrollTriggerReveal": "a block in the extension's shouldHaveAnimation() allow-list without a hideExtensions:[\"animation\"] opt-out",
+    "gsapScrollEffects": "same allow-list surface as scrollTriggerReveal (Tier G is layered on the same eligible-block set)",
+    "elementParallaxToggle": "any block supporting className, minus hideExtensions opt-outs (not scoped to background — this is whole-block drift, works with or without a background image)",
+    "blockOwnBackgroundMotion": "a block importing BackgroundPanel and rendering a background image/video element or a split-media element (the same surface the media row's paintsOwnSurface evidence establishes)"
+   },
+   "scope": {
+    "eligible": "no dedicated roster.json surface — scrollTriggerReveal/gsapScrollEffects apply near-universally via opt-out; elementParallaxToggle applies near-universally too; blockOwnBackgroundMotion scopes to the 8 blocks importing BackgroundPanel (container, cta-section, hero, multi-button, physics-canvas, site-footer, site-header, trust-bar)"
+   }
+  },
+  "angle-position": {
+   "specRef": "No Part O section exists for this type. Genuinely new work this session.",
+   "decision": "NOT one control type — angle and position are two unrelated mechanisms that happen to share a taxonomy slot. Do not force a single canonical shape onto both.",
+   "canonical": {
+    "angle": {
+     "shape": "AnglePickerControl (WP-native, raw — NO SGS wrapper exists)",
+     "path": "embedded inside src/components/gradient-picker/index.js (GradientAnglePicker), reached only through the colour-gradient system",
+     "note": "Never stands alone as an independent control — it is a sub-feature of gradient, not its own surface.",
+     "recommendedFix": "Per Bean's 2026-08-19 ruling on native controls generally: build a small SGS wrapper mirroring LinkPopoverField's shape (src/components/LinkPopoverControl.js — a thin component owning label/value/onChange plus the native primitive's quirks) if angle is ever needed OUTSIDE the gradient system. Not needed today since it has exactly one legitimate use.",
+     "componentResolutionNote2026_08_20": "resolveComponentFiles() confirms AnglePickerControl -> false (it is a raw @wordpress/components import, not a file this tree's resolver indexes). Per the hard constraint against declaring an unresolvable identifier, `component` is left undeclared here — declaring 'AnglePickerControl' as canonical would make canonicalComponentNames() emit a name the reach scan can never match (it is an external-package import, never a locally-mounted JSX identifier the resolver's compFiles map contains), producing a blanket false VIOLATION/MISSING across every gradient-capable colour row. GradientAnglePicker (the wrapper function embedded in gradient-picker/index.js) was also checked and does not resolve as a separately-exported component either."
+    },
+    "position": {
+     "component": "FocalPositionField",
+     "shape": "SGS wrapper around WP-native FocalPointPicker",
+     "path": "src/components/FocalPositionField.js",
+     "shipped2026_08_19": true,
+     "componentResolutionNote2026_08_20": "resolveComponentFiles() -> true. One-hop reach confirmed for sgs/hero only (hero/edit.js:1249 mounts <FocalPositionField> directly). The 7 blocks reached via supports.sgs.imageControls:true go through the universal image-controls.js extension's global BlockEdit filter (image-controls.js:193), which — like the animation-extension mechanisms above — is invisible to the one-hop reach scan because no per-block edit.js imports or mounts it. Expect the canonical axis to read CONFORMANT for sgs/hero and MISSING/UNCLEAR for the other ~6-7 imageControls blocks even though the control is genuinely live for them in the editor; that gap is the extension-injection blind spot, not a real defect, and should not be read as 6-7 real violations without checking the live editor first.",
+     "note": "Built this session per Bean's native-control-wrapper ruling, modelled on LinkPopoverField's shape. BOTH previously-disconnected mounts now route through it: the universal image-controls.js extension (format=\"xy\", its existing raw-{x,y} storage) and hero's split-media object-position control (format=\"css-string\", its existing CSS-string storage). The wrapper owns the format conversion via a `format` prop rather than forcing either consumer's PHP-side storage shape to change — the two mounts share the same component now without a storage migration."
+    }
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "patterns": [],
+    "_note": "No lookalikes surveyed — this type has no shared canonical to diverge from yet (both raw natives are used correctly for what they do, just unwrapped)."
+   },
+   "nativeUi": {
+    "_note": "Both ARE the native control — this type's whole finding is the absence of an SGS wrapper, not a competing native panel."
+   },
+   "qualifiesWhen": {
+    "angle": "a colour row is gradientCapable:true (never write an independent angle scope)",
+    "position": "a block renders a media element eligible for object-position/focal-point (supports.sgs.imageControls or hero's split-media element)"
+   },
+   "scope": {
+    "eligible": "angle: any gradient-capable colour row (see controls.colour.gradient in golden-controls.json). position: 7 blocks via supports.sgs.imageControls:true, + sgs/hero directly (survey-control-mounts.py, 2026-08-19)"
+   }
+  },
+  "preset": {
+   "specRef": "No Part O section exists for this type. Genuinely new work this session.",
+   "decision": "testimonial's thumbnail-grid picker is canonical — confirmed by Bean 2026-08-19 after live review of all 5 instances. It is the only one that actually delivers a VISUAL preset picker; every other instance is either a plain dropdown or has no control at all.",
+   "canonical": {
+    "shape": "testimonial's inline 'Layout variant' thumbnail grid (role=\"radiogroup\" of clickable mini-preview tiles) — NOT YET extracted to a shared component",
+    "path": "src/blocks/testimonial/edit.js (PanelBody 'Layout variant', ~line 516)",
+    "verifiedLive": true,
+    "adoption": "1 of 5 preset-bearing blocks (sgs/testimonial only)",
+    "note": "Hand-rolled inline JSX, never extracted — building the actual shared VariantPicker component is future work; this row names the target shape.",
+    "noComponentIdentifier2026_08_20": "The thumbnail grid is inline JSX inside testimonial/edit.js's own render body (a role=\"radiogroup\" of <button> tiles), not a separate named function or export — there is nothing to resolve, let alone declare. Left undeclared per the explicit instruction not to invent an identifier where nothing has been extracted yet; canonical reads N/A for this type until a shared VariantPicker component exists."
+   },
+   "bannedLookalikes": {
+    "jsxComponents": [],
+    "patterns": [
+     {
+      "shape": "a plain SelectControl standing in for a visual preset picker",
+      "verifiedLive": true,
+      "liveInstances": 3,
+      "blocks": [
+       "sgs/hero (VARIANT dropdown, 2 values)",
+       "sgs/product-card (VARIANT STYLE dropdown, 3 values)",
+       "sgs/trust-bar (BADGE STYLE dropdown, 3 values)"
+      ]
+     },
+     {
+      "shape": "a declared variant axis with NO control at all",
+      "verifiedLive": true,
+      "why": "sgs/nav-drawer declares variantPreset (7 values) in block.json + supports.sgs.variants; grep for 'variantPreset' in its own edit.js returns ZERO matches; confirmed live — its sidebar shows only Drawer/Visibility conditions/Advanced, no Style/Variant panel of any kind",
+      "liveInstances": 1,
+      "priority": "highest-value single finding in this type — a DB-backed, declared 7-value variant axis a client cannot reach at all"
+     }
+    ],
+    "matchRule": "Structural (visual-picker vs plain-dropdown vs absent), not a JSX-identifier ban — no shared component exists yet."
+   },
+   "nativeUi": {
+    "_note": "No core supports.* flag maps to variant/preset selection — not applicable."
+   },
+   "qualifiesWhen": {
+    "rule": "a block declaring supports.sgs.variants with a real variant_attr present in the DB blocks.variant_attr column — this is a DB-backed fact, not a derived/self-fulfilling predicate, so it can be used directly (unlike roster.json surfaces.*)"
+   },
+   "dataCompletenessGap": {
+    "note": "variant_slots (24 rows total, DB query 2026-08-19) is sparse and uneven against the 5 blocks' declared variant values — e.g. sgs/nav-drawer declares 7 variants but only 1 (floating-capped-card) has any variant_slots row at all. Flagged as an honest data gap, not smoothed over."
+   },
+   "scope": {
+    "eligible": "5 blocks confirmed via block.json grep, cross-checked identical against DB blocks.variant_attr column, 2026-08-19",
+    "blocks": [
+     {
+      "slug": "sgs/hero",
+      "variantAttr": "variant",
+      "values": 2
+     },
+     {
+      "slug": "sgs/product-card",
+      "variantAttr": "variantStyle",
+      "values": 3
+     },
+     {
+      "slug": "sgs/trust-bar",
+      "variantAttr": "badgeStyle",
+      "values": 3
+     },
+     {
+      "slug": "sgs/testimonial",
+      "variantAttr": "variant",
+      "values": 7
+     },
+     {
+      "slug": "sgs/nav-drawer",
+      "variantAttr": "variantPreset",
+      "values": 7
+     }
+    ]
+   }
+  }
+ }
+}

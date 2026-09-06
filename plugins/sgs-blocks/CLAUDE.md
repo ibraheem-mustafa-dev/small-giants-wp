@@ -1,5 +1,9 @@
 # SGS Blocks — Claude Code Instructions
 
+⛔ **MORE THAN 3 BLOCKS? BUILD THE DETECTOR FIRST — read
+`.claude/THE-MIGRATION-METHOD.md` before the 4th file edit.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here. What separated them was not the census — the slow rollout had one on day 2 —
+but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step 3.
+
 ## What This Is
 
 A custom Gutenberg block library (WordPress plugin) that replaces Spectra Pro. Produces clean semantic markup that reads design tokens from the SGS Theme. See build status below for what's built vs. planned.
@@ -85,7 +89,8 @@ own `--fix` when it reaches its migration.
 mode. Putting a non-gating script in a gate chain is enforcement theatre.
 ⚠ **They were built and left UNWIRED** (zero `package.json` refs) until 2026-08-09 — this repo's
 recorded failure mode, the same one D493 caught running for three weeks. **Never assume a built
-detector is reachable: grep `package.json` before believing it runs.**
+detector is reachable: run `npm run gate:list` before believing it runs.**
+⚠ **`grep package.json` NO LONGER ANSWERS THIS (changed 2026-08-24, commit `5d2ee0b17`).** The 61-command `prebuild` chain was split into `scripts/gates.json` + `run-gates.py`. Every gate kept its standalone `check:*` alias in `package.json`, so grepping still finds a hit — it now proves the ALIAS exists, not that the gate runs on a build. That is a false positive in exactly the direction this warning exists to prevent. `npm run gate:list` prints each gate's tier and measured cost; `npm run gate:wired` proves the pre-deploy tier is reachable.
 ⚠ **`survey-inspector-surface.js` counts DECLARED rows**, while D544's live-editor figures count
 DEFAULT-VISIBLE ones. **Corrected 2026-08-13 — the OWN-vs-EXTENSION split does NOT reproduce live
 measurement** (the script's own D544 calibration table says "Ordering (row-count) MATCHES live:
@@ -93,6 +98,347 @@ false"; re-verified live across 4 blocks with a declared:live ratio ranging 1.15
 constant). Only OWN *panel*-count (not row-count, not the EXTENSION split) has been verified to
 match live measurement. Do not quote ANY of its totals — panel-count included, once beyond a single
 verified block — as "what the client sees" without a fresh live check.
+
+### Grid-item defaults — scope correction (`b59f8cd3f`, 2026-08-30)
+
+`gridItem*` attrs (padding/gap/border/shadow/colour defaults for a grid's children) are
+consumed by exactly **ONE** CSS rule: `.sgs-container--grid > .sgs-container` in
+`src/blocks/container/style.css`. That selector paints ONLY a **direct child that itself
+carries `.sgs-container`** — so a block qualifies for `gridItem*` attrs only when its own
+grid cells are themselves container-wrapper-routed blocks. **`sgs/container` is the only
+qualifying block today.** `sgs/cta-section` and `sgs/trust-bar` had declared 15 `gridItem*`
+attrs each and rendered `GridItemDefaultsPanel` (~30 client-facing controls total) while
+painting nothing — `cta-section` wraps children in `.sgs-cta-section__content`,
+`trust-bar` renders `.sgs-trust-bar__badge` divs, neither matches the selector. Removed in
+`b59f8cd3f`.
+
+⛔ **`block_composition.container_kind` (section/layout/content) is IRRELEVANT to this
+qualification.** It describes the draft-layer model (Spec 31 §13.6), not what CSS a
+block's own children actually match. Do not reason from `container_kind` when deciding
+whether a block should carry `gridItem*` attrs — check the selector.
+
+### A control that "doesn't work" — diff it against a block where it ALREADY works (Bean-locked 2026-08-31)
+
+⛔ **Do not design a fix from first principles.** Ask which blocks already have the attribute:
+
+```bash
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT block_slug, attr_name, css_property, css_element, css_tier
+     FROM block_attributes WHERE css_property='object-fit'"
+```
+
+then read the WORKING block's `render.php` + `style.css` and compare. Measured 2026-08-31 across the
+media-atom layer: every "these controls don't mesh" problem resolved this way in minutes, and the DB
+query surfaced two blocks (`sgs/brand-strip` `logoFit`, `sgs/trust-bar` `badgeImageObjectFit`) a
+hand-written survey of "media blocks" had missed outright.
+
+⛔ **Never weigh "this changes what the canary currently renders."** Pre-production, no content to
+protect. Whether a default is RIGHT is a separate question decided on merits — what do the other
+surfaces measure? — never on preserving the current page.
+
+**The two findings that came out of it, both now gated:**
+
+1. **A shared rule at (0,1,0) silently beats a block's own `:where()` default at (0,0,0).** The atom
+   stylesheet fires unconditionally, so `var( --x, initial )` overrides `sgs/media`'s own
+   `:where( .sgs-media__img ){ object-fit: cover }`. A shared fallback must be the value the surfaces
+   actually MEASURE (all four say `cover`), never `initial`/`unset`/`revert` — banned by
+   `check-media-atom-purity.js`. A rule that loses is indistinguishable from an absent one; a rule
+   that silently wins is worse.
+2. **Scope per ELEMENT, not per block.** Atoms emit fixed custom-property names
+   (`--sgs-media-object-fit`) because the shared stylesheet is static CSS and cannot know a prefix.
+   That is only safe when each media element carries its own scope class —
+   `sgs_media_element_scope_class( $uid, $prefix )` → `{uid}--{prefix}`, consumed by
+   `sgs_media_element_style()`. Without it a two-element block (`sgs/before-after`) sets the same
+   property twice on one scope and the second wins: the client sets before=contain, after=fill, and
+   both render fill. `sgs/hero` already had the right answer from the other direction — it scopes its
+   selector to `.{uid} .sgs-hero__split-media--image`. Gated in `test-media-atom-parity.mjs`.
+
+### Detector blind spots — both real, both shipped a defect before being found
+
+- **`check-dead-controls.js` asks "is this attribute read by the render surface?"** It
+  cannot see "the attribute IS read and emits CSS custom properties that no selector ever
+  matches" — that distinction is invisible to a render-corpus scan. This is exactly how the
+  ~30 dead `gridItem*` controls above shipped and stayed green through every existing gate.
+- **`check-duplicate-controls.js` CHECK 2 scans literal JSX control elements** in a block's
+  own `edit.js`. It cannot see a duplicate writer living inside a **row OBJECT LITERAL**
+  passed as a config prop — e.g. a `SgsColourPanel` `rows` array entry that writes the same
+  attribute another literal JSX control also writes. This is how `sgs/trust-bar`'s duplicate
+  `textColour` writer survived undetected.
+
+Neither gap is fixed yet — read them as known scope limits, not solved problems, before
+trusting either gate's "0 findings" on a new colour/grid-item-shaped change.
+
+### Editor-canvas mirrors — the shared-wrapper pattern + 4 traps (CHECK A, 2026-09-05)
+
+`check-editor-render-parity.js` CHECK A finds attributes a control WRITES and `render.php`
+uses correctly, where the editor canvas shows nothing — the client moves a control and sees
+no change. **210 -> 0 on 2026-09-05** — the whole backlog is CLOSED (phase 1 in this session, phases 2-4 by
+a concurrent session working from the same plan doc, which was consumed and removed). History:
+D965 + D967. The pattern and traps below remain live guidance for any NEW canvas mirror.
+
+**The pattern that scales.** A shared thing is mirrorable ONCE only if it OWNS THE SELECTOR:
+
+| Kind | Example | Owns selector? | Mirror once? |
+|---|---|---|---|
+| Shared **renderer** | `SGS_Container_Wrapper` | yes — markup + uid class + rule | ✅ |
+| Shared **atom** | `includes/media/atoms/*` | yes — one property on a scoped class | ✅ |
+| Shared **control panel** | `BackgroundPanel`, `GridItemDefaultsPanel` | no — only writes the attr | ❌ |
+| Shared **value helper** | `sgs_colour_value`, `sgs_text_decls` | no — caller places the value | ❌ |
+
+A shared CONTROL creates the illusion of a shared mechanism: `BackgroundPanel` is mounted by
+5 blocks, so 85 findings looked like one root cause — but the sharing was the WRAPPER
+underneath, not the panel. Shared-on-the-way-in is not shared-on-the-way-out.
+
+Reference implementation: `svgBackgroundPreview()` in `src/utils/background-preview.js`,
+adopted by 8 blocks (`f4fc7333a` / `9cea87e9b` / `a64e9e344`). It renders the SAME element with
+the SAME class names as the frontend, so the rules already in `style.css` — which `block.json`'s
+`style` field loads into the canvas as well as the front end — do all the painting, with ZERO new
+CSS and no second vocabulary to drift.
+
+**⛔ FOUR TRAPS. Each shipped or nearly shipped a defect on 2026-09-05.**
+
+1. **Enumerate attributes explicitly at the call site.** CHECK A resolves an attribute as
+   canvas-reflected only when its NAME appears outside `InspectorControls`/`BlockControls`.
+   Handing a preview helper `attributes` wholesale renders CORRECTLY and still reads as a
+   desync. Same blind spot as the ServerSideRender pass-through wrapper (`89475bb3a`): the
+   exemption matched only the bare identifier `attributes={ attributes }`, so
+   `attributes={ omitNullAttributes( attributes ) }` flagged all 14 of `sgs/before-after`'s
+   attributes while its canvas was showing real `render.php` output.
+2. **A gate's scope is not the defect's scope.** `svgBackgroundPreview()` returns `className`
+   as a string ARRAY; its sibling `backgroundPreview()` returns a STRING.
+   `[ a, [ 'x','y' ] ].join(' ')` is `"a x,y"` — one unusable comma-joined token, so all four
+   SVG classes were silently dead while the layer still rendered. **CHECK A passed throughout.**
+   Read the emitted CSS; never close on green. (Same week: `check-text-gradient-companion`
+   passed while `sgs_text_decls()` shipped an invalid bare `color:` for gradients.)
+3. **Block CSS is LIFTED, not inline** — `wp-content/uploads/sgs-css/*.css`. Grepping page HTML
+   for a rule proves NOTHING; a verification pass reported ABSENT for three working fixes
+   because of exactly this. Follow the linked stylesheet.
+4. **`curl` the canary with `-L`** — pages 301-redirect; without it you get an empty body and
+   conclude the block did not render.
+
+**Before wiring a canvas mirror, confirm the FRONTEND actually paints it.** `sgs/hero` declared
+7 `bgSvg*` attributes and offered them in the Background panel while rendering NOTHING — its
+`render.php` nulled `bgSvgContent` on the very array passed to the wrapper, so the wrapper's
+`$has_bg_svg` gate was permanently false (fixed `a64e9e344`; Bean's call was "paint them", not
+"delete the controls"). Mirroring a layer the page never renders is the INVERSE of what CHECK A
+exists for. Check for a back door before concluding — a helper, atom or `render_block` injector
+could paint it — rather than trusting a grep of the block's own files.
+
+### `scripts/scattered-element-controls.js` — DELETED 2026-09-02, do not rebuild it
+
+⛔ **Retired via `/qc-council` (Bean-directed) after it produced ~600 false-positive findings in
+one session.** Its model was "every element (including a block's own `wrapper`) needs its
+controls in exactly ONE panel" — flat grouping purely on the DB's `css_element` column, with
+zero knowledge of `isWrapper`, `clusters`, or THE PLACEMENT RULE's two-tier structure (D537,
+Spec 35 §"THE PLACEMENT RULE"). A `wrapper` element (`isWrapper: true`) is explicitly TIER 2
+territory — its controls are SUPPOSED to split across separate property-family panels (Colour /
+Border / Padding & margin are three deliberately different panels, not scatter) — so every
+"wrapper"-element finding it produced was a false positive by design, not a bug to patch. The
+script also self-declared as a "PROTOTYPE (design + feasibility task)" in its own header and was
+never wired into any gate. **Use `scripts/placement-reach.py` instead** (below) — it already
+implements THE PLACEMENT RULE correctly, is self-tested, and its "CONTESTED" output is the
+real, spec-conformant version of what this script was trying to approximate.
+
+### `scripts/placement-reach.py` — how far THE PLACEMENT RULE actually reaches (D537)
+
+Implements THE PLACEMENT RULE (Spec 35, two-tier: TIER 1 = one panel per declared element;
+TIER 2 = property-family panel for a `wrapper` element or any control scoped to no element) against
+real `block.json` data. `python scripts/placement-reach.py [--block sgs/x] [--self-test]`. Reports
+the tier-1/tier-2 split (2,945 declared attrs: 67.6% element panel, 32.4% tier-2 as of 2026-09-02 —
+re-run rather than trusting this line) and a **CONTESTED** list: attributes claimable by 2+ elements
+per the manifest — a real manifest gap (needs an explicit `attrMap` entry), never guessed at or
+silently tie-broken. Companion prebuild gate: `check-element-manifest-conformance.js` (promoted
+WARN-ONLY → hard gate at D622).
+
+### Live motion QA — `scripts/motion-qa/` + `npm run qa:motion` (D730)
+
+```bash
+npm run qa:motion                    # all standing live probes (what the deploy runs)
+npm run qa:motion:morph              # fx-morph changes SVG geometry (page 2113)
+npm run qa:motion:motion-path        # motion-path re-animates on pass 2 (page 2109)
+npm run qa:motion:good-by-default    # scrub/scramble/split-reveal/pin-scrub (pages 2103, 2603)
+```
+
+**Wired into `build-deploy.py` as `step_motion_qa()`** — ON by default for blocks deploys,
+after `step_verify_payload()`, opt out `--skip-motion-qa`.
+
+⛔ **NOT in `prebuild`, on purpose.** These need a LIVE canary. A network-dependent check
+in a BUILD gate can only fail when the canary is merely unreachable, or warn-and-pass —
+and warn-and-pass is exactly the vacuity `check-no-inline.py --live-default` already
+carries (it PASSES on a disconnected machine, so a green run there proves nothing).
+Post-deploy is the honest home: the canary is up by definition, and the payload gate has
+just proven the live plugin IS this run's payload.
+
+⚠ **Before D730 this directory held 13 probes with ZERO `package.json` references** — the
+D338/D493 "built but never wired" failure at directory scale. The runner registers only the
+THREE probes that are standing checks with negative controls and stable fixtures; the rest
+are one-shot incident artefacts, runnable by hand, NOT claimed as covered. Promoting one
+means giving it a fixture and a negative control first.
+
+**LOAD-BEARING CANARY FIXTURES — the deploy gate depends on these four pages:**
+
+| Page | What it feeds |
+|---|---|
+| 2103 | scrub / scramble / split-reveal (good-by-default) |
+| 2109 | motion-path repeat-trigger (D451) |
+| 2113 | fx-morph geometry (D452) |
+| 2603 | pin-scrub pin + good-by-default |
+| 2740 | FR-38-31 flowing gradient, single `pastel` instance (D852/D871) |
+| 3037 | wave-gradient SIX-variant canvas split — the 0/0/0/0/1/1 proof (D871) |
+
+All four are titled `[GATE — DO NOT DELETE] …` on the canary so they survive a tidy-up.
+⛔ Deleting or emptying any of them **breaks every blocks deploy** until the fixture is
+rebuilt. This is a live risk, not a theoretical one: the hero verification report explicitly
+invited deletion of its own rig ("probe page 2602 is a test rig and can be deleted"), and
+D451's page 2083 is already a 404. Probes reference pages by **ID** (`?p=`), so renaming a
+title is safe but re-creating a page under a new ID is not.
+
+⚠ **Canary fixtures rot, and a probe cannot tell you which failure you have.** D451 named
+page 2083; it is now a 404. Every probe reports UNANSWERED separately from a real failure —
+read its output rather than assuming a regression. ⛔ **The trashed fixtures 2023 / 2114
+carry PRE-migration authoring** (`"minHeight":"90vh"` as a flat string); `minHeight` became
+a tier object on 2026-08-11, so a flat value is silently coerced to `{}` and every spacer
+collapses. Restoring one gives a silently-broken page — author fresh instead.
+
+### Shared-helper adoption — `scripts/migrate-render-closures.py` (D722)
+
+`includes/helpers-box.php` has carried byte-identical shared forms of three sanitiser closures
+since 2026-07-12 (`cef1fca9`), auto-loaded via `render-helpers.php`, with docblocks saying they
+exist to replace "the local `$sgs_css_length` closures". Only 4 blocks ever adopted them. This
+script finished that migration — **121 closure definitions across 57 files** onto three helpers.
+
+```bash
+python scripts/migrate-render-closures.py --survey        # census
+python scripts/migrate-render-closures.py --fix           # dry run
+python scripts/migrate-render-closures.py --fix --apply   # write
+python scripts/migrate-render-closures.py --check         # gate
+python scripts/migrate-render-closures.py --self-test     # 10 assertions + negative control
+```
+
+⛔ **It is a script and not `sed` for one specific reason:** several files use ALIGNED assignment
+(`$sgs_css_keyword  = static function`, two spaces). A literal-space find/replace silently skips
+them — which is why the closure count read 45 before it read 52. The self-test asserts this case.
+
+**The corner family is now CLOSED (2026-08-21).** `$sgs_corner_shorthand` / `$sgs_radius_shorthand`
+are CORNER-keyed (topLeft/topRight/bottomRight/bottomLeft), structurally a different function from
+`sgs_box_object_shorthand()`'s top/right/bottom/left — which is why there was nothing to call and
+the family was carved out. `includes/helpers-box.php` now provides the missing sibling
+**`sgs_corner_object_shorthand()`**, and all 8 definitions + 17 call sites are migrated; the script
+owns the family rather than skipping it.
+
+⛔ **The shared helper is UNTYPED on purpose — do not "tidy" it to `array`.**
+`before-after/render.php` invokes it with a raw `null` (`$attributes['borderRadiusTablet'] ?? null`)
+and relied on its own `is_array()` guard, which the helper now owns internally. A typed-`array`
+parameter would throw TypeError and fatal the page. The riskiest existing caller sets the signature.
+
+✅ **The hardened-function migration is DONE (D734, 2026-08-22).** It shipped as its own change,
+deliberately separate from this script — a real behaviour change stacked onto a refactor makes
+both unfalsifiable, so it never became a mode of `migrate-render-closures.py`. Own codemod,
+`scripts/migrate-length-sanitiser.py` (same survey/fix/check/self-test shape):
+
+```bash
+python scripts/migrate-length-sanitiser.py --survey        # census
+python scripts/migrate-length-sanitiser.py --fix           # dry run
+python scripts/migrate-length-sanitiser.py --fix --apply   # write
+python scripts/migrate-length-sanitiser.py --check         # gate
+python scripts/migrate-length-sanitiser.py --self-test      # 18 assertions + 2 negative controls
+```
+
+**204 call sites across 56 files** migrated to `sgs_css_length_value()` (the earlier "207 across
+56" line here, and "247 across 58" before that, both counted the definition and
+`function_exists` guards as call sites — corrected by classifying each match rather than
+counting raw hits). Two sites deliberately EXCLUDED, named in the script's `EXCLUDE` list, never
+guessed at: `testimonial`'s `quoteLineHeight` (unitless-legal — feeds `line-height`) and
+`google-reviews`' `gr_pct` (a bare percentage the caller appends its own `%` onto — preset-
+wrapping it would emit invalid CSS). Live-proven pre/post deploy on a dedicated probe page:
+`border-top-left-radius:calc20px1vw` (corrupted, before) → `border-top-left-radius:calc(20px + 1vw)`
+(correct, after). ⚠ **Spec 32 §6.1(a2)'s comparison table overclaims one cell** — it says the
+hardened function *resolves* `var:preset|spacing|40`; measured, it passes the value through
+UNCHANGED (no longer corrupted, but still not resolved). See D734.
+
+### Vacuous core-function guards — `scripts/remove-vacuous-style-engine-guard.py` (D732/D733)
+
+A `function_exists()` check on a CORE function is only meaningful when that function landed AFTER
+the plugin's declared minimum. `sgs-blocks.php` and the theme's `style.css` both declare
+**"Requires at least: 6.7"**, so **109 guards** (73 at D732 + 36 at D733) were testing for functions
+their own floor guarantees — a false branch never reachable on any supported install. Removal is
+behaviour-neutral BY CONSTRUCTION, not by measurement.
+
+⛔ **Verify the floor against core LOAD ORDER, not just the version number.** `style-engine.php`,
+`script-modules.php` and `interactivity-api.php` are `require`d at `wp-settings.php` lines
+437/450/453 — before mu-plugins (508) and plugins (582) — and core never wraps those definitions in
+`function_exists`, so no bootstrap window exists in which SGS code runs and the function is absent.
+The same check proves the rule DISCRIMINATES rather than being blanket: `pluggable.php` loads at
+line **612, AFTER plugins**, so `wp_get_current_user` guards are REAL. Likewise the `wp_*connector*`
+family is `@since 7.0` — ABOVE the floor. Both are correctly still in the tree.
+
+```bash
+python scripts/remove-vacuous-style-engine-guard.py --survey      # census
+python scripts/remove-vacuous-style-engine-guard.py --fix          # dry run
+python scripts/remove-vacuous-style-engine-guard.py --fix --apply  # write
+python scripts/remove-vacuous-style-engine-guard.py --check        # gate
+python scripts/remove-vacuous-style-engine-guard.py --self-test    # 14 assertions + negative control
+```
+
+⛔ **There were TWO shapes and they are NOT interchangeable.** 64 were STANDALONE (the whole `if`
+goes, body de-indents one tab). **9 were COMPOUND** — the dead call ANDed with a REAL condition
+(`&& ! empty( $base_margin_obj )`, `! $inherit_style && …`, and one spanning multiple lines).
+Deleting the wrapper on those would have silently dropped a live condition. Only the dead conjunct
+is removed there. Enumerate before assuming a guard is standalone.
+
+⛔ **`} else {` is brace-NEUTRAL, so naive depth-counting sails straight past it** to the final `}`
+and lifts a body that isn't the whole story. Checking the closing line for the word "else" does NOT
+work — the real close is detected structurally (a body line at the guard's own indent starting with
+`}`). A guard with an `else` is REFUSED, never guessed at. The self-test asserts this, and it caught
+the bug for real during the build.
+
+⛔ **Deleting the `if` line outright merges phpcs alignment groups.** The guard line was a visual
+separator; without it the statement above becomes adjacent to the de-indented first body line and
+`Generic.Formatting.MultipleStatementAlignment` reports a warning HEAD did not have (caught on
+`accordion`). The script leaves a BLANK LINE in its place. **The fix for a merged group is a blank
+line, NEVER `phpcbf`** — that realigns whole files and turns a scoped change into an unreviewable diff.
+
+⛔ **NEVER remove a POLYFILL DEFINITION.** `if ( ! function_exists( 'x' ) ) { function x() {…} }`
+is correct code that makes a file runnable outside WordPress. `helpers-css-safety.php`'s `esc_attr`
+guard is exactly this — inside a CLI `--self-test` block, with `scripts/diff-gap-sanitiser.php`
+requiring the file standalone. It is KEPT, and the gate exempts that shape. Before deleting any
+guard, grep `scripts/` and `tests/` for the filename: several `includes/` files ARE loaded by
+standalone harnesses.
+
+⚠ **Counts here were wrong TWICE, the same way: a `src/blocks/*/render.php`-only grep.** "73" was
+really 74 and "4 and 3" were really 5 and 5 — every missed site lived in `includes/`. Do not trust a
+figure from a convenient subset; run `--check`, which scans `src/` + `includes/` + the theme.
+
+⚠ **The floor is PARSED from the plugin header, never hardcoded.** A lowered floor makes the
+affected family load-bearing again, and the gate drops it rather than asserting a stale claim; it
+fails closed if the header cannot be read. Wired into `prebuild` + `npm run check:vacuous-guards`.
+
+### Comment-narrative detector — `scripts/extract-comment-narrative.py` (D727)
+
+FIND-only. It never edits. Comments must explain what the code DOES, not what it used to do.
+
+```bash
+python scripts/extract-comment-narrative.py --survey --top 20   # rank by narrative DENSITY
+python scripts/extract-comment-narrative.py --extract --only <slug>  # candidates + line ranges
+python scripts/extract-comment-narrative.py --prohibitions      # gate-backed vs UNENFORCED
+python scripts/extract-comment-narrative.py --self-test
+```
+
+⚠ **Deliberately has no `--fix`.** Measured on a pilot: only 27% of removable lines carry a
+detectable marker; **the other 73% are continuation lines** of a paragraph whose first line had
+one. A marker-tuned regex finds a quarter and cannot tell where to stop inside a block; a
+paragraph-tuned one over-cuts into functional text. **This is also why haiku is the wrong model
+for the edit** — a wrong cut deletes knowledge silently and irreversibly.
+
+`--prohibitions` is the more valuable mode: it splits every prohibition into GATE-BACKED (the
+prose names a real executable check — compress it to a pointer, the gate is the defence) and
+UNENFORCED (nothing checks it — keep verbatim, or promote it into a gate). First run: 11
+gate-backed, 37 unenforced. ⛔ A STOP-catalogue reference is PROSE, not a gate — counting it as
+enforcement was a real bug caught by the self-test, and would have hidden the very list the
+script exists to surface.
+
+Open track + ready prompt: `.claude/plans/2026-08-21-comment-narrative-cleanup-track.md`,
+`.claude/prompts/2026-08-21-owed-C-comment-narrative-cleanup.md`. Register:
+`.claude/reports/2026-08-21-unenforced-prohibition-register.md`.
 
 ### Tier-object migration triad — `scripts/migrate-tier-object.py` (Spec 35 / D549 / D554 / D571)
 
@@ -221,9 +567,106 @@ in the script's own header).
 
 **Two gates added 2026-08-16 (D639), both wired into `prebuild` in the same commit that built them — see the D338 lesson directly above for why "built but not wired for three weeks" is not acceptable:**
 - **`scripts/check-empty-inspector-containers.js`** — an inspector container rendered with **no children**. An empty `<ToolsPanelItem>` still appears in its ToolsPanel's "+" disclosure menu and still takes part in `resetAll`/`onDeselect`, so a client can find it, switch it on, and be shown nothing; an empty `<PanelBody>` opens onto blank space. Both are dead controls in the Spec 35 Part F sense. **No existing gate covered this class, and one shipped through all ~50 gates to prove it:** `check-dead-controls.js` checks the OPPOSITE direction (an attribute with a control but no renderer) — a container whose children were deleted still has perfectly valid attribute wiring, so it reads clean. Earned when moving `<BackgroundPanel>` out of `sgs/site-header` deleted the mount and left the wrapper standing. ⛔ **It is an AST walk, and must stay one — do NOT "simplify" it to a regex.** Two were tried first and both were wrong in opposite directions: `<(Tag)[^>]*?>\s*</\1>` found **0** (the char class cannot cross the `=>` in an arrow-function prop, and every real container has one) and `>\s*\n\s*</(Tag)>` found **471** (it matches the closing `>` of the last self-closing CHILD). A false absence and a false flood from one question; JSX children are a tree. Both failure shapes are `--self-test` fixtures. Standalone: `npm run check:empty-inspector-containers`.
-- **`scripts/check-wrapper-capability-preconditions.js`** — two rules over each block's `supports.sgs` (Spec 35 §F.2.1/§F.2.2). **Rule 1 (BLOCKING):** a block declaring `gridItems` in `enabledExtensions` must also declare `layout` — `GridItemDefaultsPanel`'s own `if ( layout !== 'grid' ) return null` is a RENDER-TIME bail that hides the panel once the wrong combination already exists; it is not a guarantee the combination can't be declared. **Rule 2:** `supports.sgs.gridAreas` is **RETIRED** (D639) — any declaration fails the build, including an empty array (`gridAreas: []` would otherwise be the obvious way to keep the key and silence the gate). It began as an orphan guard ("must have ≥1 live reader", Spec 35 Part N's N-2) and building that reader is what proved none was ever needed: `GridAreaPanel` was unreachable and wrote a storage shape D580 retired, and the converter derives area names from the DRAFT's own BEM ELEMENT TOKEN (`assembly.py` step 3d: `parse_sgs_bem(cls).element`, so `sgs-hero__content` -> area `content`), routing through `db.attr_for_area_property()` — `assembly.py:250` states plainly that "no gridAreas lookup is needed". ⚠ Mechanism corrected by /qc-council: this first credited `resolvers/grid_area.py` + `grid_item_areas()`, which are BOTH dead in production (zero callers; `ctx.area_name` never set outside tests). The flag was redundant by construction: the per-area attrs ARE the definition of the regions. Ships with **no baseline** — there were zero violations, and a baseline would only be a hole for the next one. **No `--fix` mode**, deliberately: a codemod injecting `layout` would change a block's rendered capability set as a side effect of a lint run. Rule 2's `dbWriter` input is INJECTABLE — when the real Stage-1 writer landed, four `--self-test` fixtures went green by reading the real tree instead of their fixture, i.e. the self-test silently stopped testing while still printing PASS. Standalone: `npm run check:wrapper-capability` (or `node scripts/check-wrapper-capability-preconditions.js --check`). ⚠ **NOT actually wired into `prebuild` until D643 (2026-08-16), despite this section, Spec 35 §F.2.1 and `dev-setup.md` all stating it was from the day it was built.** It had no `package.json` reference of any kind and no `check:` alias, unlike every sibling gate — the exact D338 "built but not wired" failure recorded three paragraphs above, repeated within a day of writing it down. Wired + aliased at D643 after verifying it passes standalone. **Grep `package.json` before believing any gate in this file runs.**
+- **`scripts/check-wrapper-capability-preconditions.js`** — two rules over each block's `supports.sgs` (Spec 35 §F.2.1/§F.2.2). **Rule 1 (BLOCKING):** a block declaring `gridItems` in `enabledExtensions` must also declare `layout` — `GridItemDefaultsPanel`'s own `if ( layout !== 'grid' ) return null` is a RENDER-TIME bail that hides the panel once the wrong combination already exists; it is not a guarantee the combination can't be declared. **Rule 2:** `supports.sgs.gridAreas` is **RETIRED** (D639) — any declaration fails the build, including an empty array (`gridAreas: []` would otherwise be the obvious way to keep the key and silence the gate). It began as an orphan guard ("must have ≥1 live reader", Spec 35 Part N's N-2) and building that reader is what proved none was ever needed: `GridAreaPanel` was unreachable and wrote a storage shape D580 retired, and the converter derives area names from the DRAFT's own BEM ELEMENT TOKEN (`assembly.py` step 3d: `parse_sgs_bem(cls).element`, so `sgs-hero__content` -> area `content`), routing through `db.attr_for_area_property()` — `assembly.py:250` states plainly that "no gridAreas lookup is needed". ⚠ Mechanism corrected by /qc-council: this first credited `resolvers/grid_area.py` + `grid_item_areas()`, which are BOTH dead in production (zero callers; `ctx.area_name` never set outside tests). The flag was redundant by construction: the per-area attrs ARE the definition of the regions. Ships with **no baseline** — there were zero violations, and a baseline would only be a hole for the next one. **No `--fix` mode**, deliberately: a codemod injecting `layout` would change a block's rendered capability set as a side effect of a lint run. Rule 2's `dbWriter` input is INJECTABLE — when the real Stage-1 writer landed, four `--self-test` fixtures went green by reading the real tree instead of their fixture, i.e. the self-test silently stopped testing while still printing PASS. Standalone: `npm run check:wrapper-capability` (or `node scripts/check-wrapper-capability-preconditions.js --check`). ⚠ **NOT actually wired into `prebuild` until D643 (2026-08-16), despite this section, Spec 35 §F.2.1 and `dev-setup.md` all stating it was from the day it was built.** It had no `package.json` reference of any kind and no `check:` alias, unlike every sibling gate — the exact D338 "built but not wired" failure recorded three paragraphs above, repeated within a day of writing it down. Wired + aliased at D643 after verifying it passes standalone. **Run `npm run gate:list` before believing any gate in this file runs** — and see the 2026-08-24 note at the top of this file: grepping `package.json` now returns a FALSE POSITIVE, because the gate chain moved to `scripts/gates.json` while every standalone `check:*` alias stayed behind.
 
 **Conformance gates — WIRED (update 2026-07-06 D283).** **Gate A** — the converter golden-fixture regression (`tests/test_converter_conformance.py`) is live (D276 programme). **Gate B — `scripts/check-hardcoded-render-defaults.js` is LIVE + wired into `prebuild`** (it blocks the build when a `render.php`/`style.css` hardcodes a layout/visual constant for a property the block declares an attr for — the F3 family defence; 17 baselined debt items). **E11 selector-aware governance (D283, `d7039a79`):** a PREFIXED-HELPER attr (consumed by `sgs_button_element_style_css` / `sgs_typography_css_rule`, which build the CSS key by `$prefix.'Suffix'` concatenation and apply it to a SPECIFIC call-site selector) governs ONLY those selectors — the gate parses render.php for the helper call, extracts the prefix + selector class tokens, and flags a hardcoded value of that attr's property ONLY when the containing style.css rule references a governed token. Native-attr E1/E6 behaviour is unchanged. This is why adding e.g. `ctaBorderRadius` no longer false-flags an unrelated `.pill`/tag border-radius. Do NOT baseline a prefixed-helper false positive — the E11 governance is the fix. (Original "planned" note: `.claude/reports/wave2/STAGE0-FRS-AND-GATE.md`.)
+
+### S5 (STORED post_content) — `scripts/migrate-stored-tier-scalars.py` (D788, 2026-08-25)
+
+The FIFTH place a flat scalar hides, after block.json (S1) / edit.js (S2) / render.php (S3) /
+theme files (S4): **stored `post_content` on a live site**. A page cloned or authored before a
+property migrated still holds the flat value, and WordPress does not error —
+`WP_Block_Type::prepare_attributes_for_render()` silently substitutes the attribute's DEFAULT
+when a stored value fails schema validation. The authored value vanishes with no error, no
+log, and no failing gate.
+
+```bash
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --survey <dir>
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --fix <dir>          # dry run
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --fix --apply <dir>  # write
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --check <dir>        # gate
+python plugins/sgs-blocks/scripts/migrate-stored-tier-scalars.py --self-test          # 15 assertions, 3 watched controls
+```
+
+Takes a directory of `<post-id>.txt` files (pull them with one `wp post list --format=json`),
+matching `audit-post-content-blocks.py`'s input shape.
+
+⛔ **IT FOLDS ONLY WHAT IT CAN PROVE, AND THE REFUSALS ARE THE POINT.** An early revision
+folded `padding:"22px"` into `{"desktop":"22px"}` — padding is a BOX object
+(`{top,right,bottom,left}`), so that would have silently destroyed spacing site-wide. Four
+buckets, per `surveys/survey-responsive-shape.py`'s settled doctrine (Spec 35 Phase 1.4, Bean
+2026-08-10): **BOX is a CLOSED, NAMED set** — `padding` / `margin` / `borderWidth` /
+`borderRadius` and their prefixed variants (`cardPadding`, `gridItemBorderRadius`, …).
+Anything else object-typed is a TIER. That rule classifies all 533 object attributes in the
+tree with **zero** left ambiguous **for THIS script's own question** — see the scoping caveat
+below (added D968) before reusing it to answer a different one.
+
+⚠ **Scoping caveat (D968, 2026-09-06) — this doctrine answers "should a flat family be folded
+into an object?", NOT "can this attribute vary per device?"** `survey-responsive-shape.py`'s
+`classify()` is only ever reached from `find_families()`, which iterates attrs that ALREADY have
+declared tier siblings — so its TIER/BOX binary is correct for that narrower question, but is
+demonstrably wrong if reused to answer the second one: `is_responsive`'s own detection needed a
+fifth+sixth wrinkle this doctrine cannot express — **TIER-of-BOXES** (an attr that is box-NAMED
+but genuinely per-device, e.g. `gridItemPadding` — proven by render evidence, not by name) and
+**RECORD/ASSET** (object-typed, but neither a tier nor a box — e.g. `shapeDividerTopScale`
+`{x,y}`, `testimonial.orgLogo` `{id,url,alt}`). See `_compute_is_responsive()` in
+`scripts/sgs-update-v2.py` for the five-shape detection it actually needed.
+
+**The canonical TIER-of-BOXES envelope (Phase 2, 2026-09-06) — settle this once, do not
+re-derive it per property.** Every TIER-of-BOXES attribute (`contentBandPadding`,
+`gridItemPadding`, `gridItemBorderRadius` today; `padding`/`margin`/`borderRadius` once
+migrated off the flat box-of-sides-declared-per-tier shape — `migrate-tier-object.py`'s
+`classify()` now reports these as `BOX_FLAT`, not `ASSET`, so `--survey` can see them) is
+ONE attribute holding `{desktop:{...}, tablet:{...}, mobile:{...}}` — always this envelope,
+never a variant of it. What differs is what lives INSIDE each tier's object, driven by
+whether the property is SIDE-keyed or CORNER-keyed:
+- **SIDE-keyed** (padding, margin): each tier holds `{top, right, bottom, left}`, read via
+  `sgs_box_object_shorthand()`.
+- **CORNER-keyed** (borderRadius): each tier holds `{topLeft, topRight, bottomRight,
+  bottomLeft}`, read via `sgs_corner_object_shorthand()` — NOT the side helper. This makes
+  explicit what `gridItemBorderRadius`'s existing `transform` escape hatch in
+  `class-sgs-container-wrapper.php` (~L3127-3143) already does implicitly: it exists
+  because radius keys are corners, not sides, not because corner properties need a
+  different outer envelope.
+
+⚠ **WordPress provides ZERO schema-level protection for what's inside a tier's object —
+proven live, not assumed (Phase 2, Step 2).** Every tier-object attribute in this codebase
+declares `{"type": "object", "default": {}}` with no nested `properties` schema
+constraining sub-keys. Confirmed by writing a real post with `maxWidth:
+{"desktop":"90vh","tablet":123,"mobile":null}` (a malformed `tablet` value) and reading it
+back through `WP_Block_Type::prepare_attributes_for_render()` on the live canary: WordPress
+passed the malformed value through completely UNCHANGED — no coercion, no rejection, no
+whole-object wipe. This means **the PHP helper (`sgs_responsive_normalise_object()`) and
+the JS write helper are the ENTIRE defence**, not a backstop behind a WP-native check. Two
+concrete obligations follow: (1) every write into a tier-object attribute must go through a
+helper that spreads the existing object first (never a bare `setAttributes({attr:
+{tier: value}})`, which silently drops the other two tiers with nothing to catch it — see
+`patchTier()`), and (2) every PHP read must defensively handle a missing/wrong-typed
+sub-key itself, since WordPress will hand it through as-authored.
+
+⚠ **Do NOT re-derive the shape from `default`.** A `"default": {}` proves nothing — 448 of 533
+object attrs declare exactly that (this doc has carried "532" and "533" inconsistently in
+adjacent sentences — re-run the count rather than trusting either cached figure). A reading
+based on the default alone concluded 234 were "undeclared" and proposed an 83-file migration to
+add information that already existed in the survey script. Read the doctrine, not the defaults.
+
+⛔ **ENUM violations are a separate class and are NEVER auto-fixed.** A value can be the right
+TYPE and still not a permitted one — `layout:"grid"` on `sgs/testimonial-slider`, whose enum
+is `["full","split"]`, coerced to `"full"` and rendered the slider at width 0. There is no
+correct fold; it is reported and refused.
+
+**Companion gate — `audit-post-content-blocks.py` now checks attribute TYPES.** It previously
+checked unparseable attrs / unknown blocks / undeclared attrs / stranded content and passed a
+canary page completely clean while that page held **102** type-broken values. It now emits
+`type-mismatch` and `enum-violation` (separate classes, for the reason above), handles union
+types (`["string","number"]` is legal and is NOT a finding), and tests bool BEFORE number
+because `bool` subclasses `int` in Python. It runs on every deploy via `build-deploy.py`'s
+`step_oldshape_audit()`, so this class of drift now fails the deploy rather than shipping.
+
+⚠ **NEVER write `post_content` to a page the operator has open in the block editor.** A save
+from the editor writes its in-memory state — loaded BEFORE your writes — over everything. It
+silently reverted a full session of content fixes on 2026-08-25; only the last write survived.
+
 
 ## Deploy
 
@@ -238,7 +681,11 @@ first, and on 2026-07-14 (D336) that took two client sites down for ~2.5h. It al
 2026-08-10 so nobody copies it back.
 
 `build-deploy.py` is the ONE path: dirty-tree gate, `--payload` deadlock-breaker, pre-deploy
-stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, OPcache reset.
+stored-content audit, default-ON fail-closed smoke test, `.bak` rollback rotation, and a
+post-deploy purge of BOTH cache layers — OPcache (compiled PHP, reset over HTTPS because the CLI
+pool keeps a separate one) and the LiteSpeed page cache (rendered HTML). ⚠ This sentence listed
+"OPcache reset" as a shipped feature until 2026-08-21, when it was checked and found false; it
+is true now because `step_purge_caches()` exists, not because the doc said so.
 Scope with `--blocks-only` / `--theme-only`; `--skip-build` reuses `build/`. Do not reach for
 `--allow-dirty` (an uncommitted edit was D336's trigger) or `--skip-verify` (it removes the check
 that catches a broken deploy).
@@ -249,14 +696,14 @@ that catches a broken deploy).
 
 | Block | Status |
 |---|---|
-| Container | Deployed (SVG background layer added 2026-05-28 D93 — `bgSvg*` attrs + SVG tab in Background panel. **2026-08-17 (D647)** — `main` removed from the `tagName` HTML-tag option (it's always a page-unique landmark, no nesting exception); `nav`/`aside` gained a new `ariaLabel` attr + "Landmark label" control, shown only for those two tags.) |
+| Container | Deployed (SVG background layer added 2026-05-28 D93 — `bgSvg*` attrs + SVG tab in Background panel. **2026-08-17 (D647)** — `main` removed from the `tagName` HTML-tag option (it's always a page-unique landmark, no nesting exception); `nav`/`aside` gained a new `ariaLabel` attr + "Landmark label" control, shown only for those two tags.) **2026-08-21 (D710) — PARTLY REVERSED:** `main` is BACK in the `tagName` option, because removing it outright meant ALL NINE templates authored `tagName:"main"` and ZERO pages rendered a `<main>` landmark (measured live). D647's reasoning still holds and is preserved by a per-request singleton guard in the shared wrapper: the FIRST container claiming `main` renders it, any later one falls back to `section`, so a client duplicating a container still cannot produce two landmarks.) **2026-08-28 correction:** D710 only ever restored `main` to `block.json`'s `tagName` enum — `edit.js`'s `TAG_NAME_OPTIONS` array (the dropdown an operator actually sees) never got the matching entry, so the schema allowed it but the UI couldn't select it. Fixed same day. ⚠ Also found live: `sgs/hero`/`sgs/trust-bar`/`sgs/cta-section` reference `attributes.tagName` only inside their `nav`/`aside` `ariaLabel` conditional — none of the three has an actual tag-picker dropdown at all; only `sgs/container` does. Not fixed this session — flagged for triage. **2026-08-22 (D742) — shop-archive Phase 2 close-out:** `layout` default `""`→`"flex"` (retroactive, matches CSS's own `row` default — same generic gap closed on `sgs/form` too, given its own `"stack"` default); new `minColumnWidth`/`minColumnWidthUnit` grid-column-floor attrs, reusing `sgs/site-footer-row`'s `sgs_intrinsic_columns_track()` mechanism via a new optional `$basis` parameter; editor canvas now mirrors padding/margin/background+text colour+gradient/`bgParallax`/`gridAutoRows`/the background overlay (colour/gradient/opacity/blend-mode) — the overlay mirror reuses `sgs_overlay_decls()` (`helpers-tokens.php`) as its spec rather than a third hand-rolled implementation. `sgs-framework.db` reseeded — `sgs/container: 93 attributes`. ⚠ **`bgSvg*` CANVAS MIRROR SHIPPED 2026-09-05** via the shared `svgBackgroundPreview()` (`src/utils/background-preview.js`), adopted by all 8 wrapper blocks — that debt is closed. Grid-item-scoped colour/gradient/shadow attrs remain unmirrored on canvas — named debt, not silently dropped; the grid-item family specifically needs a per-child scoped-CSS mechanism `edit.js` doesn't have yet.) |
 | Hero | Deployed (**Split-media per-device TYPE 2026-08-13** — `splitMediaType`/`Tablet`/`Mobile` + `splitVideo*`/`splitSvg*` families replace the old unified `splitMedia` attribute outright, deleted (`4fe39e6d`); a split hero can now be an image on desktop and an SVG on mobile. **Split-media overlay + motion, same session (D596/D597):** `mediaOverlayColour`/`Gradient*` on the split column, separate from the section's own `backgroundOverlayColour` (legacy `overlayColour` deleted — it was a dead duplicate control); `mediaParallax`/`mediaKenBurns`/`mediaAnimationDuration` as a motion pair scoped to the split-media element, mutually exclusive same as the section's own `bgParallax`/`bgKenBurns` pair. **D597 fix:** `hero/style.css` and `container/style.css` each declared a DIFFERENT animation under the identical global `@keyframes sgs-ken-burns` name — silently overwriting whichever loaded last, across every block sharing the wrapper — renamed both. **D598 fix:** the split-order control's swap now applies live in the editor canvas, not just on the published page. **D600 (same day):** `splitImageBleed` tested live (was assumed dead, wasn't) and defaulted to `true` — full-bleed is now the standard split-hero look, not opt-in; then found and fixed to also reach `video`/`svg` tiers (previously image-only — a bled video kept its native aspect ratio and overflowed its column), by targeting the type-modifier class `sgs_tier_media_render()` already emits, no `render.php` change needed. ⚠ Video/SVG tiers still have NO width/height/border/padding/object-fit controls of their own at all — a separate, bigger, still-open gap. **2026-08-15** — a `split-media` element was declared in `supports.sgs.elements` to close a `css_element` drift orphan on `splitImageMobileObjectPosition`. Important correction worth recording: `split-media` and `split-image` are BOTH current, intentional class names carried simultaneously on the same node by `sgs_tier_media_render()` — `split-media` is the type-agnostic base, `split-image` the image-type extra class. Neither is a stale leftover from the D595 image→image/video/svg generalisation, and the compound selector `.split-image.split-media--mobile` is deliberate (dropping either half weakens specificity from (0,3,0) to (0,2,0)). Manifest-only, no render.php change. See `decisions.md` for the D-number.) |
 | Info Box | Deployed |
 | Counter | Deployed |
-| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31. Dual-mode shipped 2026-06-01 FR-24-10. **sourceMode='bound' RETIRED for cloning D182 2026-06-06** (6-persona adversarial-council gated) — converter now emits `sourceMode='typed'` with native item attrs via icon-identity resolver. Canonical modes: `typed` (curated repeater, 3 variants — THE mode for cloned + authored trust-bars) / `wc-product` / `sgs-cpt` (live WC configurator only). `bound` is dead — do NOT add new `bound` emits. version 1.0.0+. **2026-08-15** — a new `badge-label` element was declared in `supports.sgs.elements` to close a `css_element` drift orphan. It exists as a SEPARATE element from the existing `label` element (rather than being merged into it) because `label`'s `css:color` slot is already legitimately owned by the `textColour` attribute for the icon-circle variant — merging was attempted first and produced a routing-determinism build failure. `labelColour` (text-only/image-badge variants, `.sgs-trust-bar__badge-label`) now claims `css:color` on the new element. Manifest-only, no render.php change. See `decisions.md` for the D-number. **2026-08-17 (D647)** — same `main`-removal + `nav`/`aside` `ariaLabel` landmark-label fix as `sgs/container`, applied identically here.) |
+| Trust Bar | Deployed (merged certification-bar capability + auto-scroll 2026-05-29 D95 — badgeStyle variants: icon-circle (default), text-only, image-badge; auto-scroll marquee when items overflow columns. Renamed from Trust Badges 2026-05-31. Dual-mode shipped 2026-06-01 FR-24-10. **sourceMode='bound' RETIRED for cloning D182 2026-06-06** (6-persona adversarial-council gated) — converter now emits `sourceMode='typed'` with native item attrs via icon-identity resolver. Canonical modes: `typed` (curated repeater, 3 variants — THE mode for cloned + authored trust-bars) / `wc-product` / `sgs-cpt` (live WC configurator only). `bound` is dead — do NOT add new `bound` emits. version 1.0.0+. **2026-08-15** — a new `badge-label` element was declared in `supports.sgs.elements` to close a `css_element` drift orphan. It exists as a SEPARATE element from the existing `label` element (rather than being merged into it) because `label`'s `css:color` slot is already legitimately owned by the `textColour` attribute for the icon-circle variant — merging was attempted first and produced a routing-determinism build failure. `labelColour` (text-only/image-badge variants, `.sgs-trust-bar__badge-label`) now claims `css:color` on the new element. Manifest-only, no render.php change. See `decisions.md` for the D-number. **2026-08-17 (D647)** — same `main`-removal + `nav`/`aside` `ariaLabel` landmark-label fix as `sgs/container`, applied identically here.) **2026-08-21 (D710) — PARTLY REVERSED:** `main` is BACK in the `tagName` option, because removing it outright meant ALL NINE templates authored `tagName:"main"` and ZERO pages rendered a `<main>` landmark (measured live). D647's reasoning still holds and is preserved by a per-request singleton guard in the shared wrapper: the FIRST container claiming `main` renders it, any later one falls back to `section`, so a client duplicating a container still cannot produce two landmarks.) |
 | Icon List | Deployed |
 | Card Grid | Deployed |
-| CTA Section | Deployed (**2026-08-17 (D647)** — `main` removed from `tagName`; `nav`/`aside` gained an `ariaLabel` + "Landmark label" control, same fix as `sgs/container`.) |
+| CTA Section | Deployed (**2026-08-17 (D647)** — `main` removed from `tagName`; `nav`/`aside` gained an `ariaLabel` + "Landmark label" control, same fix as `sgs/container`.) **2026-08-21 (D710) — PARTLY REVERSED:** `main` is BACK in the `tagName` option, because removing it outright meant ALL NINE templates authored `tagName:"main"` and ZERO pages rendered a `<main>` landmark (measured live). D647's reasoning still holds and is preserved by a per-request singleton guard in the shared wrapper: the FIRST container claiming `main` renders it, any later one falls back to `section`, so a client duplicating a container still cannot produce two landmarks.) |
 | Process Steps | Deployed |
 | Testimonial | Deployed (D8/D206/D209 2026-06-11 — typed-attr **7-VARIANT** rebuild: classic-card / pull-quote-editorial / rating-led / avatar-spotlight / corporate-logo / case-study-media / minimal-quote; visual thumbnail picker; rich gated optional fields [quote / summary-phrase / name / role / org / avatar / logo / work-image+video / stars-OR-/10-scale / date / verified / source] + per-element typography + hover scale/shadow. save.js→null; deprecated.js v8 migrates legacy scalar+InnerBlocks shapes [page-8 3-testimonial round-trip live-verified]. version 0.3.1. **MERGED to main (D209).** **⚠ Cloning gotcha (D212, 2026-06-11):** `block_composition.has_inner_blocks` MUST be 0 for this block (it's a TYPED leaf now) — it was left STALE at 1 after the D8 rebuild, so the converter still emits child blocks the typed render.php ignores → empty slides on a clone. Fix = the universal DB-driven lift + flag flip (NOT a bespoke handler); plan `.claude/plans/2026-06-11-testimonial-universal-lift-build.md`. **Avatar art-direction tiers 2026-08-07 (D521)** — `avatarMediaTablet`/`Mobile`, object-typed to MATCH `avatarMedia` (a flat value on an object-typed attr is silently coerced to the default, dropping the whole thing). Each tier gets its own `.sgs-testimonial__avatar--{tier}` WRAPPER because `sgs_render_media()` takes no class arg. Deliberately NOT that helper's `mobile_url` `<picture>` path: mobile-only, no tablet step, and not the BEM modifier the cloning pipeline reads.) |
 | Testimonial Slider | Deployed |
@@ -278,9 +725,8 @@ that catches a broken deploy).
 | Image Gallery | Deployed — grid/masonry/carousel + Interactivity API lightbox. **⚠ Corrected 2026-08-10 — this table omitted a row for it entirely while a stale duplicate sat under "Phase 2 — Not Started" describing it as unbuilt.** **Migrated to the FR-37-16 object model 2026-08-10 (D548)**: declares **NO `supports.spacing`** at all (`contentWidth`/`maxWidth`/`padding`/`margin` are object-typed attrs it owns outright) — the last mount of `ResponsiveSpacingPanel`, which is now DELETED (it wrote tablet/mobile attrs no block.json declared, so WP silently discarded them on save; see D548 for the full defect + the deliberate D542 reversal this block accepts). |
 | Before / After | Deployed — image/video/SVG per comparison SLOT. Per-device video-autoplay tiers + `BooleanResponsiveControl` (2026-08-07). **IMAGE-pair art-direction tiers 2026-08-07 (D521)** on `{before,after}Image{Id,Url}{Tablet,Mobile}`; tier siblings render INSIDE their own slot or the divider will not clip them. Alt is not tiered (`ImagePickerRow` gained `showAlt`). ⚠ YouTube/Vimeo unsupported by design in the video slot — both sides must stay frame-synced, which needs a CDN player SDK the motion doctrine excludes. ⚠ Tier keys are written as WHOLE literal suffixes (`$prefix . 'ImageIdTablet'`) because `check-dead-controls.js` cannot follow a key whose tail is a second variable — writing them in three parts reports all 8 attrs as fully dead. |
 | Mega Menu | Built (L3, needs build + deploy) |
-| Content Collection | Deployed (NEW 2026-06-03 — own WP_Query, selection rules: newest/featured/most-expensive/cheapest/most-popular/handpicked/category; renders each result as a Bound sgs/product-card; designed empty state; Inspector controls only. Spec 24 FR-24-4/5/6. version 1.1.0. Deployed to sandybrown canary.) |
 | Option Picker | Deployed (sgs-interactive — exclusive radio-group pill chooser; Spec 24 FR-24-15 / D144 Phase A; no-JS-safe SSR + bubbling `sgs:option-selected` event; WCAG contrast fix on selected pill + overridable `--sgs-option-picker-*` colour vars. **C7/D206:** group-label font-size + colour controls (legend inline style). Merged to main D209. version 0.1.7) |
-| Product Card | Deployed (dual-mode: Typed = built-in elements rendered from block attributes — **legacy InnerBlocks machinery PURGED D275 2026-07-04** (no `allowedBlocks`, `save: () => null`, no `$content` bridge, no legacy editor path); Bound = live WooCommerce/CPT. **Spec 27 Phase-1 CONFIGURATOR SHIPPED D164:** Bound variable products read WC's live 48-SKU manifest (`includes/class-product-manifest.php`) seeded into per-instance `data-wp-context`; Size+Flavour pickers swap price/sale/stock/image with 0 XHR; secure add-to-cart via `/sgs/v1/cart/add-item` proxy; cross-attribute availability grey-out + `GET /sgs/v1/cart/availability/{id}`; all 4 a11y gates pass. Colon-event bridge via `data-wp-init` (WP won't bind `data-wp-on--` colon events). overridable `--sgs-product-card-*` vars + cardMaxWidth. **Spec 28 P1 value-ladder SHIPPED 2026-06-05 (D-pending):** SSR comparative per-unit ladder (Bound-mode only, NOT seeded into the 24KB client context) — one row per pack size with per-unit price + Rule-of-100 saving + "Best value" badge; monotonicity guard suppresses worse-value rows; honest claim-suppression when no `_sgs_base_price_pence` single-item reference is set (`framingMode`/`decoyEnabled` attrs; `sgs_value_ladder()`/`sgs_saving_display()` helpers; live-verified contrast 15.71:1). D151/D164 / Spec 27 FR-27-A/B/C/G/H + Spec 28 FR-28-7/8/9/9a/16. **D204 (main):** FP-H built-in-element card (connect+override). **Block-quality 2026-06-11 (feat/block-quality-mirror, not merged):** B3 Advanced-SEO crash fixed (`__experimentalNumberControl`), B4 fresh-card defaults to built-in template (legacy detected by stored InnerBlocks), B5 duplicate bound-mode CTA text/url gated out, B6 trial border overridable (`:where()`); picker-label forwarding (built-in Size/Flavour labels customisable via `pickerLabelFontSize`/`pickerLabelColour`); `packSizes` control wired (typed mode). version 1.16.4) |
+| Product Card | Deployed (dual-mode: Typed = built-in elements rendered from block attributes — **legacy InnerBlocks machinery PURGED D275 2026-07-04** (no `allowedBlocks`, `save: () => null`, no `$content` bridge, no legacy editor path); Bound = live WooCommerce/CPT. **Spec 27 Phase-1 CONFIGURATOR SHIPPED D164:** Bound variable products read WC's live 48-SKU manifest (`includes/class-product-manifest.php`) seeded into per-instance `data-wp-context`; Size+Flavour pickers swap price/sale/stock/image with 0 XHR; secure add-to-cart via `/sgs/v1/cart/add-item` proxy; cross-attribute availability grey-out + `GET /sgs/v1/cart/availability/{id}`; all 4 a11y gates pass. Colon-event bridge via `data-wp-init` (WP won't bind `data-wp-on--` colon events). overridable `--sgs-product-card-*` vars + cardMaxWidth. **Spec 28 P1 value-ladder SHIPPED 2026-06-05 (D-pending):** SSR comparative per-unit ladder (Bound-mode only, NOT seeded into the 24KB client context) — one row per pack size with per-unit price + Rule-of-100 saving + "Best value" badge; monotonicity guard suppresses worse-value rows; honest claim-suppression when no `_sgs_base_price_pence` single-item reference is set (`framingMode`/`decoyEnabled` attrs; `sgs_value_ladder()`/`sgs_saving_display()` helpers; live-verified contrast 15.71:1). D151/D164 / Spec 27 FR-27-A/B/C/G/H + Spec 28 FR-28-7/8/9/9a/16. **D204 (main):** FP-H built-in-element card (connect+override). **Block-quality 2026-06-11 (feat/block-quality-mirror, not merged):** B3 Advanced-SEO crash fixed (`__experimentalNumberControl`), B4 fresh-card defaults to built-in template (legacy detected by stored InnerBlocks), B5 duplicate bound-mode CTA text/url gated out, B6 trial border overridable (`:where()`); picker-label forwarding (built-in Size/Flavour labels customisable via `pickerLabelFontSize`/`pickerLabelColour`); `packSizes` control wired (typed mode). **Per-element font families 2026-08-27 (D873):** `descFontFamily`/`priceFontFamily`/`priceNoteFontFamily` added — `titleFontFamily` had been the block's ONLY font-family attr, so description/price/note text could never carry a typeface and fell through to the theme. No render.php change was needed: `sgs_typography_css_rule()` builds its key as `$prefix . 'FontFamily'` and render.php already called it for all three prefixes. ⚠ All four are DYNAMIC-KEY attrs — the literal name exists at neither end, so they are carried as documented FALSE POSITIVES in `scripts/block-file-consistency-baseline.json`; a comment naming them does NOT satisfy that gate (it strips comments before grepping). **Typed-card hover 2026-08-27 (D873):** typed cards were deliberately excluded from any hover affordance so clones stayed byte-identical (blub.db 304); Bean REVERSED that — future drafts will carry their own hover effects to clone. A resting 2px transparent border is reserved so only the colour changes on `:hover`/`:focus-within`/`:focus-visible`; ⚠ with the theme's global `box-sizing: border-box` the card's outer size is unchanged but its content box is 4px narrower. **D873 lift bugs CLOSED 2026-08-28 (D875):** the card's own border now correctly renders on the card rather than leaking onto the CTA button (a converter dispatch-order bug, not just a DB fix — see D875), the trial variant's gradient background now paints, and the trial tag's font-size now varies per variant matching its colour. **Card border UI on `SgsBorderControl` (D876/D881)** — the composite matching WP core's native layout. Shape A is CLOSED: all 10 block-private border blocks are migrated (see the Border-controls section above for the standard). ⚠ Two D881 fixes landed on THIS block: its `linked` flag was dropped by the 2026-08-28 migration and restored (without it the card's border colour stored a baked hex instead of the palette token), and a palette-token border colour painted NOTHING here until `sgs_border_states_css()` was fixed to resolve the slug — product-card and `sgs/container` are that helper's only two callers. version 1.16.4) |
 | Tabs + Tab | Deployed (first-ever deploy D210 2026-06-11 — native details/summary context-passing, tab-panel `role=tabpanel`; two latent bugs root-caused + fixed live: context-stripped child render and duplicate nested `role=tabpanel`. version 0.2.0) |
 | Buybox | Deployed (FR-30-7 / D210 2026-06-11 — thin wrapper block mounting the sgs/product-card Interactivity store; composes N sgs/option-picker pickers + ONE manifest + price row + add-to-cart; proxy-wires the card's view module (`view_script_module_ids`); zero engine duplication; dismissible cart status; operator `soldOutLabel`/`unavailableLabel`; single-variant axes suppressed; foreign-id 4xx handled. **Card-surface colour/border 2026-08-16 (D640 §1/D641 Stream D):** native `supports.color.background`/`text` + border (radius/width/colour/style) + gradients enabled on the root, emitted via `wp_style_engine_get_styles()` (no inline styles) — the root grid was previously zero-paint; `sgs/mega-group` correctly left untouched (no gap). version 1.2.2) |
 | Multi Button | Deployed (a group-of-buttons composite mounting N `sgs/button` children; routes through `SGS_Container_Wrapper`, `container_kind='layout'`). **Container-style + child-group-defaults 2026-08-16 (D640/D641 Stream A):** own background colour (pre-existing) + padding (responsive tiers) + background image/video/SVG/overlay + border, full `sgs/container` parity. Child-button LIVE group defaults for background/text/border colour, border radius, font size, font weight — a CSS custom-property fallback chain (`--sgs-mb-btn-<prop>-default`), NOT the Block Context API and NOT editor-time copy (both rejected on evidence). An unset child inherits the group default live; a child with its own explicit value keeps it. Implicit inherit, no visual indicator (Bean's knowingly-accepted tradeoff, D640 §5 — do not re-raise). Distinct from the pre-existing "Apply to all buttons" one-time bulk-fill (`edit.js`'s `applyPresetToAllButtons`) — do not conflate the two mechanisms. version 1.4.0) |
@@ -291,7 +737,8 @@ that catches a broken deploy).
 | Cart | Deployed (WooCommerce mini-cart count badge v1 — Store API hydrate, SSR 0 then client-hydrate, no jQuery, cart-fragments dequeued, editor static placeholder; badge-increment E2E verified 2026-06-03; drawer mode = Phase 2) |
 | Heading | Deployed (redundant `hero` block-style removed 2026-06-03 Task D. version 0.5.1) |
 | Responsive Logo | Deployed (Track 2 nav/header/footer merge). **2026-08-05 (D496):** tier attrs renamed prefix→suffix (`desktopLogoId`→`logoId`/`logoIdTablet`/`logoIdMobile`); added string `logoUrl`/`logoUrlTablet`/`logoUrlMobile` mirroring `sgs/media`'s `imageId`+`imageUrl` pair (ID wins, URL falls back) — `alt` now `role='image-alt'` with `alt_companion_attr='logoUrl'`, retiring the interim `authored-alt-text` category for this block (see D490's correction + D496). Also fixed an editor-only data-loss bug: `edit.js` read an undeclared `_desktopLogoUrl` attr that WP silently discarded, so every preview URL went `undefined` on reload despite the ID and frontend both being correct. ⚠ `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` still shows the pre-rename `desktopLogoId` shape as of this writing — that reference is `/sgs-update`-regenerated, not hand-edited; re-run it to refresh. |
-| Site Header / Site Footer | Deployed (Track 2 nav/header/footer merge). **2026-08-05 (D496):** 32 flat per-side responsive spacing scalars replaced by 8 box-object attrs (`padding`/`paddingTablet`/`paddingMobile`/`margin`/`marginTablet`/`marginMobile` + siblings) per Spec 32's `box_family`-driven `BoxControl` pattern, matching every other box-object migration rather than carrying bespoke per-side scalars. |
+| Site Header / Site Footer | Deployed (Track 2 nav/header/footer merge). **2026-08-05 (D496):** 32 flat per-side responsive spacing scalars replaced by 8 box-object attrs (`padding`/`paddingTablet`/`paddingMobile`/`margin`/`marginTablet`/`marginMobile` + siblings) per Spec 32's `box_family`-driven `BoxControl` pattern, matching every other box-object migration rather than carrying bespoke per-side scalars. **Header completeness 2026-08-19 (D681-D684), live-verified:** `contrastSafe` is PER-DEVICE and no longer silently overrides an operator's explicit "None" — an editor advisory naming the affected device tiers replaces the rewrite, and all five behaviours are now uid-scoped per-tier CSS (the LAST `body.sgs-header-behaviour-*` rules are gone; `Sgs_Header_Behaviours` 323→133 lines, its second per-page-load `parse_blocks()` deleted). A four-value enum needed the new N-value emitter `sgs_emit_tier_rules_map()`; the binary `sgs_emit_tier_rules()` now delegates to it. Transparent's two states are client-reachable (`backgroundColourScrolled`/`textColourScrolled` + gradients + `headerTransparentDirection` to invert the pair); `force-solid` emits NO CSS — it is resolved as a SUPPRESSOR of transparent, removing the old `!important` fight. **Header colour migrated off WP-native `supports.color` into `SgsColourPanel`** (sub-flags all false, key retained for the uniformity gate) and `scrolled` is admitted to `golden-controls.json`'s REAL state vocabulary. `shadow` MOUNTED (it rendered but no control existed); 13 unreachable attrs deleted (12 `shapeDivider*` + `tagName`, so the header is permanently a `<header>` landmark), 56→43. ⛔ **Retiring native colour broke 7 header patterns silently** — WP stops registering `backgroundColor`, and `check-dead-pattern-attrs.py` MISSES it because it asks whether `supports.color` is declared, not whether its sub-flags are on; every block adopting the conformant "declared, all-false" shape inherits that blind spot (D683). |
+| Site Header Row / Site Footer Row | Deployed. **2026-08-19 (D684 + row colour fix):** behaviour controls renamed by SCOPE ("Row background transparent" / "Collapse this row on scroll" / "Reduce this row's padding on scroll") — the header and row versions produce genuinely different output, so the duplication was a NAMING problem, not redundancy. ⛔ **A palette colour on a row rendered NOTHING and did so silently:** `backgroundColour`/`textColour` went RAW to `wp_style_engine_get_styles()`, and `DesignTokenPicker` stores a token SLUG when `linked: true`. Proven on the canary — the style engine neither resolves nor rejects a bare slug, it emits the literal `background-color:primary;`, which is invalid CSS the browser drops. Both blocks now route through `sgs_colour_value()` (slug → `var(--wp--preset--color--…)`, raw hex passes through). Any block feeding a DesignTokenPicker value to the style engine RAW has this defect. |
 
 > **sgs/svg-background retired 2026-05-28 (D93).** SVG background capability merged into `sgs/container` as `bgSvg*` attrs (7 attrs: `bgSvgContent`, `bgSvgPosition`, `bgSvgAnimation`, `bgSvgAnimationSpeed`, `bgSvgOpacity`, `bgSvgMinHeight`, `bgSvgTextShadow`). Existing posts auto-migrate via `deprecated.js` v2 entry in container.
 
@@ -366,14 +813,299 @@ Every block MUST provide per-element customisation matching Kadence/Spectra dept
 
 > **TYPOGRAPHY — use the SHARED component, never bespoke font controls (MANDATORY, Bean R-22-13 2026-06-11).** For ANY per-element typography (font size / weight / style / line-height on a title, label, pill, link, price, etc.) use the shared **`TypographyControls`** component (`src/components/TypographyControls.js`, exported from `../../components`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`, auto-loaded via `render-helpers.php`) in render.php. This gives the canonical SGS inspector UI everywhere: **font size = `<ResponsiveControl>` wrapping a `<UnitControl>` (number + unit in one integrated input — NOT a RangeControl + separate SelectControl dropdown)**, **weight + style = SelectControl dropdowns**,
 >
-> ⚑ **CORRECTED 2026-08-10 (Spec 35 Phase 1.2).** This line used to read *"`<ResponsiveControl>` **device-icon switcher** wrapping a `<UnitControl>`"*. `ResponsiveControl` **no longer renders any switcher** — its own docblock now says so. The device tier is chosen ONCE, in the global toggle docked at the bottom of the inspector (`src/blocks/extensions/responsive-device-toggle.js`), which is a text-labelled `ToggleGroupControl`, not device icons. `ResponsiveControl` still wraps the control and still passes the tier to its child, so the rest of this rule is unchanged — but anyone building from the old wording would expect per-control device icons that no longer exist. ⛔ Do NOT add a per-control switcher: `inspector-scan` rule 25 flags it. **line-height = `<UnitControl>` (number + unit; empty string unit = unitless, matching the PHP helper's `''` → unitless semantic)**. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill. Blocks already on it: text/heading/button/label/quote (canonical) + counter/whatsapp-cta/mobile-nav/option-picker/trust-bar/product-card (migrated 2026-06-11). Adopt it for every new typography control + keep all blocks aligned.
+> ⚑ **CORRECTED 2026-08-10 (Spec 35 Phase 1.2).** This line used to read *"`<ResponsiveControl>` **device-icon switcher** wrapping a `<UnitControl>`"*. `ResponsiveControl` **no longer renders any switcher** — its own docblock now says so. The device tier is chosen ONCE, in the global toggle docked at the bottom of the inspector (`src/blocks/extensions/responsive-device-toggle.js`), which is a text-labelled `ToggleGroupControl`, not device icons. `ResponsiveControl` still wraps the control and still passes the tier to its child, so the rest of this rule is unchanged — but anyone building from the old wording would expect per-control device icons that no longer exist. ⛔ Do NOT add a per-control switcher: `inspector-scan` rule 25 flags it. **line-height = `<UnitControl>` (number + unit; empty string unit = unitless, matching the PHP helper's `''` → unitless semantic)**. Attr shape per element: `{prefix}FontSize` (number) + `{prefix}FontSizeUnit`/`Tablet`/`Mobile` + `{prefix}FontWeight`/`FontStyle` + `{prefix}LineHeight`/`Unit`; the helper emits a per-instance uid-scoped `<style>` (base + tablet + mobile) and honours a legacy STRING fontSize verbatim for back-compat. Do NOT hand-roll a TextControl/SelectControl font-size or emit `--x-font-size` CSS vars per block — that path produced the inconsistent stacked-RangeControl + unit-dropdown controls this rule exists to kill. Adopt it for every new typography control + keep all blocks aligned.
+>
+> ⚑ **EXTENDED 2026-09-06 (D971/D972/D973) — full replacement, not just new controls.** WordPress's native `supports.typography` block support is BANNED outright, not merely superseded for new work — every block declaring it has been migrated onto this shared mechanism (rule `45-typography-full-replacement.js` gates on any remaining native declaration; `npm run` its `inspector-scan` before assuming a block is clean). A claimed CSS-inheritance blocker for root-level typography was checked and disproven (D971) — a real CSS rule on the root cascades to unset children from ANY source, native or not. The helper also now resolves a theme font-size PRESET SLUG stored inside a *tiered* `{desktop,tablet,mobile}` object's `desktop` key (not just the old flat-legacy-string shape) via its `transform` extension point on the tiered spec — this closes a real gap `sgs/heading`/`sgs/text` hit live (D973). Never cache which blocks have migrated here — it drifts; query rule 45's live output instead.
 
 1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
-2. Custom attributes + controls for each inner text element (colour via `DesignTokenPicker`; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
+2. Custom attributes + controls for each inner text element (colour via `SgsColourPanel` — see "Colour controls" below; font size/weight/style/line-height via the shared `TypographyControls` component — see box above)
 3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
 4. Do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style` property declaration, so the guard always matches and the fallback becomes unconditional — it blocks contextual inheritance and can out-rank the operator's own scoped rule. Instead: let the value inherit (no rule), or emit the fallback inside `:where()` so any `.{uid}` scoped rule wins.
 5. Use Block Selectors API in `block.json` to target native typography to primary text element
 6. **Variant-bearing blocks MUST declare `supports.sgs.variants`** in `block.json` — a map of `variant_value → [attr/slot names that variant uses]` — so the cloning converter can detect the correct variant from what the draft extracted, without per-block code. The variant-selector attr name (e.g. `variant`, `variantStyle`, `layout`) MUST also be registerable to the `blocks.variant_attr` DB column via `/sgs-update`. (FR-22-20, DESIGN/build-pending — see Spec 22 §FR-22-20 + D133. Build = next session opening task.)
+
+### Border controls — `SgsBorderControl` is the one shape (D876/D881)
+
+⚠ **This line said "ten blocks" for weeks and drifted 4.4x — verified 2026-08-30 by grepping
+`<SgsBorderControl` across every `edit.js` rather than trusting the cached figure.** **44 blocks
+mount it** (the Shape-B border migration's full rollout — everything from the original 10 through
+`before-after`/`product-faq-item`/`form-step`/`form-field-tiles` and the rest). One more
+(`sgs/whatsapp-cta`) is radius-private-only and correctly does NOT mount it — it declares no
+`borderWidth`/`borderStyle`/`borderColour` at all, radius rides `__experimentalBorder` instead.
+Three blocks (`card-grid`, `multi-button`, `trust-bar`) still carry an ACTIVE native
+`__experimentalBorder` support (radius+width+colour+style) — the codemod's own `--survey`
+refuses them as `ambiguous-anchor`; not yet migrated, not a regression. *(Note: `sgs/media`
+migrated to full block-private border attributes at Wave 5b, 2026-09-01 — it left the native
+group, and its swap IS done, just not via a direct `edit.js` mount. Border renders through the
+shared `box-shape` atom's composition chain — `box-shape.control.js` → `MediaPanelLayout` →
+`MediaBoxShapeControls.js`, which already imports and mounts `<SgsBorderControl>` fed the atom's
+own `borderWidthValue`/`borderStyleValue`/`borderColourValue`/`borderRadiusValues` props with
+zero custom logic. `survey-border-control-migration.py` was corrected 2026-09-02 to follow that
+delegation chain [a block declaring the `box-shape` atom in `supports.sgs.mediaElements[].atoms`
+now has its border classification resolved by checking whether `MediaBoxShapeControls.js` itself
+mounts `SgsBorderControl`, rather than text-searching only the block's own `edit.js`] — `sgs/media`
+now correctly classifies `PRIVATE_DONE`.)* **Never cache this count again — run `grep -l '<SgsBorderControl' src/blocks/*/edit.js | wc -l` yourself** (note this grep alone under-counts by one: `sgs/media` mounts it only via the atom chain, not its own `edit.js`).
+
+Census + ratcheted gate: `scripts/survey-border-control-migration.py`
+(`PRIVATE_NEEDS_SWAP` ceiling is **0** as of 2026-09-02, after the `sgs/media` misclassification
+was fixed at the detector — check `CEILING` in the script rather than trusting a prose figure).
+Codemod for the edit.js swap: `scripts/migrate-border-control.js`
+(`--survey`/`--fix`/`--check`/`--self-test`). Codemod for the broader Shape-B storage migration
+(radius+width+colour off WP-native, per-block): `scripts/migrate-border-shape-b.js`.
+
+The control is a PAIR: border width (box object) + colour, with **border STYLE
+inside the colour popover** (native `BorderBoxControl` opens both from one
+swatch), plus the SGS-wrapped native radius as the second control when the
+caller wires `onRadiusChange`.
+
+⛔ **`linked` is load-bearing — never drop it when wiring a colour row.**
+`GradientCapableColourControl` reads it to decide whether a picked colour is
+stored as the palette token SLUG or a baked hex. Without it the client's colour
+is frozen against every future re-skin. Multi-state carries `linked` per state;
+single-state uses `SgsBorderControl`'s `colourLinked` prop. Both hand migrations
+AND the codemod dropped it initially and 14 green assertions missed it (D881).
+
+⛔ **Per-device border WIDTH is CANCELLED, not deferred** (Bean, 2026-08-29). No
+use case, and it would cost `borderWidthTablet`/`Mobile` attrs plus `@media`
+emission in every block. Do not rebuild it.
+
+⚠ **A palette SLUG is not a paintable value.** `sgs_border_states_css()` feeds
+its result into `background:` inside a masked `::before` ring that also sets
+`border-color:transparent` — so an unresolved slug paints NOTHING rather than
+degrading visibly. It resolves through `sgs_colour_value()` since D881. Any new
+border path handing a raw slug to CSS has this defect; a raw hex hides it.
+
+**Live check:** `node scripts/qa/check-border-roundtrip.js --blocks sgs/x,sgs/y`
+— positive instance + a `borderStyle:"none"` negative control, frontend computed
+styles, fail-closed (a missing browser exits non-zero, never green). ⚠ It measures
+the OUTERMOST `.wp-block-sgs-<name>`, so it cannot target `sgs/container` on a
+page with a header, and NOT RUN is not a pass.
+
+### Colour controls — `SgsColourPanel` is the standard (D609/D618/D622)
+
+**65 of 83 blocks mount `<SgsColourPanel`** (verify: `grep -l "<SgsColourPanel" src/blocks/*/edit.js | wc -l`)
+— **never cache this count, re-run the grep.** It is ONE SGS-owned `PanelBody` titled
+"Colour" (`src/components/SgsColourPanel.js`), rendered in the `styles` InspectorControls
+group, that takes a `rows` array and renders one `DesignTokenPicker`
+(or `GradientCapableColourControl` for a `gradientCapable: true` row) per entry. Do NOT
+hand-roll a bespoke colour `PanelBody` — mount this component instead.
+
+- **A row that doesn't apply is OMITTED, not disabled (D609 field 9c).** `SgsColourPanel`
+  runs `rows.filter(Boolean)` and returns `null` outright if every row is falsy — no empty
+  panel, no greyed-out control. The caller inlines the condition directly in the array
+  literal (`showIconColourRow && { key: "icon", … }`). Reference implementation:
+  `src/blocks/icon-list/edit.js` — read the comment above its `rows={[…]}` block, it cites
+  D609 9c by name.
+- **Row helpers `fillRow`/`textRow`/`borderRow`** (`src/components/colour-variants/`) return
+  row DESCRIPTOR objects, not JSX — they build the `{ key, label, states, … }` shape
+  `SgsColourPanel` expects from an attrs+attributes+setAttributes triple. ⚠ **`borderRow` has
+  ZERO adopters tree-wide** (`grep -rl "borderRow" src/ --include=*.js` returns only its own
+  definition file and the `src/components/index.js` barrel export) — do not treat it as a
+  proven pattern; verify before adopting.
+- **Colour lives inside an ELEMENT's own panel only where a purpose-built paired composite
+  exists** (colour + a non-colour control sharing one row — e.g. border colour sitting next
+  to border style/width in `SgsBorderControl`). There is NO general mechanism for mounting a
+  colour row inside an element's own panel, and none should be built without a design gate —
+  `SgsColourPanel` hardcodes its own `InspectorControls`/`PanelBody`, and zero blocks render
+  a colour control directly inside another panel today.
+- **Residual gap — 6 blocks still mount raw `<DesignTokenPicker>`** instead of routing through
+  `SgsColourPanel`: `hero`, `info-box`, `mega-panel`, `multi-button`, `pricing-table`,
+  `trust-bar` (verify: `grep -l "<DesignTokenPicker" src/blocks/*/edit.js`). `sgs/product-card`
+  is the fully-standardised reference (1 `SgsColourPanel` mount, 0 raw pickers).
+
+### Touch-safe HOVER helpers — `includes/helpers-hover-state.php` (2026-09-03)
+
+**The ONE place a `:hover` rule is built.** On a touchscreen a tap engages `:hover` and it
+STICKS until the user taps elsewhere — clients report it as "I tap it and the colour won't go
+back", indistinguishable from a broken control. Call one of these rather than writing a bare
+`{sel}:hover{…}` anywhere.
+
+| Function | Signature | Use when |
+|---|---|---|
+| `sgs_hover_state_rules()` | `( string $selector, string $decls, string $focus = ':focus-visible', string $suffix = '' ): string` | **The default.** You have a base selector and want the hover + focus pair built correctly. Splits the focus rule out and leaves it unguarded, which is what keyboard users need. |
+| `sgs_hover_guarded_rule()` | `( string $hover_selector, string $decls ): string` | You already hold `:hover` selectors and want just the guarded rule. Pass ONLY `:hover` selectors — emit focus separately, yourself, unguarded. |
+| `sgs_hover_media_wrap()` | `( string $rule ): string` | You have a complete rule and need only layer 1 wrapped around it. |
+
+**Two layers, both required. Neither covers the other's devices.**
+
+| Constant | Layer | Covers |
+|---|---|---|
+| `SGS_HOVER_MEDIA` = `@media (hover: hover) and (pointer: fine)` | 1 — pure CSS, works on a page shipping no JS | Phones, pure-touch tablets |
+| `SGS_HOVER_NOT_TOUCH` = `:where(:root:not(.sgs-touch-input))` | 2 — reactive class set from the last `pointerdown` | Hybrids: touchscreen laptops, Surface, iPad + trackpad |
+
+⛔ **Layer 1 alone is not enough, and this is measured, not theoretical.** The media feature
+describes the device's PRIMARY pointer only — a hybrid reports hover-capable and KEEPS
+reporting it for the whole session even while being poked with a finger. Do not delete either
+layer believing the other covers it.
+
+⚠ **`:focus-visible` / `:focus-within` stay OUTSIDE both guards** — they are keyboard-reachable,
+and a keyboard user on a touchscreen laptop still needs the focus state. Callers split the
+hover selector from the focus selector rather than emitting one combined rule.
+
+⚠ **Layer 2 is wrapped in `:where()` so it contributes ZERO specificity.** A hover rule must
+keep out-ranking its own resting rule by the `:hover` pseudo-class alone. A guard that raises
+specificity produces a rule that silently loses — indistinguishable from one that is absent.
+
+**Static `style.css` is a SECOND surface this helper cannot reach.** Per-block `style.css`
+files are enqueued by WordPress as ordinary stylesheets and never pass through PHP, so a
+motion `:hover` rule written there gets no guard from these functions. That surface is covered
+at build time instead, by `scripts/hover-guard/`:
+
+| Script | Does |
+|---|---|
+| `run-transform.js` | Wraps motion-only `:hover` rules in BOTH guards, operating on compiled CSS in `build/blocks/*/style.css`. Idempotent; nests correctly inside an existing `@media`; splits a selector list that mixes `:hover` with `:focus-visible`. |
+| `check.js` | Fails on any `:hover` rule the transform cannot classify confidently, so an odd shape surfaces as a build error rather than being silently mangled. Scans BOTH surfaces — the block CSS files AND these PHP emitters — so an unguarded hover rule added on either one is caught by a single check rather than falling between two half-checks. |
+
+Out of scope by design, and not a bug: colour-family hover rules (the PHP helpers above already
+own those) and `text-decoration`-only hover on links (a stuck underline is cosmetic, not a
+control that looks broken — but `text-decoration` COMBINED with a motion property is still
+guarded).
+
+⚠ **The transform runs on BUILD OUTPUT, so `src/**/style.css` still reads as unguarded.** That
+is expected. Do not "fix" a source file by hand-adding a guard — read `check.js`'s output for
+the real state.
+
+⚠ **The PHP half's finding count means "none this method can detect", not "none exist".** Its
+scan is per-function-body, so a hover rule reached through a cross-file data flow is invisible
+to it — one such case is known in `helpers-tokens.php`'s `sgs_border_gradient_css()`.
+
+### Known precedent-function registry (2026-09-05)
+
+**Check this table BEFORE designing any new colour-emission mechanism.** Built because
+`sgs_svg_stroke_gradient()` was independently rediscovered as "the answer" for
+SVG paint-gradient 3 separate times in one week by investigations that didn't know it
+already existed — wasted search time recurring on a schedule. Add a row here whenever a
+future session finds (or re-finds) a working precedent for a problem shape not yet
+listed.
+
+| Problem shape | Known precedent | Where |
+|---|---|---|
+| SVG paint (fill/stroke) gradient | `sgs_svg_stroke_gradient()` + `sgs_svg_inject_defs()` | `includes/helpers-svg-gradient.php:51,199` |
+| Icon gradient where the icon's SOURCE varies (lucide/wp-icon render `<svg>`, dashicon/emoji render `<span>` and paint via `color:` like any other text node) — picks SVG stroke-gradient or the text-gradient trio per source, never a bare `sgs_svg_stroke_gradient()` call that silently no-ops on dashicon/emoji | `sgs_icon_gradient_css( $iconSource, $gradientCss, $uniqueId, $selector )` — built 2026-09-05 as `sgs/icon`'s POC, rolled out 2026-09-06 to `notice-banner` (real bug fix — the only one of these with a genuinely variable source), `cart`/`accordion-item`/`before-after`/`social-icons` (lucide-only consistency swaps). `icon-list` is a KNOWN DIFFERENT SHAPE — its list items can each declare a different source, so one call can't resolve the whole row; still open. | `includes/helpers-svg-gradient.php:274` |
+| Text colour/gradient, base OR ancestor-hover, one owned scoped rule | `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()` (+ `sgs_hover_state_rules()`'s 4-arg form for ancestor-hover) | `includes/helpers-tokens.php:1124` + worked example `src/blocks/post-grid/render.php:670-689`, `src/blocks/brand-strip/render.php:502-515` |
+| Per-item dynamic-loop colour (repeater/query loop) | `:nth-child(N)`-scoped rule per iteration | `src/blocks/pricing-table/render.php:171,223-248` (`ribbonColour`) |
+| Fill or text colour, base+hover, flat-or-gradient, one owned rule | `sgs_fill_states_css()` / `sgs_text_states_css()` | `includes/helpers-colour-variants.php:109,215` |
+| Background/border custom-property gradient (static compiled stylesheet consumer) | `sgs_custom_property_gradient_decls()` — emits `--var` + `--var-gradient` siblings; stylesheet needs one added `background-image:var(--x-gradient,none)` (or `border-image`) line next to the existing `background-color:var(--x)` line | `includes/helpers-tokens.php:953` — proven on `brand-strip`, `post-grid`, `social-icons`, `form`, `gallery`, `before-after` |
+| A block's own `$root_sel`/`$sel_*`-scoped per-instance `<style>` rule needs to override a static compiled stylesheet default (incl. across a block's own WP style variants) | Emit the override into the block's own `$scoped_css[]` array, keyed to its own already-defined selector (e.g. `$sel_pill`) — the scoped `<style>` block is enqueued after the compiled stylesheet, so equal-or-greater specificity wins by source order. No new mechanism needed; every block that assembles `$scoped_css` already relies on this | `src/blocks/option-picker/render.php:415-419` (explicit comment: rules rooted at `$root_sel` "out-specify the variant") |
+
+⚠ The custom-property-gradient row above is BACKGROUND/BORDER only — every live use
+feeds a `background-color` or `border-color` custom property. A `color:`-consuming
+custom property is the TEXT row above, not this one — even when the block has multiple
+WP style variants consuming the same custom property (the variants differ only in
+fallback DEFAULT, not in selector/property shape, so they don't change which mechanism
+applies).
+
+### Colour EMISSION helpers — the render.php side (2026-09-03)
+
+**Written because the gap cost real time.** A 2026-09-03 session spent most of its length
+hand-fixing render.php CSS assembly one block at a time before realising several of these
+helpers already existed and already did the job. This section is the "which one do I call"
+reference that should have existed first. All live in `includes/helpers-tokens.php` (the
+primitives) and `includes/helpers-colour-variants.php` (the per-mechanism composers) unless
+noted. Every one is autoloaded via `render-helpers.php`.
+
+**The primitives (everything else is built from these two):**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_colour_value()` | `( ?string $value ): string` | Resolves a token slug to `var(--wp--preset--color--X)` or passes a raw CSS colour through. The floor every other helper reads through. |
+| `sgs_background_paint_decl()` | `( ?string $colour, ?string $gradient ): string` | ONE declaration — `background-color:X` or `background-image:linear-gradient(...)` (gradient wins when valid), no trailing `;`. The single shared gate for "does this fill paint a gradient". |
+
+**The state emitter (the thing every mechanism ultimately calls to become real CSS):**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_emit_state_colour_css()` | `( string $selector, array $decls_normal, array $decls_hover ): string` | Given a selector + raw declaration arrays, emits `{sel}{…}` plus a touch-guarded `:hover`/`:focus-visible` pair via `sgs_hover_state_rules()`. The lowest-level shared primitive — every mechanism below either calls this directly or is this shape hand-inlined. |
+
+**Per-mechanism composers — pick ONE based on what the element actually paints:**
+
+| Mechanism | Function | Returns | When to use |
+|---|---|---|---|
+| **Fill (background)** | `sgs_fill_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` — raw declarations, NOT finished CSS | The element shares its selector with OTHER declarations you're already assembling (compose into one rule yourself, then call `sgs_emit_state_colour_css()` once). |
+| **Fill (background)** | `sgs_fill_states_css( $selector, $attributes, $map )` | Finished CSS | The element owns its own standalone rule for JUST this fill — no composing needed. |
+| **Text** | `sgs_text_decls( $attributes, $map )` | `{normal:string[], hover:string[]}` | ⚠ Returns ONLY the `color:` declaration. If the resolved value is a gradient, you MUST separately call `sgs_text_colour_gradient_fallback_rule()` (below) — this function will not do it for you, and a bare `color:linear-gradient(...)` is invalid CSS the browser silently drops. |
+| **Border** | `sgs_border_states_css( $selector, $attributes, $map )` | Finished CSS (the ONLY one of the four that returns finished CSS unconditionally) | A border gradient needs a masked `::before` ring construct that requires BOTH states at once (delegates to `sgs_border_gradient_css()`), so there is no honest per-state-declaration form. |
+
+All four `$map` shapes are identical: `['base'=>attr, 'hover'=>attr, 'gradient'=>attr, 'hover_gradient'=>attr]` — only `base` is required, everything else optional. **Attribute names are the caller's own** (Bean's ruling, 2026-08-22) — the map adapts to whatever a block already calls its attrs; nothing gets renamed to fit the helper.
+
+**The button-element aggregate — for a genuinely button-shaped element only:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_button_element_style_css()` | `( array $attrs, string $prefix, string $selector ): string` (`includes/helpers-button-style.php`) | ONE call reads `{prefix}ColourBackground`/`ColourText`/`ColourBorder` + `Hover` siblings + `ColourBackgroundGradient`/`ColourBackgroundHoverGradient` (added 2026-09-03) + `ColourBorderGradient`/`ColourBorderHoverGradient` (pre-existing, D636), plus border-style/width/radius, font-weight/size, padding, width-type — ALL from one prefixed attribute set. |
+
+⛔ **This helper supports fill gradient and border gradient, but deliberately NOT text
+gradient.** A button-shaped element paints text and background on the SAME selector, and a
+text gradient needs `background-clip:text` — which would clip that same-selector background
+paint to the glyph shapes. Adding text gradient here needs the `::after`-layer treatment
+below applied FIRST; it cannot be bolted onto this helper as-is. `sgs/button` itself does not
+use this helper (it has its own, richer emitter) — this one is for OTHER blocks' built-in
+CTA-shaped elements (product-card's CTA, container's CTA, etc.) and now also modal's close
+button / form's prev button, google-reviews' write-review and arrow buttons (2026-09-03).
+
+**Real text gradient — the only path that supports it, and its precondition:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_resolve_text_colour_or_gradient()` | `( ?string $flat, ?string $gradient ): string` | Picks the gradient when valid, else the flat colour. |
+| `sgs_text_colour_decl()` | `( ?string $value ): string` | For a flat colour: `color:X`. For a gradient: `background-image:X;-webkit-background-clip:text;background-clip:text;color:transparent`. |
+| `sgs_text_colour_gradient_fallback_rule()` | `( string $selector, ?string $value ): string` | No-op for a flat colour. For a gradient: emits the MANDATORY `@supports not ((background-clip:text))` fallback. **Always call this alongside `sgs_text_colour_decl()`** — omit it and a gradient degrades to invisible text on any browser lacking `background-clip:text`. |
+
+⛔ **Precondition: the element must NOT also paint a background on the same selector.**
+`background-clip:text` clips the element's WHOLE background painting area — background
+colour included — to the glyph shapes. If the element needs both a text gradient AND a
+background, move the background onto a `::after` layer first:
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_block_background_layer_css()` | `( string $selector, string $paint_decl, string $hover_paint_decl = '' ): string` (`helpers-tokens.php`) | Moves a block's background paint off the element itself onto a `::after` pseudo-element, freeing the element for `background-clip:text`. Uses `::after` specifically because `sgs_border_gradient_css()` already owns `::before` on every block this applies to. |
+
+**Which blocks currently need this precondition solved before they can offer a text
+gradient**: 43 elements across ~35 blocks currently declare BOTH a `css:color*` and a
+`css:background*` member on the same `supports.sgs.elements` entry (query:
+`SELECT block_slug,css_element FROM block_attributes …` isn't quite right — the live check is
+reading each block.json's `supports.sgs.elements[*].attrMap` for an element with both a
+`css:color*` key and a genuinely separate `css:background*` key, i.e. NOT the attribute's own
+`{attr}Gradient` sibling). This is `textSharesElementWithBackground()` in
+`scripts/inspector-scan/rules/31-golden-colour-control.js:163` — an EXISTING, already-adopted
+exemption mechanism, not something to hand-derive per block. It reads the element manifest,
+so no block list is hardcoded and none needs to be kept in sync by hand. This is a real,
+sizeable backlog (button, container, hero, product-card, trust-bar, nav-menu, cta-section,
+info-box, and ~27 more) — closing all of it is its own project, not a quick follow-up.
+
+**Icon/SVG gradient where the icon's source can vary:**
+
+| Function | Signature | Does |
+|---|---|---|
+| `sgs_icon_gradient_css()` | `( string $iconSource, string $gradientCss, string $uniqueId, string $selector ): array{defs,css,fallback_rule}` (`includes/helpers-svg-gradient.php:274`) | Picks the correct gradient mechanism per icon source — SVG stroke-gradient (delegates to `sgs_svg_stroke_gradient()`) for `lucide`/`wp-icon`, the text-gradient trio (delegates to `sgs_text_colour_decl()` + `sgs_text_colour_gradient_fallback_rule()`) for `dashicon`/`emoji`, since those render a `<span>` not an `<svg>` and paint via `color:` like any other text node. |
+
+⛔ **Never call `sgs_svg_stroke_gradient()` directly on a block whose icon source can be `dashicon` or `emoji`** — it targets an `<svg>` selector that doesn't exist for those sources, a silent no-op. Use `sgs_icon_gradient_css()` instead; for a block whose icon is provably always lucide/wp-icon (no source picker, or the picker's value never reaches render), a direct `sgs_svg_stroke_gradient()` call is not wrong, but `sgs_icon_gradient_css('lucide', ...)` is the now-standard convention — matches every other icon-hosting block on one call shape. **Open gap:** a block whose REPEATED items each declare their own icon source (e.g. `sgs/icon-list`) can't be fixed by one `sgs_icon_gradient_css()` call — that needs a per-item design, not a call-site swap.
+
+**The bespoke custom-property pattern — NOT a shared helper, block-private by design:**
+
+`sgs/option-picker`'s ENTIRE colour system (base/hover/selected/border, across three style
+variants — outlined/filled/ghost) is built this way rather than through any of the above:
+render.php emits `--sgs-op-*` CSS custom-property VALUES (`$var_decls[] = '--sgs-op-bg-hover:'
+. sgs_colour_value(...)`), and style.css's per-variant rules consume them via a `var(--sgs-op-
+bg-hover, var(--sgs-op-bg, <preset-default>))` fallback chain. **Use this pattern only when a
+block has multiple STYLE VARIANTS sharing one underlying colour concept with different
+property combinations per variant** — the button/fill/text/border helpers above all assume
+one selector with one flat set of colour states, which doesn't fit that shape. There is no
+shared helper for this pattern; every adopter hand-rolls its own `--sgs-x-*` chain. It does
+NOT support gradient without extra work: a gradient needs `background-image`, and a
+`var(--x, …)` chain feeding a fixed `background-color:` declaration can't switch CSS property
+based on whether the resolved value is a gradient — that would need a second custom property
+or a conditional PHP branch choosing which property to emit, not yet built anywhere.
+
+**Decision table:**
+
+| Element shape | Use |
+|---|---|
+| One selector, needs background AND/OR border AND/OR text colour, all flat-or-gradient except text | `sgs_button_element_style_css()` if genuinely button-shaped (has border/font-weight/padding too); otherwise compose `sgs_fill_decls()`/`sgs_text_decls()`/`sgs_border_states_css()` yourself |
+| One selector, background/border only, no text | `sgs_fill_states_css()` and/or `sgs_border_states_css()` directly |
+| One selector, text gradient needed AND no background on that same selector | `sgs_resolve_text_colour_or_gradient()` → `sgs_text_colour_decl()` → `sgs_text_colour_gradient_fallback_rule()` (MANDATORY companion) |
+| One selector, text gradient needed AND a background too | Same as above, but first move the background to `sgs_block_background_layer_css()` |
+| Multiple style variants, one colour concept, different properties per variant | The bespoke `--sgs-x-*` custom-property pattern (option-picker is the reference) — gradient needs its own design here, not a drop-in |
 
 ### Hover Controls Spec (Phase 2)
 
@@ -386,6 +1118,53 @@ Blocks with interactive hover states MUST expose these controls in the editor in
 - **Transition easing** — CSS transition-timing-function (ease, ease-in-out, etc.)
 
 These are not just colour shifts. Kadence and Spectra offer transform and shadow controls — SGS must match or exceed.
+
+#### What the UNIVERSAL hover panel is for — and what it is not (D808, 2026-08-26)
+
+**Nobody had written this down, and its absence caused a whole session's work to start from a
+false premise.** Read it before adding `"hover"` to any block's
+`supports.sgs.enabledExtensions`.
+
+**The one rule: the panel governs a block whose hover target IS the block root.** Nothing else.
+`inject_hover_effects()` is a `render_block` filter — it finds the block's first real tag and
+classes THAT. It fires once per block, never once per card, tile, step or link. So on a block
+whose hover belongs to a repeated child, the panel is not "less useful", it is aimed at the
+wrong element, and switching it on gives the client one control acting on the wrapper beside
+another acting on the item.
+
+| Panel SUITS (hover target = root) | Panel does NOT suit (hover target = a child) |
+|---|---|
+| `cta-section` · `team-member` · `info-box` · `pricing-table` · `google-reviews` · `whatsapp-cta` | `card-grid` → `__item` · `post-grid` → `__card` · `gallery` → `__item` · `process-steps` → `__step` · `icon` → `__link` |
+
+**Which effects the panel actually owns.** Scale and shadow it owns outright.
+
+⚠ **The zoom/grayscale gap this paragraph used to describe is CLOSED (D817/D821, 2026-08-27) —
+per-block scoping, not a root-level rule (D796 refused that).** Of the 6 root-hover blocks: only
+`cta-section` had a real image to zoom/desaturate — fixed with a scoped `::before` rule on
+`cta-section/style.css`. `pricing-table` / `google-reviews` / `whatsapp-cta` have no image
+element at all (icons or none) — their zoom/grayscale toggles are now **withdrawn**, not left
+inert, via a new `supports.sgs.hoverExcludeControls` block.json declaration (read by both
+`hover-effects.php` and its JS twin), gated at both the class-injection point and the inspector
+UI. `team-member` and `info-box` already worked before this fix. **Net: every root-hover block
+either has a working zoom/grayscale toggle or doesn't offer one at all — no more silent no-ops.**
+
+**Its shadow vocabulary is four slugs** (`subtle` / `raised` / `floating` / `glow`) **with no
+colour input anywhere.** That is why a block-owned `shadowHover` + `shadowHoverColour` pair is
+NOT a duplicate of the panel's `sgsHoverShadow` and must not be deleted for looking like one —
+deleting it swaps a brand-colour swatch for a four-word dropdown (D796).
+
+**Defaults are separate from the panel and are declared by the block.** `supports.sgs.hoverDefaults`
+(`{scalePreset, shadow, imageZoom, focusRing}`) is read by `resolve_hover_defaults()` in
+`includes/hover-effects.php` and its JS twin, and is honoured **only when the block also opts the
+panel in**. A block can have the panel and declare no defaults — that is `cta-section`, and it is
+the fix for a banner that scaled whenever the cursor crossed it. There is no block-name list in
+either file any more; a new block declares its own or gets nothing.
+
+⚠ **`focusRing` is near-inert and must not be trusted as a11y cover.** It emits
+`.sgs-has-focus-ring:focus-visible` on the block ROOT, and a `<div>`/`<section>` root is not
+focusable without `tabindex` — measured 2026-08-26: **zero `tabindex` across card-grid,
+post-grid, process-steps, gallery and icon**, so it could never match on any of them. Real focus
+styling belongs on the focusable descendant.
 
 ## Utility Functions
 
@@ -425,7 +1204,9 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
   with an `UPDATE`, the most destructive path).
   ⚠ **Still take care with:** CORE blocks (static — hand-edited markup DOES break their validation),
   slot-bearing composites whose serialised CHILDREN may be core blocks, and hand-written attributes
-  (WP silently DISCARDS any attr the block.json doesn't declare — D338). Verify the rendered result.
+  (WP drops any attr the block.json doesn't declare FROM THE EDITOR — client can't see/edit it — but
+  PHP does NOT drop it before render.php runs, so a hand-written undeclared attr may render fine
+  until the next editor save deletes it; D338, corrected 2026-08-20). Verify the rendered result.
   For editor-state work (`wp.data.dispatch`) Playwright is still the route.
 - **Canary credentials are ALWAYS available — use them, don't ask and don't work around them.**
   `.claude/secrets/sandybrown.env` (gitignored) carries `WP_USER_SANDYBROWN`/`WP_PWD_SANDYBROWN` for
@@ -476,7 +1257,7 @@ Notifications: N8N webhooks (not wp_mail)
   - **A component's OWN constant STAYS** — it overrides no theme-wide default and is overridable per instance: `sgs/label` `fontSize:12` (an eyebrow/kicker `<span>`, NOT an h-tag equivalent — an `<h5>` above an `<h2>` would fragment the heading outline), `sgs/business-info`'s `#e7d768` credit-sweep colour, `SGS_ATTRIBUTION_URL/TEXT`. Sibling rule: a hardcoded CLIENT value is a bug (`framework-block-client-hardcode-is-a-bug-not-a-constant`); the component's own constant is not.
   - **`null` default = inherit** is the canonical pattern (`sgs/button`, `sgs/heading`, `sgs/product-card` `ctaFontSize`). The shared responsive emitter's contract is *"`''` when nothing is set"* (`helpers-responsive.php:67`), so a null default emits no rule and the theme wins.
   - Enforced by **F3b** in `check-hardcoded-render-defaults.js` (D338) — it reads theme.json `styles.elements` and flags a literal block.json `default` that flattens a theme-differentiated property. It fires ONLY on blocks declaring an enum of element keys (`sgs/heading` `level: h1..h6`), so a single-element block never trips it.
-- **WordPress SILENTLY DISCARDS any block attribute the block.json does not declare** — no error, no warning, no failing test, no failing build. **45 found live in shipped patterns (D338); 39 fixed** (19× `"type"` where `sgs/business-info` declares `displayType`; 17× American `"textColor"` where it declares British `"textColour"`). Gate: `python scripts/check-dead-pattern-attrs.py`. **Never blanket-rename `textColor`→`textColour`** — American spelling is CORRECT on core blocks; scope any rename inside `wp:sgs/*` comments only.
+- **WordPress silently DROPS any block attribute the block.json does not declare — but only on the EDITOR/JS surface.** `getBlockAttributes()` builds `attributes` from the registered schema, so the client can't see or edit an undeclared attr — no error, no warning, no failing test, no failing build. **⚠ CORRECTED 2026-08-20:** PHP does NOT drop it — `WP_Block_Type::prepare_attributes_for_render()` `continue`s past an unrecognised key rather than `unset()`-ing it (unset only fires for a DECLARED attr that fails schema validation). A value hand-authored into a theme pattern/template (as opposed to saved through the editor, which filters before writing `post_content`) reaches `render.php`'s `$attributes` unchanged and may be painting the frontend right now — e.g. `sgs/container/render.php` genuinely consumes an undeclared `backgroundColor` to emit a live `has-{slug}-background-color` class. **Treat a finding as "editor can't touch this", not "dead at render" — check render.php before deleting an authoring or a read.** **45 found live in shipped patterns (D338); 39 fixed** (19× `"type"` where `sgs/business-info` declares `displayType`; 17× American `"textColor"` where it declares British `"textColour"`). Gate: `python scripts/check-dead-pattern-attrs.py`. **Never blanket-rename `textColor`→`textColour`** — American spelling is CORRECT on core blocks; scope any rename inside `wp:sgs/*` comments only.
 - Frontend JS: vanilla only, no jQuery, no external libraries — **bounded by the three-tier motion doctrine (Spec 38 §1, D406 + D422). There are TWO sanctioned library exceptions, both npm-bundled and conditionally loaded: Tier G (GSAP) for effects vanilla cannot reach, and Tier H — a CLOSED list of single-purpose helpers, currently Lenis alone for site-level smooth scrolling, each admitted by a D-numbered decision per §1.2a. Nothing shipped migrates to either, and no CDN ever**
 - Use `viewScriptModule` (ES modules) for frontend interactivity
 - CSS scroll-snap for carousels, Intersection Observer for animations

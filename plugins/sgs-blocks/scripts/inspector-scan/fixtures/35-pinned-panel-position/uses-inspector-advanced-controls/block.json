@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/uses-inspector-advanced-controls",
+	"title": "Fixture: conformant block, correctly uses InspectorAdvancedControls",
+	"category": "sgs",
+	"attributes": {}
+}

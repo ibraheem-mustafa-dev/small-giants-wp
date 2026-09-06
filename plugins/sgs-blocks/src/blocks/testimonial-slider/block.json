@@ -18,8 +18,6 @@
 	"supports": {
 		"sgs": {
 			"collection": true,
-			"imageControls": true,
-			"imageControlsExplicit": true,
 			"containerKind": "layout",
 			"elements": {
 				"slider": {
@@ -27,26 +25,29 @@
 					"layer": "OUTER",
 					"_layer_note": "Root IS the carousel wrapper — SGS_Container_Wrapper kind='layout' renders it (render.php:460-471; DB block_composition.container_kind=layout, wraps_block=sgs/container). MF-3 makes the root OUTER, mirroring card-grid/content-collection.",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text", "motion" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text",
+						"motion"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:gap": "gap",
 						"css:padding": "native:spacing.padding",
 						"css:margin": "native:spacing.margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:letter-spacing": "native:typography.letterSpacing",
-						"css:text-transform": "native:typography.textTransform",
-						"css:font-weight": "native:typography.fontWeight",
-						"css:font-style": "native:typography.fontStyle",
-						"css:text-align": "native:typography.textAlign",
+						"css:color-gradient": "textColourGradient",
+						"css:font-size": "fontSize",
+						"css:line-height": "lineHeight",
+						"css:font-weight": "fontWeight",
+						"css:font-style": "fontStyle",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
@@ -56,24 +57,20 @@
 						"css:justify-items": "justifyItems",
 						"css:align-content": "alignContent",
 						"css:transition-duration": "transitionDuration",
-						"css:transition-timing-function": "transitionEasing"
+						"css:transition-timing-function": "transitionEasing",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
 								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover"
 							}
 						}
 					},
-					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared)."
-				},
-				"side-image": {
-					"label": "Side image (split layout)",
-					"order": 2,
-					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) — sideImage is a MediaPicker object with no independent Text/Fill/Layout style attrs (render.php:374-389)."
+					"_note": "css:align-items is an honest gap (no alignItems attr declared — only alignContent/justifyItems). `nameFontSize` was removed 2026-08-06 — no editor control, no consumer anywhere in the repo (D338-cleared). textColourGradient/textColourHoverGradient added 2026-09-04 (D744-pattern text-colour gradient rollout) -- background moved off this same root selector onto a ::after layer (sgs_block_background_layer_css()) so background-clip:text on the text colour cannot clip the background paint, mirroring sgs/info-box's identical text-and-background-on-one-element migration. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign control is offered, so those remain honest gaps (matches sgs/accordion's wrapper element)."
 				},
 				"arrow": {
 					"label": "Prev/next arrow",
@@ -94,7 +91,12 @@
 					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` (render.php:304,480) — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS (render.php:304). Added 2026-08-15, no manifest element previously covered it. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				}
 			},
-			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots, side-image) is declared above."
+			"_ownership_note": "OWNERSHIP BOUNDARY (Spec 35): each slide is rendered by iterating $block->inner_blocks and calling $inner_block->render() (render.php:286-301) — a genuine child-block render, not a scalar array. Quote text, author name, role, rating, avatar and card-style all belong ENTIRELY to the child sgs/testimonial block's own manifest and are deliberately NOT declared here — declaring them would cross the delegated-rendering ownership boundary. Only the carousel chrome this block itself emits (slider wrapper, arrows, dots) is declared above.",
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
+			}
 		},
 		"align": [
 			"wide",
@@ -105,58 +107,27 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"gradients": true,
-			"__experimentalSkipSerialization": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
+			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
 			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"providesContext": {
 		"sgs/testimonialVariant": "cardStyle"
 	},
+	"_selectorsNote": "S1 fix (2026-09-02, uniformity sweep, inspector-scan rule 33): selectors.typography retargeted from '.sgs-testimonial-slider__quote' to the block root ('.wp-block-sgs-testimonial-slider'). No element in this block's own rendered markup ever carried the quote class — the quote text belongs to a child sgs/testimonial InnerBlocks (render.php:179-183 already documents this and works around it with a manual PHP-side root-scoped rule).",
 	"selectors": {
 		"root": ".wp-block-sgs-testimonial-slider",
-		"typography": ".sgs-testimonial-slider__quote"
+		"typography": ".wp-block-sgs-testimonial-slider"
 	},
 	"attributes": {
-		"layout": {
-			"type": "string",
-			"default": "full",
-			"enum": [
-				"full",
-				"split"
-			]
-		},
 		"alignItems": {
 			"type": "string",
 			"default": ""
-		},
-		"sideImage": {
-			"type": "object"
-		},
-		"testimonials": {
-			"type": "array",
-			"default": []
 		},
 		"autoplay": {
 			"type": "boolean",
@@ -186,17 +157,35 @@
 			"type": "string",
 			"default": ""
 		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
 			"type": "string",
 			"default": ""
 		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the slider's text with a background-clip:text mechanism instead of a flat colour (D744-pattern rollout). Non-empty wins over textColour."
+		},
 		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover sibling of textColourGradient."
 		},
 		"borderColourHover": {
 			"type": "string",
@@ -221,7 +210,11 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 2, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 2,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gridTemplateColumns": {
 			"type": "object",
@@ -281,9 +274,8 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": "",
+			"default": "wrap",
 			"enum": [
-				"",
 				"wrap",
 				"nowrap"
 			]
@@ -303,6 +295,64 @@
 		"dragToScroll": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"fontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"fontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"fontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"fontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"lineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"lineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"editorScript": "file:./index.js",

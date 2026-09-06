@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
+import { useEffect, useMemo } from '@wordpress/element';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -12,18 +13,15 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import {
-	SgsColourPanel,
-	ResponsiveControl,
-	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
-	TypographyControls,
-	ShadowControl,
-	LinkPopoverField,
-} from '../../components';
+import { SgsColourPanel, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar } from '../../utils';
+import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+
+const LOGO_OBJECT_FIT_OPTIONS = [
+	{ label: __( 'Cover (crop to fill)', 'sgs-blocks' ), value: 'cover' },
+	{ label: __( 'Contain (fit within, no crop)', 'sgs-blocks' ), value: 'contain' },
+];
 
 const CAPTION_ALIGN_OPTIONS = [
 	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
@@ -101,12 +99,45 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				) }
 			/>
 
+			{ /* Per-item override of the block-wide `logoFit` default (Spec 35
+			   Part 4). Gated on media existing, mirroring the avatar/work
+			   disclosure pattern on sgs/testimonial. Object-fit only — no
+			   focal-point/crosshair control: logos are not photographs
+			   (Bean-locked convention, see sgs/testimonial's orgLogo field
+			   and this block's own pre-existing logoFit control). */ }
+			{ !! logo.media?.url && (
+				<SelectControl
+					label={ __( 'Image fit', 'sgs-blocks' ) }
+					help={ __(
+						'Overrides the block-wide "Logo fit" setting for this logo only.',
+						'sgs-blocks'
+					) }
+					value={ logo.objectFit || 'cover' }
+					options={ LOGO_OBJECT_FIT_OPTIONS }
+					onChange={ ( val ) => update( 'objectFit', val ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+
 			<TextControl
 				label={ __( 'Alt text', 'sgs-blocks' ) }
 				value={ logo.alt || '' }
 				onChange={ ( val ) => update( 'alt', val ) }
+				disabled={ !! logo.decorative }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
+			/>
+
+			<ToggleControl
+				label={ __( 'Decorative — hide from screen readers', 'sgs-blocks' ) }
+				help={ __(
+					'Turn on for a purely decorative logo — screen readers will skip it entirely instead of reading alt text.',
+					'sgs-blocks'
+				) }
+				checked={ !! logo.decorative }
+				onChange={ ( val ) => update( 'decorative', val ) }
+				__nextHasNoMarginBottom
 			/>
 
 			<TextControl
@@ -165,58 +196,67 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 // preview matches the frontend (contract §5). Editor-only convenience; the
 // frontend render.php emits every declaration scoped, never inline
 // (contract §A).
-function boxShorthand( box ) {
+function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
 	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
 /**
  * Build the editor-canvas preview style for the root element (background/
- * padding/margin/border — all WP-native supports, skip-serialised in
- * block.json so WordPress no longer auto-previews them; hand-built here to
- * match render.php's scoped output, mirroring sgs/quote + sgs/media).
+ * padding/margin/border). Native `color`/border supports are disabled on
+ * this block (block.json `color.background/text/gradients: false`, no
+ * `__experimentalBorder` at all) — background/border are the block's own
+ * `backgroundColour`/`borderWidth`/`borderStyle`/`borderColour`/
+ * `borderRadius` attrs (SgsBorderControl), never WP-native `style.*`.
  */
 function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+	const {
+		padding,
+		margin,
+		backgroundColour,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
+	if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = backgroundColour;
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
 
-	const border = style?.border;
-	if ( border?.style && border.style !== 'none' ) {
-		const borderWidthPreview = boxShorthand(
-			'object' === typeof border.width ? border.width : undefined
-		);
-		wrapperStyle.borderWidth = borderWidthPreview || border.width || undefined;
-		wrapperStyle.borderStyle = border.style;
-		if ( border.color ) {
-			wrapperStyle.borderColor = border.color;
+	const borderWidthPreview = boxShorthand( borderWidth );
+	if ( borderStyle && borderStyle !== 'none' ) {
+		wrapperStyle.borderWidth = borderWidthPreview || undefined;
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
 		}
-	} else if ( border?.color || border?.width ) {
+	} else if ( borderColour || borderWidthPreview ) {
 		// Colour/width set without an explicit style — WP defaults to solid.
-		wrapperStyle.borderWidth = border.width || undefined;
+		wrapperStyle.borderWidth = borderWidthPreview || undefined;
 		wrapperStyle.borderStyle = 'solid';
-		if ( border.color ) {
-			wrapperStyle.borderColor = border.color;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
 		}
 	}
 	const radiusPreview = boxShorthand(
-		'object' === typeof border?.radius ? border.radius : undefined
+		borderRadius?.desktop,
+		[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
 	);
-	wrapperStyle.borderRadius = radiusPreview || border?.radius || undefined;
+	if ( radiusPreview ) {
+		wrapperStyle.borderRadius = radiusPreview;
+	}
 
 	return Object.fromEntries(
 		Object.entries( wrapperStyle ).filter( ( [ , v ] ) => v !== undefined )
@@ -225,8 +265,7 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		logos,
-		style,
+		logos: rawLogos,
 		scrolling,
 		scrollSpeed,
 		scrollDirection,
@@ -234,12 +273,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		fadeWidth,
 		imageEffect,
 		maxHeight,
-		columnsDesktop,
-		columnsTablet,
-		columnsMobile,
+		columns,
 		showNames,
 		pauseOnHover,
 		nameColour,
+		nameColourGradient,
 		nameTextAlign,
 		logoGap,
 		tilePadding,
@@ -247,25 +285,42 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileShape,
 		logoFit,
 		tileBackgroundColour,
+		tileBackgroundColourGradient,
 		tileBorderWidth,
 		tileBorderColour,
 		tileBorderColourGradient,
 		tileShadow,
 		tileShadowColour,
+		itemBackgroundColourHover,
+		itemTextColourHover,
+		itemTextColourHoverGradient,
+		itemBorderColourHover,
+		itemBorderColourHoverGradient,
+		backgroundColour,
+		backgroundColourGradient,
 		backgroundColourHover,
+		backgroundColourHoverGradient,
+		textColour,
+		textColourGradient,
 		textColourHover,
-		borderColourHover,
-		borderColourHoverGradient,
+		textColourHoverGradient,
 		effectHover,
 		transitionDuration,
 		transitionEasing,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
+		nameColourHover,
 	} = attributes;
+
+	// Stable per-item `_key` for CSS scoping (Spec 35 Part 4) — backfilled
+	// silently for items authored before this field existed. useMemo keeps
+	// the generated keys stable within a render even before the effect
+	// below persists them; the effect fires at most once per real backfill
+	// (withStableItemKeys returns the SAME reference when nothing changed).
+	const logos = useMemo( () => withStableItemKeys( rawLogos ), [ rawLogos ] );
+	useEffect( () => {
+		if ( logos !== rawLogos ) {
+			setAttributes( { logos } );
+		}
+	}, [ logos, rawLogos, setAttributes ] );
 
 	const updateLogo = ( index, updated ) => {
 		const next = [ ...logos ];
@@ -283,7 +338,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			logos: [
 				...logos,
-				{ media: null, alt: '', name: '', linkUrl: '', linkTarget: '_self', linkRel: '' },
+				{
+					media: null,
+					alt: '',
+					name: '',
+					linkUrl: '',
+					linkTarget: '_self',
+					linkRel: '',
+					_key: generateItemKey(),
+					objectFit: 'cover',
+				},
 			],
 		} );
 	};
@@ -298,13 +362,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		.filter( Boolean )
 		.join( ' ' );
 
+	// Contrast check for border colour against the brand strip's own background.
+	// When the background has a gradient sibling, skip the check (flat colour would be inaccurate).
+	const brandStripContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	const blockProps = useBlockProps();
 
 	const trackStyle = {
 		'--sgs-logo-max-height': `${ maxHeight }px`,
-		'--sgs-columns-desktop': columnsDesktop ?? 8,
-		'--sgs-columns-tablet': columnsTablet ?? 4,
-		'--sgs-columns-mobile': columnsMobile ?? 2,
+		'--sgs-columns-desktop': columns?.desktop ?? 8,
+		'--sgs-columns-tablet': columns?.tablet ?? 4,
+		'--sgs-columns-mobile': columns?.mobile ?? 2,
 		'--sgs-scroll-speed': scrolling ? SPEED_MAP[ scrollSpeed ] : undefined,
 	};
 
@@ -314,28 +385,80 @@ export default function Edit( { attributes, setAttributes } ) {
 			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
 			   rows previously inline inside the Styles-tab "Tile colours"
 			   StateToggleControl and the Caption panel below. Hover pairs:
-			   tileBackgroundColour⇆backgroundColourHover,
-			   tileBorderColour⇆borderColourHover,
-			   nameColour⇆textColourHover (verified via render.php/style.css —
-			   textColourHover feeds --sgs-tile-hover-text, the hover
+			   tileBackgroundColour⇆itemBackgroundColourHover,
+			   tileBorderColour⇆itemBorderColourHover,
+			   nameColour⇆itemTextColourHover (verified via render.php/style.css —
+			   itemTextColourHover feeds --sgs-tile-hover-text, the hover
 			   counterpart of the caption's nameColour). */ }
 			<SgsColourPanel
 				rows={ [
 					{
+						key: 'rootBackground',
+						label: __( 'Block background colour (root)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								gradientValue: backgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'rootText',
+						label: __( 'Block text colour (root)', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+								gradientValue: textColourHoverGradient,
+							},
+						],
+					},
+					{
 						key: 'tileBackground',
 						label: __( 'Tile background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: tileBackgroundColour,
 								onChange: ( val ) => setAttributes( { tileBackgroundColour: val } ),
+								gradientValue: tileBackgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { tileBackgroundColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val } ),
+								value: itemBackgroundColourHover,
+								onChange: ( val ) => setAttributes( { itemBackgroundColourHover: val } ),
 							},
 						],
 					},
@@ -355,29 +478,49 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val } ),
-								gradientValue: borderColourHoverGradient,
+								value: itemBorderColourHover,
+								onChange: ( val ) => setAttributes( { itemBorderColourHover: val } ),
+								gradientValue: itemBorderColourHoverGradient,
 								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
+									setAttributes( { itemBorderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'caption',
 						label: __( 'Caption colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: nameColour,
 								onChange: ( val ) => setAttributes( { nameColour: val } ),
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nameColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val } ),
+								value: nameColourHover,
+								onChange: ( val ) => setAttributes( { nameColourHover: val } ),
+								},
+						],
+					},
+					{
+						key: 'captionHover',
+						label: __( 'Tile text colour (hover)', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: itemTextColourHover,
+								onChange: ( val ) => setAttributes( { itemTextColourHover: val } ),
+								gradientValue: itemTextColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { itemTextColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -392,6 +535,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { tileShadowColour: val ?? '' } ),
 								linked: true,
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.tileShadowColourHover,
+								onChange: ( val ) => setAttributes( { tileShadowColourHover: val ?? '' } ),
+								linked: true,
+							},
 						],
 					},
 				] }
@@ -401,7 +551,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Logos', 'sgs-blocks' ) } initialOpen={ true }>
 					{ logos.map( ( logo, index ) => (
 						<LogoEditor
-							key={ index }
+							key={ logo._key || index }
 							logo={ logo }
 							index={ index }
 							onChange={ ( updated ) =>
@@ -419,12 +569,20 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* columns is a TIER OBJECT {desktop,tablet,mobile} (D777/S2 fix,
+					   2026-09-04) — was 3 flat scalar attrs. Kept on the existing
+					   <ResponsiveControl> (global-tier switcher, not
+					   <ResponsiveOverride>'s inherit model) because each tier
+					   always carries its own concrete baked-in default (8/4/6)
+					   and a DIFFERENT max per tier — the shape here never had
+					   inheritance semantics, so introducing them would be new
+					   behaviour, not a faithful migration. */ }
 					<ResponsiveControl label={ __( 'Columns', 'sgs-blocks' ) }>
 						{ ( bp ) => {
 							const cols = {
-								desktop: { attr: 'columnsDesktop', value: columnsDesktop ?? 8, max: 12 },
-								tablet: { attr: 'columnsTablet', value: columnsTablet ?? 4, max: 10 },
-								mobile: { attr: 'columnsMobile', value: columnsMobile ?? 2, max: 6 },
+								desktop: { tier: 'desktop', value: columns?.desktop ?? 8, max: 12 },
+								tablet: { tier: 'tablet', value: columns?.tablet ?? 4, max: 10 },
+								mobile: { tier: 'mobile', value: columns?.mobile ?? 2, max: 6 },
 							}[ bp ];
 							return (
 								<RangeControl
@@ -432,7 +590,9 @@ export default function Edit( { attributes, setAttributes } ) {
 									hideLabelFromVision
 									help={ __( 'How many logos fill the width on this device. Tiles resize to fit exactly this many.', 'sgs-blocks' ) }
 									value={ cols.value }
-									onChange={ ( val ) => setAttributes( { [ cols.attr ]: val } ) }
+									onChange={ ( val ) =>
+										setAttributes( { columns: { ...columns, [ cols.tier ]: val } } )
+									}
 									min={ 1 }
 									max={ cols.max }
 									__nextHasNoMarginBottom
@@ -535,6 +695,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 				</PanelBody>
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.borderColour }
+						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
+						colourGradientValue={ attributes.borderColourGradient }
+						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourLinked={ true }
+						contrastAgainst={ brandStripContrastAgainst }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+						} }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{ /* ── STYLES tab — appearance, grouped by block element ── */ }
@@ -552,10 +737,10 @@ export default function Edit( { attributes, setAttributes } ) {
 							tileBorderWidth: 0,
 							tileBorderColour: '',
 							tileBorderColourGradient: '',
-							backgroundColourHover: '',
-							borderColourHover: '',
-							borderColourHoverGradient: '',
-							textColourHover: '',
+							itemBackgroundColourHover: '',
+							itemBorderColourHover: '',
+							itemBorderColourHoverGradient: '',
+							itemTextColourHover: '',
 							effectHover: 'none',
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',
@@ -633,14 +818,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					>
 						<ShadowControl
 							label={ __( 'Tile shadow', 'sgs-blocks' ) }
-							value={ tileShadow }
-							onChange={ ( val ) =>
-								setAttributes( { tileShadow: val } )
-							}
-							colour={ tileShadowColour }
-							onColourChange={ ( val ) =>
-								setAttributes( { tileShadowColour: val } )
-							}
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							attrNames={ {
+								base: 'tileShadow',
+								colour: 'tileShadowColour',
+								hoverColour: 'tileShadowColourHover',
+							} }
 						/>
 					</ToolsPanelItem>
 
@@ -840,51 +1024,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Strip spacing (responsive)', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

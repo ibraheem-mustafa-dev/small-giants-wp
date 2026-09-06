@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
@@ -7,7 +7,8 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -30,24 +31,40 @@ function boxShorthand( box ) {
 }
 
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
-function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+function buildWrapperStyle( attributes, colourPalette ) {
+	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
-	if ( style?.color?.text ) {
-		wrapperStyle.color = style.color.text;
+	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
+	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
+
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
+	const radiusBox = borderRadius?.desktop;
+	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
+		wrapperStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
 	}
+
 	return wrapperStyle;
 }
 
@@ -57,8 +74,35 @@ const DISPLAY_MODE_OPTIONS = [
 	{ label: __( 'Stars + value + count (e.g. 4.8 (127 reviews))', 'sgs-blocks' ), value: 'stars-with-value-and-count' },
 ];
 
-function StarSVG( { filled, half, size, colour, emptyColour } ) {
-	const fill = filled ? colour : ( half ? `url(#sgs-star-half)` : emptyColour );
+// starColourGradient/emptyColourGradient (D636/D644, mirrored from
+// render.php's `sgs_svg_stroke_gradient( ..., 'fill' )` call) paint a
+// *fill*-based SVG shape, NOT a CSS background/text gradient — `fill` cannot
+// hold a CSS gradient string, so the frontend builds a real SVG
+// `<linearGradient>`/`<radialGradient>` def and points the star's fill
+// attribute at `url(#id)`. This mirrors that exact technique (parseSvgGradient
+// + SvgGradientDefs, `src/utils/svg-gradient-preview.js`) rather than the
+// generic textPaintPreview/backgroundPaintPreview helpers, which paint via
+// `background-image`/`color` — properties an SVG `fill` attribute has no use
+// for. `injectStarDefs`/`injectEmptyDefs` mirror render.php's own
+// $star_fill_defs_injected/$empty_fill_defs_injected flags — the def only
+// needs to exist ONCE in the document; every other star referencing the same
+// gradient id resolves to it regardless of which <svg> it lives in.
+function StarSVG( {
+	filled,
+	half,
+	size,
+	colour,
+	emptyColour,
+	starGradient,
+	emptyGradient,
+	starGradId,
+	emptyGradId,
+	injectStarDefs,
+	injectEmptyDefs,
+} ) {
+	const fill = filled
+		? ( starGradient ? `url(#${ starGradId })` : colour )
+		: ( half ? `url(#sgs-star-half)` : ( emptyGradient ? `url(#${ emptyGradId })` : emptyColour ) );
 	return (
 		<svg width={ size } height={ size } viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 			{ half && (
@@ -69,30 +113,45 @@ function StarSVG( { filled, half, size, colour, emptyColour } ) {
 					</linearGradient>
 				</defs>
 			) }
+			{ ! half && filled && injectStarDefs && starGradient && (
+				<defs><SvgGradientDefs id={ starGradId } gradient={ starGradient } /></defs>
+			) }
+			{ ! half && ! filled && injectEmptyDefs && emptyGradient && (
+				<defs><SvgGradientDefs id={ emptyGradId } gradient={ emptyGradient } /></defs>
+			) }
 			<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill={ fill } />
 		</svg>
 	);
 }
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		rating,
 		maxRating,
 		starSize,
 		starColour,
+		starColourGradient,
 		emptyColour,
+		emptyColourGradient,
 		label,
 		showNumeric,
 		schemaEnabled,
 		schemaItemName,
 		schemaReviewCount,
 		displayMode,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// No-inline (contract §A/§5): the `spacing`/`color` supports declare
 	// __experimentalSkipSerialization in block.json, so useBlockProps() no
@@ -101,13 +160,43 @@ export default function Edit( { attributes, setAttributes } ) {
 	// frontend's scoped <style> output at desktop width.
 	const blockProps = useBlockProps( {
 		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, colourPalette ),
 	} );
 
+	// Style-variation gating — MIRRORS render.php:46-48 exactly (same split, same
+	// in_array semantics, same official-wins-over-flat precedence). On
+	// `is-style-trustpilot-official` render.php emits Trustpilot's own <img> badge
+	// and NO inline <svg> stars at all (render.php:195-200), so both colour rows
+	// paint nothing. Showing a control that cannot affect the output is the
+	// dead-control defect (D751) — the client picks a colour and nothing happens.
+	const sgsStyleClasses = String( attributes.className || '' )
+		.split( /\s+/ )
+		.filter( Boolean );
+	const isTpOfficial = sgsStyleClasses.includes( 'is-style-trustpilot-official' );
+
+	// Parsed once per render — mirrors render.php computing $star_fill_grad/
+	// $empty_fill_grad once, before the loop, rather than re-parsing per star.
+	const starGradient = parseSvgGradient( starColourGradient );
+	const emptyGradient = parseSvgGradient( emptyColourGradient );
+	const starGradId = `${ clientId }-star-grad`;
+	const emptyGradId = `${ clientId }-empty-grad`;
+
 	const stars = [];
+	let starDefsInjected = false;
+	let emptyDefsInjected = false;
 	for ( let i = 1; i <= maxRating; i++ ) {
 		const filled = i <= Math.floor( rating );
 		const half = ! filled && i === Math.ceil( rating ) && rating % 1 >= 0.25;
+		// Mirrors render.php's $star_fill_defs_injected/$empty_fill_defs_injected
+		// flags — the gradient def only needs to exist ONCE in the document.
+		const injectStarDefs = filled && ! half && ! starDefsInjected;
+		const injectEmptyDefs = ! filled && ! half && ! emptyDefsInjected;
+		if ( injectStarDefs ) {
+			starDefsInjected = true;
+		}
+		if ( injectEmptyDefs ) {
+			emptyDefsInjected = true;
+		}
 		stars.push(
 			<StarSVG
 				key={ i }
@@ -116,12 +205,26 @@ export default function Edit( { attributes, setAttributes } ) {
 				size={ starSize }
 				colour={ starColour }
 				emptyColour={ emptyColour }
+				starGradient={ starGradient }
+				emptyGradient={ emptyGradient }
+				starGradId={ starGradId }
+				emptyGradId={ emptyGradId }
+				injectStarDefs={ injectStarDefs }
+				injectEmptyDefs={ injectEmptyDefs }
 			/>
 		);
 	}
 
 	const showValue = displayMode === 'stars-with-value' || displayMode === 'stars-with-value-and-count';
 	const showCount = displayMode === 'stars-with-value-and-count';
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const starRatingContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
 
 	return (
 		<>
@@ -131,17 +234,37 @@ export default function Edit( { attributes, setAttributes } ) {
 			   color property), but they're still plain token-or-hex colour
 			   values resolved via sgs_colour_value(), so they belong here
 			   like any other single colour. */ }
+			{ ! isTpOfficial && (
 			<SgsColourPanel
 				rows={ [
 					{
-						key: 'starColour',
-						label: __( 'Star colour', 'sgs-blocks' ),
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: starColour,
-								onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -155,12 +278,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: emptyColour,
 								onChange: ( val ) => setAttributes( { emptyColour: val ?? '' } ),
+								gradientValue: emptyColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { emptyColourGradient: val ?? '' } ),
 								linked: true,
 							},
 						],
 					},
 				] }
 			/>
+			) }
 			<InspectorControls>
 				<PanelBody title={ __( 'Rating', 'sgs-blocks' ) }>
 					<RangeControl
@@ -191,42 +318,86 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ ! isTpOfficial && (
+						<DesignTokenPicker
+							label={ __( 'Star colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: starColour,
+									onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+									gradientValue: starColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { starColourGradient: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
+					) }
 				</PanelBody>
 
-				{ /* Box-object interface contract §B/§E: padding/margin base routes to
-				   WP-native style.spacing.* (mirrors sgs/heading); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs.
-				   The spacing support declares __experimentalSkipSerialization so base
-				   serialises scoped, not inline. */ }
+				{ /* padding/margin are each a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						contrastAgainst={ starRatingContrastAgainst }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

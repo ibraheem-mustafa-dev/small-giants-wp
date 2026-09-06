@@ -1,0 +1,61 @@
+# PHPStan — undefined-variable gate for block render templates.
+#
+# WHY THIS EXISTS (2026-08-21). `hero/render.php` passed `$overlay_gradient` to
+# `sgs_overlay_decls()`. That variable never existed in the file — one read, zero
+# assignments, for its whole history. PHP evaluates an undefined variable to null and
+# emits a notice; notices are not surfaced, so the client's configured gradient was
+# silently replaced by the flat overlay colour and NOTHING in the ~55-gate prebuild
+# chain could see it. Evidence: reports/visual-diff/hero-overlay-gradient-2026-08-21.md.
+#
+# ⚠ LEVEL 1, NOT LEVEL 0. Verified empirically on 2026-08-21 before this file was
+# written: level 0 across all 83 blocks emitted 1294 errors and ZERO of them were
+# variable errors — undefined variables are a level-1 rule (`variable.undefined`).
+# A level-0 gate here would have been vacuous. Do not lower the level.
+#
+# Separate from `phpstan.neon` (level 5, `includes/` + the plugin bootstrap) on
+# purpose: that config EXCLUDES `src`, which is precisely where render templates
+# live, so it could never have seen this defect class.
+#
+# Run:  npm run check:render-vars      (wrapper, fails closed if PHPStan is absent)
+# Prove it can fail:  npm run selftest:render-vars
+
+includes:
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+  - phpstan-render-baseline.neon
+
+parameters:
+  level: 1
+
+  paths:
+    - src/blocks
+
+  # Helpers live in includes/ and the bootstrap. Scanned (symbols resolved) but not
+  # ANALYSED — without these, 1210 of level 0's errors were `function.notFound` noise
+  # for helpers that exist perfectly well one directory up.
+  scanDirectories:
+    - includes
+  scanFiles:
+    - sgs-blocks.php
+
+  # WordPress injects exactly these three into a block's render.php. They are undefined
+  # to any static analyser and would otherwise be 69 of the 87 findings.
+  #
+  # ⛔ Deliberately narrow, and deliberately NOT a blanket `variable.undefined` ignore:
+  # three exact messages, pinned to `render.php` only. `$overlay_gradient` — and every
+  # other typo of its shape — still fails. Partial templates (e.g. buybox/notify-form.php)
+  # are NOT covered here; their inherited variables go through the reviewable baseline
+  # instead, so each one stays visible as an owed decision rather than a silent exemption.
+  ignoreErrors:
+    -
+      message: '#^Variable \$attributes might not be defined\.$#'
+      path: src/blocks/*/render.php
+    -
+      message: '#^Variable \$content might not be defined\.$#'
+      path: src/blocks/*/render.php
+    -
+      message: '#^Variable \$block might not be defined\.$#'
+      path: src/blocks/*/render.php
+
+  parallel:
+    jobSize: 20
+    maximumNumberOfProcesses: 4

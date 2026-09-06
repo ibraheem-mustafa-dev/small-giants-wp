@@ -1,0 +1,6 @@
+{
+	"name": "sgs/no-manifest",
+	"attributes": {
+		"someAttr": { "type": "string" }
+	}
+}

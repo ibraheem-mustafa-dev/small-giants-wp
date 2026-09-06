@@ -1,0 +1,18 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/media",
+	"title": "Fixture: mirrors sgs/media's real source-atom adoption plus its documented legacy thumbnail shadow (must stay silent)",
+	"category": "sgs",
+	"supports": {
+		"sgs": {
+			"mediaElements": [
+				{ "prefix": "", "context": "element", "atoms": [ "source" ] }
+			]
+		}
+	},
+	"attributes": {
+		"thumbnail": { "type": "string", "default": "" },
+		"thumbnailTablet": { "type": "string", "default": "" },
+		"thumbnailMobile": { "type": "string", "default": "" }
+	}
+}

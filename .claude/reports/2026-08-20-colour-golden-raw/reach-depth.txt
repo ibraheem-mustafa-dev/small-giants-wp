@@ -1,0 +1,19 @@
+REACH BY RESOLUTION STRATEGY  (blocks out of 83)
+COMPONENT                        depth1_noalias depth1_alias depth6_alias   verdict
+SgsColourPanel                               61           61           61   agree
+DesignTokenPicker                            19           63           64   BOTH matter (+44 alias, +1 depth)
+GradientCapableColourControl                  0           61           61   ALIAS matters (+61)
+SgsGradientPicker                             6            2           64   BOTH matter (+-4 alias, +62 depth)
+GradientOverlayControl                        8            8           24   DEPTH matters (+16)
+LinkPopoverField                             10           10           10   agree
+ResponsiveBoxControl                         48           48           48   agree
+ResponsiveBorderRadiusControl                20           20           36   DEPTH matters (+16)
+ResponsiveControl                            52           52           64   DEPTH matters (+12)
+ResponsiveOverride                           35           35           44   DEPTH matters (+9)
+TypographyControls                           16           16           16   agree
+ShadowControl                                15           15           30   DEPTH matters (+15)
+IconPicker                                   12           12           12   agree
+MediaPicker                                   8            8            8   agree
+BoxControl                                   11           11           26   DEPTH matters (+15)
+ColorPalette                                  4            0           64   BOTH matter (+-4 alias, +64 depth)
+UnitControl                                  40           40           64   DEPTH matters (+24)

@@ -270,3 +270,165 @@ body.admin-bar html {
 	box-shadow: 0 0 8px 2px
 		color-mix(in srgb, var(--sgs-focus-glow, var(--wp--preset--color--accent, #d8ca50)) 40%, transparent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * CARD + LISTING UTILITIES (Phase 3 design benchmark, 2026-08-23)
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/*
+ * ELEVATION SCALE.
+ * `.has-shadow-sm` was authored on archive.html's post card and matched ZERO
+ * rules in ANY loaded stylesheet — measured live 2026-08-23. The card's
+ * intended elevation had therefore never rendered once, and nothing errored,
+ * because a class that matches no rule is indistinguishable from a class that
+ * matches a losing one. Defining the scale here is the minimum honest fix.
+ *
+ * The BETTER fix stays on the register as a block candidate: a real elevation
+ * control on sgs/container, so an operator picks it in the inspector instead
+ * of a template hardcoding a class name. Until that ships, these three are the
+ * only defined elevation steps — do not invent a fourth in a template.
+ */
+.has-shadow-sm {
+	box-shadow: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 6px rgb(0 0 0 / 6%);
+}
+
+.has-shadow-md {
+	box-shadow: 0 2px 4px rgb(0 0 0 / 7%), 0 6px 16px rgb(0 0 0 / 8%);
+}
+
+.has-shadow-lg {
+	box-shadow: 0 4px 8px rgb(0 0 0 / 8%), 0 12px 32px rgb(0 0 0 / 10%);
+}
+
+/*
+ * LINE CLAMP — hold an excerpt to a fixed number of lines.
+ * Measured 2026-08-23: archive.html card heights ran 238px x8 and 337px x1 in
+ * the same grid, driven purely by excerpt length (126px vs 203px). Every
+ * benchmarked editorial index clamps the excerpt so ragged copy cannot break
+ * the grid. `-webkit-line-clamp` is the interoperable spelling; all four
+ * declarations are required together.
+ */
+.sgs-u-clamp-2,
+.sgs-u-clamp-3 {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.sgs-u-clamp-2 {
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+}
+
+.sgs-u-clamp-3 {
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+}
+
+/*
+ * RESERVED MEDIA BOX — keep a card's image slot the same height whether or not
+ * the post actually has a featured image.
+ * Measured 2026-08-23: no post on the canary has one, so the cards simply
+ * collapsed to text height. A client framework must not change layout shape
+ * depending on whether the client filled in an image; reserving the ratio takes
+ * cumulative layout shift to zero in both cases.
+ * Applied to the FIGURE (the featured-image wrapper), which renders even when
+ * empty, not to the <img>.
+ */
+.sgs-u-media-16x9 {
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--surface-alt, #f1f0ec);
+}
+
+.sgs-u-media-4x3 {
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--surface-alt, #f1f0ec);
+}
+
+.sgs-u-media-1x1 {
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--surface-alt, #f1f0ec);
+}
+
+.sgs-u-media-16x9 img,
+.sgs-u-media-4x3 img,
+.sgs-u-media-1x1 img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/*
+ * METADATA LABEL — render a date or eyebrow as metadata rather than as prose.
+ * The benchmarked indexes (Cloudflare, Smashing) set the date as an uppercase
+ * tracked label so it reads as metadata at a glance.
+ */
+.sgs-u-meta-label {
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-variant-numeric: tabular-nums;
+}
+
+/*
+ * TAP TARGET — grow a short text link's hit area to 44px without moving it.
+ * Measured 2026-08-23: archive card title links were 24px tall and the "Read more"
+ * link 26px, against the framework's own 44px standard (which deliberately beats
+ * WCAG 2.2's 24px floor). A one-line card title is the common case, so the link
+ * simply is not tall enough to hit reliably on a phone.
+ * Padding on the ANCHOR (not the heading) grows the hit area while leaving the
+ * text where it sits; the negative block margin cancels the visual displacement so
+ * card rhythm is unchanged. `display:inline-block` is what lets vertical padding
+ * apply to an inline element at all.
+ */
+.sgs-u-tap-44 a,
+a.sgs-u-tap-44 {
+	display: inline-block;
+	padding-block: 10px;
+	margin-block: -10px;
+}
+
+/*
+ * BYLINE SEPARATORS — put the separator on the FOLLOWING sibling, never in content.
+ * Measured live 2026-08-23: single.html authored three literal "·" text blocks between
+ * date / author / category / reading-time. `core/post-author` renders NO ELEMENT AT ALL
+ * on these posts, so two separators became adjacent and the byline read
+ * "July 31, 2026 · · Uncategorized". A separator authored as content silently assumes its
+ * neighbour renders; when the neighbour is conditional, the separator is orphaned and no
+ * gate detects it, because nothing is technically broken.
+ * Attaching it to `* + *` means a field that renders nothing takes its separator with it.
+ */
+.sgs-byline > * + *::before {
+	content: "·";
+	margin-inline: 0.5em;
+	color: currentColor;
+	opacity: 0.6;
+}
+
+/*
+ * POST NAVIGATION — hide a prev/next link that has no target.
+ * Measured live 2026-08-23: on the newest post, core/post-navigation-link renders an
+ * element that is genuinely `:empty` (zero child nodes, empty innerHTML) but still
+ * occupies 26px. Setting `showTitle` did NOT suppress it — that was assumed and measured
+ * false. `:empty` is exact here and needs no `:has()`, so it is safe on Safari 15.
+ */
+.wp-block-post-navigation-link:empty {
+	display: none;
+}
+
+/*
+ * EQUAL-HEIGHT CARDS IN A QUERY GRID.
+ * Measured live 2026-08-23: after clamping excerpts the height spread across a 9-card
+ * archive fell from 99px to 51px, the remainder caused by titles wrapping to a second
+ * line. The grid item (the <li>) stretches, but the authored <article> inside it did not
+ * fill that cell, so card backgrounds ended at different heights in the same row.
+ */
+.wp-block-post-template.is-layout-grid > li {
+	display: flex;
+}
+
+.wp-block-post-template.is-layout-grid > li > * {
+	width: 100%;
+}

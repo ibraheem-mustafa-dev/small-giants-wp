@@ -1,0 +1,30 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/three-state-required-by-element",
+	"title": "Fixture: the row's matching supports.sgs.elements entry declares 2 states (hover+selected), so 3 total (normal+hover+selected) is required and present (must NOT flag)",
+	"category": "sgs",
+	"attributes": {
+		"tabColour": { "type": "string", "default": "" },
+		"tabColourGradient": { "type": "string", "default": "" },
+		"tabColourHover": { "type": "string", "default": "" },
+		"tabColourHoverGradient": { "type": "string", "default": "" },
+		"tabColourSelected": { "type": "string", "default": "" },
+		"tabColourSelectedGradient": { "type": "string", "default": "" }
+	},
+	"supports": {
+		"sgs": {
+			"elements": {
+				"tab": {
+					"label": "Tab",
+					"attrMap": {
+						"css:color": "tabColour"
+					},
+					"states": {
+						"hover": { "attrMap": { "css:color": "tabColourHover" } },
+						"selected": { "attrMap": { "css:color": "tabColourSelected" } }
+					}
+				}
+			}
+		}
+	}
+}

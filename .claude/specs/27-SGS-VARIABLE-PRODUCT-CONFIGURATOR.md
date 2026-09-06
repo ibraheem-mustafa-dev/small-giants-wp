@@ -48,7 +48,6 @@ This is the single authoritative spec for the SGS product and WooCommerce layer.
 **FR-27-x IDs** are the variable-product configurator requirements (originally Spec 27).
 Both sets are stable: cross-references elsewhere in the codebase remain valid.
 
-Specs 24 and 25 are superseded by this document. Do not edit them.
 
 ---
 
@@ -119,7 +118,7 @@ Merged from Spec 25's feature-map table and the configurator's phasing. Rows sup
 | Converter emits `sgs/option-picker` for draft pill groups | SHIPPED (commit `c68b8cb6`, Phase D) | `scripts/orchestrator/converter_v2/convert.py`, `seed-slot-synonyms.py` | - | FR-24-15 |
 | Collection query surface (own WP_Query, selection rules) | SHIPPED, then FOLDED into `sgs/card-grid` (2026-08-01) and the standalone block DELETED (2026-08-08, D529) | `src/blocks/card-grid/` + `includes/class-cpt-collection-query.php` | D529 | FR-24-4/5/6 |
 | Pill-to-price/image swap via WP Interactivity API (full live read) | **SHIPPED** (live: 0-XHR multi-axis swap of price/sale/stock/image from the seeded manifest; FR-27-A1/A2 D164/D165) | `src/blocks/product-card/view.js`, `includes/class-product-manifest.php` | D164, D165 | FR-27-A1/A2 |
-| `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED - dropped; WC variations are the matrix; see principle 6 above | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
+| `_sgs_sku_matrix` (multi-SKU variable pricing) | SUPERSEDED — see principle 6 | - | D144 (superseded) | FR-24-14, superseded by FR-27 |
 | WC variable-product per-variant pricing/stock via WC-native variations | SUPERSEDED - this is now the primary path (FR-27-A1); the DEFERRED label is retired | - | D151 | FR-27-A1 |
 | WC adapter for the collection surface (now `sgs/card-grid`) | PLANNED - triggers when a real shop client lands | Separate spec when in scope | D149 | FR-24 out-of-scope |
 | `sgs/trust-bar` dual-mode (Typed repeater + Bound InnerBlocks) | **SHIPPED (commit `d6358f32`, 2026-06-01 — FR-24-10; render.php branches on `sourceMode` typed/bound)** | `src/blocks/trust-bar/` | D123 | FR-24-10 |
@@ -160,7 +159,7 @@ sgs/content-collection  ---loop template---->  dual-mode card (sgs/product-card)
 - **Data source:** custom CPT, registered per-site. No WooCommerce required for the base layer.
 - **Query engine:** `sgs/card-grid` collection mode with its own `WP_Query` (was the dedicated `sgs/content-collection` block until D529). Named selection presets are resolved via `WP_Query` args in `render.php`. The `query_loop_block_query_vars` PHP filter is not needed (Open Question FR-24 #1 resolved, Phase E 2026-06-03).
 - **Field surfacing:** Block Bindings API (`register_meta(show_in_rest:true)` + `register_block_bindings_source()` for computed/derived fields such as formatted price).
-- **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode equals the FR-31-6 InnerBlocks shape (Spec 22), so the clone pipeline is unaffected.
+- **Card:** the existing presentational cards, made dual-mode (FR-24-2). Typed mode equals the FR-31-6 InnerBlocks shape (Spec 31 §13), so the clone pipeline is unaffected.
 - **D149 / D151 dual-source Bound mode (decided 2026-06-02, refined 2026-06-03).** The card's Bound-mode data source is dual-source: when WooCommerce is present, the card binds to WooCommerce-native product data (price/image/stock/variations via WC's own meta and REST endpoints); when WooCommerce is absent, it falls back to the `sgs_product` CPT meta. The source is auto-detected from the product picker (no client-facing WC/CPT toggle). `custom-fields` CPT support is a REST-exposure flag, not a storage choice.
 
 ### Variable-product configurator layer
@@ -186,7 +185,7 @@ SGS thin layer
   +-- sgs_product CPT -- no-WooCommerce fallback ONLY
 ```
 
-**Inter-block state (load-bearing).** The `sgs/product-card` is the single Interactivity store and the one shared `data-wp-context` (manifest + selection). Child `sgs/option-pickers` (one per axis) read the shared context and write their selection back; the card derives price/image/availability. Option-pickers own no commerce state.
+**Inter-block state (load-bearing).** The `sgs/product-card` is the single Interactivity store and the one shared `data-wp-context` (manifest + selection). Child `sgs/option-picker` blocks (one per axis) read the shared context and write their selection back; the card derives price/image/availability. Option-pickers own no commerce state.
 
 **Manifest payload.** Seeded inline at SSR: (a) a sparse valid-combinations set (list of valid attribute-tuples + per-variation price as display-minor-int + a stock flag + a `pctOff` int, NOT a dense per-variation grid) and (b) the default variation's image/price/copy as concrete literals. The fast path holds to approximately 200-300 variations within the cap. Above the cap, the matrix is prefetched once on first interaction with the card (`pointerenter`/`focusin`), not on a pill `change`, so the first selection is still local (no per-select XHR). Per-variation galleries/long-copy are prefetched the same way. Cap: the `data-wp-context` JSON is at most 24 KB AND the JSON-LD `<script>` is at most 16 KB (measured separately); `hasVariant` has at most 50 representative children with `AggregateOffer.offerCount` equal to the true total. Above either cap, the configurator switches to the prefetch path.
 
@@ -318,11 +317,11 @@ Each card field slot declares `allowedBindings`; a card registered as a synced p
 
 ### FR-24-9 -- Clone-pipeline compatibility
 
-The dual-mode card's Typed mode is exactly the FR-31-6 InnerBlocks shape the converter already emits (see Spec 22). The query-driven layer is additive. The converter keeps emitting Typed cards; Bound/collection is an operator-authoring feature, not a converter output.
+The dual-mode card's Typed mode is exactly the FR-31-6 InnerBlocks shape the converter already emits (see Spec 31 §13). The query-driven layer is additive. The converter keeps emitting Typed cards; Bound/collection is an operator-authoring feature, not a converter output.
 
 ### FR-24-10 -- Curated-content blocks are dual-mode too (Bean-directed, 2026-06-01)
 
-> **⚠ SUPERSEDED FOR CLONING (2026-06-06):** The `sourceMode='bound'` converter path described below is a **TEST CHEAT** — the converter mirrors the draft DOM by echoing badge InnerBlocks into `$content`, instead of converting to native `items[]` attributes. This violates the convert-not-mirror rule and is being purged per `.claude/reports/2026-06-06-bound-mode-purge-plan.md`. **ONLY the live WC configurator modes (`sourceMode='wc-product'` / `'sgs-cpt'`) are legitimate bound modes.** For cloning, `sgs/trust-bar` MUST be converted to **Typed mode** with a populated `items[]` array. The factual record below is preserved for historical context.
+> **RETIRED FOR CLONING (2026-06-06):** `sgs/trust-bar`'s Bound mode (converter emitting `sourceMode='bound'` by echoing badge InnerBlocks into `$content`) was a convert-not-mirror violation and was purged (`.claude/reports/2026-06-06-bound-mode-purge-plan.md`). Cloning now converts `sgs/trust-bar` to Typed mode with a populated `items[]` array. Live WC configurator modes (`wc-product`/`sgs-cpt`, `sgs/product-card`) are unrelated and unaffected.
 
 The same Typed-vs-Bound split applies to curated-content blocks whose editor is a rich repeater the clone pipeline must also feed. `sgs/trust-bar` is the first case.
 
@@ -332,7 +331,7 @@ The badge children use existing primitives (container + icon + text/label + medi
 
 Acceptance: FR-31-18 structural parity. `.sgs-trust-bar` renders the converter's 4 badge children in Bound mode AND the curated repeater still works in Typed mode (editor smoke test, no "unexpected content" warning).
 
-Status: SHIPPED (commit `d6358f32`, 2026-06-01). `render.php` branches on the explicit `sourceMode` (typed = curated repeater / bound = converter's badge InnerBlocks); ~~converter sets `sourceMode='bound'` on cloned trust-bars~~ — **the bound-emit converter path is a cheat; see superseding note above.**
+Status: Typed-mode-only for cloning (bound-emit converter path purged — see the retirement note above). `render.php` still branches on `sourceMode` for the live WC configurator, but the converter never emits `sourceMode='bound'`.
 
 ### FR-24-11 to FR-24-17 -- Variation-sets and `sgs/option-picker`
 
@@ -344,7 +343,7 @@ Design ratified 2026-06-01 via D144. Phase A + Phase B BUILT + SHIPPED 2026-06-0
 
 **FR-24-13 -- Per-instance Interactivity API store.** The card owns the store; option-pickers read/write shared context. (For the full configurator: see the inter-block-state model in the architecture section and FR-27-I-MVP.)
 
-**FR-24-14 -- Phase-1 slot-conflict priority.** First type wins; SKU matrix deferred. `_sgs_sku_matrix` is superseded entirely for WC products (see principle 6). For CPT-only (no-WC) products, multi-variant pricing remains a Phase-2 candidate but the `_sgs_sku_matrix` key is removed from the data model.
+**FR-24-14 -- Phase-1 slot-conflict priority.** First type wins. For CPT-only (no-WC) products, multi-variant pricing remains a Phase-2 candidate, but the `_sgs_sku_matrix` key is removed from the data model (WC products: see principle 6).
 
 **FR-24-15 -- `sgs/option-picker` atomic block.** Radio-group semantics via visually-hidden `<input type=radio>` + `<label>` + pill `<span>`, CSS `:checked` active state, bubbling `sgs:option-selected` event. NOT `sgs/button`. SHIPPED 2026-06-02 (commit `ee6807d3`). Battle-ready for standalone use and converter emit target.
 
@@ -362,7 +361,7 @@ Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector 
 
 **D144 ratified decisions:**
 1. Per-type `display_as`: `pills` (interactive) | `static-list` (renders "Available in N flavours: A, B, C", non-interactive selling point) | `hidden`. PLUS a card-level "price only" toggle that sets all pickers hidden so the card shows just "From £x".
-2. SKU matrix deferred and now superseded for WC products.
+2. SKU matrix — superseded for WC products (see principle 6 / line 225).
 3. Pill style and three CSS states as above.
 4. Clone emit: emit `sgs/option-picker` directly from the clone. The converter outputs the picker block for a pill group via TRUTH-SPEC + slot_synonyms/slots updates.
 5. Source toggle in both toolbar and inspector.
@@ -413,7 +412,7 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 4. An empty query renders the designed placeholder, not a blank region.
 5. A marketing site with the product type DISABLED ships no product CPT, no extra weight.
 6. The same collection block, pointed at `sgs_testimonial`, works with zero new block code.
-7. The clone pipeline still emits Typed cards unchanged (Spec 22 regression check passes).
+7. The clone pipeline still emits Typed cards unchanged (Spec 31 §13 regression check passes).
 
 ---
 
@@ -439,13 +438,13 @@ Primary files: `src/blocks/cart/` (block.json, render.php, view.js, style.css).
 
 ### Non-goals (configurator)
 
-- Rebuilding WC cart/checkout/payments/tax/shipping; mirroring WC commerce data; a combinatorial `_sgs_sku_matrix` in custom meta (superseded); per-instance content migration (clean slate).
+- Rebuilding WC cart/checkout/payments/tax/shipping; mirroring WC commerce data; a combinatorial `_sgs_sku_matrix` in custom meta; per-instance content migration (clean slate).
 - B2B/wholesale role pricing (Indus Foods), subscriptions/bundles, configurator analytics, multi-currency. These are sibling specs.
 
 ### Hard constraints (configurator)
 
 - **WC = single source of truth.** Client sends IDs + an attribute object, never prices. Server recomputes + re-validates price AND stock at add-to-cart.
-- **WC authoritative; SGS holds a seeded read-through CACHE reconciled server-side (reframed 2026-06-03 per the adversarial-council).** No DURABLE custom store of WC commerce data (presentation/config only in term meta / variation postmeta / block attributes). BUT be honest that the SSR-seeded manifest (per-variation price/sale/stock literals in `data-wp-context`) IS a short-lived read-through cache — so the freshness defence is the render-time `get_date_modified()` staleness guard (FR-27-G6), NOT a "we never mirror so nothing can go stale" assumption. The old slogan "never mirrored" made maintainers under-build freshness; the correct framing is "WC is authoritative; SGS reconciles its seeded cache against WC on every render + at add-to-cart".
+- **WC authoritative; SGS holds a seeded read-through CACHE reconciled server-side.** No DURABLE custom store of WC commerce data (presentation/config only in term meta / variation postmeta / block attributes). The SSR-seeded manifest (per-variation price/sale/stock literals in `data-wp-context`) IS a short-lived read-through cache — the freshness defence is the render-time `get_date_modified()` staleness guard (FR-27-G6), not an assumption that nothing can go stale.
 - **All display bindings resolve against server-seeded context whose default equals the SSR literal** (Interactivity directives run server-side; binding to a JS-only getter wipes the SSR value; memory key `wp-interactivity-directives-wipe-ssr-when-bound-to-js-getters`). Per-variation derived values (% off) are seeded as literals, never computed in a client getter.
 - **Pages stay fully cacheable.** Oversell protection is a live add-to-cart-click re-check (a single fragment call), NOT page-uncacheable rendering. Price/stock freshness via targeted purge on stock + sale-schedule hooks (see FR-27-G6).
 - **Tax/currency correctness:** seed display prices from `wc_get_price_to_display()` (never own division); store decimals from `wc_get_price_decimals()` (not assumed 2dp); seed BOTH ex/inc-tax values OR cache-exclude the price fragment + vary on tax context (FR-27-H3).
@@ -497,7 +496,7 @@ Each FR carries a build-model recommendation and a holistic test strategy.
 **FR-27-H3 -- Tax-context-correct caching.** Seed BOTH ex- and inc-tax display values into the manifest (so a cached page serves the right one per the customer's tax context) OR render the price as a cache-excluded fragment with vary-on-tax-context. Round via WC semantics (`wc_get_price_to_display()`), never own division; honour `wc_get_price_decimals()`.
 - Done when: a tax-exempt (B2B) and a standard customer each see the correct price from the same cached page; the card price matches the cart price (no rounding drift). Model: sonnet. Test: B2B-exempt + standard customer on a cached page; card-vs-cart price parity.
 
-**FR-27-I-MVP -- Inter-block state + cloning compatibility + dev fixture.** The card owns the store + shared context; option-pickers read/write it (the inter-block-state model in the architecture section). The converter keeps emitting Typed option-pickers unchanged (Spec 22/D153); the Typed shape stays a deprecation-free subset after `sourceMode` + swatch attrs are added (a Jest block.json schema-compat test + a PHPUnit deprecation test assert this). Typed mode has no cross-attribute availability (WC Bound required for C1); this is stated. A `seed-48-sku-fixture.php` dev script (WC PHP API, not the authoring path) creates the test product for Phases 1-2.
+**FR-27-I-MVP -- Inter-block state + cloning compatibility + dev fixture.** The card owns the store + shared context; option-pickers read/write it (the inter-block-state model in the architecture section). The converter keeps emitting Typed option-pickers unchanged (Spec 31 §13/D153); the Typed shape stays a deprecation-free subset after `sourceMode` + swatch attrs are added (a Jest block.json schema-compat test + a PHPUnit deprecation test assert this). Typed mode has no cross-attribute availability (WC Bound required for C1); this is stated. A `seed-48-sku-fixture.php` dev script (WC PHP API, not the authoring path) creates the test product for Phases 1-2.
 - Done when: shared-context swap works; a clone run emits Typed pickers unchanged + schema-compat tests pass; the seed script builds the 48-SKU fixture. Model: sonnet. Test: clone + schema-compat + fixture-seed.
 
 #### Phase 2 -- Display + SEO + AI-visible (after the MVP sells)
@@ -546,7 +545,7 @@ Each FR carries a build-model recommendation and a holistic test strategy.
 
 **FR-27-J1 -- Ownable claims, moat-rated, evidenced.** Each claim produces a passing test + an evidence artefact in `.claude/reports/sgs-configurator-moat-evidence.md` + a durability rating: structural (closed-loop AI-built-shop-renders-accessibly-with-SEO, the real moat) | first-mover (WCAG 2.2 AA, sprint + claim now before a rival plants it) | expiring (no-React perf, ride WC's own Interactivity migration, do not bank on it) | feature (per-unit, gallery, availability, no-upsell, copyable but ship anyway).
 
-**FR-27-F2 -- AI-citation levers + secure feed (Phase R). [SHIPPED 2026-06-10, commit `95754224`, D202 — built from the D197 research pack. Live on canary: /llms.txt + /llms-full.txt (text/plain, noindex, entity-decoded, 6h cache + single-flight lock), GET /sgs/v1/merchant-feed (catalog-visibility filter — the red-team BLOCK fix — + raw post_password guard + 2000-product cap + stampede lock; g:item_group_id via the shared Product_Schema::product_group_id()), sgs/product-faq + product-faq-item blocks (native details/summary, one merged FAQPage JSON-LD via wp_footer collector, HEX-flag encoded; copy grep-gated). Probes PASSED: search-only exfil (0 leaks), feed↔schema price parity (48 items byte-identical), FAQ front+editor render zero console errors.]** `FAQPage` JSON-LD from an `sgs/product-faq` block (NEW, defined here) or an existing `core/details`/`sgs/accordion` — **value framing (research-corrected 2026-06-09): Google fully deprecated FAQ rich results on 2026-05-07 for ALL sites (superseding the 2023 health/govt narrowing); the markup's 2026 value is Bing rich results + AI-citation extraction, and every client-facing surface (block description, editor tooltip, inspector help text, docs) MUST say "improves AI search citation and Bing visibility" and MUST NOT claim Google rich results/expandable answers in Google.** `llms.txt` (product names + categories only, safe) AND `llms-full.txt` (full prices/attrs), both filtered to `post_status='publish'` AND `post_password=''` AND `catalog_visibility NOT IN (hidden,search)`, rate-limited, `X-Robots-Tag: noindex` (confirmed correct — Mueller 2025-07), `Content-Type: text/plain`, llms.txt = navigation map to existing pages only (category/policy indexes, never per-product pages, never content absent from the site — anti-cloaking), regenerated on `woocommerce_update_product`; ~~`speakable`~~ **(DESCOPED 2026-06-09, D197 — still "(BETA)", news-publishers/US-English/Google-Home only, never applicable to e-commerce; zero ROI)**; a Merchant feed (XML RSS 2.0 `g:` namespace; per-variation items with `item_group_id` = `productGroupID`; variant deep-link URLs per SEC-7; real GTIN per variant or `identifier_exists=false`, never fabricated; price/availability read ONLY from the same manifest the JSON-LD uses per SEC-1 — feed↔page↔schema mismatch is the #1 GMC rejection cause) agreeing with on-page schema, read only from `wc_get_product()`, descriptions `wp_strip_all_tags()`, image URLs same-origin/allowlist (no SSRF), public-but-rate-limited. Research pack: `.claude/reports/2026-06-09-f2-gold-standard-research.md`.
+**FR-27-F2 -- AI-citation levers + secure feed (Phase R). [SHIPPED 2026-06-10, commit `95754224`, D202 — built from the D197 research pack. Live on canary: /llms.txt + /llms-full.txt (text/plain, noindex, entity-decoded, 6h cache + single-flight lock), GET /sgs/v1/merchant-feed (catalog-visibility filter — the red-team BLOCK fix — + raw post_password guard + 2000-product cap + stampede lock; g:item_group_id via the shared Product_Schema::product_group_id()), sgs/product-faq + product-faq-item blocks (native details/summary, one merged FAQPage JSON-LD via wp_footer collector, HEX-flag encoded; copy grep-gated). Probes PASSED: search-only exfil (0 leaks), feed↔schema price parity (48 items byte-identical), FAQ front+editor render zero console errors.]** `FAQPage` JSON-LD from an `sgs/product-faq` block (NEW, defined here) or an existing `core/details`/`sgs/accordion` — **value framing (research-corrected 2026-06-09): Google fully deprecated FAQ rich results on 2026-05-07 for ALL sites (superseding the 2023 health/govt narrowing); the markup's 2026 value is Bing rich results + AI-citation extraction, and every client-facing surface (block description, editor tooltip, inspector help text, docs) MUST say "improves AI search citation and Bing visibility" and MUST NOT claim Google rich results/expandable answers in Google.** `llms.txt` (product names + categories only, safe) AND `llms-full.txt` (full prices/attrs), both filtered to `post_status='publish'` AND `post_password=''` AND `catalog_visibility NOT IN (hidden,search)`, rate-limited, `X-Robots-Tag: noindex` (confirmed correct — Mueller 2025-07), `Content-Type: text/plain`, llms.txt = navigation map to existing pages only (category/policy indexes, never per-product pages, never content absent from the site — anti-cloaking), regenerated on `woocommerce_update_product`; **(DESCOPED 2026-06-09, D197 — still "(BETA)", news-publishers/US-English/Google-Home only, never applicable to e-commerce; zero ROI)**; a Merchant feed (XML RSS 2.0 `g:` namespace; per-variation items with `item_group_id` = `productGroupID`; variant deep-link URLs per SEC-7; real GTIN per variant or `identifier_exists=false`, never fabricated; price/availability read ONLY from the same manifest the JSON-LD uses per SEC-1 — feed↔page↔schema mismatch is the #1 GMC rejection cause) agreeing with on-page schema, read only from `wc_get_product()`, descriptions `wp_strip_all_tags()`, image URLs same-origin/allowlist (no SSRF), public-but-rate-limited. Research pack: `.claude/reports/2026-06-09-f2-gold-standard-research.md`.
 - Done when: FAQ schema fires (and no client-facing string claims Google rich results); `llms.txt`/`llms-full.txt` leak no draft/hidden products + are rate-limited + noindex + text/plain; feed agrees with schema + injection/SSRF-safe + variant deep-links. Model: sonnet. Test: schema/feed parity + draft-exfil probe + SSRF probe + a grep gate over client-facing strings for "rich result|expandable answer".
 
 ---
@@ -627,6 +626,6 @@ Not a plugin for sale. This is the commerce engine of the SGS AI website builder
 ## Cross-references
 
 - **Absorbs (retired):** Spec 24 (query-driven content cards), Spec 25 (WooCommerce experience layer). Do not edit those files.
-- **Aligns with:** Spec 22 (cloning pipeline, option-picker emit unchanged), Spec 26 (global styles / auto-contrast, pending decision), Spec 11 (button presets).
+- **Aligns with:** Spec 31 §13 (cloning pipeline, option-picker emit unchanged), Spec 26 (global styles / auto-contrast, pending decision), Spec 11 (button presets).
 - **Key decisions:** D144 (option-picker ratification), D148 (CPT + cart + option-picker ships), D149 (dual-source architecture), D151 (wrapper+bridge model, add-to-cart in Phase C), D-pending (Option A ratified; WC source of truth; no mirror; clean-slate; MVP-first re-scope; closed-loop moat; AI-builder = roadmap).
 - **Primary files:** `includes/class-product-bindings.php`, `includes/content-types/class-product-cpt.php`, `src/blocks/product-card/`, `src/blocks/option-picker/`, `src/blocks/card-grid/`, `src/blocks/cart/`, `/sgs/v1/cart/add-item` (proxy endpoint).

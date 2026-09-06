@@ -9,7 +9,7 @@
  * toggle, per-plan icons (Lucide), per-plan ribbons, per-feature
  * included/excluded markers, and an optional savings badge for yearly billing.
  *
- * R-22-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
+ * R-31-14: discriminators are EXPLICIT attributes. NEVER branch on empty($content).
  *
  * @var array    $attributes Block attributes (sanitised by block.json defaults).
  * @var string   $content    Inner block content (unused — dynamic block).
@@ -27,26 +27,22 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // CSS-keyword/slug sanitiser — for free-text attrs (border-style, colour
 // slugs) concatenated into raw CSS declarations inside this block's scoped
 // <style> tag. Letters, digits, hyphen only (preset colour slugs can contain
-// digits, e.g. "neutral-200"). Mirrors sgs/hero's $sgs_css_keyword, widened
+// digits, e.g. "neutral-200"). Mirrors sgs/hero's sgs_css_keyword_sanitise(), widened
 // for slug use per contract §D.
 $sgs_pt_css_slug = static function ( $value ) {
 	return preg_replace( '/[^A-Za-z0-9-]/', '', (string) $value );
 };
 
 // CSS-length sanitiser — letters, digits, dot, percent only.
-$sgs_pt_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // ── Attributes ──────────────────────────────────────────────────────────────
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11), though this block
 // only ever exposes/uses the desktop tier (no per-device columns UI exists).
 // Read via the normaliser, never the raw attribute (absint() on an
 // unresolved array throws "Array to int conversion").
-$columns_obj  = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns      = absint( $columns_obj['desktop'] ?? 3 );
-$plans        = (array) ( $attributes['plans'] ?? array() );
-$style        = sanitize_key( $attributes['style'] ?? 'card' );
+$columns_obj = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns     = absint( $columns_obj['desktop'] ?? 3 );
+$plans       = (array) ( $attributes['plans'] ?? array() );
+$style       = sanitize_key( $attributes['pricingTableStyle'] ?? 'card' );
 // Plan-name heading level — an out-of-enum stored value is otherwise
 // silently coerced to the block.json default (blockjson-enum-coerces-
 // invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
@@ -54,18 +50,26 @@ $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
 $heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-$title_colour = $attributes['titleColour'] ?? '';
-$price_colour = $attributes['priceColour'] ?? '';
-// D636 Task 1b, sibling-attribute shape (coordinator correction 2026-08-16) —
-// mirrors sgs/container's shipped backgroundOverlayColour/overlayGradient.
+$title_colour           = $attributes['titleColour'] ?? '';
+$price_colour           = $attributes['priceColour'] ?? '';
+// D636 sibling-attribute shape — mirrors sgs/container's shipped
+// backgroundOverlayColour/overlayGradient.
 $price_colour_gradient = $attributes['priceColourGradient'] ?? '';
-$feature_colour        = $attributes['featureColour'] ?? '';
-$cta_style             = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
-$cta_colour            = $attributes['ctaColour'] ?? '';
-$cta_background        = $attributes['ctaBackground'] ?? '';
-$badge_text            = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
-$badge_colour          = $attributes['popularBadgeColour'] ?? 'white';
-$badge_bg              = $attributes['popularBadgeBackground'] ?? 'accent';
+// Task 2 (cluster A) — same sibling-attribute shape for titleColour/featureColour.
+$title_colour_gradient   = $attributes['titleColourGradient'] ?? '';
+$feature_colour          = $attributes['featureColour'] ?? '';
+$feature_colour_gradient = $attributes['featureColourGradient'] ?? '';
+$cta_style               = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
+$cta_colour              = $attributes['ctaColour'] ?? '';
+$cta_background          = $attributes['ctaBackground'] ?? '';
+$cta_background_gradient = (string) ( $attributes['ctaBackgroundGradient'] ?? '' );
+$badge_text              = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
+$badge_colour            = $attributes['popularBadgeColour'] ?? 'white';
+$badge_bg                = $attributes['popularBadgeBackground'] ?? 'accent';
+$badge_bg_gradient       = (string) ( $attributes['popularBadgeBackgroundGradient'] ?? '' );
+
+$toggle_label_hover_colour          = $attributes['toggleLabelHoverColour'] ?? '';
+$toggle_label_hover_colour_gradient = $attributes['toggleLabelHoverColourGradient'] ?? '';
 
 // ── billingToggle — backward-compat: legacy boolean true → 'monthly-yearly', false → 'none' ──
 $raw_billing_toggle = $attributes['billingToggle'] ?? 'monthly-yearly';
@@ -217,9 +221,9 @@ foreach ( $plans as $plan_index => $plan ) {
 
 	// ── Per-plan ribbon ───────────────────────────────────────────────────────
 	// ribbonColour VARIES per plan (plan-array data), so it cannot be a single
-	// scoped rule on the block root. FR-32-4 (D345) forbids the inline
-	// `style="--x:y"` this used to write per plan card; instead the resolved
-	// colour is emitted into a `:nth-child(N)` scoped rule (same mechanism as
+	// scoped rule on the block root. FR-32-4 (D345) forbids inline
+	// `style="--x:y"`; instead the resolved colour is emitted into a
+	// `:nth-child(N)` scoped rule (same mechanism as
 	// sgs/social-icons' per-item brand colour, social-icons/render.php ~458) —
 	// N is this plan's 1-based position among ALL plan cards (every plan
 	// renders its `.sgs-pricing-table__plan` wrapper unconditionally, so the
@@ -386,93 +390,55 @@ foreach ( $plans as $plan_index => $plan ) {
 	);
 }
 
-// ── WP-native color / border / typography supports — no-inline contract (§A). ──
-// block.json declares color/typography/spacing/__experimentalBorder ALL with
-// __experimentalSkipSerialization:true, so get_block_wrapper_attributes()
-// (called inside SGS_Container_Wrapper::render() below) never auto-inlines
-// them. Read the resolved values from $attributes['style'] here and emit
-// them into THIS BLOCK'S OWN scoped <style> (composite caveat, mirrors
-// sgs/hero: do NOT pass these as wrapper `extra_styles` — that path
-// inlines). Base spacing (padding/margin) is a SEPARATE mechanism the
-// wrapper already handles scoped internally — not duplicated here.
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$pt_style_engine_args = array();
+// NO-INLINE: this block emits zero inline style property declarations.
+// Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
+// Read the resolved values from $attributes['style'] here and emit them into
+// THIS BLOCK'S OWN scoped <style> (composite caveat, mirrors sgs/hero: do NOT
+// pass these as wrapper `extra_styles` — that path inlines). Base spacing
+// (padding/margin) is a SEPARATE mechanism the wrapper already handles
+// scoped internally — not duplicated here.
 
-	$pt_color_args = array();
-	if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
-		$pt_color_args['text'] = (string) $attributes['style']['color']['text'];
-	}
-	if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
-		$pt_color_args['background'] = (string) $attributes['style']['color']['background'];
-	}
-	if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
-		$pt_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
-	}
-	if ( ! empty( $pt_color_args ) ) {
-		$pt_style_engine_args['color'] = $pt_color_args;
-	}
+$pt_style_engine_args = array();
 
-	$pt_border_args = array();
-	if ( isset( $attributes['style']['border']['color'] ) && '' !== $attributes['style']['border']['color'] ) {
-		$pt_border_args['color'] = (string) $attributes['style']['border']['color'];
-	}
-	if ( isset( $attributes['style']['border']['style'] ) && '' !== $attributes['style']['border']['style'] ) {
-		$pt_border_args['style'] = preg_replace( '/[^a-zA-Z-]/', '', (string) $attributes['style']['border']['style'] );
-	}
-	if ( isset( $attributes['style']['border']['width'] ) && '' !== $attributes['style']['border']['width'] ) {
-		$pt_border_args['width'] = $sgs_pt_css_length( $attributes['style']['border']['width'] );
-	}
-	if ( isset( $attributes['style']['border']['radius'] ) ) {
-		$pt_radius_raw = $attributes['style']['border']['radius'];
-		if ( is_string( $pt_radius_raw ) && '' !== $pt_radius_raw ) {
-			$pt_border_args['radius'] = $sgs_pt_css_length( $pt_radius_raw );
-		} elseif ( is_array( $pt_radius_raw ) ) {
-			$pt_radius_clean = array();
-			foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $pt_corner ) {
-				if ( ! empty( $pt_radius_raw[ $pt_corner ] ) ) {
-					$pt_radius_clean[ $pt_corner ] = $sgs_pt_css_length( $pt_radius_raw[ $pt_corner ] );
-				}
-			}
-			if ( ! empty( $pt_radius_clean ) ) {
-				$pt_border_args['radius'] = $pt_radius_clean;
-			}
-		}
-	}
-	if ( ! empty( $pt_border_args ) ) {
-		$pt_style_engine_args['border'] = $pt_border_args;
-	}
+$pt_color_args = array();
+if ( isset( $attributes['style']['color']['text'] ) && '' !== $attributes['style']['color']['text'] ) {
+	$pt_color_args['text'] = (string) $attributes['style']['color']['text'];
+}
+if ( isset( $attributes['style']['color']['background'] ) && '' !== $attributes['style']['color']['background'] ) {
+	$pt_color_args['background'] = (string) $attributes['style']['color']['background'];
+}
+if ( isset( $attributes['style']['color']['gradient'] ) && '' !== $attributes['style']['color']['gradient'] ) {
+	$pt_color_args['gradient'] = (string) $attributes['style']['color']['gradient'];
+}
+if ( ! empty( $pt_color_args ) ) {
+	$pt_style_engine_args['color'] = $pt_color_args;
+}
 
-	if ( ! empty( $pt_style_engine_args ) ) {
-		$pt_scoped_styles = wp_style_engine_get_styles(
-			$pt_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $pt_scoped_styles['css'] ) ) {
-			$responsive_css .= $pt_scoped_styles['css'];
-		}
-	}
+// (native border_args removed by the Shape-B migration -- width/style/colour
+// are block-private attrs now, emitted below)
 
-	// Typography — declared selector (block.json selectors.typography) is
-	// ".sgs-pricing-table__title"; the rendered element uses the canonical
-	// __name class (style.css keeps __title as a back-compat alias), so both
-	// are targeted here to match that existing dual-selector convention.
-	$pt_typography_args = array();
-	if ( isset( $attributes['style']['typography']['fontSize'] ) && '' !== $attributes['style']['typography']['fontSize'] ) {
-		$pt_typography_args['fontSize'] = (string) $attributes['style']['typography']['fontSize'];
-	}
-	if ( isset( $attributes['style']['typography']['lineHeight'] ) && '' !== $attributes['style']['typography']['lineHeight'] ) {
-		$pt_typography_args['lineHeight'] = (string) $attributes['style']['typography']['lineHeight'];
-	}
-	if ( ! empty( $pt_typography_args ) ) {
-		$pt_typography_scoped = wp_style_engine_get_styles(
-			array( 'typography' => $pt_typography_args ),
-			array( 'selector' => $root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title' )
-		);
-		if ( ! empty( $pt_typography_scoped['css'] ) ) {
-			$responsive_css .= $pt_typography_scoped['css'];
-		}
+if ( ! empty( $pt_style_engine_args ) ) {
+	$pt_scoped_styles = wp_style_engine_get_styles(
+		$pt_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $pt_scoped_styles['css'] ) ) {
+		$responsive_css .= $pt_scoped_styles['css'];
 	}
 }
+
+// Typography — prefix 'title', shared TypographyControls/sgs_typography_css_rule()
+// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// supports.typography (fontSize + lineHeight only), which the Block Selectors
+// API redirected onto the SAME target selector this now emits directly — the
+// rendered element uses the canonical __name class (style.css keeps __title
+// as a back-compat alias), so both are still targeted, matching the prior
+// dual-selector convention.
+$responsive_css .= sgs_typography_css_rule(
+	$attributes,
+	'title',
+	$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title'
+);
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add
@@ -495,15 +461,52 @@ if ( '' !== $pt_preset_bg_slug ) {
 // every plan card), so each is emitted ONCE as a scoped rule here rather than
 // per-plan inline — only ribbonColour genuinely varies per plan (handled via
 // the --sgs-pt-ribbon-bg CSS var written inline above).
-if ( $badge_colour || $badge_bg ) {
-	$pt_badge_decls = array();
-	if ( $badge_colour ) {
-		$pt_badge_decls[] = 'color:' . $colour_val( $badge_colour );
+$pt_badge_sel = $root_sel . ' .sgs-pricing-table__badge';
+// D936/D937 recipe -- sibling gradient wins when set+valid. Safe
+// unconditionally: badge_bg (below) paints on its own `::after` layer,
+// never this same selector.
+$badge_colour_gradient  = (string) ( $attributes['popularBadgeColourGradient'] ?? '' );
+$badge_colour_effective = sgs_resolve_text_colour_or_gradient( $badge_colour, $badge_colour_gradient );
+if ( '' !== $badge_colour_effective ) {
+	$badge_colour_decl = sgs_text_colour_decl( $badge_colour_effective );
+	if ( '' !== $badge_colour_decl ) {
+		$responsive_css .= $pt_badge_sel . '{' . $badge_colour_decl . '}';
 	}
-	if ( $badge_bg ) {
-		$pt_badge_decls[] = 'background-color:' . $colour_val( $badge_bg );
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_badge_sel, $badge_colour_effective );
+}
+// popularBadgeColourHover — own independent emission on $pt_badge_sel, same
+// fix shape as priceColourHover above: this must NOT be folded into the
+// unrelated billing-toggle-label-hover block below (wrong selector, wrong
+// gate — only ran when toggleLabelHoverColour was also set).
+if ( '' !== ( $attributes['popularBadgeColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$pt_badge_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['popularBadgeColourHover'] ) )
+	);
+}
+if ( $badge_bg || $badge_bg_gradient || ( '' !== ( $attributes['popularBadgeBackgroundHover'] ?? '' ) ) ) {
+	// Background painted on its OWN `::after` layer, not the badge element's own
+	// selector — `.sgs-pricing-table__badge` is already `position:absolute`
+	// (style.css), so this skips `sgs_block_background_layer_css()`'s hardcoded
+	// `position:relative` (would override the badge's existing absolute
+	// positioning and break its top/right placement). The badge already
+	// qualifies as a positioned ancestor for an absolutely-positioned `::after`;
+	// style.css carries the matching `isolation:isolate` to contain the
+	// `z-index:-1` layer. Leaves `color` free of a same-selector background for
+	// the `popularBadgeColourGradient` sibling above (D936/D937 recipe).
+	// popularBadgeBackgroundGradient sibling wins over popularBadgeBackground
+	// when set+valid, via sgs_background_paint_decl() (D956-shape rollout).
+	$responsive_css .= $pt_badge_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . sgs_background_paint_decl( $badge_bg, $badge_bg_gradient ) . ';}';
+	// popularBadgeBackgroundHover — own independent emission, same fix shape as
+	// above. Hand-built (not sgs_block_background_layer_css()) because the
+	// badge's `::after` layer is itself hand-built for the position:absolute
+	// reason noted above; :focus-within matches that helper's own convention
+	// for a background-layer hover pair.
+	$badge_bg_hover_decl = sgs_background_paint_decl( (string) ( $attributes['popularBadgeBackgroundHover'] ?? '' ), '' );
+	if ( '' !== $badge_bg_hover_decl ) {
+		$responsive_css .= sgs_hover_state_rules( $pt_badge_sel, $badge_bg_hover_decl . ';', ':focus-within', '::after' );
 	}
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__badge{' . implode( ';', $pt_badge_decls ) . '}';
 }
 // D636 Task 1b — sibling gradient attribute wins when set+valid. The
 // block-local $colour_val() closure only ever emits a preset-slug var(), so
@@ -518,21 +521,127 @@ if ( '' !== $price_colour_effective ) {
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $price_sel, $price_colour_effective );
 }
-if ( $feature_colour ) {
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__feature{color:' . $colour_val( $feature_colour ) . '}';
+// priceColourHover — own independent emission on .sgs-pricing-table__price.
+// Previously mis-inserted inside the UNRELATED billing-toggle-label-hover
+// block below (wrong selector, wrong gate — only ran when
+// toggleLabelHoverColour was also set) — found live, 2026-09-03.
+if ( '' !== ( $attributes['priceColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__price',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['priceColourHover'] ) )
+	);
 }
-if ( $cta_colour || $cta_background ) {
-	$pt_cta_decls = array();
-	if ( $cta_colour ) {
-		$pt_cta_decls[] = 'color:' . $colour_val( $cta_colour );
+// Task 2 (cluster A) — featureColour/featureColourGradient sibling pair,
+// same recipe as priceColour/priceColourGradient above: the resolver picks
+// the gradient when set+valid, sgs_text_colour_decl() emits the flat
+// `color:` or the background-clip:text gradient decl, and the @supports
+// fallback is always emitted alongside (a no-op for a flat colour).
+$feature_colour_effective = sgs_resolve_text_colour_or_gradient( $feature_colour, $feature_colour_gradient );
+if ( '' !== $feature_colour_effective ) {
+	$feature_sel         = $root_sel . ' .sgs-pricing-table__feature';
+	$feature_colour_decl = sgs_text_colour_decl( $feature_colour_effective );
+	if ( '' !== $feature_colour_decl ) {
+		$responsive_css .= $feature_sel . '{' . $feature_colour_decl . '}';
 	}
-	if ( $cta_background ) {
-		$pt_cta_decls[] = 'background-color:' . $colour_val( $cta_background );
-	}
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__cta{' . implode( ';', $pt_cta_decls ) . '}';
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $feature_sel, $feature_colour_effective );
 }
-if ( $title_colour ) {
-	$responsive_css .= $root_sel . ' .sgs-pricing-table__name,' . $root_sel . ' .sgs-pricing-table__title{color:' . $colour_val( $title_colour ) . '}';
+// bg_layer equivalent (D940 batch): background moves onto a `::after` layer
+// so `ctaColour` is free of a same-selector background for the
+// ctaColourGradient sibling below. `.sgs-pricing-table__cta` is not
+// positioned in style.css, so the full helper (position:relative +
+// isolation:isolate) is safe here. ctaBackgroundGradient sibling wins over
+// ctaBackground when set+valid, via sgs_background_paint_decl().
+$pt_cta_sel           = $root_sel . ' .sgs-pricing-table__cta';
+$cta_background_hover = (string) ( $attributes['ctaBackgroundHover'] ?? '' );
+if ( $cta_background || $cta_background_gradient || '' !== $cta_background_hover ) {
+	$responsive_css .= sgs_block_background_layer_css(
+		$pt_cta_sel,
+		sgs_background_paint_decl( $cta_background, $cta_background_gradient ),
+		sgs_background_paint_decl( $cta_background_hover, '' )
+	);
+}
+// D956 -- sibling gradient wins when set+valid. Safe unconditionally now
+// that ctaBackground (above) paints on its own `::after` layer.
+$cta_colour_gradient  = (string) ( $attributes['ctaColourGradient'] ?? '' );
+$cta_colour_effective = sgs_resolve_text_colour_or_gradient( $cta_colour, $cta_colour_gradient );
+if ( '' !== $cta_colour_effective ) {
+	$cta_colour_decl = sgs_text_colour_decl( $cta_colour_effective );
+	if ( '' !== $cta_colour_decl ) {
+		$responsive_css .= $pt_cta_sel . '{' . $cta_colour_decl . '}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $pt_cta_sel, $cta_colour_effective );
+}
+// ctaColourHover — own independent emission on $pt_cta_sel, same fix shape as
+// priceColourHover above.
+if ( '' !== ( $attributes['ctaColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$pt_cta_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['ctaColourHover'] ) )
+	);
+}
+// Task 2 (cluster A) — titleColour/titleColourGradient sibling pair. The
+// declaration paints onto a COMMA-JOINED selector pair (`.sgs-pricing-table__name`
+// is the real rendered element; `.sgs-pricing-table__title` is a back-compat
+// alias — see the `_selectorsNote` in block.json), so the @supports fallback
+// rule is emitted against the SAME joined selector list, not just the first
+// member, or the alias element would lose its fallback and render invisible
+// text on any browser without background-clip:text support.
+$title_sel              = $root_sel . ' .sgs-pricing-table__name,' . $root_sel . ' .sgs-pricing-table__title';
+$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
+if ( '' !== $title_colour_effective ) {
+	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
+	if ( '' !== $title_colour_decl ) {
+		$responsive_css .= $title_sel . '{' . $title_colour_decl . '}';
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $title_sel, $title_colour_effective );
+}
+// titleColourHover — own independent emission on $title_sel, same fix shape
+// as priceColourHover above.
+if ( '' !== ( $attributes['titleColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$title_sel,
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['titleColourHover'] ) )
+	);
+}
+// featureColourHover — own independent emission on $feature_sel, same fix
+// shape as priceColourHover above. $feature_sel is only defined inside the
+// featureColour block above (conditional on featureColour/Gradient being
+// set), so it is rebuilt here unconditionally rather than relied upon.
+if ( '' !== ( $attributes['featureColourHover'] ?? '' ) ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__feature',
+		array(),
+		array( 'color:' . sgs_colour_value( $attributes['featureColourHover'] ) )
+	);
+}
+// Billing-toggle label hover tint — previously a hardcoded color-mix() (+
+// rgba fallback) in style.css with no backing attribute; replaced by this
+// operator-controlled attribute (D-pending). Button-style only, matching the
+// original CSS's scoping (the text-style toggle uses colour/track, not a
+// background tint). Hover-only: an empty attribute means no hover tint at
+// all, not a hardcoded fallback.
+//
+// FIXED 2026-09-04 — this block previously accreted titleColourHover/
+// featureColourHover/ctaColourHover/popularBadgeColourHover/
+// ctaBackgroundHover/popularBadgeBackgroundHover into $pt_toggle_label_hover_decls,
+// which only ever fires when $pt_toggle_label_hover_decl (a completely
+// unrelated attribute, toggleLabelHoverColour) is ALSO set, and which paints
+// the wrong element (the billing-toggle label) for every one of those six
+// attributes regardless. Found live, same defect class priceColourHover was
+// already fixed for on 2026-09-03. Each of the six now has its own
+// independent emission on its own correct selector, placed next to its base
+// attribute above/below; this block is restricted back to its own single
+// purpose.
+$pt_toggle_label_hover_decl = sgs_background_paint_decl( $toggle_label_hover_colour, $toggle_label_hover_colour_gradient );
+if ( '' !== $pt_toggle_label_hover_decl ) {
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label',
+		array(),
+		array( $pt_toggle_label_hover_decl )
+	);
 }
 
 // Ribbon: the --sgs-pt-ribbon-bg var (written inline per-plan above) needs a
@@ -549,6 +658,94 @@ $inner_html = $toggle_html . '<div class="sgs-pricing-table__grid">' . $plans_ht
 // Output scoped CSS. wp_strip_all_tags (NOT esc_html) blocks a </style>
 // breakout while leaving CSS combinators like `>`/`,` intact (contract §D —
 // matches SGS_Container_Wrapper + sgs/hero + sgs/quote + sgs/button). Every
+
+// ── Block-private border: width / style / colour (Shape B). ──
+// Migrated from WP-native supports by scripts/migrate-border-shape-b.js.
+// Oracle: sgs/accordion, live-verified with scripts/qa/check-border-roundtrip.js.
+$border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+
+$border_style_raw      = $attributes['borderStyle'] ?? 'none';
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+$border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
+
+if ( 'none' !== $border_style ) {
+	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
+	// through to the browser's initial `medium` (~3px).
+	if ( $has_border_width ) {
+		$bwt             = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr             = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb             = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl             = '' !== $border_width_left ? $border_width_left : '0';
+		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
+	}
+
+	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
+	// masked ::before ring. NOT sgs_border_states_css(): that helper always
+	// routes through sgs_border_gradient_css(), which sets
+	// border-color:transparent -- measured live, both of its callers
+	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
+	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
+	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
+	if ( '' !== $border_colour_gradient ) {
+		$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
+	} elseif ( '' !== $border_colour ) {
+		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
+		// the browser drops (D881 defect 3).
+		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
+	}
+} else {
+	// G5 corollary: "none" must be an explicit override too, not a
+	// no-op -- a variant's own hardcoded CSS border (e.g. a card-style
+	// class default) would otherwise keep painting even though the
+	// operator picked "no border". Cause-agnostic: harmless when no
+	// such default exists, a real fix when one does.
+	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+}
+
+// ── Block-private border-radius (radius is no longer native -- Shape B now
+// covers all four legs). Same wp_style_engine_get_styles() route already
+// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
+// tiers; base now goes through the identical call instead of WP's native
+// serialisation. The style-engine result is an intermediate PHP value ($out
+// array), never appended raw -- only its ['css'] string goes through the
+// detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
+if ( ! empty( $border_radius_obj ) ) {
+	$border_radius_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_out['css'] ) ) {
+		$responsive_css .= $border_radius_out['css'];
+	}
+}
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+if ( ! empty( $border_radius_tablet_obj ) ) {
+	$border_radius_tab_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_tab_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
+	}
+}
+$border_radius_mobile_obj = $radius_tiers['mobile'];
+if ( ! empty( $border_radius_mobile_obj ) ) {
+	$border_radius_mob_out = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_mob_out['css'] ) ) {
+		$responsive_css .= '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
+	}
+}
+
 // value reaching $responsive_css is pre-sanitised ($sgs_pt_css_slug /
 // $sgs_pt_css_length / wp_style_engine_get_styles), so no un-sanitised value
 // survives to here.

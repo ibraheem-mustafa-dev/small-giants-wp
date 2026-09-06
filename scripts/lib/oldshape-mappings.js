@@ -183,6 +183,41 @@ function renameKeysPresent(block) {
 	});
 }
 
+/**
+ * ATTRIBUTE DECOMPOSITION — a third migration SHAPE (added 2026-09-02, D920 canary
+ * pre-deploy audit). A rename maps ONE old key to ONE new key with the value
+ * unchanged; a decompose maps ONE old OBJECT-typed key's SUB-FIELDS onto several
+ * NEW scalar sibling attrs. Routed through the SAME attrs-only updateBlockAttributes
+ * path as RENAMES (innerBlocks untouched) — the driver does not need to know the
+ * difference, buildPlan expands a decompose into the identical {mode:'rename',
+ * newAttrs, tokens} shape a rename produces.
+ *
+ * sgs/hero's `splitImage`/`splitImageMobile` were `{"type":"object"}` composite
+ * attrs (shape `{id,url,alt}`, kept alive one extra day per D920/commit `dcd9940d2`'s
+ * own docblock for the cloning pipeline's scalar-media role assignment) that
+ * `b7b420df9` finished retiring in favour of the already-declared
+ * splitImageId/splitImageUrl/splitImageAlt (+Tablet/Mobile) scalar trio. Six live
+ * canary posts (2334/2337/2602/2742/2849/2884) still hand-author the old object
+ * shape and are blocked by build-deploy.py's oldshape-audit pending this migration.
+ */
+const DECOMPOSE = {
+	'sgs/hero': {
+		splitImage: { id: 'splitImageId', url: 'splitImageUrl', alt: 'splitImageAlt' },
+		splitImageMobile: { id: 'splitImageIdMobile', url: 'splitImageUrlMobile', alt: 'splitImageAltMobile' },
+	},
+};
+
+/** Old object-typed keys present on this block with at least one real sub-value. */
+function decomposeKeysPresent(block) {
+	const map = DECOMPOSE[block.name];
+	if (!map) return [];
+	return Object.keys(map).filter((k) => {
+		const v = block.attrs[k];
+		return v && typeof v === 'object' && !Array.isArray(v)
+			&& (v.id || v.url || v.alt);
+	});
+}
+
 const BUILDERS = {
 	'sgs/hero'(attrs, tokens, errors) {
 		const children = [];
@@ -320,11 +355,12 @@ const BUILDERS = {
 
 /** A stored instance qualifies as a casualty needing migration. */
 function needsMigration(block) {
-	// A rename qualifies on its own terms and must be tested FIRST: the
+	// A rename/decompose qualifies on its own terms and must be tested FIRST: the
 	// `!block.selfClosing` gate below is a rebuild-shape rule, and a block being
-	// renamed normally HAS children (that is precisely why it needs the attrs-only
-	// path). Testing rebuild-first would return false and silently skip it.
+	// renamed/decomposed normally HAS children (that is precisely why it needs the
+	// attrs-only path). Testing rebuild-first would return false and silently skip it.
 	if (renameKeysPresent(block).length) return true;
+	if (decomposeKeysPresent(block).length) return true;
 	if (!BUILDERS[block.name]) return false;
 	if (block.name === 'sgs/brand-strip') {
 		// Qualifies unless every logo is already in the deployed-compatible legacy
@@ -352,11 +388,13 @@ function buildPlan(raw) {
 		}
 		if (!needsMigration(block)) continue;
 
-		// RENAME shape — attrs only, children untouched. Emitted with mode:'rename'
-		// so the driver uses updateBlockAttributes instead of replaceBlock.
+		// RENAME/DECOMPOSE shape — attrs only, children untouched. Emitted with
+		// mode:'rename' so the driver uses updateBlockAttributes instead of
+		// replaceBlock (both shapes share the same safe write path).
 		const renameKeys = renameKeysPresent(block);
-		if (renameKeys.length) {
-			const map = RENAMES[block.name];
+		const decomposeKeys = decomposeKeysPresent(block);
+		if (renameKeys.length || decomposeKeys.length) {
+			const map = RENAMES[block.name] || {};
 			const newAttrs = {};
 			const tokens = [];
 			for (const oldKey of renameKeys) {
@@ -366,9 +404,23 @@ function buildPlan(raw) {
 				// on the migrated block, so a dropped rename cannot pass silently.
 				tokens.push({ source: `${block.name}.${oldKey}`, value });
 			}
-			// Explicitly clear the legacy keys so phase B's block.json deletion cannot
-			// strand them. undefined is how the block editor removes an attribute.
+			for (const oldKey of decomposeKeys) {
+				const subMap = DECOMPOSE[block.name][oldKey];
+				const obj = block.attrs[oldKey];
+				for (const [subKey, newKey] of Object.entries(subMap)) {
+					const isIdField = /Id(Mobile|Tablet)?$/.test(newKey);
+					const value = obj[subKey] !== undefined ? obj[subKey] : (isIdField ? 0 : '');
+					newAttrs[newKey] = value;
+					// Only inventory a real (non-default) value as a content token — an
+					// id:0/empty-alt is a legitimate "unset" state on the source object,
+					// not lost content, and must not be demanded back by verify().
+					tok(tokens, `${block.name}.${oldKey}.${subKey}`, value);
+				}
+			}
+			// Explicitly clear the legacy keys so their eventual block.json deletion
+			// cannot strand them. undefined is how the block editor removes an attribute.
 			for (const oldKey of renameKeys) newAttrs[oldKey] = undefined;
+			for (const oldKey of decomposeKeys) newAttrs[oldKey] = undefined;
 			entries.push({
 				name: block.name,
 				kth: kthCounter[block.name],

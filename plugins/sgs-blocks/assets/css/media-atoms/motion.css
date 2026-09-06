@@ -1,0 +1,103 @@
+/*
+ * motion — ken-burns zoom / parallax drift for a media element, mutually
+ * exclusive. Custom-property names match `motion.js`/`motion.php`'s `css()`
+ * output exactly: `--sgs-media-motion-animation-name`,
+ * `--sgs-media-motion-animation-duration`,
+ * `--sgs-media-motion-animation-timing-function`,
+ * `--sgs-media-motion-animation-iteration-count`,
+ * `--sgs-media-motion-animation-direction`,
+ * `--sgs-media-motion-animation-fill-mode`,
+ * `--sgs-media-motion-animation-timeline`.
+ *
+ * NONE of the three bases (`KenBurns`/`Parallax`/`AnimationDuration`) are
+ * tiered (`MEDIA_TIERED_BASES` does not carry any of them) — no `@media`
+ * device-tier fan-out needed here, unlike box-shape/focal-point.
+ *
+ * ONE `animation-name` DRIVES BOTH EFFECTS, per a custom-property selector —
+ * the same mechanism `svg-presentation.css` already uses for its
+ * `SvgAnimation` base (pulse/float/wave), applied here instead of a BEM
+ * modifier class (`motion.js`'s docblock records the judgement call in full).
+ * Ken-burns and parallax differ in every other animation-shorthand
+ * sub-property too (timing-function/iteration-count/direction/fill-mode), so
+ * every sub-property is its OWN custom property rather than a shared
+ * shorthand — this is what lets both effects share one rule with no cascade
+ * collision: only the active effect's `css()` branch emits any declarations,
+ * so the inactive effect's properties simply fall back to their var()
+ * defaults, which reproduce ken-burns' own steady-state values harmlessly
+ * (they only matter once `animation-name` is non-`none`).
+ *
+ * Ken-burns SCALES `.sgs-media-el` itself via `transform`, which can overflow
+ * the element's own layout box. This atom has no wrapper of its own
+ * (`attachesTo: 'element'`) — a consuming block that wants the zoom clipped
+ * must set `overflow: hidden` on its OWN wrapper around this element, the
+ * same responsibility `hero/style.css` takes on `.sgs-hero__media`.
+ *
+ * PARALLAX uses CSS Scroll-Driven Animations (`animation-timeline:
+ * scroll(root)`), `@supports`-gated exactly like `hero/style.css`'s own
+ * `.sgs-hero__media--parallax` — unsupported browsers simply render the
+ * media static (progressive enhancement, no JS fallback needed).
+ *
+ * PREFERS-REDUCED-MOTION IS A NEW, DEDICATED GUARD — `.sgs-media-el` is not
+ * covered by the existing guards in `hero/style.css`/`container/style.css`/
+ * `parallax.js`, which are scoped to THOSE blocks' own selectors. Both
+ * effects sit inside `@media (prefers-reduced-motion: no-preference)`, so a
+ * client with reduced motion enabled sees the media fully static —
+ * `animation-name` simply never applies.
+ *
+ * ✅ CROSS-ATOM COLLISION RESOLVED (2026-09-01, Bean's direction). This atom
+ * used to declare `animation-name`/`-duration`/`-timing-function`/
+ * `-iteration-count`/`-direction`/`-fill-mode` directly on `.sgs-media-el`,
+ * and so did `svg-presentation.css` — identical specificity (0,1,0), last
+ * partial loaded (alphabetically after `_base.css`) always won, so ken-burns/
+ * parallax silently never animated on any element that could also carry an
+ * SVG animation. Bean's direction: `svg-presentation` keeps sole ownership of
+ * the pulse/float/wave SVG vocabulary; `motion`'s ken-burns/parallax needs to
+ * actually WORK, including on an element that also has an SVG animation
+ * active — a zoom/drift transform and a decorative SVG pulse are different
+ * concepts that should be able to run simultaneously, not fight over one
+ * cascade slot. The fix: BOTH atoms still write only to their OWN uniquely
+ * named custom properties (unchanged below), but the REAL `animation-*`
+ * properties are now composed ONCE, in `_base.css`, using CSS's native
+ * comma-separated multi-value animation syntax — each atom occupies its own
+ * position in the list, so both animations run at once. See `_base.css`'s
+ * "Cross-atom rule: composed animation" section for the combining rule
+ * itself.
+ */
+
+@media ( prefers-reduced-motion: no-preference ) {
+	@keyframes sgs-media-motion-ken-burns {
+		0% {
+			transform: scale( 1 ) translate( 0, 0 );
+		}
+		33% {
+			transform: scale( 1.06 ) translate( -1%, 0.5% );
+		}
+		66% {
+			transform: scale( 1.04 ) translate( 1%, -0.5% );
+		}
+		100% {
+			transform: scale( 1 ) translate( 0, 0 );
+		}
+	}
+
+	@supports ( animation-timeline: scroll() ) {
+		.sgs-media-el {
+			animation-timeline: var( --sgs-media-motion-animation-timeline, auto );
+		}
+
+		@keyframes sgs-media-motion-parallax {
+			from {
+				transform: translateY( -16px );
+			}
+			to {
+				transform: translateY( 16px );
+			}
+		}
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-media-el {
+		animation: none !important;
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/root-correctly-targeted",
+	"title": "Fixture: typography selector correctly targets the block's own custom root — must NOT flag",
+	"category": "sgs",
+	"supports": {
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"selectors": {
+		"root": ".sgs-root-correctly-targeted",
+		"typography": ".sgs-root-correctly-targeted"
+	},
+	"attributes": {}
+}

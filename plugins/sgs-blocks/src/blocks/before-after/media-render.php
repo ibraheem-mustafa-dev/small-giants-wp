@@ -69,6 +69,20 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 		$url    = isset( $attributes[ $prefix . 'ImageUrl' ] ) ? (string) $attributes[ $prefix . 'ImageUrl' ] : '';
 		$alt    = isset( $attributes[ $prefix . 'ImageAlt' ] ) ? (string) $attributes[ $prefix . 'ImageAlt' ] : '';
 
+		// Decorative slot (D918/S8 {element}Decorative convention). WordPress
+		// already stores the real alt text on the ATTACHMENT/attribute, which
+		// is where it belongs — this is the operator saying "ignore that, this
+		// picture carries no information". It renders with an empty alt AND
+		// aria-hidden, so a screen reader skips it entirely instead of
+		// announcing a filename. Block-level per SLOT, mirroring how
+		// milestoneMediaDecorative is per-block on sgs/timeline — a client
+		// uses a comparison slot either as content or as decoration, not one
+		// way on desktop and another on a tier.
+		$decorative = ! empty( $attributes[ $prefix . 'ImageDecorative' ] );
+		if ( $decorative ) {
+			$alt = '';
+		}
+
 		if ( '' === trim( $url ) && $id <= 0 ) {
 			return array(
 				'html'        => '',
@@ -128,19 +142,18 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 		 * @param string $img_cls Full class attribute for this <img>.
 		 * @return string HTML, or '' when neither source resolves.
 		 */
-		$emit_img = static function ( int $img_id, string $img_url, string $img_cls ) use ( $alt ): string {
+		$emit_img = static function ( int $img_id, string $img_url, string $img_cls ) use ( $alt, $decorative ): string {
 			if ( $img_id > 0 ) {
-				$markup = wp_get_attachment_image(
-					$img_id,
-					'full',
-					false,
-					array(
-						'class'    => $img_cls,
-						'alt'      => $alt,
-						'loading'  => 'lazy',
-						'decoding' => 'async',
-					)
+				$img_attrs = array(
+					'class'    => $img_cls,
+					'alt'      => $alt,
+					'loading'  => 'lazy',
+					'decoding' => 'async',
 				);
+				if ( $decorative ) {
+					$img_attrs['aria-hidden'] = 'true';
+				}
+				$markup = wp_get_attachment_image( $img_id, 'full', false, $img_attrs );
 				if ( '' !== $markup ) {
 					return $markup;
 				}
@@ -149,10 +162,11 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 				return '';
 			}
 			return sprintf(
-				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async" />',
+				'<img class="%1$s" src="%2$s" alt="%3$s" loading="lazy" decoding="async"%4$s />',
 				esc_attr( $img_cls ),
 				esc_url( $img_url ),
-				esc_attr( $alt )
+				esc_attr( $alt ),
+				$decorative ? ' aria-hidden="true"' : ''
 			);
 		};
 
@@ -328,13 +342,26 @@ if ( ! function_exists( 'sgs_before_after_resolve_media' ) ) {
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $modifier   'before' | 'after'.
+	 * @param string $uid        Block instance uid (Wave 5b — scopes the
+	 *                           media-atom layer's object-fit/focal-point
+	 *                           custom properties independently per slot).
 	 * @return array{ html: string, has_content: bool, media_type: string }
 	 */
-	function sgs_before_after_resolve_media( array $attributes, string $modifier ): array {
+	function sgs_before_after_resolve_media( array $attributes, string $modifier, string $uid = '' ): array {
 		$prefix     = 'before' === $modifier ? 'before' : 'after';
 		$type_raw   = $attributes[ $prefix . 'MediaType' ] ?? 'image';
 		$media_type = in_array( $type_raw, array( 'image', 'video', 'svg' ), true ) ? $type_raw : 'image';
 		$classes    = 'wp-block-sgs-before-after__img wp-block-sgs-before-after__img--' . $modifier;
+
+		// object-fit/focal-point atoms are image+video scope only (registry.js
+		// `types`) — svg's inline geometry doesn't take object-fit, so the
+		// marker is added only for the two types that can use it.
+		if ( '' !== $uid && 'svg' !== $media_type && function_exists( 'sgs_media_element_scope_class' ) ) {
+			$sgs_bap_scope = sgs_media_element_scope_class( $uid, $prefix );
+			if ( '' !== $sgs_bap_scope ) {
+				$classes .= ' sgs-media-el ' . $sgs_bap_scope;
+			}
+		}
 
 		$result = match ( $media_type ) {
 			'video' => sgs_before_after_resolve_video( $attributes, $modifier, $classes ),

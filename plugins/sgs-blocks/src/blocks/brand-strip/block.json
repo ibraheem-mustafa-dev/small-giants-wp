@@ -22,15 +22,62 @@
 			"collection": true,
 			"arrayContentLift": true,
 			"containerMirror": false,
-			"hideExtensions": [ "clickEffects", "parallax" ],
+			"_comment_mediaElements": "Bridges the pre-existing `logoFit` control (contain|cover, default contain) onto the shared object-fit atom via STORED_AS in MediaElementControls.js/helpers-media-element.php — no new attribute, no new UI, the logo-fit dropdown stays the only control.",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
+			"hideExtensions": [
+				"clickEffects",
+				"parallax"
+			],
 			"elements": {
+				"root": {
+					"label": "Block root",
+					"order": 1,
+					"layer": "OUTER",
+					"_layer_note": "Root IS the block-private `.wp-block-sgs-brand-strip` element (render.php $root_sel, no SGS_Container_Wrapper -- this block is block-private per D294, not a section/layout composite). Mirrors sgs/testimonial-slider's 'slider' root.",
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:width": "fadeWidth",
+						"css:min-height": "maxHeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-image": "backgroundColourHoverGradient",
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "New ROOT colour panel (2026-08-20) -- background+text colour/gradient with hover, mirroring sgs/testimonial-slider's root attrMap shape (css:background-color/css:background-image/css:color) extended with the D636 css:color-gradient text-clip mechanism (sgs/heading precedent). Paints the block's own root <div>, distinct from tileBackgroundColour (the 'tile' element below) and the item*Hover attrs (the 'item' element, the nested hover surface)."
+				},
 				"tile": {
 					"label": "Tile",
-					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"prefix": "tile",
 					"attrMap": {
 						"css:background-color": "tileBackgroundColour",
+						"css:background-image": "tileBackgroundColourGradient",
 						"css:border-width": "tileBorderWidth",
 						"css:border-color": "tileBorderColour",
 						"css:border-color-gradient": "tileBorderColourGradient",
@@ -42,69 +89,84 @@
 				},
 				"logo": {
 					"label": "Logo image",
-					"order": 2,
+					"order": 3,
 					"clusters": [],
-					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares none."
+					"attrMap": {
+						"css:object-fit": "logoFit"
+					},
+					"_note": "Governed by its own logoFit/imageEffect selects (supports.sgs.imageControls removed 2026-08-11, Spec 35 capability-routing doctrine — it was fully redundant dead weight on top of this bespoke mechanism, never a real control surface) — outside the Text/Fill/Layout style clusters, so it declares no clusters. logoFit's attrMap entry added 2026-09-03 to close a db-consistency 'undeclared-subelement' finding (the classifier had no manifest signal to trace logoFit's element/selector to)."
 				},
 				"caption": {
 					"label": "Caption",
-					"order": 3,
-					"clusters": [ "text" ],
+					"order": 4,
+					"clusters": [
+						"text"
+					],
 					"prefix": "name",
 					"attrMap": {
 						"css:font-size": "nameFontSize",
 						"css:font-weight": "nameFontWeight",
-						"css:color": "nameColour"
+						"css:color": "nameColour",
+						"css:color-gradient": "nameColourGradient"
 					}
 				},
 				"name": {
 					"label": "Caption text-align",
-					"order": 3,
-					"clusters": [],
-					"prefix": "",
-					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now."
-				},
-				"item": {
-					"label": "Tile hover surface",
 					"order": 4,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. backgroundColourHover/textColourHover/borderColourHover are bare attrs with no base (non-hover) counterpart and no 'item' prefix, so prefix:\"\" opts this element out of orphan-candidate scanning rather than declaring a states.hover block that would create a new state-without-base finding against the D542-gated baseline. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now."
+					"_note": "CORRECTION 2026-08-15: an earlier pass in this same fix RENAMED 'caption' to 'name', which was WRONG - the DB tags 8 attrs (nameFontSize/nameFontWeight/nameColour/nameFontStyle/nameLineHeight/nameLetterSpacing/nameTextTransform/nameTextDecoration) css_element='caption' (matching the ORIGINAL key) and only 1 attr (nameTextAlign) css_element='name'. Renaming would have cleared 1 orphan while creating 8 new ones. 'caption' is restored above; this bare 'name' element exists purely so the audit script's exact-key-match sees 'name' declared too. nameTextAlign already resolves fine functionally under 'caption' (prefix 'name' + suffix TextAlign, default convention) regardless of this element's own (empty) clusters - this entry exists only to satisfy the drift audit's separate, independent key-existence check. Found live 2026-08-15: DB tagged 1 attr css_element='name', undeclared until now.",
+					"attrMap": {},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "nameColourHover"
+							}
+						}
+					},
+					"_note_hover": "Hover colour declared 2026-09-05. Was previously a bare `color:` in the root $root_hover_decls bucket, colliding with textColourHover's own `color:` in the same rule and never reaching this element (which sets its own explicit resting colour). render.php now emits an ancestor-hover rule on this element's selector, so the declaration is truthful."
+				},
+				"item": {
+					"label": "Tile hover surface",
+					"order": 5,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. itemBackgroundColourHover/itemTextColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the four item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, the four are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count 12 -> 16. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so the four are CLAIMED rather than orphaned."
 				},
 				"track": {
 					"label": "Marquee track",
-					"order": 5,
+					"order": 6,
 					"clusters": [],
 					"prefix": "",
 					"_note": "The scrolling marquee track (.sgs-brand-strip__track, render.php line 538). scrollSpeed drives --sgs-scroll-speed, but the CSS animation declaration that consumes it only applies on the compound .sgs-brand-strip__track--ready selector (style.css line 315-316) - a JS-toggled 'measurement complete' state (view.js line 91), not a CSS pseudo-class, so it has no home in the states taxonomy (hover-shaped only). The DB's css_element='track--ready' therefore remains a residual, undeclared drift finding after this fix: declaring a literal --ready-suffixed element key would be the first BEM-modifier-shaped top-level key anywhere in this framework (checked, no precedent), so this manifest declares the real container ('track') honestly instead of inventing one to force a clean audit pass. Accepted debt, not silently worked around."
 				},
 				"strip-spacing": {
 					"label": "Strip spacing",
-					"order": 4,
-					"clusters": [ "layout" ],
+					"order": 5,
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "borderColourGradient"
 					}
 				}
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -119,22 +181,22 @@
 			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
-		"_comment_logos_media": "Migrated 2026-05-05 â€” each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"_comment_logos_media": "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape is NOT migrated — all deprecations were deleted plugin-wide at D271; there is no deprecated.js. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
 		"logos": {
 			"type": "array",
 			"default": [],
@@ -142,10 +204,15 @@
 				"type": "object",
 				"properties": {
 					"media": {
-						"type": "object"
+						"type": "object",
+						"role": "image-object"
 					},
 					"alt": {
 						"type": "string"
+					},
+					"decorative": {
+						"type": "boolean",
+						"default": false
 					},
 					"linkUrl": {
 						"type": "string"
@@ -158,6 +225,19 @@
 					},
 					"name": {
 						"type": "string"
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit CSS so a fit value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [
+							"cover",
+							"contain"
+						],
+						"default": "cover",
+						"description": "Per-item object-fit override. Logos are not photographs — object-fit only, no focal-point/crosshair (Bean-locked convention: see sgs/testimonial orgLogo + this block's own block-wide logoFit). Falls back to the block-wide logoFit default when unset."
 					}
 				}
 			}
@@ -173,7 +253,10 @@
 		"scrollDirection": {
 			"type": "string",
 			"default": "left",
-			"enum": [ "left", "right" ]
+			"enum": [
+				"left",
+				"right"
+			]
 		},
 		"fadeEdges": {
 			"type": "boolean",
@@ -191,17 +274,13 @@
 			"type": "number",
 			"default": 180
 		},
-		"columnsDesktop": {
-			"type": "number",
-			"default": 8
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 4
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 2
+		"columns": {
+			"type": "object",
+			"default": {
+				"desktop": 8,
+				"tablet": 4,
+				"mobile": 2
+			}
 		},
 		"showNames": {
 			"type": "boolean",
@@ -253,12 +332,23 @@
 		},
 		"nameTextAlign": {
 			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
 			"default": ""
 		},
 		"nameColour": {
 			"type": "string",
 			"default": ""
+		},
+		"nameColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the caption text via background-clip:text. Non-empty wins over nameColour at render time (D636)."
 		},
 		"logoGap": {
 			"type": "number",
@@ -274,12 +364,19 @@
 		},
 		"tileShape": {
 			"type": "string",
-			"enum": [ "square", "circle", "none" ],
+			"enum": [
+				"square",
+				"circle",
+				"none"
+			],
 			"default": "square"
 		},
 		"logoFit": {
 			"type": "string",
-			"enum": [ "contain", "cover" ],
+			"enum": [
+				"contain",
+				"cover"
+			],
 			"default": "contain"
 		},
 		"tileBorderWidth": {
@@ -287,6 +384,10 @@
 			"default": 0
 		},
 		"tileBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBackgroundColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -306,22 +407,67 @@
 		"tileShadowColour": {
 			"type": "string"
 		},
+		"tileShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of itemTextColourHover. Non-empty wins over itemTextColourHover on :hover/:focus-within."
+		},
+		"itemBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBorderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of tileBorderColourGradient. Non-empty wins over itemBorderColourHover on :hover/:focus-within."
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the block ROOT background instead of a flat colour. Non-empty wins over backgroundColour at render time (D636)."
+		},
 		"backgroundColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state sibling of backgroundColourGradient. Non-empty wins over backgroundColourHover on :hover/:focus-within."
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painted through the block ROOT text via background-clip:text. Non-empty wins over textColour at render time (D636)."
 		},
 		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},
-		"borderColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"borderColourHoverGradient": {
+		"textColourHoverGradient": {
 			"type": "string",
 			"default": "",
-			"description": "Hover-state sibling of tileBorderColourGradient. Non-empty wins over borderColourHover on :hover/:focus-within."
+			"description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-within."
 		},
 		"effectHover": {
 			"type": "string",
@@ -335,29 +481,43 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"paddingTablet": {
+		"borderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
+		"borderColour": {
+			"type": "string",
+			"default": ""
 		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
 		},
-		"borderRadiusTablet": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+		"nameColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

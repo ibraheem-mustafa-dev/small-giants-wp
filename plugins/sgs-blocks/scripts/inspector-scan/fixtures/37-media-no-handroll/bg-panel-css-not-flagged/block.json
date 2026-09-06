@@ -1,0 +1,7 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/bg-panel-css-not-flagged",
+	"title": "Fixture: style.css writes background-size/position for the whole-block backdrop panel (Ken-Burns), no mediaElements (must NOT flag, condition 2 negative)",
+	"category": "sgs",
+	"attributes": {}
+}

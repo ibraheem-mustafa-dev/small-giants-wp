@@ -65,12 +65,84 @@ final class Sgs_Block_Bindings_Support {
 	 * label/url/linkTarget/rel → $label/$url/$link_target/$rel) — the
 	 * binding-computed value is not silently ignored at render time.
 	 *
+	 * WIDENED 2026-09-04 (C15-5, `.claude/reports/2026-08-28-c15-block-bindings-scope-proposal.md`)
+	 * from 3 blocks / 6 attrs to the 37 blocks / 78 attrs below. Every pair here
+	 * is a SAFE binding target per the detector `scripts/audit-bindable-attrs.py`
+	 * (`--check` gates this const against it): a SCALAR attribute (never
+	 * object/array — a binding resolves to one value and a mismatched type is
+	 * silently coerced to the attribute's default) carrying `"role":"content"`
+	 * in its own block.json (this codebase's existing "this holds client
+	 * content" marker), or a `linkTarget`/`rel` sibling of a content URL attr
+	 * (mirrors core/button's own bindable set) — AND actually READ by the
+	 * block's own render surface (own render.php, a `use function`-imported
+	 * shared helper, a sibling PHP file in the same block folder, or the
+	 * `$prefix . 'Suffix'` dynamic-key pattern `sgs/before-after` uses).
+	 * `sgs/product-card` is deliberately EXCLUDED — its dynamic data already
+	 * routes through `Product_Bindings::get_product_data()` called directly
+	 * from render.php (C15-6); adding it here would double up two live-data
+	 * mechanisms.
+	 * NOT covered (named, not silently dropped — see the detector's `--survey`
+	 * for the full picture):
+	 *   - `sgs/button`'s `linkId`/`linkKind` (SgsLinkPopover internal
+	 *     bookkeeping, not client content); `sgs/heading`'s `headingRole` (an
+	 *     enum UI selector, not authored text) — deliberately curated out.
+	 *   - `sgs/info-box` (`heading`/`description`), `sgs/hero` (`label`),
+	 *     `sgs/notice-banner` (`text`), `sgs/cta-section` (`headline`),
+	 *     `sgs/tab` (`label`) — DECLARED `role:content` in block.json but
+	 *     genuinely DEAD at render: each was FR-22-6-migrated to an InnerBlocks
+	 *     child (sgs/heading/sgs/text/sgs/label) that owns the real text, and
+	 *     the parent's flat scalar is a leftover marker nothing reads. A
+	 *     binding on any of these would resolve and be silently discarded.
+	 *     `sgs/form-field-address`/`-consent`/`-file`/`-tiles` similarly do not
+	 *     read their own `placeholder` (address computes it internally per
+	 *     sub-field; consent/file/tiles are not text inputs, so it never
+	 *     applied) — the detector proved this per-attribute, not per-block, so
+	 *     each of those blocks keeps whichever of `label`/`helpText` IS read.
+	 *   - Every other `role:content` pair on a block/attr this pass did not
+	 *     reach — run `--survey` for the live list and widen in a follow-up
+	 *     pass, per THE-MIGRATION-METHOD.md (do not cover every block in one
+	 *     sitting).
+	 *
 	 * @var array<string,string[]>
 	 */
 	private const SUPPORTED_ATTRIBUTES = array(
-		'sgs/text'    => array( 'text' ),
-		'sgs/heading' => array( 'content' ),
-		'sgs/button'  => array( 'url', 'label', 'linkTarget', 'rel' ),
+		'sgs/text'              => array( 'text' ),
+		'sgs/heading'           => array( 'content' ),
+		'sgs/button'            => array( 'url', 'label', 'linkTarget', 'rel' ),
+		'sgs/media'             => array( 'imageAlt', 'imageUrl', 'caption', 'linkUrl', 'videoUrl' ),
+		'sgs/decorative-image'  => array( 'imageAlt', 'imageUrl' ),
+		'sgs/responsive-logo'   => array( 'alt', 'logoUrl' ),
+		'sgs/team-member'       => array( 'name', 'bio' ),
+		'sgs/testimonial'       => array( 'quote', 'reviewerName', 'reviewerRole', 'orgName', 'summaryPhrase' ),
+		'sgs/counter'           => array( 'label', 'prefix', 'suffix' ),
+		'sgs/trust-bar'         => array( 'title' ),
+		'sgs/icon'              => array( 'linkUrl', 'linkTarget' ),
+		'sgs/whatsapp-cta'      => array( 'label' ),
+		'sgs/label'             => array( 'text' ),
+		'sgs/collapsible-text'  => array( 'text' ),
+		'sgs/table-of-contents' => array( 'title' ),
+		'sgs/form-review'       => array( 'heading' ),
+		'sgs/product-faq'       => array( 'heading' ),
+		'sgs/product-faq-item'  => array( 'question' ),
+		'sgs/accordion-item'    => array( 'title' ),
+		'sgs/form-step'         => array( 'label' ),
+		'sgs/star-rating'       => array( 'label' ),
+		'sgs/audio'             => array( 'title' ),
+		'sgs/before-after'      => array( 'beforeImageAlt', 'beforeImageUrl', 'afterImageAlt', 'afterImageUrl', 'beforeLabel', 'afterLabel' ),
+		'sgs/form'              => array( 'successMessage' ),
+		'sgs/form-field-address'  => array( 'label', 'helpText' ),
+		'sgs/form-field-checkbox' => array( 'label', 'helpText' ),
+		'sgs/form-field-consent'  => array( 'helpText' ),
+		'sgs/form-field-date'     => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-email'    => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-file'     => array( 'label', 'helpText' ),
+		'sgs/form-field-number'   => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-phone'    => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-radio'    => array( 'label', 'helpText' ),
+		'sgs/form-field-select'   => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-text'     => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-textarea' => array( 'label', 'placeholder', 'helpText' ),
+		'sgs/form-field-tiles'    => array( 'label', 'helpText' ),
 	);
 
 	/**

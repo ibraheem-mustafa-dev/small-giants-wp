@@ -9,22 +9,22 @@
  * grid/background/overlay/shape-divider machinery) and it already renders a
  * single semantic root (`<fieldset>`), so the shared wrapper was dead weight —
  * same proven pattern as sgs/quote (D294). The `<fieldset>` IS the block root,
- * built via get_block_wrapper_attributes(); the rendered subtree carries ZERO
- * inline CSS property declarations — every declaration (root box/border/width,
- * WP color/spacing/border supports, pill resting/selected state, legend
- * typography) is emitted into the block's OWN scoped `.{uid}` <style> tag. WP
- * styling supports declare `__experimentalSkipSerialization` in block.json so
- * get_block_wrapper_attributes() never auto-inlines them.
+ * built via get_block_wrapper_attributes().
+ *
+ * NO-INLINE: this block emits zero inline style property declarations.
+ * Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js
+ * --check.
  *
  * Because the root can carry the anchor `id` (ToC), the scoped uid is a CLASS
  * (`sgs-op-{md5}`, container/quote-style), never an `id`.
  *
- * Pill resting/selected colour + border-radius are attribute-driven CSS custom
- * PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's `.sgs-option-picker`
- * class rules — never inline property declarations. Per Spec 32 FR-32-4 as
- * amended 2026-07-18 (D345), inline `--var` declarations are FORBIDDEN too —
- * every `--sgs-op-*` value (root resting/selected/radius vars + the per-pill
- * swatch bg/text vars) is emitted into the block's OWN scoped `.{uid}`
+ * Pill resting/hover/selected colour + border-radius are attribute-driven CSS
+ * custom PROPERTY VALUES (`--sgs-op-*`) consumed by style.css's
+ * `.sgs-option-picker` class rules — never inline property declarations. Per
+ * Spec 32 FR-32-4 as amended 2026-07-18 (D345), inline `--var` declarations
+ * are FORBIDDEN too — every `--sgs-op-*` value (root resting/hover/selected/
+ * radius vars + the per-pill swatch bg/text vars) is emitted into the
+ * block's OWN scoped `.{uid}`
  * `<style>` tag, never as an inline `style="--var:…"` attribute. This is
  * also what makes the pill states CLONEABLE: the universal styling-lift
  * (Spec 31 §3.B B2) matches each attr's `derived_selector` against the draft's
@@ -32,7 +32,7 @@
  * draft's static `--active` modifier class (the mockup shows one pill
  * selected by baking the modifier class directly into the markup).
  *
- * R-22-14: explicit discriminators, never empty($content).
+ * R-31-14: explicit discriminators, never empty($content).
  * No WP Interactivity API store — plain DOM events via view.js (untouched).
  *
  * ── Swatch rendering (FR-27-B2 + FR-27-I2) ────────────────────────────
@@ -67,6 +67,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -76,16 +99,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // CSS-length sanitiser — strips everything except digits, dot, %, and unit
 // letters so an object-attr side/corner value can never break out of its
 // declaration. Mirrors sgs/button + sgs/quote + sgs/container.
-$sgs_css_length = static function ( $value ) {
-	return preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
-};
-
 // CSS-keyword sanitiser — free-text attrs concatenated into raw CSS
 // declarations (border-style). Strips everything except letters + hyphen.
-$sgs_css_keyword = static function ( $value ) {
-	return preg_replace( '/[^a-zA-Z-]/', '', (string) $value );
-};
-
 // ---------------------------------------------------------------------------
 // 2. Attribute extraction.
 // ---------------------------------------------------------------------------
@@ -93,6 +108,7 @@ $sgs_css_keyword = static function ( $value ) {
 $label                = $attributes['label'] ?? __( 'Choose an option', 'sgs-blocks' );
 $show_label           = $attributes['showLabel'] ?? true;
 $label_colour         = $attributes['labelColour'] ?? '';
+$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
 $label_margin_bottom  = $attributes['labelMarginBottom'] ?? '';
 $option_items         = $attributes['optionItems'] ?? array();
 $default_selected     = $attributes['defaultSelected'] ?? '';
@@ -103,7 +119,17 @@ $pill_size            = $attributes['pillSize'] ?? 'medium';
 $colour_preset        = $attributes['colourPreset'] ?? '';
 $show_selected_tick   = array_key_exists( 'showSelectedTick', $attributes ) ? (bool) $attributes['showSelectedTick'] : true;
 $pill_bg_colour       = $attributes['pillBgColour'] ?? '';
+$pill_bg_colour_gradient = $attributes['pillBgColourGradient'] ?? '';
 $pill_text_colour     = $attributes['pillTextColour'] ?? '';
+
+// Pill HOVER colours — real attributes since 2026-09-03 (FR-35-5 exception
+// reversed by the block owner). Empty = fall through to the existing
+// static preset-variant hover look via the CSS var() fallback chain in
+// style.css (no behaviour change for an instance with nothing configured).
+$pill_bg_colour_hover   = $attributes['pillBgColourHover'] ?? '';
+$pill_bg_colour_hover_gradient = $attributes['pillBgColourHoverGradient'] ?? '';
+$pill_text_colour_hover = $attributes['pillTextColourHover'] ?? '';
+
 $pill_border_colour   = $attributes['pillBorderColour'] ?? '';
 $pill_border_gradient = sgs_css_gradient_value( $attributes['pillBorderColourGradient'] ?? '' );
 $pill_sel_bg_colour   = $attributes['pillSelectedBgColour'] ?? '';
@@ -118,20 +144,20 @@ $pill_border_radius   = isset( $attributes['pillBorderRadius'] ) ? (string) $att
 $pill_sel_radius_raw  = isset( $attributes['pillSelectedBorderRadius'] ) ? (string) $attributes['pillSelectedBorderRadius'] : '';
 
 // Root wrapper (box+width only, content-kind — matches the mirrored
-// SGS_Container_Wrapper 'content' capability set).
-// RENAMED from `contentWidth` 2026-08-10 (D540): this block renders no inner
-// band — the value becomes a plain `width:` in $root_decls beside `max-width:`.
-// D540 reserves `contentWidth` for a real second layer; a fixed width is `width`.
+// SGS_Container_Wrapper 'content' capability set) (D540). This block renders
+// no inner band — the value becomes a plain `width:` in $root_decls beside
+// `max-width:`. D540 reserves `contentWidth` for a real second layer; a fixed
+// width is `width`.
 $content_width = $attributes['width'] ?? '';
 $max_width     = $attributes['maxWidth'] ?? '';
 
 // Root border — custom attrs (mirrors sgs/quote: radius stays WP-native,
 // width/style/colour are SGS custom so width can be a 4-side object).
 $border_width_obj    = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-$border_width_top    = $sgs_css_length( $border_width_obj['top'] ?? '' );
-$border_width_right  = $sgs_css_length( $border_width_obj['right'] ?? '' );
-$border_width_bottom = $sgs_css_length( $border_width_obj['bottom'] ?? '' );
-$border_width_left   = $sgs_css_length( $border_width_obj['left'] ?? '' );
+$border_width_top    = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_right  = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bottom = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_left   = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width     = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
 
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
@@ -205,53 +231,51 @@ $radio_name = $uid . '-choice';
 $legend_id  = $uid . '-legend';
 $root_sel   = '.' . $uid . '.wp-block-sgs-option-picker';
 
+// Media-element atom layer (rule 37-media-no-handroll) — the image-swatch
+// marker classes, computed once (every swatch <img> in this instance shares
+// the same 'swatch' scope, since there is one client-facing fit control per
+// picker instance, not per option). `.sgs-media-el` is the shared marker
+// assets/css/media-atoms/object-fit.css's rule targets; `$sgs_op_swatch_scope`
+// is the per-instance scope the atom's custom-property VALUE (§7 below) is
+// set on. Mirrors sgs/gallery's identical pattern.
+$sgs_op_swatch_scope   = '';
+$sgs_op_swatch_classes = array();
+if ( class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_op_swatch_scope   = SGS_Media_Element::scope_class( $uid, 'swatch' );
+	$sgs_op_swatch_classes = SGS_Media_Element::element_classes( $sgs_op_swatch_scope );
+}
+$sgs_op_swatch_img_class = implode( ' ', array_filter( array_merge( array( 'sgs-option-picker__swatch', 'sgs-option-picker__swatch--image' ), $sgs_op_swatch_classes ) ) );
+
 // ---------------------------------------------------------------------------
 // 5. WP-native style.* (skip-serialised → emitted scoped, never inline).
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? $sgs_css_length( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 $style_colour_text     = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
 $style_colour_bg       = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
@@ -260,12 +284,11 @@ $preset_text_slug      = isset( $attributes['textColor'] ) ? sanitize_html_class
 $preset_bg_slug        = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // Pill custom padding — SGS custom TIER-OF-BOXES object attr
-// {desktop,tablet,mobile} (Spec 35 box-tier migration, 2026-08-11 — the
-// pillPaddingTablet/pillPaddingMobile sibling attrs no longer exist in this
-// block's schema). The pill is a content CHILD, not the block root, so there
-// is no WP-native support to route through. sgs_responsive_normalise_object()
-// is the canonical reader (helpers-responsive.php:273), box=true so an
-// unset/legacy value never mis-resolves as a flat side (D328 defence).
+// {desktop,tablet,mobile} (Spec 35 box-tier migration). The pill is a
+// content CHILD, not the block root, so there is no WP-native support to
+// route through. sgs_responsive_normalise_object() is the canonical reader
+// (helpers-responsive.php:273), box=true so an unset/legacy value never
+// mis-resolves as a flat side (D328 defence).
 $pill_padding_tiers      = sgs_responsive_normalise_object( $attributes['pillPadding'] ?? null, true );
 $pill_padding_obj        = is_array( $pill_padding_tiers['desktop'] ) ? $pill_padding_tiers['desktop'] : array();
 $pill_padding_tablet_obj = is_array( $pill_padding_tiers['tablet'] ) ? $pill_padding_tiers['tablet'] : array();
@@ -273,20 +296,31 @@ $pill_padding_mobile_obj = is_array( $pill_padding_tiers['mobile'] ) ? $pill_pad
 
 // ---------------------------------------------------------------------------
 // 6. Scoped CSS custom-PROPERTY VALUES (never property declarations, never
-// inline) for pill resting/selected colour + radius, root border colour.
-// Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are emitted into
-// the scoped `{$root_sel}{--var:value;…}` rule below (§7) — NOT as an
-// inline `style="--var:value"` attribute — consumed by style.css's class
-// rules via var(--sgs-op-*, …).
+// inline) for pill resting/hover/selected colour + radius, root border
+// colour. Per Spec 32 FR-32-4 as amended 2026-07-18 (D345), these are
+// emitted into the scoped `{$root_sel}{--var:value;…}` rule below (§7) —
+// NOT as an inline `style="--var:value"` attribute — consumed by
+// style.css's class rules via var(--sgs-op-*, …). The --sgs-op-*-hover
+// vars (2026-09-03) feed the SAME :hover rules that used to reuse the
+// resting vars as a fallback — style.css chains
+// var(--sgs-op-*-hover, var(--sgs-op-*, <old hardcoded default>)) so an
+// instance with nothing configured renders byte-identically to before.
 // ---------------------------------------------------------------------------
 
 $var_decls = array();
 
-if ( $pill_bg_colour ) {
-	$var_decls[] = '--sgs-op-bg:' . sgs_colour_value( $pill_bg_colour );
-}
+// pillBgColour/pillBgColourHover gradient siblings (2026-09-05) — same
+// custom-property-gradient shape already proven on brand-strip/post-grid/
+// social-icons/form/gallery/before-after (helpers-tokens.php:953); style.css
+// carries the matching background-image:var(--sgs-op-bg[-hover]-gradient,none)
+// line next to the existing background-color:var(...) rule.
+$var_decls = array_merge( $var_decls, sgs_custom_property_gradient_decls( 'sgs-op-bg', $pill_bg_colour, $pill_bg_colour_gradient ) );
 if ( $pill_text_colour ) {
 	$var_decls[] = '--sgs-op-text:' . sgs_colour_value( $pill_text_colour );
+}
+$var_decls = array_merge( $var_decls, sgs_custom_property_gradient_decls( 'sgs-op-bg-hover', $pill_bg_colour_hover, $pill_bg_colour_hover_gradient ) );
+if ( $pill_text_colour_hover ) {
+	$var_decls[] = '--sgs-op-text-hover:' . sgs_colour_value( $pill_text_colour_hover );
 }
 if ( $pill_border_colour ) {
 	$var_decls[] = '--sgs-op-border:' . sgs_colour_value( $pill_border_colour );
@@ -305,13 +339,13 @@ if ( $pill_sel_border_col ) {
 if ( '' !== $pill_border_radius ) {
 	// CSS-length string — emit the value directly (sanitised), preserving an
 	// explicit "0"/"0px". '' = unset → the CSS default var governs.
-	$pbr_safe = $sgs_css_length( $pill_border_radius );
+	$pbr_safe = sgs_css_length_value( $pill_border_radius );
 	if ( '' !== $pbr_safe ) {
 		$var_decls[] = '--sgs-op-pill-radius:' . $pbr_safe;
 	}
 }
 if ( '' !== $pill_sel_radius_raw ) {
-	$psr_safe = $sgs_css_length( $pill_sel_radius_raw );
+	$psr_safe = sgs_css_length_value( $pill_sel_radius_raw );
 	if ( '' !== $psr_safe ) {
 		$var_decls[] = '--sgs-op-sel-pill-radius:' . $psr_safe;
 	}
@@ -328,6 +362,17 @@ if ( $border_colour ) {
 
 $scoped_css = array();
 
+// --- Swatch image object-fit (media-element atom layer, rule
+// 37-media-no-handroll) — no `swatchObjectFit` value set -> style() returns
+// '' -> nothing appended -> the shared stylesheet's own `.sgs-media-el`
+// `cover` fallback governs, matching the removed style.css hardcode exactly. ---
+if ( '' !== $sgs_op_swatch_scope && class_exists( 'SGS_Media_Element' ) ) {
+	$sgs_op_swatch_css = SGS_Media_Element::style( $attributes, 'swatch', 'sgs/option-picker', $uid, array( 'object-fit' ) );
+	if ( '' !== $sgs_op_swatch_css ) {
+		$scoped_css[] = $sgs_op_swatch_css;
+	}
+}
+
 // --- Root custom-property VALUES (§6) — the ONLY per-instance override
 // channel (Spec 32 FR-32-4), scoped here rather than emitted inline. ---
 if ( $var_decls ) {
@@ -336,7 +381,10 @@ if ( $var_decls ) {
 
 // --- Root box declarations (border-style/width, width, max-width) ---
 $root_decls = array();
-if ( 'none' !== $border_style ) {
+// G5 (Bean, 2026-08-26): 'style set, no width' means no border by
+// default — never fall through to the browser's initial medium (~3px)
+// border-width.
+if ( 'none' !== $border_style && $has_border_width ) {
 	if ( $has_border_width ) {
 		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
 		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
@@ -350,14 +398,14 @@ if ( 'none' !== $border_style ) {
 	}
 }
 if ( $max_width ) {
-	$mw_safe = $sgs_css_length( $max_width );
+	$mw_safe = sgs_css_length_value( $max_width );
 	if ( '' !== $mw_safe ) {
 		$root_decls[] = 'max-width:' . $mw_safe;
 		$root_decls[] = 'margin-inline:auto';
 	}
 }
 if ( $content_width ) {
-	$cw_safe = $sgs_css_length( $content_width );
+	$cw_safe = sgs_css_length_value( $content_width );
 	if ( '' !== $cw_safe ) {
 		$root_decls[] = 'width:' . $cw_safe;
 	}
@@ -392,79 +440,56 @@ if ( '' !== $pill_sel_border_gradient ) {
 }
 
 // --- Base WP-native style.* — skip-serialised, emitted scoped (contract §A/§b) ---
-if ( function_exists( 'wp_style_engine_get_styles' ) ) {
-	$base_style_engine_args = array();
 
-	$base_spacing = array();
-	if ( ! empty( $base_padding_obj ) ) {
-		$base_spacing['padding'] = $base_padding_obj;
-	}
-	if ( ! empty( $base_margin_obj ) ) {
-		$base_spacing['margin'] = $base_margin_obj;
-	}
-	if ( ! empty( $base_spacing ) ) {
-		$base_style_engine_args['spacing'] = $base_spacing;
-	}
+$base_style_engine_args = array();
 
-	if ( null !== $base_border_radius ) {
-		$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
-	}
+$base_spacing = array();
+if ( ! empty( $base_padding_obj ) ) {
+	$base_spacing['padding'] = $base_padding_obj;
+}
+if ( ! empty( $base_margin_obj ) ) {
+	$base_spacing['margin'] = $base_margin_obj;
+}
+if ( ! empty( $base_spacing ) ) {
+	$base_style_engine_args['spacing'] = $base_spacing;
+}
 
-	$color_args = array();
-	if ( '' !== $style_colour_text ) {
-		$color_args['text'] = $style_colour_text;
-	}
-	if ( '' !== $style_colour_bg ) {
-		$color_args['background'] = $style_colour_bg;
-	}
-	if ( '' !== $style_colour_gradient ) {
-		$color_args['gradient'] = $style_colour_gradient;
-	}
-	if ( ! empty( $color_args ) ) {
-		$base_style_engine_args['color'] = $color_args;
-	}
+if ( null !== $base_border_radius ) {
+	$base_style_engine_args['border'] = array( 'radius' => $base_border_radius );
+}
 
-	if ( ! empty( $base_style_engine_args ) ) {
-		$base_scoped_styles = wp_style_engine_get_styles(
-			$base_style_engine_args,
-			array( 'selector' => $root_sel )
-		);
-		if ( ! empty( $base_scoped_styles['css'] ) ) {
-			$scoped_css[] = $base_scoped_styles['css'];
-		}
+$color_args = array();
+if ( '' !== $style_colour_text ) {
+	$color_args['text'] = $style_colour_text;
+}
+if ( '' !== $style_colour_bg ) {
+	$color_args['background'] = $style_colour_bg;
+}
+if ( '' !== $style_colour_gradient ) {
+	$color_args['gradient'] = $style_colour_gradient;
+}
+if ( ! empty( $color_args ) ) {
+	$base_style_engine_args['color'] = $color_args;
+}
+
+if ( ! empty( $base_style_engine_args ) ) {
+	$base_scoped_styles = wp_style_engine_get_styles(
+		$base_style_engine_args,
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $base_scoped_styles['css'] ) ) {
+		$scoped_css[] = $base_scoped_styles['css'];
 	}
 }
 
 // --- Responsive padding/margin/border-radius tiers — box objects, hand-built
 // shorthand (contract §B/§B2: tablet max-width:1023px, mobile max-width:767px). ---
-$sgs_box_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$top    = $sgs_css_length( $box['top'] ?? '' );
-	$right  = $sgs_css_length( $box['right'] ?? '' );
-	$bottom = $sgs_css_length( $box['bottom'] ?? '' );
-	$left   = $sgs_css_length( $box['left'] ?? '' );
-	if ( '' === $top && '' === $right && '' === $bottom && '' === $left ) {
-		return null;
-	}
-	return ( '' !== $top ? $top : '0' ) . ' ' . ( '' !== $right ? $right : '0' ) . ' ' . ( '' !== $bottom ? $bottom : '0' ) . ' ' . ( '' !== $left ? $left : '0' );
-};
-
-$sgs_corner_shorthand = static function ( array $box ) use ( $sgs_css_length ) {
-	$tl = $sgs_css_length( $box['topLeft'] ?? '' );
-	$tr = $sgs_css_length( $box['topRight'] ?? '' );
-	$br = $sgs_css_length( $box['bottomRight'] ?? '' );
-	$bl = $sgs_css_length( $box['bottomLeft'] ?? '' );
-	if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
-		return null;
-	}
-	return ( '' !== $tl ? $tl : '0' ) . ' ' . ( '' !== $tr ? $tr : '0' ) . ' ' . ( '' !== $br ? $br : '0' ) . ' ' . ( '' !== $bl ? $bl : '0' );
-};
-
-$padding_tab_val = $sgs_box_shorthand( $padding_tablet_obj );
-$padding_mob_val = $sgs_box_shorthand( $padding_mobile_obj );
-$margin_tab_val  = $sgs_box_shorthand( $margin_tablet_obj );
-$margin_mob_val  = $sgs_box_shorthand( $margin_mobile_obj );
-$radius_tab_val  = $sgs_corner_shorthand( $border_radius_tablet_obj );
-$radius_mob_val  = $sgs_corner_shorthand( $border_radius_mobile_obj );
+$padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
+$padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
+$margin_tab_val  = sgs_box_object_shorthand( $margin_tablet_obj );
+$margin_mob_val  = sgs_box_object_shorthand( $margin_mobile_obj );
+$radius_tab_val  = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$radius_mob_val  = sgs_corner_object_shorthand( $border_radius_mobile_obj );
 
 $tablet_root_decls = array();
 if ( null !== $padding_tab_val ) {
@@ -498,9 +523,9 @@ if ( $mobile_root_decls ) {
 // (SGS custom family; falls back to the per-size default in style.css when
 // unset — byte-identical default behaviour). ---
 $sel_pill        = "{$root_sel} .sgs-option-picker__pill";
-$pill_padding_val      = $sgs_box_shorthand( $pill_padding_obj );
-$pill_padding_tab_val  = $sgs_box_shorthand( $pill_padding_tablet_obj );
-$pill_padding_mob_val  = $sgs_box_shorthand( $pill_padding_mobile_obj );
+$pill_padding_val      = sgs_box_object_shorthand( $pill_padding_obj );
+$pill_padding_tab_val  = sgs_box_object_shorthand( $pill_padding_tablet_obj );
+$pill_padding_mob_val  = sgs_box_object_shorthand( $pill_padding_mobile_obj );
 
 if ( null !== $pill_padding_val ) {
 	$scoped_css[] = "{$sel_pill}{padding:{$pill_padding_val};}";
@@ -522,18 +547,57 @@ if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }
 
+// Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
+// picks the gradient sibling attribute when it's set and valid, otherwise the
+// flat labelColour value untouched; sgs_text_colour_decl() emits a plain
+// `color:` declaration for a flat value or the background-clip:text
+// declarations for a gradient. sgs_text_colour_gradient_fallback_rule() is the
+// MANDATORY @supports companion — a gradient with no background-clip:text
+// support would otherwise render invisible text (omitted for a flat value,
+// where it is a no-op). Same recipe as sgs/quote's attribution colour.
+$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
+$label_colour_decl      = sgs_text_colour_decl( $label_colour_effective );
+
 $legend_decls = array();
-if ( '' !== $label_colour ) {
-	$legend_decls[] = 'color:' . sgs_colour_value( $label_colour );
+if ( '' !== $label_colour_decl ) {
+	$legend_decls[] = $label_colour_decl;
 }
 if ( '' !== $label_margin_bottom ) {
-	$mb_safe = $sgs_css_length( $label_margin_bottom );
+	$mb_safe = sgs_css_length_value( $label_margin_bottom );
 	if ( '' !== $mb_safe ) {
 		$legend_decls[] = 'margin-bottom:' . $mb_safe;
 	}
 }
 if ( $legend_decls ) {
 	$scoped_css[] = "{$sel_label}{" . implode( ';', $legend_decls ) . ';}';
+}
+$label_colour_gradient_fallback = sgs_text_colour_gradient_fallback_rule( $sel_label, $label_colour_effective );
+if ( '' !== $label_colour_gradient_fallback ) {
+	$scoped_css[] = $label_colour_gradient_fallback;
+}
+
+// Pill resting TEXT flat-or-gradient (D636 "text" builder) — same recipe as
+// the legend colour above and the pillBorderColourGradient border builder
+// (§7, ~line 421). $sel_pill (root_sel + .sgs-option-picker__pill, 3
+// classes) OUT-SPECIFIES every per-variant resting rule in style.css
+// (`.sgs-option-picker--{style} .sgs-option-picker__pill`, 2 classes), the
+// exact specificity precedent the pillBorderColourGradient rule already
+// relies on — no source-order dependency. The hover-state colour
+// (--sgs-op-text-hover, chained to --sgs-op-text in §6) still wins on
+// hover/focus-within because that static rule carries an extra pseudo-class
+// (specificity 4 vs this rule's 3), so hover behaviour is unaffected by this
+// change. Empty pillTextColour + empty pillTextColourGradient -> $effective
+// is '' -> decl is '' -> no scoped rule emitted (additive-safety guarantee,
+// existing --sgs-op-text var mechanism keeps governing unchanged).
+$pill_text_colour_gradient  = $attributes['pillTextColourGradient'] ?? '';
+$pill_text_colour_effective = sgs_resolve_text_colour_or_gradient( $pill_text_colour, $pill_text_colour_gradient );
+$pill_text_colour_decl      = sgs_text_colour_decl( $pill_text_colour_effective );
+if ( '' !== $pill_text_colour_decl ) {
+	$scoped_css[] = "{$sel_pill}{{$pill_text_colour_decl};}";
+}
+$pill_text_colour_gradient_fallback = sgs_text_colour_gradient_fallback_rule( $sel_pill, $pill_text_colour_effective );
+if ( '' !== $pill_text_colour_gradient_fallback ) {
+	$scoped_css[] = $pill_text_colour_gradient_fallback;
 }
 
 // ---------------------------------------------------------------------------
@@ -635,9 +699,13 @@ foreach ( $valid_items as $item ) {
 				$img_url           = $src_data[0];
 				$img_w             = absint( $src_data[1] );
 				$img_h             = absint( $src_data[2] );
+				// Marker classes computed once above ($sgs_op_swatch_img_class) —
+				// media-element atom layer, object-fit only (rule
+				// 37-media-no-handroll; see block.json's `_comment_mediaElements`).
 				$swatch_image_html = sprintf(
-					'<img src="%s" alt="" class="sgs-option-picker__swatch sgs-option-picker__swatch--image" width="%d" height="%d" loading="lazy" decoding="async" aria-hidden="true" />',
+					'<img src="%s" alt="" class="%s" width="%d" height="%d" loading="lazy" decoding="async" aria-hidden="true" />',
 					esc_url( $img_url ),
+					esc_attr( $sgs_op_swatch_img_class ),
 					$img_w,
 					$img_h
 				);
@@ -737,7 +805,7 @@ $root_attr_args = array(
 // --sgs-op-* custom-property VALUES are emitted into the scoped `{$root_sel}`
 // rule at §7 instead (functional-colour values are normalised to hex by
 // sgs_colour_value() so they survive WordPress's safecss_filter_attr(),
-// which strips rgb()/rgba()/hsl() — the same normalisation now protects the
+// which strips rgb()/rgba()/hsl() — the same normalisation protects the
 // scoped `<style>` channel, which is unfiltered but kept consistent).
 if ( $anchor ) {
 	$root_attr_args['id'] = esc_attr( $anchor );
@@ -755,8 +823,8 @@ $wrapper_attrs = get_block_wrapper_attributes( $root_attr_args );
 	<?php
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators like `>` intact (matches SGS_Container_Wrapper + sgs/quote).
-	// Every value reaching $scoped_css is pre-sanitised ($sgs_css_length /
-	// $sgs_css_keyword / sgs_colour_value / wp_style_engine_get_styles /
+	// Every value reaching $scoped_css is pre-sanitised (sgs_css_length_value() /
+	// sgs_css_keyword_sanitise() / sgs_colour_value / wp_style_engine_get_styles /
 	// sgs_typography_css_rule), so no un-sanitised value survives to here.
 	echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>

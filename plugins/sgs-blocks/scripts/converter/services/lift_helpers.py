@@ -168,3 +168,51 @@ def scalar_media_from_img(img_node: Tag, media_map: dict) -> dict:
         "id": 0,
         "alt": img_node.get("alt", ""),
     }
+
+
+# ---------------------------------------------------------------------------
+# scalar_media_from_video — sibling of scalar_media_from_img for a <video>
+# scalar-media column (2026-09-02, sgs/hero split-media video/svg tier widening).
+# ---------------------------------------------------------------------------
+
+def scalar_media_from_video(video_node: Tag, media_map: dict) -> dict:
+    """Build a scalar-media object value from a bare <video> element.
+
+    Mirrors ``scalar_media_from_img`` for the video media kind — same shape
+    minus ``alt`` (a video has none). Reads ``src`` from the ``<video>`` tag
+    itself; falls back to the first ``<source src>`` child when the tag has no
+    ``src`` attribute of its own (both are valid HTML5 video-embedding shapes
+    a hand-authored draft may use).
+
+    Returns ``{"url": ..., "id": 0}`` — ``id`` is 0 for the same reason as
+    ``scalar_media_from_img``: no WP media-library id is available from
+    mockup HTML.
+    """
+    src = video_node.get("src", "") or ""
+    if not src:
+        source_el = video_node.find("source")
+        if source_el is not None and isinstance(source_el, Tag):
+            src = source_el.get("src", "") or ""
+    return {
+        "url": resolve_media_url(src, media_map),
+        "id": 0,
+    }
+
+
+# ---------------------------------------------------------------------------
+# svg_markup_from_node — raw <svg>...</svg> serialisation for a scalar-media
+# column (2026-09-02). Mirrors the EXISTING role='svg' pattern in
+# field_extractors.py (str(svg_el).strip()) rather than inventing a fresh
+# sanitiser — render.php applies the same wp_kses() allowlist to every
+# splitSvgContent* tier at render time (see hero render.php + CLAUDE.md's
+# "SVG art-direction tiers" note), so the converter never needs to sanitise.
+# ---------------------------------------------------------------------------
+
+def svg_markup_from_node(svg_node: Tag) -> str:
+    """Serialise an <svg> element to its raw markup string, stripped.
+
+    Returns "" when the node has no renderable markup (defensive — bs4 always
+    round-trips a parsed Tag, so this is effectively unreachable in practice,
+    but callers must not assume a non-empty result).
+    """
+    return str(svg_node).strip()

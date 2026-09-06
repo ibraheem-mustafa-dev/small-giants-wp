@@ -24,7 +24,24 @@
 		"customClassName": true,
 		"html": false,
 		"reusable": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
 		"sgs": {
+			"colourExemptions": {
+				"indicator": {
+					"rule": "states",
+					"reason": "style.css declares .sgs-nav-menu__indicator { pointer-events: none; } — the element is structurally unhoverable, the browser passes all pointer events through to whatever is underneath. Already correctly painted with a real gradient attribute wired. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"submenu-bg": {
+					"rule": "states",
+					"reason": "The submenu panel's visibility is a binary open/closed disclosure toggled by the trigger, not by pointer position over the panel itself — once open, the pointer is always over some interactive CHILD (each with its own hover colour), never a hoverable moment on the panel background itself. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				}
+			},
+			"containerKind": "layout",
 			"collection": true,
 			"headerEssential": true,
 			"hideExtensions": [
@@ -42,10 +59,22 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:background-color": "navBg",
+						"css:color": "navColour",
+						"css:color-gradient": "navColourGradient"
 					},
-					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "navBgHover",
+								"css:color": "navColourHover"
+							}
+						}
+					},
+					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. navBg/navColour/navBgHover all write to the same bare $uid_sel wrapper selector (2026-08-28 fix — navBg previously only resolved via a hand-seeded attr-classification-overrides.json entry, not derivation; that override entry is now redundant, kept for now as a separate cleanup). The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed).",
+					"_note_hover_nav": "navColourHover declared 2026-09-05: render.php:872-873 emits sgs_hover_state_rules( \"{$uid_sel}\", 'color:…', ':focus-visible' ) — the block ROOT, so it belongs on the wrapper element, not a descendant."
 				},
 				"bar": {
 					"label": "Item bar (flex row)",
@@ -56,9 +85,10 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:grid-template-columns:count": "listColumns"
 					},
-					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute)."
+					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute). `css:grid-template-columns:count` is a pseudo-property destination tag (mirrors `css:color-gradient` — not a real CSS property, a manifest-level routing key) claiming `listColumns` as this element's grid COLUMN-COUNT destination for the converter's grid resolver (`db.attr_for_grid_column_count`), matching render.php:1603-1624's own target selector `.sgs-nav-menu__bar` for the in-drawer vertical-list column count."
 				},
 				"item": {
 					"label": "Nav item (resting)",
@@ -69,6 +99,17 @@
 						"layout"
 					],
 					"prefix": "item",
+					"attrMap": {
+						"css:color": "itemColour",
+						"css:color-gradient": "itemColourGradient",
+						"css:background-color": "itemBg",
+						"css:background-image": "itemBgGradient",
+						"css:border-radius": "itemRadius",
+						"css:font-size": "itemFontSize",
+						"css:font-weight": "itemFontWeight",
+						"css:font-style": "itemFontStyle",
+						"css:line-height": "itemLineHeight"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -76,16 +117,9 @@
 								"css:background-color": "itemBgHover",
 								"css:border-radius": "itemRadiusHover"
 							}
-						},
-						"selected": {
-							"attrMap": {
-								"css:color": "itemColourHover",
-								"css:background-color": "itemBgHover",
-								"css:border-radius": "itemRadiusHover"
-							}
 						}
 					},
-					"_note": "render.php:953-957 defines `$hover_targets` as `:hover, :focus-visible` ONLY. `[aria-current=\"page\"]` was removed 2026-07-31 (render.php:1476-1480 gives it distinct treatment: font-weight:600 top-level, border-left+background in drawer) so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The `selected` state's attrMap remains itemColourHover/itemBgHover/itemRadiusHover for schema consistency, but these attributes only render on the hover/focus selector list, never on aria-current (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
+					"_note": "render.php:953-957 defines `$hover_targets` as `:hover, :focus-visible` ONLY. `[aria-current=\"page\"]` was removed 2026-07-31 (render.php:1476-1480 gives it distinct treatment: font-weight:600 top-level, border-left+background in drawer) so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. NO `selected` state is declared. A duplicate `selected` attrMap (byte-identical to `hover`) was REMOVED 2026-08-19: the classifier's _record() is last-write-wins (extract-signatures.py:1966-1983), so `selected` iterated second and silently overwrote the correct hover derivation, tagging all three attributes css_state='selected' in the DB - a state they never render in. Keeping it 'for schema consistency' made the metadata factually wrong. This block has NO operator-controllable current-page colour at all; adding one is separate work (FR-35-5). underlineThickness/underlineOffset/underlineColour(Hover) belong to the separate `underline` element, not this one — they only apply under hoverStyle='underline'."
 				},
 				"underline": {
 					"label": "Hover / current-page underline bar",
@@ -98,6 +132,7 @@
 					"prefix": "underline",
 					"attrMap": {
 						"css:background-color": "underlineColour",
+						"css:background-image": "underlineColourGradient",
 						"css:height": "underlineThickness",
 						"css:bottom": "underlineOffset"
 					},
@@ -108,16 +143,19 @@
 							}
 						}
 					},
-					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding."
+					"_note": "The ::after bar rendered only when hoverStyle='underline' (render.php:369-377). underlineThickness maps to css:height (the bar's own height, not the item's) and underlineOffset maps to css:bottom (its position:absolute offset) — both attrMap'd explicitly since neither matches the default {prefix}{suffix} convention for those members. `selected` reuses the same hover state (render.php's $hover_after_sel covers :hover/:focus-visible/[aria-current] identically), so no separate selected mapping is declared to avoid a duplicate finding. underlineColourGradient added 2026-09-04 (D948 rollout) -- non-empty wins over underlineColour, resting state only (mirrors indicatorColourGradient's precedent: a standalone decorative element with no competing background on the same selector, so a direct swap via sgs_background_paint_decl() is safe, no ::after-layer split needed)."
 				},
 				"indicator": {
 					"label": "Sliding indicator",
 					"order": 5,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"attrMap": {
-						"css:background-color": "indicatorColour"
+						"css:background-color": "indicatorColour",
+						"css:background-image": "indicatorColourGradient"
 					},
-					"_note": "The `.sgs-nav-menu__indicator` sliding pill (render.php:1582-1583), view.js-animated behind the active/hovered item — only rendered when `indicatorStyle='pill'`. Added 2026-08-15, no manifest element previously covered it. `indicatorColour` mapped explicitly (attrMap) rather than via the default `{prefix}Suffix` convention: the fill cluster's css:background-color member only lists `BackgroundColour`/`Bg`/`Background` suffixes, none of which matches `indicatorColour`'s bare `Colour` form. `clusters: [\"fill\"]` is declared (not `[]`) SPECIFICALLY so the forward-resolution pass actually visits css:background-color and consults this attrMap — an attrMap on an element with `clusters: []` is never consulted (nothing ever iterates it), which was caught live: the first version of this fix (clusters: []) left indicatorColour unclaimed and it surfaced as a NEW style-defect orphan instead of resolving. The other fill-cluster members (opacity/background-image/etc.) become honest GAPs — ungated, and correct, since this element has no such controls."
+					"_note": "indicatorColourGradient added 2026-09-04 (fix.js codemod apply, Bug A fix) -- non-empty wins over indicatorColour. The `.sgs-nav-menu__indicator` sliding pill (render.php:1582-1583), view.js-animated behind the active/hovered item — only rendered when `indicatorStyle='pill'`. Added 2026-08-15, no manifest element previously covered it. `indicatorColour` mapped explicitly (attrMap) rather than via the default `{prefix}Suffix` convention: the fill cluster's css:background-color member only lists `BackgroundColour`/`Bg`/`Background` suffixes, none of which matches `indicatorColour`'s bare `Colour` form. `clusters: [\"fill\"]` is declared (not `[]`) SPECIFICALLY so the forward-resolution pass actually visits css:background-color and consults this attrMap — an attrMap on an element with `clusters: []` is never consulted (nothing ever iterates it), which was caught live: the first version of this fix (clusters: []) left indicatorColour unclaimed and it surfaced as a NEW style-defect orphan instead of resolving. The other fill-cluster members (opacity/background-image/etc.) become honest GAPs — ungated, and correct, since this element has no such controls."
 				},
 				"featured": {
 					"label": "Featured item",
@@ -128,17 +166,24 @@
 						"layout"
 					],
 					"prefix": "featured",
+					"attrMap": {
+						"css:color": "featuredColour",
+						"css:color-gradient": "featuredColourGradient",
+						"css:background-color": "featuredBg",
+						"css:background-image": "featuredBgGradient"
+					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "featuredColourHover",
 								"css:background-color": "featuredBgHover",
+								"css:background-image": "featuredBgHoverGradient",
 								"css:border-radius": "featuredRadiusHover",
 								"css:font-weight": "featuredFontWeightHover"
 							}
 						}
 					},
-					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member."
+					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient added 2026-09-04 (mirrors burgerColourGradient's shape) -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments). featuredBgGradient/featuredBgHoverGradient added 2026-09-06 (D958, Bean-directed preset-to-gradient upgrade) -- non-empty wins over the resolved featuredBg/featuredBgHover slug+hex; when active the pill foreground skips WCAG contrast-against-background maths (no single hex to test) and uses the operator's own flat colour instead (see render.php). The submenu-inheritance custom property stays hex-only, same scope boundary as featuredColourGradient above."
 				},
 				"burger": {
 					"label": "Burger toggle",
@@ -151,35 +196,64 @@
 					"prefix": "burger",
 					"attrMap": {
 						"css:width": "burgerSize",
-						"css:height": "burgerSize"
+						"css:height": "burgerSize",
+						"css:color": "burgerColour",
+						"css:color-gradient": "burgerColourGradient",
+						"css:background-color": "burgerBg",
+						"css:background-image": "burgerBgGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:color": "burgerColourHover",
 								"css:background-color": "burgerHoverColour"
 							}
 						}
 					},
-					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default)."
+					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default). 2026-09-05: `css:color`->burgerColour (render.php:1189-1196), `css:background-color`->burgerBg (render.php:1210-1213) and `states.hover.css:color`->burgerColourHover (render.php:1199-1201, sgs_hover_state_rules on `:hover, :focus-visible`) declared EXPLICITLY. Two DB-consistency findings drove this: (a) burgerColour + burgerColourHover both derived to (color, burger, state=NULL), colliding on one routing slot -- the hover entry is what separates them; (b) burgerBg carried a rogue `css_property='background-color'` seed present in NEITHER the derived classifier layer NOR the overrides, so it would have vanished on the next reseed. The manifest is the durable source; the stray seed is not removed here because the attribute genuinely paints that property."
+				},
+				"sublink": {
+					"label": "Submenu link",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "submenuColour",
+						"css:color-gradient": "submenuColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "submenuColourHover"
+							}
+						}
+					},
+					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\"> (render.php:410), painted at render.php's own scoped `.sgs-nav-menu__sublink{...}` rule. Declared explicitly because the emission classifier cannot reach it: prefix \"\" is the documented explicit opt-out from orphan-scanning: the sublink shares no name prefix with submenuColour, and a \"submenu\" prefix would wrongly try to claim submenuAlign/Caret/CloseGrace/MinWidth/Radius/Padding, which belong to the submenu PANEL rather than to this anchor. D956 (778879732 rollout, Phase 3): submenuColourGradient added as the text-colour gradient sibling — routed as a DIRECT decl (sgs_text_colour_decl/sgs_resolve_text_colour_or_gradient), replacing the previous --sgs-nm-submenu-colour custom-property indirection for this attribute, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason). 2026-09-05: `states.hover.css:color`->submenuColourHover declared explicitly (render.php:1457-1459 -- `sgs_hover_state_rules()` on the SAME `.sgs-nav-menu__sublink` selector, `:hover, :focus-visible`). Without it submenuColour and submenuColourHover both derived to (color, sublink, state=NULL) and collided on one routing slot."
 				}
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"submenuPadding": [
 					"submenuPadding"
 				]
 			}
-		},
-		"spacing": {
-			"padding": true,
-			"margin": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"ref": {
 			"type": "number",
 			"default": 0
@@ -211,14 +285,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"_note_nav_fill": "Nav CONTAINER surface (2026-07-28). The block previously had NO fill controls at all — only per-ITEM colours — so a client could never sit the bar on its own surface. Scope is deliberately SURFACE ONLY: border/radius/divider were built and then REMOVED the same day (Bean ruling) because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not re-add them here without a header-level reason. Defaults unset, so an untouched nav renders byte-identically. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
 		"navBg": {
 			"type": "string",
@@ -228,6 +294,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"navColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the nav text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over navColour. Safe unconditionally -- navBg already paints on a separate ::after layer (sgs_block_background_layer_css()), never this same selector."
+		},
 		"navBgHover": {
 			"type": "string",
 			"default": ""
@@ -236,9 +307,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"itemColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over itemColour. Safe unconditionally -- itemBg already paints on a ::before layer (D942 recipe item 1), never this same selector. Not offered on hover: itemColourHover's 'pill' style auto-computes its colour for WCAG contrast against itemBgHover."
+		},
 		"itemBg": {
 			"type": "string",
 			"default": ""
+		},
+		"itemBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item background via the same ::before layer as itemBg (D942 recipe item 1); non-empty wins over the flat itemBg colour, mirroring itemColourGradient's sibling-wins pattern."
 		},
 		"itemColourHover": {
 			"type": "string",
@@ -264,6 +345,10 @@
 			"default": ""
 		},
 		"underlineColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"underlineColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -302,9 +387,19 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"featuredColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured bar item's LABEL-form text with a background-clip:text mechanism instead of a flat colour (mirrors burgerColourGradient). Non-empty wins over featuredColour. Resting LABEL form only (no featuredBg set) -- the PILL form (featuredBg set) keeps its WCAG-contrast-resolved flat foreground, and the submenu inheritance custom property (--sgs-nm-featured-colour) stays flat-only because its consumer paints a background on the same selector (see render.php)."
+		},
 		"featuredBg": {
 			"type": "string",
 			"default": ""
+		},
+		"featuredBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form background (background-image custom-property-gradient pattern, D958 upgrade from slug-only). Non-empty wins over the resolved featuredBg slug/hex. When active, the pill's foreground SKIPS the WCAG contrast-against-background computation (sgs_wcag_preferred_text_colour_for_bg() needs ONE background hex; a gradient has none) and uses the operator's own FLAT featuredColour/featuredColourHover choice instead -- never the gradient-capable text resolve, which would collide with this same background-image on the same selector (see render.php comment at the featured-item paint block, and featuredColourGradient's note above for the identical precedent on the flat-hex pill form). The submenu-inherited featured item (--sgs-nm-featured-bg custom property) is NOT extended to carry this gradient -- same documented scope boundary as featuredColourGradient's submenu gap above."
 		},
 		"featuredColourHover": {
 			"type": "string",
@@ -313,6 +408,11 @@
 		"featuredBgHover": {
 			"type": "string",
 			"default": ""
+		},
+		"featuredBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form :hover/:focus-visible background (mirrors featuredBgGradient, D958). Non-empty wins over the resolved featuredBgHover slug/hex. Same WCAG-skip rationale as featuredBgGradient: the hover foreground uses the operator's own flat featuredColourHover (falling back to featuredColour) rather than computing WCAG contrast against a gradient."
 		},
 		"featuredRadius": {
 			"type": "number",
@@ -329,6 +429,10 @@
 			"type": "number"
 		},
 		"burgerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerColourGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -385,6 +489,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"submenuColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"submenuMinWidth": {
 			"type": "string",
 			"default": ""
@@ -396,6 +504,30 @@
 		"submenuPadding": {
 			"type": "object",
 			"default": {}
+		},
+		"navBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"navColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"indicatorColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

@@ -21,9 +21,9 @@
 		"anchor": true,
 		"html": false,
 		"color": {
-			"background": true,
+			"background": false,
 			"gradients": false,
-			"text": true,
+			"text": false,
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
@@ -33,31 +33,19 @@
 			"textAlign": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"iconPicker": true,
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"borderWidth": [
 					"borderWidth"
@@ -67,55 +55,93 @@
 				"wrapper": {
 					"label": "List wrapper",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:background-color": "backgroundColour",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:gap": "gap",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:background-color-gradient": "backgroundColourGradient"
 					},
-					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist)."
+					"_note": "The root <ul> (render.php step 6). `gap` is the per-item spacing preset slug emitted as the `--sgs-icon-list-gap` custom-property VALUE (contract-permitted, not a declaration). No __experimentalBorder.width/color/style native support declared — border-width/style/colour are SGS custom scalar attrs (base only, no tiers), mirrors sgs/quote's borderWidth object pattern. No `layer` — this is a static list, not a configurable grid/flex composite (no display/flex-*/grid-* attrs exist).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient"
+							}
+						}
+					}
 				},
 				"item-icon": {
 					"label": "Item icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"prefix": "icon",
 					"attrMap": {
 						"css:stroke": "iconColourGradient"
 					},
-					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). `css:color` resolves via default convention `icon`+`Colour`=`iconColour` (render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "Per-item icon span (render.php:457, `.sgs-icon-list__icon`). `css:color` resolves via default convention `icon`+`Colour`=`iconColour` (render.php:221-223) — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to `iconColourGradient`, added 2026-08-16 (Builder 4) — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "iconColourHover",
+								"css:stroke": "iconColourHoverGradient"
+							}
+						}
+					}
 				},
 				"item": {
 					"label": "Item row",
 					"order": 3,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "item",
 					"_note": "The per-item `<li class=\"sgs-icon-list__item\">` row (render.php:337 `$item_row_sel`, fed to `sgs_typography_css_rule( $attributes, 'item', $item_row_sel )` at render.php:348-350 — the shared TypographyControls emitter, R-22-13). Owns itemFontSize/FontSizeUnit/FontWeight/FontStyle/LineHeight/LineHeightUnit, all resolved via the default `item`+suffix convention. This is a DISTINCT DOM node from item-text's `<span class=\"sgs-icon-list__text\">` (render.php:337 `$text_sel`) — added 2026-08-15 because these six attrs were showing as orphans: item-text's attrMap explicitly redirects css:font-size/line-height to native typography (which paints the span), so the default convention never got a chance to claim the item-row's own itemFontSize/itemLineHeight family for anyone. Same split rationale as the `heading` element below (2026-07-23)."
 				},
 				"item-text": {
 					"label": "Item text",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:color": "textColour",
 						"css:font-size": "native:typography.fontSize",
 						"css:line-height": "native:typography.lineHeight",
-						"css:text-align": "native:typography.textAlign"
+						"css:text-align": "native:typography.textAlign",
+						"css:color-gradient": "textColourGradient"
 					},
-					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest."
+					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					}
 				},
 				"heading": {
 					"label": "Heading",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "heading",
 					"_note": "Optional list heading (render.php, `.sgs-icon-list__heading`). Custom typography resolves via prefix `heading` + the text cluster (headingFontSize/FontWeight/FontStyle/LineHeight). Declared as its OWN element (2026-07-23) so heading* typography routes to element=heading, DISTINCT from item* text — before this they both fell to NULL element and collided on font-size."
 				}
@@ -127,6 +153,18 @@
 		"typography": ".sgs-icon-list__text"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"items": {
 			"type": "array",
 			"default": [
@@ -159,6 +197,22 @@
 						"type": "string",
 						"role": "icon-slug"
 					},
+					"iconColour": {
+						"type": "string",
+						"description": "Per-item icon colour override. Empty falls back to the block-level iconColour."
+					},
+					"iconColourGradient": {
+						"type": "string",
+						"description": "Per-item icon gradient override. Empty falls back to the block-level iconColourGradient. Non-empty wins over this item's own iconColour."
+					},
+					"iconColourHover": {
+						"type": "string",
+						"description": "Per-item icon hover-colour override. Empty falls back to the block-level iconColourHover."
+					},
+					"iconColourGradientHover": {
+						"type": "string",
+						"description": "Per-item icon hover-gradient override. Empty falls back to the block-level iconColourHoverGradient. Non-empty wins over this item's own iconColourHover."
+					},
 					"url": {
 						"type": "string",
 						"role": "url-href"
@@ -173,7 +227,12 @@
 		"defaultIconSource": {
 			"type": "string",
 			"default": "lucide",
-			"enum": [ "lucide", "wp-icon", "dashicon", "emoji" ],
+			"enum": [
+				"lucide",
+				"wp-icon",
+				"dashicon",
+				"emoji"
+			],
 			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented and NOT inferred from the two local comparisons — they are the framework's icon-source vocabulary, enforced as a hard allow-list at icon/render.php:88 (`$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' )`) and mirrored one-for-one by the four icon-* roles on sgs/icon (iconName/wpIconName/dashiconName/emojiChar — D503). EXACT PRECEDENT: sgs/icon.iconSource already declares this identical enum, so this is copying a settled declaration rather than authoring a new one. Feeds enum_values -> TIER 3.5 role `enum-mode`, and gives the client a real select control."
 		},
 		"iconColour": {
@@ -185,6 +244,11 @@
 			"default": "",
 			"description": "CSS gradient string painting every item's icon stroke instead of a flat colour. Non-empty wins over iconColour at render time (D636/D644)."
 		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourGradient. Non-empty wins over iconColourHover at render time."
+		},
 		"iconSize": {
 			"type": "string",
 			"default": "medium"
@@ -193,7 +257,35 @@
 			"type": "boolean",
 			"default": false
 		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},
@@ -201,29 +293,11 @@
 			"type": "string",
 			"default": "20"
 		},
-		"paddingTablet": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",
@@ -251,7 +325,7 @@
 				"inset",
 				"outset"
 			],
-			"default": "none"
+			"default": "solid"
 		},
 		"heading": {
 			"type": "string",
@@ -259,7 +333,14 @@
 		},
 		"headingLevel": {
 			"type": "string",
-			"enum": [ "h2", "h3", "h4", "h5", "h6", "p" ],
+			"enum": [
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p"
+			],
 			"default": "h3"
 		},
 		"markerType": {
@@ -269,7 +350,10 @@
 		"source": {
 			"type": "string",
 			"default": "typed",
-			"enum": [ "typed", "menu" ],
+			"enum": [
+				"typed",
+				"menu"
+			],
 			"_comment": "Declared 2026-08-06 (Spec 35 Task A2). Values are NOT invented — they are the allow-list render.php:158 already enforces: `in_array( $attributes['source'] ?? '', array( 'typed', 'menu' ), true ) ? ... : 'typed'`. Declaring it does three things at once with no new role logic: /sgs-update Stage 1 reads it into block_attributes.enum_values, TIER 3.5 then seeds role `enum-mode` from that column, and the client gets a real select control instead of a free-text box (Spec 35 Part B). WP coercing an out-of-enum stored value back to the default matches render.php's own fallback exactly, so the two layers agree rather than diverge (the D456 site-header-row.layout precedent)."
 		},
 		"menuRef": {
@@ -323,6 +407,10 @@
 			"type": "number"
 		},
 		"itemLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"iconColourHover": {
 			"type": "string",
 			"default": ""
 		}

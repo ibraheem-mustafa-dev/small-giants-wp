@@ -30,21 +30,34 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true,
-			"__experimentalSkipSerialization": true
-		},
 		"filter": {
 			"duotone": true
 		},
 		"interactivity": true,
 		"sgs": {
+			"colourExemptions": {
+				"overlay": {
+					"rule": "states",
+					"reason": "overlayColourHover is HOVER-ONLY by design (see the img-wrap element's own noBaseByDesign marker, 2026-08-15/2026-09-05) — the hover-reveal overlay only exists on hover, so there is no resting counterpart to pair it with and none should exist. The census's statesCount<2 check does not know about noBaseByDesign. Confirmed 2026-09-06 (colour-conformance FILL audit)."
+				},
+				"caption-background-colour": {
+					"rule": "states",
+					"reason": "Already correctly painted via a hand-built ::after layer reproducing sgs_block_background_layer_css()'s paint semantics (the shared helper can't be called directly here — it unconditionally injects position:relative, which would break the caption's own position:absolute, per render.php's own comment). Gradient sibling already shipped 2026-09-04. Hover: the item's own hover-lift/reveal treatment already exists at the .sgs-gallery__item level (a different mechanism); no established precedent in this codebase adds a colour-specific hover to a caption background. Confirmed 2026-09-06 (colour-conformance FILL audit, verified via dispatched agent read)."
+				}
+			},
 			"collection": true,
 			"imageControls": true,
 			"imageControlsExplicit": true,
+			"_comment_mediaElements": "Rule 37-media-no-handroll fix (D-pending). Grid-thumbnail object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector — adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks the grid <img> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-gallery__img, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). The lightbox full-view image is deliberately NOT part of this — it keeps its own hardcoded object-fit:contain (style.css), which is not client-controllable.",
+			"mediaElements": [
+				{
+					"prefix": "sgs",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
+			],
 			"fx": {
 				"draggable": true,
 				"providesNatively": [
@@ -70,10 +83,10 @@
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
-						"css:border-width": "native:__experimentalBorder.width",
-						"css:border-style": "native:__experimentalBorder.style",
-						"css:border-color": "native:__experimentalBorder.color",
-						"css:border-radius": "native:__experimentalBorder.radius",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
@@ -87,7 +100,8 @@
 						"anim:preset": "sgsAnimation",
 						"anim:duration": "sgsAnimationDuration",
 						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay"
+						"anim:stagger": "staggerDelay",
+						"css:border-color-gradient": "borderColourGradient"
 					},
 					"_note": "No `display`/`order`/`overflow` attribute exists on this block — honest GAPs.",
 					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-image staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — no bgParallax/scroll-trigger attributes on this block."
@@ -96,7 +110,14 @@
 					"label": "Image",
 					"order": 2,
 					"clusters": [],
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:filter": "grayscaleHover"
+							}
+						}
+					},
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"caption": {
 					"label": "Caption",
@@ -107,9 +128,13 @@
 					],
 					"prefix": "caption",
 					"attrMap": {
-						"css:background-color": "captionBgColour"
+						"css:background-color": "captionBgColour",
+						"css:background-image": "captionBgColourGradient",
+						"css:color-gradient": "captionColourGradient",
+						"css:color": "captionColour"
 					},
-					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour)."
+					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text.",
+					"_note_colour": "captionColour declared 2026-09-05: render.php:118 reads it and it paints the caption's text colour. It previously had css_property='color' in the DB with no authored source (a rogue seed that would vanish on the next reseed); declaring it here makes that value legitimate and durable."
 				},
 				"item": {
 					"label": "Grid item",
@@ -127,8 +152,25 @@
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now."
+					"_note": "The wrapper around the rendered <img> inside each grid item (.sgs-gallery__img-wrap, render.php ~line 467/508) - carries the hover-reveal overlay. overlayColourHover is HOVER-ONLY (no resting overlayColour attribute exists on this block) so it is deliberately left unclustered rather than declared via states.hover, which would manufacture a new state-without-base finding against the D542-gated baseline (currently exactly 1, sgs/post-grid). prefix:\"\" opts this element out of orphan-candidate scanning so the attribute is reported honestly as a gap, not force-claimed. Found live 2026-08-15: DB tagged 1 attr css_element='img-wrap', undeclared until now.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "overlayColourHover"
+							},
+							"noBaseByDesign": [
+								"css:background-color"
+							],
+							"_noBaseByDesignNote": "css:background-color (overlayColourHover) legitimately has NO resting counterpart: this element's overlay is a hover-reveal affordance — at rest there is no overlay to colour, so a 'resting overlay colour' control would paint a permanent tint over every gallery image rather than adding capability. The block declares only overlayColourHover / overlayColourHoverGradient; no resting sibling exists or should. Same shape as sgs/post-grid's card.scaleHover. NOT a suppression hatch — the attribute was declared here on 2026-09-05 to fix a rogue seed (css_property present in the DB with no authored source), and render.php:145 confirms it paints an EXISTING .sgs-gallery__img-wrap::after on hover."
+						}
+					},
+					"_note_hover": "overlayColourHover declared 2026-09-05: render.php:145 states it paints an EXISTING `.sgs-gallery__img-wrap::after` overlay on hover. Was a rogue seed (css_property in the DB, declared nowhere)."
 				}
+			},
+			"boxFamilies": {
+				"borderRadius": [
+					"borderRadius"
+				]
 			}
 		}
 	},
@@ -143,7 +185,32 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"decorative": {
+						"type": "boolean",
+						"default": false
+					},
+					"_key": {
+						"type": "string",
+						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index or the WP attachment id (which collides the moment the same image is used twice). Spec 35 Part 4."
+					},
+					"objectFit": {
+						"type": "string",
+						"enum": [
+							"cover",
+							"contain"
+						],
+						"default": "cover"
+					},
+					"focalPoint": {
+						"type": "object",
+						"default": {
+							"x": 0.5,
+							"y": 0.5
+						}
+					}
+				}
 			}
 		},
 		"layout": {
@@ -157,16 +224,22 @@
 		},
 		"columns": {
 			"type": "object",
-			"default": {"desktop": 3, "tablet": 2, "mobile": 1}
+			"default": {
+				"desktop": 3,
+				"tablet": 2,
+				"mobile": 1
+			}
 		},
 		"gap": {
 			"type": "object",
-			"default": {"desktop": "16px"},
+			"default": {
+				"desktop": "16px"
+			},
 			"_comment": "Was the bare number \"16\". MEASURED before and after: this default renders 16px either way, so the change is behaviour-preserving — it only makes the value explicit. (An earlier draft of this comment claimed the default had been silently dead because spacing slug 16 does not exist in theme.json. That was WRONG: gallery's own render.php already appended `px` to a bare number before handing it on, so \"16\" always meant 16px here. The live capture showed 16px on both builds and corrected the claim.) Notably this block had already implemented the bare-number-means-px convention locally, which is now the framework-wide rule. Bean-ruled 2026-08-10."
 		},
 		"aspectRatio": {
 			"type": "string",
-			"default": "1/1"
+			"default": "1 / 1"
 		},
 		"effectHover": {
 			"type": "string",
@@ -184,13 +257,25 @@
 			"type": "string",
 			"default": "text-inverse"
 		},
+		"captionColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"captionBgColour": {
 			"type": "string",
 			"default": "primary-dark"
 		},
+		"captionBgColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"overlayColourHover": {
 			"type": "string",
 			"default": "primary-dark"
+		},
+		"overlayColourHoverGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"scaleHover": {
 			"type": "string",
@@ -290,7 +375,7 @@
 		},
 		"flexWrap": {
 			"type": "string",
-			"default": ""
+			"default": "wrap"
 		},
 		"justifyContent": {
 			"type": "string",
@@ -319,6 +404,40 @@
 		"loopCarousel": {
 			"type": "boolean",
 			"default": false
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

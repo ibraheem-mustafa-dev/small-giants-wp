@@ -1,0 +1,13 @@
+{
+	"apiVersion": 2,
+	"name": "sgs/no-typography-support-declared",
+	"title": "Fixture: no native typography support declared at all — rule must skip this block entirely",
+	"category": "sgs",
+	"supports": {
+		"align": false
+	},
+	"selectors": {
+		"typography": ".sgs-no-typography-support-declared__whatever-this-is-irrelevant"
+	},
+	"attributes": {}
+}

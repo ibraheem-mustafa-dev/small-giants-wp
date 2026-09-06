@@ -1,0 +1,9 @@
+<!-- wp:sgs/container {"backgroundColour":"#101018","fx":"particles","fxParticlePreset":"sparks","minHeight":{"desktop":"70vh"}} -->
+<!-- wp:sgs/heading {"content":"PARTICLES ON \u2014 sparks","level":"h2"} /-->
+<!-- wp:sgs/heading {"content":"Move the pointer across this panel.","level":"h3"} /-->
+<!-- /wp:sgs/container -->
+<!-- wp:sgs/container {"backgroundColour":"#101018","minHeight":{"desktop":"70vh"}} -->
+<!-- wp:sgs/heading {"content":"NEGATIVE CONTROL \u2014 no fx","level":"h2"} /-->
+<!-- wp:sgs/heading {"content":"This panel must never paint a canvas.","level":"h3"} /-->
+<!-- /wp:sgs/container -->
+

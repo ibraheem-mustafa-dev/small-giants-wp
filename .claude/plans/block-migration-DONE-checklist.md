@@ -4,7 +4,7 @@ title: Block no-inline migration — DONE checklist (end conditions only)
 status: ACTIVE
 created: 2026-07-09
 governs: the universal no-inline styling rollout
-detail: .claude/plans/2026-07-09-per-block-no-inline-migration-contract.md (the HOW — this doc is the WHAT-DONE-LOOKS-LIKE)
+detail: .claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md (the HOW — this doc is the WHAT-DONE-LOOKS-LIKE)
 ---
 
 # Block migration — DONE checklist
@@ -45,6 +45,22 @@ re-derive them.
 - [ ] **7. Client controls intact.** Every migrated family keeps its editor control
   (BoxControl for box families); `check-dead-controls.js` = 0 net-new; editor preview
   matches the frontend.
+- [ ] **7b. Editor CANVAS reflects the control (CHECK A, added 2026-09-05).**
+  `node scripts/check-editor-render-parity.js --check` = 0 net-new for this block. A control
+  that writes its attribute and renders correctly on the page, but shows nothing on the
+  canvas, is NOT done — the client cannot see what they are doing.
+  Three things this item specifically requires, each of which shipped a defect before being
+  caught:
+  - **Enumerate attributes explicitly** where a preview helper is called. CHECK A resolves an
+    attribute as canvas-reflected only when its NAME appears outside
+    `InspectorControls`/`BlockControls`; handing a helper `attributes` wholesale renders
+    correctly and still reads as a desync.
+  - **Confirm the FRONTEND paints it before mirroring it.** `sgs/hero` declared 7 `bgSvg*`
+    attributes and rendered none of them; a canvas mirror would have made the editor lie.
+  - **Read the emitted CSS, not the gate result.** CHECK A verifies a NAME is referenced, not
+    that the resulting CSS is correct — it passed green while all four of `svgBackgroundPreview`'s
+    classes were dead from a comma-joined array.
+  Pattern + traps: `plugins/sgs-blocks/CLAUDE.md` → "Editor-canvas mirrors".
 - [ ] **8. Security.** Free-text keyword attrs (border-style, etc.) pass
   `preg_replace('/[^a-zA-Z-]/','',$v)`; the `<style>` blob uses `wp_strip_all_tags`.
 - [ ] **9. No churn.** No version bump, no `deprecated.js` (pre-production).
@@ -68,5 +84,5 @@ re-derive them.
 **Which pattern (D294):** single-element + content-KIND-box+width-only → block-private (quote/heading/text/button); section/layout composites → keep the (scoped) wrapper (hero/container).
 
 ## Reference impls / detail
-- HOW-TO + rationale: `.claude/plans/2026-07-09-per-block-no-inline-migration-contract.md`.
+- HOW-TO + rationale: `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md`.
 - Mechanism spec: Spec 31 §3.A/§4/§13.4 (FR-31-22), Spec 32 §6.1.

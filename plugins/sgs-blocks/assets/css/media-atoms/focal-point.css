@@ -1,0 +1,44 @@
+/* ── focal-point atom ─────────────────────────────────────────────────────
+ *
+ * Element scope: object-position, a crop focus for a replaced element
+ * (<img>/<video>) — TIERED, because art direction genuinely differs per
+ * device (`MEDIA_TIERED_BASES` carries `ObjectPosition`). Backdrop scope:
+ * background-position/-repeat/-attachment for a painted background box —
+ * NOT tiered (none of the three backdrop bases are in `MEDIA_TIERED_BASES`).
+ *
+ * The mobile rule nests mobile -> tablet -> desktop -> initial, per _base.css
+ * — reversing the middle two would let an unset mobile value fall through to
+ * desktop and silently ignore a tablet value the client did set.
+ *
+ * `initial` resets each property to its own CSS default (`50% 50%` for
+ * *-position, `repeat` for *-repeat, `scroll` for *-attachment) — identical
+ * to what paints when this rule is absent, so an unset atom never changes
+ * rendering.
+ */
+.sgs-media-el {
+	object-position: var( --sgs-media-object-position, center center );
+	background-position: var( --sgs-media-background-position, center center );
+	background-repeat: var( --sgs-media-background-repeat, no-repeat );
+	background-attachment: var( --sgs-media-background-attachment, scroll );
+}
+
+@media (max-width: 1023px) {
+	.sgs-media-el {
+		object-position: var(
+			--sgs-media-object-position-tablet,
+			var( --sgs-media-object-position, center center )
+		);
+	}
+}
+
+@media (max-width: 767px) {
+	.sgs-media-el {
+		object-position: var(
+			--sgs-media-object-position-mobile,
+			var(
+				--sgs-media-object-position-tablet,
+				var( --sgs-media-object-position, center center )
+			)
+		);
+	}
+}
