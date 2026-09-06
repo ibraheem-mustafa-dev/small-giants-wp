@@ -32,10 +32,25 @@ object) gets the same protection automatically:
    is correctly exempted, and a block that already migrated but grew a
    NEW stray read of the dead name is correctly caught.
 
+BASELINE (added 2026-09-06, mirroring scripts/audit-block-file-consistency.py's
+sanctioned pattern -- see that script's own docstring for the precedent): this
+gate is wired into gates.json's `fast` tier and runs on EVERY build for EVERY
+concurrent session in this shared codebase. Extending DEAD_FLAT_ATTRS to cover
+borderRadius surfaced 96 pre-existing findings across ~48 OTHER blocks that
+were never in scope for the border-radius render fix -- they carry the same
+bug, but fixing them is separate, un-scoped work. Without a baseline, the gate
+would go red for every other concurrent session's build the moment that fix
+landed. A finding already accepted into the baseline is still computed and
+reported (see "Baselined" in the summary), but does not fail `--check` -- only
+a NET-NEW finding (not in the baseline) does. `--update-baseline` is the ONLY
+sanctioned way to grow the baseline.
+
 Usage:
-  python scripts/check-render-tier-object-spacing.py --check       # gate: exit 1 on any finding
-  python scripts/check-render-tier-object-spacing.py                # same scan, exit 0 always (report)
-  python scripts/check-render-tier-object-spacing.py --self-test    # fixture-based, exit 1 on failed assertion
+  python scripts/check-render-tier-object-spacing.py --check           # gate: exit 1 on any NET-NEW finding
+  python scripts/check-render-tier-object-spacing.py                    # same scan, exit 0 always (report)
+  python scripts/check-render-tier-object-spacing.py --self-test        # fixture-based, exit 1 on failed assertion
+  python scripts/check-render-tier-object-spacing.py --update-baseline  # accepts every CURRENT finding into
+                                                                          # the baseline and exits 0
 """
 import json
 import re
@@ -47,6 +62,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_DIR = SCRIPT_DIR.parent
 BLOCKS_DIR = PLUGIN_DIR / 'src' / 'blocks'
+BASELINE_FILE = SCRIPT_DIR / 'render-tier-object-spacing-baseline.json'
 
 # Shared trees eligible for the SAME two bug classes as render.php, extended
 # 2026-09-06 after finding the wrapper itself (class-sgs-container-wrapper.php)
@@ -101,6 +117,58 @@ def strip_comments(text):
     text = BLOCK_COMMENT_RE.sub(blank, text)
     text = LINE_COMMENT_RE.sub(blank, text)
     return text
+
+
+# ---------------------------------------------------------------------------
+# Baseline (ratchet -- see module docstring)
+# ---------------------------------------------------------------------------
+
+# The finding strings this script emits are either:
+#   "<file>: reads $attributes['<attr>'] Nx but block.json does not declare
+#    '<attr>' -- dead flat-attribute read"          (dead-flat-attr findings)
+#   "<file>: ..."                                    (load-order findings)
+# A dead-flat-attr finding's count (`Nx`) is NOT part of the identity -- a
+# render.php growing a second read of the same already-known-dead attr must
+# still be treated as the SAME baselined finding, not a new one. So the key
+# is derived from file path + attribute name only, dropping the count. A
+# load-order finding has no attribute name and its file path alone is a
+# stable-enough identity (there is at most one load-order finding per file).
+DEAD_FLAT_KEY_RE = re.compile(
+    r"^(?P<file>[^:]+): reads \$attributes\['(?P<attr>[^']+)'\]"
+)
+
+
+def finding_key(finding):
+    """Derive a stable key from a finding STRING (not a dict, unlike
+    audit-block-file-consistency.py's dict-shaped findings -- this script's
+    findings are plain human-readable strings). Keyed on file path + attr
+    name for dead-flat-attr findings (count-independent, so a growing count
+    of an already-known-dead read doesn't look new); keyed on the file path
+    alone for a load-order finding (there's only ever one per file)."""
+    m = DEAD_FLAT_KEY_RE.match(finding)
+    if m:
+        return f"dead_flat_attr:{m.group('file')}:{m.group('attr')}"
+    file_part = finding.split(':', 1)[0]
+    return f"load_order:{file_part}"
+
+
+def load_baseline():
+    if not BASELINE_FILE.exists():
+        return set()
+    try:
+        data = json.loads(BASELINE_FILE.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    accepted = data.get('accepted', []) if isinstance(data, dict) else []
+    return {finding_key(f) for f in accepted}
+
+
+def save_baseline(all_findings):
+    """Write every CURRENT finding into the baseline as 'accepted' (the ONLY
+    sanctioned way to grow the baseline -- mirrors
+    audit-block-file-consistency.py's save_baseline())."""
+    payload = {'accepted': all_findings}
+    BASELINE_FILE.write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
 
 
 def declared_attrs(block_json_path):
@@ -305,6 +373,40 @@ def self_test():
     if check_load_order(self_defining_file, 'fixture') is not None:
         failures.append('self-test: a call within the function-defining file itself should not be a load-order finding')
 
+    # Fixture 10 -- THE ratchet itself, earned 2026-09-06 fixing the gate-
+    # breaking regression from extending DEAD_FLAT_ATTRS to borderRadius: a
+    # baseline mechanism that silently accepts everything is worse than no
+    # gate at all, so prove it can still fail on something genuinely new.
+    # (a) A finding whose key IS in the baseline must NOT count as net-new.
+    baselined_finding = (
+        "src/blocks/some-old-block/render.php: reads $attributes['borderRadiusTablet'] "
+        "1x but block.json does not declare 'borderRadiusTablet' — dead flat-attribute read"
+    )
+    baseline_keys = {finding_key(baselined_finding)}
+    net_new = [f for f in [baselined_finding] if finding_key(f) not in baseline_keys]
+    if net_new:
+        failures.append('self-test: a finding present in the baseline must not be net-new')
+    # (b) A genuinely different finding (different file) must still be net-new
+    # against that same baseline -- the ratchet must be able to fail.
+    new_finding = (
+        "src/blocks/some-new-block/render.php: reads $attributes['borderRadiusMobile'] "
+        "1x but block.json does not declare 'borderRadiusMobile' — dead flat-attribute read"
+    )
+    net_new = [f for f in [new_finding] if finding_key(f) not in baseline_keys]
+    if not net_new:
+        failures.append('self-test: a finding NOT present in the baseline must be net-new (ratchet must be able to fail)')
+    # (c) The count suffix ("1x" vs "3x") must not change the key -- growing
+    # the count of an already-baselined dead read is still the SAME finding,
+    # not a new one.
+    same_finding_more_reads = baselined_finding.replace('1x', '3x')
+    if finding_key(same_finding_more_reads) != finding_key(baselined_finding):
+        failures.append('self-test: finding_key must be count-independent (1x vs 3x of the same file+attr must match)')
+    # (d) A load-order finding's key must be file-based and stable.
+    load_order_finding_1 = "includes/some-shared-file.php: calls sgs_responsive_normalise_object() but no require of..."
+    load_order_finding_2 = "includes/some-shared-file.php: calls sgs_responsive_normalise_object() at line 9 but the defining require is at line 12..."
+    if finding_key(load_order_finding_1) != finding_key(load_order_finding_2):
+        failures.append('self-test: two load-order findings for the same file must share a key')
+
     if failures:
         for f in failures:
             print(f'[self-test] FAIL: {f}')
@@ -322,18 +424,36 @@ def main():
     shared_findings, shared_scanned = scan_shared_files()
     findings = block_findings + shared_findings
     is_check = '--check' in args
+    is_update_baseline = '--update-baseline' in args
 
     print(f'[check-render-tier-object-spacing] scanned {blocks_scanned} block(s) with both '
           f'render.php and block.json, plus {shared_scanned} shared file(s)')
+
+    if is_update_baseline:
+        save_baseline(findings)
+        print(f'[check-render-tier-object-spacing] Baseline updated — {len(findings)} finding(s) accepted.')
+        sys.exit(0)
+
+    baseline = load_baseline()
+    net_new = [f for f in findings if finding_key(f) not in baseline]
+    accepted = [f for f in findings if finding_key(f) in baseline]
+
     if not findings:
         print('[check-render-tier-object-spacing] OK — 0 findings')
         sys.exit(0)
 
-    print(f'[check-render-tier-object-spacing] {len(findings)} finding(s):')
+    if accepted:
+        print(f'[check-render-tier-object-spacing] Baselined (pre-existing, not gating): {len(accepted)}')
+    print(f'[check-render-tier-object-spacing] Net-new: {len(net_new)}')
+    print(f'[check-render-tier-object-spacing] {len(findings)} finding(s) total:')
     for f in findings:
-        print(f'  - {f}')
+        tag = '(baselined)' if finding_key(f) in baseline else '(NET-NEW)'
+        print(f'  - {tag} {f}')
 
-    sys.exit(1 if is_check else 0)
+    if is_check and net_new:
+        print(f'[check-render-tier-object-spacing] --check FAILED: {len(net_new)} net-new finding(s) not in baseline.')
+        sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == '__main__':
