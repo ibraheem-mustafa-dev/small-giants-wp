@@ -1232,3 +1232,4 @@
 2026-09-06 23:11:09 | inspector-scan | MANUAL SKIP | roster.json regenerated fresh (83/83) as part of this same commit
 2026-09-06 23:36:51 | accordion-item | MANUAL SKIP | block.json metadata-only: added usesContext keys for context values already consumed by render.php (lines 47-54, 77-108). No visual/rendering change.
 2026-09-06 23:37:52 | accordion-item | MANUAL SKIP | block.json metadata-only: added usesContext keys for context values already consumed by render.php. No visual/rendering change.
+2026-09-07 00:14:06 | post-grid | MANUAL SKIP | Attribute declaration + editor control wiring. No visual output change: render.php already prepared to emit gradient.
