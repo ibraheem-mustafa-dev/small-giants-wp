@@ -642,6 +642,28 @@ was truncated** — see hazards.
 ⚠ **If the survey counts moved between your dry run and your apply, another track moved your
 targets.** Re-survey; do not apply.
 
+## Step 9b — A codemod's own `--check` is necessary, not sufficient
+
+**"Done" for a schema fold is a green FULL build/gate chain — never the codemod's own
+`--check` alone.** Earned on a padding/margin/borderRadius tier-object fold: `--check` was
+green while the real build surfaced four classes of bug an exact-shape matcher cannot see:
+dead destructured attribute names left in `edit.js` after a `block.json` fold; a **second,
+differently-shaped** control for the same attribute family in the same file, untouched
+because the matcher only recognises the shape it was built for; a variable used before
+assignment in `render.php`, catchable only by a real PHPStan run; and a hand-written
+regex "cleanup" pass that matched the wrong occurrence and corrupted whitespace, reported
+as success by its own script.
+
+- **Re-grep the WHOLE codebase for the old attribute names after every codemod run** — do
+  not just re-run the codemod's own survey. One file can hold more than one occurrence of
+  the shape the codemod targets, and an exact-shape matcher fixes only the shapes it
+  recognises.
+- **Run the real build (`npm run build`, the full gate chain — PHPStan included) before
+  calling any block.json schema fold done.** `--self-test` and `--check` prove the codemod
+  agrees with itself; only the build chain proves the tree still works.
+- **Never trust a hand-written regex reformat pass without re-reading the diff.** A tool
+  reporting success is not proof of correctness — read `git diff` yourself.
+
 ## Step 10 — Prove the gate can fail
 
 ```bash
