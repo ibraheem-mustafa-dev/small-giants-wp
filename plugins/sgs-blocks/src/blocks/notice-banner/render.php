@@ -225,7 +225,7 @@ if ( $icon_colour ) {
 // earlier (icon/lucide/wp-icon cases only carry real <svg> markup — dashicon/
 // emoji/text are unaffected, sgs_svg_inject_defs() no-ops when there's no
 // <svg> to match).
-$sgs_notice_banner_stroke_grad = sgs_svg_stroke_gradient( $icon_colour_gradient, $uid . '-ig' );
+$sgs_notice_banner_stroke_grad = sgs_icon_gradient_css( $resolved_source, $icon_colour_gradient, $uid . '-ig', $root_sel . ' .sgs-notice-banner__icon svg' );
 if ( '' !== $sgs_notice_banner_stroke_grad['defs'] ) {
 	$icon_html    = sgs_svg_inject_defs( $icon_html, $sgs_notice_banner_stroke_grad['defs'] );
 	$scoped_css[] = $root_sel . ' .sgs-notice-banner__icon svg{' . $sgs_notice_banner_stroke_grad['css'] . ';}';

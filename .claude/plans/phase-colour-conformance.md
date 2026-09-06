@@ -11,6 +11,34 @@ status: IN PROGRESS — detector + 5 helpers built and MERGED TO MAIN (2026-08-2
 
 # Phase — Colour control conformance
 
+## STATUS UPDATE — 2026-09-06 (read this before PROGRESS below)
+
+**The day-to-day adoption mechanism has moved on from R2/Steps 2-6 below,
+without a decision recorded here that it superseded them — flagging for
+Bean's confirmation, not declaring it unilaterally.** Since 2026-09-03, the
+live adoption vehicle has been a paint-surface shape census
+(`plugins/sgs-blocks/scripts/colour-codemod/classify-end-shape.js`) plus one
+codemod per shape-key in that same directory
+(`migrate-fill-custom-property-gradient.js` and siblings), driven by the
+carried-forward session prompt at
+`.claude/prompts/2026-09-06-colour-conformance-paint-target-grouping.md`
+(the current day-to-day worklist pointer — read that, not this file, for
+what's open right now, the same way `LEDGER.md` is the pointer for live
+project status elsewhere in this repo). That census/codemod approach is
+NOT the rule-31 DB-mechanism-resolver + `GridItemDefaultsPanel`/
+`ShadowControl` adoption path this plan's Steps 2/2b/3/5a/5b/6a-6d describe
+— whether it formally supersedes R2-R6 below, or is a parallel track that
+still needs those steps run separately, is undecided here.
+
+One piece of this plan's own design has already proven correct under the
+newer tooling: Step 2's mechanism table (below) already names `stroke ->
+SVG STROKE` as a fifth mechanism alongside fill/text/border/shadow. The
+2026-09-06 session's ICON/SVG surface work (`sgs_icon_gradient_css()`,
+built 2026-09-05 as a `sgs/icon` proof-of-concept, now being rolled out to
+`icon-list`/`notice-banner` and others) is executing exactly that mechanism
+— just via the shape-census/codemod tooling, not the rule-31 resolver
+Step 2 originally specified.
+
 ⛔ **More than 3 blocks/files/call sites? The first deliverable is the
 DETECTOR, not the edit — `.claude/THE-MIGRATION-METHOD.md`.** Measured: a census-driven pass moves the corrections out of the tree and into the detector, where one commit fixes hundreds of sites. Figures + derivation live in ONE place — do not copy them here.
 
