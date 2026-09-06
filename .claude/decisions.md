@@ -1,4 +1,62 @@
-## D976 [INCIDENT] — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry
+## D977 [INCIDENT] — shared wrapper (SGS_Container_Wrapper) silently dropped ALL padding/margin for every tier-object-migrated composite block; found via the "check shared files too" instinct, live-verified, fixed with a proven-safe pattern
+
+**2026-09-06.** Bean asked, after the 29-block render.php + D976 guard-gate work: "check if your
+scanners and tracking has been comprehensively implemented across all shared files too like the
+atoms, extensions, helpers, injectors etc." That question surfaced a bug bigger than the render.php
+fix it was checking on: `includes/class-sgs-container-wrapper.php` — the shared file `sgs/container`,
+`sgs/hero`, `sgs/trust-bar`, `sgs/site-header`, `sgs/site-footer`, `sgs/multi-button` and
+`sgs/physics-canvas` all route through — had the IDENTICAL dead-flat-attr bug already fixed
+everywhere else, in TWO places: (1) tablet/mobile padding/margin still read the pre-migration flat
+`paddingTablet`/`paddingMobile`/`marginTablet`/`marginMobile` siblings directly; (2) the base/desktop
+extraction still treated `$attributes['padding']`/`['margin']` as a flat `{top,right,bottom,left}`
+box, gated `! $container_queries` on the assumption ONLY site-header-row/site-footer-row/gallery
+ever stored it as a tier-object — an assumption the 2026-09-06 Phase 2 migration (folding
+`sgs/container`'s own padding/margin into the same tier-object shape) silently invalidated.
+
+**Verified live before touching anything** (per Rule 5 + the D976 lesson about not repeating a
+fix on unproven ground): a direct `render_block()` call on `sgs/container` with padding+margin
+set returned a bare passthrough with ZERO scoped CSS — no uid class, no `<style>` tag, nothing.
+Confirmed against a REST-created throwaway page too before escalating.
+
+**Fix, reusing the exact pattern already proven safe 250+ lines earlier in the same function**
+(the file already calls `sgs_responsive_normalise_object()` at `:344` for `columns`, well before
+this edit's insertion point — no load-order risk, D976's own lesson applied): compute
+`$sgs_wrap_padding_tiers`/`$sgs_wrap_margin_tiers` ONCE via `sgs_responsive_normalise_object( ...,
+true )`, which already disambiguates a flat box (returned as the desktop tier) from a real
+tier-object (all three tiers as stored) from an absent attribute (all null, correctly falling
+through to the pre-existing native `style.spacing` fallback) BY DATA SHAPE — removing the
+`! $container_queries` flag-gate entirely rather than adding a second branch to it, consistent
+with this file's own stated "universal by data, not by flag" principle (D555 comment, ⁢~:233).
+
+**Verified in isolation before deploying** (learning D976's near-miss rather than repeating it):
+uploaded a renamed-class copy of the FIXED file to the canary's real `includes/` directory (so its
+own internal `require_once __DIR__ . '/render-helpers.php'` resolves correctly) and called
+`SGS_Container_Wrapper_TEST::render()` directly via `wp eval-file`, bypassing the live plugin
+entirely — four cases: the previously-broken tier-object container (now emits base + tablet +
+mobile padding/margin correctly), the already-working `container_queries=true` path (unchanged,
+including its own `container-type:inline-size` emission), a legacy flat-box-only instance (still
+renders base-only, no spurious tablet/mobile rules — backward compatibility proven, not assumed),
+and no padding/margin set at all (renders cleanly, no uid, no empty style block). All four correct.
+Test files deleted from the server afterwards.
+
+**Guard extended, not duplicated.** `check-render-tier-object-spacing.py` (D976) only scanned
+`src/blocks/*/render.php`, so it would never have caught a shared file — extended it with a
+second scan (`scan_shared_files()`) covering `includes/class-sgs-container-wrapper.php`,
+`includes/helpers-box.php`, `includes/helpers-responsive.php`, and the two media-atom PHP files
+(`includes/media/atoms/media-padding.php`, `box-shape.php`) for the identical two checks, using a
+GLOBAL declared-attrs set (since a shared file has no single owning block.json). Earned one more
+fixture doing it: the file that DEFINES `sgs_responsive_normalise_object()` calls it internally
+with no require of itself — correctly not a bug, but the naive load-order check flagged it on
+first run; fixed by skipping the check when the call and its own definition are in the same file.
+
+**Still open, named but not yet fixed (out of scope for this specific commit):** the same class of
+bug in the media-atom shared files (`includes/media/atoms/box-shape.php`,
+`src/components/media/atoms/box-shape.control.js`/`.js`, `media-padding.js`/`.php`) for
+border-radius and mediaPadding — confirmed present via grep, now covered by the extended guard's
+scan list so they show as findings rather than silently passing, tracked as the next piece of the
+tier-object migration (border-radius, priorities 1+2 from the 2026-09-06 status recap).
+
+## D976 [INCIDENT] — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry
 
 **2026-09-06.** The tier-object padding/margin render.php fix (29 blocks,
 commits e863203d7 + 75b8dd657) inserted a normalisation preamble calling
