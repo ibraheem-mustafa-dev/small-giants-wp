@@ -32,11 +32,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"typography": {
 			"fontSize": false,
 			"textAlign": true,
@@ -45,30 +40,33 @@
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"wrapper": {
 					"label": "Text box",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin"
+						"css:padding": "padding",
+						"css:margin": "margin"
 					}
 				},
 				"body": {
 					"label": "Body text",
 					"order": 2,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "",
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -89,6 +87,18 @@
 		"typography": ".sgs-collapsible-text__body"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"text": {
 			"type": "string",
 			"default": "",
@@ -125,22 +135,6 @@
 		"lineHeightUnit": {
 			"type": "string",
 			"default": ""
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"backgroundColour": {
 			"type": "string",

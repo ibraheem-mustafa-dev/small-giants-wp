@@ -150,7 +150,7 @@ def test_null_emit_shape_content_attr_is_loud_content_gap(monkeypatch):
 
     monkeypatch.setattr(
         db_lookup, "content_attr_for_element",
-        lambda slug, element, tier=None: ("fakeAttr", None, "text-content", "string"),
+        lambda slug, element, tier=None, modifiers=(): ("fakeAttr", None, "text-content", "string"),
     )
     monkeypatch.setattr(db_lookup, "capabilities_for", lambda slug: frozenset())
     monkeypatch.setattr(db_lookup, "block_attrs", lambda slug: {})
@@ -219,3 +219,65 @@ def test_gate_default_scan_has_no_new_findings():
     baseline = no_slug_literal._load_baseline()
     new = [v for v in no_slug_literal.run() if v["key"] not in baseline]
     assert new == [], f"gate widening introduced NEW findings: {new}"
+
+
+# ---------------------------------------------------------------------------
+# 6. Breakpoint-modifier hardening (whole-branch review finding, 2026-09-05):
+# `content_attr_for_element`'s `modifiers` tuple exists ONLY to break a
+# same-tier variant-alias tie via `variant_slots.variant_value` (Task 3's
+# featuredTag/trialTag fix, commit a9b9104c6). That commit's docstring
+# claimed a breakpoint suffix (mobile/tablet/desktop) "never matches" a
+# `variant_value` — TRUE today (verified live: no block declares one), but
+# nothing structurally prevented a future block from declaring a variant
+# literally named 'mobile', at which point an element's own device-tier
+# modifier would silently win a content-routing tiebreak it has no business
+# winning. The fix filters breakpoint-tier modifiers out of the `modifiers`
+# tuple in walk.py BEFORE it reaches the resolver, reusing the same
+# DB-sourced breakpoint vocabulary (`_tier_by_lower`) walk.py already reads
+# for device-tier detection — this test proves that exclusion is real.
+# ---------------------------------------------------------------------------
+
+def test_breakpoint_modifier_excluded_from_variant_tiebreak_modifiers(monkeypatch):
+    from bs4 import BeautifulSoup
+
+    monkeypatch.setattr(
+        db_lookup, "modifier_suffixes",
+        lambda kind: ("Mobile", "Tablet", "Desktop") if kind == "breakpoint" else (),
+    )
+    monkeypatch.setattr(db_lookup, "capabilities_for", lambda slug: frozenset())
+    monkeypatch.setattr(db_lookup, "block_attrs", lambda slug: {})
+
+    seen_modifiers = {}
+
+    def _fake_content_attr_for_element(slug, element, tier=None, modifiers=()):
+        seen_modifiers["value"] = modifiers
+        return ("fakeAttr", "nested", "text-content", "string")
+
+    monkeypatch.setattr(
+        db_lookup, "content_attr_for_element", _fake_content_attr_for_element,
+    )
+
+    # An element that carries BOTH a breakpoint-tier modifier ('mobile') AND
+    # a genuine content-discriminating modifier ('featured') — the exact
+    # shape a future 'mobile'-named variant would need to exploit.
+    node = BeautifulSoup(
+        '<div class="sgs-fakeblk">'
+        '<span class="sgs-fakeblk__label sgs-fakeblk__label--mobile '
+        'sgs-fakeblk__label--featured">Hello</span></div>',
+        "html.parser",
+    ).find("div")
+    rec = Recognition("named", "sgs/fakeblk", None, 0)
+    walk.run_universal_content_walk(rec, node, media_map={}, css_rules={})
+
+    assert "value" in seen_modifiers, "content_attr_for_element was never called"
+    assert "mobile" not in seen_modifiers["value"], (
+        f"REGRESSION: a breakpoint-tier modifier ('mobile') reached the"
+        f" variant-tiebreak resolver's `modifiers` tuple:"
+        f" {seen_modifiers['value']!r} — a future block declaring a variant"
+        f" literally named 'mobile' could have a device-tier modifier"
+        f" silently win a content-routing tiebreak it has no business winning"
+    )
+    assert "featured" in seen_modifiers["value"], (
+        "the guard must exclude ONLY breakpoint-tier modifiers — a genuine"
+        " non-tier modifier ('featured') must still reach the resolver"
+    )

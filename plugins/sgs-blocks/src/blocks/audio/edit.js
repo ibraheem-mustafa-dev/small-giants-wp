@@ -10,7 +10,30 @@ import {
 	ButtonGroup,
 	Notice,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { boxShorthand } from '../../utils/spacing-preview';
+
+/** Editor-canvas mirror of render.php's border block — width/style/colour(+gradient)/radius. */
+function buildBorderPreviewStyle( { borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } ) {
+	const preview = {};
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) preview.borderWidth = borderWidthPreview;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) {
+			preview.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			preview.borderImage = `${ borderColourGradient } 1`;
+		}
+	}
+	const radiusBox = borderRadius?.desktop;
+	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
+		preview.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
+	}
+	return preview;
+}
 
 // Shared with isReactive below so the two can't drift apart.
 const REACTIVE_STYLES = [ 'spectrum', 'radial', 'oscilloscope', 'gradient-pulse' ];
@@ -53,11 +76,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		accentColourHoverGradient,
 		spectrumColour,
 		title,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
 	} = attributes;
 
 	// --sgs-audio-accent mirrors render.php's brand-accent custom property
@@ -86,6 +110,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			// attribute style.css consumes must appear on the DOM style too).
 			...( accentColourHover ? { '--sgs-audio-accent-hover': resolveColourToken( accentColourHover, palette ) } : {} ),
 			...( accentColourHoverGradient ? { '--sgs-audio-accent-hover-gradient': accentColourHoverGradient } : {} ),
+			...buildBorderPreviewStyle( attributes ),
 		},
 	} );
 	const hasAudio = audioUrl || audioId;
@@ -292,36 +317,62 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

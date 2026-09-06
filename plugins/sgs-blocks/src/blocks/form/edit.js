@@ -14,10 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel,
-	SgsBorderControl,
-	TypographyControls,
-} from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
@@ -604,59 +601,40 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Responsive spacing (padding + margin) — box-object interface contract
-					(.claude/plans/2026-07-09-box-object-interface-contract.md §5). Base tier
-					writes to the WP-native style.spacing object (also visible in the Styles >
-					Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
-					and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */ }
+				{ /* Responsive spacing (padding + margin) — each is a single block-owned
+					tier-object attr { desktop, tablet, mobile }, written via
+					ResponsiveOverride + SgsBoxControl; read by SGS_Container_Wrapper's
+					tier-object emission path. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.style?.spacing?.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, padding: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'paddingTablet' : 'paddingMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.style?.spacing?.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( tier === 'base' ) {
-								setAttributes( {
-									style: {
-										...attributes.style,
-										spacing: { ...attributes.style?.spacing, margin: next },
-									},
-								} );
-							} else {
-								setAttributes( {
-									[ tier === 'tablet' ? 'marginTablet' : 'marginMobile' ]: next,
-								} );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
@@ -672,13 +650,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

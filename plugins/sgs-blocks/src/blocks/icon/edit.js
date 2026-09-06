@@ -11,7 +11,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField } from '../../components';
+import { SgsColourPanel, IconPicker, IconPreview, ResponsiveBoxControl, LinkPopoverField, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 
 // Box-object interface contract §1: build an editor-preview shorthand from a
@@ -100,8 +100,7 @@ function currentIconName( attrs ) {
 }
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		style,
+	const { padding, margin,
 		iconSource,
 		iconSize,
 		iconColour,
@@ -120,10 +119,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		scaleHover,
 		iconAlign,
 		textAlign,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
@@ -175,13 +170,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		textAlign: textAlign || undefined,
 	};
 
-	// Base padding/margin preview — WP-native style.spacing.* objects
-	// (box-object interface contract §B; box-model order top/right/bottom/left).
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }; the desktop tier is a box (box-model
+	// order top/right/bottom/left).
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
@@ -406,44 +402,39 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (skip-serialised —
-				   scoped, not inline, on the frontend); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object
-				   attrs (scoped @media 1023/767). */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

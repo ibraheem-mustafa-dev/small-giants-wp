@@ -37,6 +37,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -118,36 +141,42 @@ if ( ! $evergreen_mode && $target_date ) {
 // ---------------------------------------------------------------------------
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $side => $val ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $side => $val ) {
 		if ( is_string( $val ) && '' !== $val ) {
 			$base_padding_obj[ $side ] = $val;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $side => $val ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $side => $val ) {
 		if ( is_string( $val ) && '' !== $val ) {
 			$base_margin_obj[ $side ] = $val;
 		}
 	}
 }
 
-$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Whole native border group (colour/width/style/radius) — read wholesale, like
 // sgs/media, because __experimentalBorder carries all four under one object.
 $native_border = ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) ? $attributes['style']['border'] : array();
 
-// WP `color` support values (skip-serialised).
-$style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';
-$style_color_bg   = isset( $attributes['style']['color']['background'] ) ? (string) $attributes['style']['color']['background'] : '';
+// Wrapper text/background colour — block-private, gradient-capable attrs
+// (WP-native `supports.color` is disabled; the old `style.color.*` path was
+// never populated — colour-conformance track fix, 2026-09-06). Text paints
+// via background-clip:text when a gradient is set, so the background is
+// moved onto its own `::after` layer (CLAUDE.md's text+background-on-one-
+// selector precondition) rather than sharing $root_sel with the text decl.
+$wrapper_text_colour_value = sgs_resolve_text_colour_or_gradient( $attributes['textColour'] ?? '', $attributes['textColourGradient'] ?? '' );
+$wrapper_bg_paint_decl     = sgs_background_paint_decl( $attributes['backgroundColour'] ?? '', $attributes['backgroundColourGradient'] ?? '' );
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
@@ -193,22 +222,20 @@ if ( ! empty( $native_border ) ) {
 	$base_args['border'] = sgs_gate_native_border_style( $native_border );
 }
 
-$color_args = array();
-if ( '' !== $style_color_text ) {
-	$color_args['text'] = $style_color_text;
-}
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
-if ( ! empty( $color_args ) ) {
-	$base_args['color'] = $color_args;
-}
-
 if ( ! empty( $base_args ) ) {
 	$base_out = wp_style_engine_get_styles( $base_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $base_out['css'] ) ) {
 		$scoped_css[] = $base_out['css'];
 	}
+}
+
+$wrapper_text_decl = sgs_text_colour_decl( $wrapper_text_colour_value );
+if ( '' !== $wrapper_text_decl ) {
+	$scoped_css[] = "{$root_sel}{{$wrapper_text_decl};}";
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $wrapper_text_colour_value );
+}
+if ( '' !== $wrapper_bg_paint_decl ) {
+	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }
 
 // --- text-align — scoped declaration (custom attr keyword, WP core support
@@ -441,7 +468,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_obj ) ),

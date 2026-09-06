@@ -20,12 +20,13 @@
  * (render.php), so nothing here is persisted to post_content.
  *
  * Padding/margin are edited via ResponsiveBoxControl (box-object interface
- * contract): base routes to WP-native style.spacing.padding/margin, tablet/
+ * contract): base routes to WP-native padding/margin, tablet/
  * mobile route to the paddingTablet/paddingMobile/marginTablet/marginMobile
- * object attrs. Border width/colour/style/radius stay on WP's native
- * automatic Styles-tab panels (no custom UI needed — team-member declares
- * FULL native __experimentalBorder support, unlike quote's mixed custom+
- * native border).
+ * object attrs. Border width/colour/style/radius are BLOCK-PRIVATE
+ * (borderWidth/borderStyle/borderColour/borderRadius, via SgsBorderControl
+ * below) — CORRECTED 2026-09-06: this comment previously claimed team-member
+ * declares FULL native `__experimentalBorder` support; block.json declares no
+ * such support at all, so WP-native `style.border` was never populated.
  */
 import { __ } from '@wordpress/i18n';
 import {
@@ -40,14 +41,9 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow,
-	SgsBorderControl,
-	resolveColourToken,
-	DesignTokenPicker,
-	TypographyControls,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
 
 const CARD_STYLES = [
@@ -190,8 +186,7 @@ function boxShorthand( box, keys ) {
 // Editor preview style builder — desktop styles only; responsive tiers +
 // nameColour/roleColour scoped rules render via PHP.
 function buildWrapperStyle( attributes ) {
-	const {
-		style,
+	const { padding, margin,
 		maxWidth,
 		cardShadow,
 		cardShadowColour,
@@ -199,6 +194,10 @@ function buildWrapperStyle( attributes ) {
 		backgroundColourGradient,
 		textColour,
 		textColourGradient,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
 	} = attributes;
 	const wrapperStyle = {};
 
@@ -242,25 +241,30 @@ function buildWrapperStyle( attributes ) {
 	// `fontSize` attr has no canvas preview yet, matching sgs/accordion's
 	// identical no-preview precedent for this same migration.
 
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl below) — block.json declares no
+	// `__experimentalBorder` support at all, so WP-native `style.border` is
+	// never populated.
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		wrapperStyle.borderRadius = radiusPreview;
 	}
-	if ( style?.border?.width ) {
-		wrapperStyle.borderWidth = style.border.width;
-	}
-	if ( style?.border?.style ) {
-		wrapperStyle.borderStyle = style.border.style;
-	}
-	if ( style?.border?.color ) {
-		wrapperStyle.borderColor = style.border.color;
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
+		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -275,7 +279,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		photo,
 		// photoTablet / photoMobile are deliberately NOT destructured — the
 		// responsive family is read through `photoForTier()` off `attributes`
@@ -306,10 +309,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionEasing,
 		displayMode,
 		socialLinks,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		nameColourHover,
 		roleColourHover,
@@ -375,10 +374,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
+	// Mirrors render.php's own allowlist exactly so the editor canvas shows
+	// the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ? textAlign : '';
+
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
 		isCompact && 'sgs-team-member--compact',
+		canvasTextAlign && `has-text-align-${ canvasTextAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -793,62 +797,70 @@ export default function Edit( { attributes, setAttributes } ) {
 				   any block). Root prefix "" since the card root is the single
 				   typography target. textAlign is now a plain block-private
 				   attribute — TypographyControls has no alignment picker, so a
-				   dedicated SelectControl is mounted alongside it; render.php's
-				   existing has-text-align-* class mechanism is unchanged. */ }
+				   dedicated control is mounted alongside it; render.php's
+				   existing has-text-align-* class mechanism is unchanged.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("Justify", 7 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text alignment', 'sgs-blocks' ) }
 						value={ textAlign || '' }
-						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 				</PanelBody>
 
-				{ /* Box-object interface contract §B/§E: padding/margin base routes
-				   to WP-native style.spacing.* (skip-serialised → scoped, not
-				   inline); tiers are the paddingTablet/paddingMobile +
-				   marginTablet/marginMobile object attrs. Border width/colour/
-				   style/radius stay on WP's native automatic Styles panels. */ }
+				{ /* padding/margin are each a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read by SGS_Container_Wrapper's tier-object
+				   emission path. Border width/colour/style/radius are
+				   block-private (borderWidth/borderStyle/borderColour/
+				   borderRadius via the SgsBorderControl panel below). */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Width — outer maxWidth (kept-scalar, base only — matches the
@@ -879,13 +891,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ teamMemberContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

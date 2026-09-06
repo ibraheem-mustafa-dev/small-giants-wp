@@ -523,6 +523,14 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'backgroundColourHoverGradient',
 	'borderColourHover',
 	'borderColourHoverGradient',
+	// Same mechanism as borderColourHover/borderColourHoverGradient above,
+	// under a `wrapper`-prefixed name (2026-09-06) — sgs/social-icons already
+	// has a per-item `iconBorderColourHover`, so its own wrapper-level border
+	// hover control needed a distinct name to avoid colliding with it.
+	// Emitted via the identical sgs_border_states_css() :hover mechanism
+	// (render.php:312-314) — unpreviewable for the same reason, not a new one.
+	'wrapperBorderColourHover',
+	'wrapperBorderColourHoverGradient',
 	'gridItemBackgroundHover',
 	'gridItemBackgroundHoverGradient',
 	'gridItemBorderGradientHover',

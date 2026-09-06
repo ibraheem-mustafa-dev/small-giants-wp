@@ -26,6 +26,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -115,6 +138,21 @@ $accent_gradient_val = sgs_css_gradient_value( $accent_gradient_raw );
 $accent_hover_val          = '' !== $accent_hover_raw ? sgs_colour_value( $accent_hover_raw ) : '';
 $accent_hover_gradient_val = sgs_css_gradient_value( $accent_hover_gradient_raw );
 
+// Border (Block Customisation Standard — wrapper-level border control).
+// Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
+// attr { top, right, bottom, left }, no tiers. Colour resolution (flat vs
+// gradient, base + hover) is delegated to the shared sgs_border_states_css()
+// helper (helpers-colour-variants.php) — the ONLY one of the four colour
+// helpers that returns finished CSS unconditionally, per CLAUDE.md's
+// precedent-function registry.
+$border_style_raw = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
+$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
+$border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
+$border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
+$border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+
 // A no-controls audio with no autoplay is unreachable — force controls unless autoplay is on.
 $show_native_controls = ( $controls || ! $autoplay );
 
@@ -151,26 +189,26 @@ $uid      = 'sgs-au-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-audio';
 
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $padding_side => $padding_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $padding_side => $padding_value ) {
 		if ( is_string( $padding_value ) && '' !== $padding_value ) {
 			$base_padding_obj[ $padding_side ] = $padding_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $scoped_css = array();
 
@@ -233,6 +271,63 @@ $accent_gradient_decl       = '' !== $accent_gradient_val ? '--sgs-audio-accent-
 $accent_hover_decl          = '' !== $accent_hover_val ? '--sgs-audio-accent-hover:' . esc_attr( $accent_hover_val ) . ';' : '';
 $accent_hover_gradient_decl = '' !== $accent_hover_gradient_val ? '--sgs-audio-accent-hover-gradient:' . esc_attr( $accent_hover_gradient_val ) . ';' : '';
 $scoped_css[]               = "{$root_sel}{--sgs-audio-accent:" . esc_attr( $accent_val ) . ';--sgs-audio-spectrum:' . esc_attr( $spectrum_val ) . ';' . $accent_gradient_decl . $accent_hover_decl . $accent_hover_gradient_decl . '}';
+
+// --- Border — width/style on the wrapper (base decls), colour (flat or
+// gradient, base + hover) via the shared sgs_border_states_css() helper,
+// radius via the shared sgs_border_radius_tiers() + core style engine
+// (base) plus hand-built shorthand tiers (tablet/mobile), mirroring
+// sgs/button + sgs/quote. ---
+$border_base_decls = array();
+if ( $has_border_width ) {
+	$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+	$bwr                 = '' !== $border_width_rgt ? $border_width_rgt : '0';
+	$bwb                 = '' !== $border_width_bot ? $border_width_bot : '0';
+	$bwl                 = '' !== $border_width_lft ? $border_width_lft : '0';
+	$border_base_decls[] = "border-width:{$bwt} {$bwr} {$bwb} {$bwl}";
+	if ( $border_style_raw && 'solid' !== $border_style_raw ) {
+		$border_base_decls[] = 'border-style:' . $border_style_raw;
+	}
+}
+if ( $border_base_decls ) {
+	$scoped_css[] = "{$root_sel}{" . implode( ';', $border_base_decls ) . ';}';
+}
+
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$scoped_css[] = $border_colour_css;
+}
+
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_base       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
+if ( null !== $border_radius_base ) {
+	$border_radius_scoped = wp_style_engine_get_styles(
+		array( 'border' => array( 'radius' => $border_radius_base ) ),
+		array( 'selector' => $root_sel )
+	);
+	if ( ! empty( $border_radius_scoped['css'] ) ) {
+		$scoped_css[] = $border_radius_scoped['css'];
+	}
+}
+$border_radius_tab_val = sgs_corner_object_shorthand( $border_radius_tablet_obj );
+$border_radius_mob_val = sgs_corner_object_shorthand( $border_radius_mobile_obj );
+if ( null !== $border_radius_tab_val ) {
+	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$border_radius_tab_val};}}";
+}
+if ( null !== $border_radius_mob_val ) {
+	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$border_radius_mob_val};}}";
+}
 
 // Wrapper: SGS-BEM root + uid + style modifier + data hooks. Zero inline
 // `style` — everything (spacing + brand vars) lives in the scoped <style>

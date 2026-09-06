@@ -9,13 +9,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import {
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsBorderControl,
-	TypographyControls,
-	resolveColourToken,
-} from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -70,23 +64,31 @@ function radiusShorthand( radius ) {
 	return [ topLeft, topRight, bottomRight, bottomLeft ].map( ( v ) => v || '0' ).join( ' ' );
 }
 
-function buildRootPreviewStyle( style ) {
-	const spacing = style?.spacing || {};
-	const border = style?.border || {};
-	const color = style?.color || {};
-	const typography = style?.typography || {};
+// `style.color.text` / `style.color.background` — block.json declares
+// `color.background/text/gradients: false` and no block-private
+// backgroundColour/textColour attr exists anywhere on this block to
+// substitute (only the per-element titleColour/linkColour/activeLinkColour
+// custom attrs exist), so those two properties are DEAD with no safe
+// replacement in this file. Deliberately left unset here — flagged as a
+// follow-up decision, not resolved. Border (block.json declares no
+// `__experimentalBorder` support) and typography (no `typography` support —
+// migrated onto the fontSize/lineHeight custom attrs, D971/D972) DO have
+// working block-private replacements and are wired to those instead.
+function buildRootPreviewStyle( attributes, padding, margin ) {
+	const { borderWidth, borderStyle, borderColour, borderRadius, fontSize, fontSizeUnit, lineHeight, lineHeightUnit } = attributes;
+
+	const fontSizeDesktop = fontSize && 'object' === typeof fontSize ? fontSize.desktop : fontSize;
+	const lineHeightDesktop = lineHeight && 'object' === typeof lineHeight ? lineHeight.desktop : lineHeight;
 
 	const previewStyle = {
-		color: color.text || undefined,
-		backgroundColor: color.background || undefined,
-		padding: boxShorthand( spacing.padding ),
-		margin: boxShorthand( spacing.margin ),
-		borderRadius: radiusShorthand( border.radius ),
-		borderWidth: border.width || undefined,
-		borderStyle: border.style || undefined,
-		borderColor: border.color || undefined,
-		fontSize: typography.fontSize || undefined,
-		lineHeight: typography.lineHeight || undefined,
+		padding: boxShorthand( padding?.desktop ),
+		margin: boxShorthand( margin?.desktop ),
+		borderRadius: radiusShorthand( borderRadius?.desktop ),
+		borderWidth: boxShorthand( borderWidth ) || undefined,
+		borderStyle: ( borderStyle && borderStyle !== 'none' ) ? borderStyle : undefined,
+		borderColor: borderColour || undefined,
+		fontSize: fontSizeDesktop ? `${ fontSizeDesktop }${ fontSizeUnit || 'px' }` : undefined,
+		lineHeight: lineHeightDesktop ? `${ lineHeightDesktop }${ lineHeightUnit || '' }` : undefined,
 	};
 
 	return Object.fromEntries(
@@ -111,11 +113,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkColourGradient,
 		activeLinkColour,
 		activeLinkColourGradient,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 	} = attributes;
 
 	// Detect headings from the current post content in the editor.
@@ -179,7 +176,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// frontend never inlines these; see buildRootPreviewStyle above).
 	const blockProps = useBlockProps( {
 		className,
-		style: buildRootPreviewStyle( style ),
+		style: buildRootPreviewStyle( attributes, attributes.padding, attributes.margin ),
 	} );
 
 	const ListTag = listStyle === 'numbered' ? 'ol' : 'ul';
@@ -373,7 +370,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /*
 				 * Padding / margin / border-radius — WP-native base tiers
-				 * (style.spacing.padding / style.spacing.margin /
+				 * (padding / margin /
 				 * style.border.radius) unified with the SGS Tablet/Mobile
 				 * tier object attrs in ONE responsive control (mirrors
 				 * sgs/label + sgs/media). Border colour/width/style stay on
@@ -383,38 +380,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

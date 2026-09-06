@@ -11,15 +11,7 @@ import {
   ToggleControl,
   RangeControl,
 } from "@wordpress/components";
-import {
-  SgsColourPanel,
-  DesignTokenPicker,
-  IconPicker,
-  ResponsiveBoxControl,
-  SgsBorderControl,
-  TypographyControls,
-  resolveColourToken,
-} from "../../components";
+import { SgsColourPanel, DesignTokenPicker, IconPicker, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from "../../components";
 import ContainerWrapperControls from "../container/components/ContainerWrapperControls";
 
 const STYLE_OPTIONS = [
@@ -285,53 +277,35 @@ export default function Edit({ attributes, setAttributes }) {
             Dimensions panel); tablet/mobile write to the paddingTablet/paddingMobile
             and marginTablet/marginMobile object attrs read by the wrapper's @media tiers. */}
         <PanelBody title={ __( "Padding & margin", "sgs-blocks" ) } initialOpen={ false }>
-          <ResponsiveBoxControl
-            label={ __( "Padding", "sgs-blocks" ) }
-            presets
-            values={ {
-              base: attributes.style?.spacing?.padding ?? {},
-              tablet: attributes.paddingTablet ?? {},
-              mobile: attributes.paddingMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, padding: next },
-                  },
-                } );
-              } else {
-                setAttributes( {
-                  [ tier === "tablet" ? "paddingTablet" : "paddingMobile" ]: next,
-                } );
-              }
-            } }
-          />
+          <ResponsiveOverride
+          	value={ attributes.padding }
+          	onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Padding', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
           <hr style={ { margin: "16px 0" } } />
-          <ResponsiveBoxControl
-            label={ __( "Margin", "sgs-blocks" ) }
-            presets
-            values={ {
-              base: attributes.style?.spacing?.margin ?? {},
-              tablet: attributes.marginTablet ?? {},
-              mobile: attributes.marginMobile ?? {},
-            } }
-            onChange={ ( tier, next ) => {
-              if ( tier === "base" ) {
-                setAttributes( {
-                  style: {
-                    ...attributes.style,
-                    spacing: { ...attributes.style?.spacing, margin: next },
-                  },
-                } );
-              } else {
-                setAttributes( {
-                  [ tier === "tablet" ? "marginTablet" : "marginMobile" ]: next,
-                } );
-              }
-            } }
-          />
+          <ResponsiveOverride
+          	value={ attributes.margin }
+          	onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+          >
+          	{ ( { ownValue, setOwnValue } ) => (
+          		<SgsBoxControl
+          			label={ __( 'Margin', 'sgs-blocks' ) }
+          			values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+          			units={ BOX_UNITS }
+          			presets
+          			onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+          		/>
+          	) }
+          </ResponsiveOverride>
         </PanelBody>
         {/* Border — block-private width/style/colour attrs (Shape B, 2026-08-30).
             Radius is deliberately NOT mounted here: it stays a WP-native support

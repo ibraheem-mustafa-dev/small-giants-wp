@@ -202,13 +202,13 @@ shape with correct wrapper classes. A full 12-step build plan with 5 locked KJCs
 
 **Trigger:** Before the next multi-page clone run.
 
-### P-CONVERTER-LIVE-CLONE-VERIFY-BATCH — four converter changes are code-complete/merged but share one unmet closure condition: a real live-clone verification run
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-31 (merged)
+### P-CONVERTER-LIVE-CLONE-VERIFY-BATCH — three converter changes are code-complete/merged but share one unmet closure condition: a real live-clone verification run
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-31 (merged); narrowed 2026-09-06 (D975 closed the variant-discriminator item in full — see `memory/parking-archive.md`)
 
-**Why merged.** Four separately-parked entries all reduce to the same residual — the code shipped
+**Why merged.** These separately-parked entries all reduce to the same residual — the code shipped
 and unit tests pass, but nobody has run the converter against a real client draft/clone and read
 the live result. Merging them into one entry means the eventual verification session opens ONE
-item, not four, and can knock all four residuals out in the same pass since they sit on
+item, not several, and can knock all the residuals out in the same pass since they sit on
 overlapping converter surfaces (css_pass.py / variant detection / conformance goldens). Named
 `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` rather than after any one sub-case, since no single original
 slug should read as more important than the others — this is an index, not a rename.
@@ -222,22 +222,7 @@ slug should read as more important than the others — this is an index, not a r
    never verified against a live clone — whether the keyed data actually IMPROVES cloning fidelity
    is an R-31-11/R-31-13 claim that was deferred.
 
-2. **P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL** — nav-drawer/trust-bar variant discrimination
-   must be BEM-structural, not styling-attr-based (design-gated + Bean-approved 2026-07-21).
-   Trust-bar's own case is fixed (structural image controls double as its recogniser; the F6 gate
-   is now a universal ambiguity rule — 2+ variants sharing an identical/empty signature =
-   violation, one zero-signature fallback allowed) and unit-verified, but live-clone verification
-   was never done. **Nav-drawer's own defect (the sub-item this residual pointed at) is RESOLVED**
-   — closed 2026-09-05 via a second, composition-based detection signal rather than a
-   structural/styling attribute fix (D969, archived in `memory/parking-archive.md`); F6 Check #3
-   reports 0 violations for this block, verified live, not re-baselined. **The universal audit is
-   also now substantively covered**, not by a manual walkthrough but by the automated F6 gate
-   itself running clean (0 violations) across every block with `variant_attr` set, plus a new
-   proactive check ("Check #10 — Dead Composition Discriminator") that would catch this exact
-   defect class the moment any future block introduces it. Residual scope narrows to just:
-   trust-bar's own live-clone verification, never done.
-
-3. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
+2. **P-QUOTE-PATH2-SELF-NESTING** — the Path-2 self-nesting bug (an unrecognised child element
    resolving to its own parent block's slug, letting a block self-nest) is CODE RESOLVED and
    merged into `main`. Three universal defences shipped: a recognition self-nest guard (FR-31-11),
    a transparent-wrapper dissolve fixing a silent content-drop class on tab/feature-grid/form-step/
@@ -248,7 +233,7 @@ slug should read as more important than the others — this is an index, not a r
    proof FIRST, never a bare local emit. This is the SAME task as `P-CONFORMANCE-GOLDEN-DRIFT`
    (one 27-failure re-baseline; these 4 are a subset, not extra work).
 
-4. **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the "244px vs 327px height gap" is an
+3. **P-CLONE-TEAM-MEMBER-ITEM-HEIGHT-DIVERGENCE** — the "244px vs 327px height gap" is an
    ENVIRONMENT ARTEFACT: the oracle renders the DRAFT as a bare `file://` fragment (no WP theme)
    and the CLONE as a full themed WP page, and `oracle/batch_runner.py:221` hardcodes
    `_HEIGHT_COMPARABLE = False`, so guard 4 returns passed+measured=False by design and can never
@@ -260,13 +245,12 @@ slug should read as more important than the others — this is an index, not a r
    team-member — verify via Stage 11.6 content-keyed parity, NOT the cross-environment height
    number. Remove this residual once the box-layout tier matches.
 
-**Trigger:** one dedicated converter live-clone-verification session covering all four: (1) run
-the keyed css_property resolver against a real draft and confirm it improves fidelity; (2) same run,
-confirm TRUST-BAR variant detection resolves correctly against a real draft (nav-drawer's own
-resolution — code + F6 gate + live editor-canvas proof — is done, see item 2 above; only
-trust-bar's live-clone leg remains open here); (3) after a canary deploy, re-seed the 4
-self-nesting goldens per `P-CONFORMANCE-GOLDEN-DRIFT`'s discipline; (4) check team-member's
-Stage 11.6 content-keyed parity and strike that residual if it matches.
+**Trigger:** one dedicated converter live-clone-verification session covering the remaining three:
+(1) run the keyed css_property resolver against a real draft and confirm it improves fidelity;
+(2) after a canary deploy, re-seed the 4 self-nesting goldens per `P-CONFORMANCE-GOLDEN-DRIFT`'s
+discipline; (3) check team-member's Stage 11.6 content-keyed parity and strike that residual if it
+matches. (The variant-discriminator item that used to be here — both nav-drawer's and trust-bar's
+live-clone legs — is fully closed; see D974/D975 and `memory/parking-archive.md`.)
 
 ## framework
 

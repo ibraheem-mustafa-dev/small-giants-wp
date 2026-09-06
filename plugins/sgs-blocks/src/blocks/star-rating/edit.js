@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
@@ -7,8 +7,8 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker } from '../../components';
-import { parseSvgGradient, SvgGradientDefs } from '../../utils';
+import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
 // keys, each an already-unit-bearing CSS length string or absent (unset
@@ -31,24 +31,40 @@ function boxShorthand( box ) {
 }
 
 /** Build the wrapper's editor-preview style (mirrors render.php's scoped base declarations). */
-function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+function buildWrapperStyle( attributes, colourPalette ) {
+	const { padding, margin, textColour, textColourGradient, backgroundColour, backgroundColourGradient, borderStyle, borderWidth, borderColour, borderColourGradient, borderRadius } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
-	if ( style?.color?.text ) {
-		wrapperStyle.color = style.color.text;
+	Object.assign( wrapperStyle, textPaintPreview( textColour, textColourGradient, colourPalette ) );
+	Object.assign( wrapperStyle, backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette ) );
+
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth );
+		if ( borderWidthPreview ) {
+			wrapperStyle.borderWidth = borderWidthPreview;
+		}
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = /^#|^rgb|^hsl/.test( borderColour ) ? borderColour : `var(--wp--preset--color--${ borderColour })`;
+		}
+		if ( borderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( borderColourGradient ) ) {
+			wrapperStyle.borderImage = `${ borderColourGradient } 1`;
+		}
 	}
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
+	const radiusBox = borderRadius?.desktop;
+	if ( radiusBox && ( radiusBox.topLeft || radiusBox.topRight || radiusBox.bottomRight || radiusBox.bottomLeft ) ) {
+		wrapperStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => radiusBox[ k ] || '0' ).join( ' ' );
 	}
+
 	return wrapperStyle;
 }
 
@@ -123,12 +139,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		schemaItemName,
 		schemaReviewCount,
 		displayMode,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		borderColour,
+		borderColourGradient,
+		borderColourHover,
+		borderColourHoverGradient,
+		borderStyle,
+		borderWidth,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
+
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// No-inline (contract §A/§5): the `spacing`/`color` supports declare
 	// __experimentalSkipSerialization in block.json, so useBlockProps() no
@@ -137,7 +160,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// frontend's scoped <style> output at desktop width.
 	const blockProps = useBlockProps( {
 		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
-		style: buildWrapperStyle( attributes ),
+		style: buildWrapperStyle( attributes, colourPalette ),
 	} );
 
 	// Style-variation gating — MIRRORS render.php:46-48 exactly (same split, same
@@ -195,6 +218,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const showValue = displayMode === 'stars-with-value' || displayMode === 'stars-with-value-and-count';
 	const showCount = displayMode === 'stars-with-value-and-count';
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const starRatingContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			{ /* Colour panel FIRST — sgs/button pattern (D618/D619). Both rows
@@ -206,6 +237,38 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ ! isTpOfficial && (
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 					{
 						key: 'emptyColour',
 						label: __( 'Empty colour', 'sgs-blocks' ),
@@ -274,42 +337,67 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				{ /* Box-object interface contract §B/§E: padding/margin base routes to
-				   WP-native style.spacing.* (mirrors sgs/heading); tiers are the
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs.
-				   The spacing support declares __experimentalSkipSerialization so base
-				   serialises scoped, not inline. */ }
+				{ /* padding/margin are each a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ borderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ borderStyle }
+						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
+						contrastAgainst={ starRatingContrastAgainst }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

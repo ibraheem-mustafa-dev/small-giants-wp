@@ -47,6 +47,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -81,18 +104,18 @@ $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_sel
 // ---------------------------------------------------------------------------
 
 // WP-native base padding/margin objects (skip-serialised — NOT auto-inlined).
-$base_padding_obj = ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) )
-	? $attributes['style']['spacing']['padding']
+$base_padding_obj = ( ! empty( $sgs_tor_padding_desktop ) )
+	? $sgs_tor_padding_desktop
 	: array();
-$base_margin_obj  = ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) )
-	? $attributes['style']['spacing']['margin']
+$base_margin_obj  = ( ! empty( $sgs_tor_margin_desktop ) )
+	? $sgs_tor_margin_desktop
 	: array();
 
 // SGS custom tier object attrs.
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // SGS flat colour attrs (D635 pattern — native color.text/color.background
 // supports are off; the SgsColourPanel writes here instead).

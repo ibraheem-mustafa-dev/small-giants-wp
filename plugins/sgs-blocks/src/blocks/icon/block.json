@@ -30,29 +30,26 @@
 			"gradients": false,
 			"text": false
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"imageControls": false,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
 				"icon": {
 					"label": "Icon",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "iconColour",
@@ -86,6 +83,18 @@
 		"root": ".wp-block-sgs-icon"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"iconSource": {
 			"type": "string",
 			"default": "lucide",
@@ -145,22 +154,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Padding inside the background shape (circle/pill/rounded/square/outline). Raw CSS length (e.g. 12px, 0.75rem). Empty = theme default (12px). Single uniform value — NOT a 4-side box family (Spec 32 6.1c) — emitted scoped, not inline."
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"linkUrl": {
 			"type": "string",

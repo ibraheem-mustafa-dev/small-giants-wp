@@ -13,16 +13,7 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
-import {
-	SgsColourPanel,
-	ResponsiveControl,
-	ResponsiveBoxControl,
-	TypographyControls,
-	ShadowControl,
-	LinkPopoverField,
-	SgsBorderControl,
-	resolveColourToken,
-} from '../../components';
+import { SgsColourPanel, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, generateItemKey, withStableItemKeys } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -205,58 +196,67 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 // preview matches the frontend (contract §5). Editor-only convenience; the
 // frontend render.php emits every declaration scoped, never inline
 // (contract §A).
-function boxShorthand( box ) {
+function boxShorthand( box, keys = [ 'top', 'right', 'bottom', 'left' ] ) {
 	if ( ! box || 'object' !== typeof box ) return undefined;
-	const { top, right, bottom, left } = box;
-	if ( ! top && ! right && ! bottom && ! left ) return undefined;
-	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
 }
 
 /**
  * Build the editor-canvas preview style for the root element (background/
- * padding/margin/border — all WP-native supports, skip-serialised in
- * block.json so WordPress no longer auto-previews them; hand-built here to
- * match render.php's scoped output, mirroring sgs/quote + sgs/media).
+ * padding/margin/border). Native `color`/border supports are disabled on
+ * this block (block.json `color.background/text/gradients: false`, no
+ * `__experimentalBorder` at all) — background/border are the block's own
+ * `backgroundColour`/`borderWidth`/`borderStyle`/`borderColour`/
+ * `borderRadius` attrs (SgsBorderControl), never WP-native `style.*`.
  */
 function buildWrapperStyle( attributes ) {
-	const { style } = attributes;
+	const {
+		padding,
+		margin,
+		backgroundColour,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+	} = attributes;
 	const wrapperStyle = {};
 
-	if ( style?.color?.background ) {
-		wrapperStyle.backgroundColor = style.color.background;
+	if ( backgroundColour ) {
+		wrapperStyle.backgroundColor = backgroundColour;
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
 
-	const border = style?.border;
-	if ( border?.style && border.style !== 'none' ) {
-		const borderWidthPreview = boxShorthand(
-			'object' === typeof border.width ? border.width : undefined
-		);
-		wrapperStyle.borderWidth = borderWidthPreview || border.width || undefined;
-		wrapperStyle.borderStyle = border.style;
-		if ( border.color ) {
-			wrapperStyle.borderColor = border.color;
+	const borderWidthPreview = boxShorthand( borderWidth );
+	if ( borderStyle && borderStyle !== 'none' ) {
+		wrapperStyle.borderWidth = borderWidthPreview || undefined;
+		wrapperStyle.borderStyle = borderStyle;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
 		}
-	} else if ( border?.color || border?.width ) {
+	} else if ( borderColour || borderWidthPreview ) {
 		// Colour/width set without an explicit style — WP defaults to solid.
-		wrapperStyle.borderWidth = border.width || undefined;
+		wrapperStyle.borderWidth = borderWidthPreview || undefined;
 		wrapperStyle.borderStyle = 'solid';
-		if ( border.color ) {
-			wrapperStyle.borderColor = border.color;
+		if ( borderColour ) {
+			wrapperStyle.borderColor = borderColour;
 		}
 	}
 	const radiusPreview = boxShorthand(
-		'object' === typeof border?.radius ? border.radius : undefined
+		borderRadius?.desktop,
+		[ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
 	);
-	wrapperStyle.borderRadius = radiusPreview || border?.radius || undefined;
+	if ( radiusPreview ) {
+		wrapperStyle.borderRadius = radiusPreview;
+	}
 
 	return Object.fromEntries(
 		Object.entries( wrapperStyle ).filter( ( [ , v ] ) => v !== undefined )
@@ -266,7 +266,6 @@ function buildWrapperStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		logos: rawLogos,
-		style,
 		scrolling,
 		scrollSpeed,
 		scrollDirection,
@@ -308,10 +307,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		effectHover,
 		transitionDuration,
 		transitionEasing,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		nameColourHover,
 	} = attributes;
 
@@ -715,10 +710,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ brandStripContrastAgainst }
 						radiusValues={ {
-								base: attributes.borderRadius?.desktop ?? {},
-								tablet: attributes.borderRadius?.tablet ?? {},
-								mobile: attributes.borderRadius?.mobile ?? {},
-							} }
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
+						} }
 						onRadiusChange={ ( tier, next ) => {
 							const key = tier === 'base' ? 'desktop' : tier;
 							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
@@ -1029,38 +1024,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Strip spacing (responsive)', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

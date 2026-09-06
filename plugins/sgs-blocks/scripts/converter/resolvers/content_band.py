@@ -179,7 +179,7 @@ def _content_band_box_write(decl: Any, ctx: Any) -> Write | list[Write] | GAP | 
 
     prefix = db_lookup.layer_attr_prefix("CONTENT") or ""
     family = f"{prefix}{band_suffix}"
-    object_attr = tier_state_suffix(family, decl, ctx.conn)
+    object_attr = tier_state_suffix(family, decl, ctx.conn, ctx.block_slug)
     box_family = db_lookup.box_family_for(ctx.block_slug, object_attr)
     if box_family != family:
         return None
@@ -312,7 +312,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # Step 4 + 4a: tier suffix THEN interaction-state suffix (universal shared helper,
     # §3.A). A :hover/:focus/:active decl routes to `{base}{Tier}{State}` (validated
     # below) else an honest gap.
-    attr = tier_state_suffix(base_attr, decl, ctx.conn)
+    attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
     if not validate(ctx, attr, decl.value):
         return gap_writer(
             ctx, decl, GapOrigin.NO_DESTINATION,

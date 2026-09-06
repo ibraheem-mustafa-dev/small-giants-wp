@@ -31,8 +31,8 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:background-image": "backgroundColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -83,16 +83,13 @@
 					"borderWidth"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -109,14 +106,21 @@
 			"fontSize": true,
 			"lineHeight": true,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"attribution": {
 			"type": "string",
 			"default": ""
@@ -219,15 +223,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderStyle": {
 			"type": "string",
@@ -288,22 +286,6 @@
 		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"maxWidth": {
 			"type": "object",

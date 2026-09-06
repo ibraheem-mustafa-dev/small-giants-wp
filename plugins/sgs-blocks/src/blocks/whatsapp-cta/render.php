@@ -28,6 +28,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $phone_number          = $attributes['phoneNumber'] ?? '';
@@ -78,16 +101,16 @@ if ( $encoded_message ) {
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised in
 // block.json), passed straight to the style engine which formats + sanitises.
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -117,10 +140,10 @@ if ( isset( $attributes['style']['border']['radius'] ) ) {
 }
 
 // Responsive tiers — SGS custom object attrs.
-$padding_tablet_obj       = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj       = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj        = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj        = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 $border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
 $border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
 

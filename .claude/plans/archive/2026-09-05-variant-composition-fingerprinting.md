@@ -462,3 +462,14 @@ registered in `plugins/sgs-blocks/scripts/db-consistency/run.py`.
    fix further, per Part 1's "out of scope" section).
 4. Check #10 fires on a manufactured positive control and stays silent on
    the real, now-fixed nav-drawer.
+
+## Addendum (2026-09-06, D974) — the `two-column-editorial` collision this plan left open is now closed
+
+This plan's Part 1 correctly scoped `two-column-editorial`/`floating-capped-card`'s collision
+as "real, distinct, unresolved" and out of scope. It stayed genuinely undetectable after this
+plan shipped — verification item 3 above still held. A follow-up session (D974,
+`f351464db`/`3e8006dea`, merged `68378ab86`) fixed the actual cause: `itemFontSize` was seeded
+as a flat number against `sgs/nav-menu`'s tiered schema, and `listColumns` had no CSS-extraction
+route at all — both fixed, confirmed live via `detect_variant()` now returning
+`"two-column-editorial"` for a real-clone-shaped fixture. Do not re-open this collision as a
+gap in THIS plan's scope; it is fully closed, just by later, separate work.

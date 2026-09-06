@@ -27,11 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
@@ -53,16 +48,13 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -80,8 +72,8 @@
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
 						"css:color-gradient": "textColourGradient",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -132,6 +124,18 @@
 		"typography": ".wp-block-sgs-info-box"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"iconPosition": {
 			"type": "string",
 			"default": "top",
@@ -248,22 +252,6 @@
 			"type": "string",
 			"default": "em"
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"backgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
@@ -348,15 +336,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -11,6 +11,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
@@ -143,51 +166,34 @@ $min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_h
 // paddingTablet/paddingMobile + marginTablet/marginMobile OBJECT attrs
 // { top, right, bottom, left } (a missing key = that side unset).
 $base_spacing_padding = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_padding[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_spacing_margin = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_margin[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // Base border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys). Tiers are the
 // borderRadiusTablet/borderRadiusMobile OBJECT attrs (contract §2).
-$base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Typography (custom mode only) — D971/D972 full-replacement track: emitted
 // via the shared sgs_typography_css_rule() helper (root prefix '') rather

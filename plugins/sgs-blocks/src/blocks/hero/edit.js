@@ -14,22 +14,7 @@ import {
 	BoxControl,
 	ToggleControl,
 } from '@wordpress/components';
-import {
-	DesignTokenPicker,
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	ShadowControl,
-	shadowAttrKeys,
-	GradientOverlayControl,
-	gradientOverlayAttrKeys,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsColourPanel,
-	SgsBorderControl,
-	resolveColourToken,
-	TypographyControls,
-} from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
 import {
 	HeroSplitMediaSourceSection,
 	HeroSplitMediaStylingSection,
@@ -975,13 +960,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						] }
 						contrastAgainst={ heroBorderContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -1938,42 +1923,34 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					<ResponsiveSpacingPanel> whose flat paddingTopTablet… attrs the
 					wrapper never read (dead controls, R6 2026-07-10). */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							/* Breakpoint -> attr MAP, never a ternary. check-control-ux.js
-							   recognises this exact shape as its COMPLIANT IDIOM EXEMPTION; a
-							   bare computed ternary reads to the gate as an unwrapped direct
-							   write and fails the build with RESPONSIVE-FAMILY-WITHOUT-SWITCHER.
-							   Identical to container/edit.js. */
-							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							/* Breakpoint -> attr MAP, never a ternary. check-control-ux.js
-							   recognises this exact shape as its COMPLIANT IDIOM EXEMPTION; a
-							   bare computed ternary reads to the gate as an unwrapped direct
-							   write and fails the build with RESPONSIVE-FAMILY-WITHOUT-SWITCHER.
-							   Identical to container/edit.js. */
-							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />

@@ -4,21 +4,40 @@
  * Extracted from the canonical sgs/text + sgs/heading pattern so that EVERY
  * block customises the SAME variables in the SAME way (Bean R-22-13, 2026-06-11).
  *
- * CANONICAL UI (device-icon switcher + integrated UnitControl):
- *   - Font size  → <ResponsiveControl> device-icon switcher wrapping a
- *                  <UnitControl __next40pxDefaultSize > whose displayed value combines the numeric
- *                  breakpoint attr with the shared FontSizeUnit string
- *                  (e.g. attr 18 + unit 'px' → '18px'). onChange: parse the
- *                  combined string back to number (breakpoint attr) + unit
- *                  (FontSizeUnit). When showResponsive=false, a single UnitControl
- *                  without the switcher wrapper.
- *   - Line height → single <UnitControl __next40pxDefaultSize > integrating LineHeight (number) +
- *                  LineHeightUnit (string). The PHP helper emits the unit verbatim:
- *                  '' = unitless (e.g. 1.5 with no suffix), any string = suffixed.
- *                  UnitControl stores '' for the "—" (unitless) option which maps
- *                  to the PHP helper's empty-string semantic (unitless).
- *   - Font weight → SelectControl dropdown (enumerations are fine as dropdowns)
- *   - Font style  → SelectControl dropdown (Normal / Italic)
+ * CANONICAL UI — WordPress's OWN native typography controls, rendered directly
+ * (2026-09-06 rebuild). This panel is not "styled like" core's Typography panel;
+ * with the single unavoidable exception noted below, it IS core's components,
+ * wired to SGS's attribute store (tiered-responsive shape + `prefix` system)
+ * underneath. Every prop contract below was read verbatim from the
+ * `WordPress/gutenberg` `wp/7.1` branch.
+ *
+ *   - Font size    → core <FontSizePicker> (`withSlider`): its own header,
+ *                    preset/custom gear toggle, t-shirt ToggleGroup or dropdown,
+ *                    and UnitControl + RangeControl custom body.
+ *   - Font family  → core <FontFamilyControl>.
+ *   - Weight+style → core <FontAppearanceControl> — ONE combined dropdown, not
+ *                    two separate ones.
+ *   - Line height  → core <LineHeightControl> (unitless stepper). Writes
+ *                    LineHeight and pins LineHeightUnit to '' — the PHP
+ *                    helper's unitless semantic, where the number is emitted
+ *                    with no suffix.
+ *   - Letter space → core <LetterSpacingControl>.
+ *   - Decoration   → core <TextDecorationControl> (icon ToggleGroup).
+ *   - Letter case  → core <TextTransformControl> (icon ToggleGroup).
+ *   - Text align   → FAITHFUL REIMPLEMENTATION of core's TextAlignmentControl.
+ *                    Core's is a PRIVATE API (`private-apis.js` only, needs
+ *                    `unlock()`), so it cannot be imported; it is rebuilt from
+ *                    its real source with the same icons, labels, options and
+ *                    deselect behaviour. See its render site.
+ *
+ * SGS-ONLY, rendered LAST (no WordPress equivalent exists at all):
+ *   - Text wrap    → CSS `text-wrap`. Core has no such control and no
+ *                    `textWrap` typography support anywhere in `packages/`.
+ *   - Hover trio   → decoration/transform/weight on :hover.
+ *
+ * ⛔ Do NOT reintroduce a hand-built lookalike for anything in the first list.
+ * A local copy of a core control drifts from it silently — nothing in this repo
+ * would report that it had.
  *
  * Parameterised by `prefix` so one component drives any element's typography:
  *   prefix ''       → fontSize / fontSizeUnit / fontSizeTablet / fontSizeMobile /
@@ -46,13 +65,36 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { Button, Flex, FlexItem, SelectControl } from '@wordpress/components';
-import { useSettings } from '@wordpress/block-editor';
+import { BaseControl, Flex, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
+// The same four icons core's own TextAlignmentControl imports — see the
+// reimplementation note at its render site for why it is rebuilt, not imported.
+import { alignLeft, alignCenter, alignRight, alignJustify } from '@wordpress/icons';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
-import { UnitControl, ToggleGroupControl, ToggleGroupControlOption } from './primitives';
+import {
+	VStack,
+	UnitControl,
+	NumberControl,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToggleGroupControlOptionIcon,
+	// The REAL WordPress typography controls. Routed through the primitives
+	// barrel (the `__experimental*` compat boundary) rather than imported raw —
+	// `survey-experimental-imports.js --check` fails the build on any raw
+	// `__experimental*` component import outside that one file.
+	FontSizePicker,
+	LineHeightControl,
+	LetterSpacingControl,
+	TextTransformControl,
+	TextDecorationControl,
+	FontAppearanceControl,
+	FontFamilyControl,
+	WritingModeControl,
+} from './primitives';
 import { makeResponsive } from '../utils/responsive';
-import { flattenPresetSetting } from '../utils/presetSettings';
+// ⛔ `flattenPresetSetting` and `useSettings` are deliberately NOT imported.
+// The real core controls read the theme's font-size and font-family presets
+// themselves; see the note at the top of TypographyControlsFields.
 
 /**
  * Multi-target switcher threshold (Bean-approved design, 2026-09-05).
@@ -85,8 +127,20 @@ function isTieredValue( val ) {
 	return val !== null && typeof val === 'object' && ! Array.isArray( val );
 }
 
+/**
+ * The empty-option label used by EVERY typography dropdown.
+ *
+ * WordPress core's own typography dropdowns label their unset option with the
+ * plain word "Default" (never a dash, an em-dash sandwich, or the word
+ * "inherit"). Bean's 2026-09-06 spec adopts that verbatim: a client reads
+ * "Default" as "whatever the theme decides", where "— inherit —" reads as
+ * developer jargon. One constant so a single edit changes every dropdown
+ * rather than eight separate option arrays drifting apart.
+ */
+const SGS_TYPOGRAPHY_DEFAULT_LABEL = __( 'Default', 'sgs-blocks' );
+
 export const SGS_FONT_WEIGHT_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: SGS_TYPOGRAPHY_DEFAULT_LABEL, value: '' },
 	{ label: __( 'Thin (100)', 'sgs-blocks' ), value: '100' },
 	{ label: __( 'Extra-light (200)', 'sgs-blocks' ), value: '200' },
 	{ label: __( 'Light (300)', 'sgs-blocks' ), value: '300' },
@@ -99,7 +153,7 @@ export const SGS_FONT_WEIGHT_OPTIONS = [
 ];
 
 export const SGS_FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: SGS_TYPOGRAPHY_DEFAULT_LABEL, value: '' },
 	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
 	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
 ];
@@ -108,7 +162,7 @@ export const SGS_FONT_STYLE_OPTIONS = [
 // sgs_typography_css_rule — none/underline/line-through/overline and
 // none/uppercase/lowercase/capitalize). '' = inherit (emit nothing).
 export const SGS_TEXT_DECORATION_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: SGS_TYPOGRAPHY_DEFAULT_LABEL, value: '' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
 	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
@@ -116,42 +170,144 @@ export const SGS_TEXT_DECORATION_OPTIONS = [
 ];
 
 export const SGS_TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
+	{ label: SGS_TYPOGRAPHY_DEFAULT_LABEL, value: '' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase' },
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
 ];
 
-// Units for the letter-spacing UnitControl (px/em; '' clears).
-const LETTER_SPACING_UNITS = [
-	{ value: 'px', label: 'px', default: 0 },
-	{ value: 'em', label: 'em', default: 0 },
+/**
+ * text-align enum. Mirrors `sgs/text`'s own TEXT_ALIGN_OPTIONS verbatim (the
+ * reference panel Bean named for row/spacing conventions) so the two blocks
+ * offer an identical vocabulary — only the empty label differs, now "Default".
+ *
+ * ⚠ WordPress core's own alignment control (`TextAlignmentControl`,
+ * `block-editor/src/components/text-alignment-control/`) is a PRIVATE API — it
+ * lives in `private-apis.js` and is deliberately absent from the package's
+ * public `components/index.js`, so it cannot be imported by a plugin at all
+ * (verified against Gutenberg trunk, 2026-09-06). Reimplementing it as a
+ * SelectControl — matching the shape `sgs/text` already ships — is the only
+ * route, not a preference.
+ *
+ * The values match the PHP allowlist in `sgs_typography_css_rule()`
+ * (`left|center|right|justify|start|end`); `start`/`end` are omitted from the
+ * picker for the same reason `sgs/text` omits them — they are RTL-aware
+ * logical values the converter may set, not something a client picks.
+ */
+export const SGS_TEXT_ALIGN_OPTIONS = [
+	{ label: __( 'Align text left', 'sgs-blocks' ), value: 'left', icon: alignLeft },
+	{ label: __( 'Align text center', 'sgs-blocks' ), value: 'center', icon: alignCenter },
+	{ label: __( 'Align text right', 'sgs-blocks' ), value: 'right', icon: alignRight },
+	{ label: __( 'Justify text', 'sgs-blocks' ), value: 'justify', icon: alignJustify },
 ];
 
 /**
- * Units available in the font-size UnitControl.
- * Matching the PHP helper's accepted unit set (px/em/rem, stripped to [a-z]).
+ * CSS `text-wrap` enum.
+ *
+ * ⚠ WordPress core has NO text-wrap control of any kind — a search of the whole
+ * Gutenberg `packages/` tree returns no such component and `core/heading`'s
+ * `supports.typography` does not list it (verified against trunk, 2026-09-06).
+ * This one is genuinely SGS-only, so there is no native shape to mirror.
+ *
+ * `nowrap` and `stable` are carried because `sgs/heading`'s render.php allowlist
+ * already accepts them and the cloning converter can set them on a cloned
+ * heading (heading/render.php `$allowed_text_wrap`). `stable` is deliberately
+ * NOT offered in the picker — it is a re-layout hint with no authoring value —
+ * but a stored `stable` still renders, it simply isn't client-selectable.
  */
-const FONT_SIZE_UNITS = [
+export const SGS_TEXT_WRAP_OPTIONS = [
+	{ label: SGS_TYPOGRAPHY_DEFAULT_LABEL, value: '' },
+	{ label: __( 'Wrap', 'sgs-blocks' ), value: 'wrap' },
+	{ label: __( 'Balance', 'sgs-blocks' ), value: 'balance' },
+	{ label: __( 'Pretty', 'sgs-blocks' ), value: 'pretty' },
+	{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
+];
+
+/**
+ * Units + per-unit starting quantities for the text-indent control.
+ *
+ * Lifted verbatim from core's own `TextIndentControl`, which builds them via
+ * `useCustomUnits({ availableUnits: useSettings('spacing.units') || [ 'px',
+ * 'em', 'rem', 'ch', '%', 'vw', 'vh' ], defaultValues: { px: 16, em: 2,
+ * rem: 2, ch: 2 } })`. Only those four units get a starting quantity in core;
+ * %/vw/vh deliberately get none, and that asymmetry is reproduced rather than
+ * tidied away.
+ */
+const TEXT_INDENT_UNITS = [
 	{ value: 'px', label: 'px', default: 16 },
-	{ value: 'em', label: 'em', default: 1 },
-	{ value: 'rem', label: 'rem', default: 1 },
+	{ value: 'em', label: 'em', default: 2 },
+	{ value: 'rem', label: 'rem', default: 2 },
+	{ value: 'ch', label: 'ch', default: 2 },
+	{ value: '%', label: '%' },
+	{ value: 'vw', label: 'vw' },
+	{ value: 'vh', label: 'vh' },
 ];
 
 /**
- * Units available in the line-height UnitControl.
- * '' = unitless (the PHP helper emits the number with no suffix when the unit
- * string is '' — e.g. line-height:1.5 for a pleasing ratio default).
- * UnitControl uses an empty string for the "—" pseudo-unit option, which maps
- * exactly to the helper's empty-string → unitless semantic.
+ * Text-indent slider bounds, keyed by unit — core's own expression:
+ * `isValueUnitRelative ? 10 : 100` for max and `? 0.1 : 1` for step, where
+ * `isValueUnitRelative` is `[ 'em','rem','%','ch','vw','vh' ].includes(unit)`.
+ *
+ * ⚠ Note the relative set here is NOT the same as the font-size picker's
+ * (`em/rem/vw/vh`) — this one also counts `%` and `ch`. `px` is the only unit
+ * core treats as non-relative for text-indent. Reproduced exactly.
+ *
+ * @param {string} unit The active unit.
+ * @return {{max: number, step: number}} Slider bounds.
  */
-const LINE_HEIGHT_UNITS = [
-	{ value: '', label: '—', default: 1.5 },
-	{ value: 'em', label: 'em', default: 1.5 },
-	{ value: 'rem', label: 'rem', default: 1.5 },
-	{ value: 'px', label: 'px', default: 24 },
-];
+function textIndentSliderBounds( unit ) {
+	const isRelative = [ 'em', 'rem', '%', 'ch', 'vw', 'vh' ].includes( unit );
+	return isRelative ? { max: 10, step: 0.1 } : { max: 100, step: 1 };
+}
+
+/**
+ * ⛔ NO line-height, letter-spacing or font-size-slider constants live here.
+ *
+ * An earlier pass declared SGS copies of core's `BASE_DEFAULT_VALUE` (1.5),
+ * `STEP` (0.01), `SPIN_FACTOR` (10), the font-size slider bounds
+ * (min 0 / max 10-or-100 / step 0.1-or-1) and the letter-spacing unit list with
+ * its per-unit defaults. Every one is now owned by the REAL core control this
+ * file renders — `LineHeightControl`, `FontSizePicker`, `LetterSpacingControl` —
+ * so the copies were DELETED rather than kept in sync.
+ *
+ * That is the whole point of rendering the real components rather than
+ * lookalikes: a copied constant can silently drift from the thing it copies,
+ * and nothing in this repo would ever have told us it had.
+ */
+
+/**
+ * Units offered by the font-size picker.
+ *
+ * ⚠ A PLAIN STRING ARRAY, not the `{ value, label, default }` object array
+ * UnitControl takes. Core's `FontSizePicker` declares
+ * `units?: string[]` and feeds it to `useCustomUnits( { availableUnits } )`,
+ * which builds the object form itself — handing it the object array produces a
+ * picker with no usable units.
+ *
+ * The set is narrower than core's default (`px/em/rem/vw/vh`) on purpose: it
+ * matches the PHP helper's accepted units, which `sgs_responsive_sanitise_unit()`
+ * strips to `[a-z]`. Offering `vw`/`vh` here would let a client choose a unit
+ * the server then renders differently from the editor preview.
+ */
+const FONT_SIZE_UNIT_SLUGS = [ 'px', 'em', 'rem' ];
+
+/**
+ * ⛔ There is deliberately NO line-height unit list any more.
+ *
+ * Line height is UNITLESS-ONLY, matching WordPress core: its `LineHeightControl`
+ * renders `__experimentalNumberControl`, not `UnitControl`, and offers no unit
+ * or measure switcher at all (verified against Gutenberg trunk, 2026-09-06 —
+ * `block-editor/src/components/line-height-control/index.jsx`). A unitless
+ * line-height is also the correct default in CSS: `1.5` inherits as a RATIO
+ * recomputed against each descendant's own font-size, whereas `1.5em` inherits
+ * as a fixed computed length and silently breaks nested text.
+ *
+ * The stepper therefore writes `{prefix}LineHeightUnit: ''` alongside the
+ * number. The PHP helper's `''` → unitless semantic is unchanged, so this needs
+ * no server-side edit: `sgs_typography_css_rule()` already emits the bare
+ * number when the unit string is empty (helpers-typography.php, `$line_unit`).
+ */
 
 /**
  * Build the attribute name for a given prefix + base (camelCase).
@@ -188,6 +344,15 @@ export function typographyAttrKeys( prefix ) {
 		textTransform: typographyAttrName( prefix, 'TextTransform' ),
 		letterSpacing: typographyAttrName( prefix, 'LetterSpacing' ),
 		letterSpacingUnit: typographyAttrName( prefix, 'LetterSpacingUnit' ),
+		textColumns: typographyAttrName( prefix, 'TextColumns' ),
+		textIndent: typographyAttrName( prefix, 'TextIndent' ),
+		writingMode: typographyAttrName( prefix, 'WritingMode' ),
+		// OPT-IN fields (showTextAlign / showTextWrap). Present in the key map
+		// unconditionally so `targetHasCustomValues` can see them; a block that
+		// does not declare the attribute simply reads `undefined` there, which
+		// the modified-indicator scan already treats as unset.
+		textAlign: typographyAttrName( prefix, 'TextAlign' ),
+		textWrap: typographyAttrName( prefix, 'TextWrap' ),
 		// Hover companions (D309). Consumed only when showHover is enabled AND the
 		// block declares + renders them (else the dead-control gate flags it).
 		fontWeightHover: typographyAttrName( prefix, 'FontWeightHover' ),
@@ -270,6 +435,15 @@ function parseUnitValue( raw, currentUnit ) {
  *   scale as a dropdown. OPT-IN: only pass true when the block's
  *   {prefix}FontSize attr is typed ["number","string"] — on a number-only
  *   attr WP discards the stored slug at render (silent-discard class, D338).
+ * @param {boolean}  [props.showTextAlign=false] Offer a text-align dropdown.
+ *   OPT-IN: only pass true when the block declares {prefix}TextAlign. Emitted
+ *   server-side by sgs_typography_css_rule() (allowlist
+ *   left|center|right|justify|start|end).
+ * @param {boolean}  [props.showTextWrap=false] Offer a CSS text-wrap dropdown.
+ *   OPT-IN: only pass true when the block declares {prefix}TextWrap. Emitted
+ *   server-side by sgs_typography_css_rule() (allowlist
+ *   wrap|nowrap|balance|pretty|stable). WordPress core has no equivalent
+ *   control — this one is SGS-only.
  * @param {boolean}  [props.showFontFamily=false] Offer a font-family picker
  *   sourced from the theme.json `typography.fontFamilies` preset list (same
  *   opt-in shape as fontSizePresets). OPT-IN: only pass true when the block
@@ -292,32 +466,37 @@ function TypographyControlsFields( {
 	showDecoration = false,
 	showTransform = false,
 	showLetterSpacing = false,
+	showTextAlign = false,
+	showTextWrap = false,
+	showTextColumns = false,
+	showTextIndent = false,
+	showWritingMode = false,
 	showHover = false,
 } ) {
 	const k = typographyAttrKeys( prefix );
 
-	// Weight / Style / Line height / Letter spacing default COLLAPSED behind a
-	// "More typography options" toggle (Bean-requested compact-by-default
-	// pass, 2026-08-19) — mirrors WP core's own opt-in-via-menu disclosure
-	// pattern rather than rendering all four unconditionally. Local UI state
-	// only: it governs render visibility, never whether the attribute exists
-	// or is reachable — a block that already has a value stored in one of
-	// these four still shows it once expanded, same as before this change.
-	const [ moreOpen, setMoreOpen ] = useState( false );
-	const hasMoreFields = showWeight || showStyle || showLineHeight || showLetterSpacing;
+	// ⛔ NO "More typography options" disclosure. Every field renders expanded,
+	// always. The 2026-08-19 compact-by-default pass collapsed weight / style /
+	// line height / letter spacing behind a Button; Bean REVERSED that on
+	// 2026-09-06 after comparing the panel against core/heading's, whose fields
+	// are likewise all visible. A control a client cannot see is a control they
+	// do not know exists — and the row-pairing below already recovers the
+	// vertical space the disclosure was introduced to save.
 
-	// MEASURED live on the canary 2026-08-19: this resolves to an origin-keyed
-	// OBJECT ({ theme, custom }), not an array. `?? []` does not guard that —
-	// the object is truthy, so `.map` threw and unmounted the whole inspector.
-	// flattenPresetSetting() always returns an array. See utils/presetSettings.js.
-	const [ themeFontFamilies ] = useSettings( 'typography.fontFamilies' );
-	const fontFamilyOptions = [
-		{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-		...flattenPresetSetting( themeFontFamilies ).map( ( f ) => ( {
-			label: f.name || f.slug,
-			value: f.fontFamily,
-		} ) ),
-	];
+	// ⛔ NO useSettings() calls and NO flattenPresetSetting() here any more.
+	//
+	// This component used to read `typography.fontFamilies` and
+	// `typography.fontSizes` itself and hand-build option arrays from them.
+	// Both real core controls source those settings THEMSELVES —
+	// `FontFamilyControl` falls back to `useSettings( 'typography.fontFamilies' )`
+	// when `fontFamilies` is omitted, and the block-editor `FontSizePicker`
+	// wrapper force-overrides `fontSizes`/`disableCustomFontSizes` from settings
+	// after spreading our props, so anything we passed would be discarded.
+	//
+	// This also retires the origin-keyed-object crash that
+	// `flattenPresetSetting()` existed to guard here (an object, not an array,
+	// so `.map` threw and unmounted the inspector — measured on the canary
+	// 2026-08-19): core's own controls handle that shape internally.
 
 	// Each property's tier shape is read from the CURRENTLY STORED value, not
 	// hardcoded per-block — the tier-object migration runs property-by-property,
@@ -328,18 +507,6 @@ function TypographyControlsFields( {
 	const lineHeightIsTiered = isTieredValue( lineHeightRaw );
 	const letterSpacingRaw  = attributes[ k.letterSpacing ];
 	const letterSpacingIsTiered = isTieredValue( letterSpacingRaw );
-
-	// Theme preset font-size scale. MEASURED live on the canary 2026-08-19:
-	// origin-keyed OBJECT ({ default, theme, custom }), same crash shape as
-	// fontFamilies above. Hook must run unconditionally.
-	const [ themeFontSizes ] = useSettings( 'typography.fontSizes' );
-	const fontSizePresetOptions = [
-		{ label: __( '— none —', 'sgs-blocks' ), value: '' },
-		...flattenPresetSetting( themeFontSizes ).map( ( size ) => ( {
-			label: `${ size.name || size.slug } (${ size.size })`,
-			value: size.slug,
-		} ) ),
-	];
 
 	/**
 	 * onChange for the preset-size dropdown. A preset is global (no device
@@ -381,6 +548,27 @@ function TypographyControlsFields( {
 			[ k.letterSpacing ]: num,
 			[ k.letterSpacingUnit ]: unit,
 		} );
+	}
+
+	/**
+	 * onChange for the letter-spacing control in TIERED mode, writing ONLY the
+	 * active tier via ResponsiveOverride's setOwnValue — the exact shape
+	 * onFontSizeChangeTiered() uses.
+	 *
+	 * ⛔ Never call setAttributes with a freshly-built `{ [tier]: value }`
+	 * object here. `setOwnValue` spreads the EXISTING tier object first; a bare
+	 * write would silently drop the other two tiers, and WordPress applies no
+	 * schema validation inside a tier object to catch it.
+	 *
+	 * @param {Function} setOwnValue Writer for the active tier.
+	 * @param {string}   raw         Raw value from the control.
+	 */
+	function onLetterSpacingChangeTiered( setOwnValue, raw ) {
+		const { num, unit } = parseUnitValue( raw, currentLetterSpacingUnit );
+		setOwnValue( num );
+		if ( unit !== currentLetterSpacingUnit ) {
+			setAttributes( { [ k.letterSpacingUnit ]: unit } );
+		}
 	}
 
 	// Shared unit across all breakpoints. Default 'px' if unset.
@@ -431,39 +619,132 @@ function TypographyControlsFields( {
 		}
 	}
 
-	const currentLineHeightUnit = attributes[ k.lineHeightUnit ] !== undefined
-		? attributes[ k.lineHeightUnit ]
-		: '';
 	const currentLineHeightValue = lineHeightIsTiered
 		? lineHeightRaw?.desktop
 		: lineHeightRaw;
 
 	/**
-	 * onChange for the line-height UnitControl.
-	 * Writes the numeric part to lineHeight and the unit to lineHeightUnit.
-	 * The PHP helper emits the number with no suffix when unit === '' (unitless).
+	 * onChange for the line-height STEPPER (NumberControl).
 	 *
-	 * @param {string} raw Raw value from UnitControl onChange.
+	 * Line height is unitless-only now (see the LINE_HEIGHT_UNITS tombstone
+	 * above), so this writes the bare number and pins the companion unit attr
+	 * to `''` — the PHP helper's unitless semantic. Pinning it rather than
+	 * leaving it alone is deliberate: a block whose `block.json` still declares
+	 * `lineHeightUnit` with a `"default": "em"` (most of them do) would
+	 * otherwise render `1.5em` while this control displays a bare `1.5`, i.e.
+	 * the number the client typed would not be the number the page renders.
+	 *
+	 * NumberControl hands back a STRING (or undefined when cleared).
+	 *
+	 * @param {string|undefined} raw Raw value from NumberControl onChange.
 	 */
 	function onLineHeightChange( raw ) {
-		const { num, unit } = parseUnitValue( raw, currentLineHeightUnit );
+		const parsed = ( raw === undefined || raw === null || '' === String( raw ).trim() )
+			? undefined
+			: parseFloat( raw );
+		const num = ( parsed === undefined || isNaN( parsed ) ) ? undefined : parsed;
 		if ( lineHeightIsTiered ) {
 			setAttributes( {
 				[ k.lineHeight ]: makeResponsive( { ...( lineHeightRaw || {} ), desktop: num } ),
-				[ k.lineHeightUnit ]: unit,
+				[ k.lineHeightUnit ]: '',
 			} );
 			return;
 		}
 		setAttributes( {
 			[ k.lineHeight ]: num,
-			[ k.lineHeightUnit ]: unit,
+			[ k.lineHeightUnit ]: '',
 		} );
 	}
 
+	/**
+	 * onChange for the line-height stepper in TIERED mode, writing ONLY the
+	 * active tier via ResponsiveOverride's setOwnValue — the exact shape
+	 * onFontSizeChangeTiered() uses.
+	 *
+	 * ⛔ Never call setAttributes with a freshly-built `{ [tier]: value }`
+	 * object here (see onLetterSpacingChangeTiered's note — same trap).
+	 *
+	 * @param {Function}         setOwnValue Writer for the active tier.
+	 * @param {string|undefined} raw         Raw value from NumberControl.
+	 */
+	function onLineHeightChangeTiered( setOwnValue, raw ) {
+		const parsed = ( raw === undefined || raw === null || '' === String( raw ).trim() )
+			? undefined
+			: parseFloat( raw );
+		setOwnValue( ( parsed === undefined || isNaN( parsed ) ) ? undefined : parsed );
+		// Line height is unitless-only; pin the companion unit the same way the
+		// flat path does, so the displayed number is the rendered number.
+		if ( '' !== ( attributes[ k.lineHeightUnit ] ?? '' ) ) {
+			setAttributes( { [ k.lineHeightUnit ]: '' } );
+		}
+	}
+
+	/**
+	 * The font-size field: THE REAL core `FontSizePicker`.
+	 *
+	 * It brings its own header ("Font size" label + the gear that toggles
+	 * between preset and custom), its own preset body (a t-shirt-size
+	 * ToggleGroup at <=5 presets, a dropdown above that — core's
+	 * `MAX_TOGGLE_GROUP_SIZES`), and its own custom body (UnitControl +
+	 * RangeControl). We pass `withSlider` so the slider is present, and
+	 * `withReset={ false }` because clearing is already reachable through the
+	 * unit input and, on a tiered attribute, through ResponsiveOverride's own
+	 * "Reset to inherited".
+	 *
+	 * ⚠ We import the BLOCK-EDITOR FontSizePicker, not the components one. The
+	 * block-editor build is a settings-aware wrapper that force-overrides
+	 * `fontSizes` and `disableCustomFontSizes` from `useSettings` AFTER
+	 * spreading our props — so passing our own `fontSizes` would be silently
+	 * discarded. That is exactly what we want here (the theme's preset scale is
+	 * the same source `flattenPresetSetting` was reading), but it does mean
+	 * `fontSizePresets={ false }` cannot suppress the preset body; see the
+	 * `disableCustomFontSizes` note on the call itself.
+	 *
+	 * ⚠ `valueMode` is ASYMMETRIC and this is the trap the wiring turns on.
+	 * It changes only how `value` is READ (matched against `fontSize.slug` vs
+	 * `fontSize.size`). `onChange` ALWAYS emits the literal SIZE as its first
+	 * argument; the slug arrives as the optional SECOND argument
+	 * (`selectedItem`). So "did the client pick a preset?" is answered by
+	 * `selectedItem` being present, never by inspecting the first argument.
+	 *
+	 * @param {Object}                args
+	 * @param {number|string|undefined} args.value    Numeric size, or a preset slug.
+	 * @param {Function}              args.onChange   Receives a UnitControl-style string.
+	 * @param {Function}              args.onPreset   Receives a preset slug (or '').
+	 * @return {JSX.Element} The picker.
+	 */
+	function renderFontSizeRow( { value, onChange, onPreset } ) {
+		const isSlug = typeof value === 'string' && '' !== value;
+		return (
+			<FontSizePicker
+				value={ isSlug ? value : composeUnitValue( value, currentFontSizeUnit ) }
+				valueMode={ isSlug ? 'slug' : 'literal' }
+				withSlider
+				withReset={ false }
+				units={ FONT_SIZE_UNIT_SLUGS }
+				onChange={ ( next, selectedItem ) => {
+					// A preset was chosen — store the SLUG, not the resolved size,
+					// so the client's size follows the theme if the theme changes.
+					if ( selectedItem?.slug ) {
+						onPreset( selectedItem.slug );
+						return;
+					}
+					// Cleared entirely.
+					if ( next === undefined || next === null || '' === next ) {
+						onPreset( '' );
+						onChange( '' );
+						return;
+					}
+					onChange( String( next ) );
+				} }
+			/>
+		);
+	}
+
 	// Font size, in whichever of the 3 shapes applies (tiered / responsive /
-	// static) — extracted to a variable so it can sit in a FlexItem paired
-	// with Preset size below, instead of each shape owning its own full-width
-	// row (Bean-requested compact pass, 2026-08-19).
+	// static). Every shape renders the SAME real FontSizePicker via
+	// renderFontSizeRow() — the shapes differ only in where the value is read
+	// from and written to, never in what the client sees.
 	let fontSizeField = null;
 	if ( showSize && showResponsive && fontSizeIsTiered ) {
 		fontSizeField = (
@@ -472,201 +753,480 @@ function TypographyControlsFields( {
 				value={ fontSizeRaw }
 				onChange={ ( obj ) => setAttributes( { [ k.fontSize ]: obj } ) }
 			>
-				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<UnitControl
-						label={ __( 'Font size', 'sgs-blocks' ) }
-						hideLabelFromVision
-						value={ composeUnitValue( inherited ? undefined : ownValue, currentFontSizeUnit ) }
-						placeholder={ inherited ? composeUnitValue( effectiveValue, currentFontSizeUnit ) : undefined }
-						units={ FONT_SIZE_UNITS }
-						onChange={ ( val ) => onFontSizeChangeTiered( setOwnValue, val ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				) }
+				{ ( { ownValue, inherited, setOwnValue } ) =>
+					renderFontSizeRow( {
+						value: inherited ? undefined : ownValue,
+						onChange: ( val ) => onFontSizeChangeTiered( setOwnValue, val ),
+						onPreset: onFontSizePresetChange,
+					} )
+				}
 			</ResponsiveOverride>
 		);
 	} else if ( showSize && showResponsive && ! fontSizeIsTiered ) {
 		fontSizeField = (
 			<ResponsiveControl label={ __( 'Font size', 'sgs-blocks' ) }>
-				{ ( breakpoint ) => (
-					<UnitControl
-						label={ __( 'Font size', 'sgs-blocks' ) }
-						hideLabelFromVision
-						value={ composeUnitValue(
-							attributes[ fontSizeAttrMap[ breakpoint ] ],
-							currentFontSizeUnit
-						) }
-						units={ FONT_SIZE_UNITS }
-						onChange={ ( val ) => onFontSizeChange( breakpoint, val ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				) }
+				{ ( breakpoint ) =>
+					renderFontSizeRow( {
+						value: attributes[ fontSizeAttrMap[ breakpoint ] ],
+						onChange: ( val ) => onFontSizeChange( breakpoint, val ),
+						onPreset: onFontSizePresetChange,
+					} )
+				}
 			</ResponsiveControl>
 		);
 	} else if ( showSize && ! showResponsive ) {
-		fontSizeField = (
-			<UnitControl
-				label={ __( 'Font size', 'sgs-blocks' ) }
-				value={ composeUnitValue(
-					fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ],
-					currentFontSizeUnit
-				) }
-				units={ FONT_SIZE_UNITS }
-				onChange={ ( val ) => onFontSizeChange( 'desktop', val ) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			/>
-		);
+		fontSizeField = renderFontSizeRow( {
+			value: fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ],
+			onChange: ( val ) => onFontSizeChange( 'desktop', val ),
+			onPreset: onFontSizePresetChange,
+		} );
 	}
 
 	return (
-		<>
-			{ /* Preset size + Font size share one row, half-width each — both are
-			     measurement/selection controls for the SAME property, so pairing
-			     them (rather than each taking a full-width row) halves the height
-			     this pair costs without losing either field. */ }
-			{ ( ( showSize && fontSizePresets ) || fontSizeField ) && (
-				<Flex gap={ 2 } align="flex-start">
-					{ showSize && fontSizePresets && (
-						<FlexItem isBlock>
-							<SelectControl
-								label={ __( 'Preset size', 'sgs-blocks' ) }
-								value={ ( () => {
-									const desktopVal = fontSizeIsTiered ? fontSizeRaw?.desktop : attributes[ k.fontSize ];
-									return typeof desktopVal === 'string' ? desktopVal : '';
-								} )() }
-								options={ fontSizePresetOptions }
-								onChange={ onFontSizePresetChange }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</FlexItem>
-					) }
-					{ fontSizeField && <FlexItem isBlock>{ fontSizeField }</FlexItem> }
-				</Flex>
-			) }
+		/* ONE VStack owns the vertical rhythm for every row below.
+		 *
+		 * Before this pass each field brought its own margin (or suppressed it
+		 * with __nextHasNoMarginBottom and brought none), so the gaps between
+		 * rows were inconsistent — the specific complaint Bean raised comparing
+		 * sgs/heading against sgs/text. Spacing is now declared ONCE here and
+		 * every row inherits it, so no future row can drift. */
+		<VStack spacing={ 3 }>
+			{ /* ── Font size ── THE REAL core FontSizePicker, which brings its
+			     own "Font size" header and preset/custom gear toggle. No SGS
+			     label wrapper: adding one would double the heading. */ }
+			{ fontSizeField }
 
+			{ /* ── Font family ── THE REAL core control. It sources the theme's
+			     font families itself via useSettings when `fontFamilies` is
+			     omitted, renders `Default` as its own empty option, and matches
+			     `value` against the fontFamily CSS STRING (its `option.key`) —
+			     which is exactly what this attribute stores, per the PHP
+			     helper's own docblock ("the raw CSS font-family VALUE, not a
+			     slug"). It returns null by itself when the theme defines none. */ }
 			{ showFontFamily && (
-				<SelectControl
-					label={ __( 'Font family', 'sgs-blocks' ) }
+				<FontFamilyControl
 					value={ attributes[ k.fontFamily ] || '' }
-					options={ fontFamilyOptions }
-					onChange={ ( val ) => setAttributes( { [ k.fontFamily ]: val || undefined } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) =>
+						setAttributes( { [ k.fontFamily ]: val || undefined } )
+					}
 				/>
 			) }
 
-			{ /* Weight / Style / Line height / Letter spacing default COLLAPSED —
-			     see the moreOpen state comment above the function body. Whatever
-			     is already stored keeps working the moment this is expanded; this
-			     toggle only changes what renders by default, never what exists. */ }
-			{ hasMoreFields && (
-				<Button
-					variant="link"
-					onClick={ () => setMoreOpen( ( v ) => ! v ) }
-					aria-expanded={ moreOpen }
-					style={ { marginBottom: '8px' } }
-				>
-					{ moreOpen
-						? __( 'Hide weight, style & spacing', 'sgs-blocks' )
-						: __( 'More typography options', 'sgs-blocks' ) }
-				</Button>
+			{ /* ── Appearance ── THE REAL core FontAppearanceControl: ONE
+			     dropdown combining weight and style, not two. It relabels
+			     itself ("Appearance" / "Font weight" / "Font style") from the
+			     two has* flags, and returns false on its own when both are off.
+
+			     ⚠ `value` is REQUIRED and destructured as `{ fontStyle,
+			     fontWeight }` — passing undefined throws. Always pass the
+			     object, with undefined MEMBERS for unset.
+
+			     ⚠ onChange emits the option's `style` OBJECT, and selecting
+			     Default emits `{ fontStyle: undefined, fontWeight: undefined }`.
+			     Both members are normalised to '' on the way into
+			     setAttributes because these attributes are declared
+			     `"type":"string"` with a '' default — writing undefined would
+			     leave the previous stored value untouched instead of clearing
+			     it. Weight is String()-coerced so it round-trips against
+			     core's own option values. */ }
+			{ ( showWeight || showStyle ) && (
+				<FontAppearanceControl
+					value={ {
+						fontStyle: attributes[ k.fontStyle ] || undefined,
+						fontWeight: attributes[ k.fontWeight ] || undefined,
+					} }
+					hasFontStyles={ !! showStyle }
+					hasFontWeights={ !! showWeight }
+					onChange={ ( next ) =>
+						setAttributes( {
+							...( showStyle
+								? { [ k.fontStyle ]: next?.fontStyle ?? '' }
+								: {} ),
+							...( showWeight
+								? {
+										[ k.fontWeight ]:
+											next?.fontWeight === undefined ||
+											next?.fontWeight === null
+												? ''
+												: String( next.fontWeight ),
+								  }
+								: {} ),
+						} )
+					}
+				/>
 			) }
 
-			{ moreOpen && ( showWeight || showStyle ) && (
-				<Flex gap={ 2 } align="flex-start">
-					{ showWeight && (
-						<FlexItem isBlock>
-							<SelectControl
-								label={ __( 'Weight', 'sgs-blocks' ) }
-								value={ attributes[ k.fontWeight ] || '' }
-								options={ SGS_FONT_WEIGHT_OPTIONS }
-								onChange={ ( val ) => setAttributes( { [ k.fontWeight ]: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</FlexItem>
-					) }
-					{ showStyle && (
-						<FlexItem isBlock>
-							<SelectControl
-								label={ __( 'Style', 'sgs-blocks' ) }
-								value={ attributes[ k.fontStyle ] || '' }
-								options={ SGS_FONT_STYLE_OPTIONS }
-								onChange={ ( val ) => setAttributes( { [ k.fontStyle ]: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</FlexItem>
-					) }
-				</Flex>
-			) }
-
-			{ moreOpen && ( showLineHeight || showLetterSpacing ) && (
+			{ /* ── Line height + Letter spacing ── paired two-per-row.
+			     Line height is a UNITLESS STEPPER: NumberControl with custom
+			     spin buttons and a GREYED 1.5 placeholder when unset, exactly
+			     reproducing core's LineHeightControl (which is itself a
+			     NumberControl, not a UnitControl — no measure switcher exists
+			     on it, verified against Gutenberg trunk 2026-09-06).
+			     Letter spacing keeps its unit switcher and stays EMPTY when
+			     unset — no placeholder number, per Bean's spec. */ }
+			{ ( showLineHeight || showLetterSpacing ) && (
 				<Flex gap={ 2 } align="flex-start">
 					{ showLineHeight && (
 						<FlexItem isBlock>
-							<UnitControl
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								value={ composeUnitValue(
-									currentLineHeightValue,
-									currentLineHeightUnit
-								) }
-								units={ LINE_HEIGHT_UNITS }
-								onChange={ onLineHeightChange }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
+							{ /* THE REAL core control. It owns its own
+							   placeholder (1.5), step (0.01), spinFactor (10),
+							   min (0) and `spinControls="custom"` internally —
+							   we pass NONE of them, so there is nothing here to
+							   drift out of sync with core. Unset is signalled by
+							   passing undefined; it substitutes its own
+							   RESET_VALUE ('') to stay a controlled input.
+
+							   TIER-AWARE, exactly like font size above: when the
+							   stored value is a {desktop,tablet,mobile} OBJECT it
+							   is wrapped in <ResponsiveOverride>, so ONE control
+							   edits whichever tier the global device toggle has
+							   selected. There are no separate tablet/mobile
+							   siblings — those were the bolted-on shape this
+							   replaced (2026-09-06).
+
+							   ⚠ `placeholder` is genuinely forwarded here:
+							   core's LineHeightControl sets its own
+							   `placeholder={BASE_DEFAULT_VALUE}` BEFORE spreading
+							   `{...otherProps}`, so ours overrides it. That makes
+							   an inherited tier show the INHERITED number greyed,
+							   rather than a misleading 1.5. */ }
+							{ lineHeightIsTiered ? (
+								<ResponsiveOverride
+									label={ __( 'Line height', 'sgs-blocks' ) }
+									value={ lineHeightRaw }
+									onChange={ ( obj ) =>
+										setAttributes( { [ k.lineHeight ]: obj } )
+									}
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<LineHeightControl
+											value={
+												inherited || ownValue === '' || ownValue === undefined
+													? undefined
+													: ownValue
+											}
+											placeholder={
+												inherited && effectiveValue !== undefined
+													&& effectiveValue !== null && '' !== effectiveValue
+													? effectiveValue
+													: undefined
+											}
+											onChange={ ( val ) =>
+												onLineHeightChangeTiered( setOwnValue, val )
+											}
+											__unstableInputWidth="100%"
+										/>
+									) }
+								</ResponsiveOverride>
+							) : (
+								<LineHeightControl
+									value={
+										( currentLineHeightValue === undefined
+											|| currentLineHeightValue === null
+											|| '' === currentLineHeightValue )
+											? undefined
+											: currentLineHeightValue
+									}
+									onChange={ onLineHeightChange }
+									__unstableInputWidth="100%"
+								/>
+							) }
 						</FlexItem>
 					) }
 					{ showLetterSpacing && (
 						<FlexItem isBlock>
-							<UnitControl
-								label={ __( 'Letter spacing', 'sgs-blocks' ) }
+							{ /* THE REAL core control. It sources its own unit
+							   list from the theme (`useSettings('spacing.units')`,
+							   falling back to px/em/rem) and its own per-unit
+							   default quantities — so SGS no longer declares
+							   either. It speaks whole CSS length STRINGS
+							   ('2px'), which we split back into our stored
+							   number + unit pair on the way in and out. */ }
+							{ /* TIER-AWARE, same shape as line height and font size
+							   above. `placeholder` passes straight through to the
+							   underlying UnitControl — LetterSpacingControl
+							   spreads `{...otherProps}` FIRST and never sets a
+							   placeholder of its own — so an inherited tier shows
+							   the inherited length greyed. */ }
+							{ letterSpacingIsTiered ? (
+								<ResponsiveOverride
+									label={ __( 'Letter spacing', 'sgs-blocks' ) }
+									value={ letterSpacingRaw }
+									onChange={ ( obj ) =>
+										setAttributes( { [ k.letterSpacing ]: obj } )
+									}
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<LetterSpacingControl
+											value={ composeUnitValue(
+												inherited ? undefined : ownValue,
+												currentLetterSpacingUnit
+											) }
+											placeholder={
+												inherited
+													? composeUnitValue(
+															effectiveValue,
+															currentLetterSpacingUnit
+													  )
+													: undefined
+											}
+											onChange={ ( val ) =>
+												onLetterSpacingChangeTiered( setOwnValue, val )
+											}
+											__unstableInputWidth="100%"
+										/>
+									) }
+								</ResponsiveOverride>
+							) : (
+							<LetterSpacingControl
 								value={ composeUnitValue(
 									currentLetterSpacingValue,
 									currentLetterSpacingUnit
 								) }
-								units={ LETTER_SPACING_UNITS }
 								onChange={ onLetterSpacingChange }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+								__unstableInputWidth="100%"
 							/>
+							) }
 						</FlexItem>
 					) }
 				</Flex>
 			) }
 
+			{ /* ── Line indent + Columns ── core render positions 7 and 8,
+			     immediately after Line height (5) / Letter spacing (6) and
+			     before Decoration (9). Both are paragraph-only in core
+			     (`core/heading` declares neither), so both are OPT-IN here.
+
+			     "Line indent" is a FAITHFUL REIMPLEMENTATION — core's
+			     TextIndentControl is a PRIVATE API (absent from the package's
+			     public components/index.js), the same situation as
+			     TextAlignmentControl. Rebuilt from its real source: the
+			     with-slider branch is BaseControl.VisualLabel + Flex[ UnitControl,
+			     RangeControl ], the UnitControl carries min=0 and hides its
+			     label, and the RangeControl is withInputField={false},
+			     initialPosition={0}, with core's own unit-dependent max/step.
+			     ⚠ Its label is "Line indent", NOT "Text indent". */ }
+			{ ( showTextIndent || showTextColumns ) && (
+				<VStack spacing={ 1 }>
+					{ showTextIndent && (
+						<VStack spacing={ 1 }>
+							<BaseControl.VisualLabel>
+								{ __( 'Line indent', 'sgs-blocks' ) }
+							</BaseControl.VisualLabel>
+							{ ( () => {
+								const raw = attributes[ k.textIndent ] || '';
+								const parsed = parseUnitValue( raw, 'px' );
+								const bounds = textIndentSliderBounds( parsed.unit );
+								return (
+									<Flex gap={ 2 } align="flex-end">
+										<FlexItem isBlock>
+											<UnitControl
+												label={ __( 'Line indent', 'sgs-blocks' ) }
+												hideLabelFromVision
+												value={ raw }
+												units={ TEXT_INDENT_UNITS }
+												min={ 0 }
+												onChange={ ( val ) =>
+													setAttributes( { [ k.textIndent ]: val ?? '' } )
+												}
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										</FlexItem>
+										<FlexItem isBlock style={ { flexGrow: 2 } }>
+											<RangeControl
+												label={ __( 'Line indent', 'sgs-blocks' ) }
+												hideLabelFromVision
+												value={ parsed.num }
+												withInputField={ false }
+												initialPosition={ 0 }
+												min={ 0 }
+												max={ bounds.max }
+												step={ bounds.step }
+												onChange={ ( val ) =>
+													setAttributes( {
+														[ k.textIndent ]:
+															val === undefined || val === null
+																? ''
+																: `${ val }${ parsed.unit || 'px' }`,
+													} )
+												}
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										</FlexItem>
+									</Flex>
+								);
+							} )() }
+						</VStack>
+					) }
+					{ showTextColumns && (
+						<NumberControl
+							label={ __( 'Columns', 'sgs-blocks' ) }
+							min={ 1 }
+							max={ 6 }
+							spinControls="custom"
+							initialPosition={ 1 }
+							value={
+								attributes[ k.textColumns ] === undefined
+									|| attributes[ k.textColumns ] === null
+									|| '' === attributes[ k.textColumns ]
+									? ''
+									: attributes[ k.textColumns ]
+							}
+							onChange={ ( val ) => {
+								const parsed = ( val === undefined || val === null
+									|| '' === String( val ).trim() )
+									? undefined
+									: parseInt( val, 10 );
+								setAttributes( {
+									[ k.textColumns ]:
+										parsed === undefined || isNaN( parsed ) ? undefined : parsed,
+								} );
+							} }
+						/>
+					) }
+				</VStack>
+			) }
+
+			{ /* ── Decoration + Letter case ── THE REAL core controls: icon
+			     ToggleGroupControls, not dropdowns. Each owns its own option
+			     list, icons and labels ("Decoration" / "Letter case"), so SGS
+			     declares none of them.
+
+			     ⚠ These have NO "Default" option and that is CORRECT, not an
+			     omission: core makes them `isDeselectable`, so clicking the
+			     already-selected option returns to unset and emits `undefined`.
+			     Their `None` option is the real CSS keyword `none`, a DIFFERENT
+			     state from unset. We normalise the deselect `undefined` to ''
+			     because our attributes are declared `"type": "string"` with a
+			     '' default — writing undefined would leave the previous stored
+			     value in place rather than clearing it. */ }
 			{ ( showDecoration || showTransform ) && (
 				<Flex gap={ 2 } align="flex-start">
 					{ showDecoration && (
 						<FlexItem isBlock>
-							<SelectControl
-								label={ __( 'Decoration', 'sgs-blocks' ) }
-								value={ attributes[ k.textDecoration ] || '' }
-								options={ SGS_TEXT_DECORATION_OPTIONS }
-								onChange={ ( val ) => setAttributes( { [ k.textDecoration ]: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+							<TextDecorationControl
+								value={ attributes[ k.textDecoration ] || undefined }
+								onChange={ ( val ) =>
+									setAttributes( { [ k.textDecoration ]: val ?? '' } )
+								}
 							/>
 						</FlexItem>
 					) }
 					{ showTransform && (
 						<FlexItem isBlock>
-							<SelectControl
-								label={ __( 'Transform', 'sgs-blocks' ) }
-								value={ attributes[ k.textTransform ] || '' }
-								options={ SGS_TEXT_TRANSFORM_OPTIONS }
-								onChange={ ( val ) => setAttributes( { [ k.textTransform ]: val } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+							<TextTransformControl
+								value={ attributes[ k.textTransform ] || undefined }
+								onChange={ ( val ) =>
+									setAttributes( { [ k.textTransform ]: val ?? '' } )
+								}
 							/>
 						</FlexItem>
 					) }
 				</Flex>
+			) }
+
+			{ /* ── Orientation (writing-mode) ── THE REAL core control,
+			     `__experimentalWritingModeControl`, public and a drop-in. Its
+			     own label is "Orientation" (the OPTIONS are Horizontal /
+			     Vertical, icon-only), and it owns its `isDeselectable` +
+			     deselect-to-undefined handling internally.
+
+			     ⚠ Its vertical VALUE is direction-dependent — core emits
+			     'vertical-lr' under isRTL() and 'vertical-rl' otherwise — so
+			     the PHP allowlist accepts BOTH verticals plus 'horizontal-tb'.
+			     Applies to heading AND text: core declares
+			     __experimentalWritingMode on both blocks.
+
+			     Core renders this at position 10, between Decoration (9) and
+			     Letter case (11). SGS pairs Decoration + Letter case on ONE row
+			     (the row-pairing convention), which is indivisible, so this
+			     sits immediately AFTER that pair instead of between its two
+			     halves — one position later than core, the only ordering
+			     deviation in the panel. */ }
+			{ showWritingMode && (
+				<WritingModeControl
+					value={ attributes[ k.writingMode ] || undefined }
+					onChange={ ( val ) =>
+						setAttributes( { [ k.writingMode ]: val ?? '' } )
+					}
+				/>
+			) }
+
+			{ /* ── Text alignment ── a FAITHFUL REIMPLEMENTATION of core's
+			     TextAlignmentControl, not an approximation.
+
+			     ⛔ Core's own component CANNOT be imported: it is registered
+			     ONLY in `block-editor/src/private-apis.js` (inside the
+			     `lock( privateApis, … )` object) and appears nowhere in the
+			     package's public `components/index.js`. Reaching it needs
+			     `unlock()`, which is core's explicit consent mechanism and not
+			     available to a plugin.
+
+			     So this is rebuilt from its real source, element for element:
+			     the same `ToggleGroupControl` + `ToggleGroupControlOptionIcon`
+			     pair, the same four `@wordpress/icons` (alignLeft / alignCenter
+			     / alignRight / alignJustify), the same per-option labels, the
+			     same `isDeselectable`, and the same deselect idiom
+			     `onChange( newValue === value ? undefined : newValue )`.
+
+			     ⚠ Do NOT swap this for the PUBLIC `AlignmentControl`. That one
+			     is core's TOOLBAR control — `hooks/text-align.js` mounts it
+			     inside `BlockControls`, it takes `alignmentControls` with
+			     `{ icon, title, align }` keys, and it offers no `justify`. It
+			     is a different control for a different surface. */ }
+			{ showTextAlign && (
+				<ToggleGroupControl
+					isDeselectable
+					label={ __( 'Text alignment', 'sgs-blocks' ) }
+					value={ attributes[ k.textAlign ] || undefined }
+					onChange={ ( val ) =>
+						setAttributes( {
+							[ k.textAlign ]:
+								val === ( attributes[ k.textAlign ] || undefined )
+									? ''
+									: val ?? '',
+						} )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					{ SGS_TEXT_ALIGN_OPTIONS.map( ( option ) => (
+						<ToggleGroupControlOptionIcon
+							key={ option.value }
+							value={ option.value }
+							icon={ option.icon }
+							label={ option.label }
+						/>
+					) ) }
+				</ToggleGroupControl>
+			) }
+
+			{ /* ═══ BELOW THIS LINE: controls with NO WordPress-native
+			     equivalent. They sit LAST in the panel, after everything that
+			     mirrors a core control, so the familiar native surface reads
+			     first and the SGS-only extras read as additions to it. ═══ */ }
+
+			{ /* ── Text wrap ── SGS-ONLY. Core has no text-wrap control and no
+			     `textWrap` typography support: a full-tree search of
+			     `packages/` on `wp/7.1` (code search, the 14,955-entry file
+			     tree, `hooks/typography.js`'s TYPOGRAPHY_SUPPORT_KEYS, and
+			     `style-engine`'s generator roster) returns nothing. There is no
+			     native shape to mirror, so this stays a plain SelectControl.
+
+			     OPT-IN (showTextWrap): the block must DECLARE `{prefix}TextWrap`
+			     first, or WordPress silently discards what this writes (D338,
+			     the silent-discard class). */ }
+			{ showTextWrap && (
+				<SelectControl
+					label={ __( 'Text wrap', 'sgs-blocks' ) }
+					value={ attributes[ k.textWrap ] || '' }
+					options={ SGS_TEXT_WRAP_OPTIONS }
+					onChange={ ( val ) => setAttributes( { [ k.textWrap ]: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			) }
 
 			{ /* Hover typography (D309). Opt-in: only render for a block that
@@ -708,9 +1268,22 @@ function TypographyControlsFields( {
 					</FlexItem>
 				</Flex>
 			) }
-		</>
+		</VStack>
 	);
 }
+
+/**
+ * Unit-companion keys never carry meaning on their own — `block.json` gives
+ * every one of them a non-empty default (`'px'`) so `<UnitControl>` has
+ * something to display, independent of whether the paired numeric field is
+ * set. Included in `targetHasCustomValues`'s scan, that default alone always
+ * satisfies "has a set value", making the indicator fire unconditionally on
+ * every target — live-verified 2026-09-06 on a freshly inserted `sgs/card-grid`
+ * (both "Title" and "Subtitle" showed the modified suffix with every
+ * typography attribute genuinely empty). Excluded here so only a key that can
+ * actually signal customisation is checked.
+ */
+const SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS = [ 'fontSizeUnit', 'lineHeightUnit', 'letterSpacingUnit' ];
 
 /**
  * Does the given target prefix carry at least one non-default typography
@@ -720,9 +1293,21 @@ function TypographyControlsFields( {
  * rather than "B is customised, A is untouched".
  *
  * Checks every attribute key this component reads/writes for the prefix
- * (`typographyAttrKeys`), tiered-object-aware (a `{desktop:'',tablet:18,…}`
- * object counts as modified because SOME tier is set, even though its own
- * `desktop` slot is empty).
+ * (`typographyAttrKeys`), minus the unit-companion keys (see
+ * `SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS`), tiered-object-aware (a
+ * `{desktop:'',tablet:18,…}` object counts as modified because SOME tier is
+ * set, even though its own `desktop` slot is empty).
+ *
+ * ⚠ An empty ARRAY also means "unset", not just an empty object. A tiered
+ * attr declared `{"type":"object","default":{}}` (e.g. card-grid's
+ * `titleFontSize`) reads back from WordPress as `[]`, not `{}` — PHP cannot
+ * distinguish an empty associative array from an empty list, so an empty
+ * object default round-trips through block registration as a JSON array.
+ * `isTieredValue()` deliberately excludes arrays (so a real array-typed attr
+ * is never misread as a tier object), which without this check made every
+ * untouched tiered font-size attribute count as "customised" — live-verified
+ * 2026-09-06 on a freshly inserted `sgs/card-grid`, `titleFontSize:[]`
+ * still tripped the indicator after the unit-companion fix alone.
  *
  * @param {Object} attributes Block attributes.
  * @param {string} prefix     Attribute prefix for the target.
@@ -730,9 +1315,15 @@ function TypographyControlsFields( {
  */
 function targetHasCustomValues( attributes, prefix ) {
 	const keys = typographyAttrKeys( prefix );
-	return Object.values( keys ).some( ( attrKey ) => {
+	return Object.entries( keys ).some( ( [ keyName, attrKey ] ) => {
+		if ( SGS_TYPOGRAPHY_UNIT_COMPANION_KEYS.includes( keyName ) ) {
+			return false;
+		}
 		const val = attributes[ attrKey ];
 		if ( val === undefined || val === null || '' === val ) {
+			return false;
+		}
+		if ( Array.isArray( val ) && 0 === val.length ) {
 			return false;
 		}
 		if ( isTieredValue( val ) ) {
@@ -770,7 +1361,8 @@ function targetHasCustomValues( attributes, prefix ) {
  *   `fieldProps` are any of `TypographyControlsFields`' own props (`showWeight`,
  *   `showStyle`, `showLineHeight`, `showResponsive`, `fontSizePresets`,
  *   `showFontFamily`, `showDecoration`, `showTransform`, `showLetterSpacing`,
- *   `showHover`) — each target can expose a different subset, exactly as
+ *   `showTextAlign`, `showTextWrap`, `showHover`) — each target can expose a
+ *   different subset, exactly as
  *   today's separate per-element mounts do.
  * @return {JSX.Element} Switcher + the active target's full control set.
  */

@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"What We Offer","textAlign":"center","fontSize":{"desktop":"xx-large"}} /-->
 
-	<!-- wp:sgs/text {"text":"Comprehensive solutions tailored to your unique business needs.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
+	<!-- wp:sgs/text {"text":"Comprehensive solutions tailored to your unique business needs.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"fx":"scrub","fxStart":"top 70%","fxEnd":"top center","fxScrub":0.8} -->
 

@@ -22,8 +22,21 @@
 			"scalarStylingLift": true,
 			"_comment_mediaElements": "Two independently-scoped media elements (rule 37-media-no-handroll). 'main' covers EVERY render branch's main product image — typed .sgs-product-card__image (product-card-builtin-render.php), bound read-only/non-variable .product-card-img (render.php WC-below-floor + non-variable-live branches), and bound variable-configurator .product-card__media .product-card-img — deliberately ONE control, per R-31-9, since only one of these three ever renders on a given page load. 'thumb' is the bound variable-configurator's OWN thumbnail-rail image (.product-card__thumb img) — a distinct role with its own 48x48 box, never governed by 'main'. Mirrors sgs/buybox's already-migrated main/thumb split (its gallery-col.php composes a SEPARATE render instance of the same markup, so that migration does not cover this block's own render.php paths). CORRECTED 2026-09-03 via /qc-council: imageControls/imageControlsExplicit REMOVED (were dead weight even before this migration — render.php's own comment three lines below confirms the legacy sgs_media_position_css() call \"never had a declared sgsObjectFit/sgsObjectPosition attribute pair... so it always emitted ''\"), because leaving the flags in place still made the universal image-controls extension (src/blocks/extensions/image-controls.js) mount its own dead 'Object fit' dropdown alongside the two live MediaElementPanel controls below — three controls in the sidebar for what is really one property.",
 			"mediaElements": [
-				{ "prefix": "main", "context": "element", "atoms": [ "object-fit", "focal-point" ] },
-				{ "prefix": "thumb", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "main",
+					"context": "element",
+					"atoms": [
+						"object-fit",
+						"focal-point"
+					]
+				},
+				{
+					"prefix": "thumb",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"arrayContentLift": true,
 			"boxFamilies": {
@@ -46,8 +59,7 @@
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -64,7 +76,10 @@
 				"box": {
 					"label": "Card",
 					"order": 1,
-					"clusters": [ "fill", "layout" ],
+					"clusters": [
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -94,7 +109,9 @@
 				"body": {
 					"label": "Card body",
 					"order": 2,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"isWrapper": false,
 					"attrMap": {
 						"css:padding": "cardPadding"
@@ -104,7 +121,9 @@
 				"image": {
 					"label": "Product image",
 					"order": 3,
-					"clusters": [ "layout" ],
+					"clusters": [
+						"layout"
+					],
 					"attrMap": {
 						"css:height": "imageHeight"
 					},
@@ -113,7 +132,9 @@
 				"title": {
 					"label": "Title",
 					"order": 4,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "title",
 					"attrMap": {
 						"tag": "headingLevel"
@@ -123,13 +144,17 @@
 				"price": {
 					"label": "Price",
 					"order": 5,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "price"
 				},
 				"desc": {
 					"label": "Description",
 					"order": 6,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "desc"
 				},
 				"description": {
@@ -142,7 +167,9 @@
 				"priceNote": {
 					"label": "Price note",
 					"order": 7,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "priceNote"
 				},
 				"price-note": {
@@ -155,14 +182,20 @@
 				"priceFromLabel": {
 					"label": "\"From\" label",
 					"order": 8,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "priceFromLabel",
 					"_note": "No colour attribute exists for this element (priceFromLabelColour) — an honest gap; the label inherits price-note colour visually."
 				},
 				"tag": {
 					"label": "Tag (trial/featured badge)",
 					"order": 9,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "tag",
 					"attrMap": {
 						"css:background-color": "tagBackgroundColour",
@@ -181,14 +214,20 @@
 				"pill": {
 					"label": "Option-picker pill",
 					"order": 10,
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "pill",
 					"_note": "Targets the real sgs/option-picker pill rendered inside the card (both typed and bound modes) — see render.php sgs_typography_css_rule( $attributes, 'pill', … )."
 				},
 				"cta": {
 					"label": "Call to action",
 					"order": 11,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "cta",
 					"attrMap": {
 						"css:background-color": "ctaColourBackground",
@@ -403,11 +442,21 @@
 		},
 		"ctaBorderWidth": {
 			"type": "object",
-			"default": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }
+			"default": {
+				"top": "2px",
+				"right": "2px",
+				"bottom": "2px",
+				"left": "2px"
+			}
 		},
 		"ctaBorderRadius": {
 			"type": "object",
-			"default": { "topLeft": "10px", "topRight": "10px", "bottomLeft": "10px", "bottomRight": "10px" }
+			"default": {
+				"topLeft": "10px",
+				"topRight": "10px",
+				"bottomLeft": "10px",
+				"bottomRight": "10px"
+			}
 		},
 		"ctaFontWeight": {
 			"type": "string",
@@ -502,16 +551,10 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {},
+			"default": {
+				"desktop": {}
+			},
 			"description": "Card root border radius { topLeft, topRight, bottomLeft, bottomRight }. Block-private (2026-08-30 radius target-shape correction), replaces the native __experimentalBorder.radius path."
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderStyle": {
 			"type": "string",
@@ -872,7 +915,10 @@
 			"description": "CSS gradient string painting the in-body trial tag's text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over tagTextColour."
 		},
 		"tagBorderRadius": {
-			"type": [ "string", "number" ],
+			"type": [
+				"string",
+				"number"
+			],
 			"default": "",
 			"description": "Border radius for the in-body trial tag as a CSS length (e.g. '16px', '1.5rem'). Empty = the style.css default. A bare number is treated as px for pre-2026-08-13 instances. Cloning converter lifts the draft trial-tag border-radius here."
 		},

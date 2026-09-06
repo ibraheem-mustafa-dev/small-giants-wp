@@ -91,6 +91,60 @@
       "attr": "nameColour (default flattens headingLevel's theme-differentiated color across h2/h3/h4/h5/h6/p)",
       "reason": "2026-08-17 — same false-positive class as the sgs/card-grid titleColour entry above (see that entry for the full mechanism). Verified directly: render.php:583-584 paints nameColour exclusively through sgs_colour_value(), which returns 'var(--wp--preset--color--primary)', never the literal 'primary'. Same root cause, same out-of-scope-for-E12 disposition.",
       "disposition": "detector-limitation"
+    },
+    {
+      "block": "sgs/button",
+      "file": "src\\blocks\\button\\style.css",
+      "property": "padding",
+      "value": "14px 24px",
+      "attr": "padding",
+      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms button/style.css last changed by an unrelated earlier commit). Surfaced by the F5/build gate for the first time this run, not introduced here. Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/form",
+      "file": "src\\blocks\\form\\style.css",
+      "property": "padding",
+      "value": "1rem",
+      "attr": "padding",
+      "reason": "2026-09-06 — pre-existing on main before this session's colour-conformance branch touched this repo (git log confirms form/style.css was never touched by this branch). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/heading",
+      "file": "src\\blocks\\heading\\style.css",
+      "property": "margin-bottom",
+      "value": "8px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's heading/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/option-picker",
+      "file": "src\\blocks\\option-picker\\style.css",
+      "property": "margin",
+      "value": "-1px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's option-picker/edit.js change was scoped to the border-radius preview only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/product-faq",
+      "file": "src\\blocks\\product-faq\\style.css",
+      "property": "margin-top",
+      "value": "8px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; this session's product-faq/edit.js change was scoped to a stale style-read cleanup only (git diff confirms style.css untouched). Fix tracked separately.",
+      "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/whatsapp-cta",
+      "file": "src\\blocks\\whatsapp-cta\\style.css",
+      "property": "margin",
+      "value": "-1px",
+      "attr": "margin",
+      "reason": "2026-09-06 — pre-existing on main; sgs/whatsapp-cta was never touched by this session's colour-conformance work (git diff confirms zero changes to this block). Fix tracked separately.",
+      "disposition": "accepted-debt"
     }
   ],
   "_meta": {

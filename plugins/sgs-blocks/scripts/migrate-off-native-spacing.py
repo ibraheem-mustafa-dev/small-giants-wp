@@ -76,9 +76,28 @@ THEME_DIRS = [
 # :1904-1937) is ungated by slug/kind/roster -- so declaring the owned attrs is
 # sufficient for the PHP side. None passes container_queries; do not add it (that flag
 # DISABLES the owned-attr read and falls the block silently back to native).
-ROSTER = ('multi-button', 'physics-canvas', 'site-footer', 'site-header', 'trust-bar')
+#
+# Widened 2026-09-05 (Phase 3, Group 1) from the original 5 (multi-button,
+# physics-canvas, site-footer, site-header, trust-bar -- all already fully
+# migrated, kept here so a re-run is a harmless no-op) to the full remaining
+# roster: every block still declaring `supports.spacing.padding`/`margin` with
+# `paddingTablet`/`paddingMobile` (and margin siblings) as existing owned attrs.
+# Confirmed via `grep -rl '"paddingTablet"' src/blocks/*/block.json`.
+ROSTER = (
+    'multi-button', 'physics-canvas', 'site-footer', 'site-header', 'trust-bar',
+    'accordion', 'audio', 'brand-strip', 'breadcrumbs', 'business-info', 'button',
+    'collapsible-text', 'countdown-timer', 'counter', 'cta-section', 'form',
+    'heading', 'icon', 'icon-list', 'info-box', 'nav-menu', 'notice-banner',
+    'option-picker', 'process-steps', 'product-faq', 'product-search', 'quote',
+    'responsive-logo', 'separator', 'social-icons', 'star-rating',
+    'table-of-contents', 'team-member', 'testimonial', 'text', 'timeline',
+    'whatsapp-cta',
+)
 
 # Blocks whose edit.js is NOT a mechanical redirect. See module docstring.
+# Confirmed for the original 5. The 32 newly-added blocks are surveyed fresh
+# (--survey) before assuming any of them are mechanical -- never assume by
+# analogy to site-header/multi-button.
 HAND_EDIT = {'site-header', 'multi-button'}
 
 BOX_ATTRS = ('padding', 'margin')
@@ -557,7 +576,12 @@ def self_test():
     check('positive: no refusals on the clean case', refs, [])
 
     # Negative control (a): identical payload, block OUTSIDE the roster.
-    other = before.replace('sgs/site-header', 'sgs/accordion')
+    # `sgs/accordion` was used here until ROSTER was widened to 32 blocks
+    # (Phase 3, Group 1, 2026-09-05) -- it's now IN the roster, which
+    # silently turned this into a no-op positive test. `sgs/media` is not
+    # part of this migration at all (it owns its box props via the media atom
+    # layer, not supports.spacing) and stays a genuine negative control.
+    other = before.replace('sgs/site-header', 'sgs/media')
     out_o, n_o, _ = rewrite_text(other, roster_slugs())
     check('negative: non-roster block untouched', (out_o, n_o), (other, 0))
 

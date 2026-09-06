@@ -12,6 +12,6 @@
 
 	<!-- wp:sgs/text {"text":"\"Working with this team has been an absolute game-changer for our business. The attention to detail and strategic thinking is unmatched.\"","textAlign":"center","textColour":"surface","fontSize":{"desktop":"xx-large"},"fontStyle":"italic","fontWeight":"300"} /-->
 
-	<!-- wp:sgs/text {"text":"<strong>David Thompson</strong> · Chief Marketing Officer, InnovateCorp","textAlign":"center","textColour":"text-inverse","fontSize":{"desktop":"small"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} /-->
+	<!-- wp:sgs/text {"text":"<strong>David Thompson</strong> · Chief Marketing Officer, InnovateCorp","textAlign":"center","textColour":"text-inverse","fontSize":{"desktop":"small"},"margin":{"top":"var:preset|spacing|40"}} /-->
 
 <!-- /wp:sgs/container -->

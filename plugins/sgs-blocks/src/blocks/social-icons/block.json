@@ -26,11 +26,6 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"colourExemptions": {
 				"icon-bg-hover": {
@@ -44,12 +39,16 @@
 			"arrayContentLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"borderRadius": [
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -69,9 +68,22 @@
 						"css:font-weight": "fontWeight",
 						"css:font-style": "fontStyle",
 						"css:line-height": "lineHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:gap": "gap"
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:gap": "gap",
+						"css:border-width": "wrapperBorderWidth",
+						"css:border-style": "wrapperBorderStyle",
+						"css:border-color": "wrapperBorderColour",
+						"css:border-radius": "borderRadius",
+						"css:border-color-gradient": "wrapperBorderColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "wrapperBorderColourHover",
+								"css:border-color-gradient": "wrapperBorderColourHoverGradient"
+							}
+						}
 					},
 					"_note": "Root <div> (render.php get_block_wrapper_attributes, style.css .sgs-social-icons — display:flex is hardcoded CSS, no attribute, so no `layer` is declared and the 12 arrangement members are honestly never asked about). No `layout` box-model attrs beyond padding/margin/gap exist (no width/height/max-width/border/box-shadow control) — honest gaps. Typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). The old native `textAlign` capability (`css:text-align`) was dropped, not replaced: this root is `display:flex` (style.css) with no inline/block content of its own, so `text-align` was inert dead CSS on every real instance — confirmed by reading style.css, not assumed."
 				},
@@ -121,6 +133,18 @@
 		"root": ".wp-block-sgs-social-icons"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"icons": {
 			"type": "array",
 			"default": [],
@@ -261,21 +285,46 @@
 			"type": "string",
 			"default": "em"
 		},
-		"paddingTablet": {
+		"wrapperBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"wrapperBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"wrapperBorderWidth": {
 			"type": "object",
 			"default": {}
 		},
-		"paddingMobile": {
+		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

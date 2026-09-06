@@ -9,7 +9,7 @@ import {
 	Flex,
 	Notice,
 } from '@wordpress/components';
-import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls } from '../../components';
+import { DesignTokenPicker, SpacingControl, ResponsiveBoxControl, LinkPopoverField, IconPreview, resolveColourToken, SgsColourPanel, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { spacingVar, borderPaintPreview } from '../../utils';
 
 // Site Info mode pulls from this fixed set of networks (same 8 slugs the
@@ -141,23 +141,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		colourMode,
 		iconStyle,
 		gap,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
+		wrapperBorderColour,
+		wrapperBorderColourGradient,
+		wrapperBorderColourHover,
+		wrapperBorderColourHoverGradient,
+		wrapperBorderStyle,
+		wrapperBorderWidth,
 	} = attributes;
 
 	const isSiteInfoSource = 'site-info' === source;
 	const [ palette ] = useSettings( 'color.palette' );
 
-	// Box-object interface contract §5: base padding/margin preview mirrors the
-	// WP-native style.spacing.* object read by render.php's style engine call.
-	// NOTE: `style` here is WP's native style-support object attribute (holds
-	// style.spacing/style.color) — distinct from this block's own `iconStyle`
-	// attribute (plain/filled/outlined/pill variant).
-	const basePadding = style?.spacing?.padding;
-	const baseMargin = style?.spacing?.margin;
+	// Base padding/margin preview — padding/margin are owned tier-object
+	// attrs { desktop, tablet, mobile }, read directly by render.php.
+	// NOTE: `style` here is WP's native style-support object attribute (now
+	// holds only style.color, not spacing) — distinct from this block's own
+	// `iconStyle` attribute (plain/filled/outlined/pill variant).
+	const basePadding = attributes.padding?.desktop;
+	const baseMargin = attributes.margin?.desktop;
 	const previewStyle = {};
 	const paddingPreview = boxShorthand( basePadding );
 	if ( paddingPreview ) {
@@ -166,6 +167,22 @@ export default function Edit( { attributes, setAttributes } ) {
 	const marginPreview = boxShorthand( baseMargin );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
+	}
+	if ( wrapperBorderStyle && wrapperBorderStyle !== 'none' ) {
+		const wbw = boxShorthand( wrapperBorderWidth );
+		if ( wbw ) previewStyle.borderWidth = wbw;
+		previewStyle.borderStyle = wrapperBorderStyle;
+		if ( wrapperBorderColour ) {
+			previewStyle.borderColor = /^#|^rgb|^hsl/.test( wrapperBorderColour ) ? wrapperBorderColour : resolveColourToken( wrapperBorderColour, palette );
+		}
+		if ( wrapperBorderColourGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( wrapperBorderColourGradient ) ) {
+			previewStyle.borderImage = `${ wrapperBorderColourGradient } 1`;
+		}
+	}
+	const wrapperRadiusBox = attributes.borderRadius?.desktop;
+	if ( wrapperRadiusBox && ( wrapperRadiusBox.topLeft || wrapperRadiusBox.topRight || wrapperRadiusBox.bottomRight || wrapperRadiusBox.bottomLeft ) ) {
+		previewStyle.borderRadius = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ]
+			.map( ( k ) => wrapperRadiusBox[ k ] || '0' ).join( ' ' );
 	}
 	if ( gap ) {
 		previewStyle.gap = spacingVar( gap );
@@ -576,41 +593,67 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Spacing panel ── Box-object interface contract §B/§E: padding/
-				   margin base routes to WP-native style.spacing.* (skip-serialised,
-				   emitted scoped by render.php); tiers are the paddingTablet/
-				   paddingMobile + marginTablet/marginMobile object attrs. */ }
+				{ /* ── Spacing panel ── padding/margin are each a single block-owned
+				   tier-object attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ wrapperBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { wrapperBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ wrapperBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { wrapperBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: wrapperBorderColour,
+							  onChange: ( val ) => setAttributes( { wrapperBorderColour: val ?? '' } ),
+							  gradientValue: wrapperBorderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: wrapperBorderColourHover,
+							  onChange: ( val ) => setAttributes( { wrapperBorderColourHover: val ?? '' } ),
+							  gradientValue: wrapperBorderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { wrapperBorderColourHoverGradient: val ?? '' } ) },
+						] }
+						radiusValues={ {
+							base: attributes.borderRadius?.desktop ?? {},
+							tablet: attributes.borderRadius?.tablet ?? {},
+							mobile: attributes.borderRadius?.mobile ?? {},
 						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

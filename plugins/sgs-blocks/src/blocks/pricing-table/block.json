@@ -43,8 +43,7 @@
 			},
 			"boxFamilies": {
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"enabledExtensions": [
@@ -711,15 +710,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"priceColourHover": {
 			"type": "string",

@@ -33,13 +33,7 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import {
-	TypographyControls,
-	ResponsiveBoxControl,
-	ResponsiveControl,
-	SgsColourPanel,
-	SgsLengthControl,
-} from '../../components';
+import { TypographyControls, ResponsiveBoxControl, ResponsiveControl, SgsColourPanel, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /**
@@ -1139,8 +1133,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					resetAll={ () =>
 						setAttributes( {
 							gap: '8px',
-							paddingTablet: {},
-							paddingMobile: {},
+							padding: {},
 						} )
 					}
 				>
@@ -1171,50 +1164,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 */ }
 					<ToolsPanelItem
 						hasValue={ () =>
-							Object.keys( attributes.paddingTablet || {} )
-								.length > 0 ||
-							Object.keys( attributes.paddingMobile || {} )
-								.length > 0
+							Object.keys( attributes.padding ?? {} ).length > 0
 						}
 						label={ __( 'Padding', 'sgs-blocks' ) }
 						onDeselect={ () =>
-							setAttributes( {
-								paddingTablet: {},
-								paddingMobile: {},
-							} )
+							setAttributes( { padding: {} } )
 						}
 						isShownByDefault
 					>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: attributes.style?.spacing?.padding ?? {},
-								tablet: attributes.paddingTablet ?? {},
-								mobile: attributes.paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( {
-										style: {
-											...attributes.style,
-											spacing: {
-												...attributes.style?.spacing,
-												padding: next,
-											},
-										},
-									} );
-								} else {
-									setAttributes( {
-										[ `padding${
-											'tablet' === tier
-												? 'Tablet'
-												: 'Mobile'
-										}` ]: next,
-									} );
-								}
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					</ToolsPanelItem>
 				</ToolsPanel>
 

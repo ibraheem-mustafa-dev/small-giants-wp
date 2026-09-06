@@ -28,25 +28,17 @@
 			"text": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true,
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -59,9 +51,12 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -106,6 +101,18 @@
 		"root": ".wp-block-sgs-countdown-timer"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"targetDate": {
 			"type": "string",
 			"default": ""
@@ -142,6 +149,22 @@
 			"type": "boolean",
 			"default": true
 		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"numberColour": {
 			"type": "string",
 			"default": "primary"
@@ -165,30 +188,6 @@
 		"digitStyle": {
 			"type": "string",
 			"default": "simple"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"borderWidth": {
 			"type": "object",
@@ -220,7 +219,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"fontSize": {
 			"type": "object",
@@ -249,7 +250,13 @@
 		"textAlign": {
 			"type": "string",
 			"default": "",
-			"enum": [ "", "left", "center", "right", "justify" ],
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
 			"description": "Migrated off WP-native supports.typography.textAlign (D971/D972 full-replacement track) — plain attribute + own SelectControl, since typography.fontSize was the only native flag TypographyControls replaces."
 		}
 	},

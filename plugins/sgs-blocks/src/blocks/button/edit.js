@@ -20,18 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	TypographyControls,
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	ShadowControl,
-	resolveColourToken,
-	SgsLengthControl,
-	SgsBorderControl,
-} from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -142,8 +131,7 @@ function parseUnit( raw, currentUnit ) {
 // <ResponsiveOverride> exposes.
 
 export default function Edit( { attributes, setAttributes } ) {
-	const {
-		style,
+	const { padding, margin,
 		label,
 		url,
 		linkId,
@@ -195,10 +183,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		scaleHover,
 		transitionDuration,
 		transitionEasing,
@@ -325,7 +309,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( borderWidthPreview ) previewStyle.borderWidth = borderWidthPreview;
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
 	if ( fontSize ) previewStyle.fontSize = `${ fontSize }${ fontSizeUnit || 'px' }`;
 	if ( fontWeight ) previewStyle.fontWeight = fontWeight;
@@ -355,9 +339,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( boxShadowPreview ) {
 		previewStyle.boxShadow = boxShadowPreview;
 	}
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 	// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35
 	// migration, 2026-08-11) — the editor preview always shows the DESKTOP tier.
@@ -901,9 +885,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
-				   no tiers); border-radius is the SGS tier-object attr
-				   `borderRadius: { desktop, tablet, mobile }` (no native WP border
-				   support is declared on this block). */ }
+				   no tiers); borderRadius is a single block-owned tier-object attr
+				   { desktop, tablet, mobile }, read directly by render.php. */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 												{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 						   (width/style/colour) mirroring native's BorderBoxControl layout,
@@ -948,42 +931,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</PanelBody>
 
-				{ /* Spacing — Box-object interface contract §1/§5: padding/margin base
-				   routes to WP-native style.spacing (mirrors sgs/container); tiers are
-				   paddingTablet/paddingMobile + marginTablet/marginMobile object attrs. */ }
+				{ /* Spacing — padding/margin are each a single block-owned tier-object
+				   attr { desktop, tablet, mobile }, written via ResponsiveOverride +
+				   SgsBoxControl; read directly by this block's render.php. */ }
 				<PanelBody title={ __( 'Spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Effects */ }

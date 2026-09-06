@@ -42,16 +42,13 @@
 					"contentBandPadding"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -147,11 +144,15 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"backgroundColour": {
 			"type": "string",
@@ -195,22 +196,6 @@
 				"desktop": "full"
 			}
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"backgroundAttachment": {
 			"type": "string",
 			"default": "scroll",
@@ -233,7 +218,9 @@
 		},
 		"backgroundOverlayOpacity": {
 			"type": "object",
-			"default": {"desktop": 30}
+			"default": {
+				"desktop": 30
+			}
 		},
 		"backgroundPosition": {
 			"type": "string",
@@ -495,15 +482,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

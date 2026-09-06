@@ -572,6 +572,13 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "featuredTag",
+      "fields": {
+        "derived_selector": ".sgs-product-card__tag--featured"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagBackgroundColour",
       "fields": {
         "canonical_slot": "label",
@@ -973,8 +980,10 @@
       "slug": "sgs/icon",
       "attr": "iconSource",
       "fields": {
-        "derived_selector": ".sgs-icon__glyph, [data-icon-source]"
-      }
+        "derived_selector": ".sgs-icon__glyph, [data-icon-source]",
+        "canonical_slot": "icon"
+      },
+      "_why": "canonical_slot added 2026-09-06 (Check#12 roleguess fix). The element-scope 'icon' slot resolves to standalone_block sgs/icon, but sgs/icon carries 6 content-bearing candidates across 6 different roles (dashiconName/emojiChar/iconName/iconSource/linkTarget/wpIconName) with none owning canonical_slot='icon', so a draft child's bare __icon token fell to insertion-order guessing. iconSource (role='identity') is the block's own GENERIC icon-source field -- it already resolves via the SAME icon-slug priority chain (data-icon/data-lucide/inline-svg/BEM-modifier) as the format-specific fields, per roles.json's own 'identity' role docs -- so it is the correct sole owner of the generic 'icon' concept; the format-specific fields (dashiconName etc.) are populated separately by resolve_icon_kind()'s own dispatch, not by this slot match."
     },
     {
       "slug": "sgs/icon",
@@ -1029,8 +1038,10 @@
       "slug": "sgs/notice-banner",
       "attr": "text",
       "fields": {
-        "derived_selector": ".sgs-notice-banner__text"
-      }
+        "derived_selector": ".sgs-notice-banner__text",
+        "canonical_slot": "disclaimer"
+      },
+      "_why": "canonical_slot merged in 2026-09-06 (Check#12 roleguess fix): this attr previously carried canonical_slot='text' (a self-referential default from the attribute's own name), but the incoming slot literal for this block's registered purpose is 'disclaimer' (slots.json: 'Disclaimer/legal callout text... -> sgs/notice-banner'), which had no exact match anywhere, so it fell to guessing among {iconName, iconSource, text}. Safe to re-point: attr_name_for_slot_or_alias's pass-2 attr-name fallback still resolves a literal '__text' token to this same attribute even after the change, so nothing regresses."
     },
     {
       "slug": "sgs/responsive-logo",
@@ -2344,8 +2355,10 @@
       "slug": "sgs/option-picker",
       "attr": "optionItems",
       "fields": {
-        "role": "content"
-      }
+        "role": "content",
+        "canonical_slot": "option-picker"
+      },
+      "_why": "canonical_slot added 2026-09-06 (Check#12 roleguess fix): the literal slot 'option-picker' has no exact canonical_slot match on sgs/option-picker, so content lift fell to insertion-order guessing among {label, optionItems}. optionItems is the array-content field _lift_item() actually fills -- label is a separate, already-correct 'label' slot owner and is unaffected."
     },
     {
       "slug": "sgs/gallery",
@@ -2540,8 +2553,44 @@
       "slug": "sgs/testimonial",
       "attr": "ratingStars",
       "fields": {
-        "role": "rating"
-      }
+        "role": "rating",
+        "derived_selector": ".sgs-testimonial__stars"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial classic-card/rating-led content-loss audit). derived_selector was NULL, so lift_scalar_content's first gate (scalar_content.py:158-160) skipped this attr before role was even consulted -- no draft, however faithfully shaped, could ever populate it. render.php:717 confirms the star-rating container carries BOTH classes together: `class=\"sgs-testimonial__rating sgs-testimonial__stars\"` -- `.sgs-testimonial__stars` is used (not the shared `.sgs-testimonial__rating`) so this attr's selector never also matches the UNRELATED numeric-scale container (`.sgs-testimonial__rating.sgs-testimonial__rating--scale`, rating-led variant), which carries no star aria-label/glyphs at all."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "sourcePlatform",
+      "fields": {
+        "derived_selector": ".sgs-testimonial__source"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). derived_selector was NULL -- same missing-selector defect class as ratingStars above, blocking the attr at the data layer regardless of draft markup. role='text-content'/attr_type='string' already correctly matches lift_scalar_content's is_text gate; only the selector was missing. render.php:730 confirms the real emitted class: `<span class=\"sgs-testimonial__source\">`."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingScale",
+      "fields": {
+        "role": "numeric-content",
+        "derived_selector": ".sgs-testimonial__score"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). role was 'select-from-enum', which lift_scalar_content's gate correctly excludes (an enum pick is not this attr's shape) -- but the role itself was the mis-derivation, not the gate: render.php:103-104 clamps this to a CONTINUOUS 0-100 float (`max(0, min(100, (float)$attributes['ratingScale']))`), e.g. '9.2 / 10' -- not a fixed choice set. Reusing the existing 'rating' role (its docstring says 'star/numeric') was considered and REJECTED: its sole consumer, extract_star_count() (converter/services/lift_helpers.py:112-126), hardcodes an aria-label-digit-or-glyph-count read clamped to 0..5 -- silently WRONG (not merely absent) for a 0-100 score, and this element carries no aria-label/star glyphs at all. A new role 'numeric-content' was added instead (data/roles.json, converter/services/field_extractors.py, converter/resolvers/scalar_content.py) -- zero pre-existing attrs carried it, so widening the gate to accept it changes no other block's behaviour. derived_selector narrowed from the shared '.sgs-testimonial__rating' (also matches the UNRELATED star container in classic-card, and would swallow the trailing '/ 10' text if read from the outer div) to '.sgs-testimonial__score', the exact span render.php:686 emits the numeric value into."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "ratingType",
+      "fields": {
+        "role": "css-modifier"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit) -- found while fixing ratingScale, not itself in the original 4-field root-cause list, but necessary for the ratingScale fix to have any visible effect: render.php:679 gates the numeric-score render branch on `'scale' === $rating_type`, and ratingType defaults to 'stars' (render.php:98) with no prior mechanism to ever set it to 'scale' from draft content. role was 'select-from-enum' (excluded by the same gate as ratingScale, for the same reason -- there is no enum PICKER here, the value is read off the draft, not chosen). The correct shape is 'css-modifier': render.php:685 emits the modifier class `sgs-testimonial__rating--scale` on the SAME element ratingScale's derived_selector's ancestor `.sgs-testimonial__rating` matches, so the value is recoverable as a BEM --modifier suffix. 'css-modifier' already existed as a role in field_extractors.py (used by array_content's per-item extraction) but had never been wired into lift_scalar_content's gate -- zero pre-existing block_attributes rows carried it, so widening the gate is a genuinely new, zero-blast-radius capability, not a change to existing behaviour. derived_selector is UNCHANGED ('.sgs-testimonial__rating', already correct) -- for classic-card's star container this element carries no `--` modifier, so extraction correctly returns None (no key emitted) and the attr's own 'stars' default applies exactly as before."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "verified",
+      "fields": {
+        "role": "presence-boolean",
+        "derived_selector": ".sgs-testimonial__verified"
+      },
+      "_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit). TWO independent defects stacked on this one row. (1) Wrong selector: derived_selector was '.sgs-testimonial__text', which does not exist anywhere in render.php -- the real emitted badge is `<span class=\"sgs-testimonial__verified\">` (render.php:727). (2) Wrong role: 'boolean-visibility' -- but that role's own contract (data/roles.json) states 'a draft's HTML/CSS carries no signal a boolean toggle could be lifted from, so the absence of a resolver is expected, not a gap'. That claim is FALSE for this attr: the badge's mere presence in the draft IS a real, unambiguous signal (unlike avatarDecorative/orgLogoDecorative, genuine editor-only preference toggles with no draft signal, correctly left on 'boolean-visibility'). A new role 'presence-boolean' was added (data/roles.json, field_extractors.py, scalar_content.py) rather than repurposing 'boolean-visibility' itself, because that role is explicitly documented and relied upon elsewhere as 'no consumer, deliberately excluded from the content walk' -- widening IT would have silently started content-lifting every other attr that (correctly) carries that role. 'presence-boolean' is brand new (zero pre-existing rows), so this fix cannot change any other block's behaviour."
     },
     {
       "slug": "sgs/trustpilot-reviews",
@@ -3037,6 +3086,66 @@
         "css_element": "entry-even"
       },
       "_why": "2026-09-06. See rowStripeColourAGradient's entry (added alongside this one) -- same alternating-row disambiguation, opposite parity."
+    },
+    {
+      "_why": "Check#12 roleguess: svgContent/svgContentMobile/svgContentTablet carry no canonical_slot at all, unlike their imageUrl*/videoUrl* siblings which already correctly mirror each other ('image'/'video'). There is no plain 'svg' row in slots.json (only 'background-svg') -- sgs/media's mediaType enum treats svg as a first-class peer of image/video, so the gap is the missing slot row, not a misclassification. New plain 'svg' slot added to slots.json alongside this fix. canonical_slot_aliases added 2026-09-06 (Check#12 Build 2 widening, same class as imageUrl/videoUrl below): 'background-svg' is the same SVG element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing among sgs/media's 6-role content-bearing set.",
+      "slug": "sgs/media",
+      "attr": "svgContent",
+      "fields": {
+        "canonical_slot": "svg",
+        "canonical_slot_aliases": "[\"background-svg\"]"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "svgContentTablet",
+      "fields": { "canonical_slot": "svg" }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "svgContentMobile",
+      "fields": { "canonical_slot": "svg" }
+    },
+    {
+      "_why": "Check#12 roleguess: sgs/button.label has no canonical_slot at all, so any of button/button-outline/button-primary/buttonSecondary falls to insertion-order guessing among {iconTitle, label, linkTarget, url}. label is the button's visible text and the only plausible target of the four; url/linkTarget are link-href, iconTitle is icon-only text. canonical_slot='button' covers the base variant slot; canonical_slot_aliases (Check#12 Build 2 multi-value mechanism) additionally names the 3 sibling style-variant slots -- button-outline/button-primary/buttonSecondary -- so all 4 button slots resolve to this same attr via the exact-match/CONFIRMED path rather than any fallback guess. The attr-name fallback (pass 2 in attr_name_for_slot_or_alias) still catches a literal '__label' token regardless.",
+      "slug": "sgs/button",
+      "attr": "label",
+      "fields": {
+        "canonical_slot": "button",
+        "canonical_slot_aliases": "[\"button-outline\", \"button-primary\", \"buttonSecondary\"]"
+      }
+    },
+    {
+      "_why": "bgVideoMobile/bgVideoTablet are art-direction tier siblings of bgVideo, which already correctly carries canonical_slot='background-video'. The siblings were left unset, so a tier-specific bg-video BEM token on this block falls to guessing instead of matching its own tier.",
+      "slug": "sgs/multi-button",
+      "attr": "bgVideoTablet",
+      "fields": { "canonical_slot": "background-video" }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "bgVideoMobile",
+      "fields": { "canonical_slot": "background-video" }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "bgSvgContent",
+      "fields": { "canonical_slot": "background-svg" }
+    },
+    {
+      "_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). sgs/media.imageUrl's canonical_slot='image' already resolves the plain 'image' slot; the 'avatar' and 'background-image' slots are the same physical <img> element under a different draft naming convention and previously fell through to insertion-order guessing among imageUrl/videoUrl/svgContent/thumbnail (role='image-object' vs 'content' vs 'svg'). canonical_slot_aliases names both as extra slots this attr also answers to -- the exact-match/CONFIRMED path in both attr_name_for_slot_or_alias and _slot_extraction_role now resolves them directly rather than guessing.",
+      "slug": "sgs/media",
+      "attr": "imageUrl",
+      "fields": {
+        "canonical_slot_aliases": "[\"avatar\", \"background-image\"]"
+      }
+    },
+    {
+      "_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). Same shape as sgs/media.imageUrl immediately above: videoUrl's canonical_slot='video' already resolves the plain 'video' slot; 'background-video' is the same video element under the art-direction background-media naming split (slots.json Task B) and previously fell through to insertion-order guessing.",
+      "slug": "sgs/media",
+      "attr": "videoUrl",
+      "fields": {
+        "canonical_slot_aliases": "[\"background-video\"]"
+      }
     },
     {
       "slug": "sgs/timeline",

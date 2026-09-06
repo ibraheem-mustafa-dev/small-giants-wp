@@ -29,6 +29,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -183,43 +206,26 @@ $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
 // with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
 // in block.json → emit scoped via the style engine in step 5.
-$base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Base padding/margin — WP-native style.spacing.* objects (skip-serialised).
 // Kept as-is (string values incl. preset "var:preset|spacing|N" refs) and passed
 // straight to the style engine, which formats + sanitises them (contract §B / the
 // button reference does exactly this).
 $base_padding_obj = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_padding_obj[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_margin_obj[ $spacing_side ] = $spacing_value;
 		}
@@ -227,10 +233,10 @@ if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes
 }
 
 // Responsive spacing tiers — SGS object attrs { top, right, bottom, left }.
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
 // Custom hex/rgb → emitted scoped via the style engine; preset SLUGS → the
@@ -275,14 +281,21 @@ if ( '' !== $text_colour_effective ) {
 // (core-blocks-critical.css `h1..h6`, a deliberate enhancement for AUTHORED
 // content). A CLONED heading must instead render the DRAFT's effective wrap —
 // drafts declare no `text-wrap`, so the effective value is the CSS-initial
-// `wrap` (greedy). The converter sets `textWrap` on cloned headings; render
-// emits it at `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0) which beats the
-// theme's `h1..h6` (0,0,1). Authored headings leave it EMPTY → inherit balance.
-$allowed_text_wrap = array( 'wrap', 'nowrap', 'balance', 'pretty', 'stable' );
-$text_wrap         = isset( $attributes['textWrap'] ) ? (string) $attributes['textWrap'] : '';
-if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
-	$text_decls[] = 'text-wrap:' . $text_wrap;
-}
+// `wrap` (greedy). The converter sets `textWrap` on cloned headings.
+// Authored headings leave it EMPTY → inherit balance.
+//
+// ⛔ NOT emitted here any more (2026-09-06). The local block-private emitter
+// that used to sit at this spot moved verbatim — same allowlist, same value
+// set — into the SHARED sgs_typography_css_rule() helper, so that any block
+// declaring `{prefix}TextWrap` gains the property rather than sgs/heading
+// being the only block able to render it. The helper is called below at
+// `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0), the SAME selector this
+// block's own $text_decls rule uses, so the specificity argument that made
+// this beat the theme's `h1..h6` (0,0,1) is unchanged.
+//
+// ⚠ Do NOT re-add a local emitter here: it would double-declare `text-wrap`
+// on one selector, and a future divergence between the two allowlists would
+// then be invisible (the later rule silently wins).
 
 // ---------------------------------------------------------------------------
 // 4. Build the wrapper's box/visual declarations (scoped, NOT inline).

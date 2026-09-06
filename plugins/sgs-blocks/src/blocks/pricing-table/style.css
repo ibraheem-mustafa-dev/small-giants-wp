@@ -324,8 +324,17 @@
 .sgs-pricing-table__name {
 	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
 	font-size: var(--wp--preset--font-size--large, 1.5rem);
-	font-weight: 700;
 	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/*
+ * Font-weight default — :where() keeps this at specificity 0 so the
+ * uid-scoped titleFontWeight rule (sgs_typography_css_rule, prefix "title")
+ * always wins. Sanctioned F3-exempt overridable-default pattern (mirrors
+ * sgs/product-card's line-height :where() block).
+ */
+:where(.sgs-pricing-table__title, .sgs-pricing-table__name) {
+	font-weight: 700;
 }
 
 /* ── Feature included / excluded states ──────────────────────────────────── */

@@ -642,6 +642,28 @@ was truncated** — see hazards.
 ⚠ **If the survey counts moved between your dry run and your apply, another track moved your
 targets.** Re-survey; do not apply.
 
+## Step 9b — A codemod's own `--check` is necessary, not sufficient
+
+**"Done" for a schema fold is a green FULL build/gate chain — never the codemod's own
+`--check` alone.** Earned on a padding/margin/borderRadius tier-object fold: `--check` was
+green while the real build surfaced four classes of bug an exact-shape matcher cannot see:
+dead destructured attribute names left in `edit.js` after a `block.json` fold; a **second,
+differently-shaped** control for the same attribute family in the same file, untouched
+because the matcher only recognises the shape it was built for; a variable used before
+assignment in `render.php`, catchable only by a real PHPStan run; and a hand-written
+regex "cleanup" pass that matched the wrong occurrence and corrupted whitespace, reported
+as success by its own script.
+
+- **Re-grep the WHOLE codebase for the old attribute names after every codemod run** — do
+  not just re-run the codemod's own survey. One file can hold more than one occurrence of
+  the shape the codemod targets, and an exact-shape matcher fixes only the shapes it
+  recognises.
+- **Run the real build (`npm run build`, the full gate chain — PHPStan included) before
+  calling any block.json schema fold done.** `--self-test` and `--check` prove the codemod
+  agrees with itself; only the build chain proves the tree still works.
+- **Never trust a hand-written regex reformat pass without re-reading the diff.** A tool
+  reporting success is not proof of correctness — read `git diff` yourself.
+
 ## Step 10 — Prove the gate can fail
 
 ```bash
@@ -726,6 +748,8 @@ uncovered list names files you did not write, stop and hand back.**
   count read 45 before it read 52.
 - **`} else {` is brace-neutral.** Depth-counting sails past it to the wrong closing brace.
   Detect the close structurally, and refuse rather than guess.
+- **A function call can precede the require that DEFINES it — valid syntax, fatal at runtime.** Earned 2026-09-06, D976: a codemod inserted a preamble calling `sgs_responsive_normalise_object()` immediately after the `ABSPATH` guard in 29 files, but the `require_once` naming the file that defines it sat 16-56 lines LATER in every one of them. `php -l` cannot catch this — the syntax is valid; only tracing EXECUTION ORDER does. Deployed once, fataled on the live canary within the first request, rolled back in ~2 minutes. **When inserting a call to a shared helper function, either (a) require its defining file directly, inline, at the insertion point — removing the load-order dependency entirely — or (b) verify by LINE NUMBER, not by reading the surrounding code and assuming, that every target file's existing require of that function's home already precedes your insertion point.** A permanent guard for this exact hazard (`check-render-tier-object-spacing.py`) now runs on every build — copy its load-order check (`check_load_order()`) for any future migration that calls a shared function from a NEW insertion point across many files.
+- **A comment mentioning a function/attribute name with the same trailing syntax as a real reference reads as a real reference to a naive regex.** Earned building the guard above, in the SAME session: `sgs_responsive_normalise_object()` written in a docblock explaining the fix (trailing `(` included, since it reads as prose) matched the exact same pattern as a real call, and `$attributes['paddingTablet']` named in a comment matched the exact same pattern as a real read — producing a false failure on all 29 already-fixed files. An independent second agent verifying the same fix hit the identical trap on its first attempt, self-corrected, and reported the same root cause independently — this is not a one-off slip, it is the default outcome of matching on name+syntax without stripping comments first. **Strip `/* */` and `//` comments (preserving embedded newlines, so line-number reporting stays correct) BEFORE running any line-based or regex-based detector**, not just for a codemod's `classify()` — for a permanent guard's scan too.
 - **A per-line quote check cannot see a multi-line string.** A PHP heredoc/nowdoc body or a
   JS template literal spanning lines classifies as `call` and gets silently rewritten. Strip
   those bodies before classifying, or refuse any file containing one.

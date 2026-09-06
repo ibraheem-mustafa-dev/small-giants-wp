@@ -42,6 +42,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -242,10 +265,10 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
 // --- Responsive padding/margin tiers — SGS custom box objects, hand-built
 // shorthand, scoped @media on the SAME selector (contract §B2: tablet
 // max-width:1023px, mobile max-width:767px). Mirrors sgs/label + sgs/quote. ---
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $padding_tab_val = sgs_box_object_shorthand( $padding_tablet_obj );
 $padding_mob_val = sgs_box_object_shorthand( $padding_mobile_obj );
@@ -277,8 +300,9 @@ if ( $mobile_decls ) {
 // --- Responsive border-radius tiers — SGS custom 4-CORNER object attrs,
 // routed through the same stable core style-engine API (mirrors sgs/media's
 // proven borderRadiusTablet/borderRadiusMobile pattern). ---
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 if ( ! empty( $border_radius_tablet_obj ) ) {
 	$radius_tab_out = wp_style_engine_get_styles(
@@ -417,7 +441,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_obj ) ),

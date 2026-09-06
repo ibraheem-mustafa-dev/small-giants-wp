@@ -16,15 +16,7 @@ import {
 	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
-import {
-	DesignTokenPicker,
-	GradientCapableColourControl,
-	IconPicker,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsBorderControl,
-	TypographyControls,
-} from '../../components';
+import { DesignTokenPicker, GradientCapableColourControl, IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
@@ -235,27 +227,24 @@ function boxShorthand( box, keys ) {
  * manual reconstruction for visual parity, exactly like sgs/quote.
  */
 function buildRootPreviewStyle( attributes ) {
-	const { style, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
+	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, backgroundColour } = attributes;
 	const previewStyle = {};
 
-	const colourText = style?.color?.text;
-	if ( colourText ) {
-		previewStyle.color = colourText;
+	if ( textColour ) {
+		previewStyle.color = /^#|^rgb|^hsl/.test( textColour ) ? textColour : colourVar( textColour );
 	}
-	const colourBg = style?.color?.background;
-	if ( colourBg ) {
-		previewStyle.backgroundColor = colourBg;
+	if ( backgroundColour ) {
+		previewStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour ) ? backgroundColour : colourVar( backgroundColour );
 	}
 
-	if ( style?.shadow ) {
-		previewStyle.boxShadow = style.shadow;
-	}
-
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	// Border radius is the block's own `borderRadius` tier-object attr
+	// (SgsBorderControl below) — block.json declares no `__experimentalBorder`
+	// support at all, so WP-native `style.border` is never populated (unlike
+	// `style.color`/`style.shadow` above, which stay live — see this file's
+	// colour panel and the `shadow` support declared in block.json).
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		previewStyle.borderRadius = radiusPreview;
-	} else if ( typeof style?.border?.radius === 'string' && style.border.radius ) {
-		previewStyle.borderRadius = style.border.radius;
 	}
 
 	if ( borderStyle && borderStyle !== 'none' ) {
@@ -277,11 +266,11 @@ function buildRootPreviewStyle( attributes ) {
 		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		previewStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		previewStyle.margin = marginPreview;
 	}
@@ -486,7 +475,6 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		orientation,
 		contentLayout,
 		contentSide,
@@ -523,14 +511,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		rowStripeColourBGradient,
 		rowStripeColourBHover,
 		rowStripeColourBHoverGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		borderWidth,
 		borderColour,
 		borderColourGradient,
 		borderStyle,
+		textColour,
+		backgroundColour,
 	} = attributes;
 
 	// Build preview class list mirroring render.php. The class name IS the
@@ -662,27 +648,35 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const timelineContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
+
 	return (
 		<>
 			<SgsColourPanel
 				rows={ [
 					{
-						/* Wrapper text/background colour — previously WP-native
-						   `supports.color` (text/background), now disabled
-						   (block.json) so this SGS panel is the only surface.
-						   Still stored at `style.color.text`/`style.color.background`
-						   (render.php:78-80, 245-253 reads + applies these to the
-						   root `.sgs-timeline` element via the style engine) — not
-						   a new attr, just moved off the native auto-generated UI. */
+						/* Wrapper text/background colour — WP-native `supports.color`
+						   is disabled (block.json), so this is a block-private
+						   colour attribute, matching the same pattern already
+						   used by connectorColour/dateColour/rowStripeColour*
+						   on this same block. Previously this row wrote to
+						   `attributes.style.color.*`, which WP silently
+						   discards (no attribute of that name is declared) —
+						   fixed 2026-09-06 (colour-conformance track). */
 						key: 'wrapperText',
 						label: __( 'Text colour', 'sgs-blocks' ),
 						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.text,
-								onChange: ( val ) =>
-									setAttributes( { style: { ...style, color: { ...style?.color, text: val ?? undefined } } } ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -694,9 +688,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
-								value: style?.color?.background,
-								onChange: ( val ) =>
-									setAttributes( { style: { ...style, color: { ...style?.color, background: val ?? undefined } } } ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -1118,15 +1111,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				   this property-family panel, despite the shared cluster
 				   name.
 
-				   Box-object interface contract §B/§E: padding/margin base
-				   routes to WP-native style.spacing.* (skip-serialised ->
-				   scoped, not inline); tiers are the paddingTablet/
-				   paddingMobile + marginTablet/marginMobile object attrs.
+				   padding/margin are each a single block-owned tier-object
+				   attr { desktop, tablet, mobile }, written via
+				   ResponsiveOverride + SgsBoxControl; read directly by this
+				   block's render.php.
 				   Box-object interface contract §1/§5: borderWidth is an SGS
 				   custom object attr (base only, no tiers — no WP-native
-				   per-side width support); border-radius is the SGS
-				   tier-object attr `borderRadius: { desktop, tablet,
-				   mobile }`. */}
+				   per-side width support); borderRadius is a single
+				   block-owned tier-object attr { desktop, tablet, mobile }. */}
 				<InspectorControls group="styles">
 				{/* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight/fontWeight/fontStyle only) with the shared
@@ -1143,38 +1135,34 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Padding, margin & border', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
 					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
@@ -1192,6 +1180,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onColourGradientChange={ ( val ) =>
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ timelineContrastAgainst }
 						radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},

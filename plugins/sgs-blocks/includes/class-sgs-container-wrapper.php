@@ -305,7 +305,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// would reorder a closure several hundred lines of logic already depend on.
 			$sgs_grid_obj = $attributes['gridTemplateColumns'] ?? null;
 			$object_grid  = false;
-			if ( $container_queries && is_array( $sgs_grid_obj ) ) {
+			if ( is_array( $sgs_grid_obj ) ) {
 				foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_grid_tier ) {
 					$sgs_grid_val = $sgs_grid_obj[ $sgs_grid_tier ] ?? null;
 					if ( null !== $sgs_grid_val && '' !== $sgs_grid_val && array() !== $sgs_grid_val ) {
@@ -595,25 +595,40 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// rather than the inline base (which would beat any .uid{} @media rule).
 			$has_responsive_min_height = $is_section && ( '' !== $min_height_tablet || '' !== $min_height_mobile );
 
-			// Responsive padding — all kinds (WP spacing.padding sets base via the block-supports
-			// layer; responsive variants land as @media rules scoped to the uid selector).
-			// Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
-			// §1/§2): paddingTablet/paddingMobile are OBJECT attrs { top, right, bottom, left } —
-			// a missing side key = that side unset, matching the prior flat-attr '' semantic.
-			$padding_tablet_obj    = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-			$padding_mobile_obj    = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-			$padding_top_tablet    = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
-			$padding_right_tablet  = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
-			$padding_bottom_tablet = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
-			$padding_left_tablet   = $sgs_css_length( $padding_tablet_obj['left'] ?? '' );
-			$padding_top_mobile    = $sgs_css_length( $padding_mobile_obj['top'] ?? '' );
-			$padding_right_mobile  = $sgs_css_length( $padding_mobile_obj['right'] ?? '' );
-			$padding_bottom_mobile = $sgs_css_length( $padding_mobile_obj['bottom'] ?? '' );
-			$padding_left_mobile   = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
+			// Responsive padding/margin — all kinds. FIXED 2026-09-06 (D976 follow-up,
+			// live-verified via render_block() on sandybrown): this used to read the
+			// PRE-migration flat paddingTablet/paddingMobile/marginTablet/marginMobile
+			// sibling attrs directly, and separately (~:1931 below) misread a
+			// tier-object `padding`/`margin` as a flat box on any block NOT flagged
+			// container_queries. Once sgs/container (then sgs/hero) migrated their
+			// own `padding`/`margin` to the {desktop,tablet,mobile} tier-object shape
+			// (Phase 2 box-object migration, 2026-09-06) neither read matched any
+			// more: base AND tablet AND mobile all silently emitted nothing — no
+			// inline (correct, no-inline policy), no scoped rule either, proven via a
+			// direct render_block() call returning zero CSS for either property.
+			// sgs_responsive_normalise_object() already disambiguates a flat box
+			// (returns it as the DESKTOP tier, tablet/mobile null) from a real
+			// tier-object (returns all three as stored) from an absent attribute
+			// (native `supports.spacing` blocks — all three null, correctly falling
+			// through to the style.spacing.* fallback at ~:1949 below) — by DATA
+			// SHAPE, not by the container_queries flag, so it replaces the old
+			// per-flag branching entirely rather than adding a second branch to it.
+			// Computed once here and reused at ~:1931 for the base/desktop tier.
+			$sgs_wrap_padding_tiers = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+			$sgs_wrap_margin_tiers  = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+			$padding_tablet_obj     = is_array( $sgs_wrap_padding_tiers['tablet'] ) ? $sgs_wrap_padding_tiers['tablet'] : array();
+			$padding_mobile_obj     = is_array( $sgs_wrap_padding_tiers['mobile'] ) ? $sgs_wrap_padding_tiers['mobile'] : array();
+			$padding_top_tablet     = $sgs_css_length( $padding_tablet_obj['top'] ?? '' );
+			$padding_right_tablet   = $sgs_css_length( $padding_tablet_obj['right'] ?? '' );
+			$padding_bottom_tablet  = $sgs_css_length( $padding_tablet_obj['bottom'] ?? '' );
+			$padding_left_tablet    = $sgs_css_length( $padding_tablet_obj['left'] ?? '' );
+			$padding_top_mobile     = $sgs_css_length( $padding_mobile_obj['top'] ?? '' );
+			$padding_right_mobile   = $sgs_css_length( $padding_mobile_obj['right'] ?? '' );
+			$padding_bottom_mobile  = $sgs_css_length( $padding_mobile_obj['bottom'] ?? '' );
+			$padding_left_mobile    = $sgs_css_length( $padding_mobile_obj['left'] ?? '' );
 
-			// Responsive margin — all kinds. Same object-attr contract as padding above.
-			$margin_tablet_obj    = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-			$margin_mobile_obj    = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+			$margin_tablet_obj    = is_array( $sgs_wrap_margin_tiers['tablet'] ) ? $sgs_wrap_margin_tiers['tablet'] : array();
+			$margin_mobile_obj    = is_array( $sgs_wrap_margin_tiers['mobile'] ) ? $sgs_wrap_margin_tiers['mobile'] : array();
 			$margin_top_tablet    = $sgs_css_length( $margin_tablet_obj['top'] ?? '' );
 			$margin_right_tablet  = $sgs_css_length( $margin_tablet_obj['right'] ?? '' );
 			$margin_bottom_tablet = $sgs_css_length( $margin_tablet_obj['bottom'] ?? '' );
@@ -1922,26 +1937,26 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// rely on the native `style.spacing.padding`/`margin` read; that path is
 			// untouched below. Prefer the owned attr when the block actually declares
 			// it (non-empty), else fall back to native.
-			// ⚠ `$attributes['padding']` is NOT this shape on every block: the
-			// container-query blocks (site-header-row / site-footer-row / gallery,
-			// `$container_queries` true) use `padding` as a TIER object
-			// `{desktop,tablet,mobile}`, each tier itself a box — a different shape
-			// entirely. Gate this read to `! $container_queries` so it can never
-			// misread that tier object as a flat box.
+			// FIXED 2026-09-06 (D976 follow-up): `$attributes['padding']` used to be
+			// misread here as a flat box on every block except the three flagged
+			// container_queries (which store it as a TIER object). Once sgs/container
+			// itself migrated `padding`/`margin` to the tier-object shape (Phase 2,
+			// 2026-09-06) that stopped being true, and the flat-box foreach loop below
+			// silently produced nothing for it (an array value fails is_string(),
+			// so every 'side' was dropped) — proven live via render_block(). Reuses
+			// $sgs_wrap_padding_tiers/$sgs_wrap_margin_tiers computed at ~:603 above,
+			// which already disambiguates flat-box vs tier-object vs absent BY DATA
+			// SHAPE — the container_queries flag is no longer needed as a gate here.
 			$owned_spacing_padding = array();
-			if ( ! $container_queries && isset( $attributes['padding'] ) && is_array( $attributes['padding'] ) ) {
-				foreach ( $attributes['padding'] as $spacing_side => $spacing_value ) {
-					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-						$owned_spacing_padding[ $spacing_side ] = $spacing_value;
-					}
+			foreach ( ( is_array( $sgs_wrap_padding_tiers['desktop'] ) ? $sgs_wrap_padding_tiers['desktop'] : array() ) as $spacing_side => $spacing_value ) {
+				if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+					$owned_spacing_padding[ $spacing_side ] = $spacing_value;
 				}
 			}
 			$owned_spacing_margin = array();
-			if ( ! $container_queries && isset( $attributes['margin'] ) && is_array( $attributes['margin'] ) ) {
-				foreach ( $attributes['margin'] as $spacing_side => $spacing_value ) {
-					if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
-						$owned_spacing_margin[ $spacing_side ] = $spacing_value;
-					}
+			foreach ( ( is_array( $sgs_wrap_margin_tiers['desktop'] ) ? $sgs_wrap_margin_tiers['desktop'] : array() ) as $spacing_side => $spacing_value ) {
+				if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
+					$owned_spacing_margin[ $spacing_side ] = $spacing_value;
 				}
 			}
 
@@ -2046,7 +2061,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateColumns'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['gridTemplateRows'] ?? null )
 				|| $sgs_needs_uid_object_tier( $attributes['columns'] ?? null )
-				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null );
+				|| $sgs_needs_uid_object_tier( $attributes['contentBandPadding'] ?? null )
+				// Phase 2 fix (2026-09-06): on a block whose `padding`/`margin`
+				// has migrated to the tier-of-boxes shape (D555 + the Phase 2
+				// box-object migration — e.g. sgs/container, sgs/hero), these
+				// were never added here, so a block whose ONLY customisation
+				// was padding/margin never minted a uid and the correct
+				// tier-object CSS emitted further down (which only runs
+				// `if ($uid)`) silently never fired. `$owned_spacing_padding`/
+				// `$owned_spacing_margin` above does NOT cover this case either
+				// for such a block — it expects `{top,right,bottom,left}` keys
+				// and gets `{desktop,tablet,mobile}` instead, so it silently
+				// computes empty (it's still load-bearing for blocks that
+				// haven't migrated off native `style.spacing`, so it stays).
+				// See decisions.md for the D-number.
+				|| $sgs_needs_uid_object_tier( $attributes['padding'] ?? null )
+				|| $sgs_needs_uid_object_tier( $attributes['margin'] ?? null );
 
 			// uid also needed when parallax/ken-burns is active, bg-video is responsive,
 			// base padding/margin needs a scoped (non-inline) home, a base outer

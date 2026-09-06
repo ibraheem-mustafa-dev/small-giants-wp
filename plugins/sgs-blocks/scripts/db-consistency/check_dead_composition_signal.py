@@ -17,9 +17,12 @@ impossible to miss again, for ANY block, now or in the future.
 
 THE RULE
 ----------------------------------------------------------------------------
-For every `block_slug` with at least one row in `variant_composition_slots`
-(a real, non-empty InnerBlocks-composition discriminator exists for at least
-one of its variants), that block MUST have at least ONE of three content-
+For every `block_slug` with at least one row in `variant_composition_slots` OR
+in `variant_composition_attr_slots` (extended 2026-09-06 — the child-ATTRIBUTE-
+VALUE composition signal is dead in exactly the same way, and by exactly the
+same mechanism, if the converter can never see the block's composed children)
+— i.e. a real, non-empty InnerBlocks-composition discriminator exists for at
+least one of its variants — that block MUST have at least ONE of three content-
 extraction paths — the mechanisms by which the converter can ever see the
 block's actual composed children at convert-time and therefore ever populate
 `variant_composition_slots`-shaped signal for `detect_variant()` to read:
@@ -124,16 +127,54 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
     # Every block with at least one composition discriminator, plus the
     # distinct variant values that carry one — so a violation can name exactly
     # which variant(s) are affected, not just the block.
-    rows = conn.execute(
-        "SELECT block_slug, variant_value "
-        "FROM variant_composition_slots "
-        "GROUP BY block_slug, variant_value "
-        "ORDER BY block_slug, variant_value"
-    ).fetchall()
+    #
+    # BOTH composition tables (2026-09-06). `variant_composition_attr_slots`
+    # (a nested CHILD's own attribute value) reaches detect_variant() by the
+    # very same route as `variant_composition_slots` (the child's slug) — the
+    # converter must be able to see the block's composed children at
+    # convert-time, or neither signal can ever fire. A row in the newer table
+    # on a block with no content-extraction path is dead in exactly the way
+    # this check exists to catch, so it is UNIONed in rather than left
+    # invisible. The check's rule, remedy and output are otherwise unchanged.
+    #
+    # Each half carries its OWN table name through the UNION so a violation can
+    # name the table(s) the offending rows actually came from — a row present
+    # only in the newer table must not be reported as "seeded in
+    # variant_composition_slots" (that hardcoded string was this check's M3
+    # review finding, 2026-09-06).
+    try:
+        rows = conn.execute(
+            "SELECT block_slug, variant_value, source_table FROM ("
+            "  SELECT block_slug, variant_value, 'variant_composition_slots' "
+            "    AS source_table FROM variant_composition_slots"
+            "  UNION"
+            "  SELECT block_slug, variant_value, 'variant_composition_attr_slots' "
+            "    AS source_table FROM variant_composition_attr_slots"
+            ") "
+            "GROUP BY block_slug, variant_value, source_table "
+            "ORDER BY block_slug, variant_value, source_table"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # Pre-migration DB: `variant_composition_attr_slots` may not exist yet,
+        # which would make the UNION fail as a whole and take the ORIGINAL
+        # (slug-table-only) half of this check down with it. Fall back to that
+        # half rather than losing the check entirely — the exact soft-fail
+        # check_variants.py already carries for this same table (M4, 2026-09-06).
+        rows = [
+            (block_slug, variant_value, "variant_composition_slots")
+            for block_slug, variant_value in conn.execute(
+                "SELECT block_slug, variant_value FROM variant_composition_slots "
+                "GROUP BY block_slug, variant_value "
+                "ORDER BY block_slug, variant_value"
+            ).fetchall()
+        ]
 
     variants_by_block: dict[str, list[str]] = {}
-    for block_slug, variant_value in rows:
-        variants_by_block.setdefault(block_slug, []).append(variant_value)
+    tables_by_block: dict[str, set[str]] = {}
+    for block_slug, variant_value, source_table in rows:
+        if variant_value not in variants_by_block.setdefault(block_slug, []):
+            variants_by_block[block_slug].append(variant_value)
+        tables_by_block.setdefault(block_slug, set()).add(source_table)
 
     for block_slug, variant_values in variants_by_block.items():
         has_delegates_content = derive_delegates_content(block_slug) == 1
@@ -155,13 +196,14 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
 
         variants_sorted = sorted(variant_values)
         block_file_slug = block_slug.replace("sgs/", "")
+        source_tables = " + ".join(sorted(tables_by_block.get(block_slug, ())))
         violations.append(Violation(
             check="dead_composition_signal",
             block=block_slug,
             detail=(
                 f"{block_slug}: variant(s) {variants_sorted} have a real "
                 f"InnerBlocks-composition discriminator seeded in "
-                f"variant_composition_slots, but {block_slug} has NONE of the three "
+                f"{source_tables}, but {block_slug} has NONE of the three "
                 f"content-extraction paths (derive_delegates_content()==1, an "
                 f"'array-content-lift' block_capabilities row, or a block_attributes "
                 f"row with emit_shape='child') that would let the converter ever "
@@ -179,7 +221,7 @@ def run(conn: sqlite3.Connection) -> list[Violation]:
                 f"block_capabilities for {block_slug}, or (c) declare an attribute "
                 f"with emit_shape='child' in block_attributes for {block_slug}. If "
                 f"none of these is appropriate, remove the dead row(s) from "
-                f"variant_composition_slots and discriminate {variants_sorted} via a "
+                f"{source_tables} and discriminate {variants_sorted} via a "
                 f"styling attribute instead (supports.sgs.variants in "
                 f"src/blocks/{block_file_slug}/block.json), then run: "
                 f"python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 1"

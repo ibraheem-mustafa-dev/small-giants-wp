@@ -47,15 +47,29 @@ def _fixed_box_family(monkeypatch, family_map: dict[str, str]):
     """Patch db_lookup.box_family_for used inside orchestrator to a fixed map
     (mirrors the same-name helper in test_root_supports.py). qc-council
     finding #4 (2026-07-09) gates the orchestrator's dict-merge sites on
-    ``box_family_for`` rather than bare ``isinstance(dict)`` — these fixture
-    attrs (e.g. plain ``'padding'``) have no real DB row for sgs/container
-    (only the tier-suffixed ``paddingTablet``/``paddingMobile`` do), so tests
+    ``box_family_for`` rather than bare ``isinstance(dict)`` — tests
     exercising the MERGE mechanism itself must declare the attr a box family
-    explicitly, same as production resolvers do via a real DB row."""
+    explicitly, same as production resolvers do via a real DB row.
+
+    ⚠ CORRECTED 2026-09-06 (Phase 2 tier-object migration). This docstring
+    used to say ``sgs/container.padding`` "has no real DB row... only the
+    tier-suffixed siblings do" — that was true before the migration and is
+    false now: ``padding`` is a real, migrated, TIER-of-BOXES attribute with
+    its own DB row (``default_value={"desktop":{}}``). Since
+    ``box_family_is_tier_shaped()`` reads that real row directly (it is not
+    gated on the mocked ``box_family_for``), a test using this fixed-family
+    mock to exercise the LEGACY flat-box merge path must also pin
+    ``box_family_is_tier_shaped`` to False, or it silently exercises the
+    real container's now-correct tier-nesting path instead of the isolated
+    flat-merge behaviour the test intends to prove."""
     import converter.dispatch_spine as _mod
     monkeypatch.setattr(
         _mod.db_lookup, "box_family_for",
         lambda slug, attr: family_map.get(attr),
+    )
+    monkeypatch.setattr(
+        _mod.db_lookup, "box_family_is_tier_shaped",
+        lambda slug, attr: False,
     )
 
 

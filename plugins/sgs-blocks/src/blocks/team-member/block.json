@@ -25,11 +25,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"imageControls": true,
 			"imageControlsExplicit": true,
@@ -69,8 +64,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
@@ -173,16 +168,13 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		}
@@ -191,6 +183,18 @@
 		"root": ".wp-block-sgs-team-member"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"photo": {
 			"type": "object"
 		},
@@ -360,22 +364,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -406,15 +394,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"nameColourHover": {
 			"type": "string",
@@ -450,7 +432,13 @@
 		},
 		"textAlign": {
 			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
 			"default": ""
 		}
 	},

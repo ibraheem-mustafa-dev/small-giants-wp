@@ -35,7 +35,13 @@
 			"scalarStylingLift": true,
 			"_comment_mediaElements": "badgeImageObjectFit already matches mediaAttrName('badgeImage','ObjectFit') — wired directly onto the existing attribute, no rename/bridge needed (detector rule 37-media-no-handroll).",
 			"mediaElements": [
-				{ "prefix": "badgeImage", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "badgeImage",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"variantAttr": "badgeStyle",
 			"variants": {
@@ -56,19 +62,16 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"contentBandPadding": [
 					"contentBandPadding"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -231,11 +234,15 @@
 	"attributes": {
 		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"badgeStyle": {
 			"type": "string",
@@ -252,7 +259,8 @@
 				"type": "object",
 				"properties": {
 					"icon": {
-						"type": "string"
+						"type": "string",
+						"role": "icon"
 					},
 					"iconSvg": {
 						"type": "string"
@@ -304,7 +312,10 @@
 					},
 					"objectFit": {
 						"type": "string",
-						"enum": [ "cover", "contain" ],
+						"enum": [
+							"cover",
+							"contain"
+						],
 						"default": "cover",
 						"description": "image-badge variant only. Per-item object-fit override — badges are logos/certification marks, so no focal-point/crop field exists here by design (see sgs/testimonial orgLogo, sgs/brand-strip logoFit)."
 					}
@@ -604,7 +615,9 @@
 		},
 		"backgroundOverlayOpacity": {
 			"type": "object",
-			"default": {"desktop": 30}
+			"default": {
+				"desktop": 30
+			}
 		},
 		"overlayGradient": {
 			"type": "string",
@@ -840,22 +853,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"contentBandPadding": {
 			"type": "object",
 			"default": {
@@ -914,15 +911,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"render": "file:./render.php",

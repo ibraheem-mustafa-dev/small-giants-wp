@@ -1,8 +1,10 @@
 node_modules/
 build/
 
-# Ad-hoc Chrome DevTools MCP capture dumps (console/CWV/network) — ephemeral
-# debugging output, not curated deliverables like the rest of reports/.
+# Ad-hoc Chrome DevTools MCP capture dumps (console/CWV/network), including
+# stage8-audit.js run output — timestamped per-run JSON, not durable
+# documentation (unlike the hand-written reports/*.md files, which stay
+# tracked).
 reports/console/
 reports/cwv/
 reports/network/

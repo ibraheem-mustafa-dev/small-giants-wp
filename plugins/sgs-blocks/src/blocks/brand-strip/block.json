@@ -148,8 +148,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -160,16 +160,13 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			}
 		},
@@ -184,14 +181,21 @@
 			"gradients": false,
 			"text": false,
 			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"_comment_logos_media": "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape is NOT migrated — all deprecations were deleted plugin-wide at D271; there is no deprecated.js. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos. alt/linkUrl/linkTarget/name are per-item JS runtime keys, declared here for schema clarity (array-item sub-properties are not subject to the D338 top-level attr-discard rule).",
 		"logos": {
 			"type": "array",
@@ -477,30 +481,6 @@
 			"type": "string",
 			"default": "ease-in-out"
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -531,7 +511,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"nameColourHover": {
 			"type": "string",

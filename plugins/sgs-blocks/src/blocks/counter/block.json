@@ -21,16 +21,13 @@
 			"scalarStylingLift": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -44,8 +41,8 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:background-color": "native:color.background",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -104,11 +101,6 @@
 			"textAlign": true,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"interactivity": true
 	},
 	"selectors": {
@@ -116,6 +108,18 @@
 		"typography": ".sgs-counter__number"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"number": {
 			"type": "number",
 			"default": 0
@@ -190,30 +194,6 @@
 			"type": "boolean",
 			"default": false
 		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"borderWidth": {
 			"type": "object",
 			"default": {}
@@ -244,7 +224,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"editorScript": "file:./index.js",

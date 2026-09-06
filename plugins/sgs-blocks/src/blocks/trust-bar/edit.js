@@ -12,10 +12,7 @@ import {
 	Notice,
 	BoxControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow,
-	SgsBorderControl,
-	resolveColourToken,
-} from '../../components';
+import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
@@ -857,13 +854,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								colourLinked={ true }
 								contrastAgainst={ trustBarContrastAgainst }
 								radiusValues={ {
-									base: attributes.borderRadius ?? {},
-									tablet: attributes.borderRadiusTablet ?? {},
-									mobile: attributes.borderRadiusMobile ?? {},
-								} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 								onRadiusChange={ ( tier, next ) => {
-									const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-									setAttributes( { [ radiusKey ]: next } );
+									const key = tier === 'base' ? 'desktop' : tier;
+									setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 								} }
 							/>
 						);
@@ -914,39 +911,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     to the paddingTablet/paddingMobile + marginTablet/marginMobile object
 				     attrs read by the shared wrapper's @media tiers. Mirrors sgs/container's edit.js. */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Breakpoint -> attr map, not a computed ternary key. This is
-							// the canonical idiom (mirrors sgs/container's edit.js) that
-							// check-control-ux.js recognises as delegated-to-shared-
-							// component; a ternary inside a computed property key reads
-							// to the gate as an unwrapped direct write.
-							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+							presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Same canonical breakpoint -> attr map as Padding above.
-							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Content band (Layer 2 __inner) — object attrs ─────────── */ }

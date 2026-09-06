@@ -59,8 +59,8 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:background-color": "navBg",
 						"css:color": "navColour",
 						"css:color-gradient": "navColourGradient"
@@ -85,9 +85,10 @@
 					],
 					"prefix": "",
 					"attrMap": {
-						"css:gap": "gap"
+						"css:gap": "gap",
+						"css:grid-template-columns:count": "listColumns"
 					},
-					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute)."
+					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute). `css:grid-template-columns:count` is a pseudo-property destination tag (mirrors `css:color-gradient` — not a real CSS property, a manifest-level routing key) claiming `listColumns` as this element's grid COLUMN-COUNT destination for the converter's grid resolver (`db.attr_for_grid_column_count`), matching render.php:1603-1624's own target selector `.sgs-nav-menu__bar` for the in-drawer vertical-list column count."
 				},
 				"item": {
 					"label": "Nav item (resting)",
@@ -234,21 +235,25 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"submenuPadding": [
 					"submenuPadding"
 				]
 			}
-		},
-		"spacing": {
-			"padding": true,
-			"margin": true,
-			"__experimentalSkipSerialization": true
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"ref": {
 			"type": "number",
 			"default": 0
@@ -277,14 +282,6 @@
 			"default": "8px"
 		},
 		"listColumns": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
 			"type": "object",
 			"default": {}
 		},

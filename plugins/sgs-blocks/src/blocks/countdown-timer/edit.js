@@ -7,12 +7,9 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl,
-	SgsBorderControl,
-	TypographyControls,
-	resolveColourToken,
-} from '../../components';
-import { colourVar, textPaintPreview } from '../../utils';
+import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { colourVar, textPaintPreview, backgroundPaintPreview } from '../../utils';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const CARD_STYLES = [
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
@@ -43,44 +40,67 @@ function boxShorthand( box, order = [ 'top', 'right', 'bottom', 'left' ] ) {
  * mobile tiers are not simulated on the fixed-width canvas, matching quote/
  * media precedent).
  */
-function buildPreviewStyle( attributes ) {
-	const { style, textAlign, fontSize, fontSizeUnit, fontWeight, fontStyle, lineHeight, lineHeightUnit } = attributes;
+function buildPreviewStyle( attributes, colourPalette ) {
+	const {
+		padding,
+		margin,
+		textAlign,
+		fontSize,
+		fontSizeUnit,
+		fontWeight,
+		fontStyle,
+		lineHeight,
+		lineHeightUnit,
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderRadius,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
+	} = attributes;
 
 	const preview = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding );
+	const paddingPreview = boxShorthand( padding?.desktop );
 	if ( paddingPreview ) {
 		preview.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin?.desktop );
 	if ( marginPreview ) {
 		preview.margin = marginPreview;
 	}
 
-	const border = style?.border ?? {};
-	if ( border.style && border.style !== 'none' ) {
-		const borderWidthPreview = boxShorthand( border.width, [ 'top', 'right', 'bottom', 'left' ] );
-		if ( typeof border.width === 'string' ) {
-			preview.borderWidth = border.width;
-		} else if ( borderWidthPreview ) {
+	// Border is the block's own borderWidth/borderStyle/borderColour/
+	// borderRadius attrs (SgsBorderControl, below) — NOT WP-native
+	// `style.border`, which no control in this file ever writes to; the
+	// block.json `supports` block declares no `__experimentalBorder` at all.
+	if ( borderStyle && borderStyle !== 'none' ) {
+		const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+		if ( borderWidthPreview ) {
 			preview.borderWidth = borderWidthPreview;
 		}
-		preview.borderStyle = border.style;
-		if ( border.color ) {
-			preview.borderColor = border.color;
+		preview.borderStyle = borderStyle;
+		if ( borderColour ) {
+			preview.borderColor = borderColour;
 		}
 	}
-	if ( border.radius ) {
-		preview.borderRadius = typeof border.radius === 'string'
-			? border.radius
-			: boxShorthand( border.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	if ( radiusPreview ) {
+		preview.borderRadius = radiusPreview;
 	}
 
-	if ( style?.color?.text ) {
-		preview.color = style.color.text;
+	// Wrapper text/background colour — block-private, gradient-capable attrs
+	// (WP-native `supports.color` is disabled; the old `style.color.*` path
+	// was never populated — colour-conformance track fix, 2026-09-06).
+	const wrapperTextPreview = textPaintPreview( textColour, textColourGradient, colourPalette );
+	if ( wrapperTextPreview ) {
+		Object.assign( preview, wrapperTextPreview );
 	}
-	if ( style?.color?.background ) {
-		preview.backgroundColor = style.color.background;
+	const wrapperBgPreview = backgroundPaintPreview( backgroundColour, backgroundColourGradient, colourPalette );
+	if ( wrapperBgPreview ) {
+		Object.assign( preview, wrapperBgPreview );
 	}
 	// Typography — migrated off WP-native style.typography.fontSize onto the
 	// shared TypographyControls attribute shape (D971/D972). Base/desktop tier
@@ -120,26 +140,20 @@ export default function Edit( { attributes, setAttributes } ) {
 		showSeconds,
 		cardStyle,
 		digitStyle,
-		style,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		numberColour,
 		numberColourGradient,
 		labelColour,
 		labelColourGradient,
+		textColour,
+		textColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
 	} = attributes;
 
 	const className = [
 		'sgs-countdown',
 		`sgs-countdown--${ cardStyle }`,
 	].join( ' ' );
-
-	const blockProps = useBlockProps( {
-		className,
-		style: buildPreviewStyle( attributes ),
-	} );
 
 	// numberColour/numberColourGradient + labelColour/labelColourGradient real
 	// mechanism (render.php): a flat colour is a `--sgs-countdown-*-colour`
@@ -149,6 +163,12 @@ export default function Edit( { attributes, setAttributes } ) {
 	// exactly the textPaintPreview() technique already shared with
 	// sgs/container's own text-colour mirror.
 	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	const blockProps = useBlockProps( {
+		className,
+		style: buildPreviewStyle( attributes, colourPalette ),
+	} );
+
 	const numberPreview = textPaintPreview( numberColour, numberColourGradient, colourPalette );
 	const labelPreview = textPaintPreview( labelColour, labelColourGradient, colourPalette );
 
@@ -157,6 +177,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( showHours ) units.push( { value: '00', label: __( 'Hours', 'sgs-blocks' ) } );
 	if ( showMinutes ) units.push( { value: '00', label: __( 'Minutes', 'sgs-blocks' ) } );
 	if ( showSeconds ) units.push( { value: '00', label: __( 'Seconds', 'sgs-blocks' ) } );
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const countdownTimerContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
 
 	return (
 		<>
@@ -168,6 +196,36 @@ export default function Edit( { attributes, setAttributes } ) {
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
 				rows={ [
+					{
+						key: 'wrapperText',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'wrapperBackground',
+						label: __( 'Background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: backgroundColour,
+								onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+								gradientValue: backgroundColourGradient,
+								onGradientChange: ( val ) => setAttributes( { backgroundColourGradient: val ?? '' } ),
+							},
+						],
+					},
 					{
 						key: 'number',
 						label: __( 'Number colour', 'sgs-blocks' ),
@@ -316,62 +374,59 @@ export default function Edit( { attributes, setAttributes } ) {
 				    is the only element this block-level typography targets (the
 				    number/label elements keep their own colour-only controls).
 				    TypographyControls has no text-align field, so that control
-				    stays a plain SelectControl mirroring render.php's own
-				    allowed_aligns allowlist. */ }
+				    stays block-private. D812 (2026-08-26): a 5-option enum with
+				    longest rendered label <=12 chars ("— inherit —", 11 chars)
+				    renders as ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ attributes.textAlign || '' }
-						options={ [
-							{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-							{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-							{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-						] }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="" label={ __( '— inherit —', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="left" label={ __( 'Left', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="right" label={ __( 'Right', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="justify" label={ __( 'Justify', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 				</PanelBody>
 				<PanelBody title={ __( 'Responsive spacing', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
@@ -386,6 +441,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourGradientValue={ attributes.borderColourGradient }
 						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ countdownTimerContrastAgainst }
 						radiusValues={ {
 								base: attributes.borderRadius?.desktop ?? {},
 								tablet: attributes.borderRadius?.tablet ?? {},

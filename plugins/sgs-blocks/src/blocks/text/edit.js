@@ -2,13 +2,22 @@
  * edit.js — Block editor component for sgs/text.
  *
  * Provides a RichText editing surface with InspectorControls panels for:
- * - Tag selection
- * - Colour (text)
- * - Typography (font size responsive, weight, line height, letter spacing,
- *   font style, text decoration, text transform, font family)
- * - Spacing (4-side margin + padding, per viewport)
- * - Layout (text align, max width)
+ * - Colour (text + background)
+ * - Typography — ONE mount of the shared TypographyControls, which since the
+ *   2026-09-06 rebuild renders WordPress's OWN native controls (font size,
+ *   family, appearance, line height, letter spacing, decoration, letter case,
+ *   alignment) plus the SGS-only text-wrap field. Text align lives HERE, not in
+ *   Layout — it is a text-family property.
+ * - Layout (max width, custom width, margin/padding, border)
+ * - Effects (shadow, hover scale, transition)
  * - Drop cap toggle + first-letter overrides
+ *
+ * ⚠ The drop-cap panel is SGS-ONLY and deliberately richer than core's. WP's
+ * `core/paragraph` has a `dropCap` attribute too, but its control is a bare
+ * on/off `ToggleControl` and its styling is a fixed `::first-letter` rule in
+ * `paragraph/style.scss` (8.4em, weight 100) with no client controls at all.
+ * This block additionally exposes first-letter size, weight and colour
+ * (including gradient + hover). Do not "align it with core" by removing those.
  */
 import { __ } from '@wordpress/i18n';
 import {
@@ -21,21 +30,12 @@ import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import {
-	TypographyControls,
-	ResponsiveControl,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsLengthControl,
-	SgsBorderControl,
-	DesignTokenPicker,
-	GradientCapableColourControl,
-	ShadowControl,
-	shadowAttrKeys,
-} from '../../components';
+// ⛔ ResponsiveControl is deliberately NOT imported any more: the only mount was
+// the bolted-on "Line height (tablet / mobile)" pair, now replaced by the shared
+// TypographyControls' own tier-aware line-height field.
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
 
@@ -56,34 +56,22 @@ const FONT_WEIGHT_OPTIONS = [
 	{ label: __( 'Black (900)', 'sgs-blocks' ), value: '900' },
 ];
 
-const FONT_STYLE_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Normal', 'sgs-blocks' ), value: 'normal' },
-	{ label: __( 'Italic', 'sgs-blocks' ), value: 'italic' },
-];
-
-const TEXT_DECORATION_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
-	{ label: __( 'Line-through', 'sgs-blocks' ), value: 'line-through' },
-];
-
-const TEXT_TRANSFORM_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Uppercase', 'sgs-blocks' ), value: 'uppercase' },
-	{ label: __( 'Lowercase', 'sgs-blocks' ), value: 'lowercase' },
-	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
-];
-
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
+// ⛔ FONT_STYLE_OPTIONS / TEXT_DECORATION_OPTIONS / TEXT_TRANSFORM_OPTIONS /
+// TEXT_ALIGN_OPTIONS all lived here until 2026-09-06. Every one is gone because
+// the controls that consumed them are gone: the shared TypographyControls now
+// renders WordPress's OWN components (FontAppearanceControl,
+// TextDecorationControl, TextTransformControl and a faithful rebuild of core's
+// private TextAlignmentControl), each of which owns its option list, icons and
+// labels internally.
+//
+// Do NOT re-declare a block-private copy. Divergence between a block's list and
+// the PHP allowlist in sgs_typography_css_rule() is SILENT — an out-of-enum
+// value is coerced to the attribute default by WordPress and simply stops
+// rendering, with nothing to flag it.
+//
+// FONT_WEIGHT_OPTIONS is deliberately KEPT below: the drop-cap panel's
+// "First-letter weight" SelectControl still uses it, and that control has no
+// core equivalent (core's drop cap is a bare on/off toggle).
 
 const MAX_WIDTH_UNITS = [
 	{ value: 'px', label: 'px', default: 800 },
@@ -138,8 +126,7 @@ function boxShorthand( box, keys ) {
 }
 
 function buildEditorStyle( attributes ) {
-	const {
-		style,
+	const { padding, margin,
 		textColour,
 		textColourGradient,
 		fontSize,
@@ -229,18 +216,17 @@ function buildEditorStyle( attributes ) {
 		previewStyle.width = `${ customWidth }${ customWidthUnit }`;
 	}
 
-	// Box-object interface contract §5: base padding/margin/border-radius come
-	// from WP-native style.spacing.* / style.border.radius (object); border
-	// width from the SGS custom borderWidth object attr. Tablet/mobile tiers
-	// stay flat per-side attrs (contract exception for this block — not
-	// previewed here, matching the pre-existing desktop-only canvas preview).
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	// Base padding/margin/border-radius preview — padding/margin are owned
+	// tier-object attrs { desktop, tablet, mobile } (desktop tier previewed
+	// here only); border-radius stays WP-native style.border.radius; border
+	// width comes from the SGS custom borderWidth object attr.
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) previewStyle.padding = paddingPreview;
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) previewStyle.margin = marginPreview;
 
 	// CSS border-radius shorthand order: top-left top-right bottom-right bottom-left.
-	const borderRadiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const borderRadiusPreview = boxShorthand( attributes.borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( borderRadiusPreview ) previewStyle.borderRadius = borderRadiusPreview;
 
 	const borderWidthPreview = boxShorthand( borderWidth, [ 'top', 'right', 'bottom', 'left' ] );
@@ -351,7 +337,6 @@ function parseUnit( raw, currentUnit ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		text,
 		textColour,
 		fontSize,
@@ -365,12 +350,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		textTransform,
 		fontFamily,
 		textAlign,
+		textWrap,
 		maxWidth,
 		maxWidthUnit,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		dropCap,
 		firstLetterColour,
 		firstLetterColourHover,
@@ -454,6 +436,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							textTransform: '',
 							fontFamily: '',
 							textAlign: '',
+							textWrap: '',
 							textColour: '',
 							textColourGradient: '',
 							textColourHover: '',
@@ -470,7 +453,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							!! fontStyle ||
 							( lineHeight && 'object' === typeof lineHeight && Object.keys( lineHeight ).length > 0 ) ||
 							'em' !== ( lineHeightUnit || 'em' ) ||
-							( letterSpacing && 'object' === typeof letterSpacing && Object.keys( letterSpacing ).length > 0 )
+							( letterSpacing && 'object' === typeof letterSpacing && Object.keys( letterSpacing ).length > 0 ) ||
+							!! fontFamily ||
+							!! textDecoration ||
+							!! textTransform ||
+							!! textAlign ||
+							!! textWrap
 						}
 						onDeselect={ () =>
 							setAttributes( {
@@ -481,20 +469,36 @@ export default function Edit( { attributes, setAttributes } ) {
 								lineHeight: {},
 								lineHeightUnit: 'em',
 								letterSpacing: {},
+								fontFamily: '',
+								textDecoration: '',
+								textTransform: '',
+								textAlign: '',
+								textWrap: '',
 							} )
 						}
 						isShownByDefault
 					>
 					{ /*
-					 * Font size + line height via shared TypographyControls.
-					 * Handles: fontSize/fontSizeUnit (fontSize is a TIER OBJECT here
-					 *           — {desktop,tablet,mobile} — so the responsive values
-					 *           live inside it. The legacy flat fontSizeTablet/
-					 *           fontSizeMobile pair does NOT apply to this block and
-					 *           must not be re-added; TypographyControls' tiered
-					 *           branch never writes them.)
-					 *           lineHeight/lineHeightUnit
-					 *           fontWeight / fontStyle
+					 * THE WHOLE typography field set is the shared
+					 * TypographyControls component, which since the 2026-09-06
+					 * rebuild renders WordPress's OWN native controls
+					 * (FontSizePicker / FontFamilyControl / FontAppearanceControl /
+					 * LineHeightControl / LetterSpacingControl /
+					 * TextDecorationControl / TextTransformControl, plus a faithful
+					 * reimplementation of core's private TextAlignmentControl).
+					 *
+					 * Four ToolsPanelItems that used to sit below this one —
+					 * "Text decoration & transform", "Font family" and "Text align" —
+					 * are GONE, not moved alongside. Each hand-rolled a control the
+					 * shared component already renders; "Text decoration & transform"
+					 * in particular was a genuine DUPLICATE WRITER, since this block
+					 * already passed showDecoration/showTransform.
+					 *
+					 * fontSize / lineHeight / letterSpacing are TIER OBJECTS here
+					 * ({desktop,tablet,mobile}), so the responsive values live inside
+					 * them. The legacy flat fontSizeTablet/fontSizeMobile pair does
+					 * NOT apply to this block and must not be re-added;
+					 * TypographyControls' tiered branch never writes them.
 					 */ }
 					<TypographyControls
 						attributes={ attributes }
@@ -509,116 +513,57 @@ export default function Edit( { attributes, setAttributes } ) {
 						showLetterSpacing={ true }
 						showDecoration={ true }
 						showTransform={ true }
+						showFontFamily={ true }
+						showTextAlign={ true }
+						showTextWrap={ true }
+						showTextColumns={ true }
+						showTextIndent={ true }
+						showWritingMode={ true }
 					/>
 
-					{ /* Line height tablet/mobile — lineHeight is now an OBJECT-typed
-					   {desktop,tablet,mobile} attr (Spec 35 tier-object migration).
-					   TypographyControls' own lineHeight UnitControl only edits the
-					   desktop tier; the tablet/mobile tiers are managed here, writing
-					   into the SAME object rather than the retired lineHeightTablet/
-					   lineHeightMobile sibling attrs (folded into this object — WP
-					   silently discards a value written to an undeclared attr). */ }
-					<ResponsiveControl label={ __( 'Line height (tablet / mobile)', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => {
-							if ( breakpoint === 'desktop' ) {
-								return null; // desktop handled by TypographyControls above
-							}
-							const lineHeightObj =
-								lineHeight && 'object' === typeof lineHeight && ! Array.isArray( lineHeight )
-									? lineHeight
-									: {};
-							const val = lineHeightObj[ breakpoint ];
-							return (
-								<RangeControl
-									label={ breakpoint === 'tablet'
-										? __( 'Line height (tablet)', 'sgs-blocks' )
-										: __( 'Line height (mobile)', 'sgs-blocks' )
-									}
-									value={ val ?? '' }
-									onChange={ ( v ) =>
-										setAttributes( { lineHeight: { ...lineHeightObj, [ breakpoint ]: v } } )
-									}
-									min={ 0.8 }
-									max={ 3 }
-									step={ 0.05 }
-									allowReset
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							);
-						} }
-					</ResponsiveControl>
+					{ /* ⛔ The separate "Line height (tablet / mobile)" ResponsiveControl
+					   that used to sit here is DELETED (2026-09-06).
 
-					{ /* Letter spacing is already rendered by TypographyControls above
-					   (showLetterSpacing={ true }) — this block used to duplicate it with
-					   a second, conflicting flat-value UnitControl that would clobber the
-					   letterSpacing OBJECT with a bare number. Removed rather than fixed:
-					   TypographyControls is the single owner. */ }
+					   It existed because the shared TypographyControls' line-height
+					   field only ever edited the `.desktop` tier, so the other two
+					   tiers had to be bolted on beside it as two always-visible
+					   RangeControls — a different control, a different shape and a
+					   different interaction model from the font-size field directly
+					   above it, for the same kind of property.
+
+					   TypographyControls' line height is now TIER-AWARE in its own
+					   right: one control, wrapped in <ResponsiveOverride>, editing
+					   whichever tier the global device toggle
+					   (src/blocks/extensions/responsive-device-toggle.js) has
+					   selected — identical to how font size has always behaved.
+
+					   ⛔ Do NOT re-add per-tier siblings here for line height OR
+					   letter spacing. Two controls writing different keys of one
+					   tier object is the shape this replaced, and a bare
+					   `setAttributes({ lineHeight: {...obj, [tier]: v} })` of the
+					   kind that lived here is exactly the write WordPress applies
+					   no schema validation to. */ }
 					</ToolsPanelItem>
 
-					<ToolsPanelItem
-						label={ __( 'Text decoration & transform', 'sgs-blocks' ) }
-						hasValue={ () => textDecoration !== '' || textTransform !== '' }
-						onDeselect={ () =>
-							setAttributes( { textDecoration: '', textTransform: '' } )
-						}
-					>
-					<SelectControl
-						label={ __( 'Text decoration', 'sgs-blocks' ) }
-						value={ textDecoration }
-						options={ TEXT_DECORATION_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textDecoration: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Text transform', 'sgs-blocks' ) }
-						value={ textTransform }
-						options={ TEXT_TRANSFORM_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textTransform: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					</ToolsPanelItem>
+					{ /* ⛔ THREE ToolsPanelItems were DELETED here on 2026-09-06,
+					     not moved: "Text decoration & transform", "Font family"
+					     and "Text align". Every control they held is now rendered
+					     by the shared TypographyControls above, using WordPress's
+					     own native components.
 
-					<ToolsPanelItem
-						label={ __( 'Font family', 'sgs-blocks' ) }
-						hasValue={ () => fontFamily !== '' }
-						onDeselect={ () => setAttributes( { fontFamily: '' } ) }
-					>
-					<TextControl
-						label={ __( 'Font family', 'sgs-blocks' ) }
-						value={ fontFamily }
-						onChange={ ( val ) =>
-							setAttributes( { fontFamily: val } )
-						}
-						placeholder={ __( 'Inter, sans-serif', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					</ToolsPanelItem>
+					     "Text decoration & transform" was a genuine DUPLICATE
+					     WRITER — this block already passed showDecoration and
+					     showTransform to TypographyControls, so two separate
+					     controls wrote `textDecoration`/`textTransform`, and the
+					     client saw the same two properties twice in one panel.
 
-					<ToolsPanelItem
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						hasValue={ () => textAlign !== '' }
-						onDeselect={ () => setAttributes( { textAlign: '' } ) }
-						isShownByDefault
-					>
-					<SelectControl
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textAlign: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					</ToolsPanelItem>
+					     "Font family" was a FREE-TEXT TextControl: it accepted any
+					     string, offered no theme font list, and had no way to show
+					     the client which families the theme actually provides.
+					     Core's FontFamilyControl reads them from theme settings.
+
+					     ⛔ Do not re-add any of the three. Their attributes are now
+					     covered by the Font item's own hasValue/onDeselect above. */ }
 
 					<ToolsPanelItem
 						label={ __( 'Text colour', 'sgs-blocks' ) }
@@ -753,45 +698,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						presets={ false }
 					/>
 
-					{ /* Box-object interface contract §B (100% box-group): base padding/
-					   margin route to WP-native style.spacing (mirrors sgs/container +
-					   sgs/button); tablet/mobile tiers are the SGS object attrs
-					   marginTablet/marginMobile + paddingTablet/paddingMobile, written
-					   via the container/button onChange( tier, next ) split. The device
-					   switcher selects base/tablet/mobile. */ }
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					{ /* padding/margin are each a single block-owned tier-object attr
+					   { desktop, tablet, mobile }, written via ResponsiveOverride +
+					   SgsBoxControl; read directly by this block's render.php. The
+					   device switcher selects desktop/tablet/mobile. */ }
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: style?.spacing?.padding ?? {},
-							tablet: paddingTablet ?? {},
-							mobile: paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-							} else {
-								setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 
 					{ /* Box-object interface contract §1/§5: borderWidth is an SGS custom
 					   object attr (base only, no tiers — mirrors sgs/button); border-radius
@@ -827,13 +766,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						] }
 						contrastAgainst={ textContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

@@ -1,3 +1,236 @@
+## D977 [INCIDENT] — shared wrapper (SGS_Container_Wrapper) silently dropped ALL padding/margin for every tier-object-migrated composite block; found via the "check shared files too" instinct, live-verified, fixed with a proven-safe pattern
+
+**2026-09-06.** Bean asked, after the 29-block render.php + D976 guard-gate work: "check if your
+scanners and tracking has been comprehensively implemented across all shared files too like the
+atoms, extensions, helpers, injectors etc." That question surfaced a bug bigger than the render.php
+fix it was checking on: `includes/class-sgs-container-wrapper.php` — the shared file `sgs/container`,
+`sgs/hero`, `sgs/trust-bar`, `sgs/site-header`, `sgs/site-footer`, `sgs/multi-button` and
+`sgs/physics-canvas` all route through — had the IDENTICAL dead-flat-attr bug already fixed
+everywhere else, in TWO places: (1) tablet/mobile padding/margin still read the pre-migration flat
+`paddingTablet`/`paddingMobile`/`marginTablet`/`marginMobile` siblings directly; (2) the base/desktop
+extraction still treated `$attributes['padding']`/`['margin']` as a flat `{top,right,bottom,left}`
+box, gated `! $container_queries` on the assumption ONLY site-header-row/site-footer-row/gallery
+ever stored it as a tier-object — an assumption the 2026-09-06 Phase 2 migration (folding
+`sgs/container`'s own padding/margin into the same tier-object shape) silently invalidated.
+
+**Verified live before touching anything** (per Rule 5 + the D976 lesson about not repeating a
+fix on unproven ground): a direct `render_block()` call on `sgs/container` with padding+margin
+set returned a bare passthrough with ZERO scoped CSS — no uid class, no `<style>` tag, nothing.
+Confirmed against a REST-created throwaway page too before escalating.
+
+**Fix, reusing the exact pattern already proven safe 250+ lines earlier in the same function**
+(the file already calls `sgs_responsive_normalise_object()` at `:344` for `columns`, well before
+this edit's insertion point — no load-order risk, D976's own lesson applied): compute
+`$sgs_wrap_padding_tiers`/`$sgs_wrap_margin_tiers` ONCE via `sgs_responsive_normalise_object( ...,
+true )`, which already disambiguates a flat box (returned as the desktop tier) from a real
+tier-object (all three tiers as stored) from an absent attribute (all null, correctly falling
+through to the pre-existing native `style.spacing` fallback) BY DATA SHAPE — removing the
+`! $container_queries` flag-gate entirely rather than adding a second branch to it, consistent
+with this file's own stated "universal by data, not by flag" principle (D555 comment, ⁢~:233).
+
+**Verified in isolation before deploying** (learning D976's near-miss rather than repeating it):
+uploaded a renamed-class copy of the FIXED file to the canary's real `includes/` directory (so its
+own internal `require_once __DIR__ . '/render-helpers.php'` resolves correctly) and called
+`SGS_Container_Wrapper_TEST::render()` directly via `wp eval-file`, bypassing the live plugin
+entirely — four cases: the previously-broken tier-object container (now emits base + tablet +
+mobile padding/margin correctly), the already-working `container_queries=true` path (unchanged,
+including its own `container-type:inline-size` emission), a legacy flat-box-only instance (still
+renders base-only, no spurious tablet/mobile rules — backward compatibility proven, not assumed),
+and no padding/margin set at all (renders cleanly, no uid, no empty style block). All four correct.
+Test files deleted from the server afterwards.
+
+**Guard extended, not duplicated.** `check-render-tier-object-spacing.py` (D976) only scanned
+`src/blocks/*/render.php`, so it would never have caught a shared file — extended it with a
+second scan (`scan_shared_files()`) covering `includes/class-sgs-container-wrapper.php`,
+`includes/helpers-box.php`, `includes/helpers-responsive.php`, and the two media-atom PHP files
+(`includes/media/atoms/media-padding.php`, `box-shape.php`) for the identical two checks, using a
+GLOBAL declared-attrs set (since a shared file has no single owning block.json). Earned one more
+fixture doing it: the file that DEFINES `sgs_responsive_normalise_object()` calls it internally
+with no require of itself — correctly not a bug, but the naive load-order check flagged it on
+first run; fixed by skipping the check when the call and its own definition are in the same file.
+
+**Still open, named but not yet fixed (out of scope for this specific commit):** the same class of
+bug in the media-atom shared files (`includes/media/atoms/box-shape.php`,
+`src/components/media/atoms/box-shape.control.js`/`.js`, `media-padding.js`/`.php`) for
+border-radius and mediaPadding — confirmed present via grep, now covered by the extended guard's
+scan list so they show as findings rather than silently passing, tracked as the next piece of the
+tier-object migration (border-radius, priorities 1+2 from the 2026-09-06 status recap).
+
+## D976 [INCIDENT] — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry — render.php helper-function load-order fatal on sandybrown, rolled back and root-caused; new permanent guard gate + THE-MIGRATION-METHOD.md hazard entry
+
+**2026-09-06.** The tier-object padding/margin render.php fix (29 blocks,
+commits e863203d7 + 75b8dd657) inserted a normalisation preamble calling
+`sgs_responsive_normalise_object()` right after each file's `ABSPATH` guard —
+but that function is only DEFINED once `require_once .../render-helpers.php`
+(or `helpers-responsive.php` directly) actually executes, and in every one of
+the 29 files that require came 16-56 lines LATER in the file. Deployed to
+sandybrown; fataled immediately with "Call to undefined function
+sgs_responsive_normalise_object()" via `sgs/business-info`, reached early
+through `class-sgs-header-rules.php`'s header-pattern-evaluation path (which
+runs before the normal block-render lifecycle has loaded everything). Rolled
+back within ~2 minutes (`.bak` swap + OPcache reset over HTTPS on the web
+pool, per the documented rollback procedure). Fixed by requiring
+`helpers-responsive.php` directly, inline, right where the preamble is
+inserted — removing the load-order dependency entirely rather than trying to
+find "the right place" to insert relative to an existing require.
+
+**Structural fix, not just a one-off repair.** Built
+`scripts/check-render-tier-object-spacing.py` (GUARD gate shape per THE-
+MIGRATION-METHOD.md Step 8 — 0 from registration, 1 only on divergence),
+registered in `gates.json` (fast tier) + `package.json` aliases
+(`check:render-tier-object-spacing` / `selftest:render-tier-object-spacing`).
+It scans every `src/blocks/*/render.php` (not just the 29 already fixed) for
+two things: (1) any call to `sgs_responsive_normalise_object()` whose defining
+require appears at a LATER line number — catches this exact hazard on any
+current or future block; (2) any literal `$attributes['paddingTablet'/
+'paddingMobile'/'marginTablet'/'marginMobile']` read in a block whose
+`block.json` doesn't declare that attribute — the dead-flat-attribute bug
+class the original migration fixed, checked per-block against the real
+schema rather than a hardcoded roster. Ships with 7 fixtures including one
+earned mid-build: the first version matched a DOCBLOCK COMMENT describing the
+fix (which names the function with a trailing `(` and the dead attrs by name)
+as if it were real code, producing a false failure on all 29 already-fixed
+blocks — fixed by stripping comments (preserving line numbers) before
+scanning. An independent QC-council code-verifier subagent hit the identical
+comment-matching trap on its own first attempt before self-correcting,
+confirming this is a genuinely easy mistake to make, not a one-off slip.
+
+**THE-MIGRATION-METHOD.md gap.** The "Known hazards" section had no entry for
+"a function call can precede the require that defines it" — every existing
+hazard is about find-and-replace mechanics (CRLF, JSON reformatting, aligned
+assignment, brace-depth) rather than *execution order* within the file being
+edited. Added a new hazard entry naming this class directly, since a codemod
+inserting a call anywhere other than immediately after its own dependency's
+require is exactly how this recurs.
+
+**Also fixed while auditing:** the DB reseed run this session
+(`sgs-update-v2.py`, full 13-stage) cleared 241 orphaned `block_attributes`
+rows and 32 stale `block_supports` rows left behind by the padding/margin AND
+border-radius schema folds (border-radius's own migration is separate,
+unstarted work — not touched here, only its stale DB rows were pruned).
+`sgs/nav-menu` and `sgs/quote`'s `edit.js` still had `ToolsPanel`
+`resetAll`/`ToolsPanelItem` `hasValue`/`onDeselect` handlers referencing the
+same dead flat attrs (silently no-op on reset/deselect since WP discards
+writes to undeclared attributes, D338) — fixed to reference the real
+`padding`/`margin` tier-object attr directly, matching the already-correct
+pattern used by `sgs/quote`'s own individual Padding/Margin panel items and
+by `sgs/accordion`.
+
+## D975 [ROUTINE] — trust-bar variant discrimination live-clone-verified for real; found + fixed a durability gap in D974's own container-marker fix
+
+**2026-09-06.** Closes the last open residual on `parking.md`'s
+`P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` entry (folded inside
+`P-CONVERTER-LIVE-CLONE-VERIFY-BATCH`): "trust-bar's own case is fixed... but
+live-clone verification was never done."
+
+**Live-clone verification performed.** Constructed real SGS-BEM draft HTML
+fragments for `sgs/trust-bar`'s two non-default `badgeStyle` variants
+(`text-only`, `image-badge`) and ran them through the ACTUAL cloning pipeline
+(`converter.recognition.recognise_section` + `services.extraction.
+build_block_markup`) — not a hand-built `detect_variant_for_node()` unit call.
+Both correctly emitted `"badgeStyle":"text-only"` / `"badgeStyle":"image-badge"`
+in the generated block markup. Deployed to the sandybrown canary via a real WP
+page (REST-created, then deleted after) and confirmed the live rendered DOM:
+root class carries `sgs-trust-bar--text-only`/`sgs-trust-bar--image-badge`
+correctly, and badge markup differs structurally as designed (plain
+`<span class="sgs-trust-bar__badge-label">` vs a real
+`<img class="sgs-trust-bar__badge-img">`).
+
+**Found + fixed while running this: D974's own container-marker fix
+(Check #12 Build 3) was non-durable and had already silently reverted.**
+Build 3 set `slots.resolves_whole_instance='true'` directly via SQL on the
+live DB for the 4 container-marker slots (review/testimonial/star/
+button-group) but never persisted that value into `slots.json` — the file
+`db_lookup._migrate_slots()` reads as the reseed SOURCE OF TRUTH on module
+load. A subsequent reseed (by any concurrent session touching the shared
+`sgs-framework.db`) silently reverted all 4 rows to NULL, resurrecting the
+exact 4 `roleguess:*` findings D974 was supposed to have closed for good —
+confirmed live: `db-consistency-baseline.json` had regrown exactly those
+4 keys between D974 and this session. Compounding cause:
+`dbschema/capture_seed_data.py` (the ONE writer of `slots.json`) had its own
+hardcoded column list for the `slots` table, also never updated for
+`resolves_whole_instance` — so even re-running the correct writer couldn't
+have fixed this on its own; its `__columns` header stayed 6-wide against
+`db_lookup.py`'s 7-wide reader expectation (which soft-fails closed by
+design, per its own docstring, rather than corrupting data). Fixed both: the
+live DB rows (verified), the writer's column list + its self-test DDL/dummy
+row, then re-ran `--write` so `slots.json` now carries the real values
+durably — confirmed by re-running `db-consistency/run.py --report` (0
+violations) and `capture_seed_data.py --self-test` (still proves the
+negative-control break actually lands).
+
+**7 pre-existing test failures found, confirmed NOT mine, left untouched.**
+`git stash` + re-run against unmodified `main` reproduced all 7 identically
+(`TestCheck5VariantReseed` × 4 — a throwaway test-fixture schema missing the
+D966 `slot_value` column; 2 unrelated converter tests; 1 stale-fixture
+Check #12 test asserting `roleguess:avatar` still exists, written before this
+session's earlier canonical_slot_aliases fix closed it). Flagged, not fixed —
+different tracks' debt, out of scope for this task.
+
+**Both sub-items of the parking entry are now genuinely closed** — moved to
+`memory/parking-archive.md`.
+
+## D974 [ROUTINE] — nav-drawer's `two-column-editorial` variant is genuinely detectable now (D969 corrected); Check #12 (role-resolution guard) shipped and fully cleared, not baselined
+
+**2026-09-06.** Closes out a follow-up from the `variant-detection-audit` line of work
+(`f351464db`, `3e8006dea`, merged via `68378ab86`; schema-drift companion fix `81852feaa`).
+Two separate pieces:
+
+**1. `two-column-editorial` is now actually detectable — D969 only got it partway.** D969
+(2026-09-05, PR #38) added a composition-based tiebreaker signal, but per the worktree's own
+honest exit report (`.superpowers/sdd/task-5-navdrawer-report.md`, gitignored, never
+committed) that signal still returned `None` for this variant — `itemFontSize` was seeded as
+a flat number against `sgs/nav-menu`'s tiered `{desktop,tablet,mobile}` schema (can never
+string-match a real clone's tiered write), and `listColumns` had no CSS-extraction route at
+all (`css_property`/`css_element` both NULL). **Root-caused and fixed for real:**
+`nav-drawer/variations.js` now seeds `itemFontSize` in the correct tiered shape, and
+`converter/resolvers/grid.py` resolves the grid column-COUNT destination DB-first via a new
+`db_lookup.attr_for_grid_column_count()` (keyed on a `"css:grid-template-columns:count"`
+attrMap pseudo-property, mirroring the existing `"css:color-gradient"` convention) instead of
+a single hardcoded `"columns"` literal — `sgs/nav-menu` opts in via its `block.json` attrMap;
+every other grid-bearing block keeps the literal fallback, confirmed byte-identical via a
+before/after regression check. Confirmed live: `detect_variant()` now returns
+`"two-column-editorial"` for a real-clone-shaped fixture, with a negative control proving the
+old flat-value shape still correctly fails closed. `parking.md`'s
+`P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL` residual entry, which had prematurely credited
+D969 alone with resolving this, is corrected alongside this decision.
+
+**2. Check #12 — order-dependent role-resolution guard (`f351464db`) — shipped AND fully
+cleared same session, not left baselined.** The check flags array-content slots whose
+extraction role is resolved by DB insertion order rather than an explicit declaration (the
+exact shape of the historical sgs/trust-bar image-badge silent-drop bug). It landed with 15
+pre-existing findings baselined; this session closed all 15 for real: 9 via direct
+`canonical_slot`/array-item `role` declarations (option-picker, disclaimer, media svg tiers,
+multi-button bg-video tiers, the button base slot, icon array-item fields), a widened
+`canonical_slot_aliases` mechanism so one attribute can answer to several structurally-related
+slot names (button style-variants; media avatar/background-image/background-video), and a new
+resolver rule recognising whole-instance "container marker" slots (review/testimonial/star/
+button-group) that skips scalar-attribute guessing entirely instead of forcing a wrong owner.
+`db-consistency-baseline.json` is back to `[]`. Full converter suite unchanged throughout at
+811 passed / 1 skipped / 10 xfailed.
+
+**Schema-drift companion fix.** The two new DB columns this added (`block_attributes.
+canonical_slot_aliases`, `slots.resolves_whole_instance`) plus two pre-existing undocumented
+tables from the earlier variant-detection-audit work (`variant_composition_slots`,
+`variant_composition_attr_slots`) were live in the shared `sgs-framework.db` but never
+captured in the committed `dbschema/schema.sql` — caught by `check_schema_drift.py --check`
+(a gate this session ran unprompted, not one that failed at commit time) and closed via
+`--regenerate` (`81852feaa`); `--check` now reports CLEAN.
+
+**Commit-gate note, worth recording once rather than re-discovering:** committing from a
+worktree while the ORIGINAL session's project root sits on an unrelated branch produces a
+predictable false positive on the F5 commit-gate hook — it resolves `_REPO` to that original
+root (not the worktree actually being committed), and reads it against the single
+globally-shared `sgs-framework.db` (fixed path outside any worktree), so a worktree's own
+freshly-reseeded DB rows appear "rogue" through the stale root's classifier files. The fix is
+to verify `db-consistency/run.py --report` directly inside the worktree being committed (0
+violations both times here), then bypass with `[gates-ok:...]` naming this exact mechanism —
+not to chase a phantom regression. Separately: a worktree with no `node_modules` of its own
+(never had `npm install` run in it) makes the same check fail-closed on a Node-based parser
+step for an unrelated reason (`MODULE_NOT_FOUND`) — fixed properly via `npm ci` in that
+worktree, not a manual `NODE_PATH` env hack (which a directory-junction attempt also proved
+fragile against a concurrent session's own `node_modules` churn on the root it pointed at).
+
 ## D973 [ROUTINE] — Typography full-replacement Tasks 1+2 shipped (23 blocks); a codemod was ruled out by evidence; the shared helper gained a font-size preset-slug path
 
 **2026-09-06.** Follow-on to D971/D972. Migrated all 19 native-only blocks (Task 1) and all 4
@@ -8572,6 +8805,91 @@ separate *"a simpler pass is sufficient"* stripper never did. It does now (Test 
 non-vacuous — against the old stripper the planted use drops 2 occurrences → 1 and the test fails.
 24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
 four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
+
+## D661 [INCIDENT] — CHECK 5's comment stripper swallowed 715 lines; all 24 advisories were false (2026-08-18)
+
+`check-dead-controls.js` printed **24 dead-assignment advisories on every build, every one false,
+all on `sgs/hero`**. `stripPhpCommentsForAssignmentCheck()` stripped `/* */` block comments in a
+pass BEFORE `//` line comments. `hero/render.php:313` is an ordinary line comment reading
+`the *Tablet/*Mobile siblings …` — the `/*` inside it opened a phantom block comment that did not
+close until another `//` comment at `:1028` happened to contain `*/`. ~715 lines were deleted before
+the liveness check ran, including every genuine use of the attributes then reported dead.
+
+**The first diagnosis was wrong and is recorded here because the wrong one is instructive:** the
+liveness logic (Rule 3) was blamed and is in fact correct. Prescribing "make it test variable
+liveness" would have sent someone rewriting working code and left the bug. Fixed with a single
+alternation pass so whichever comment style STARTS FIRST wins — reordering the two passes instead
+would only mirror the defect (a `//` comment containing `*/` would leave an unterminated `/*` and
+leak comment text back in, a false NEGATIVE).
+
+CHECK 4's shared `stripComments()` already carried a regression test for this exact shape; CHECK 5's
+separate *"a simpler pass is sufficient"* stripper never did. It does now (Test G), proven
+non-vacuous — against the old stripper the planted use drops 2 occurrences → 1 and the test fails.
+24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
+four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
+
+## D662 [ROUTINE] — device-tier breakpoint 599→767 on 4 stylesheets, NOT 9 (2026-08-18)
+
+`SGS_Breakpoints::MOBILE_MAX = 767`, but `info-box`, `tabs` (×2), `gallery` and `post-grid` still
+stacked at 599px — so at 600–767px they kept their wider layout while the shared wrapper had already
+switched to the mobile tier. Fixed, deployed, live-verified on the canary.
+
+Three scoping decisions, each of which a blanket sweep would have got wrong:
+- **`form/style.css:120` deliberately untouched.** Its 599px sits inside
+  `@supports not (container-type: inline-size)` — a container-query fallback, not a device tier.
+- **`post-grid` needed a companion edit.** Its tablet block is an explicit RANGE
+  (`600px <= width <= 1023px`), not a cascading max-width, so raising the mobile ceiling alone would
+  have left 600–767px matching both blocks — tablet wins on source order and silently cancels the fix.
+- **`countdown-timer`, `google-reviews`, `process-steps`, `trust-bar` excluded** — cosmetic rules
+  (font-size/gap/padding/touch-target); two already carry correct 767px tiers elsewhere.
+
+⚠ CLAUDE.md cites "D228, unified 2026-06-16" for the 599 retirement. **That D-number does not
+resolve to that content.** The 767/1023 standard is real and verified in code; the citation is not.
+Commit `efe5c2a3`; evidence `reports/2026-08-18-breakpoint-599-to-767-live-evidence.md`.
+
+## D663 [ROUTINE] — Stage 8 runtime audit: ONE Lighthouse run, not three bespoke scripts (2026-08-18)
+
+`plans/strategy/chrome-devtools-stage-8-integration.md` specified three scripts, each "calling" a
+Chrome DevTools **MCP** tool. Two corrections, both load-bearing:
+
+1. **A Node script cannot invoke an MCP tool** — MCP is an agent-session channel. As specified these
+   would only ever run with Claude driving. Built as real scripts (Playwright/`lighthouse`) so they
+   run in CI unattended.
+2. **Lighthouse already ships two of the three audits** (`errors-in-console`, `network-requests`), so
+   two scripts would have re-implemented Google's own work. One browser run now yields Core Web
+   Vitals + console + network. Found by GitHub research BEFORE building, at Bean's prompting.
+
+Cross-tier review then proved the first cut **reported OVERALL PASS on a page that never loaded** —
+seven scenarios incl. main-document 404/500 — because Lighthouse returns an `lhr` carrying
+`runtimeError` rather than throwing, and nothing read it. Also proved the self-test could not detect
+**8 of 10** injected mutations, including `>` → `>=` on all four CWV thresholds. Fixed: new `error`
+severity ranked worse than `critical` (distinguishing *this page is bad* from *we could not measure
+it*); self-test 24 → 68 assertions with exact-boundary and per-field value checks. A missing
+`favicon.ico` no longer fails the gate — Lighthouse reports network 404s as console errors, and
+console-`critical` now counts genuine JS exceptions only. **Deliberately NOT wired into `prebuild`:
+it needs a live URL, and a gate that silently passes when the target is unreachable is worse than
+none.** PR #31, not merged.
+
+## D664 [ROUTINE] — plans-folder audit: 14 archived, verified against source not status lines (2026-08-18)
+
+38 plan docs audited by checking **code**, not the docs' own `status:` lines — which were wrong in
+both directions. 14 archived (plans root 29→20, strategy 9→4), **58 citations repointed first**.
+
+The load-bearing finding is where the citations were: four `mega-aside` source files carry
+`GROUND-TRUTH: verified against …` headers, eleven strict-`xfail` test decorators name a plan as the
+record for the Spec 39 residual they carry, and `goals.md` — an ACTIVE doc — cites three "dead"
+April docs across four live goal rows. A docs-only sweep would have broken all of it.
+
+⚠ **`handoff-preflight.py`'s dangling-link check does not cover this.** It scans three files and only
+`[text](path.md)` markdown syntax — structurally blind to code comments, spec body text and
+`goals.md`. The repo-wide `git grep` was the real gate; preflight is secondary. Do not cite it as
+proof that a doc move is safe.
+
+Bean's rulings recorded: Spec 31 is superseded by **Spec 39** (archive-and-salvage the current
+converter scripts, do not delete); Snooza remains live; the leftover `scroll-smoother` registry row
+stays (inert, and unrelated to the Lenis desktop smooth-scrolling that is actually shipped).
+Reference docs fold into specs as **Parts** (`Spec 35 Part O` precedent) — decimal `spec_id`s were
+rejected because the spec template mandates `spec_id: <N>  # integer`.
 
 ## D656 [ROUTINE] — Step 1b added: unnumbered normative statements are TRIAGED, never demoted (2026-08-18)
 

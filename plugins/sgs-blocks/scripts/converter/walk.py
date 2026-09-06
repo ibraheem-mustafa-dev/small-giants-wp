@@ -537,13 +537,34 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
         # Taking "whichever modifier came first" would be the positional
         # tie-break D505 removed from the sibling resolver — same defect
         # class, so it is not reintroduced here.
+        _element_modifiers = _family_modifiers(el, element)
         _device_tier = next(
             (_tier_by_lower[m.lower()]
-             for m in _family_modifiers(el, element)
+             for m in _element_modifiers
              if m.lower() in _tier_by_lower),
             None,
         )
-        hit = db_lookup.content_attr_for_element(rec.slug, element, tier=_device_tier)
+        # NON-tier own-family modifiers are handed to the resolver as
+        # `modifiers` — a modifier like `--featured`/`--trial` is the signal
+        # that disambiguates a same-tier content-attr alias tie via the
+        # block's own `variant_slots` declaration (Task 3, 2026-09-05: the
+        # featuredTag/trialTag defect — see `content_attr_for_element`'s
+        # docstring). Breakpoint-tier modifiers (mobile/tablet/desktop) are
+        # excluded here via `_tier_by_lower` — the same DB-sourced vocabulary
+        # `_device_tier` above reads — rather than relying on the empirical
+        # fact that no block TODAY names a `variant_slots.variant_value`
+        # `mobile`/`tablet`/`desktop`. That fact holds now but is not
+        # structurally guaranteed against a future block declaring a variant
+        # with one of those names, at which point an element's own device-
+        # tier modifier would silently win a content-routing tiebreak it has
+        # no business winning. Reviewer finding, 2026-09-05.
+        _non_tier_modifiers = tuple(
+            m for m in _element_modifiers if m.lower() not in _tier_by_lower
+        )
+        hit = db_lookup.content_attr_for_element(
+            rec.slug, element, tier=_device_tier,
+            modifiers=_non_tier_modifiers,
+        )
         if hit is None:
             # `hit is None` has THREE causes inside content_attr_for_element:
             # no_rows / no_match / tier_sibling_missing. Only the third means

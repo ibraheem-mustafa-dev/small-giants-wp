@@ -7,17 +7,7 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, RangeControl, SelectControl, Notice, BoxControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import {
-	ResponsiveBoxControl,
-	ResponsiveOverride,
-	ShadowControl,
-	SgsColourPanel,
-	fillRow,
-	BOX_UNITS,
-	normaliseResponsiveBox,
-	SgsBorderControl,
-	resolveColourToken,
-} from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, fillRow, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import { backgroundPreview, spacingPreview, svgBackgroundPreview } from '../../utils';
 // Reused directly rather than duplicated (Spec 35 Part B / composite-mirror rule,
 // D152): physics-canvas KEEPS SGS_Container_Wrapper (containerKind: 'section'), so
@@ -222,13 +212,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						colourLinked={ true }
 						contrastAgainst={ physicsCanvasContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -343,39 +333,35 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				     attrs the wrapper's @media tiers read. Mirrors sgs/container's
 				     and sgs/trust-bar's own edit.js exactly. ────────────────── */ }
 				<PanelBody title={ __( 'Padding & margin', 'sgs-blocks' ) } initialOpen={ false }>
-					<ResponsiveBoxControl
-						label={ __( 'Padding', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.padding ?? {},
-							tablet: attributes.paddingTablet ?? {},
-							mobile: attributes.paddingMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Breakpoint -> attr map, not a computed ternary key. This is
-							// the canonical idiom (mirrors sgs/container's edit.js) that
-							// check-control-ux.js recognises as delegated-to-shared-
-							// component; a ternary inside a computed property key reads
-							// to the gate as an unwrapped direct write.
-							const attrFor = { base: 'padding', tablet: 'paddingTablet', mobile: 'paddingMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+							presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<hr style={ { margin: '16px 0' } } />
-					<ResponsiveBoxControl
-						label={ __( 'Margin', 'sgs-blocks' ) }
-						presets
-						values={ {
-							base: attributes.margin ?? {},
-							tablet: attributes.marginTablet ?? {},
-							mobile: attributes.marginMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							// Same canonical breakpoint -> attr map as Padding above.
-							const attrFor = { base: 'margin', tablet: 'marginTablet', mobile: 'marginMobile' };
-							setAttributes( { [ attrFor[ tier ] ]: next } );
-						} }
-					/>
+					<ResponsiveOverride
+						value={ attributes.margin }
+						onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Margin', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Content band (Layer 2 __inner) — this band IS the physics

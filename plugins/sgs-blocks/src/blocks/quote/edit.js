@@ -44,16 +44,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import {
-	ResponsiveControl,
-	ResponsiveOverride,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	ShadowControl,
-	SgsLengthControl,
-	TypographyControls,
-	SgsBorderControl,
-} from '../../components';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -130,7 +121,7 @@ function boxShorthand( box, keys ) {
 // ---------------------------------------------------------------------------
 
 function buildWrapperStyle( attributes ) {
-	const {
+	const { padding, margin,
 		inheritStyle,
 		backgroundColour,
 		style,
@@ -177,11 +168,11 @@ function buildWrapperStyle( attributes ) {
 		}
 	}
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -260,10 +251,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHover,
 		backgroundColourGradient,
 		backgroundColourHoverGradient,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		inheritStyle,
 		transitionDuration,
@@ -698,18 +685,8 @@ export default function Edit( { attributes, setAttributes } ) {
 									backgroundColour: '',
 									boxShadow: '',
 									boxShadowColour: '',
-									style: {
-										...style,
-										spacing: {
-											...style?.spacing,
-											padding: {},
-											margin: {},
-										},
-									},
-									paddingTablet: {},
-									paddingMobile: {},
-									marginTablet: {},
-									marginMobile: {},
+									padding: {},
+									margin: {},
 									maxWidth: {},
 								} )
 							}
@@ -734,74 +711,57 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							</ToolsPanelItem>
 
-							{ /* Box-object interface contract §B/§E: padding/margin base routes
-							   to WP-native style.spacing.* (skip-serialised → scoped, not
-							   inline); tiers are the paddingTablet/paddingMobile +
-							   marginTablet/marginMobile object attrs. */ }
+							{ /* padding/margin are each a single block-owned tier-object attr
+							   { desktop, tablet, mobile }, written via ResponsiveOverride +
+							   SgsBoxControl; read directly by this block's render.php. */ }
 							<ToolsPanelItem
 								label={ __( 'Padding', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( style?.spacing?.padding ?? {} ).length > 0 ||
-									Object.keys( paddingTablet ?? {} ).length > 0 ||
-									Object.keys( paddingMobile ?? {} ).length > 0
+									Object.keys( attributes.padding ?? {} ).length > 0
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										style: { ...style, spacing: { ...style?.spacing, padding: {} } },
-										paddingTablet: {},
-										paddingMobile: {},
-									} )
+									setAttributes( { padding: {} } )
 								}
 								isShownByDefault
 							>
-								<ResponsiveBoxControl
-									label={ __( 'Padding', 'sgs-blocks' ) }
-									presets
-									values={ {
-										base: style?.spacing?.padding ?? {},
-										tablet: paddingTablet ?? {},
-										mobile: paddingMobile ?? {},
-									} }
-									onChange={ ( tier, next ) => {
-										if ( 'base' === tier ) {
-											setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-										} else {
-											setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-										}
-									} }
-								/>
+								<ResponsiveOverride
+									value={ attributes.padding }
+									onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue } ) => (
+										<SgsBoxControl
+											label={ __( 'Padding', 'sgs-blocks' ) }
+											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											units={ BOX_UNITS }
+											presets
+											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+										/>
+									) }
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 							<ToolsPanelItem
 								label={ __( 'Margin', 'sgs-blocks' ) }
 								hasValue={ () =>
-									Object.keys( style?.spacing?.margin ?? {} ).length > 0 ||
-									Object.keys( marginTablet ?? {} ).length > 0 ||
-									Object.keys( marginMobile ?? {} ).length > 0
+									Object.keys( attributes.margin ?? {} ).length > 0
 								}
 								onDeselect={ () =>
-									setAttributes( {
-										style: { ...style, spacing: { ...style?.spacing, margin: {} } },
-										marginTablet: {},
-										marginMobile: {},
-									} )
+									setAttributes( { margin: {} } )
 								}
 							>
-								<ResponsiveBoxControl
-									label={ __( 'Margin', 'sgs-blocks' ) }
-									presets
-									values={ {
-										base: style?.spacing?.margin ?? {},
-										tablet: marginTablet ?? {},
-										mobile: marginMobile ?? {},
-									} }
-									onChange={ ( tier, next ) => {
-										if ( 'base' === tier ) {
-											setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-										} else {
-											setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-										}
-									} }
-								/>
+								<ResponsiveOverride
+									value={ attributes.margin }
+									onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue } ) => (
+										<SgsBoxControl
+											label={ __( 'Margin', 'sgs-blocks' ) }
+											values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+											units={ BOX_UNITS }
+											presets
+											onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+										/>
+									) }
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 
 							{ /* Width — outer maxWidth (kept-scalar, responsive) + content
@@ -884,13 +844,13 @@ export default function Edit( { attributes, setAttributes } ) {
 							] }
 							contrastAgainst={ quoteContrastAgainst }
 							radiusValues={ {
-								base: attributes.borderRadius ?? {},
-								tablet: attributes.borderRadiusTablet ?? {},
-								mobile: attributes.borderRadiusMobile ?? {},
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
 							} }
 							onRadiusChange={ ( tier, next ) => {
-								const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-								setAttributes( { [ radiusKey ]: next } );
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 							} }
 						/>
 					</PanelBody>

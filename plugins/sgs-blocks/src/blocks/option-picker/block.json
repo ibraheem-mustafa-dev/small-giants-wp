@@ -30,32 +30,33 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true,
-			"__experimentalDefaultControls": {
-				"margin": false,
-				"padding": false
-			}
-		},
 		"sgs": {
 			"scalarStylingLift": true,
 			"arrayContentLift": true,
 			"scalarContentLift": true,
 			"_comment_mediaElements": "The image-swatch <img> (style.css .sgs-option-picker__swatch--image, render.php ~line 609) is a fixed 2rem square crop of a WooCommerce attribute term's `_sgs_swatch_image_id` image — no per-instance media picker, but the crop MODE (cover|contain) is a legitimate client choice (e.g. a white-background product photo may want 'contain'). Wired via the shared object-fit atom, prefix 'swatch', rather than the hand-rolled `object-fit: cover` that used to live in style.css (detector rule 37-media-no-handroll).",
 			"mediaElements": [
-				{ "prefix": "swatch", "context": "element", "atoms": [ "object-fit" ] }
+				{
+					"prefix": "swatch",
+					"context": "element",
+					"atoms": [
+						"object-fit"
+					]
+				}
 			],
 			"elements": {
 				"root": {
 					"label": "Picker (fieldset)",
 					"order": 1,
-					"clusters": [ "layout", "fill", "text" ],
+					"clusters": [
+						"layout",
+						"fill",
+						"text"
+					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:width": "width",
 						"css:border-width": "borderWidth",
@@ -71,7 +72,10 @@
 				"label": {
 					"label": "Group label (legend)",
 					"order": 2,
-					"clusters": [ "text", "layout" ],
+					"clusters": [
+						"text",
+						"layout"
+					],
 					"prefix": "label",
 					"attrMap": {
 						"css:color-gradient": "labelColourGradient"
@@ -81,7 +85,11 @@
 				"pill": {
 					"label": "Option pill",
 					"order": 3,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"prefix": "pill",
 					"attrMap": {
 						"css:background-color": "pillBgColour",
@@ -112,19 +120,16 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"pillPadding": [
 					"pillPadding"
@@ -137,6 +142,18 @@
 		"typography": ".sgs-option-picker__pill"
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Choose an option"
@@ -314,35 +331,15 @@
 		},
 		"pillPadding": {
 			"type": "object",
-			"default": {"desktop": {}}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderWidth": {
 			"type": "object",

@@ -72,9 +72,6 @@ def test_conservation_total_and_no_unrouted(conn):
     # produced ≥1 routed result. (writes may exceed decl_count when a decl produces
     # a list[Write]; here it doesn't, but the invariant is decl_results==decl_count.)
     assert result.decl_results == len(decls)
-    # padding (shorthand, pre-dispatch-expansion seam) is an honest tracked GAP —
-    # UNIMPLEMENTED_STUB, not a silent drop.
-    #
     # background-color USED to be a NO_DESTINATION here, and this assertion said so.
     # That stopped being true on 2026-08-20: `1905257e` gave sgs/container a real,
     # client-reachable `backgroundColour` attribute (block.json:626, mapped at
@@ -87,8 +84,22 @@ def test_conservation_total_and_no_unrouted(conn):
     # The transfer is now the faithful outcome (7-rules #1/#4), so it is asserted
     # POSITIVELY below rather than the gap-set assertion merely being loosened —
     # a future regression that silently stops transferring it must still fail here.
-    assert {g.origin for g in result.gaps} == {GapOrigin.UNIMPLEMENTED_STUB}
+    #
+    # padding (root shorthand, "80px 24px") went through the SAME class of fix on
+    # 2026-09-06 (Phase 2 tier-object migration): `padding` moved from a flat
+    # 3-sibling box family to the TIER-of-BOXES shape ({desktop,tablet,mobile}),
+    # and the converter's own routing (tier_state_suffix + dispatch_spine.attrs())
+    # was updated in lockstep — it now correctly transfers to
+    # `padding.desktop` instead of being an honest UNIMPLEMENTED_STUB gap (the
+    # pre-dispatch shorthand-expansion seam this test used to document was a real
+    # gap; it no longer applies to this specific attr because outer_box's box-
+    # family self-merge exception, ~L220, now targets the correct shape). No GAP
+    # remains for this element at all.
+    assert {g.origin for g in result.gaps} == set()
     assert {w.attr: w.value for w in result.writes}.get("backgroundColour") == "#f5f0eb"
+    assert {w.attr: w.value for w in result.writes}.get("padding") == {
+        "top": "80px", "right": "24px", "bottom": "80px", "left": "24px",
+    }
     assert result.unrouted() == []
 
 
@@ -99,11 +110,14 @@ def test_emit_produces_maxwidth_block_markup(conn):
     # open+close fails block validation and drops the section on the rendered page —
     # wired-pipeline LANDED fix #2, 2026-07-01).
     # backgroundColour rides along since 1905257e (2026-08-20) gave sgs/container a
-    # real background-colour attribute — see the note in
-    # test_conservation_total_and_no_unrouted for why this expectation moved.
+    # real background-colour attribute; padding rides along since the Phase 2
+    # tier-object migration (2026-09-06) gave it a working TIER-of-BOXES
+    # destination — see the note in test_conservation_total_and_no_unrouted for
+    # why both expectations moved.
     assert markup == (
         '<!-- wp:sgs/container '
-        '{"backgroundColour":"#f5f0eb","maxWidth":{"desktop":"1200px"}} /-->'
+        '{"backgroundColour":"#f5f0eb","maxWidth":{"desktop":"1200px"},'
+        '"padding":{"desktop":{"bottom":"80px","left":"24px","right":"24px","top":"80px"}}} /-->'
     )
 
 
@@ -197,9 +211,15 @@ def test_metamorphic_bem_rename_identical(conn):
     b = process_element(_ctx(conn), _rt_decls())
     # The metamorphic property under test is a == b (name-free routing); the literal
     # dict is only the current transfer set, which gained backgroundColour at
-    # 1905257e (2026-08-20). Both halves kept: the invariant AND the exact set.
+    # 1905257e (2026-08-20) and padding at the Phase 2 tier-object migration
+    # (2026-09-06 — see test_conservation_total_and_no_unrouted). Both halves
+    # kept: the invariant AND the exact set.
     assert a.attrs() == b.attrs()
-    assert a.attrs() == {"backgroundColour": "#f5f0eb", "maxWidth": {"desktop": "1200px"}}
+    assert a.attrs() == {
+        "backgroundColour": "#f5f0eb",
+        "maxWidth": {"desktop": "1200px"},
+        "padding": {"desktop": {"top": "80px", "right": "24px", "bottom": "80px", "left": "24px"}},
+    }
 
 
 def test_metamorphic_px_scale_by_k(conn):

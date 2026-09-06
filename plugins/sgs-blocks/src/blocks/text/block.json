@@ -23,27 +23,19 @@
 		},
 		"html": false,
 		"color": false,
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				],
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -67,9 +59,13 @@
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:column-count": "textColumns",
+						"css:text-indent": "textIndent",
+						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -99,7 +95,9 @@
 				"background": {
 					"label": "Background",
 					"order": 3,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"isWrapper": false,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -139,6 +137,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"text": {
 			"type": "string",
 			"default": "",
@@ -214,22 +224,6 @@
 			"type": "string",
 			"default": ""
 		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
 		"textAlign": {
 			"type": "string",
 			"enum": [
@@ -238,6 +232,35 @@
 				"center",
 				"right",
 				"justify"
+			],
+			"default": ""
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
 			],
 			"default": ""
 		},
@@ -285,15 +308,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderStyle": {
 			"type": "string",

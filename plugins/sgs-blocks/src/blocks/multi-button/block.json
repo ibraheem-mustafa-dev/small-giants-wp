@@ -36,16 +36,13 @@
 			"containerKind": "layout",
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
@@ -90,19 +87,15 @@
 	"attributes": {
 		"padding": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"backgroundColour": {
 			"type": "string",
@@ -123,14 +116,6 @@
 		"textColour": {
 			"type": "string",
 			"default": ""
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"backgroundImage": {
 			"type": "object",
@@ -178,8 +163,10 @@
 		},
 		"backgroundOverlayOpacity": {
 			"type": "object",
-			"default": {"desktop": 30}
-		},
+			"default": {
+				"desktop": 30
+			}
+		},
 		"overlayGradient": {
 			"type": "string",
 			"default": ""
@@ -287,7 +274,7 @@
 		"childBtnBackgroundHover": {
 			"type": "string",
 			"default": "",
-			"description": "Hover background colour GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-default; button/style.css's own :hover chain previously had no group-default rung at all — a hover colour set here only ever fell through to the RESTING group default, never a distinct hover one."
+			"description": "Hover background colour GROUP DEFAULT for child sgs/button instances. Emitted as --sgs-mb-btn-bg-hover-default; button/style.css's own :hover chain previously had no group-default rung at all -- a hover colour set here only ever fell through to the RESTING group default, never a distinct hover one."
 		},
 		"childBtnBackgroundHoverGradient": {
 			"type": "string",
@@ -449,15 +436,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"example": {

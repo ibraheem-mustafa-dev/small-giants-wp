@@ -3889,3 +3889,21 @@ rather than dispatched, and on inspection needs a real design decision before it
 correctly (border contrast is a UI-component check per WCAG 1.4.11, 3:1, not the 4.5:1 text
 threshold `GradientCapableColourControl`'s check is hardcoded to) — parked separately, not folded
 into this now-closed entry.
+
+## P-VARIANT-DISCRIMINATORS-MUST-BE-STRUCTURAL — CLOSED 2026-09-06 (D975)
+
+Originally folded into `P-CONVERTER-LIVE-CLONE-VERIFY-BATCH` item 2 (parked 2026-07-21,
+design-gated + Bean-approved). Verbatim residual scope at close: "nav-drawer/trust-bar variant
+discrimination must be BEM-structural, not styling-attr-based. Trust-bar's own case is fixed
+(structural image controls double as its recogniser; the F6 gate is now a universal ambiguity
+rule — 2+ variants sharing an identical/empty signature = violation, one zero-signature fallback
+allowed) and unit-verified, but live-clone verification was never done. Nav-drawer's own defect
+[was] genuinely closed (D974)."
+
+**Trust-bar's live-clone verification (the last open leg) — done 2026-09-06 (D975).**
+Constructed real SGS-BEM draft fragments for `badgeStyle` text-only/image-badge, ran them through
+the actual `recognise_section()`/`build_block_markup()` pipeline (not a hand-built
+`detect_variant_for_node()` unit call), confirmed correct variant recognition, then deployed to
+the sandybrown canary and confirmed the live rendered DOM carries the correct structural markup
+per variant. Both sub-items (nav-drawer D974, trust-bar D975) are now genuinely closed. Full
+detail: `decisions.md` D975.

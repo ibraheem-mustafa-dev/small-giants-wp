@@ -11,7 +11,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/heading {"content":"How We Help You Succeed","textAlign":"center","fontSize":{"desktop":"xx-large"},"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|60"}}}} /-->
+	<!-- wp:sgs/heading {"content":"How We Help You Succeed","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"50% 50%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"},"margin":{"bottom":"var:preset|spacing|60"}} -->
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}","flexWrap":"wrap"} -->

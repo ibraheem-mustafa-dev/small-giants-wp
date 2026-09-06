@@ -27,6 +27,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// [D-tier-object-render-fix 2026-09-06]
+// Group 1 folded padding/margin into owned tier-object attrs
+// {desktop,tablet,mobile}, but this block's own scoped CSS below still
+// reads the pre-migration flat shape (a plain box for the base value,
+// plus four separate flat attrs for the tablet/mobile overrides --
+// block.json no longer declares any of those four). Normalise once,
+// into fresh locals only -- every literal reference below has been
+// redirected to these instead of writing back into $attributes.
+// Fixed 2026-09-06: sgs_responsive_normalise_object() lives in
+// helpers-responsive.php, which this file's own render-helpers.php
+// require below WOULD load -- but too late, since these two calls run
+// before that require executes. A block whose render.php is the first
+// SGS block PHP to run in a request (nav-menu in the site header, on
+// every page) fatals with "Call to undefined function" before any
+// other block's render.php has had a chance to load it. Requiring the
+// defining file directly, here, removes the load-order dependency.
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
+$sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
+
+
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -51,10 +74,10 @@ $text_colour_gradient = $attributes['textColourGradient'] ?? '';
 // OBJECT attrs paddingTablet/paddingMobile/marginTablet/marginMobile
 // { top, right, bottom, left } (a missing key = that side unset). The unit is
 // carried inline in each value string, so no {family}Unit companion exists.
-$padding_tablet_obj = is_array( $attributes['paddingTablet'] ?? null ) ? $attributes['paddingTablet'] : array();
-$padding_mobile_obj = is_array( $attributes['paddingMobile'] ?? null ) ? $attributes['paddingMobile'] : array();
-$margin_tablet_obj  = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj  = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 $max_width           = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'] : null;
 $max_width_unit      = $attributes['maxWidthUnit'] ?? 'px';
@@ -82,27 +105,10 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 // out of the declaration into a new CSS rule.
 // Border-radius — block-private corner object (2026-08-30 radius target-shape
 // correction), base + tablet + mobile tiers.
-$base_border_radius = null;
-if ( isset( $attributes['borderRadius'] ) ) {
-	$radius_raw = $attributes['borderRadius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
-		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$base_border_radius       = $radius_tiers['base'];
+$border_radius_tablet_obj = $radius_tiers['tablet'];
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 
 // Border-width — Box-object interface contract §1/§2: `borderWidth` is an SGS
 // custom OBJECT attr { top, right, bottom, left } — no WP-native border-width
@@ -300,7 +306,23 @@ $scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
 // D574 bug class the same way) + lineHeight/letterSpacing (tiered) plus
 // fontWeight/fontStyle/textDecoration/textTransform/fontFamily/textAlign
 // (base-only, moved here from step 4's $base_decls above).
-$css_base_and_tiers = sgs_typography_css_rule( $attributes, '', $scope );
+// The 4th argument is the ADJACENT-SIBLING selector that `textIndent` alone is
+// emitted against, mirroring core/paragraph's own
+// `selectors.typography.textIndent` = ".wp-block-paragraph + .wp-block-paragraph"
+// (indent every paragraph AFTER the first — the typographic convention).
+//
+// LEFT side is the block's SHARED class, RIGHT side is this instance's scope.
+// It cannot be "{$scope} + {$scope}": $scope carries this instance's uid, and
+// two sibling blocks always have different uids, so that compound would match
+// nothing at all. `.wp-block-sgs-text + .wp-block-sgs-text.{uid}` reads as
+// "this instance, when it directly follows another sgs/text" — which is the
+// semantic core implements, kept instance-scoped.
+$css_base_and_tiers = sgs_typography_css_rule(
+	$attributes,
+	'',
+	$scope,
+	'.wp-block-sgs-text + ' . $scope
+);
 
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).
@@ -349,16 +371,16 @@ if ( '' !== $background_layer_css ) {
 $css_base_spacing_radius = '';
 
 $base_spacing_padding = array();
-if ( isset( $attributes['style']['spacing']['padding'] ) && is_array( $attributes['style']['spacing']['padding'] ) ) {
-	foreach ( $attributes['style']['spacing']['padding'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_padding[ $spacing_side ] = $spacing_value;
 		}
 	}
 }
 $base_spacing_margin = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $spacing_side => $spacing_value ) {
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	foreach ( $sgs_tor_margin_desktop as $spacing_side => $spacing_value ) {
 		if ( is_string( $spacing_value ) && '' !== $spacing_value ) {
 			$base_spacing_margin[ $spacing_side ] = $spacing_value;
 		}

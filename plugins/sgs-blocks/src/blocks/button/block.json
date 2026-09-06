@@ -25,35 +25,31 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
-					"paddingTablet",
-					"paddingMobile"
+					"padding"
 				],
 				"margin": [
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderWidth": [
 					"borderWidth"
 				],
 				"borderRadius": [
-					"borderRadiusTablet",
-					"borderRadiusMobile"
+					"borderRadius"
 				]
 			},
 			"elements": {
 				"button": {
 					"label": "Button",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -69,8 +65,8 @@
 						"css:background-image": "colourBackgroundGradient",
 						"css:width": "customWidth",
 						"css:min-height": "minHeight",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
+						"css:padding": "padding",
+						"css:margin": "margin",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
@@ -96,7 +92,10 @@
 				"icon": {
 					"label": "Icon",
 					"order": 2,
-					"clusters": [ "text", "fill" ],
+					"clusters": [
+						"text",
+						"fill"
+					],
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient"
@@ -115,6 +114,18 @@
 		}
 	},
 	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
 		"label": {
 			"type": "string",
 			"default": "Click Here",
@@ -163,7 +174,9 @@
 		},
 		"widthType": {
 			"type": "object",
-			"default": {"desktop": "fit"}
+			"default": {
+				"desktop": "fit"
+			}
 		},
 		"customWidth": {
 			"type": "object",
@@ -171,11 +184,12 @@
 		},
 		"customWidthUnit": {
 			"type": "object",
-			"default": {"desktop": "px", "tablet": "px", "mobile": "px"}
+			"default": {
+				"desktop": "px",
+				"tablet": "px",
+				"mobile": "px"
+			}
 		},
-
-
-
 		"minHeight": {
 			"type": "object",
 			"default": {}
@@ -191,22 +205,6 @@
 		"minHeightMobileUnit": {
 			"type": "string",
 			"default": "px"
-		},
-		"paddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"paddingMobile": {
-			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"fontFamily": {
 			"type": "string",
@@ -322,15 +320,9 @@
 		},
 		"borderRadius": {
 			"type": "object",
-			"default": {}
-		},
-		"borderRadiusTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"borderRadiusMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"boxShadow": {
 			"type": "string",

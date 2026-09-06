@@ -10,20 +10,9 @@ import {
 	ToggleControl,
 	Notice,
 } from '@wordpress/components';
-import {
-	IconPicker,
-	IconPreview,
-	ResponsiveBoxControl,
-	SgsColourPanel,
-	SgsLengthControl,
-	fillRow,
-	textRow,
-	SgsBorderControl,
-	resolveColourToken,
-	TypographyControls,
-} from '../../components';
+import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only, matches the pre-existing attribute set). contentWidth was
@@ -131,14 +120,14 @@ function boxShorthand( box, keys ) {
 // and carries zero inline declarations — this inline style exists only for
 // the live editor preview, same exception documented in sgs/quote's edit.js.
 function buildWrapperStyle( attributes ) {
-	const { style, maxWidth } = attributes;
+	const { padding, margin, maxWidth } = attributes;
 	const wrapperStyle = {};
 
-	const paddingPreview = boxShorthand( style?.spacing?.padding, [ 'top', 'right', 'bottom', 'left' ] );
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( paddingPreview ) {
 		wrapperStyle.padding = paddingPreview;
 	}
-	const marginPreview = boxShorthand( style?.spacing?.margin, [ 'top', 'right', 'bottom', 'left' ] );
+	const marginPreview = boxShorthand( margin?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( marginPreview ) {
 		wrapperStyle.margin = marginPreview;
 	}
@@ -151,7 +140,6 @@ function buildWrapperStyle( attributes ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		style,
 		variant,
 		showIcon,
 		iconSource,
@@ -163,10 +151,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		stickyPosition,
 		dismissible,
 		dismissBehaviour,
-		paddingTablet,
-		paddingMobile,
-		marginTablet,
-		marginMobile,
 		maxWidth,
 		backgroundColour,
 		backgroundColourGradient,
@@ -175,11 +159,17 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isAnnouncement = 'announcement' === displayMode;
 
+	// Mirrors render.php's own allowlist exactly (left/center/right only —
+	// 'justify' is not a valid has-text-align-* class) so the editor canvas
+	// shows the same class the frontend emits.
+	const canvasTextAlign = [ 'left', 'center', 'right' ].includes( textAlign ) ? textAlign : '';
+
 	const className = [
 		'sgs-notice-banner',
 		`sgs-notice-banner--${ variant }`,
 		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
 		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
+		canvasTextAlign ? `has-text-align-${ canvasTextAlign }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -457,16 +447,27 @@ export default function Edit( { attributes, setAttributes } ) {
 				   pattern) rather than native — the full-replacement rule
 				   (rule 45) flags ANY declared supports.typography sub-key,
 				   so textAlign moved off the native mechanism too, driving
-				   the same has-text-align-* class render.php already emits. */ }
+				   the same has-text-align-* class render.php already emits.
+				   D812 (2026-08-26): a 5-option enum with longest rendered
+				   label <=12 chars ("— inherit —", 11 chars) renders as
+				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
+							<ToggleGroupControlOption
+								key={ option.value }
+								value={ option.value }
+								label={ option.label }
+							/>
+						) ) }
+					</ToggleGroupControl>
 					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -475,10 +476,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				{ /* NO-INLINE + NO-WRAPPER (2026-07-10): content-KIND, box+width only —
 				     dropped SGS_Container_Wrapper (D294) in favour of block-private
-				     scoped output (matches sgs/quote). Padding/margin route to the
-				     WP-native style.spacing.* object (base) + custom Tablet/Mobile
-				     box-object tiers; only shown in inline mode — announcement mode
-				     is always full-width + fixed. */ }
+				     scoped output (matches sgs/quote). padding/margin are each a
+				     single block-owned tier-object attr { desktop, tablet, mobile },
+				     read directly by this block's render.php; only shown in inline
+				     mode — announcement mode is always full-width + fixed. */ }
 				{ ! isAnnouncement && (
 					<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
 						<SgsLengthControl
@@ -489,38 +490,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
 							help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
 						/>
-						<ResponsiveBoxControl
-							label={ __( 'Padding', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.padding ?? {},
-								tablet: paddingTablet ?? {},
-								mobile: paddingMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, padding: next } } } );
-								} else {
-									setAttributes( { [ `padding${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
-						<ResponsiveBoxControl
-							label={ __( 'Margin', 'sgs-blocks' ) }
-							presets
-							values={ {
-								base: style?.spacing?.margin ?? {},
-								tablet: marginTablet ?? {},
-								mobile: marginMobile ?? {},
-							} }
-							onChange={ ( tier, next ) => {
-								if ( 'base' === tier ) {
-									setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
-								} else {
-									setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-								}
-							} }
-						/>
+						<ResponsiveOverride
+							value={ attributes.padding }
+							onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Padding', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
+						<ResponsiveOverride
+							value={ attributes.margin }
+							onChange={ ( obj ) => setAttributes( { margin: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ __( 'Margin', 'sgs-blocks' ) }
+									values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					</PanelBody>
 				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
@@ -538,13 +535,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ noticeBannerContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

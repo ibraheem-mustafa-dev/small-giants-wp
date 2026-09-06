@@ -595,3 +595,16 @@ MERGED to main (merge commit, 7 commits: b1eb92520, d6b031061, bcc75910d, ff1f02
 NEXT: /dispatching-parallel-agents for the mechanical/easy row fixes now that fix.js correctly
 classifies them (real --fix --apply on real blocks, first time this tool has ever been used for
 that on this corpus).
+
+---
+
+# SDD progress — border-radius render.php stale-flat-attr fix, 2026-09-06
+
+Plan: .claude/plans/2026-09-06-border-radius-render-fix.md
+Branch: fix/border-radius-render-stale-flat-attrs
+Base commit: 9014aa9e6 (main)
+
+Task 1: dispatched
+Task 2: not started
+Task 1: complete (commits 9014aa9-fab4f92, review clean after 1 fix round — gate-breaking regression on 96 pre-existing findings closed via baseline ratchet)
+  Minor open, not blocking: task-1-report.md misnames one pre-existing gate (check-colour-attr-css-property -> should read check-colour-preview-resolver) and undercounts fast-tier failures due to this worktree's missing node_modules (env gap, not a code defect) -- cosmetic, noted for final review triage.

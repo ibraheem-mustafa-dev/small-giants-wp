@@ -1,1 +1,6 @@
-[]
+[
+  "roleguess:button-group",
+  "roleguess:review",
+  "roleguess:star",
+  "roleguess:testimonial"
+]
