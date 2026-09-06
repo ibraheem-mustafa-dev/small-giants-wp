@@ -195,8 +195,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textDecorationHover,
 		borderStyle,
 		borderWidth,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		paddingTablet,
 		paddingMobile,
 		marginTablet,
@@ -903,12 +901,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
 				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
-				   no tiers); border-radius routes to WP-native style.border.radius
-				   (base) + borderRadiusTablet/Mobile object attrs (tiers). The button
-				   declares __experimentalBorder.__experimentalSkipSerialization itself
-				   (block.json) so base radius serialises scoped, not inline — this is
-				   the spacing skipSerialization pattern container proves, applied to
-				   border here (container skip-serialises spacing, not border). */ }
+				   no tiers); border-radius is the SGS tier-object attr
+				   `borderRadius: { desktop, tablet, mobile }` (no native WP border
+				   support is declared on this block). */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 												{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 						   (width/style/colour) mirroring native's BorderBoxControl layout,
@@ -942,13 +937,13 @@ export default function Edit( { attributes, setAttributes } ) {
 								},
 							] }
 							radiusValues={ {
-								base: attributes.borderRadius ?? {},
-								tablet: borderRadiusTablet ?? {},
-								mobile: borderRadiusMobile ?? {},
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
 							} }
 							onRadiusChange={ ( tier, next ) => {
-								const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-								setAttributes( { [ radiusKey ]: next } );
+								const key = tier === 'base' ? 'desktop' : tier;
+								setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 							} }
 						/>
 					</PanelBody>

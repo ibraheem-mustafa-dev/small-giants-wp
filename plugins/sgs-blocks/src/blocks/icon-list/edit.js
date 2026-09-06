@@ -163,8 +163,6 @@ export default function Edit({ attributes, setAttributes }) {
     paddingMobile,
     marginTablet,
     marginMobile,
-    borderRadiusTablet,
-    borderRadiusMobile,
     borderWidth,
     borderColour,
     borderColourGradient,
@@ -668,15 +666,15 @@ export default function Edit({ attributes, setAttributes }) {
             }
             colourLinked={true}
             contrastAgainst={ iconListContrastAgainst }
-            radiusValues={{
-              base: attributes.borderRadius ?? {},
-              tablet: borderRadiusTablet ?? {},
-              mobile: borderRadiusMobile ?? {},
-            }}
-            onRadiusChange={(tier, next) => {
-              const radiusKey = tier === "base" ? "borderRadius" : tier === "tablet" ? "borderRadiusTablet" : "borderRadiusMobile";
-              setAttributes({ [radiusKey]: next });
-            }}
+            radiusValues={ {
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
+            onRadiusChange={ ( tier, next ) => {
+            	const key = tier === 'base' ? 'desktop' : tier;
+            	setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
+            } }
           />
         </PanelBody>
       </InspectorControls>

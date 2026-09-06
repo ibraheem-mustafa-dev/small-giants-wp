@@ -17,7 +17,6 @@ import {
 	SgsColourPanel,
 	ResponsiveControl,
 	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
 	TypographyControls,
 	ShadowControl,
 	LinkPopoverField,
@@ -313,8 +312,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		nameColourHover,
 	} = attributes;
 
@@ -718,13 +715,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourLinked={ true }
 						contrastAgainst={ brandStripContrastAgainst }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: attributes.borderRadiusTablet ?? {},
-							mobile: attributes.borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
@@ -1061,21 +1058,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
 							} else {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
-						} }
-					/>
-					<ResponsiveBorderRadiusControl
-						label={ __( 'Border radius', 'sgs-blocks' ) }
-						values={ {
-							base: style?.border?.radius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
-						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
 						} }
 					/>

@@ -519,8 +519,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		paddingMobile,
 		marginTablet,
 		marginMobile,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		borderWidth,
 		borderColour,
 		borderColourGradient,
@@ -1079,9 +1077,9 @@ export default function Edit( { attributes, setAttributes } ) {
 				   paddingMobile + marginTablet/marginMobile object attrs.
 				   Box-object interface contract §1/§5: borderWidth is an SGS
 				   custom object attr (base only, no tiers — no WP-native
-				   per-side width support); border-radius routes to WP-native
-				   style.border.radius (base) + borderRadiusTablet/Mobile
-				   tiers. */}
+				   per-side width support); border-radius is the SGS
+				   tier-object attr `borderRadius: { desktop, tablet,
+				   mobile }`. */}
 				<InspectorControls group="styles">
 				{/* Typography — replaces the old WP-native supports.typography
 				    (fontSize/lineHeight/fontWeight/fontStyle only) with the shared
@@ -1148,13 +1146,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

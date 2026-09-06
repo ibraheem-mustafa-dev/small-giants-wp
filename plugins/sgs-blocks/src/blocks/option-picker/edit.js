@@ -194,8 +194,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBorderColourGradient,
 		pillBorderRadius,
 		pillSelectedBorderRadius,
-		borderRadiusTablet,
-		borderRadiusMobile,
 		// pillPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
 		// box-tier migration) — the pillPaddingTablet/pillPaddingMobile sibling
 		// attrs no longer exist in this block's schema.
@@ -998,13 +996,13 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { borderColourGradient: val ?? '' } ) }
 						colourLinked={ true }
 						radiusValues={ {
-							base: attributes.borderRadius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
-						} }
+								base: attributes.borderRadius?.desktop ?? {},
+								tablet: attributes.borderRadius?.tablet ?? {},
+								mobile: attributes.borderRadius?.mobile ?? {},
+							} }
 						onRadiusChange={ ( tier, next ) => {
-							const radiusKey = tier === 'base' ? 'borderRadius' : tier === 'tablet' ? 'borderRadiusTablet' : 'borderRadiusMobile';
-							setAttributes( { [ radiusKey ]: next } );
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>
