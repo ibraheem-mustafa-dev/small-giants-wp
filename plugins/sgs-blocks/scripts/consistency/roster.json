@@ -1290,7 +1290,7 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": false,
         "media": false,
@@ -1335,7 +1335,7 @@
       "replaces": "core/site-logo",
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": true,
         "media": true,

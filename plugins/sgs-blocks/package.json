@@ -136,7 +136,9 @@
     "check:bindable-attrs": "python scripts/audit-bindable-attrs.py --check",
     "selftest:bindable-attrs": "python scripts/audit-bindable-attrs.py --self-test",
     "check:colour-attr-css-property": "python scripts/check-colour-attr-css-property.py --check",
-    "selftest:colour-attr-css-property": "python scripts/check-colour-attr-css-property.py --self-test"
+    "selftest:colour-attr-css-property": "python scripts/check-colour-attr-css-property.py --self-test",
+    "check:render-tier-object-spacing": "python scripts/check-render-tier-object-spacing.py --check",
+    "selftest:render-tier-object-spacing": "python scripts/check-render-tier-object-spacing.py --self-test"
   },
   "devDependencies": {
     "@wordpress/icons": "^11.6.0",
