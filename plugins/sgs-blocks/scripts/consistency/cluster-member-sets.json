@@ -150,6 +150,30 @@
 						"FontFamily"
 					],
 					"nativeSupportsPath": "typography.fontFamily"
+				},
+				{
+					"key": "css:text-wrap",
+					"label": "Text wrap",
+					"suffixes": [
+						"TextWrap"
+					],
+					"note": "SGS-only — no nativeSupportsPath: no `typography.textWrap` (or any) key exists in WP core's block-supports typography vocabulary (verified via TypographyControls.js's own docblock, a full-tree search of `packages/` on WP 7.1). Currently 2 attrs: sgs/text.textWrap, sgs/heading.textWrap, both via the shared TypographyControls SelectControl. Draft addition pending Bean sign-off — see setting-registry-additions.json for the paired golden-master row."
+				},
+				{
+					"key": "css:column-count",
+					"label": "Text columns",
+					"suffixes": [
+						"TextColumns"
+					],
+					"note": "SGS-only — no nativeSupportsPath: core has no per-block `column-count` typography control (multi-column layout in core is the separate core/columns structural block, not a text-property control). Currently 1 attr: sgs/text.textColumns (NumberControl, 1-6), via the shared TypographyControls component. sgs/heading does NOT declare this attribute (verified by grep — heading's block.json has no textColumns-shaped key). Draft addition pending Bean sign-off — see setting-registry-additions.json for the paired golden-master row."
+				},
+				{
+					"key": "css:text-indent",
+					"label": "Line indent",
+					"suffixes": [
+						"TextIndent"
+					],
+					"note": "SGS-only — no nativeSupportsPath: core has no `typography.textIndent` (or any) supports key; the paired UnitControl+RangeControl UI is a faithful reimplementation of core's own PRIVATE TextIndentControl (absent from @wordpress/block-editor's public components/index.js), including its 'Line indent' label and per-unit slider bounds. Currently 1 attr: sgs/text.textIndent, via the shared TypographyControls component. sgs/heading does NOT declare this attribute (verified by grep — heading's block.json has no textIndent-shaped key). Draft addition pending Bean sign-off — see setting-registry-additions.json for the paired golden-master row."
 				}
 			]
 		},

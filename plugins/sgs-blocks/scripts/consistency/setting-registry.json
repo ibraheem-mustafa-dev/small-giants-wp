@@ -3254,6 +3254,84 @@
 			"divergence": "None known at creation.",
 			"divergence_severity": "none",
 			"notes": "Sibling to css:outline-width, added in the same pass. sgs/form style.css:209 `outline-offset: var(--sgs-focus-ring-offset)`."
+		},
+		{
+			"setting_key": "css:text-wrap",
+			"category": "css-property",
+			"label": "Text wrap",
+			"optimal_control": {
+				"component": "SelectControl via TypographyControls (SGS_TEXT_WRAP_OPTIONS)",
+				"props": {
+					"options": "'' (inherit), wrap, nowrap, balance, pretty, stable"
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "6 options incl. inherit — matches the real CSS text-wrap enum exactly, no Custom path needed",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "clears to '' (inherit)"
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Part B/H (opt-in typography field) — no core equivalent exists to defer to",
+			"current_state": "2 attrs (sgs/text.textWrap, sgs/heading.textWrap), same shared-component SelectControl on both; observed_control_types: SelectControl; observed_roles: typography; conformance: consistent (dedup_confidence: high)",
+			"divergence": "None against an assumed WP-native path — there is no core `text-wrap` typography support anywhere in `packages/` (verified by TypographyControls.js's own docblock, a full-tree search on WP 7.1). This is an SGS-only capability, rendered last in the panel, opt-in via `showTextWrap`.",
+			"divergence_severity": "none",
+			"notes": "This row exists to close `check-element-manifest-conformance.js`'s orphan_style_defect finding: sgs/text's attrMap already declares \"css:text-wrap\": \"textWrap\" and the block.json attribute is real and rendered, but no setting-registry row nor cluster-member-sets.json 'text' cluster member existed to classify it — the vocabulary was missing, not the block's implementation. No native `nativeSupportsPath` is proposed in the companion cluster entry because core has no `typography.textWrap` (or any) supports key at all."
+		},
+		{
+			"setting_key": "css:column-count",
+			"category": "css-property",
+			"label": "Text columns",
+			"optimal_control": {
+				"component": "NumberControl via TypographyControls (opt-in, showTextColumns)",
+				"props": {
+					"min": 1,
+					"max": 6,
+					"spinControls": "custom",
+					"initialPosition": 1
+				},
+				"preset_layer": null,
+				"units": "n/a (integer column count, not a length)",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a — bounded integer stepper (1-6), not a dropdown",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "clears to undefined (unset -> no column-count rule emitted)",
+				"note_on_label": "Real UX is a plain integer CSS `column-count` control ('Columns' in the panel), NOT a text-wrapping/hyphenation concept — labelled 'Text columns' here only to disambiguate the setting_key/label from generic 'columns' rows elsewhere in the registry (e.g. layout grid-column-count concepts), not to describe the control's own on-screen label."
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Part B/H (opt-in typography field) — no core equivalent exists to defer to",
+			"current_state": "1 attr (sgs/text.textColumns only — sgs/heading does NOT declare it), NumberControl via the shared component; observed_control_types: NumberControl; observed_roles: typography; conformance: n/a (single instance, nothing to compare against)",
+			"divergence": "None against an assumed WP-native path — core has no per-block `column-count` typography control; multi-column layout in core is achieved only via the separate core/columns block, a structural block-composition tool, not a text-property control on a single text element. This is an SGS-only capability.",
+			"divergence_severity": "none",
+			"notes": "This row exists to close `check-element-manifest-conformance.js`'s orphan_style_defect finding: sgs/text's attrMap already declares \"css:column-count\": \"textColumns\" and the block.json attribute (`textColumns`, type number, no default = CSS multicol off) is real and rendered, but no setting-registry row nor cluster-member-sets.json 'text' cluster member existed to classify it. Grep confirms sgs/heading does not declare a textColumns-shaped attribute — this is currently sgs/text-only, unlike css:text-wrap above which sgs/heading also has."
+		},
+		{
+			"setting_key": "css:text-indent",
+			"category": "css-property",
+			"label": "Line indent",
+			"optimal_control": {
+				"component": "UnitControl + RangeControl pair via TypographyControls (opt-in, showTextIndent) — a faithful reimplementation of core's private TextIndentControl",
+				"props": {
+					"unitControl": "hideLabelFromVision, min=0, units=TEXT_INDENT_UNITS",
+					"rangeControl": "hideLabelFromVision, withInputField=false, initialPosition=0, min=0, max/step computed per-unit by textIndentSliderBounds() (relative units em/rem/%/ch/vw/vh: max 10 step 0.1; absolute units: max 100 step 1)"
+				},
+				"preset_layer": null,
+				"units": "real units via UnitControl (not px-only) — TEXT_INDENT_UNITS list",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a — paired unit+slider input, not a dropdown",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "clears to '' (no text-indent rule emitted)",
+				"note_on_label": "The control's on-screen label is 'Line indent' (TypographyControls.js's own docblock flags this deliberately: core's private TextIndentControl uses this label, NOT 'Text indent' — the CSS property is `text-indent` but the UI wording follows core's precedent). The setting_key stays `css:text-indent` to match the real CSS property name and the block.json attrMap key."
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Part B/H (opt-in typography field) + Part G (faithful reimplementation of a core private API — TextIndentControl is absent from @wordpress/block-editor's public components/index.js, same situation as TextAlignmentControl)",
+			"current_state": "1 attr (sgs/text.textIndent only — sgs/heading does NOT declare it), UnitControl+RangeControl pair via the shared component; observed_control_types: UnitControl+RangeControl (paired); observed_roles: typography; conformance: n/a (single instance, nothing to compare against)",
+			"divergence": "None against core's own precedent — this control is a faithful rebuild of core's private TextIndentControl (same UnitControl+RangeControl shape, same unit-dependent bounds, same label), reimplemented because it is not exported publicly rather than because SGS diverged from a different design.",
+			"divergence_severity": "none",
+			"notes": "This row exists to close `check-element-manifest-conformance.js`'s orphan_style_defect finding: sgs/text's attrMap already declares \"css:text-indent\": \"textIndent\" and the block.json attribute (`textIndent`, type string, default '') is real and rendered, but no setting-registry row nor cluster-member-sets.json 'text' cluster member existed to classify it. Grep confirms sgs/heading does not declare a textIndent-shaped attribute — this is currently sgs/text-only."
 		}
 	]
 }
