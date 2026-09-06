@@ -63,6 +63,7 @@
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
+						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
 						"css:margin": "margin",
@@ -183,14 +184,16 @@
 			"default": ""
 		},
 		"lineHeight": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"lineHeightUnit": {
 			"type": "string",
 			"default": "em"
 		},
 		"letterSpacing": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"letterSpacingUnit": {
 			"type": "string",
@@ -219,9 +222,11 @@
 		"textDecoration": {
 			"type": "string",
 			"enum": [
+				"",
 				"none",
 				"underline",
-				"line-through"
+				"line-through",
+				"overline"
 			],
 			"default": ""
 		},
@@ -344,6 +349,16 @@
 		},
 		"textWrap": {
 			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
 			"default": ""
 		}
 	},

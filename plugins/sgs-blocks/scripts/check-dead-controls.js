@@ -781,6 +781,36 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'LetterSpacingTablet',
 		'LetterSpacingMobile',
 		'TextAlign',
+		// Added 2026-09-06 with the helper's own text-wrap branch, for exactly
+		// the reason the FontFamily comment above describes. Until then
+		// `sgs_typography_css_rule()` could not emit `text-wrap`, so the only
+		// block offering it (`sgs/heading`) emitted it BLOCK-PRIVATELY — and
+		// that private emission was the sole LITERAL occurrence of the attr
+		// name in any PHP file. Moving it into the shared helper made
+		// `textWrap` look unrendered to this checker at both ends: the control
+		// builds the key as `typographyAttrName( prefix, 'TextWrap' )` and the
+		// render as `sgs_typography_attr( $prefix, 'TextWrap' )`, so the string
+		// "textWrap" appears in neither.
+		//
+		// ⛔ This is the CORRECT fix, not a baseline entry. `dead-controls-
+		// baseline.json`'s own header and this repo's CLAUDE.md both say to
+		// broaden the resolver when it false-positives a legitimate consumption
+		// pattern rather than accepting the finding — a baselined entry would
+		// silence this attribute on every block forever, including a future one
+		// where it really is dead.
+		'TextWrap',
+		// Added 2026-09-06 alongside the helper's column-count / text-indent /
+		// writing-mode branches — same dynamic-key reason as every suffix above.
+		//
+		// ⚠ TextIndent is emitted on its OWN selector (the adjacent-sibling
+		// rule), not into $base_decls, but it is still read as
+		// `sgs_typography_attr( $prefix, 'TextIndent' )` inside the same helper
+		// call, so it belongs in this list exactly like the others — the list
+		// records which SUFFIXES the helper consumes, not which CSS rule they
+		// land in.
+		'TextColumns',
+		'TextIndent',
+		'WritingMode',
 	],
 	sgs_button_element_style_css: [
 		'ColourBackground',

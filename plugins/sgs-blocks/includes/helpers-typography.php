@@ -35,6 +35,10 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-responsive.php';
+// sgs_css_length_value() — sanitises the text-indent length below. This file
+// declares its own dependencies explicitly rather than relying on
+// render-helpers.php's load order, matching the two requires above.
+require_once __DIR__ . '/helpers-css-safety.php';
 
 if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	/**
@@ -85,9 +89,16 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 * @param string $prefix     Attribute prefix ('' | 'label' | 'title' | …).
 	 * @param string $selector   Fully-formed, already-safe CSS selector
 	 *                           (e.g. ".sgs-trust-bar__label" scoped by a uid).
+	 * @param string $indent_sibling_selector Optional. Fully-formed, already-safe
+	 *   ADJACENT-SIBLING selector that `text-indent` alone is emitted against —
+	 *   see the text-indent block below for why it cannot be derived from
+	 *   $selector. Pass '' (the default) and `{prefix}TextIndent` is NOT emitted
+	 *   at all, deliberately: approximating the sibling semantic onto the root
+	 *   selector would indent EVERY paragraph including the first, which is a
+	 *   different feature, not a near-enough version of this one.
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_typography_css_rule( array $attributes, $prefix, $selector ) {
+	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '' ) {
 		$k_size        = sgs_typography_attr( $prefix, 'FontSize' );
 		$k_size_unit   = sgs_typography_attr( $prefix, 'FontSizeUnit' );
 		$k_family      = sgs_typography_attr( $prefix, 'FontFamily' );
@@ -100,6 +111,10 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_letter      = sgs_typography_attr( $prefix, 'LetterSpacing' );
 		$k_letter_unit = sgs_typography_attr( $prefix, 'LetterSpacingUnit' );
 		$k_align       = sgs_typography_attr( $prefix, 'TextAlign' );
+		$k_wrap        = sgs_typography_attr( $prefix, 'TextWrap' );
+		$k_columns     = sgs_typography_attr( $prefix, 'TextColumns' );
+		$k_indent      = sgs_typography_attr( $prefix, 'TextIndent' );
+		$k_writing     = sgs_typography_attr( $prefix, 'WritingMode' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -274,6 +289,81 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$allowed_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
 		if ( ! empty( $attributes[ $k_align ] ) && in_array( $attributes[ $k_align ], $allowed_aligns, true ) ) {
 			$base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';';
+		}
+		// text-wrap — flat scalar (no responsive tier), same discipline as the
+		// other base-only props above. Added 2026-09-06 as part of the shared
+		// TypographyControls redesign: `textWrap` had been emitted by
+		// sgs/heading's own render.php alone, so no other block could offer the
+		// control even after declaring the attribute. Moving it here makes it a
+		// SHARED capability any block gains by declaring `{prefix}TextWrap`.
+		//
+		// The allowlist is lifted verbatim from heading/render.php's own
+		// $allowed_text_wrap so the migration is value-for-value identical —
+		// `stable` and `nowrap` included, because the cloning converter can set
+		// either on a cloned heading even though the editor picker offers only
+		// Wrap / Balance / Pretty / No wrap.
+		//
+		// ⚠ WordPress core has NO text-wrap block support and no such control
+		// (verified against Gutenberg trunk, 2026-09-06), so there is no native
+		// emitter this could have delegated to.
+		$allowed_wraps = array( 'wrap', 'nowrap', 'balance', 'pretty', 'stable' );
+		if ( ! empty( $attributes[ $k_wrap ] ) && in_array( $attributes[ $k_wrap ], $allowed_wraps, true ) ) {
+			$base_decls[] = 'text-wrap:' . $attributes[ $k_wrap ] . ';';
+		}
+		// writing-mode. CSS property name confirmed against WordPress's own
+		// style engine (`class-wp-style-engine.php`: 'writingMode' =>
+		// property_keys default 'writing-mode'), NOT guessed from the attr name.
+		// The allowlist is core's own option set from WritingModeControl:
+		// 'horizontal-tb' plus ONE vertical value chosen by text direction —
+		// 'vertical-lr' in RTL, 'vertical-rl' otherwise. Both verticals are
+		// accepted here because the stored value depends on the locale the
+		// client authored in, and a site can switch direction after the fact.
+		$allowed_writing_modes = array( 'horizontal-tb', 'vertical-rl', 'vertical-lr' );
+		if ( ! empty( $attributes[ $k_writing ] ) && in_array( $attributes[ $k_writing ], $allowed_writing_modes, true ) ) {
+			$base_decls[] = 'writing-mode:' . $attributes[ $k_writing ] . ';';
+		}
+		// column-count. ⚠ The CSS property does NOT match the attribute name:
+		// core's style engine maps `textColumns` to `column-count` (verbatim:
+		// 'textColumns' => array( 'property_keys' => array( 'default' =>
+		// 'column-count' ) )). Emitting `text-columns` would be silently
+		// invalid CSS. Range 1-6 mirrors core's MIN_TEXT_COLUMNS /
+		// MAX_TEXT_COLUMNS; cast through absint() and clamped rather than
+		// interpolated, so a hand-authored out-of-range value cannot reach CSS.
+		if ( isset( $attributes[ $k_columns ] ) && '' !== $attributes[ $k_columns ] && is_numeric( $attributes[ $k_columns ] ) ) {
+			$columns = absint( $attributes[ $k_columns ] );
+			if ( $columns >= 1 && $columns <= 6 ) {
+				$base_decls[] = 'column-count:' . $columns . ';';
+			}
+		}
+
+		// ── text-indent — its OWN rule, on its OWN selector ──────────────────
+		//
+		// Deliberately NOT part of $base_decls. WordPress scopes paragraph
+		// text-indent to an ADJACENT-SIBLING selector, declared in
+		// `core/paragraph`'s block.json as the selectors entry
+		// `typography.textIndent` = ".wp-block-paragraph + .wp-block-paragraph",
+		// and consumed by WP_Theme_JSON's get_feature_declarations_for_node(),
+		// which pulls the subfeature OUT of the block node and re-keys it under
+		// that selector (it even `unset()`s it so it is not also emitted on the
+		// root). The semantic is "indent every paragraph AFTER the first" — the
+		// typographic convention — not "indent every paragraph".
+		//
+		// ⛔ The sibling selector CANNOT be derived as "{$selector} + {$selector}".
+		// $selector is uid-scoped to ONE block instance, and two sibling blocks
+		// always carry DIFFERENT uids, so that compound would match nothing,
+		// ever — a rule indistinguishable from an absent one. The caller must
+		// therefore supply a selector whose LEFT side is the block's shared
+		// class and whose RIGHT side is this instance's scope — for sgs/text
+		// that is ".wp-block-sgs-text + {$scope}",
+		// which keeps the "follows a sibling of the same block type" meaning
+		// while staying scoped to the instance the client is editing.
+		//
+		// With no selector supplied, nothing is emitted (see the @param note).
+		if ( '' !== $indent_sibling_selector && isset( $attributes[ $k_indent ] ) && '' !== $attributes[ $k_indent ] ) {
+			$indent_safe = sgs_css_length_value( $attributes[ $k_indent ] );
+			if ( '' !== $indent_safe ) {
+				$css .= $indent_sibling_selector . '{text-indent:' . $indent_safe . ';}';
+			}
 		}
 
 		if ( ! empty( $base_decls ) ) {

@@ -281,14 +281,21 @@ if ( '' !== $text_colour_effective ) {
 // (core-blocks-critical.css `h1..h6`, a deliberate enhancement for AUTHORED
 // content). A CLONED heading must instead render the DRAFT's effective wrap —
 // drafts declare no `text-wrap`, so the effective value is the CSS-initial
-// `wrap` (greedy). The converter sets `textWrap` on cloned headings; render
-// emits it at `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0) which beats the
-// theme's `h1..h6` (0,0,1). Authored headings leave it EMPTY → inherit balance.
-$allowed_text_wrap = array( 'wrap', 'nowrap', 'balance', 'pretty', 'stable' );
-$text_wrap         = isset( $attributes['textWrap'] ) ? (string) $attributes['textWrap'] : '';
-if ( '' !== $text_wrap && in_array( $text_wrap, $allowed_text_wrap, true ) ) {
-	$text_decls[] = 'text-wrap:' . $text_wrap;
-}
+// `wrap` (greedy). The converter sets `textWrap` on cloned headings.
+// Authored headings leave it EMPTY → inherit balance.
+//
+// ⛔ NOT emitted here any more (2026-09-06). The local block-private emitter
+// that used to sit at this spot moved verbatim — same allowlist, same value
+// set — into the SHARED sgs_typography_css_rule() helper, so that any block
+// declaring `{prefix}TextWrap` gains the property rather than sgs/heading
+// being the only block able to render it. The helper is called below at
+// `$root_sel` (`.uid.wp-block-sgs-heading`, 0,2,0), the SAME selector this
+// block's own $text_decls rule uses, so the specificity argument that made
+// this beat the theme's `h1..h6` (0,0,1) is unchanged.
+//
+// ⚠ Do NOT re-add a local emitter here: it would double-declare `text-wrap`
+// on one selector, and a future divergence between the two allowlists would
+// then be invisible (the later rule silently wins).
 
 // ---------------------------------------------------------------------------
 // 4. Build the wrapper's box/visual declarations (scoped, NOT inline).

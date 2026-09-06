@@ -306,7 +306,23 @@ $scope = '.wp-block-sgs-text.' . esc_attr( $anchor );
 // D574 bug class the same way) + lineHeight/letterSpacing (tiered) plus
 // fontWeight/fontStyle/textDecoration/textTransform/fontFamily/textAlign
 // (base-only, moved here from step 4's $base_decls above).
-$css_base_and_tiers = sgs_typography_css_rule( $attributes, '', $scope );
+// The 4th argument is the ADJACENT-SIBLING selector that `textIndent` alone is
+// emitted against, mirroring core/paragraph's own
+// `selectors.typography.textIndent` = ".wp-block-paragraph + .wp-block-paragraph"
+// (indent every paragraph AFTER the first — the typographic convention).
+//
+// LEFT side is the block's SHARED class, RIGHT side is this instance's scope.
+// It cannot be "{$scope} + {$scope}": $scope carries this instance's uid, and
+// two sibling blocks always have different uids, so that compound would match
+// nothing at all. `.wp-block-sgs-text + .wp-block-sgs-text.{uid}` reads as
+// "this instance, when it directly follows another sgs/text" — which is the
+// semantic core implements, kept instance-scoped.
+$css_base_and_tiers = sgs_typography_css_rule(
+	$attributes,
+	'',
+	$scope,
+	'.wp-block-sgs-text + ' . $scope
+);
 
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).

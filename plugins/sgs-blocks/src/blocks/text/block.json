@@ -59,6 +59,10 @@
 						"css:text-decoration": "textDecoration",
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:column-count": "textColumns",
+						"css:text-indent": "textIndent",
+						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
 						"css:margin": "margin",
@@ -228,6 +232,35 @@
 				"center",
 				"right",
 				"justify"
+			],
+			"default": ""
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
 			],
 			"default": ""
 		},
