@@ -45,7 +45,24 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding='utf-8')
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-BLOCKS_DIR = SCRIPT_DIR.parent / 'src' / 'blocks'
+PLUGIN_DIR = SCRIPT_DIR.parent
+BLOCKS_DIR = PLUGIN_DIR / 'src' / 'blocks'
+
+# Shared trees eligible for the SAME two bug classes as render.php, extended
+# 2026-09-06 after finding the wrapper itself (class-sgs-container-wrapper.php)
+# had the identical dead-flat-attr bug that had already been fixed in all 29
+# block-private render.php files -- the original guard only scanned
+# `src/blocks/*/render.php` and would never have caught it. A shared file has
+# no single owning block.json to check declarations against, so the
+# dead-flat-attr check here uses a GLOBAL declaration set (is this attr name
+# declared by ANY block.json in the tree?) rather than a per-block one.
+SHARED_PHP_FILES = [
+    PLUGIN_DIR / 'includes' / 'class-sgs-container-wrapper.php',
+    PLUGIN_DIR / 'includes' / 'helpers-box.php',
+    PLUGIN_DIR / 'includes' / 'helpers-responsive.php',
+    PLUGIN_DIR / 'includes' / 'media' / 'atoms' / 'media-padding.php',
+    PLUGIN_DIR / 'includes' / 'media' / 'atoms' / 'box-shape.php',
+]
 
 REQUIRE_DEFINER_RE = re.compile(
     r"require(?:_once)?[^\n]*(?:helpers-responsive\.php|render-helpers\.php)['\"]"
@@ -94,10 +111,20 @@ def declared_attrs(block_json_path):
     return set((data.get('attributes') or {}).keys())
 
 
+FUNCTION_DEFINITION_RE = re.compile(r"function\s+sgs_responsive_normalise_object\s*\(")
+
+
 def check_load_order(text, relpath):
     """Returns a finding string, or None."""
     call_match = NORMALISE_CALL_RE.search(text)
     if not call_match:
+        return None
+    if FUNCTION_DEFINITION_RE.search(text):
+        # This file DEFINES the function (helpers-responsive.php itself) --
+        # any call to it elsewhere in the same file needs no require, since
+        # the whole file has already been parsed/executed by the time any
+        # line in it runs. Earned 2026-09-06 extending the check to shared
+        # files: this exact false positive fired on first run.
         return None
     require_match = REQUIRE_DEFINER_RE.search(text)
     if not require_match:
@@ -126,6 +153,43 @@ def check_dead_flat_attrs(text, relpath, declared):
                 f"does not declare '{name}' — dead flat-attribute read"
             )
     return findings
+
+
+def global_declared_attrs():
+    """Union of every attribute name declared by ANY block.json in the tree.
+    Used for the shared-file check: a shared file has no single owning block
+    to check declarations against, so a flat-attr name is only exempt there
+    if SOME block, somewhere, still genuinely declares it (not yet migrated)."""
+    declared = set()
+    if not BLOCKS_DIR.exists():
+        return declared
+    for block_dir in BLOCKS_DIR.iterdir():
+        block_json = block_dir / 'block.json'
+        if block_json.exists():
+            declared |= declared_attrs(block_json)
+    return declared
+
+
+def scan_shared_files():
+    """Extended 2026-09-06 after class-sgs-container-wrapper.php was found to
+    have the identical dead-flat-attr bug already fixed in every render.php --
+    the original guard only scanned src/blocks/*/render.php and would never
+    have caught a shared file. Same two checks, applied to the shared PHP
+    trees (includes/, media atoms) that many blocks route through."""
+    findings = []
+    declared = global_declared_attrs()
+    scanned = 0
+    for path in SHARED_PHP_FILES:
+        if not path.exists():
+            continue
+        scanned += 1
+        text = strip_comments(path.read_text(encoding='utf-8'))
+        relpath = str(path.relative_to(PLUGIN_DIR)).replace('\\', '/')
+        order_finding = check_load_order(text, relpath)
+        if order_finding:
+            findings.append(order_finding)
+        findings.extend(check_dead_flat_attrs(text, relpath, declared))
+    return findings, scanned
 
 
 def scan():
@@ -217,6 +281,19 @@ def self_test():
     if strip_comments(multiline_comment).count('\n') != multiline_comment.count('\n'):
         failures.append('self-test: strip_comments must preserve line count across a multi-line block comment')
 
+    # Fixture 9 -- EDGE, earned extending the check to shared files 2026-09-06:
+    # the file that DEFINES sgs_responsive_normalise_object() calls it
+    # elsewhere in the same file (helper composition) with no require at all
+    # -- correctly not a bug, since the whole file has already executed by
+    # then. First run of the shared-file scan false-positived on exactly this.
+    self_defining_file = (
+        "<?php\n"
+        "function sgs_responsive_normalise_object( $raw, $is_box = false ) { return array(); }\n"
+        "$x = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );\n"
+    )
+    if check_load_order(self_defining_file, 'fixture') is not None:
+        failures.append('self-test: a call within the function-defining file itself should not be a load-order finding')
+
     if failures:
         for f in failures:
             print(f'[self-test] FAIL: {f}')
@@ -230,11 +307,13 @@ def main():
     if '--self-test' in args:
         sys.exit(self_test())
 
-    findings, scanned = scan()
+    block_findings, blocks_scanned = scan()
+    shared_findings, shared_scanned = scan_shared_files()
+    findings = block_findings + shared_findings
     is_check = '--check' in args
 
-    print(f'[check-render-tier-object-spacing] scanned {scanned} block(s) with both '
-          f'render.php and block.json')
+    print(f'[check-render-tier-object-spacing] scanned {blocks_scanned} block(s) with both '
+          f'render.php and block.json, plus {shared_scanned} shared file(s)')
     if not findings:
         print('[check-render-tier-object-spacing] OK — 0 findings')
         sys.exit(0)
