@@ -929,5 +929,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 99
+  },
+  {
+    "id": "nav-qa-logical-props",
+    "cmd": "python scripts/nav-qa/logical-props-lint.py --check",
+    "tier": "fast",
+    "added_D": 987,
+    "added_commit": null,
+    "budget_ms": 250,
+    "order": 100
   }
 ]

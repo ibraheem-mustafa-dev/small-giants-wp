@@ -8,6 +8,7 @@ Usage
     python scripts/db-consistency/run.py --report     # print all violations, exit 0
     python scripts/db-consistency/run.py --check      # exit 1 if any NEW violation key (not in baseline)
     python scripts/db-consistency/run.py --update-baseline  # write current keys to baseline, exit 0
+    python scripts/db-consistency/run.py --prune-stale      # drop keys that no longer occur (subtract-only)
 
 Baseline file
     db-consistency-baseline.json  (alongside this file — a JSON list of key strings)
@@ -211,10 +212,21 @@ def main() -> int:
         default=False,
         help="Write current violation keys to the baseline file and exit 0.",
     )
+    mode.add_argument(
+        "--prune-stale",
+        action="store_true",
+        default=False,
+        help=(
+            "Remove baseline keys whose violation no longer occurs, and NOTHING "
+            "else. Never adds a key, so it can only make the gate stricter -- "
+            "which is why, unlike the re-baseline mode, it is safe to run "
+            "automatically after a reseed."
+        ),
+    )
     args = parser.parse_args()
 
     # Default mode is --report.
-    if not args.check and not args.update_baseline:
+    if not args.check and not args.update_baseline and not args.prune_stale:
         args.report = True
 
     # DB availability. The DB is DELIBERATELY UNVERSIONED (see
@@ -275,13 +287,45 @@ def main() -> int:
 
     baseline = _load_baseline()
 
+    current = {v.key for v in violations}
+    stale = sorted(baseline - current)
+
+    if args.prune_stale:
+        # ONLY subtraction. A key is dropped when its violation no longer occurs,
+        # so this can never bless anything -- the gate gets stricter or stays the
+        # same. That asymmetry is the whole reason this is safe to automate and
+        # the re-baseline mode is not.
+        if not stale:
+            print("[F6] Nothing to prune -- every baselined key still occurs.")
+            return 0
+        _save_baseline(baseline - set(stale))
+        print(f"[F6] Pruned {len(stale)} stale baseline key(s) "
+              f"(their violations no longer occur):")
+        for k in stale:
+            print(f"    [RESOLVED] {k}")
+        print(f"[F6] Baseline now {len(baseline) - len(stale)} key(s).")
+        return 0
+
     if args.update_baseline:
-        new_baseline = {v.key for v in violations}
+        new_baseline = current
         _save_baseline(new_baseline)
         print(f"[F6] Baseline updated — {len(new_baseline)} key(s) written to {_BASELINE_PATH}")
         return 0
 
     _print_report(violations, baseline)
+
+    # STALE ENTRIES ARE A FINDING TOO (2026-09-07). Reporting only NEW violations
+    # means a baselined entry whose cause was fixed sits here for ever, and the
+    # file then claims N known problems when the real number is smaller. That is
+    # exactly how this baseline came to hold 4 roleguess keys against 0 live
+    # violations. Mirrors consistency/check-box-flat.py's [REMOVED] block.
+    if stale:
+        print()
+        print(f"[F6] {len(stale)} baselined key(s) NO LONGER OCCUR -- the fix landed "
+              f"but the baseline was never shrunk. Run --prune-stale to drop them "
+              f"(subtract-only, so it cannot bless anything):")
+        for k in stale:
+            print(f"    [RESOLVED] {k}")
 
     if args.check:
         new_violations = [v for v in violations if v.key not in baseline]

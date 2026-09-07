@@ -1,3 +1,52 @@
+## D987 [ROUTINE] — logical-props gate wired in + RTL fixes; db-consistency gains subtract-only auto-prune
+
+**2026-09-07, Bean.** Three linked changes, all from the same root problem: a
+baseline or a gate can be wrong in ways that look identical to being right.
+
+**1. `logical-props-lint.py` is now a wired gate.** It was a real detector for a
+real Spec 36 §8 requirement (RTL readiness), with its own self-test, referenced
+from nothing but its own README. Its docstring named the risk exactly: *"the risk
+was never 'it reads green forever', it was that nobody ever runs it."* Added to
+`gates.json` as `nav-qa-logical-props` (fast tier, 0.16s, `--check`). Negative
+control run AFTER wiring: a planted `margin-left` makes the gate exit 1; reverting
+returns it to 0.
+
+**2. The 5 known physical-property sites triaged, 3 converted.** Converted to
+logical: the drawer's real close button plus the two editor-preview chrome pieces
+(`inset-inline-end` / `inset-inline-start`) — chrome that should track reading
+direction. **Two deliberately KEPT physical**, and the second matters:
+  - the burger-to-X morph bars: full-width spans rotated ±45° inside a fixed box —
+    a symmetric graphic with no start/end meaning, so converting is pure churn.
+  - `.sgs-nav-menu__indicator`: `shared/effects/nav-indicator.js:62` computes the
+    sliding pill's offset as `linkRect.left - barRect.left` from
+    `getBoundingClientRect()` — a PHYSICAL measurement written into
+    `--sgs-nav-indicator-x` and consumed by `translateX`. Converting the CSS anchor
+    to `inset-inline-start` would flip it in RTL while the JS kept measuring from
+    the physical left, silently mispositioning the pill. Verified by reading the JS,
+    not inferred from the CSS. Baseline 5 -> 2, and both remaining entries are
+    documented keeps rather than debt.
+
+**3. db-consistency: `--prune-stale`, and it now runs automatically.** Its baseline
+held 4 `roleguess:*` keys against **0** live violations. Cause: a reseed fixed the
+underlying ambiguity, and nothing ever shrinks a baseline — `--check` is read-only
+on it by design, and a full re-baseline is human-gated. So a resolved finding stays
+recorded for ever while the file claims problems that no longer exist.
+  - `--report` / `--check` now SURFACE stale entries (`[RESOLVED] <key>`), mirroring
+    `consistency/check-box-flat.py`'s existing `[REMOVED]` block. Making staleness
+    visible is the actual fix; pruning is the follow-through.
+  - New `--prune-stale` ONLY subtracts keys whose violation no longer occurs. It can
+    never add one, so it can only make the gate stricter. **That asymmetry is why it
+    is safe to automate while a full re-baseline is not** — the dangerous half of
+    "auto-update" is auto-ACCEPTING new violations, and this does not do that.
+  - Wired into `/sgs-update`'s post-reseed scanners as `db-consistency-prune`,
+    ordered BEFORE the `--report` entry so the report reflects the pruned state. A
+    reseed is exactly when a baselined violation stops occurring, so it is the right
+    moment. That function's docstring promises its scanners never mutate state; the
+    promise is load-bearing, so the exception is recorded there explicitly rather
+    than quietly broken. Idempotent: a second run prunes nothing.
+  - Baseline 4 -> 0. `--check` still exits 0; the suite still reports 0 violations.
+
+
 ## D986 [ROUTINE] — enum control-shape: enforced band narrowed to 2-4, FIVE options is neutral
 
 **2026-09-07, Bean.** Amends D812's threshold table (Spec 35 §3.1). The enforced band was
