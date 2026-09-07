@@ -227,7 +227,7 @@ function coreSupportedAttrs( supports ) {
 //
 // MEASURED (D810, 2026-08-26): adopting `gradientOverlayAttrKeys()` on
 // sgs/hero took this rule from 82 -> 84 flagged, the two new findings being
-// `mediaOverlayGradient` and `mediaBackgroundGradient` — exactly the derived
+// `splitMediaOverlayGradient` and `mediaBackgroundGradient` — exactly the derived
 // keys, both real client-reachable controls the rule could no longer see.
 // Bean-approved fix (D810's own close-out): teach the rule to expand these
 // three call sites rather than leave adoption of a name helper permanently
@@ -1117,7 +1117,7 @@ module.exports = {
 			// gradientOverlayAttrKeys()/typographyAttrKeys() compute at call
 			// time from the call site's own literal argument. This is the
 			// exact shape that blinded the rule on sgs/hero (D810:
-			// mediaOverlayGradient / mediaBackgroundGradient, 82 -> 84).
+			// splitMediaOverlayGradient / mediaBackgroundGradient, 82 -> 84).
 			'shadow-helper-derived',
 			'gradient-helper-derived',
 			'typography-helper-derived',

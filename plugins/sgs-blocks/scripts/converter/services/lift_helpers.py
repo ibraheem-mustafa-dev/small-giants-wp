@@ -204,7 +204,7 @@ def scalar_media_from_video(video_node: Tag, media_map: dict) -> dict:
 # column (2026-09-02). Mirrors the EXISTING role='svg' pattern in
 # field_extractors.py (str(svg_el).strip()) rather than inventing a fresh
 # sanitiser — render.php applies the same wp_kses() allowlist to every
-# splitSvgContent* tier at render time (see hero render.php + CLAUDE.md's
+# splitMediaSvgContent* tier at render time (see hero render.php + CLAUDE.md's
 # "SVG art-direction tiers" note), so the converter never needs to sanitise.
 # ---------------------------------------------------------------------------
 

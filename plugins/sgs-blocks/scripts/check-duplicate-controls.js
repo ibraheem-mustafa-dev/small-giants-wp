@@ -1271,9 +1271,9 @@ function resolveWrite( baseKey, valueNode, paramNames ) {
 	// CURRENT value straight through when this particular control isn't the
 	// one being toggled (a "keep as-is unless I'm clearing you" clause, not a
 	// real setting). Verified live shape: sgs/hero's mutually-exclusive
-	// "Media Ken-burns"/"Media parallax" toggles — mediaKenBurns's onChange
-	// writes `{ mediaKenBurns: val, mediaParallax: val ? false : mediaParallax }`
-	// and mediaParallax's onChange does the mirror. Without this exclusion
+	// "Media Ken-burns"/"Media parallax" toggles — splitMediaKenBurns's onChange
+	// writes `{ splitMediaKenBurns: val, splitMediaParallax: val ? false : splitMediaParallax }`
+	// and splitMediaParallax's onChange does the mirror. Without this exclusion
 	// each toggle is credited as a second "writer" for the OTHER's attr,
 	// producing a false same-file-duplicate finding on a standard toggle-pair
 	// pattern (also present in ContainerWrapperControls.js's own comment).

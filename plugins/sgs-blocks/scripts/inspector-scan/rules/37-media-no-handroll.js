@@ -292,7 +292,7 @@ const MEDIA_CSS_PROPERTIES = [
 // The discriminator that makes this a universal exclusion rather than a
 // per-block carve-out (rule 3, no carve-outs): every genuine media-element
 // attribute in this codebase carries an ELEMENT-NAME PREFIX before the
-// property suffix (`splitMediaObjectPosition`, `mediaOverlayColour`,
+// property suffix (`splitMediaObjectPosition`, `splitMediaOverlayColour`,
 // `logoFit`, `badgeImageObjectFit`). The background-panel family is always
 // BARE-PREFIXED — the attribute name itself starts with `background`/`bg`
 // (`backgroundOverlayColour`, `backgroundSize`, `bgParallax`, `bgKenBurns`)

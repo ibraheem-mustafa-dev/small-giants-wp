@@ -5,7 +5,7 @@
  *
  * See the JS twin's docblock for the full background: a mutually-exclusive
  * ken-burns/parallax pair, already proven on `sgs/hero`'s split-media
- * (`mediaKenBurns`/`mediaParallax`/`mediaAnimationDuration`) and
+ * (`splitMediaKenBurns`/`splitMediaParallax`/`splitMediaAnimationDuration`) and
  * `sgs/container`'s background (`bgKenBurns`/`bgParallax`/
  * `bgAnimationDuration`), re-expressed here as custom properties on
  * `.sgs-media-el` instead of a BEM modifier class — `svg-presentation`'s own
@@ -118,7 +118,7 @@ if ( ! function_exists( 'sgs_media_atom_motion_css' ) ) {
 
 		// Parallax wins if somehow both attrs are true — mirrors the reference
 		// implementations' own defensive resolution (`hero/render.php`:
-		// `$media_ken_burns = !empty($attributes['mediaKenBurns']) && !$media_parallax;`).
+		// `$media_ken_burns = !empty($attributes['splitMediaKenBurns']) && !$media_parallax;`).
 		// Mirrors the JS half exactly; the parity gate holds them together.
 		$parallax_active  = sgs_media_atom_motion_validate_boolean( $attributes[ $keys['parallax'] ] ?? null );
 		$ken_burns_active = sgs_media_atom_motion_validate_boolean( $attributes[ $keys['kenBurns'] ] ?? null ) && ! $parallax_active;

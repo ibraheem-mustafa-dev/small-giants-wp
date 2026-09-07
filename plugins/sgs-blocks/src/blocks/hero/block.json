@@ -639,7 +639,8 @@
 			}
 		},
 		"_comment_boxShapeNewBases": "C19 item 3 (2026-09-04) — the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not left to auto-injection, because render.php/edit.js destructure them as literal variables (same precedent as the 'source atom pair' comment above). Mirrors sgs/media's own shapes exactly: MediaSizing carries no default (a 'default':null on a typed attr 400s SSR previews); Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight match box-shape.js's MEDIA_ATTR_TYPES map. `splitMediaMaxWidthPercent` (this comment used to also cover it) was DELETED 2026-09-07 — a percentage max-width is already expressible via `splitMediaMaxWidth` + `splitMediaMaxWidthUnit:'%'`.",
-		"splitMediaSizing": {
+		"_comment_splitMediaMediaSizing": "DOUBLE-NOUN ON PURPOSE — do NOT rename to splitMediaSizing. The box-shape atom control resolves its key as prefix + base (MediaElementControls.js mediaAttrName), the base string is literally 'MediaSizing', and STORED_AS carries no sgs/hero override — so the control reads and writes splitMedia+MediaSizing. Renaming the DECLARATION alone (tried 2026-09-07, reverted the same session) leaves the control writing splitMediaMediaSizing while render.php reads splitMediaSizing: the value saves, nothing errors, and aspect-ratio silently stops emitting. The attribute is also runtime-INJECTED via the atom registration, so a block.json-only census cannot see the break. Same exemption already applied to splitMediaType. Shortening the name would require STORED_AS entries in BOTH twins plus the converter and its test, for a cosmetic gain.",
+		"splitMediaMediaSizing": {
 			"type": "string",
 			"enum": [
 				"auto",

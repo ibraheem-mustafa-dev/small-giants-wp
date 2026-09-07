@@ -257,7 +257,7 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
 
     Monkeypatches:
       - is_class_section_block → True  (activates composite-interior path)
-      - scalar_media_attr_for(slug, 'split-image') → 'splitImage'
+      - scalar_media_attr_for(slug, 'split-image') → 'splitMediaImage'
       - breakpoint_suffix_rules → [('Mobile', ['Mobile'])]  (no hardcoded dict)
       - parse_sgs_bem → real function (tested against actual BEM string)
     """
@@ -293,7 +293,7 @@ def test_mech_b_scalar_media_column_emits_scalar_lift(monkeypatch):
     scalar_lifts = [r for r in results if isinstance(r, ScalarLift)]
     assert scalar_lifts, f"Expected ScalarLift from scalar-media column, got: {results}"
     lift = scalar_lifts[0]
-    assert lift.attr == "splitImage", f"Expected attr='splitImage', got {lift.attr!r}"
+    assert lift.attr == "splitMediaImage", f"Expected attr='splitMediaImage', got {lift.attr!r}"
     assert isinstance(lift.value, dict), f"Expected dict value, got {type(lift.value)}"
     assert lift.value.get("url") == "/hero.jpg", f"Expected url='/hero.jpg', got {lift.value!r}"
     assert lift.value.get("id") == 0
@@ -343,15 +343,15 @@ def test_mech_b_scalar_media_mobile_modifier_appends_Mobile(monkeypatch):
 
     scalar_lifts = [r for r in results if isinstance(r, ScalarLift)]
     assert scalar_lifts, f"Expected ScalarLift, got: {results}"
-    # 'mobile' modifier → 'splitImageMobile'
-    assert scalar_lifts[0].attr == "splitImageMobile", (
-        f"Expected attr='splitImageMobile', got {scalar_lifts[0].attr!r}"
+    # 'mobile' modifier → 'splitMediaImageMobile'
+    assert scalar_lifts[0].attr == "splitMediaImageMobile", (
+        f"Expected attr='splitMediaImageMobile', got {scalar_lifts[0].attr!r}"
     )
 
 
 def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
-    """Art-directed dual <img> (--mobile + --desktop) must emit BOTH splitImage AND
-    splitImageMobile — the W3 LANDED-proof bug was both collapsing onto splitImage
+    """Art-directed dual <img> (--mobile + --desktop) must emit BOTH splitMediaImage AND
+    splitMediaImageMobile — the W3 LANDED-proof bug was both collapsing onto splitMediaImage
     (the desktop image winning by source order) because _mobile_suffixes() was empty.
     """
     import converter.db.db_lookup as db
@@ -386,10 +386,10 @@ def test_mech_b_scalar_media_dual_art_direction_keeps_both(monkeypatch):
     results = run_mechanism_b(rec, root)
     by_attr = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
 
-    assert "splitImage" in by_attr, f"desktop image dropped; got {list(by_attr)}"
-    assert "splitImageMobile" in by_attr, f"mobile image dropped; got {list(by_attr)}"
-    assert by_attr["splitImage"]["url"] == "/hero-desk.webp"
-    assert by_attr["splitImageMobile"]["url"] == "/hero-mob.jpg"
+    assert "splitMediaImage" in by_attr, f"desktop image dropped; got {list(by_attr)}"
+    assert "splitMediaImageMobile" in by_attr, f"mobile image dropped; got {list(by_attr)}"
+    assert by_attr["splitMediaImage"]["url"] == "/hero-desk.webp"
+    assert by_attr["splitMediaImageMobile"]["url"] == "/hero-mob.jpg"
 
 
 def test_mech_b_scalar_media_no_img_emits_content_gap(monkeypatch):

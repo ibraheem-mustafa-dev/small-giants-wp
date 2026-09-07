@@ -140,7 +140,7 @@ def test_the_drift_detector_itself_catches_a_reclassified_role():
     for table, cols in cols_by_table.items():
         con.execute(f'CREATE TABLE "{table}" ({", ".join(f'"{c}" TEXT' for c in cols)})')
     # ⚠ Group by (table, key) FIRST. Two assertions can target the SAME row via
-    # different columns (splitImage's `role` and its `emit_shape`); inserting one row
+    # different columns (splitMediaImage's `role` and its `emit_shape`); inserting one row
     # per ASSERTION then produces two half-populated rows for one logical row, and the
     # lookup's fetchone() picks whichever came first. Caught by this test failing.
     rows: dict[tuple, dict] = {}
@@ -176,14 +176,14 @@ def test_art_direction_on_the_live_path_routes_both_images():
     out = _walk(REAL_CANARY_MARKUP)
     lifts = out["lifts"]
 
-    assert lifts.get("splitImage") == "/hero-desk.webp", (
-        f"desktop image did not reach splitImage; got {lifts.get('splitImage')!r}. "
+    assert lifts.get("splitMediaImage") == "/hero-desk.webp", (
+        f"desktop image did not reach splitMediaImage; got {lifts.get('splitMediaImage')!r}. "
         f"A value of '/hero-mob.jpg' is the known failure: the mobile crop lands in "
         f"the desktop attribute and would render on desktop. Full lifts: {lifts}"
     )
-    assert lifts.get("splitImageMobile") == "/hero-mob.jpg", (
-        f"mobile image did not reach splitImageMobile; got "
-        f"{lifts.get('splitImageMobile')!r}. Full lifts: {lifts}"
+    assert lifts.get("splitMediaImageMobile") == "/hero-mob.jpg", (
+        f"mobile image did not reach splitMediaImageMobile; got "
+        f"{lifts.get('splitMediaImageMobile')!r}. Full lifts: {lifts}"
     )
 
 
@@ -220,8 +220,8 @@ def test_single_class_markup_also_routes_both_images():
         '</section>'
     )
     lifts = _walk(markup)["lifts"]
-    assert lifts.get("splitImage") == "/d.webp", f"got {lifts}"
-    assert lifts.get("splitImageMobile") == "/m.jpg", f"got {lifts}"
+    assert lifts.get("splitMediaImage") == "/d.webp", f"got {lifts}"
+    assert lifts.get("splitMediaImageMobile") == "/m.jpg", f"got {lifts}"
 
 
 # ---------------------------------------------------------------------------
@@ -239,7 +239,7 @@ def test_single_class_markup_also_routes_both_images():
 
 @requires_db
 def test_tablet_image_routes_to_the_tablet_attr_alongside_mobile_and_desktop():
-    """Three-way tier resolution: --tablet must land on splitImageTablet,
+    """Three-way tier resolution: --tablet must land on splitMediaImageTablet,
     distinct from both the base (desktop) and Mobile attrs."""
     markup = (
         '<section class="sgs-hero sgs-hero--split">'
@@ -254,18 +254,18 @@ def test_tablet_image_routes_to_the_tablet_attr_alongside_mobile_and_desktop():
         '</section>'
     )
     lifts = _walk(markup)["lifts"]
-    assert lifts.get("splitImage") == "/hero-desk.webp", f"got {lifts}"
-    assert lifts.get("splitImageTablet") == "/hero-tab.jpg", (
-        f"tablet image did not reach splitImageTablet; got "
-        f"{lifts.get('splitImageTablet')!r}. Full lifts: {lifts}"
+    assert lifts.get("splitMediaImage") == "/hero-desk.webp", f"got {lifts}"
+    assert lifts.get("splitMediaImageTablet") == "/hero-tab.jpg", (
+        f"tablet image did not reach splitMediaImageTablet; got "
+        f"{lifts.get('splitMediaImageTablet')!r}. Full lifts: {lifts}"
     )
-    assert lifts.get("splitImageMobile") == "/hero-mob.jpg", f"got {lifts}"
+    assert lifts.get("splitMediaImageMobile") == "/hero-mob.jpg", f"got {lifts}"
 
 
 @requires_db
 def test_tablet_image_expands_to_id_url_alt_tablet_trio():
-    """The Tablet emit_as expansion must write splitImageIdTablet/UrlTablet/
-    AltTablet — not the (dead) composite splitImageTablet object attr."""
+    """The Tablet emit_as expansion must write splitMediaImageIdTablet/UrlTablet/
+    AltTablet — not the (dead) composite splitMediaImageTablet object attr."""
     markup = (
         '<section class="sgs-hero sgs-hero--split">'
         '  <div class="sgs-hero__split-image">'
@@ -282,14 +282,14 @@ def test_tablet_image_expands_to_id_url_alt_tablet_trio():
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
     # Branch A still emits the composite attr name as the ScalarLift key —
     # the id/url/alt EXPANSION happens one layer up in assembly.py, not here.
-    assert lifts.get("splitImageTablet") == {
+    assert lifts.get("splitMediaImageTablet") == {
         "url": "/hero-tab.jpg", "id": 0, "alt": "Tablet crop",
     }, f"got {lifts}"
 
 
 @requires_db
 def test_video_in_split_media_routes_to_split_video_id_url():
-    """A <video> in the scalar-media column must route to splitVideo*, not
+    """A <video> in the scalar-media column must route to splitMediaVideo*, not
     be silently dropped or misrouted onto the image family."""
     markup = (
         '<section class="sgs-hero sgs-hero--split">'
@@ -305,8 +305,8 @@ def test_video_in_split_media_routes_to_split_video_id_url():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
-    assert "splitImage" not in lifts, (
+    assert lifts.get("splitMediaVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
+    assert "splitMediaImage" not in lifts, (
         f"a <video> must not be routed onto the image family; got {lifts}"
     )
 
@@ -325,12 +325,12 @@ def test_video_falls_back_to_source_child_when_no_src_attr():
         '</section>'
     )
     out = _walk(markup)
-    assert out["lifts"].get("splitVideoMobile") == "/hero-mob.mp4", f"got {out}"
+    assert out["lifts"].get("splitMediaVideoMobile") == "/hero-mob.mp4", f"got {out}"
 
 
 @requires_db
 def test_svg_in_split_media_routes_to_split_svg_content_directly():
-    """An inline <svg> writes directly to splitSvgContent* as a raw string —
+    """An inline <svg> writes directly to splitMediaSvgContent* as a raw string —
     no id/url/alt decomposition (it IS the real block.json attr name)."""
     markup = (
         '<section class="sgs-hero sgs-hero--split">'
@@ -346,10 +346,10 @@ def test_svg_in_split_media_routes_to_split_svg_content_directly():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert "splitSvgContent" in lifts, f"got {lifts}"
-    assert lifts["splitSvgContent"].startswith("<svg"), f"got {lifts['splitSvgContent']!r}"
-    assert "circle" in lifts["splitSvgContent"]
-    assert isinstance(lifts["splitSvgContent"], str), (
+    assert "splitMediaSvgContent" in lifts, f"got {lifts}"
+    assert lifts["splitMediaSvgContent"].startswith("<svg"), f"got {lifts['splitMediaSvgContent']!r}"
+    assert "circle" in lifts["splitMediaSvgContent"]
+    assert isinstance(lifts["splitMediaSvgContent"], str), (
         "svg lift must be a raw string, never a dict — it needs no emit_as expansion"
     )
 
@@ -361,7 +361,7 @@ def test_video_lift_also_writes_matching_split_media_type():
 
     Pre-fix behaviour (provable from the extraction.py diff, not re-run here
     since the buggy code path no longer exists to execute): the video branch
-    emitted ONLY a ScalarLift(attr='splitVideo', value={url,id}) — nothing
+    emitted ONLY a ScalarLift(attr='splitMediaVideo', value={url,id}) — nothing
     ever wrote splitMediaType. block.json's schema default for that attr is
     'image', so WordPress would silently coerce the unset tier back to
     'image' at render time, and $sgs_hero_resolve_split_type()'s STRICT
@@ -386,7 +386,7 @@ def test_video_lift_also_writes_matching_split_media_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
+    assert lifts.get("splitMediaVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
     assert lifts.get("splitMediaType") == "video", (
         f"the video's TYPE was not written alongside its content — a schema-default "
         f"'image' would silently win at render time; got {lifts}"
@@ -414,8 +414,8 @@ def test_video_tablet_and_mobile_tiers_each_get_their_own_matching_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitVideoTablet") == {"url": "/hero-tab.mp4", "id": 0}, f"got {lifts}"
-    assert lifts.get("splitVideoMobile") == {"url": "/hero-mob.mp4", "id": 0}, f"got {lifts}"
+    assert lifts.get("splitMediaVideoTablet") == {"url": "/hero-tab.mp4", "id": 0}, f"got {lifts}"
+    assert lifts.get("splitMediaVideoMobile") == {"url": "/hero-mob.mp4", "id": 0}, f"got {lifts}"
     assert lifts.get("splitMediaTypeTablet") == "video", f"got {lifts}"
     assert lifts.get("splitMediaTypeMobile") == "video", f"got {lifts}"
     assert "splitMediaType" not in lifts, (
@@ -444,7 +444,7 @@ def test_svg_lift_also_writes_matching_split_media_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert isinstance(lifts.get("splitSvgContent"), str) and lifts["splitSvgContent"].startswith("<svg"), (
+    assert isinstance(lifts.get("splitMediaSvgContent"), str) and lifts["splitMediaSvgContent"].startswith("<svg"), (
         f"got {lifts}"
     )
     assert lifts.get("splitMediaType") == "svg", (
@@ -475,7 +475,7 @@ def test_image_lift_does_not_write_split_media_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitImage", {}).get("url") == "/hero-desk.webp", f"got {lifts}"
+    assert lifts.get("splitMediaImage", {}).get("url") == "/hero-desk.webp", f"got {lifts}"
     assert "splitMediaType" not in lifts, (
         f"image branch must not write a type — WP's own schema default ('image') "
         f"already resolves it correctly; got {lifts}"
@@ -488,7 +488,7 @@ def test_svg_tablet_lift_writes_content_and_matching_split_media_type():
 
     Closes a real test-coverage gap flagged by an independent QC-council review
     of commit 2cc9cbc56 (2026-09-02): only the DESKTOP svg tier had a test
-    proving splitSvgContentTablet + splitMediaTypeTablet both land. The code
+    proving splitMediaSvgContentTablet + splitMediaTypeTablet both land. The code
     trace was judged correct by that review; this test proves it rather than
     assuming it."""
     markup = (
@@ -505,7 +505,7 @@ def test_svg_tablet_lift_writes_content_and_matching_split_media_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert isinstance(lifts.get("splitSvgContentTablet"), str) and lifts["splitSvgContentTablet"].startswith("<svg"), (
+    assert isinstance(lifts.get("splitMediaSvgContentTablet"), str) and lifts["splitMediaSvgContentTablet"].startswith("<svg"), (
         f"got {lifts}"
     )
     assert lifts.get("splitMediaTypeTablet") == "svg", (
@@ -532,7 +532,7 @@ def test_svg_mobile_lift_writes_content_and_matching_split_media_type():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert isinstance(lifts.get("splitSvgContentMobile"), str) and lifts["splitSvgContentMobile"].startswith("<svg"), (
+    assert isinstance(lifts.get("splitMediaSvgContentMobile"), str) and lifts["splitMediaSvgContentMobile"].startswith("<svg"), (
         f"got {lifts}"
     )
     assert lifts.get("splitMediaTypeMobile") == "svg", (
@@ -564,7 +564,7 @@ def test_image_lift_does_not_write_split_media_type_tablet():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitImageTablet", {}).get("url") == "/hero-tab.jpg", f"got {lifts}"
+    assert lifts.get("splitMediaImageTablet", {}).get("url") == "/hero-tab.jpg", f"got {lifts}"
     assert "splitMediaTypeTablet" not in lifts, (
         f"image branch must not write a tablet type — the tablet resolver's own "
         f"empty-string inherit/cascade branch already resolves it correctly; got {lifts}"
@@ -590,7 +590,7 @@ def test_image_lift_does_not_write_split_media_type_mobile():
     root = BeautifulSoup(markup, "html.parser").find("section")
     results = W.run_universal_content_walk(rec, root, {}, {})
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
-    assert lifts.get("splitImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
+    assert lifts.get("splitMediaImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
     assert "splitMediaTypeMobile" not in lifts, (
         f"image branch must not write a mobile type — the mobile resolver's own "
         f"empty-string inherit/cascade branch already resolves it correctly; got {lifts}"
@@ -623,26 +623,26 @@ def test_mixed_media_types_across_tiers_resolve_independently_no_cross_contamina
     lifts = {r.attr: r.value for r in results if isinstance(r, ScalarLift)}
 
     # Desktop: video content + matching type.
-    assert lifts.get("splitVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
+    assert lifts.get("splitMediaVideo") == {"url": "/hero-desk.mp4", "id": 0}, f"got {lifts}"
     assert lifts.get("splitMediaType") == "video", f"got {lifts}"
 
     # Tablet: svg content + matching type.
-    assert isinstance(lifts.get("splitSvgContentTablet"), str) and lifts["splitSvgContentTablet"].startswith("<svg"), (
+    assert isinstance(lifts.get("splitMediaSvgContentTablet"), str) and lifts["splitMediaSvgContentTablet"].startswith("<svg"), (
         f"got {lifts}"
     )
     assert lifts.get("splitMediaTypeTablet") == "svg", f"got {lifts}"
 
     # Mobile: image content, no type write (image is the default, no explicit type needed).
-    assert lifts.get("splitImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
+    assert lifts.get("splitMediaImageMobile", {}).get("url") == "/hero-mob.jpg", f"got {lifts}"
     assert "splitMediaTypeMobile" not in lifts, f"got {lifts}"
 
     # No cross-contamination: each tier's OWN family attrs only, nothing else leaked.
-    assert "splitImage" not in lifts, f"desktop is video, not image; got {lifts}"
-    assert "splitVideoTablet" not in lifts, f"tablet is svg, not video; got {lifts}"
-    assert "splitSvgContentMobile" not in lifts, f"mobile is image, not svg; got {lifts}"
-    assert "splitVideoMobile" not in lifts, f"mobile is image, not video; got {lifts}"
-    assert "splitImageTablet" not in lifts, f"tablet is svg, not image; got {lifts}"
-    assert "splitSvgContent" not in lifts, f"desktop is video, not svg; got {lifts}"
+    assert "splitMediaImage" not in lifts, f"desktop is video, not image; got {lifts}"
+    assert "splitMediaVideoTablet" not in lifts, f"tablet is svg, not video; got {lifts}"
+    assert "splitMediaSvgContentMobile" not in lifts, f"mobile is image, not svg; got {lifts}"
+    assert "splitMediaVideoMobile" not in lifts, f"mobile is image, not video; got {lifts}"
+    assert "splitMediaImageTablet" not in lifts, f"tablet is svg, not image; got {lifts}"
+    assert "splitMediaSvgContent" not in lifts, f"desktop is video, not svg; got {lifts}"
 
 
 @requires_db

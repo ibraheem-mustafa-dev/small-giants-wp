@@ -42,19 +42,6 @@
     {
       "check": "parent-child-duplicate",
       "block": "sgs/hero",
-      "attr": "mediaOverlayColour",
-      "severity": "parent-child:heuristic",
-      "keeper": "child sgs/media's own typography/colour controls",
-      "sources": [
-        "sgs/hero edit.js: parent-level control for \"mediaOverlayColour\"",
-        "sgs/media (mounted via this block's InnerBlocks template, role \"media\"): its own native typography/colour controls"
-      ],
-      "reason": "\"mediaOverlayColour\" (role \"media\") is a parent-level styling attr on sgs/hero, which also mounts a sgs/media InnerBlock for that same role. sgs/media owns real typography/colour controls for itself — whichever wins on CSS specificity, the client is shown two places to set the same visual property. Verify: does the parent attr actually still drive rendered CSS, or is it a dead-by-specificity leftover (check-dead-controls' angle) that should be removed in favour of the child's own controls?",
-      "disposition": "accepted-debt"
-    },
-    {
-      "check": "parent-child-duplicate",
-      "block": "sgs/hero",
       "attr": "textAlign",
       "severity": "parent-child:heuristic",
       "keeper": "BOTH -- parent sets the inheritable default, child overrides one instance (Bean's ruling 2026-08-21)",

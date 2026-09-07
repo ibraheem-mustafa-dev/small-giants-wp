@@ -304,6 +304,11 @@ export const MEDIA_ATOMS = {
 				splitMediaWidthMobile: 'NUMBER, same legacy shape as splitMediaWidth — editor-inert, render.php-only',
 			},
 			'sgs/decorative-image': {
+				// This is sgs/decorative-image's OWN independent maxWidthPercent —
+				// a block-private attr that never adopted the box-shape atom, and
+				// is UNRELATED to (and unaffected by) the shared atom's own
+				// MaxWidthPercent, which was deleted 2026-09-07 — see
+				// box-shape.js's docblock note on that deletion.
 				maxWidthPercent: 'a bare percentage number, not a length+unit pair',
 			},
 		},
@@ -334,16 +339,16 @@ export const MEDIA_ATOMS = {
 			// opacity, blend mode, hover or tiers. Routing it through the atom
 			// is what gives that surface the missing four.
 			'sgs/hero': {
-				mediaOverlayColour: 'split-column overlay, bypasses sgs_overlay_decls()',
-				mediaOverlayGradient: 'split-column overlay, bypasses sgs_overlay_decls()',
+				splitMediaOverlayColour: 'split-column overlay, bypasses sgs_overlay_decls()',
+				splitMediaOverlayGradient: 'split-column overlay, bypasses sgs_overlay_decls()',
 			},
 		},
 	},
 
 	// Atom 11 — added 2026-09-01 (Bean-directed, harvested not designed).
 	// Ken-burns and parallax are a mutually-exclusive pair on TWO working
-	// surfaces already: sgs/hero's split-media (mediaParallax/mediaKenBurns/
-	// mediaAnimationDuration) and sgs/container's background
+	// surfaces already: sgs/hero's split-media (splitMediaParallax/splitMediaKenBurns/
+	// splitMediaAnimationDuration) and sgs/container's background
 	// (bgParallax/bgKenBurns/bgAnimationDuration). `types` is confirmed from
 	// hero's own help text ("the split media (image, video, or SVG)") and its
 	// render.php gate (`$media_ken_burns = !empty(...) && !$media_parallax`),

@@ -559,7 +559,7 @@ def scalar_media_emit_as(block_slug: str, attr_name: str) -> dict[str, str] | No
     id/url/alt to be present. ``assembly.py``'s consumer reads the returned
     dict generically (``r.value.get(key, ...)`` per declared key) so any
     subset of {id, url, alt} keys is safe to add here without a second change
-    there. (An inline-SVG lift needs no expansion at all — ``splitSvgContent``
+    there. (An inline-SVG lift needs no expansion at all — ``splitMediaSvgContent``
     is written directly as a plain string ScalarLift; it never appears here.)
 
     @return the entry's ``emit_as`` dict (target attr names) verbatim, or
@@ -591,12 +591,12 @@ def scalar_media_type_stem(block_slug: str, media_kind: str) -> str | None:
     same day (Wave 7b re-anchor) to also cover ``'image'``. A scalar-media
     column (e.g. sgs/hero's split-media slot) may hold an ``<img>``, a
     ``<video>``, or an inline ``<svg>`` depending on the draft — each media
-    kind writes to a DIFFERENT attr family (``splitImage*`` / ``splitVideo*``
-    / ``splitSvgContent*``).
+    kind writes to a DIFFERENT attr family (``splitMediaImage*`` / ``splitMediaVideo*``
+    / ``splitMediaSvgContent*``).
 
     ⚠ Before the Wave 7b re-anchor, the image family's stem was NOT declared
     here — it was read straight off ``scalar_media_attr_for``'s return value,
-    because that function's DB-resolved anchor happened to BE ``splitImage``.
+    because that function's DB-resolved anchor happened to BE ``splitMediaImage``.
     That coincidence is exactly what the re-anchor removed: the anchor moved
     to ``splitMediaType`` (a presence/eligibility gate only — see
     ``scalar_media_attr_for``'s docstring), which shares no substring with
@@ -605,7 +605,7 @@ def scalar_media_type_stem(block_slug: str, media_kind: str) -> str | None:
     the roster's ``media_type_stems`` section instead of being guessed by
     string-substitution (R-31-1 — no invented naming convention).
 
-    @return the stem string (e.g. ``'splitVideo'``, ``'splitSvgContent'``) or
+    @return the stem string (e.g. ``'splitMediaVideo'``, ``'splitMediaSvgContent'``) or
         ``None`` when the block declares no stem for that media kind — the
         caller must treat this as "route not built for this block/kind", a
         loud ContentGap, never a guess.

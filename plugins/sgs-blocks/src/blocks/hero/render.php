@@ -877,7 +877,7 @@ if ( null !== $image_height_mobile ) {
 // resolves to mode 'auto'). Mode instead governs the EDITOR disclosure only
 // (which control is greyed) plus these NEW, additive properties, which are
 // inert on every pre-existing hero (their attrs default empty/'none').
-$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaSizing'] ?? null, $image_object_fit );
+$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaMediaSizing'] ?? null, $image_object_fit, $attributes, 'splitMedia', 'sgs/hero' );
 $image_shape        = sgs_media_atom_box_shape_validate_shape( $attributes['splitMediaShape'] ?? null );
 $image_aspect_ratio = sgs_media_atom_box_shape_normalise_ratio( $attributes['splitMediaAspectRatio'] ?? null );
 

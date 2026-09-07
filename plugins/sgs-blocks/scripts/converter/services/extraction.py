@@ -772,7 +772,7 @@ def run_mechanism_b(
 
                     # media_kind == "svg" — CONTENT is written DIRECTLY as a
                     # plain string ScalarLift, no emit_as expansion:
-                    # splitSvgContent* IS the real block.json-declared attr
+                    # splitMediaSvgContent* IS the real block.json-declared attr
                     # name, unlike image/video which decompose into an
                     # Id/Url(/Alt) trio. (test_svg_in_split_media_routes_to_
                     # split_svg_content_directly asserts the value stays a raw

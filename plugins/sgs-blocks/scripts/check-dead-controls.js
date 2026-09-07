@@ -535,7 +535,7 @@ function stripComments( src ) {
  * `sgs/decorative-image` (both call the helper with a literal `''` prefix),
  * but produced 5 false-positive "dead" findings on `sgs/hero`, whose call
  * sites pass `'splitMedia'`/`'media'` — the real stored names
- * (`splitMediaObjectPosition`, `mediaOverlayColour`, …) were never generated,
+ * (`splitMediaObjectPosition`, `splitMediaOverlayColour`, …) were never generated,
  * so `isConsumed()` never matched them even though `SGS_Media_Element::style()`
  * genuinely resolves them at render time (see the atom's own
  * `sgs_media_element_stored_attr( $block_slug, $prefix, $base )` call — prefix
@@ -950,7 +950,7 @@ function isDynamicPrefixConsumed( attr, corpus, suffixes ) {
 // `$attributes[ sgs_media_element_stored_attr( $block_slug, $prefix, $base ) ]`
 // — a bracket access keyed by a FUNCTION CALL, not a literal or a simple
 // concatenation, so neither existing resolver can see it. `sgs/hero`'s
-// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient` are
+// `splitMediaObjectPosition`/`splitMediaOverlayColour`/`splitMediaOverlayGradient` are
 // exactly this shape (verified live: `hero/render.php` calls
 // `SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid,
 // array( 'object-fit', 'focal-point' ) )` and
@@ -997,7 +997,7 @@ const MEDIA_ELEMENT_ATOM_BASES = {
 	'focal-point': [ 'ObjectPosition', 'Position', 'Repeat', 'Attachment' ],
 	'box-shape': [
 		'MediaSizing', 'AspectRatio', 'Shape', 'Height', 'HeightUnit', 'MaxHeight',
-		'MaxHeightUnit', 'MaxWidth', 'MaxWidthUnit', 'MaxWidthPercent', 'MinHeight',
+		'MaxHeightUnit', 'MaxWidth', 'MaxWidthUnit', 'MinHeight',
 		'Width', 'WidthUnit', 'BorderRadius', 'BorderWidth', 'BorderStyle',
 		'BorderColour', 'BorderColourGradient',
 	],
@@ -3089,7 +3089,7 @@ function runDumpJsonSelfTest( log ) {
 	}
 
 	// Live check — task-2 findings-34 fix (2026-09-02): sgs/hero declares
-	// `splitMediaObjectPosition`/`mediaOverlayColour`/`mediaOverlayGradient`
+	// `splitMediaObjectPosition`/`splitMediaOverlayColour`/`splitMediaOverlayGradient`
 	// with NO own edit.js control and consumes them entirely via
 	// `SGS_Media_Element::style( $attributes, 'splitMedia'|'media', 'sgs/hero',
 	// $uid, array( 'focal-point' )|array( 'overlay' ) )` — a bracket read keyed
@@ -3115,7 +3115,7 @@ function runDumpJsonSelfTest( log ) {
 		pass = false;
 	}
 	const heroOverlayColourRow = liveRows.find(
-		( r ) => 'sgs/hero' === r.block && 'mediaOverlayColour' === r.attr
+		( r ) => 'sgs/hero' === r.block && 'splitMediaOverlayColour' === r.attr
 	);
 	if (
 		heroOverlayColourRow &&
@@ -3123,7 +3123,7 @@ function runDumpJsonSelfTest( log ) {
 		'media-element-atom' === heroOverlayColourRow.renderVia
 	) {
 		log(
-			'PASS — Test K (live): sgs/hero.mediaOverlayColour -> renderConsumed=true, ' +
+			'PASS — Test K (live): sgs/hero.splitMediaOverlayColour -> renderConsumed=true, ' +
 				'renderVia=media-element-atom (hero/render.php SGS_Media_Element::style(), overlay atom).'
 		);
 	} else {

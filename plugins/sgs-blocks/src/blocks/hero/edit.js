@@ -280,7 +280,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// C19 item 3 (2026-09-04) — box-shape atom's remaining bases, only used
 		// for this ToolsPanelItem's hasValue()/onDeselect() below; the control
 		// UI itself reads/writes via MediaElementPanel's own atom composition.
-		splitMediaSizing,
+		splitMediaMediaSizing,
 		splitMediaShape,
 		splitMediaAspectRatio,
 		splitMediaMinHeight,
@@ -629,7 +629,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// "box" IS) carries the universal `sgs-media-box` marker + this element's
 	// own scope class. This is what lets the SAME shared `overlay.css` the
 	// other adopting blocks use paint here too — no hero-specific overlay CSS.
-	const mediaBoxScopeClass = elementScopeClass( clientId, 'media' );
+	const mediaBoxScopeClass = elementScopeClass( clientId, 'splitMedia' );
 	const mediaWrapperClassName = [
 		'sgs-hero__media',
 		'sgs-media-box',
@@ -646,7 +646,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// overlay preview at all; it now matches the frontend exactly.
 		...elementCustomProperties( {
 			attributes,
-			prefix: 'media',
+			prefix: 'splitMedia',
 			blockSlug: 'sgs/hero',
 			atoms: [ 'overlay' ],
 		} ),
@@ -1632,7 +1632,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaWidthUnit: '%',
 								splitMediaHeight: {},
 								splitMediaHeightUnit: 'px',
-								splitMediaSizing: undefined,
+								splitMediaMediaSizing: undefined,
 								splitMediaShape: 'none',
 								splitMediaAspectRatio: '',
 								splitMediaMinHeight: {},
@@ -1710,14 +1710,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						     hero the same shape -> fit -> position chain as sgs/media
 						     (MediaBoxShapeControls: sizing mode / named shape / height /
 						     ratio / min-height / width / max-width / max-height /
-						     max-width-percent / border, plus a padding row). Prefix
+						     border, plus a padding row). Prefix
 						     'splitMedia' resolves to hero's EXISTING splitMediaWidth/
 						     Height/BorderRadius/BorderWidth/BorderStyle/BorderColour/
 						     Padding attrs (mediaStoredAttrName has no STORED_AS entry for
 						     sgs/hero, so the canonical splitMedia+Base naming already
-						     matches — zero renames) plus the NEW splitMediaSizing/
-						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight/
-						     MaxWidthPercent attrs hand-declared in block.json. The
+						     matches — zero renames) plus the NEW splitMediaMediaSizing/
+						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight
+						     attrs hand-declared in block.json. The
 						     'custom' sizing-mode sentinel written by the "Custom sizing"
 						     toggle above (HeroSplitMediaStylingSection) still works
 						     unchanged: box-shape's own resolveSizingMode() resolves an
@@ -1725,7 +1725,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Split media box & border', 'sgs-blocks' ) }
 							hasValue={ () =>
-								!! splitMediaSizing ||
+								!! splitMediaMediaSizing ||
 								splitMediaShape !== 'none' ||
 								!! splitMediaAspectRatio ||
 								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
@@ -1750,7 +1750,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							}
 							onDeselect={ () =>
 								setAttributes( {
-									splitMediaSizing: undefined,
+									splitMediaMediaSizing: undefined,
 									splitMediaShape: 'none',
 									splitMediaAspectRatio: '',
 									splitMediaWidth: {},
@@ -1762,7 +1762,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaMaxWidthUnit: 'px',
 									splitMediaMaxHeight: {},
 									splitMediaMaxHeightUnit: 'px',
-										splitMediaBorderRadius: {},
+									splitMediaBorderRadius: {},
 									splitMediaBorderRadiusTablet: {},
 									splitMediaBorderRadiusMobile: {},
 									splitMediaBorderStyle: 'none',
