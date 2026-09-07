@@ -414,7 +414,6 @@
  * after the no-inline conversion and silently killed the gold hover). Gate via
  * a `var(--x, <inert-fallback>)` instead: unset → inert, set → applies. */
 .sgs-brand-strip__item:hover {
-	color: var(--sgs-tile-hover-text, inherit);
 	border-color: var(--sgs-tile-hover-border, transparent);
 }
 

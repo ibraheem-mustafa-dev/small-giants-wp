@@ -112,8 +112,6 @@ $tile_shadow         = $attributes['tileShadow'] ?? '';
 $tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
 $tile_shadow_colour_hover = $attributes['tileShadowColourHover'] ?? '';
 $hover_bg_colour           = $attributes['itemBackgroundColourHover'] ?? '';
-$hover_text_colour         = $attributes['itemTextColourHover'] ?? '';
-$hover_text_colour_gradient = sgs_css_gradient_value( $attributes['itemTextColourHoverGradient'] ?? '' );
 $hover_border_colour       = $attributes['itemBorderColourHover'] ?? '';
 // Root-element colour + gradient + hover -- paints the block's OWN
 // root `<div>` (see $root_sel below), distinct from tileBackgroundColour (the
@@ -253,14 +251,8 @@ $css_vars = array_merge(
 if ( $fade_edges ) {
 	$css_vars[] = '--sgs-fade-width:' . absint( $fade_width ) . 'px';
 }
-// itemBackgroundColourHover moved OFF this custom-property mechanism
-// 2026-09-04 -- .sgs-brand-strip__item:hover ALSO gained itemTextColourHover's
-// gradient sibling below (a real shared-selector conflict this fix.js dispatch
-// missed and centrally corrected), so the hover background needs its own
-// ::after layer to keep background-clip:text from clipping it. See
-// sgs_block_background_layer_css() call near $item_hover_sel below.
-if ( $hover_text_colour ) {
-	$css_vars[] = '--sgs-tile-hover-text:' . sgs_colour_value( $hover_text_colour );
+if ( $hover_bg_colour ) {
+	$css_vars[] = '--sgs-tile-hover-bg:' . sgs_colour_value( $hover_bg_colour );
 }
 if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-tile-hover-border:' . sgs_colour_value( $hover_border_colour );
@@ -523,43 +515,6 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 	$allowed_name_align = array( 'left', 'center', 'right', 'justify' );
 	if ( in_array( $name_align_raw, $allowed_name_align, true ) ) {
 		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{--sgs-name-text-align:" . $name_align_raw . ';}';
-	}
-}
-
-// --- Item hover: itemTextColourHover (text) / itemBackgroundColourHover
-// (fill) SHARE .sgs-brand-strip__item:hover -- CORRECTED 2026-09-04, real
-// shared-selector conflict the original dispatch missed (it hand-waved "the
-// item tile has no background of its own", which was wrong: style.css:407-409
-// paints background-color on this exact hover selector via the pre-existing
-// --sgs-tile-hover-bg custom property, itself falling back through
-// --sgs-tile-bg to the theme surface-alt token -- a real 3-level default
-// chain, not a simple unset case). background-clip:text only clips when the
-// resolved value is ACTUALLY a gradient (a flat `color:` never touches
-// background-clip), so this narrows to exactly that case rather than
-// replacing the whole background mechanism: a flat itemTextColourHover is
-// byte-identical to before this fix; only the gradient case neutralises the
-// static background-color (transparent) and repaints the SAME resolved
-// value on a hand-built ::after layer (no position:relative needed --
-// .sgs-brand-strip__item is a flex child with no position rule of its own,
-// but this rule only fires in the rare gradient case, so adding one here is
-// safe and scoped).
-$item_sel       = "{$root_sel} .sgs-brand-strip__item";
-$item_hover_sel = "{$item_sel}:hover";
-$item_text_hover_effective = sgs_resolve_text_colour_or_gradient( $hover_text_colour, $hover_text_colour_gradient );
-$item_text_hover_decl      = sgs_text_colour_decl( $item_text_hover_effective );
-if ( '' !== $item_text_hover_decl ) {
-	if ( str_contains( $item_text_hover_effective, 'gradient(' ) ) {
-		$item_bg_hover_fallback = $hover_bg_colour ? $hover_bg_colour : ( $tile_bg_colour ? $tile_bg_colour : 'surface-alt' );
-		$item_bg_hover_paint    = sgs_background_paint_decl( $item_bg_hover_fallback, '' );
-		$scoped_css[]           = "{$item_hover_sel}{background-color:transparent;position:relative;isolation:isolate;}";
-		if ( '' !== $item_bg_hover_paint ) {
-			$scoped_css[] = "{$item_hover_sel}::after{content:\"\";position:absolute;inset:0;z-index:-1;pointer-events:none;" . $item_bg_hover_paint . ';}';
-		}
-	}
-	$scoped_css[] = "{$item_hover_sel}{" . $item_text_hover_decl . ';}';
-	$item_text_hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $item_hover_sel, $item_text_hover_effective );
-	if ( '' !== $item_text_hover_fallback_rule ) {
-		$scoped_css[] = $item_text_hover_fallback_rule;
 	}
 }
 

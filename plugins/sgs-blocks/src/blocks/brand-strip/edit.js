@@ -292,8 +292,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileShadow,
 		tileShadowColour,
 		itemBackgroundColourHover,
-		itemTextColourHover,
-		itemTextColourHoverGradient,
 		itemBorderColourHover,
 		itemBorderColourHoverGradient,
 		backgroundColour,
@@ -387,9 +385,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   StateToggleControl and the Caption panel below. Hover pairs:
 			   tileBackgroundColour⇆itemBackgroundColourHover,
 			   tileBorderColour⇆itemBorderColourHover,
-			   nameColour⇆itemTextColourHover (verified via render.php/style.css —
-			   itemTextColourHover feeds --sgs-tile-hover-text, the hover
-			   counterpart of the caption's nameColour). */ }
+			   nameColour⇆nameColourHover. */ }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -506,22 +502,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: nameColourHover,
 								onChange: ( val ) => setAttributes( { nameColourHover: val } ),
 								},
-						],
-					},
-					{
-						key: 'captionHover',
-						label: __( 'Tile text colour (hover)', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: itemTextColourHover,
-								onChange: ( val ) => setAttributes( { itemTextColourHover: val } ),
-								gradientValue: itemTextColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { itemTextColourHoverGradient: val ?? '' } ),
-							},
 						],
 					},
 					tileShadow && {
@@ -740,7 +720,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							itemBackgroundColourHover: '',
 							itemBorderColourHover: '',
 							itemBorderColourHoverGradient: '',
-							itemTextColourHover: '',
 							effectHover: 'none',
 							transitionDuration: '300',
 							transitionEasing: 'ease-in-out',

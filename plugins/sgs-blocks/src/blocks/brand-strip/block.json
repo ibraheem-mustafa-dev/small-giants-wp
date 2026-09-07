@@ -131,7 +131,7 @@
 					"order": 5,
 					"clusters": [],
 					"prefix": "",
-					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. itemBackgroundColourHover/itemTextColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the four item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, the four are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count 12 -> 16. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so the four are CLAIMED rather than orphaned."
+					"_note": "The inner node the hover colour shifts actually target (.sgs-brand-strip__item, render.php line 510/514) - nested INSIDE .sgs-brand-strip__tile (border/padding/shadow/gap), a genuinely different DOM node. itemBackgroundColourHover/itemBorderColourHover/itemBorderColourHoverGradient carry the 'item' prefix (renamed 2026-08-20 from the former bare backgroundColourHover/textColourHover/borderColourHover/borderColourHoverGradient) so the plain unprefixed names are freed for a future root-level colour panel. Found live 2026-08-15: DB tagged 3 attrs css_element='item', undeclared until now. ⚠ PREFIX HELD AT \"\" PENDING BEAN'S SIGN-OFF (2026-08-20). The /sgs-update reseed HAS taught attr-role-map.json the item* names, so the earlier ORPHAN:UNCLASSIFIED blocker is gone and prefix:\"item\" now resolves cleanly. What stops it is different: with the prefix set, these are scanned and classified as ORPHAN:STYLE-DEFECT, pushing that count up. element-manifest-baseline.json states raising a baseline is STOP-THE-LINE and needs Bean's sign-off. Flip to \"item\" together with either that sign-off or, better, declaring the colour cluster member on this element so these are CLAIMED rather than orphaned. (itemTextColourHover, formerly a fourth member of this group, was removed 2026-09-07 as a dead control — .sgs-brand-strip__item never contains a text node.)"
 				},
 				"track": {
 					"label": "Marquee track",
@@ -414,15 +414,6 @@
 		"itemBackgroundColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"itemTextColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"itemTextColourHoverGradient": {
-			"type": "string",
-			"default": "",
-			"description": "Hover-state gradient sibling of itemTextColourHover. Non-empty wins over itemTextColourHover on :hover/:focus-within."
 		},
 		"itemBorderColourHover": {
 			"type": "string",
