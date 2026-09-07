@@ -70,6 +70,10 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 	 * Flattens a resolved menu-block tree into the sgs/nav-menu FLAT bar markup.
 	 *
 	 * Deliberately simpler than the accordion renderer this block used before
+	 * ⛔ STALE UNTIL 2026-09-07 — this paragraph described the pre-fc021a340
+	 * behaviour and contradicted the DROPDOWN branch at :393-425 in this same
+	 * file for ~5 weeks. Plain submenus DO render a real disclosure now.
+	 * Historical text follows.
 	 * the Spec 36 rebuild: every submenu/mega-menu item collapses to ONE
 	 * top-level link (its own URL when set, else '#') — no nested <ul>, no
 	 * disclosure toggle. Phase-1 scope is a flat bar only.
