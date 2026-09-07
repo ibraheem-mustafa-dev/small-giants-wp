@@ -114,9 +114,20 @@ $start_position = max( 0, min( 100, $start_position ) );
 // 3. Frame (root) attributes.
 // ---------------------------------------------------------------------------
 
-$box_shadow              = $attributes['boxShadow'] ?? '';
-$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
-$box_shadow_colour_hover = $attributes['boxShadowColourHover'] ?? '';
+// Shape+colour composed for BOTH states via sgs_shadow_decls() (Wave A1
+// ShadowControl redesign) — reads boxShadow/boxShadowColour/boxShadowHover/
+// boxShadowColourHover directly from $attributes; boxShadowHover added
+// 2026-09-07 so hover can lift/grow/soften, not just recolour (Bean's
+// full-symmetry ruling).
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	)
+);
 
 // `maxWidth` is a TIER OBJECT (Spec 35) — ONE attr holding
 // {desktop,tablet,mobile}, read through the shared normaliser.
@@ -185,16 +196,15 @@ if ( $style_color_bg ) {
 // G5 (Bean, 2026-08-26): 'style set, no width' means no border by
 // default — never fall through to the browser's initial medium (~3px)
 // border-width.
-if ( $box_shadow ) {
-	$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
+if ( $box_shadow_decls['normal'] ) {
+	$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 }
-// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
-// with the hover colour composed in.
-if ( $box_shadow && $box_shadow_colour_hover ) {
-	$box_shadow_hover_value = sgs_shadow_value_composed( $box_shadow, $box_shadow_colour_hover );
-	if ( '' !== $box_shadow_hover_value ) {
-		$scoped_css[] = sgs_hover_state_rules( $root_sel, "box-shadow:{$box_shadow_hover_value}", ':focus-within' );
-	}
+// HOVER-state shadow (shape + colour, Rule 31 2026-08-22 / D-pending 2026-09-07
+// full-symmetry ruling) — sgs_shadow_decls() falls back to the resting shape
+// when only a hover colour is set, so this stays correct for pre-existing
+// hover-colour-only instances.
+if ( $box_shadow_decls['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $box_shadow_decls['hover'] ), ':focus-within' );
 }
 if ( $max_width ) {
 	$mw_safe = sgs_css_length_value( $max_width );

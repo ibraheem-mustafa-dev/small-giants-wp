@@ -85,7 +85,15 @@
 						"css:box-shadow": "tileShadow",
 						"css:padding": "tilePadding",
 						"css:gap": "logoGap"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "tileShadowHover"
+							}
+						}
+					},
+					"_note_shadow_hover": "tileShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing tileShadowColourHover. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair."
 				},
 				"logo": {
 					"label": "Logo image",
@@ -410,6 +418,11 @@
 		"tileShadowColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"tileShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state shadow SHAPE sibling of tileShadow. Composed with tileShadowColourHover (falls back to tileShadowColour) at render time via sgs_shadow_decls()."
 		},
 		"itemBackgroundColourHover": {
 			"type": "string",

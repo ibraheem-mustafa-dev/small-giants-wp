@@ -962,7 +962,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ shadowAttrKeys( 'boxShadow', { hoverColour: true } ) }
+							attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>

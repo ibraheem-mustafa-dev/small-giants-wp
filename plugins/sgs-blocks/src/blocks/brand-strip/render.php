@@ -108,9 +108,20 @@ $hover_border_gradient      = sgs_css_gradient_value( $attributes['itemBorderCol
 // `var(--wp--preset--shadow--small)`, which the browser simply ignores
 // (initial box-shadow: none) — graceful degrade, no crash, no deprecation
 // needed (D270 no-deprecations policy).
-$tile_shadow         = $attributes['tileShadow'] ?? '';
-$tile_shadow_colour  = $attributes['tileShadowColour'] ?? '';
-$tile_shadow_colour_hover = $attributes['tileShadowColourHover'] ?? '';
+// Shape+colour composed for BOTH states via sgs_shadow_decls() (Wave A1
+// ShadowControl redesign) — reads tileShadow/tileShadowColour/tileShadowHover/
+// tileShadowColourHover directly from $attributes; tileShadowHover added
+// 2026-09-07 so hover can lift/grow/soften, not just recolour (Bean's
+// full-symmetry ruling).
+$tile_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'tileShadow',
+		'colour'       => 'tileShadowColour',
+		'hover'        => 'tileShadowHover',
+		'hover_colour' => 'tileShadowColourHover',
+	)
+);
 $hover_bg_colour           = $attributes['itemBackgroundColourHover'] ?? '';
 $hover_border_colour       = $attributes['itemBorderColourHover'] ?? '';
 // Root-element colour + gradient + hover -- paints the block's OWN
@@ -451,27 +462,19 @@ if ( '' !== $tile_border_gradient ) {
 	);
 }
 
-// --- Tile shadow (ShadowControl builder). `sgs_shadow_value()` accepts either a raw CSS
-// box-shadow string (the builder's normal output — colour normalised to hex
-// so it survives `safecss_filter_attr()`-style stripping even though this
-// channel isn't subject to it) or a bare theme shadow-preset slug picked from
-// the preset row (sm/md/lg/glow), and resolves it to `var(--wp--preset--
-// shadow--{slug})`. Scoped, real `box-shadow` PROPERTY declaration — never
-// inline (Spec 32). Applies at rest; `.sgs-brand-strip--hover-lift` already
-// overrides box-shadow on hover via its own rule in style.css, unaffected. ---
-if ( '' !== $tile_shadow ) {
-	$safe_tile_shadow_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour );
-	if ( '' !== $safe_tile_shadow_value ) {
-		$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{box-shadow:{$safe_tile_shadow_value};}";
-	}
+// --- Tile shadow (ShadowControl builder, via sgs_shadow_decls()). Accepts either a
+// raw CSS box-shadow string (the builder's normal output — colour normalised to
+// hex so it survives `safecss_filter_attr()`-style stripping even though this
+// channel isn't subject to it) or a bare theme shadow-preset slug picked from the
+// preset row (sm/md/lg/glow), resolved to `var(--wp--preset--shadow--{slug})`.
+// Scoped, real `box-shadow` PROPERTY declaration — never inline (Spec 32).
+// Hover SHAPE (tileShadowHover) composes with hover colour (falling back to the
+// resting shape/colour when either is unset) — see sgs_shadow_decls() docblock. ---
+if ( $tile_shadow_decls['normal'] ) {
+	$scoped_css[] = "{$root_sel} .sgs-brand-strip__item{" . implode( ';', $tile_shadow_decls['normal'] ) . ';}';
 }
-// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
-// with the hover colour composed in.
-if ( '' !== $tile_shadow && '' !== $tile_shadow_colour_hover ) {
-	$safe_tile_shadow_hover_value = sgs_shadow_value_composed( $tile_shadow, $tile_shadow_colour_hover );
-	if ( '' !== $safe_tile_shadow_hover_value ) {
-		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-brand-strip__item", "box-shadow:{$safe_tile_shadow_hover_value}", ':focus-within' );
-	}
+if ( $tile_shadow_decls['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-brand-strip__item", implode( ';', $tile_shadow_decls['hover'] ), ':focus-within' );
 }
 
 // --- Logo-name caption typography (shared TypographyControls contract,

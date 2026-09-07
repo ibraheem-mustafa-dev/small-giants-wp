@@ -291,6 +291,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		tileBorderColourGradient,
 		tileShadow,
 		tileShadowColour,
+		tileShadowHover,
 		itemBackgroundColourHover,
 		itemBorderColourHover,
 		itemBorderColourHoverGradient,
@@ -802,6 +803,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							attrNames={ {
 								base: 'tileShadow',
 								colour: 'tileShadowColour',
+								hover: 'tileShadowHover',
 								hoverColour: 'tileShadowColourHover',
 							} }
 						/>

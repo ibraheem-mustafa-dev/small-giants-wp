@@ -71,7 +71,16 @@
 						"css:max-width": "maxWidth",
 						"css:height": "height",
 						"css:border-color-gradient": "borderColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "boxShadowHover",
+								"css:box-shadow-color": "boxShadowColourHover"
+							}
+						}
+					},
+					"_note_shadow_hover": "boxShadowHover added 2026-09-07 (hover SHAPE capability, Bean's shape+colour-per-state ruling) — sibling of the pre-existing boxShadowColourHover, which was declared as an attribute but had no attrMap entry until now. Composed together by sgs_shadow_decls() in render.php (map key 'hover'), mirroring sgs/button's boxShadow/boxShadowHover pair."
 				},
 				"label": {
 					"label": "Labels",
@@ -532,6 +541,11 @@
 		"boxShadowColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state shadow SHAPE sibling of boxShadow. Composed with boxShadowColourHover (falls back to boxShadowColour) at render time via sgs_shadow_decls()."
 		},
 		"borderWidth": {
 			"type": "object",
