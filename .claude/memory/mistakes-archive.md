@@ -6,6 +6,14 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-07 (box-shape hover handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
+
+### [2026-08-16] A session brief's claimed branch/HEAD/D-ceiling/deploy-status is a claim to verify, not a fact to relay
+- **Pattern key:** `verify-incoming-session-brief-against-repo`
+- **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
+
+---
+
 ## 2026-09-06 (typography-migration handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
 
 ### [2026-08-16] A "replace each session" living-status doc's rule governs its own cruft, not another thread's same-day, not-yet-archived work
