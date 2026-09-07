@@ -1036,29 +1036,47 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<p style={ { fontSize: '12px', fontWeight: 600, marginBottom: '4px' } }>
-							{ __( 'Label typography', 'sgs-blocks' ) }
-						</p>
+						{ /* Multi-target typography switcher (2026-09-07) — label + title share
+						     ONE full control set at a time. Both targets include the full extended
+						     show* set (fontSizePresets, showFontFamily, showDecoration, etc.) per
+						     project rule. Title renders conditionally per badgeStyle, but the
+						     control is included unconditionally in the targets array — the switcher
+						     simply has no visible effect when the title variant isn't active. */ }
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							prefix="label"
-							showLineHeight={ false }
-						/>
-					</PanelBody>
-				) }
-
-				{ /* ── Optional title (text-only + image-badge) ─────────────── */ }
-				{ ( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && (
-					<PanelBody title={ __( 'Title', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-							{ __( 'Optional heading above the badge row.', 'sgs-blocks' ) }
-						</p>
-						{ /* Title colour moved to the Colour panel (2026-08-30). */ }
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="title"
+							targets={ [
+								{
+									key: 'label',
+									label: __( 'Label', 'sgs-blocks' ),
+									prefix: 'label',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showTextIndent: true,
+									showWritingMode: true,
+								},
+								{
+									key: 'title',
+									label: __( 'Title', 'sgs-blocks' ),
+									prefix: 'title',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showTextIndent: true,
+									showWritingMode: true,
+								},
+							] }
 						/>
 					</PanelBody>
 				) }

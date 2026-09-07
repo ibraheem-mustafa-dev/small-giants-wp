@@ -820,7 +820,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="label"
-								showLetterSpacing={ false }
+								fontSizePresets={ true }
+								showFontFamily={ true }
+								showLineHeight={ true }
+								showDecoration={ true }
+								showTransform={ true }
+								showLetterSpacing={ true }
+								showTextAlign={ true }
+								showTextWrap={ true }
+								showTextColumns={ true }
+								showTextIndent={ true }
+								showWritingMode={ true }
 							/>
 						</>
 					) }

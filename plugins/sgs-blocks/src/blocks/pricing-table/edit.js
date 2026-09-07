@@ -579,10 +579,71 @@ export default function Edit( { attributes, setAttributes } ) {
 				   panel replaces always rendered onto `.sgs-pricing-table__name`
 				   (block.json `selectors.typography`), the "title" element, not the wrapper. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix="title"
+						targets={ [
+							{
+								key: 'title',
+								label: __( 'Plan title', 'sgs-blocks' ),
+								prefix: 'title',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'price',
+								label: __( 'Price', 'sgs-blocks' ),
+								prefix: 'price',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'cta',
+								label: __( 'CTA button text', 'sgs-blocks' ),
+								prefix: 'cta',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'feature',
+								label: __( 'Feature list', 'sgs-blocks' ),
+								prefix: 'feature',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

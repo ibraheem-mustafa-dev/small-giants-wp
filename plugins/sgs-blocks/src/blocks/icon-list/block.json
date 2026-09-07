@@ -27,12 +27,6 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"collection": true,
 			"iconPicker": true,
@@ -149,8 +143,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-icon-list",
-		"typography": ".sgs-icon-list__text"
+		"root": ".wp-block-sgs-icon-list"
 	},
 	"attributes": {
 		"padding": {

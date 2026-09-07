@@ -12,13 +12,20 @@
 /* ===== Shared text elements ===== */
 .sgs-testimonial__quote {
 	font-size: var(--sgs-testimonial-quote-size, var(--wp--preset--font-size--medium));
-	line-height: 1.6;
 	margin: 0 0 var(--wp--preset--spacing--30, 1rem) 0;
 	font-style: normal;
 	position: relative;
 	/* Reset blockquote default indentation. */
 	padding: 0;
 	quotes: none;
+}
+
+/* Default line-height (0 specificity via :where()) — the quoteLineHeight
+ * attribute now drives this via sgs_typography_css_rule()'s scoped rule
+ * (Task 4, 2026-09-07); this default must always lose to that scoped
+ * declaration, never win on source order or specificity. */
+:where(.sgs-testimonial__quote) {
+	line-height: 1.6;
 }
 
 /* No rest-state colour fallback: <blockquote> inherits theme.json

@@ -1856,27 +1856,60 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							prefix="title"
-							showFontFamily
+							targets={ [
+								{
+									key: 'title',
+									label: __( 'Title', 'sgs-blocks' ),
+									prefix: 'title',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showTextIndent: true,
+									showWritingMode: true,
+								},
+								{
+									key: 'desc',
+									label: __( 'Description', 'sgs-blocks' ),
+									prefix: 'desc',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showWeight: true,
+									showStyle: true,
+									showLineHeight: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showTextIndent: true,
+									showWritingMode: true,
+								},
+								{
+									key: 'tag',
+									label: __( 'Tag', 'sgs-blocks' ),
+									prefix: 'tag',
+									fontSizePresets: true,
+									showFontFamily: true,
+									showWeight: true,
+									showStyle: true,
+									showLineHeight: true,
+									showDecoration: true,
+									showTransform: true,
+									showLetterSpacing: true,
+									showTextAlign: true,
+									showTextWrap: true,
+									showTextColumns: true,
+									showTextIndent: true,
+									showWritingMode: true,
+								},
+							] }
 						/>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="desc"
-							showFontFamily
-							showWeight={ false }
-							showStyle={ false }
-						/>
-						{ ( isTrial || isFeatured ) && (
-							<TypographyControls
-								attributes={ attributes }
-								setAttributes={ setAttributes }
-								prefix="tag"
-								showWeight={ false }
-								showStyle={ false }
-								showLineHeight={ false }
-							/>
-						) }
 						{ isTrial && (
 							<>
 								<ToggleControl

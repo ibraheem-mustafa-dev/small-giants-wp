@@ -440,59 +440,13 @@ if ( '' !== $label_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
 
-$label_decls = array();
-if ( $attributes['labelFontWeight'] ?? '' ) {
-	$fw_safe = sgs_css_keyword_sanitise( $attributes['labelFontWeight'] );
-	if ( '' !== $fw_safe ) {
-		$label_decls[] = 'font-weight:' . $fw_safe;
-	}
-}
-if ( $attributes['labelFontStyle'] ?? '' ) {
-	$fs_safe = sgs_css_keyword_sanitise( $attributes['labelFontStyle'] );
-	if ( '' !== $fs_safe ) {
-		$label_decls[] = 'font-style:' . $fs_safe;
-	}
-}
-if ( $label_decls ) {
-	$scoped_css[] = $label_sel . '{' . implode( ';', $label_decls ) . ';}';
-}
-
-$label_font_size_unit   = $attributes['labelFontSizeUnit'] ?? 'px';
-$label_line_height_unit = $attributes['labelLineHeightUnit'] ?? '';
-
-// labelFontSize is a TIER OBJECT (Spec 35) — sgs_responsive_css_rule() reads
-// flat sibling keys, so feed it a synthetic array carrying the normalised
-// tier values under the flat key names — same pattern as
-// button/render.php's $tier_object_synthetic_attrs. labelLineHeight stays
-// genuinely flat (no Tablet/Mobile siblings).
-$label_font_size_obj = sgs_responsive_normalise_object( $attributes['labelFontSize'] ?? null );
-$css_label_tiers     = sgs_responsive_css_rule(
-	array_merge(
-		$attributes,
-		array(
-			'labelFontSize'       => $label_font_size_obj['desktop'],
-			'labelFontSizeTablet' => $label_font_size_obj['tablet'],
-			'labelFontSizeMobile' => $label_font_size_obj['mobile'],
-		)
-	),
-	array(
-		array(
-			'attr'         => 'labelFontSize',
-			'css'          => 'font-size',
-			'unit_default' => $label_font_size_unit,
-			'tablet_attr'  => 'labelFontSizeTablet',
-			'mobile_attr'  => 'labelFontSizeMobile',
-		),
-		array(
-			'attr'         => 'labelLineHeight',
-			'css'          => 'line-height',
-			'unit_default' => $label_line_height_unit,
-		),
-	),
-	$label_sel
-);
-if ( $css_label_tiers ) {
-	$scoped_css[] = $css_label_tiers;
+// Label typography — delegate to shared helper which handles the full set
+// of properties from TypographyControls (font-family, font-size, font-weight,
+// font-style, text-decoration, text-transform, letter-spacing, text-align,
+// text-wrap, text-indent, text-columns, writing-mode).
+$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+if ( '' !== $label_typography_css ) {
+	$scoped_css[] = $label_typography_css;
 }
 
 // --- Reduced motion: the divider is user-driven input, so it stays live

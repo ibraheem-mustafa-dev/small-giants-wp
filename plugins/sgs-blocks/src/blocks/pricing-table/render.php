@@ -427,8 +427,13 @@ if ( ! empty( $pt_style_engine_args ) ) {
 	}
 }
 
-// Typography — prefix 'title', shared TypographyControls/sgs_typography_css_rule()
-// mechanism (D971/D972 full-replacement track). Replaces the old WP-native
+// Typography — shared TypographyControls/sgs_typography_css_rule() mechanism
+// (D971/D972 full-replacement track). Multiple targets: title, price, cta, feature.
+// Each target emits its own scoped rule with its own prefix (titleFontSize,
+// priceFontSize, ctaFontSize, featureFontSize, etc.), targeting the appropriate
+// rendered element selector.
+
+// Title typography — prefix 'title'. Replaces the old WP-native
 // supports.typography (fontSize + lineHeight only), which the Block Selectors
 // API redirected onto the SAME target selector this now emits directly — the
 // rendered element uses the canonical __name class (style.css keeps __title
@@ -438,6 +443,28 @@ $responsive_css .= sgs_typography_css_rule(
 	$attributes,
 	'title',
 	$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title'
+);
+
+// Price typography — prefix 'price'. Targets both monthly and yearly prices
+// via the shared .sgs-pricing-table__price class selector.
+$responsive_css .= sgs_typography_css_rule(
+	$attributes,
+	'price',
+	$root_sel . ' .sgs-pricing-table__price'
+);
+
+// CTA button text typography — prefix 'cta'. Targets the button/link element.
+$responsive_css .= sgs_typography_css_rule(
+	$attributes,
+	'cta',
+	$root_sel . ' .sgs-pricing-table__cta'
+);
+
+// Feature list typography — prefix 'feature'. Targets all feature list items.
+$responsive_css .= sgs_typography_css_rule(
+	$attributes,
+	'feature',
+	$root_sel . ' .sgs-pricing-table__feature'
 );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

@@ -359,7 +359,7 @@ $item_row_sel = $root_sel . ' .sgs-icon-list__item';
 
 $scoped_css = array();
 
-// --- Heading + item typography families (Bean R-22-13 — shared emitter,
+// --- Heading + item + item text typography families (Bean R-22-13 — shared emitter,
 // never a bespoke font-size control). Only set properties are emitted. ---
 if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	$heading_typography_css = sgs_typography_css_rule( $attributes, 'heading', $heading_sel );
@@ -369,6 +369,10 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 	$item_typography_css = sgs_typography_css_rule( $attributes, 'item', $item_row_sel );
 	if ( '' !== $item_typography_css ) {
 		$scoped_css[] = $item_typography_css;
+	}
+	$text_typography_css = sgs_typography_css_rule( $attributes, 'textEl', $text_sel );
+	if ( '' !== $text_typography_css ) {
+		$scoped_css[] = $text_typography_css;
 	}
 }
 

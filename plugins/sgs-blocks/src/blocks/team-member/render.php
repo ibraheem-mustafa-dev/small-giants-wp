@@ -544,15 +544,24 @@ if ( ! empty( $base_style_engine_args ) ) {
 	}
 }
 
-// Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
+// Typography — three independent text surfaces (name / role / bio), each with
+// its own prefix and selector, via shared TypographyControls/sgs_typography_css_rule()
 // mechanism (D971/D972 full-replacement track). Replaces the old WP-native
 // supports.typography fontSize with the framework's own helper, which also
 // now offers fontWeight/fontStyle/lineHeight. textAlign stays native (a
 // separate, unrelated capability — applied via the has-text-align-* class
 // added at step 14).
-$sgs_tm_typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
-if ( '' !== $sgs_tm_typography_css ) {
-	$scoped_css[] = $sgs_tm_typography_css;
+$sgs_tm_name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name' );
+if ( '' !== $sgs_tm_name_typography_css ) {
+	$scoped_css[] = $sgs_tm_name_typography_css;
+}
+$sgs_tm_role_typography_css = sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role' );
+if ( '' !== $sgs_tm_role_typography_css ) {
+	$scoped_css[] = $sgs_tm_role_typography_css;
+}
+$sgs_tm_bio_typography_css = sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio' );
+if ( '' !== $sgs_tm_bio_typography_css ) {
+	$scoped_css[] = $sgs_tm_bio_typography_css;
 }
 
 // --- 12b. Background + text colour (block-private, replaces the native

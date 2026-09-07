@@ -201,10 +201,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 						prefix="caption"
 						showSize={ true }
-						showWeight={ false }
-						showStyle={ false }
-						showLineHeight={ false }
-						showResponsive={ false }
+						fontSizePresets={ true }
+						showFontFamily={ true }
+						showWeight={ true }
+						showStyle={ true }
+						showLineHeight={ true }
+						showResponsive={ true }
+						showDecoration={ true }
+						showTransform={ true }
+						showLetterSpacing={ true }
+						showTextAlign={ true }
+						showTextWrap={ true }
+						showTextColumns={ true }
+						showTextIndent={ true }
+						showWritingMode={ true }
 					/>
 				</PanelBody>
 			</InspectorControls>

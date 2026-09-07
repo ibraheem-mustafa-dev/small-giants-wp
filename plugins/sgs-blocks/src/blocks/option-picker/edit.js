@@ -714,8 +714,38 @@ export default function Edit( { attributes, setAttributes } ) {
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								prefix="label"
-								showLineHeight={ false }
+								targets={ [
+									{
+										key: 'label',
+										label: __( 'Group label', 'sgs-blocks' ),
+										prefix: 'label',
+										fontSizePresets: true,
+										showFontFamily: true,
+										showDecoration: true,
+										showTransform: true,
+										showLetterSpacing: true,
+										showTextAlign: true,
+										showTextWrap: true,
+										showTextColumns: true,
+										showTextIndent: true,
+										showWritingMode: true,
+									},
+									{
+										key: 'pill',
+										label: __( 'Pill text', 'sgs-blocks' ),
+										prefix: 'pill',
+										fontSizePresets: true,
+										showFontFamily: true,
+										showDecoration: true,
+										showTransform: true,
+										showLetterSpacing: true,
+										showTextAlign: true,
+										showTextWrap: true,
+										showTextColumns: true,
+										showTextIndent: true,
+										showWritingMode: true,
+									},
+								] }
 							/>
 							<TextControl
 								label={ __( 'Label margin bottom', 'sgs-blocks' ) }
@@ -781,13 +811,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<TypographyControls
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="pill"
-						showLineHeight={ false }
-						showStyle={ false }
-					/>
+					{ /* Typography controls (label + pill) are now unified in the Label
+					   panel's targets-based TypographyControls above — search for
+					   "Group label" target to adjust both text surfaces from one call. */ }
 					{ /* Border-radius is a CSS-length STRING (number+unit), so the
 					   styling-lift's generic string value lands directly and an
 					   explicit "0"/"0px" is distinct from empty (= CSS default). */ }

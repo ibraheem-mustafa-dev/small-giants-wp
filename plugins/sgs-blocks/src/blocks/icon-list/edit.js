@@ -190,7 +190,6 @@ export default function Edit({ attributes, setAttributes }) {
     dividers,
     textColour,
     gap,
-    style,
     borderWidth,
     borderColour,
     borderColourGradient,
@@ -248,10 +247,6 @@ export default function Edit({ attributes, setAttributes }) {
   if (paddingPreview) previewStyle.padding = paddingPreview;
   const marginPreview = boxShorthand(margin?.desktop, ["top", "right", "bottom", "left"]);
   if (marginPreview) previewStyle.margin = marginPreview;
-  const radiusPreview = boxShorthand(style?.border?.radius, ["topLeft", "topRight", "bottomRight", "bottomLeft"]);
-  if (radiusPreview) previewStyle.borderRadius = radiusPreview;
-  if (style?.color?.text) previewStyle.color = style.color.text;
-  if (style?.color?.background) previewStyle.backgroundColor = style.color.background;
   if (borderStyle && borderStyle !== "none") {
     const borderWidthPreview = boxShorthand(borderWidth, ["top", "right", "bottom", "left"]);
     if (borderWidthPreview) previewStyle.borderWidth = borderWidthPreview;
@@ -507,11 +502,6 @@ export default function Edit({ attributes, setAttributes }) {
                 __nextHasNoMarginBottom
               	__next40pxDefaultSize
               />
-              <TypographyControls
-                attributes={attributes}
-                setAttributes={setAttributes}
-                prefix="heading"
-              />
             </>
           )}
         </PanelBody>
@@ -624,7 +614,53 @@ export default function Edit({ attributes, setAttributes }) {
           <TypographyControls
             attributes={attributes}
             setAttributes={setAttributes}
-            prefix="item"
+            targets={[
+              {
+                key: "heading",
+                label: __("Heading", "sgs-blocks"),
+                prefix: "heading",
+                fontSizePresets: true,
+                showFontFamily: true,
+                showDecoration: true,
+                showTransform: true,
+                showLetterSpacing: true,
+                showTextAlign: true,
+                showTextWrap: true,
+                showTextColumns: true,
+                showTextIndent: true,
+                showWritingMode: true,
+              },
+              {
+                key: "item",
+                label: __("Item text (row)", "sgs-blocks"),
+                prefix: "item",
+                fontSizePresets: true,
+                showFontFamily: true,
+                showDecoration: true,
+                showTransform: true,
+                showLetterSpacing: true,
+                showTextAlign: true,
+                showTextWrap: true,
+                showTextColumns: true,
+                showTextIndent: true,
+                showWritingMode: true,
+              },
+              {
+                key: "text",
+                label: __("Item text (span)", "sgs-blocks"),
+                prefix: "textEl",
+                fontSizePresets: true,
+                showFontFamily: true,
+                showDecoration: true,
+                showTransform: true,
+                showLetterSpacing: true,
+                showTextAlign: true,
+                showTextWrap: true,
+                showTextColumns: true,
+                showTextIndent: true,
+                showWritingMode: true,
+              },
+            ]}
           />
         </PanelBody>
 

@@ -397,6 +397,17 @@ if ( '' !== $quote_colour_hover ) {
 // `core/link`, so a linked selection needs its own colour, independent of the
 // ancestor-hover mechanism above.
 $scoped_css[] = sgs_link_colour_css( $attributes, 'quote', $quote_colour_sel );
+	// Quote typography (font-size, weight, style, line-height, letter-spacing,
+	// text-decoration, text-transform, text-align, text-wrap, text-columns,
+	// text-indent, writing-mode — via the shared sgs_typography_css_rule()
+	// helper, exactly as the name element below). The base rules (font-size
+	// + font-style + line-height + margin-bottom) are built above; this call
+	// emits the RESPONSIVE and EXTENDED typography properties.
+	$quote_typography_css = sgs_typography_css_rule( $attributes, 'quote', $quote_colour_sel );
+	if ( '' !== $quote_typography_css ) {
+	$scoped_css[] = $quote_typography_css;
+	}
+
 
 // Reviewer name — colour stays on the shared per-element rule builder;
 // font-size (new, Spec 35 tier-object shape) + font-weight (pre-existing,

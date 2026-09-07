@@ -155,7 +155,6 @@ const VARIANTS = [
 
 export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const {
-		style,
 		maxWidth,
 		variant,
 		quote,
@@ -1273,32 +1272,79 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 							</>
 						) }
 						{ /*
-						 * Reviewer-name font size (responsive: desktop/tablet/mobile)
-						 * via the shared TypographyControls component (Bean R-22-13).
-						 * showWeight=false because the existing Name font weight
-						 * SelectControl below already owns nameFontWeight with its
-						 * own restricted option set.
+						 * Quote and reviewer-name typography controls via the shared
+						 * TypographyControls component with targets (Bean R-22-13,
+						 * targets added 2026-09-07). The multi-target mode shows ONE
+						 * full control set at a time (toggled via segment buttons).
+						 *
+						 * Quote target: full control set (fontSizePresets, showFontFamily,
+						 * showDecoration, showTransform, showLetterSpacing, showTextAlign,
+						 * showTextWrap, showTextColumns, showTextIndent, showWritingMode
+						 * all true).
+						 *
+						 * Name target: preserves the existing showWeight=false/
+						 * showStyle=false/showLineHeight=false (the separate
+						 * SelectControl below owns font-weight with a restricted set),
+						 * but adds the full extended show* set for comprehensive control.
 						 */ }
 						<ToolsPanelItem
-							label={ __( 'Name font size', 'sgs-blocks' ) }
+							label={ __( 'Quote and name typography', 'sgs-blocks' ) }
 							hasValue={ () => {
-								const fsObj = nameFontSize && 'object' === typeof nameFontSize ? nameFontSize : {};
-								return !! fsObj.desktop || !! fsObj.tablet || !! fsObj.mobile;
+								const quoteHasVal = !! quoteFontSize;
+								const nameObj = nameFontSize && 'object' === typeof nameFontSize ? nameFontSize : {};
+								const nameHasVal = !! nameObj.desktop || !! nameObj.tablet || !! nameObj.mobile;
+								return quoteHasVal || nameHasVal;
 							} }
 							onDeselect={ () =>
-								setAttributes( { nameFontSize: {} } )
+								setAttributes( { quoteFontSize: '', nameFontSize: {} } )
 							}
 							isShownByDefault
 						>
 							<TypographyControls
 								attributes={ attributes }
 								setAttributes={ setAttributes }
-								prefix="name"
-								showSize={ true }
-								showWeight={ false }
-								showStyle={ false }
-								showLineHeight={ false }
-								showResponsive={ true }
+								targets={ [
+									{
+										key: 'quote',
+										label: __( 'Quote text', 'sgs-blocks' ),
+										prefix: 'quote',
+										showSize: true,
+										showWeight: true,
+										showStyle: true,
+										showLineHeight: true,
+										showResponsive: true,
+										fontSizePresets: true,
+										showFontFamily: true,
+										showDecoration: true,
+										showTransform: true,
+										showLetterSpacing: true,
+										showTextAlign: true,
+										showTextWrap: true,
+										showTextColumns: true,
+										showTextIndent: true,
+										showWritingMode: true,
+									},
+									{
+										key: 'name',
+										label: __( 'Reviewer name', 'sgs-blocks' ),
+										prefix: 'name',
+										showSize: true,
+										showWeight: true,
+										showStyle: true,
+										showLineHeight: true,
+										showResponsive: true,
+										fontSizePresets: true,
+										showFontFamily: true,
+										showDecoration: true,
+										showTransform: true,
+										showLetterSpacing: true,
+										showTextAlign: true,
+										showTextWrap: true,
+										showTextColumns: true,
+										showTextIndent: true,
+										showWritingMode: true,
+									},
+								] }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

@@ -803,10 +803,56 @@ export default function Edit( { attributes, setAttributes } ) {
 				   label <=12 chars ("Justify", 7 chars) renders as
 				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+					<TypographyControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						prefix=""
+						targets={ [
+							{
+								key: 'name',
+								label: __( 'Name', 'sgs-blocks' ),
+								prefix: 'name',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'role',
+								label: __( 'Role', 'sgs-blocks' ),
+								prefix: 'role',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'bio',
+								label: __( 'Bio', 'sgs-blocks' ),
+								prefix: 'bio',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+							},
+						] }
 					/>
 					<ToggleGroupControl
 						label={ __( 'Text alignment', 'sgs-blocks' ) }

@@ -27,16 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"shadow": {
 			"__experimentalSkipSerialization": true
 		},
@@ -297,8 +287,7 @@
 		"sgs/testimonialVariant"
 	],
 	"selectors": {
-		"root": ".sgs-testimonial",
-		"typography": ".sgs-testimonial__quote"
+		"root": ".sgs-testimonial"
 	},
 	"attributes": {
 		"padding": {
