@@ -77,7 +77,35 @@ this session has been seen on a rendered page.
 
 ## THE FRONT — what to pick up next
 
-### 1. Cloning-pipeline rework (Spec 39) — the big one
+### 1. ⭐ CLONE THE DRAFT'S HEADER AND FOOTER — the front (Bean, 2026-09-07, D1004)
+
+Bean: *"the footer and headers are still ugly though and they need to be clones of the draft's
+header and footer."*
+
+**They are ugly because they are never cloned.** `converter/services/section_passes.py:30`:
+`SKIP_TOP_LEVEL_TAGS = frozenset({"header", "footer", "nav"})`. The walker skips all three at top
+level by design (an R-31-3 permitted exception), so a cloned page inherits the theme's generic
+header/footer and the draft's own never reach the page. `git grep sgs_header|sgs_footer` across
+`scripts/converter/` returns **nothing** — the converter has never created one.
+
+This is **Spec 33 Part 2 / Spec 37 FR-37-22**, and it is the cheapest high-value work available
+because every dependency is already done:
+
+| Needed | State |
+|---|---|
+| Emit targets | **BUILT + live** — `sgs/site-header`, `sgs/site-footer`, `sgs/nav-menu`, `sgs/nav-drawer`, with published CPT instances on the canary |
+| Token source | **DONE** — Spec 33 Part 1 COMPLETE (13/13 FRs); those blocks already default from `theme-snapshot.json` |
+| Design gate | **Bean-approved 2026-07-13**, names the concrete emit target |
+| Plain dropdowns | **BUILT** (`fc021a340`, 2026-07-31) — three docs claimed otherwise for 5 weeks, corrected 2026-09-07 |
+
+**Missing: one converter leg** — read the draft's `<header>`/`<footer>` rather than skipping them,
+and emit those four blocks into the header/footer CPTs.
+
+⛔ **This outranks Spec 39 (below).** Motion recognition is research-grade work behind a classifier
+that does not exist; this is named, design-gated, dependency-complete, and its absence is visible
+on every cloned page.
+
+### 1b. Cloning-pipeline rework (Spec 39) — after the header/footer
 
 **Read `.claude/plans/spec-39-seed-requirements.md` IN FULL**, including the new "Bean's quality
 bar" section at the end.
@@ -101,7 +129,26 @@ Bean's Awwwards bar means reading `@keyframes`/`animation`/`transition` out of r
 RECOGNISING intent (a reveal, a parallax, a stagger) to map onto the fx roster — a recognition
 layer that does not exist today and is harder than R1–R7's shape work.
 
-### 2. Mama's Munches go-live
+### 2. Mama's Munches go-live — ONE gap, verified live
+
+⛔ **WooCommerce is KEPT, not replaced (Bean, 2026-09-07, D1003).** Any SGS commerce-engine
+ambition is superseded; SGS is the presentation layer over WC. Do not re-propose an SGS
+cart/checkout/order engine.
+
+Verified live on the canary this session, not from docs: WooCommerce 11.0.1 active; checkout is a
+native `wp:woocommerce/checkout` block tree (page 15); products are native WC `product` CPT (6);
+`woocommerce_enable_guest_checkout = yes` so **no account is required**; `sgs/cart` writes through
+a hardened proxy with rate-limiting and stale-stock re-sync.
+
+**The single blocker to a paid order:** the only enabled gateway is **Cash on Delivery**
+(`woocommerce_cod_settings.enabled = yes`; `woocommerce_paypal_settings.enabled = no`, credentials
+blank; no Stripe/WooPayments installed). ~1-2 hours to switch one on.
+
+**Second, unproven:** order emails. Active plugins are only `litespeed-cache`, `sgs-blocks`,
+`woocommerce` — **no SMTP plugin**, so WC's mail goes via bare PHP `mail()`, which shared hosting
+routinely drops. Place one test order and confirm it arrives (~30 min).
+
+
 
 Canary homepage is page **2742** (`/`), posts page **2741** (`/blog/`). Page 144 is DELETED —
 verify any post ID exists before pointing anything at it.

@@ -1,3 +1,54 @@
+## D1003 — WooCommerce is KEPT, not replaced. Any SGS commerce-layer ambition is superseded.
+
+**2026-09-07. Bean, directly:** *"I actually don't want to replace woocommerce. That plan is
+superseded."*
+
+**What this settles.** WooCommerce remains the commerce ENGINE — cart, checkout, orders,
+payments, emails. SGS's job is the presentation layer on top of it and nothing more. Spec 27's
+configurator and `sgs/buybox`/`sgs/cart`/`sgs/product-card` stay exactly as they are: they wrap
+WC, they do not replace it. Spec 30's "reuse, never rebuild" rule is now the general rule, not
+just a page-type rule.
+
+**Verified live the same day, so the record is grounded:** WooCommerce 11.0.1 is the active
+plugin on the canary; checkout is a native `wp:woocommerce/checkout` block tree on page 15;
+products are the native WC `product` CPT (6 present); guest checkout is on. The SGS side is a
+hardened wrapper (`includes/class-cart-proxy.php` calling `WC()->cart->add_to_cart()` in-process
+with rate limiting and stale-stock re-sync), which is the correct shape under this ruling.
+
+**Do not** re-propose an SGS cart/checkout/order engine, and do not read Spec 27's older framing
+as licence to build one.
+
+## D1004 — the REAL cloning gap is the header and footer, not motion
+
+**2026-09-07. Bean:** *"the footer and headers are still ugly though and they need to be clones of
+the draft's header and footer."*
+
+**Why they are ugly: they are never cloned at all.**
+`converter/services/section_passes.py:30` — `SKIP_TOP_LEVEL_TAGS = frozenset({"header", "footer",
+"nav"})`. The walker deliberately skips all three at top level (one of R-31-3's three permitted
+exceptions), so a cloned page inherits whatever generic header/footer the theme supplies. The
+draft's own header/footer never reach the page.
+
+**This is Spec 33 Part 2 / Spec 37 FR-37-22, and it is genuinely NOT BUILT** — `git grep`
+for `sgs_header|sgs_footer` across `scripts/converter/` returns nothing; the converter has never
+created a header or footer.
+
+**Everything else it needs already exists**, which is what makes this the cheap high-value front:
+- The emit targets are built and live: `sgs/site-header`, `sgs/site-footer`, `sgs/nav-menu`,
+  `sgs/nav-drawer`, with real published CPT instances on the canary.
+- The token source is done — Spec 33 Part 1 is COMPLETE (13/13 FRs), and those blocks already
+  default their colours/typography/spacing from `theme-snapshot.json`.
+- The design gate is Bean-approved (2026-07-13) and names the concrete emit target.
+- Plain (non-mega) dropdowns ARE built (`fc021a340`, 2026-07-31) — three docs claimed otherwise
+  for five weeks; corrected the same day as this decision.
+
+**So the missing piece is one converter leg:** read the draft's `<header>`/`<footer>` instead of
+skipping them, and emit the four named blocks into the header/footer CPTs.
+
+**Priority ruling implied by Bean's message:** this outranks Spec 39's motion-recognition layer.
+Motion is a research-grade problem behind an unbuilt classifier; the header/footer clone is a
+named, design-gated, dependency-complete piece of work whose absence Bean can see on every page.
+
 ## D1002 [INCIDENT] — a THIRD same-selector CSS collision (min-height); three width caps collapse to one; media inspector surface split by tab
 
 **2026-09-07.** Slices 2, 3, 5 and 6 of the media control-surface work, run as
