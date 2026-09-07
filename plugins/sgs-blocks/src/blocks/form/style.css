@@ -384,6 +384,15 @@ select.sgs-form-field__input {
 	background-color: var(--wp--preset--color--accent-light, #fee8d4);
 }
 
+/* Rule 43 (WCAG 1.4.1): the 'background' style's selected state has no
+ * differentiator beyond colour (unlike 'checkmark', which already gets a
+ * border-width bump above). Bump the label to bold as the non-colour
+ * signal — base label weight is 500, below. */
+.sgs-form-field--tiles-style-background .sgs-form-tile--selected .sgs-form-tile__label,
+.sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) .sgs-form-tile__label {
+	font-weight: 700;
+}
+
 .sgs-form-tile__input {
 	position: absolute;
 	opacity: 0;

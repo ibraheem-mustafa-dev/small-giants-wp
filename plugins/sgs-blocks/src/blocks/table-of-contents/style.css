@@ -158,6 +158,16 @@
 	text-decoration: underline;
 }
 
+/* Specificity fix: .sgs-toc__link:hover/:focus-visible above is (0,2,0) and
+ * beats .sgs-toc__link--active's (0,1,0), so hovering/focusing an
+ * already-active link silently strips its underline. This rule is also
+ * (0,2,0) (two classes, no IDs) but wins on source order (declared after),
+ * so an active link keeps its underline while hovered/focused. */
+.sgs-toc__link--active:hover,
+.sgs-toc__link--active:focus-visible {
+	text-decoration: underline;
+}
+
 /* Spec 32: no block emits an inline `style` property declaration any more,
  * so a `:not([style*=…])` guard always matches and the fallback is
  * unconditional. This value is PAINTED (not what the element inherits), so
