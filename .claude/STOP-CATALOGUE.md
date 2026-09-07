@@ -23,6 +23,46 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-NO-PR-NO-STASH-DIRECT-TO-MAIN** — NEW 2026-09-07 (Bean-locked). **Never open a pull
+  request on this project, and never `git stash`.** Commit straight to `main`. Bean does not
+  review PRs, so a PR is a queue of one that nobody reads — it does not gate anything, it just
+  detaches work from `main` and lets it rot. Measured the day this was locked: **8 draft PRs
+  (#53-#60) and 30 remote branches**, presented as "awaiting a per-branch call". Every single one
+  turned out already superseded by `main`, and it took a full forensic session (`git cherry -v`,
+  two-dot diffs, three verification subagents) to prove nothing was being lost by deleting them.
+  That entire session was pure waste created by the branch-and-PR habit. The stash half is the
+  same failure inward: this tree is shared by many concurrent sessions, a main-thread stash has
+  already swept a dozen peer sessions' uncommitted files, and `git checkout -- <file>` to undo one
+  bad edit silently took an unrelated uncommitted fix with it. **To move work: commit YOUR files
+  with an explicit pathspec** (never `git add -A`, never a glob — a `*/render.php` glob swept
+  another session's half-done edit onto `main` and left it fatal for 5 minutes), then switch.
+  Siblings: `never-stash-in-shared-worktree-commit-first`, `a-glob-pathspec-is-not-a-scoped-commit`.
+
+- **STOP-A-INTEGRATE-AFTER-EVERY-TASK** — NEW 2026-09-07 (Bean-locked). **Push to `origin/main`
+  and rebase onto it after every COMPLETED task, not at the end of a session or a track.** Banked
+  divergence is this repo's most expensive recurring failure and it compounds three ways: a session
+  holding uncommitted or unpushed work blocks other sessions from committing and deploying, those
+  sessions then bank their own divergence and block still more, and the original session is finally
+  blocked by the mess it started. **The cost is superlinear in branch age, so "I'll integrate later"
+  is never the cheap option.** Evidence from the 2026-09-07 cleanup: branches up to **2,150 commits
+  behind `main`**, at which point merging one would have REVERTED ~55k lines, and no reviewer could
+  honestly adjudicate the diff at all. One branch's distinguishing "fix" had by then become
+  *actively worse* than `main`'s (it made a 29-file preamble load-order DEPENDENT where `main` had
+  made it independent) — merging it would have reintroduced a fatal. A branch that is never allowed
+  to get old cannot reach any of those states.
+
+- **STOP-A-BYPASS-OK-BUT-FIX-PRE-EXISTING** — NEW 2026-09-07 (Bean-locked). **Bypassing a commit
+  gate is FINE when the reported violations are not your work** — check each one is genuinely
+  pre-existing, then disclose it in the commit message (`[gates-ok:<reason>]`). You are not
+  required to fix another session's mess to land your own diff, and standing blocked on it is
+  itself a block-cascade (see `STOP-A-INTEGRATE-AFTER-EVERY-TASK`). **But the permission carries a
+  paired obligation: if you are FIXING things, fix the pre-existing issues too** — unless another
+  session is actively working on them, in which case leave them and say so. Do not route around a
+  failure you were in a position to close: that is how a violation survives dozens of green runs
+  and becomes "ambient noise" nobody owns. The judgement is "is this MINE?" for the bypass, and
+  "am I already in here fixing?" for the obligation — they are different questions and both get
+  asked. This amends the final clause of `STOP-A-TWO-BYPASS-LAYERS-NOT-ONE`.
+
 - **STOP-A-A-DISPATCH-REPORT-DESCRIBING-A-PLAN-IS-NOT-COMPLETION** — NEW 2026-08-28. A dispatched
   agent returned after ~70 seconds (vs 30-50+ minutes for comparable tasks) with a report that
   DESCRIBED a plan to dispatch further work, rather than doing the work itself. No file, no commit,
@@ -106,7 +146,12 @@ points here. Neither ever silently drops a STOP.
   "pre-commit BLOCKED by F5 gate") before assuming your `[gates-ok:]` token was ignored or
   malformed** — it may simply not apply to the layer that's currently blocking. Never use
   `--no-verify` without checking every reported violation is genuinely pre-existing and
-  disclosed first, and never without the user's explicit go-ahead per this project's hook policy.
+  disclosed first. ⚠ **AMENDED 2026-09-07 (Bean-locked, git-hygiene standards).** This entry
+  previously ended "and never without the user's explicit go-ahead per this project's hook
+  policy". That half is SUPERSEDED: Bean has given standing authorisation to bypass when the
+  reported violations are **not your work**. The check-and-disclose half above is untouched and
+  is what makes the bypass honest. The permission arrives with a paired OBLIGATION — see
+  `STOP-A-BYPASS-OK-BUT-FIX-PRE-EXISTING`. Recorded rather than deleted per D101.
 
 - **STOP-A-CENSUS-IS-ONLY-AS-WIDE-AS-ITS-CORPUS** — NEW 2026-08-22 (D740). D717 measured that the
   overlay row was "the ONLY colour row missing `linked`", against ~40 rows that had it, and shipped
@@ -1650,6 +1695,25 @@ for real before claiming done?
     (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
 
 ## D. D101 count-check receipt
+
+- **2026-09-07 (branch/PR cleanup + git-hygiene standards: three STOP entries added to §A, one
+  existing entry AMENDED, no question added):** measured with this file's own canonical commands
+  AFTER writing (a self-referential count taken before the write is stale the instant it lands).
+  Unique `STOP-*` tokens 272 -> **275** (+3). DEFINED entries (`grep -c '^- \*\*STOP-'`) 272 ->
+  **275** (+3). Bullet defences (`grep -cE '^- \*\*'`) 340 -> **343** (+3). Ritual questions (§C)
+  15 -> **15**, unchanged. Bytes 273,307 -> **277,291** (+3,984). ADDED **3**
+  (`STOP-A-NO-PR-NO-STASH-DIRECT-TO-MAIN`, `STOP-A-INTEGRATE-AFTER-EVERY-TASK`,
+  `STOP-A-BYPASS-OK-BUT-FIX-PRE-EXISTING`) and SUBTRACTED **none**. 275 >= 272. 343 >= 340.
+  15 >= 15. ALL PASS.
+  ⚠ **One existing entry was AMENDED, which D101 requires justifying explicitly.**
+  `STOP-A-TWO-BYPASS-LAYERS-NOT-ONE`'s final clause ("never without the user's explicit go-ahead")
+  was superseded by Bean's standing authorisation to bypass gates for violations that are not your
+  work. The amendment is recorded INLINE in that entry with its date and reason rather than
+  silently rewritten, and the entry's check-and-disclose requirement is untouched — so the defence
+  is narrowed by an explicit Bean ruling, not weakened by drift. Earned by something that actually
+  happened this session: 8 draft PRs and 30 remote branches, every one already superseded by
+  `main`, cost a full forensic session to safely delete — the branch-and-PR habit produced nothing
+  but the work of proving it had produced nothing.
 
 - **2026-09-04 (session 8, colour track — one STOP entry added to §A, one existing ritual
   question extended, no new question):** measured with this file's own canonical command,

@@ -1,3 +1,50 @@
+## D983 - Git hygiene standards: no PRs, no stashes, integrate after every task [ROUTINE]
+
+**2026-09-07, Bean-locked.** Three standing rules, applied to this project AND globally
+(`~/.claude/CLAUDE.md` + new `~/.claude/rules/git-hygiene.md`):
+
+1. **Commit straight to `main`; never open a PR; never `git stash`.** Bean does not review
+   PRs, so a PR is a queue of one that detaches work from `main` and lets it rot.
+2. **Integrate with `origin/main` after every COMPLETED task**, not per session or per track.
+   Banked divergence blocks other sessions, which bank their own and block more, which
+   eventually blocks the originating session back.
+3. **Gate bypasses are permitted when the violations are not your work** (check each is
+   genuinely pre-existing, disclose via `[gates-ok:<reason>]`) — but if you are already in
+   there FIXING, fix the pre-existing issues too, unless another session is actively on them.
+
+**Trigger / evidence.** A previous session left 8 draft PRs (#53-#60) of "recovered orphaned
+work" awaiting a per-branch call, plus 30 remote branches. Full forensic verification this
+session (`git cherry -v` patch-equivalence, two-dot diffs, three verification subagents,
+direct content reads of `origin/main`) found **every one already superseded — zero salvage**.
+Several would have REGRESSED `main` if merged: PR #54 was a pre-rebase backup whose rebase had
+landed (merging it reverts ~55k lines); `fix/tier-object-render-spacing-2026-09-06` carried a
+preamble ordering that was load-order DEPENDENT where `main` had made it independent, i.e. a
+reintroduced fatal across 29 files. Branches ran up to **2,150 commits behind**. All 8 PRs
+closed with per-PR reasons; all 30 branches deleted; no archive tags (the commits are on
+`main`, so a tag would pin a superseded copy of content that is not at risk).
+
+**Doc changes.** Project `CLAUDE.md` "## Git workflow" rewritten — it had instructed
+**"stash -> switch -> pop -> commit"**, the exact banned anti-pattern and already in conflict
+with the hardened `never-stash-in-shared-worktree-commit-first` rule; it also deferred to the
+global "3+ files -> branch+push+PR" rule, now retired everywhere. `STOP-CATALOGUE.md`: +3
+entries, `STOP-A-TWO-BYPASS-LAYERS-NOT-ONE` amended inline (its "never without the user's
+explicit go-ahead" clause is superseded by rule 3; the check-and-disclose half is untouched),
+D101 receipt written — 272 -> 275, nothing subtracted.
+
+**Also folded in:** removal of the dead `| Skill / agent / pipeline / router lifecycle |
+/lifecycle |` delegation-table row (verified 2026-09-07: no `/lifecycle` skill or command
+exists anywhere; only a `hooks/lifecycle-gate.py` hook and historical mentions in archived
+docs).
+
+**Method note worth keeping.** `git diff main...branch` (three-dot) shows what the BRANCH added
+since the merge base — NOT what `main` lacks; on a branch thousands of commits behind it reads
+as "main is missing these files" when they are byte-identical. Use `git cherry -v` (patch-id,
+so it sees work that landed under a different SHA) plus two-dot diffs. Second trap: under Git
+Bash, `git show <ref>:.claude/...` silently mangles the path and returns an EMPTY file, which
+reads as "0 matches -> content missing". Set `MSYS_NO_PATHCONV=1`; distinguish an empty result
+from a zero-match result.
+
+
 ## D982 [ROUTINE] — /qc-council batch on the 6 remaining fast-tier gate findings, all resolved or correctly deferred to Bean's sign-off
 
 **2026-09-06/07.** After D978-D981 closed Bean's original 5 gate-finding requests, `run-gates.py

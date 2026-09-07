@@ -133,7 +133,6 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 | Per-client tokens / brand colours | `sites/<client>/theme-snapshot.json` (Spec 33) → `push-theme-snapshot.py` |
 | Visual / a11y verification of a built page | `/visual-qa` (9-layer SGS pipeline) + `/a11y-audit`; Playwright MCP for bespoke probes |
 | Clone fidelity — is it faithful? | Spec 20 computed-parity (Stage 11.6, auto) **+ Bean's eye (R-31-13)**. Never close on a number alone |
-| Skill / agent / pipeline / router lifecycle | `/lifecycle` |
 | Cloning pipeline work | `/sgs-clone` + register the result via `/sgs-update` |
 | Doc edits | `docscore-on-doc-edit` PostToolUse hook auto-runs |
 | Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / cross-TIER cold-Claude validation — all-Claude fleet since 2026-07-15) |
@@ -159,15 +158,41 @@ Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-c
 
 ## Git workflow
 
-**Before every commit/push:** run `git branch --show-current` and verify branch matches scope.
+**Hygiene standards (Bean-locked 2026-09-07). These OVERRIDE global CLAUDE.md's
+"feature 3+ files or risky → branch+push+PR" — that rule is retired everywhere
+(`~/.claude/rules/git-hygiene.md`); Bean does not review PRs.**
+
+1. **Commit straight to `main`. Never open a PR.** A PR here is a queue of one that
+   nobody reads. Measured 2026-09-07: 8 draft PRs + 30 remote branches, every one
+   already superseded by `main`, and it took a forensic session to prove nothing was lost.
+2. **Never stash.** To move work: commit your own files with an EXPLICIT pathspec
+   (never `git add -A`, never a glob), then switch. This tree is shared by many
+   concurrent sessions — a main-thread stash has already swept a dozen peer sessions'
+   uncommitted files, and a `*/render.php` glob swept another session's half-done edit
+   onto `main`.
+3. **Integrate with `origin/main` after every completed task** — pull/rebase and push,
+   don't bank up divergence. Long-lived branches are what blocked sessions, which
+   blocked more sessions, which blocked the original session back. The cost compounds:
+   the branches deleted on 2026-09-07 were up to 2,150 commits behind, at which point
+   merging one would have REVERTED ~55k lines and nobody could safely adjudicate it.
+4. **Gate bypasses:** bypassing is FINE when the reported violations are not your work
+   — check each one is genuinely pre-existing and disclose it in the commit message
+   (`[gates-ok:<reason>]`). But if you are FIXING things, fix the pre-existing issues
+   too, unless another session is actively working on them. Don't route around a
+   failure you could have closed.
+
+**Before every commit/push:** run `git branch --show-current` in the SAME command as the
+commit and verify it matches scope. **Never commit core framework changes to a client
+branch.**
+
+If a short-lived branch is genuinely unavoidable, merge it back to `main` the same
+session, then delete it. Scope table for that case only:
 
 | Work | Branch |
 |---|---|
-| Core SGS (plugins/sgs-blocks/src/, theme/sgs-theme/, plugin PHP) | `main` |
+| Core SGS (plugins/sgs-blocks/src/, theme/sgs-theme/, plugin PHP) | `main` (the default for everything) |
 | Client-specific (sites/<client>/, per-client snapshot) | `feat/<client>-*` |
 | New framework feature | `feat/<feature>` branched from `main` |
-
-**Never commit core framework changes to a client/feature branch.** If on wrong branch mid-work: stash → switch → pop → commit. See global CLAUDE.md for full git workflow rules.
 
 ## Build & deploy (one-liners; full sequence in dev-setup.md)
 
