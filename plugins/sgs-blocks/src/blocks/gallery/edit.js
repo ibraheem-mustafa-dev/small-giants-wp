@@ -810,81 +810,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{ /* Panel 3: Content */ }
-				<PanelBody
-					title={ __( 'Content', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Enable lightbox', 'sgs-blocks' ) }
-						checked={ enableLightbox }
-						onChange={ set( 'enableLightbox' ) }
-						help={ __(
-							'Open images in a full-screen lightbox on click.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show captions', 'sgs-blocks' ) }
-						checked={ showCaptions }
-						onChange={ set( 'showCaptions' ) }
-						__nextHasNoMarginBottom
-					/>
-					{ showCaptions && (
-						<ToggleControl
-							label={ __(
-								'Reveal caption on hover',
-								'sgs-blocks'
-							) }
-							checked={ captionReveal }
-							onChange={ set( 'captionReveal' ) }
-							help={ __(
-								'Caption slides up into view when the user hovers the image.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					) }
-					{ /* Moved in from the shared SgsColourPanel (D622 — an
-					     element-scoped colour belongs in its own element's
-					     TIER 1 panel; "caption" is a declared element whose
-					     attrMap claims captionColour/captionBgColour). */ }
-					{ showCaptions && (
-						<>
-							<DesignTokenPicker
-								label={ __( 'Caption text colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: captionColour,
-										onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
-										linked: true,
-										gradientValue: captionColourGradient,
-										onGradientChange: ( val ) => setAttributes( { captionColourGradient: val ?? '' } ),
-									},
-								] }
-							/>
-							<DesignTokenPicker
-								label={ __( 'Caption background colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: captionBgColour,
-										onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
-										linked: true,
-										gradientValue: captionBgColourGradient,
-										onGradientChange: ( val ) => setAttributes( { captionBgColourGradient: val ?? '' } ),
-									},
-								] }
-							/>
-						</>
-					) }
-				</PanelBody>
-
-				{ /* Panel 4: Hover Effects */ }
+				{ /* Panel 3: Hover Effects — moved ahead of Content 2026-09-08
+				     (rule 41 dom-order-vs-declared-order finding). This panel
+				     holds Image's owned attrs (imageSize/imageZoomHover/
+				     grayscaleHover; block.json supports.sgs.elements.image,
+				     order 2) alongside the block-wide hover-effect controls
+				     (effectHover/scaleHover/transitionDuration/Easing/
+				     staggerDelay/shadowHover). render.php genuinely draws
+				     <img> before <figcaption> (Image element order 2 before
+				     Caption order 3), so the panel carrying Image's controls
+				     must render before the panel carrying Caption's — moving
+				     the JSX to match the real on-page order, not the other
+				     way round (block.json's order numbers are correct and
+				     were left alone). */ }
 				<ToolsPanel
 					label={ __( 'Hover Effects', 'sgs-blocks' ) }
 					resetAll={ () =>
@@ -1062,6 +1000,80 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
+
+				{ /* Panel 4: Content */ }
+				<PanelBody
+					title={ __( 'Content', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Enable lightbox', 'sgs-blocks' ) }
+						checked={ enableLightbox }
+						onChange={ set( 'enableLightbox' ) }
+						help={ __(
+							'Open images in a full-screen lightbox on click.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show captions', 'sgs-blocks' ) }
+						checked={ showCaptions }
+						onChange={ set( 'showCaptions' ) }
+						__nextHasNoMarginBottom
+					/>
+					{ showCaptions && (
+						<ToggleControl
+							label={ __(
+								'Reveal caption on hover',
+								'sgs-blocks'
+							) }
+							checked={ captionReveal }
+							onChange={ set( 'captionReveal' ) }
+							help={ __(
+								'Caption slides up into view when the user hovers the image.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+					{ /* Moved in from the shared SgsColourPanel (D622 — an
+					     element-scoped colour belongs in its own element's
+					     TIER 1 panel; "caption" is a declared element whose
+					     attrMap claims captionColour/captionBgColour). */ }
+					{ showCaptions && (
+						<>
+							<DesignTokenPicker
+								label={ __( 'Caption text colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: captionColour,
+										onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
+										linked: true,
+										gradientValue: captionColourGradient,
+										onGradientChange: ( val ) => setAttributes( { captionColourGradient: val ?? '' } ),
+									},
+								] }
+							/>
+							<DesignTokenPicker
+								label={ __( 'Caption background colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: captionBgColour,
+										onChange: ( val ) => setAttributes( { captionBgColour: val ?? '' } ),
+										linked: true,
+										gradientValue: captionBgColourGradient,
+										onGradientChange: ( val ) => setAttributes( { captionBgColourGradient: val ?? '' } ),
+									},
+								] }
+							/>
+						</>
+					) }
+				</PanelBody>
 
 				{ /* Panel 6: Carousel (conditional — only when layout = carousel) */ }
 				{ 'carousel' === layout && (

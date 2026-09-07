@@ -108,7 +108,7 @@
 				},
 				"image": {
 					"label": "Image",
-					"order": 3,
+					"order": 2,
 					"clusters": [],
 					"states": {
 						"hover": {
@@ -117,12 +117,11 @@
 							}
 						}
 					},
-					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here.",
-					"_note_order": "order corrected 2-of-2 (Image 2->3, Caption 3->2) 2026-09-08 (rule 41 dom-order-vs-declared-order finding). Image's owned attrs (imageZoomHover/imageSize/grayscaleHover) all live in edit.js's 'Hover Effects' ToolsPanel; Caption's owned attrs live in the earlier 'Content' PanelBody alongside the general lightbox/show-captions toggles. That JSX arrangement is the sensible authoring flow for an operator (general content settings before hover-effect fine-tuning) — the declared order values were backwards relative to it, so the numbers were corrected to match the real, sensible panel sequence rather than moving JSX."
+					"_note": "Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover/imageZoomHover, not the Text/Fill/Layout style clusters. `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
 				},
 				"caption": {
 					"label": "Caption",
-					"order": 2,
+					"order": 3,
 					"clusters": [
 						"text",
 						"fill"
