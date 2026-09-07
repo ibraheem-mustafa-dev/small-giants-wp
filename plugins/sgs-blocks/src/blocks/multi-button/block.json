@@ -33,6 +33,12 @@
     },
     "sgs": {
       "_comment_overlayNotAdopted": "backgroundOverlayColour/Opacity/OpacityTablet/OpacityMobile/ColourHover/BlendMode are the shared whole-block BACKGROUND PANEL (rendered by class-sgs-container-wrapper.php's sgs_overlay_decls()), not media elements -- same settled reasoning as sgs/container (see its block.json for the full note, 2026-09-03, Bean-directed). Detector rule 37-media-no-handroll's bare `background`/`bg`-prefix discriminator excludes this whole family from supports.sgs.mediaElements by design.",
+      "colourExemptions": {
+        "child-btn-text-colour": {
+          "rule": "gradient",
+          "reason": "Single var() fallback chain into an independently-rendered child sgs/button instance — cannot express a gradient/background-clip:text switch without breaking the working group-defaults mechanism (D640 §5). The fallback chain is the group-defaults-with-child-override architecture; redesigning it to support gradient text risked breaking existing inherit/override behaviour. An architectural limit, not merely undecided."
+        }
+      },
       "containerKind": "layout",
       "boxFamilies": {
         "padding": [
@@ -116,6 +122,20 @@
     "textColour": {
       "type": "string",
       "default": ""
+    },
+    "textColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the text instead of a flat colour (background-clip:text). Non-empty wins over textColour at render time (colour-conformance FILL closeout 2026-09-07)."
+    },
+    "textColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "textColourHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "Hover-state sibling of textColourGradient. Non-empty wins over textColourHover on :hover/:focus-visible."
     },
     "backgroundImage": {
       "type": "object",

@@ -143,6 +143,14 @@
 					"note": "Added 2026-09-07, Task 3 (two-state link colour). Sibling to css:color the way css:color-gradient is — a SEPARATE member because a RichText field can legitimately have both its own base text colour (css:color, e.g. descColour) AND an independent colour for an inline `core/link` inside it (descLinkColour). Both attributes end in the literal suffix 'Colour', so without this sibling member the css:color member's suffix list would resolve first and the link-colour attribute would be permanently unclaimable on any element that already has a base text-colour sibling — same class of gap as css:box-shadow-color's own history (a member claims exactly one attribute; a second colour concept on the same element needs its own member, not a wider suffix list on the existing one). sgs_link_colour_css() (includes/helpers-typography.php) is the real emitter, scoped to `{selector} a`."
 				},
 				{
+					"key": "css:color-link-gradient",
+					"label": "Link colour (gradient)",
+					"suffixes": [
+						"LinkColourGradient"
+					],
+					"note": "Added 2026-09-07, Task 3 addendum (sgs_link_colour_css() gradient support). Sibling to css:color-link the way css:color-gradient is sibling to css:color — a link's gradient colour is a distinct concept from its flat colour, and 'LinkColourGradient' would otherwise fall through to css:color-gradient's own 'ColourGradient' suffix (misclaiming it as the ELEMENT's own text-gradient rather than the link's). Real mechanism: background-clip:text scoped to `{selector} a`, same as css:color-gradient but on the link, not the element."
+				},
+				{
 					"key": "css:text-align",
 					"label": "Text align",
 					"suffixes": [

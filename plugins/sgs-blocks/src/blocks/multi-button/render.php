@@ -161,7 +161,6 @@ if ( null !== $mb_radius_mob ) {
 // CSS already targets, via the stable core style engine (mirrors sgs/label's
 // pattern).
 
-$mb_color_border = array();
 // D635-pattern migration: text now reads from the flat textColour attr
 // (SgsColourPanel), not native style.color.text (supports.color.text is now
 // false). Background (colour + gradient, resting + hover) is owned by the
@@ -176,25 +175,51 @@ $mb_color_border = array();
 // storage). The flag flip is therefore PAIRED with a block-private
 // backgroundColourGradient exposed through fillRow(), so capability is moved
 // rather than lost.
-$mb_color_args = array();
-if ( isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ) {
-	$mb_color_args['text'] = (string) $attributes['textColour'];
+
+// Background moved to ::after layer (2026-09-07, colour-conformance FILL closeout)
+// to make room for text-gradient which needs background-clip:text on the element.
+// sgs_block_background_layer_css() emits position:relative + the ::after layer;
+// the wrapper element itself becomes the layer that text-gradient clips to.
+$mb_bg_normal = sgs_css_gradient_value( (string) ( $attributes['backgroundColourGradient'] ?? '' ) );
+if ( '' === $mb_bg_normal ) {
+	$mb_bg_normal = sgs_colour_value( (string) ( $attributes['backgroundColour'] ?? '' ) );
 }
-if ( ! empty( $mb_color_args ) ) {
-	$mb_color_border['color'] = $mb_color_args;
+$mb_bg_hover = sgs_css_gradient_value( (string) ( $attributes['backgroundColourHoverGradient'] ?? '' ) );
+if ( '' === $mb_bg_hover ) {
+	$mb_bg_hover = sgs_colour_value( (string) ( $attributes['backgroundColourHover'] ?? '' ) );
 }
-$mb_fill_css = sgs_fill_states_css(
-	$root_sel,
-	$attributes,
-	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
-	)
-);
+$mb_fill_css = sgs_block_background_layer_css( $root_sel, $mb_bg_normal, $mb_bg_hover );
 if ( '' !== $mb_fill_css ) {
 	$css .= $mb_fill_css;
+}
+
+// Text colour + gradient, resting + hover (colour-conformance FILL closeout 2026-09-07).
+// Trio: textColour (flat), textColourGradient, textColourHover (flat),
+// textColourHoverGradient. sgs_resolve_text_colour_or_gradient() picks the
+// gradient if valid, else falls back to flat. sgs_text_colour_decl() emits
+// the right CSS (bare color: for flat, or background-clip:text for gradient).
+// sgs_text_colour_gradient_fallback_rule() adds the @supports fallback.
+// sgs_hover_state_rules() wraps the hover pair in :hover/:focus-visible.
+$mb_text_normal_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColour'] ?? '' ),
+	(string) ( $attributes['textColourGradient'] ?? '' )
+);
+$mb_text_normal_decl = sgs_text_colour_decl( $mb_text_normal_resolved );
+if ( '' !== $mb_text_normal_decl ) {
+	$css .= "{$root_sel}{" . $mb_text_normal_decl . ';}';
+}
+$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $mb_text_normal_resolved );
+
+$mb_text_hover_resolved = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+if ( '' !== $mb_text_hover_resolved && $mb_text_hover_resolved !== $mb_text_normal_resolved ) {
+	$mb_text_hover_decl = sgs_text_colour_decl( $mb_text_hover_resolved );
+	if ( '' !== $mb_text_hover_decl ) {
+		$css .= sgs_hover_state_rules( $root_sel, $mb_text_hover_decl . ';' );
+	}
+	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $mb_text_hover_resolved );
 }
 // Base padding/margin are NOT read here (2026-08-27). They were, and that was a
 // genuine DOUBLE EMISSION: this block calls SGS_Container_Wrapper::render() below
@@ -210,16 +235,6 @@ if ( '' !== $mb_fill_css ) {
 // ⛔ Do NOT pass `container_queries => true` for this block to "fix" anything: that
 // flag DISABLES the owned-attr read and silently falls it back to native spacing,
 // which no longer exists here.
-if ( ! empty( $mb_color_border ) ) {
-	$mb_style_engine_css = wp_style_engine_get_styles(
-		$mb_color_border,
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $mb_style_engine_css['css'] ) ) {
-		$css .= $mb_style_engine_css['css'];
-	}
-}
-
 // Preset colour/gradient SLUGS (e.g. backgroundColor:"primary") don't carry a raw
 // value for the style engine above — WP paints them via the standard has-* classes
 // instead. Re-add those classes onto the wrapper (mirrors sgs/label's step 5).

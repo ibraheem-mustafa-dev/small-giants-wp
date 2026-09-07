@@ -117,6 +117,11 @@ $connector_colour_gradient = $attributes['connectorColourGradient'] ?? '';
 $connector_colour_hover          = $attributes['connectorColourHover'] ?? '';
 $connector_colour_hover_gradient = $attributes['connectorColourHoverGradient'] ?? '';
 $date_colour      = $attributes['dateColour'] ?? 'accent';
+// dateColourGradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT closeout)
+// — same sgs_custom_property_gradient_decls() 5-arg form proven on textColour below.
+$date_colour_gradient = $attributes['dateColourGradient'] ?? '';
+$date_colour_hover          = $attributes['dateColourHover'] ?? '';
+$date_colour_hover_gradient = $attributes['dateColourHoverGradient'] ?? '';
 $progress_fill    = ! empty( $attributes['connectorProgressFill'] );
 $fill_colour      = $attributes['connectorFillColour'] ?? 'accent';
 $reveal_on_scroll = isset( $attributes['revealOnScroll'] ) ? (bool) $attributes['revealOnScroll'] : true;
@@ -250,7 +255,13 @@ $date_gutter   = 'own-column' === $date_position && 'single-column' === $content
 // Wrapper text/background colour — block-private attrs (WP-native
 // `supports.color` is disabled; the native `style.color.*` path is never
 // populated, matching connectorColour/dateColour on this same block).
+// textColour/Gradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT closeout)
+// — background moves to ::after layer via sgs_block_background_layer_css() below
+// to free the root for background-clip:text on text colour gradients.
 $style_color_text = isset( $attributes['textColour'] ) && '' !== $attributes['textColour'] ? sgs_colour_value( $attributes['textColour'] ) : '';
+$text_colour_gradient = $attributes['textColourGradient'] ?? '';
+$text_colour_hover          = $attributes['textColourHover'] ?? '';
+$text_colour_hover_gradient = $attributes['textColourHoverGradient'] ?? '';
 $style_color_bg   = isset( $attributes['backgroundColour'] ) && '' !== $attributes['backgroundColour'] ? sgs_colour_value( $attributes['backgroundColour'] ) : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -324,6 +335,38 @@ $description_sel = $root_sel . ' .sgs-timeline__description';
 
 $scoped_css = array();
 
+// --- Background layer (Task 1, 2026-09-07) — ::after layer frees the root for
+// background-clip:text on text colour gradients. sgs_block_background_layer_css()
+// emits the full CSS rule if backgroundColour is set; Spec 32 contract. ---
+$bg_paint_decl = '';
+if ( '' !== $style_color_bg ) {
+	$bg_paint_decl = 'background-color:' . $style_color_bg;
+}
+if ( '' !== $bg_paint_decl ) {
+	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $bg_paint_decl );
+}
+
+// --- Text colour trio (Task 1, 2026-09-07) — base + gradient + hover, routed
+// via custom properties. Gradient sibling wins over flat; hover chain falls back
+// to resting → CSS default, matching before-after/post-grid precedent. ---
+$text_colour_flat = sgs_resolve_text_colour_or_gradient( $style_color_text, sgs_css_gradient_value( $text_colour_gradient ) );
+if ( '' !== $text_colour_flat || '' !== sgs_css_gradient_value( $text_colour_gradient ) ) {
+	$text_decl = sgs_text_colour_decl( $text_colour_flat );
+	if ( '' !== $text_decl ) {
+		$scoped_css[] = "{$root_sel}{" . $text_decl . ';}';
+		// Fallback for browsers without background-clip:text support
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_flat );
+	}
+	// Hover state
+	$text_colour_hover_flat = sgs_resolve_text_colour_or_gradient( $text_colour_hover, sgs_css_gradient_value( $text_colour_hover_gradient ) );
+	if ( '' !== $text_colour_hover_flat || '' !== sgs_css_gradient_value( $text_colour_hover_gradient ) ) {
+		$text_hover_decl = sgs_text_colour_decl( $text_colour_hover_flat );
+		if ( '' !== $text_hover_decl ) {
+			$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_hover_decl );
+		}
+	}
+}
+
 // Two-state link colour (Task 3, 2026-09-07) — the per-entry description
 // field permits `core/link`, so a linked selection needs its own colour.
 // Applies block-wide to every entry's description, matching how the
@@ -390,9 +433,9 @@ $color_args = array();
 if ( '' !== $style_color_text ) {
 	$color_args['text'] = $style_color_text;
 }
-if ( '' !== $style_color_bg ) {
-	$color_args['background'] = $style_color_bg;
-}
+// textColourGradient/Hover(Gradient) (2026-09-07): background moved to ::after
+// layer via sgs_block_background_layer_css() below, so it does not compete with
+// background-clip:text on text colour gradients. Remove from style engine.
 if ( ! empty( $color_args ) ) {
 	$base_style_engine_args['color'] = $color_args;
 }
@@ -544,8 +587,38 @@ $wrapper_style_parts = array_merge(
 	$wrapper_style_parts,
 	sgs_custom_property_gradient_decls( 'sgs-connector-colour', $connector_colour, $connector_colour_gradient, $connector_colour_hover, $connector_colour_hover_gradient )
 );
-if ( $date_colour ) {
-	$wrapper_style_parts[] = '--sgs-date-colour:' . sgs_colour_value( $date_colour );
+// Flat base colour only — dateColour paints TEXT (color:), not a background/
+// border custom property, so its gradient CANNOT go through
+// sgs_custom_property_gradient_decls() the way connectorColour above does:
+// that helper emits a raw --var-gradient custom property fed straight into
+// `background-image:var(...)`, with no background-clip:text/color:transparent
+// switch — a gradient painted that way is a plain rectangle behind flat text,
+// not gradient text. Corrected 2026-09-07 same session — the first pass
+// copied connectorColour's shape by surface proximity rather than by
+// contract; see the text-colour trio block below for the real fix.
+$wrapper_style_parts = array_merge(
+	$wrapper_style_parts,
+	sgs_custom_property_gradient_decls( 'sgs-date-colour', $date_colour, '', '', '' )
+);
+
+// dateColour gradient + hover trio (correction, 2026-09-07) — routed through
+// the standard text-colour trio, same shape as the textColour block above,
+// scoped to the date element itself so it always out-specifies the compiled
+// stylesheet's flat `.sgs-timeline__date{color:var(--sgs-date-colour)}` rule.
+// Also gives dateColourHover a touch-safe hover pair via sgs_hover_state_rules()
+// instead of style.scss's raw (non-touch-guarded) `:hover` selector.
+$date_sel                    = $root_sel . ' .sgs-timeline__date';
+$date_colour_effective       = sgs_resolve_text_colour_or_gradient( $date_colour, $date_colour_gradient );
+$date_decl                   = sgs_text_colour_decl( $date_colour_effective );
+if ( '' !== $date_decl ) {
+	$scoped_css[] = "{$date_sel}{" . $date_decl . ';}';
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $date_sel, $date_colour_effective );
+}
+$date_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $date_colour_hover, $date_colour_hover_gradient );
+$date_hover_decl             = sgs_text_colour_decl( $date_colour_hover_effective );
+if ( '' !== $date_hover_decl ) {
+	$scoped_css[] = sgs_hover_state_rules( $date_sel, $date_hover_decl );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $date_sel . ':hover', $date_colour_hover_effective );
 }
 if ( $progress_fill && $fill_colour ) {
 	$fill_colour_gradient = $attributes['connectorFillColourGradient'] ?? '';

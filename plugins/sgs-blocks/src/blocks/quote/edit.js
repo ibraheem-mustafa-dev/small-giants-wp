@@ -221,6 +221,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributionEnabled,
 		attributionLinkColour,
 		attributionLinkColourHover,
+		attributionLinkColourGradient,
+		attributionLinkColourHoverGradient,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -418,6 +420,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'attributionLinkColour',
 						label: __( 'Attribution link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -426,6 +429,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { attributionLinkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: attributionLinkColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { attributionLinkColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -434,6 +440,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { attributionLinkColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: attributionLinkColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { attributionLinkColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

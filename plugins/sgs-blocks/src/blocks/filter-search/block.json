@@ -27,6 +27,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"text": {
+					"rule": "gradient",
+					"reason": "Paints text inside a live <input> field — background-clip:text gradient rendering on typed/placeholder text is non-standard UX and cross-browser inconsistent, and this is the only row in the colour-conformance TEXT census painting a form control rather than static content. Hover state is unaffected by this exemption (textColourHover is flat-only, not gradient)."
+				}
+			},
 			"boxFamilies": {
 				"margin": [
 					"marginTablet",
@@ -75,6 +81,10 @@
 			"default": ""
 		},
 		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHover": {
 			"type": "string",
 			"default": ""
 		},

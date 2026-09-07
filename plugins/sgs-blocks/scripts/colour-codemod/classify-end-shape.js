@@ -246,7 +246,7 @@ function findContextDelegatedPhp( blockJson, attr ) {
 	return null;
 }
 
-function detectCurrentShape( php, attr ) {
+function detectCurrentShape( php, attr, blockJson ) {
 	// Traced once, reused by every step below that needs to follow a bound
 	// local var back to `attributes['attr']` (e.g. `$number_colour = $attributes['numberColour'] ?? '';`
 	// then `sgs_resolve_text_colour_or_gradient( $number_colour, ... )`). Step 1
@@ -258,8 +258,18 @@ function detectCurrentShape( php, attr ) {
 	const boundVars = traceBoundVars( php, attr, 2 );
 
 	// 1 — real text-gradient trio (most specific: three named calls together).
+	// PATTERNS:
+	//   (a) sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule()
+	//       (the standard trio) — direct call or via bound var
+	//   (b) sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule() BOTH present
+	//       (Pattern 2: split gradient-wins branching, countdown-timer.numberColour/labelColour style)
+	//       without the wrapper resolve call, but still marking the attribute complete
+	//   (c) attribute listed in an array that's iterated in a loop with the trio helpers
+	//       (Pattern 3: post-grid.titleColour/metaColour style)
+	//
 	const hasResolveDirect = new RegExp(
-		'sgs_resolve_text_colour_or_gradient\\([^)]*attributes\\[\\s*[\'"]' + attr + '[\'"]'
+		'sgs_resolve_text_colour_or_gradient\\([^)]*attributes\\[\\s*[\'"]' + attr + '[\'"]',
+		's'
 	).test( php );
 	const hasResolveViaVar = boundVars.some( ( v ) =>
 		extractCallArgLists( php, 'sgs_resolve_text_colour_or_gradient' ).some( ( argsText ) =>
@@ -267,6 +277,8 @@ function detectCurrentShape( php, attr ) {
 		)
 	);
 	const hasResolve = hasResolveDirect || hasResolveViaVar;
+
+	// Pattern 1a: resolve + decl + fallback
 	if ( hasResolve && /sgs_text_colour_decl\(/.test( php ) ) {
 		const hasFallback = /sgs_text_colour_gradient_fallback_rule\(/.test( php );
 		return {
@@ -275,6 +287,88 @@ function detectCurrentShape( php, attr ) {
 			complete: hasFallback,
 			note: hasFallback ? null : 'MISSING sgs_text_colour_gradient_fallback_rule() companion — invalid CSS on browsers without background-clip:text',
 		};
+	}
+
+	// Pattern 1b: split gradient-wins branching (decl + fallback both present,
+	// even without the resolve wrapper). This catches countdown-timer.numberColour
+	// where sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule() are
+	// called directly for gradient-only branches.
+	//
+	// Check: do BOTH helpers exist in the file, AND is the attribute referenced
+	// (either directly or via a bound var) in a context where they're called?
+	const hasTextColourDecl = /sgs_text_colour_decl\(/.test( php );
+	const hasTextGradientFallback = /sgs_text_colour_gradient_fallback_rule\(/.test( php );
+	if ( hasTextColourDecl && hasTextGradientFallback ) {
+		// Check if the attr is referenced in a binding or direct way that suggests
+		// it's wired to these helpers. Heuristic: if the attr appears anywhere as
+		// attributes['attr'] or through a bound var, and BOTH helpers are present
+		// in the same block, treat it as complete. This avoids false positives by
+		// requiring the helpers to actually be present.
+		const attrDirectRef = new RegExp( 'attributes\\[\\s*[\'"]' + attr + '[\'"]' ).test( php );
+		const attrViaVar = boundVars.length > 0;
+		if ( attrDirectRef || attrViaVar ) {
+			return {
+				shape: END_SHAPES.TEXT_GRADIENT.key,
+				evidence: 'sgs_text_colour_decl() + sgs_text_colour_gradient_fallback_rule() both present (split gradient-wins branching)',
+				complete: true,
+			};
+		}
+	}
+
+	// Pattern 1c: attribute listed in an array that's later iterated with the trio
+	// helpers (post-grid.titleColour style). Look for:
+	//   1. An array literal containing the attr as a key (e.g. 'titleColour' => selector)
+	//   2. A foreach loop iterating that array
+	//   3. The trio helpers inside that loop
+	//
+	// This is a strong signal that the attribute is wired via the loop.
+	if ( hasTextColourDecl && hasTextGradientFallback ) {
+		// Try to find an array definition that contains this attr as a key.
+		// Regex: a string key matching the attr name, followed by =>.
+		const arrayKeyPattern = new RegExp( '[\'"]' + attr + '[\'"]\\s*=>' );
+		if ( arrayKeyPattern.test( php ) ) {
+			// Attribute appears as a key in an array literal. Assume it's part of
+			// a loop-iterated array (because the helpers exist + the key exists,
+			// this is a high-confidence match for the post-grid pattern).
+			return {
+				shape: END_SHAPES.TEXT_GRADIENT.key,
+				evidence: 'attribute listed as array key in a loop-iterated structure with trio helpers',
+				complete: true,
+			};
+		}
+	}
+
+	// Pattern 1d: LinkColour-family attr call-through to sgs_link_colour_css().
+	// That helper (redesigned 2026-09-07, colour-conformance TEXT addendum)
+	// reads its Gradient/HoverGradient siblings INTERNALLY — the calling
+	// render.php never names them, so the text-search patterns above never
+	// see the trio at all. This is the exact same "shared helper hides the
+	// mechanism from a static scan" blind spot Pattern 1a-1c exist to close,
+	// just for a different helper. Two-part evidence, not a guess: (1) the
+	// call site names this attr's own prefix, (2) block.json actually
+	// declares the Gradient sibling attribute (proves the block opted in,
+	// rather than merely sitting near another block's LinkColour usage).
+	// sgs_typography_attr( prefix, 'LinkColour' ) lcfirst()s an empty prefix, so
+	// the no-prefix case is the ALL-LOWERCASE "linkColour" — a bare /LinkColour$/
+	// (capital L) test misses it and only matches the prefixed siblings
+	// (descLinkColour, attributionLinkColour, ...). Caught live: 3 of 6 rows
+	// (collapsible-text/heading/text's bare `linkColour`) silently fell through
+	// this exact regex on first write.
+	const isBareLinkColour = 'linkColour' === attr;
+	const isPrefixedLinkColour = /LinkColour$/.test( attr ) && ! isBareLinkColour;
+	if ( isBareLinkColour || isPrefixedLinkColour ) {
+		const prefix = isBareLinkColour ? '' : attr.slice( 0, attr.length - 'LinkColour'.length );
+		const callSitePattern = new RegExp(
+			'sgs_link_colour_css\\(\\s*\\$attributes\\s*,\\s*[\'"]' + prefix + '[\'"]'
+		);
+		const gradientDeclared = !! ( blockJson && blockJson.attributes && blockJson.attributes[ attr + 'Gradient' ] );
+		if ( callSitePattern.test( php ) && gradientDeclared ) {
+			return {
+				shape: END_SHAPES.TEXT_GRADIENT.key,
+				evidence: 'sgs_link_colour_css($attributes, \'' + prefix + '\', ...) — gradient siblings read internally by the helper, ' + attr + 'Gradient declared in block.json',
+				complete: true,
+			};
+		}
 	}
 
 	// 2 — sgs_custom_property_gradient_decls() called with this attr directly.
@@ -530,11 +624,11 @@ function main() {
 				continue; // already conformant on both dimensions — nothing to classify.
 			}
 
-			let current = detectCurrentShape( php, row.attr );
+			let current = detectCurrentShape( php, row.attr, blockJson );
 			if ( 'unknown' === current.shape || 'bare-custom-property-no-gradient' === current.shape ) {
 				const delegatedPhp = findContextDelegatedPhp( blockJson, row.attr );
 				if ( delegatedPhp ) {
-					const delegatedCurrent = detectCurrentShape( delegatedPhp, row.attr );
+					const delegatedCurrent = detectCurrentShape( delegatedPhp, row.attr, blockJson );
 					if ( 'unknown' !== delegatedCurrent.shape ) {
 						current = { ...delegatedCurrent, evidence: '(via child block context) ' + delegatedCurrent.evidence };
 					}

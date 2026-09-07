@@ -478,6 +478,12 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"colourExemptions": {
+				"hover-colour-older-browsers": {
+					"rule": "gradient",
+					"reason": "Feeds a hardcoded single-colour-stop sweep animation baked into style.css — the general gradient trio cannot drop in without redesigning that effect. The mechanism: attributionHoverColour holds the gradient colour-stop inside background-image:linear-gradient(...) text-clip sweep (modern browsers); attributionHoverColourFallback holds the plain color: declaration inside the @supports not (background-clip:text) fallback (older browsers). A color: declaration can never legally hold a CSS gradient, so the pair stays split. Structurally impossible, not merely undecided — see reason above, not a general architectural-limit."
+				}
+			},
 			"boxFamilies": {
 				"padding": [
 					"padding"
@@ -566,6 +572,14 @@
 					"prefix": "label",
 					"attrMap": {
 						"css:background-image": "labelColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:background-image": "labelColourHoverGradient"
+							}
+						}
 					},
 					"_note_gradient": "labelColourGradient (2026-09-04) is the text-colour gradient sibling to labelColour, same background-clip:text mechanism. labelColour currently only paints .sgs-business-hours__day (the 'hours' displayType) — the gradient sibling follows the same real paint target."
 				},

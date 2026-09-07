@@ -78,7 +78,8 @@
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
 						"css:color-gradient": "textColourGradient",
-						"css:color-link": "linkColour"
+						"css:color-link": "linkColour",
+						"css:color-link-gradient": "linkColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -88,7 +89,8 @@
 								"css:box-shadow-color": "boxShadowHoverColour",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
-								"css:color-link": "linkColourHover"
+								"css:color-link": "linkColourHover",
+								"css:color-link-gradient": "linkColourHoverGradient"
 							}
 						}
 					},
@@ -171,6 +173,16 @@
 		"linkColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the link text via background-clip:text. Non-empty wins over linkColour."
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of linkColourHover. Non-empty wins over linkColourHover on :hover/:focus-visible."
 		},
 		"fontSize": {
 			"type": "object",

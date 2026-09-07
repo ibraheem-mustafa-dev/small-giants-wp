@@ -492,8 +492,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		connectorFillColourHover,
 		connectorFillColourHoverGradient,
 		dateColour,
+		dateColourGradient,
+		dateColourHover,
+		dateColourHoverGradient,
 		descriptionLinkColour,
+		descriptionLinkColourGradient,
 		descriptionLinkColourHover,
+		descriptionLinkColourHoverGradient,
 		scrollEffect,
 		revealOnScroll,
 		revealTrigger,
@@ -518,6 +523,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderColourGradient,
 		borderStyle,
 		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
 		backgroundColour,
 	} = attributes;
 
@@ -709,6 +717,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						   fixed 2026-09-06 (colour-conformance track). */
 						key: 'wrapperText',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -716,6 +725,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -873,6 +894,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'date',
 						label: __( 'Date colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -880,12 +902,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: dateColour,
 								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
 								linked: true,
+								gradientValue: dateColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dateColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: dateColourHover,
+								onChange: ( val ) => setAttributes( { dateColourHover: val ?? '' } ),
+								gradientValue: dateColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { dateColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
 					{
 						key: 'descriptionLink',
 						label: __( 'Entry description link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -894,6 +929,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { descriptionLinkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: descriptionLinkColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { descriptionLinkColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -901,7 +939,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: descriptionLinkColourHover,
 								onChange: ( val ) =>
 									setAttributes( { descriptionLinkColourHover: val ?? '' } ),
-								linked: true,
+								gradientValue: descriptionLinkColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { descriptionLinkColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

@@ -155,7 +155,18 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "desc"
+					"prefix": "desc",
+					"attrMap": {
+						"css:color-link-gradient": "descLinkColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-link-gradient": "descLinkColourHoverGradient"
+							}
+						}
+					},
+					"_note": "descLinkColour/descLinkColourHover resolve via default convention (prefix 'desc' + suffix, same as descColour above); their Gradient/HoverGradient siblings (2026-09-07, colour-conformance TEXT closeout) do not fit that convention's suffix vocabulary and need this explicit css:color-link-gradient mapping, same key used by sgs/timeline's descriptionLinkColourGradient."
 				},
 				"description": {
 					"label": "Description colour",
@@ -678,6 +689,11 @@
 			"default": "",
 			"description": "Bound/configurator mode only: colour for the in-card option-picker labels (Size/Flavour legends). Theme colour token slug (e.g. primary) or raw hex. Empty = default. Forwarded to each sgs/option-picker as labelColour."
 		},
+		"pickerLabelColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as labelColourGradient — sgs/option-picker already carries the full gradient sibling for its label colour (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerLabelColour."
+		},
 		"pickerColourPreset": {
 			"type": "string",
 			"default": "solid",
@@ -707,6 +723,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Forwarded to each in-card sgs/option-picker as pillTextColour (resting pill text)."
+		},
+		"pickerPillTextColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Forwarded to each in-card sgs/option-picker as pillTextColourGradient — sgs/option-picker already carries the full gradient sibling for its pill text colour (2026-09-05); this attribute was the missing forward. Non-empty wins over pickerPillTextColour."
 		},
 		"pickerPillBorderColour": {
 			"type": "string",
@@ -832,9 +853,19 @@
 			"type": "string",
 			"default": ""
 		},
+		"descLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the product description link colour, read by sgs_link_colour_css(). Non-empty wins over descLinkColour."
+		},
 		"descLinkColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"descLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string for the product description link hover colour, read by sgs_link_colour_css(). Non-empty wins over descLinkColourHover."
 		},
 		"descFontFamily": {
 			"type": "string",

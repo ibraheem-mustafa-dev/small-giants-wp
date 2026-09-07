@@ -1366,6 +1366,31 @@
 			"notes": "Sibling to css:color the same way css:color-gradient is — a SEPARATE member because a RichText field whose `allowedFormats` permits `core/link` can legitimately have both its own base text colour (css:color) AND an independent colour for a linked selection inside it, and both attribute names end in the literal suffix 'Colour' so they would otherwise contend for the same manifest slot. Real emitter: sgs_link_colour_css() (includes/helpers-typography.php), scoped to `{selector} a`."
 		},
 		{
+			"setting_key": "css:color-link-gradient",
+			"category": "css-property",
+			"label": "Link colour (gradient)",
+			"optimal_control": {
+				"component": "DesignTokenPicker (enableAlpha + clearable, gradient tab)",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "hover",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "enableAlpha + clearable",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Task 3 addendum, 2026-09-07 (sgs_link_colour_css() gradient support)",
+			"current_state": "7 blocks (collapsible-text, heading, product-card, quote, testimonial, text, timeline), 2026-09-07 build",
+			"divergence": "none — first rollout",
+			"divergence_severity": "low",
+			"notes": "Sibling to css:color-link the same way css:color-gradient is sibling to css:color — a link's gradient colour is a distinct concept from its flat colour, so 'LinkColourGradient' needs its own member rather than falling through to css:color-gradient's 'ColourGradient' suffix (which would misclaim it as the element's own text-gradient). Real mechanism: background-clip:text scoped to `{selector} a`, same as css:color-gradient but on the link."
+		},
+		{
 			"setting_key": "css:display",
 			"category": "css-property",
 			"label": "Display type",

@@ -22,7 +22,7 @@ import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, text
 import { textPaintPreview, linkColourPreviewCss } from '../../utils';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover } = attributes;
+	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover, linkColourGradient, linkColourHoverGradient } = attributes;
 
 	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
 	// 2026-09-07) — mirrors render.php's uid scope, matching product-card's
@@ -76,6 +76,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'link',
 						label: __( 'Link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -84,6 +85,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { linkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: linkColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { linkColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -92,6 +96,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { linkColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: linkColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { linkColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

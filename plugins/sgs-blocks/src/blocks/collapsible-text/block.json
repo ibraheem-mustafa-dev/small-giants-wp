@@ -179,6 +179,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"fontFamily": {
 			"type": "string",
 			"default": ""

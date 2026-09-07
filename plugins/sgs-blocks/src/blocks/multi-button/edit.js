@@ -87,6 +87,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		flexWrap,
 		alignItems,
 		textColour,
+		textColourGradient,
+		textColourHover,
+		textColourHoverGradient,
 		childBtnBackground,
 		childBtnTextColour,
 		childBtnBorderColour,
@@ -312,6 +315,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -320,6 +324,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) =>
 									setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) =>
+									setAttributes( { textColourHover: val ?? '' } ),
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { textColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

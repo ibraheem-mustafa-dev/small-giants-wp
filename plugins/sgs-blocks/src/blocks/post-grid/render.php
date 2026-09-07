@@ -587,6 +587,14 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . Post_Grid_REST::card_vars_decls( $card_params ) . '}';
 
+// categoryBadgeBgColour background layer — moved to ::after (D292) so the
+// categoryBadgeColour text-colour gradient can use background-clip:text on the
+// same element. This MUST run before the text-colour trio loop below.
+$badge_bg_paint_decl = sgs_background_paint_decl( $card_params['categoryBadgeBgColour'], $attributes['categoryBadgeBgColourGradient'] ?? '' );
+if ( '' !== $badge_bg_paint_decl ) {
+	$responsive_css .= sgs_block_background_layer_css( $root_sel . ' .sgs-post-grid__badge,' . $root_sel . ' .sgs-post-grid__category', $badge_bg_paint_decl );
+}
+
 // D956 (778879732 rollout, Phase 3) — titleColour/excerptColour/metaColour/
 // readMoreColour gradient siblings. Emitted as DIRECT declarations at the real
 // card element selectors (not the --sgs-pg-* custom-property chain above,
@@ -631,6 +639,23 @@ foreach ( $post_grid_text_rows as $post_grid_attr => $post_grid_sel ) {
 		$responsive_css .= $post_grid_sel . '{' . $post_grid_decl . ';}';
 	}
 	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $post_grid_sel, $post_grid_effective );
+}
+
+// categoryBadgeColourHover (colour-conformance text-colour trio closeout,
+// 2026-09-07) — category badge text colour on :hover/:focus-within, with
+// optional gradient sibling. Emitted as a separate descendant rule for the
+// same comma-joined selector as the base categoryBadgeColour (both
+// .sgs-post-grid__badge and .sgs-post-grid__category are mutually-exclusive
+// per cardStyle). This is a standalone section separate from the trio loop
+// because it targets the CARD's :hover, not a text-element's direct :hover —
+// render.php's own comment at line 609-611 calls this an 'ancestor-hover shape'.
+if ( '' !== ( $attributes['categoryBadgeColourHover'] ?? '' ) ) {
+	$badge_hover_colour = sgs_colour_value( $attributes['categoryBadgeColourHover'] );
+	$responsive_css .= sgs_emit_state_colour_css(
+		$root_sel . ' .sgs-post-grid__badge,' . $root_sel . ' .sgs-post-grid__category',
+		array(),
+		array( 'color:' . $badge_hover_colour )
+	);
 }
 
 // Hover colour shifts (background/text/border) — per-instance scoped rules via

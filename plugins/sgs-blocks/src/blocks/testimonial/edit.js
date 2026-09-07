@@ -183,6 +183,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		quoteColourHover,
 		quoteLinkColour,
 		quoteLinkColourHover,
+		quoteLinkColourGradient,
+		quoteLinkColourHoverGradient,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
@@ -1231,6 +1233,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						/>
 						<DesignTokenPicker
 							label={ __( 'Quote link colour', 'sgs-blocks' ) }
+							gradientCapable={ true }
 							states={ [
 								{
 									key: 'normal',
@@ -1239,6 +1242,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									onChange: ( val ) =>
 										setAttributes( { quoteLinkColour: val ?? '' } ),
 									linked: true,
+									gradientValue: quoteLinkColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { quoteLinkColourGradient: val ?? '' } ),
 								},
 								{
 									key: 'hover',
@@ -1247,6 +1253,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 									onChange: ( val ) =>
 										setAttributes( { quoteLinkColourHover: val ?? '' } ),
 									linked: true,
+									gradientValue: quoteLinkColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { quoteLinkColourHoverGradient: val ?? '' } ),
 								},
 							] }
 						/>

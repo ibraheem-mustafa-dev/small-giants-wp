@@ -381,11 +381,22 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 
 if ( ! function_exists( 'sgs_link_colour_css' ) ) {
 	/**
-	 * Two-state LINK colour for a RichText field whose `allowedFormats`
-	 * permits `core/link` — a linked selection and the surrounding plain text
-	 * coexist in the same field, so they need independent colours (Task 3,
-	 * 2026-09-07). Scoped to `{$selector} a` so it overrides the field's own
-	 * text colour ONLY where a link actually exists.
+	 * Two-state, flat-or-gradient LINK colour for a RichText field whose
+	 * `allowedFormats` permits `core/link` — a linked selection and the
+	 * surrounding plain text coexist in the same field, so they need
+	 * independent colours (Task 3, 2026-09-07). Scoped to `{$selector} a` so
+	 * it overrides the field's own text colour ONLY where a link actually
+	 * exists.
+	 *
+	 * Gradient support added same day (Task 3 addendum, Bean-approved design
+	 * call) — mirrors the standard text-colour trio
+	 * (`sgs_resolve_text_colour_or_gradient()` -> `sgs_text_colour_decl()` ->
+	 * `sgs_text_colour_gradient_fallback_rule()`) for BOTH states, reading
+	 * `{prefix}LinkColourGradient` / `{prefix}LinkColourHoverGradient`
+	 * siblings when a caller declares them. A caller that never declares the
+	 * Gradient attrs (isset() false -> '' -> resolves to the flat value) gets
+	 * byte-identical output to the pre-gradient version — fully backward
+	 * compatible, no per-caller opt-in needed.
 	 *
 	 * GROUND-TRUTH: source=file evidence=confirmed against
 	 * includes/helpers-hover-state.php's sgs_hover_state_rules() signature
@@ -399,24 +410,36 @@ if ( ! function_exists( 'sgs_link_colour_css' ) ) {
 	 * @return string CSS text; '' when nothing is set.
 	 */
 	function sgs_link_colour_css( array $attributes, $prefix, $selector ) {
-		$k_colour = sgs_typography_attr( $prefix, 'LinkColour' );
-		$k_hover  = sgs_typography_attr( $prefix, 'LinkColourHover' );
+		$k_colour       = sgs_typography_attr( $prefix, 'LinkColour' );
+		$k_gradient     = sgs_typography_attr( $prefix, 'LinkColourGradient' );
+		$k_hover        = sgs_typography_attr( $prefix, 'LinkColourHover' );
+		$k_hover_grad   = sgs_typography_attr( $prefix, 'LinkColourHoverGradient' );
 
-		$colour = isset( $attributes[ $k_colour ] ) ? (string) $attributes[ $k_colour ] : '';
-		$hover  = isset( $attributes[ $k_hover ] ) ? (string) $attributes[ $k_hover ] : '';
+		$colour     = isset( $attributes[ $k_colour ] ) ? (string) $attributes[ $k_colour ] : '';
+		$gradient   = isset( $attributes[ $k_gradient ] ) ? (string) $attributes[ $k_gradient ] : '';
+		$hover      = isset( $attributes[ $k_hover ] ) ? (string) $attributes[ $k_hover ] : '';
+		$hover_grad = isset( $attributes[ $k_hover_grad ] ) ? (string) $attributes[ $k_hover_grad ] : '';
 
-		if ( '' === $colour && '' === $hover ) {
+		$effective       = sgs_resolve_text_colour_or_gradient( $colour, $gradient );
+		$hover_effective = sgs_resolve_text_colour_or_gradient( $hover, $hover_grad );
+
+		if ( '' === $effective && '' === $hover_effective ) {
 			return '';
 		}
 
 		$link_selector = $selector . ' a';
 		$css           = '';
 
-		if ( '' !== $colour ) {
-			$css .= $link_selector . '{color:' . sgs_colour_value( $colour ) . ';}';
+		$decl = sgs_text_colour_decl( $effective );
+		if ( '' !== $decl ) {
+			$css .= $link_selector . '{' . $decl . ';}';
+			$css .= sgs_text_colour_gradient_fallback_rule( $link_selector, $effective );
 		}
-		if ( '' !== $hover ) {
-			$css .= sgs_hover_state_rules( $link_selector, 'color:' . sgs_colour_value( $hover ) . ';' );
+
+		$hover_decl = sgs_text_colour_decl( $hover_effective );
+		if ( '' !== $hover_decl ) {
+			$css .= sgs_hover_state_rules( $link_selector, $hover_decl );
+			$css .= sgs_text_colour_gradient_fallback_rule( $link_selector . ':hover', $hover_effective );
 		}
 
 		return $css;

@@ -76,6 +76,7 @@ $subtitle_colour_gradient = $attributes['subtitleColourGradient'] ?? '';
 $hover_bg            = $attributes['backgroundColourHover'] ?? '';
 $hover_bg_gradient   = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text          = $attributes['textColourHover'] ?? '';
+$hover_text_gradient = $attributes['textColourHoverGradient'] ?? '';
 $hover_border        = $attributes['borderColourHover'] ?? '';
 // D636 border-colour gradient siblings — resolved once here, emitted via
 // sgs_border_gradient_css() masked ::before further down; border-color can
@@ -981,3 +982,4 @@ echo $card_grid_style_tags . SGS_Container_Wrapper::render( // phpcs:ignore Word
 		'extra_styles'  => $grid_style_parts,
 	)
 );
+

@@ -265,6 +265,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		textColourHoverGradient,
 		linkColour,
 		linkColourHover,
+		linkColourGradient,
+		linkColourHoverGradient,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
@@ -371,6 +373,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{
 						key: 'link',
 						label: __( 'Link colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -378,6 +381,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: linkColour,
 								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
 								linked: true,
+								gradientValue: linkColourGradient,
+								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
 							},
 							{
 								key: 'hover',
@@ -385,6 +390,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value: linkColourHover,
 								onChange: ( val ) => setAttributes( { linkColourHover: val ?? '' } ),
 								linked: true,
+								gradientValue: linkColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { linkColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

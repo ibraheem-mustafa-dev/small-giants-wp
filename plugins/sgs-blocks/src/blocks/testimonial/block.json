@@ -107,16 +107,20 @@
 					"prefix": "quote",
 					"attrMap": {
 						"css:margin-bottom": "quoteMarginBottom",
-						"css:background-image": "quoteColourGradient"
+						"css:background-image": "quoteColourGradient",
+						"css:color-link": "quoteLinkColour",
+						"css:color-link-gradient": "quoteLinkColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "quoteColourHover"
+								"css:color": "quoteColourHover",
+								"css:color-link": "quoteLinkColourHover",
+								"css:color-link-gradient": "quoteLinkColourHoverGradient"
 							}
 						}
 					},
-					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member."
+					"_note": "quoteMarginBottom (render.php:153,241, `'margin-bottom' => $quote_margin_bot`) resolves via the new css:margin-bottom layout member (Spec 35 vocabulary fix). quoteColourGradient (D636 Task 1b) is the text-colour gradient sibling to quoteColour — background-clip:text mechanism; the 'fill' cluster was added solely to place this member. quoteLinkColour/Hover/Gradient/HoverGradient (2026-09-07, colour-conformance TEXT closeout) route through sgs_link_colour_css(), scoped to `.sgs-testimonial__quote a` — same `css:color-link` convention as sgs/timeline's descriptionLinkColour."
 				},
 				"reviewer-name": {
 					"label": "Reviewer name",
@@ -436,6 +440,16 @@
 		"quoteLinkColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"quoteLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the quote link text via background-clip:text. Non-empty wins over quoteLinkColour."
+		},
+		"quoteLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of quoteLinkColourHover. Non-empty wins over quoteLinkColourHover on :hover/:focus-visible."
 		},
 		"quoteFontStyle": {
 			"type": "string",

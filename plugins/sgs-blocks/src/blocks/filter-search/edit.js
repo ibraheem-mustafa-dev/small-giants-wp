@@ -19,7 +19,7 @@ import { borderPaintPreview, textPaintPreview } from '../../utils';
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, focusRingColour, textColour } = attributes;
+	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, focusRingColour, textColour, textColourHover } = attributes;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
 	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
@@ -79,6 +79,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: textColour,
 								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
 								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
 							},
 						],
 					},

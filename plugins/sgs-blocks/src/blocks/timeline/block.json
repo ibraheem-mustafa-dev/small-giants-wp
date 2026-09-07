@@ -66,6 +66,7 @@
 					"isWrapper": true,
 					"attrMap": {
 						"css:color": "textColour",
+						"css:color-gradient": "textColourGradient",
 						"css:background-color": "backgroundColour",
 						"css:padding": "padding",
 						"css:margin": "margin",
@@ -75,6 +76,14 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-style": "borderStyle",
 						"css:box-shadow": "native:shadow"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
 					},
 					"_note": "Root <div> (Step 4a moved the <ol> inside it as `.sgs-timeline__list`, wrapped in `.sgs-timeline__track`, so a horizontal scroll effect can resolve a plain <div> direct child; an <ol> may only contain <li>). No `layer` declared (leaf content block, no grid/flex attrs despite align:wide/full). block.json's native `typography` support is declared here but rendered via `selectors.typography` against `.sgs-timeline__title` (render.php:258-268), NOT this root — see the `title` element below, which owns the text-cluster typography members instead. borderWidth/borderColour/borderStyle are custom scalar/object attrs (no WP-native per-side width support), verified live in render.php:143-155."
 				},
@@ -142,9 +151,18 @@
 					],
 					"prefix": "date",
 					"attrMap": {
-						"css:color": "dateColour"
+						"css:color": "dateColour",
+						"css:color-gradient": "dateColourGradient"
 					},
-					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "dateColourHover",
+								"css:color-gradient": "dateColourHoverGradient"
+							}
+						}
+					},
+					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`). dateColourGradient/Hover/HoverGradient (2026-09-07, colour-conformance TEXT closeout, corrected same session) are routed through the standard text-colour trio in render.php, scoped to `.sgs-timeline__date` directly — NOT the sgs_custom_property_gradient_decls() background-image chain a first pass mistakenly copied from connectorColour (a FILL/background attribute) — dateColour paints text (color:), which that mechanism cannot express."
 				},
 				"entry": {
 					"label": "Timeline entry",
@@ -300,13 +318,38 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"dateColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the date text via background-clip:text (helpers-tokens.php sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl(), the text trio — not sgs_custom_property_gradient_decls(), which cannot express background-clip:text). Non-empty wins over dateColour."
+		},
+		"dateColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Date text colour on :hover/:focus-visible (colour-conformance TEXT closeout 2026-09-07). Falls back to dateColour, then the CSS default, when unset."
+		},
+		"dateColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the date text on :hover/:focus-visible via background-clip:text. Non-empty wins over dateColourHover; falls back to dateColourGradient, then none."
+		},
 		"descriptionLinkColour": {
 			"type": "string",
 			"default": ""
 		},
+		"descriptionLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting description links via background-clip:text (helpers-tokens.php sgs_link_colour_css). Non-empty wins over descriptionLinkColour."
+		},
 		"descriptionLinkColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"descriptionLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting description links on :hover/:focus-visible via background-clip:text. Non-empty wins over descriptionLinkColourHover; falls back to descriptionLinkColourGradient, then none."
 		},
 		"titleFontSize": {
 			"type": "object",
@@ -402,6 +445,21 @@
 		"textColour": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper text via background-clip:text (helpers-tokens.php sgs_resolve_text_colour_or_gradient()/sgs_text_colour_decl(), the text trio). Non-empty wins over textColour."
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Wrapper text colour on :hover/:focus-visible (colour-conformance TEXT closeout 2026-09-07). Falls back to textColour, then the CSS default, when unset."
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the wrapper text on :hover/:focus-visible via background-clip:text. Non-empty wins over textColourHover; falls back to textColourGradient, then none."
 		},
 		"backgroundColour": {
 			"type": "string",

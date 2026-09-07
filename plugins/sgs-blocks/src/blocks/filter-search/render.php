@@ -128,6 +128,15 @@ if ( ! empty( $input_css ) ) {
 	$scoped_css[] = "{$root_sel}{" . $input_css . '}';
 }
 
+// Hover state for text colour (flat colour only; no gradient — exempted per
+// Task 1, colour-conformance FILL closeout).
+if ( ! empty( $attributes['textColourHover'] ?? '' ) ) {
+	$scoped_css[] = sgs_hover_state_rules(
+		$root_sel,
+		'--sgs-filter-search-text-hover:' . sanitize_text_field( $attributes['textColourHover'] ) . ';'
+	);
+}
+
 // --- Border gradient (D636 border builder) — masked ::before, replaces the
 // flat --sgs-filter-search-border custom property above when set. No hover
 // state exists on this attribute. ---

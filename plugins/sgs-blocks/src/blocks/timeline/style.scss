@@ -1026,6 +1026,14 @@
 	color: var(--sgs-date-colour);
 }
 
+// dateColourGradient/Hover(Gradient) (2026-09-07, colour-conformance TEXT
+// closeout, corrected same session) — a raw background-image custom-property
+// chain cannot express background-clip:text switching, and a hand-rolled
+// :hover here bypasses the touch-safe hover guard. Both gradient and hover
+// (flat + gradient) are now wired PHP-side via the text-colour trio +
+// sgs_hover_state_rules(), scoped to `.sgs-timeline__date` directly — see
+// render.php. Nothing left to do here beyond the flat resting colour above.
+
 // ── Content ───────────────────────────────────────────────────────────────────
 
 .sgs-timeline__content {

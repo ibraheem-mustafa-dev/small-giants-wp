@@ -219,6 +219,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"fontStyle": {
 			"type": "string",
 			"enum": [

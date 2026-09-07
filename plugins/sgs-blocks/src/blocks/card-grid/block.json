@@ -1,766 +1,771 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/card-grid",
-	"version": "0.3.0",
-	"title": "SGS Card Grid",
-	"category": "sgs-content",
-	"description": "Flexible image and content grid with overlay and card variants.",
-	"keywords": [
-		"card",
-		"grid",
-		"image",
-		"gallery",
-		"product",
-		"tiles"
-	],
-	"textdomain": "sgs-blocks",
-	"icon": "grid-view",
-	"supports": {
-		"align": [
-			"wide",
-			"full"
-		],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": false,
-			"text": false,
-			"gradients": false,
-			"__experimentalSkipSerialization": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"__experimentalSkipSerialization": true
-		},
-		"shadow": {
-			"__experimentalSkipSerialization": true
-		},
-		"sgs": {
-			"collection": true,
-			"scalarStylingLift": true,
-			"imageControls": true,
-			"imageControlsExplicit": true,
-			"_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
-			"mediaElements": [
-				{
-					"prefix": "sgs",
-					"context": "element",
-					"atoms": [
-						"object-fit"
-					]
-				}
-			],
-			"arrayContentLift": true,
-			"presetSelectors": [
-				"effectHover"
-			],
-			"boxFamilies": {
-				"cardBorderWidth": [
-					"cardBorderWidth"
-				],
-				"borderRadius": [
-					"borderRadius"
-				]
-			},
-			"elements": {
-				"grid": {
-					"label": "Grid",
-					"layer": "OUTER",
-					"_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
-					"order": 1,
-					"clusters": [
-						"layout",
-						"animation"
-					],
-					"isWrapper": true,
-					"attrMap": {
-						"css:gap": "gap",
-						"css:padding": "native:spacing.padding",
-						"css:margin": "native:spacing.margin",
-						"css:max-width": "maxWidth",
-						"css:border-width": "borderWidth",
-						"css:border-style": "borderStyle",
-						"css:border-color": "borderColour",
-						"css:border-radius": "borderRadius",
-						"css:grid-template-columns": "gridTemplateColumns",
-						"css:grid-template-rows": "gridTemplateRows",
-						"css:grid-auto-rows": "gridAutoRows",
-						"css:justify-items": "justifyItems",
-						"css:justify-content": "justifyContent",
-						"css:align-content": "alignContent",
-						"css:align-items": "alignItems",
-						"css:flex-direction": "flexDirection",
-						"css:flex-wrap": "flexWrap",
-						"anim:preset": "sgsAnimation",
-						"anim:duration": "sgsAnimationDuration",
-						"anim:easing": "sgsAnimationEasing",
-						"anim:stagger": "staggerDelay",
-						"css:border-color-gradient": "borderColourGradient"
-					},
-					"_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
-				},
-				"item": {
-					"label": "Card",
-					"order": 4,
-					"clusters": [],
-					"attrMap": {
-						"css:background-color": "cardBackground",
-						"css:background-image": "cardBackgroundGradient",
-						"css:border-color": "cardBorderColour",
-						"css:border-color-gradient": "cardBorderColourGradient",
-						"css:border-width": "cardBorderWidth",
-						"css:border-radius": "cardRadius",
-						"css:box-shadow": "cardShadow"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:background-color": "backgroundColourHover",
-								"css:background-image": "backgroundColourHoverGradient",
-								"css:border-color": "borderColourHover",
-								"css:border-color-gradient": "borderColourHoverGradient",
-								"css:box-shadow": "shadowHover"
-							}
-						}
-					},
-					"_note": "Renamed from 'card-tile' 2026-08-15 (element-manifest drift fix) — the real rendered class is `.sgs-card-grid__item` (render.php:694), not `.sgs-card-grid__card-tile`. `textColourHover` (not in this element's attrMap) already resolved to css_element='item' via the markup-fallback derivation before this rename — the key now matches every attr's real target, not just the attrMap-covered ones. Spec 35 FR-35-5 fix (2026-07-21, Task 4) — the card tile now has RESTING-STATE attrs (cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow) alongside the existing hover-only ones, so backgroundColourHover/borderColourHover/shadowHover are STATE_OK not STATE_WITHOUT_BASE. An empty resting attr means the card inherits the theme token exactly as before (Bean's Option A — custom-property FALLBACK at style.css, never a baked default). The top-level `attrMap` on this element (not `clusters`) is deliberate: it resolves the 5 members for the states-axis base check without declaring the full fill/layout clusters, which would flood this repeater-item element with unrelated GAP findings (padding/width/aspect-ratio/etc. it genuinely doesn't have controls for)."
-				},
-				"image": {
-					"label": "Card image",
-					"order": 5,
-					"clusters": [],
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:filter": "grayscaleHover"
-							}
-						}
-					},
-					"_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
-				},
-				"image-wrap": {
-					"label": "Image wrapper",
-					"order": 4,
-					"clusters": [],
-					"prefix": "",
-					"_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opts this element out of orphan-candidate scanning — it has no other style attrs to claim, so any gap is reported honestly rather than force-claimed."
-				},
-				"title": {
-					"label": "Card title",
-					"order": 2,
-					"clusters": [
-						"text"
-					],
-					"prefix": "title",
-					"attrMap": {
-						"tag": "headingLevel",
-						"css:background-image": "titleColourGradient"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:color": "titleColourHover"
-							}
-						}
-					},
-					"_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. `states.hover.attrMap` added 2026-09-03 — without it titleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
-				},
-				"subtitle": {
-					"label": "Card subtitle",
-					"order": 3,
-					"clusters": [
-						"text"
-					],
-					"prefix": "subtitle",
-					"attrMap": {
-						"css:background-image": "subtitleColourGradient"
-					},
-					"states": {
-						"hover": {
-							"attrMap": {
-								"css:color": "subtitleColourHover"
-							}
-						}
-					},
-					"_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`. `subtitleColourGradient` (2026-09-03) is the text-colour gradient sibling to subtitleColour, same background-clip:text mechanism. `states.hover.attrMap` added 2026-09-03 — without it subtitleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
-				},
-				"badge": {
-					"label": "Card badge",
-					"order": 7,
-					"clusters": [],
-					"_note": "Renamed from 'card-badge' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__badge` (render.php:719), not `.sgs-card-grid__card-badge`. Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
-				}
-			}
-		}
-	},
-	"selectors": {
-		"root": ".wp-block-sgs-card-grid"
-	},
-	"attributes": {
-		"variant": {
-			"type": "string",
-			"default": "card"
-		},
-		"headingLevel": {
-			"type": "string",
-			"enum": [
-				"h2",
-				"h3",
-				"h4",
-				"h5",
-				"h6",
-				"p"
-			],
-			"default": "h3"
-		},
-		"_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
-		"items": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "object",
-				"properties": {
-					"title": {
-						"type": "string",
-						"role": "text-content"
-					},
-					"subtitle": {
-						"type": "string",
-						"role": "text-content"
-					},
-					"media": {
-						"type": "string",
-						"role": "image-object",
-						"_note": "TWO shapes are accepted and both render. edit.js writes the OBJECT form { url, type, alt, ... } consumed by sgs_render_media(); a BARE URL STRING (what this declared type describes, and what the mega starter patterns use) is normalised to that object in render.php. Before 2026-07-29 the string form silently rendered NOTHING — sgs_render_media() bails on a non-array (helpers-media.php:168) — which cost both mega starter patterns all 8 card images through a green build. Do not 'tidy' the string branch away."
-					},
-					"badge": {
-						"type": "string",
-						"role": "text-content"
-					},
-					"link": {
-						"type": "string"
-					},
-					"linkTarget": {
-						"type": "string"
-					},
-					"linkRel": {
-						"type": "string"
-					},
-					"badgeVariant": {
-						"type": "string"
-					},
-					"decorative": {
-						"type": "boolean",
-						"default": false,
-						"description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
-					},
-					"_key": {
-						"type": "string",
-						"_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
-					},
-					"objectFit": {
-						"type": "string",
-						"enum": [
-							"cover",
-							"contain",
-							"fill"
-						],
-						"default": "cover"
-					},
-					"focalPoint": {
-						"type": "object",
-						"default": {
-							"x": 0.5,
-							"y": 0.5
-						}
-					}
-				}
-			}
-		},
-		"columns": {
-			"type": "object",
-			"default": {
-				"desktop": 3,
-				"tablet": 2,
-				"mobile": 1
-			}
-		},
-		"gap": {
-			"type": "object",
-			"default": {
-				"desktop": "1rem"
-			},
-			"_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
-		},
-		"aspectRatio": {
-			"type": "string",
-			"default": "16 / 9"
-		},
-		"effectHover": {
-			"type": "string",
-			"default": "zoom"
-		},
-		"titleColour": {
-			"type": "string",
-			"default": "primary"
-		},
-		"titleColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"subtitleColour": {
-			"type": "string",
-			"default": "text"
-		},
-		"subtitleColourGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"titleFontSize": {
-			"type": "object",
-			"default": {}
-		},
-		"titleFontSizeUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"subtitleFontSize": {
-			"type": "object",
-			"default": {}
-		},
-		"subtitleFontSizeUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"cardBackground": {
-			"type": "string",
-			"default": ""
-		},
-		"cardBackgroundGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"cardBorderColour": {
-			"type": "string",
-			"default": ""
-		},
-		"cardBorderColourGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the card border instead of a flat colour. Non-empty wins over cardBorderColour at render time (D636)."
-		},
-		"cardBorderWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"cardRadius": {
-			"type": "string",
-			"default": ""
-		},
-		"cardShadow": {
-			"type": "string",
-			"default": ""
-		},
-		"cardShadowColour": {
-			"type": "string"
-		},
-		"backgroundColourHover": {
-			"type": "string"
-		},
-		"backgroundColourHoverGradient": {
-			"type": "string",
-			"default": ""
-		},
-		"textColourHover": {
-			"type": "string"
-		},
-		"borderColourHover": {
-			"type": "string",
-			"default": "primary"
-		},
-		"borderColourHoverGradient": {
-			"type": "string",
-			"default": "",
-			"description": "Hover-state sibling of cardBorderColourGradient. Non-empty wins over borderColourHover on :hover."
-		},
-		"transitionDuration": {
-			"type": "string",
-			"default": "300"
-		},
-		"transitionEasing": {
-			"type": "string",
-			"default": "ease-in-out"
-		},
-		"scaleHover": {
-			"type": "string",
-			"default": ""
-		},
-		"shadowHover": {
-			"type": "string",
-			"default": ""
-		},
-		"shadowHoverColour": {
-			"type": "string"
-		},
-		"imageZoomHover": {
-			"type": "boolean",
-			"default": false
-		},
-		"grayscaleHover": {
-			"type": "boolean",
-			"default": false
-		},
-		"staggerDelay": {
-			"type": "number",
-			"default": 80
-		},
-		"sgsAnimation": {
-			"type": "string",
-			"default": "fade-up"
-		},
-		"sgsAnimationDuration": {
-			"type": "string",
-			"default": "medium"
-		},
-		"sgsAnimationEasing": {
-			"type": "string",
-			"default": "default"
-		},
-		"source": {
-			"type": "string",
-			"default": "manual",
-			"enum": [
-				"manual",
-				"query",
-				"wc-product",
-				"cpt-collection"
-			],
-			"description": "Where cards come from. 'wc-product' requires WooCommerce; 'cpt-collection' is the WooCommerce-INDEPENDENT path folded in from sgs/content-collection (2026-08-01) — it queries a custom post type (sgs_product by default) with the seven meta-driven selection rules and renders each result through sgs/product-card in sgs-cpt mode."
-		},
-		"_comment_cpt_collection": "── Attributes below ported verbatim (same names, same defaults) from sgs/content-collection when that block was folded into this one on 2026-08-01. Names were kept IDENTICAL so migrating an existing sgs/content-collection block is a near-identity attribute map plus source:'cpt-collection'. They are declared here because WordPress silently DISCARDS any attribute a block.json does not declare (D338) — an undeclared port would look correct in render.php and do nothing. Engine: includes/class-cpt-collection-query.php.",
-		"contentType": {
-			"type": "string",
-			"default": "sgs_product",
-			"description": "Post type queried in cpt-collection mode. Whitelisted server-side; extend via the sgs_content_collection_post_types filter."
-		},
-		"selectionRule": {
-			"type": "string",
-			"default": "newest",
-			"enum": [
-				"newest",
-				"featured",
-				"most-expensive",
-				"cheapest",
-				"most-popular",
-				"handpicked",
-				"category"
-			],
-			"description": "cpt-collection mode only. The seven meta-driven selection rules. Mirrors CPT_Collection_Query::SELECTION_RULES."
-		},
-		"count": {
-			"type": "number",
-			"default": 12,
-			"description": "cpt-collection mode only. Items per page (1–24, capped server-side)."
-		},
-		"handpickedIds": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "number"
-			},
-			"description": "cpt-collection mode, selectionRule 'handpicked'. Explicit post IDs; the operator's order is preserved."
-		},
-		"categoryTerm": {
-			"type": "number",
-			"default": 0,
-			"description": "cpt-collection mode, selectionRule 'category'. Term ID in the {contentType}_cat taxonomy."
-		},
-		"emptyMessage": {
-			"type": "string",
-			"default": "No items to show yet. Check back soon.",
-			"description": "cpt-collection mode empty state (FR-24-6). Never renders blank."
-		},
-		"showPickers": {
-			"type": "boolean",
-			"default": true,
-			"description": "Forwarded to each rendered product-card in cpt-collection mode. When false, suppresses in-card option-picker UI (axis and pill pickers)."
-		},
-		"ctaBehaviour": {
-			"type": "string",
-			"default": "learn-more",
-			"enum": [
-				"learn-more",
-				"add-to-basket",
-				"buy-now"
-			],
-			"description": "Forwarded to each rendered product-card in cpt-collection mode. learn-more = link to the product page; add-to-basket = SGS cart proxy; buy-now = add then redirect to checkout."
-		},
-		"showLadder": {
-			"type": "boolean",
-			"default": false,
-			"description": "Forwarded to each rendered product-card in cpt-collection mode. Browsing grids default false (price + per-unit note only, no multi-row value ladder)."
-		},
-		"pagination": {
-			"type": "string",
-			"default": "none",
-			"enum": [
-				"none",
-				"standard",
-				"load-more",
-				"infinite"
-			],
-			"description": "cpt-collection mode only. Rendered by the shared includes/class-grid-pagination.php helper in MODE_LINK — real <a href> links, so it works without JavaScript and is crawlable. This block has no view.js, so 'load-more' and 'infinite' degrade to numbered links rather than emitting controls nothing would hydrate."
-		},
-		"productSource": {
-			"type": "string",
-			"default": "collection",
-			"enum": [
-				"collection",
-				"handpick"
-			],
-			"description": "How products are selected: 'collection' = smart preset + filters; 'handpick' = explicit IDs."
-		},
-		"productCollection": {
-			"type": "string",
-			"default": "latest",
-			"enum": [
-				"best-selling",
-				"price-high",
-				"price-low",
-				"top-rated",
-				"latest"
-			],
-			"description": "Smart collection preset. Ignored when productSource = 'handpick'."
-		},
-		"productCategories": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "number"
-			},
-			"description": "WC product category term IDs to filter by (multi-select). Empty = all categories."
-		},
-		"productTags": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "number"
-			},
-			"description": "WC product tag term IDs to filter by (multi-select). Empty = all tags."
-		},
-		"productFeatured": {
-			"type": "boolean",
-			"default": false,
-			"description": "When true, only featured products are returned."
-		},
-		"productOnSale": {
-			"type": "boolean",
-			"default": false,
-			"description": "When true, only on-sale products are returned (uses wc_get_product_ids_on_sale index)."
-		},
-		"productInStock": {
-			"type": "boolean",
-			"default": true,
-			"description": "When true, only in-stock products are returned."
-		},
-		"productLimit": {
-			"type": "number",
-			"default": 6,
-			"description": "Maximum number of products to return (1â€“24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
-		},
-		"productIds": {
-			"type": "array",
-			"default": [],
-			"items": {
-				"type": "number"
-			},
-			"description": "Explicit product IDs for handpick mode. Order is respected."
-		},
-		"productShowLadder": {
-			"type": "boolean",
-			"default": false,
-			"description": "Show the per-pack price ladder on each card. Off by default â€” grids are a browsing context; the ladder does its upsell work on the product page."
-		},
-		"productEmptyMessage": {
-			"type": "string",
-			"default": "No products to show at the moment. Check back soon.",
-			"description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
-		},
-		"queryPostType": {
-			"type": "string",
-			"default": "post"
-		},
-		"queryPostsPerPage": {
-			"type": "number",
-			"default": 6
-		},
-		"queryCategory": {
-			"type": "number",
-			"default": 0
-		},
-		"contentWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"maxWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"layout": {
-			"type": "string",
-			"enum": [
-				"",
-				"flex",
-				"stack",
-				"grid"
-			],
-			"default": ""
-		},
-		"gridTemplateColumns": {
-			"type": "object",
-			"default": {}
-		},
-		"gridTemplateRows": {
-			"type": "object",
-			"default": {}
-		},
-		"gridAutoRows": {
-			"type": "string",
-			"default": ""
-		},
-		"flexDirection": {
-			"type": "string",
-			"default": ""
-		},
-		"flexWrap": {
-			"type": "string",
-			"default": "wrap"
-		},
-		"justifyContent": {
-			"type": "string",
-			"default": ""
-		},
-		"justifyItems": {
-			"type": "string",
-			"default": ""
-		},
-		"alignContent": {
-			"type": "string",
-			"default": ""
-		},
-		"alignItems": {
-			"type": "string",
-			"default": ""
-		},
-		"borderWidth": {
-			"type": "object",
-			"default": {}
-		},
-		"borderStyle": {
-			"type": "string",
-			"enum": [
-				"none",
-				"solid",
-				"dashed",
-				"dotted",
-				"double",
-				"groove",
-				"ridge",
-				"inset",
-				"outset"
-			],
-			"default": "solid"
-		},
-		"borderColour": {
-			"type": "string",
-			"default": ""
-		},
-		"borderColourGradient": {
-			"type": "string",
-			"default": "",
-			"description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
-		},
-		"borderRadius": {
-			"type": "object",
-			"default": {
-				"desktop": {}
-			}
-		},
-		"titleColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"subtitleColourHover": {
-			"type": "string",
-			"default": ""
-		},
-		"titleFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"titleFontStyle": {
-			"type": "string",
-			"enum": [
-				"",
-				"normal",
-				"italic"
-			],
-			"default": ""
-		},
-		"titleLineHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"titleLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		},
-		"subtitleFontWeight": {
-			"type": "string",
-			"default": ""
-		},
-		"subtitleFontStyle": {
-			"type": "string",
-			"enum": [
-				"",
-				"normal",
-				"italic"
-			],
-			"default": ""
-		},
-		"subtitleLineHeight": {
-			"type": "object",
-			"default": {}
-		},
-		"subtitleLineHeightUnit": {
-			"type": "string",
-			"default": "em"
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
-	"example": {
-		"attributes": {
-			"variant": "card",
-			"columns": 3,
-			"items": [
-				{
-					"title": "Fresh Produce",
-					"subtitle": "Farm-fresh vegetables and fruits"
-				},
-				{
-					"title": "Dairy & Eggs",
-					"subtitle": "Sourced from trusted local farms"
-				},
-				{
-					"title": "Bakery",
-					"subtitle": "Baked fresh every morning"
-				}
-			]
-		}
-	}
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/card-grid",
+  "version": "0.3.0",
+  "title": "SGS Card Grid",
+  "category": "sgs-content",
+  "description": "Flexible image and content grid with overlay and card variants.",
+  "keywords": [
+    "card",
+    "grid",
+    "image",
+    "gallery",
+    "product",
+    "tiles"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "grid-view",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": false,
+      "text": false,
+      "gradients": false,
+      "__experimentalSkipSerialization": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "__experimentalSkipSerialization": true
+    },
+    "shadow": {
+      "__experimentalSkipSerialization": true
+    },
+    "sgs": {
+      "collection": true,
+      "scalarStylingLift": true,
+      "imageControls": true,
+      "imageControlsExplicit": true,
+      "_comment_mediaElements": "Rule 37-media-no-handroll fix. Card-image object-fit now routes through the shared media-element atom layer instead of a style.css literal. NOT a new client control: prefix 'sgs' resolves (sgs_media_element_attr) to the SAME 'sgsObjectFit' attribute the legacy universal image-controls extension (imageControls/imageControlsExplicit above) already injects and already exposes an 'Object Fit' dropdown for in the inspector -- adding a second ObjectFitField here would give the client two controls for one property. render.php reads that existing value through SGS_Media_Element::style() and marks each card's <img>/<video> with the atom's scope class; style.css no longer hardcodes object-fit on .sgs-card-grid__image, relying on assets/css/media-atoms/object-fit.css's cover fallback (identical default). Mirrors sgs/gallery's identical fix.",
+      "mediaElements": [
+        {
+          "prefix": "sgs",
+          "context": "element",
+          "atoms": [
+            "object-fit"
+          ]
+        }
+      ],
+      "arrayContentLift": true,
+      "presetSelectors": [
+        "effectHover"
+      ],
+      "boxFamilies": {
+        "cardBorderWidth": [
+          "cardBorderWidth"
+        ],
+        "borderRadius": [
+          "borderRadius"
+        ]
+      },
+      "elements": {
+        "grid": {
+          "label": "Grid",
+          "layer": "OUTER",
+          "_layer_note": "This element is BOTH the block root and the grid definition. layer_detect.py's MF-3 guard makes the root OUTER regardless of its own display:grid, so OUTER is correct here — the layout cluster carries the grid/arrangement properties, disambiguated by this element being the grid.",
+          "order": 1,
+          "clusters": [
+            "layout",
+            "animation"
+          ],
+          "isWrapper": true,
+          "attrMap": {
+            "css:gap": "gap",
+            "css:padding": "native:spacing.padding",
+            "css:margin": "native:spacing.margin",
+            "css:max-width": "maxWidth",
+            "css:border-width": "borderWidth",
+            "css:border-style": "borderStyle",
+            "css:border-color": "borderColour",
+            "css:border-radius": "borderRadius",
+            "css:grid-template-columns": "gridTemplateColumns",
+            "css:grid-template-rows": "gridTemplateRows",
+            "css:grid-auto-rows": "gridAutoRows",
+            "css:justify-items": "justifyItems",
+            "css:justify-content": "justifyContent",
+            "css:align-content": "alignContent",
+            "css:align-items": "alignItems",
+            "css:flex-direction": "flexDirection",
+            "css:flex-wrap": "flexWrap",
+            "anim:preset": "sgsAnimation",
+            "anim:duration": "sgsAnimationDuration",
+            "anim:easing": "sgsAnimationEasing",
+            "anim:stagger": "staggerDelay",
+            "css:border-color-gradient": "borderColourGradient"
+          },
+          "_note_animation": "FR-35-6 — the scroll-reveal preset (sgsAnimation/sgsAnimationDuration/sgsAnimationEasing) + per-card staggerDelay resolve via explicit attrMap (no `prefix` declared, per ROLLOUT REQUIREMENT 1). anim:parallax/anim:trigger are honest gaps — this block has no bgParallax/scroll-trigger attributes."
+        },
+        "item": {
+          "label": "Card",
+          "order": 4,
+          "clusters": [],
+          "attrMap": {
+            "css:background-color": "cardBackground",
+            "css:background-image": "cardBackgroundGradient",
+            "css:border-color": "cardBorderColour",
+            "css:border-color-gradient": "cardBorderColourGradient",
+            "css:border-width": "cardBorderWidth",
+            "css:border-radius": "cardRadius",
+            "css:box-shadow": "cardShadow"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:background-color": "backgroundColourHover",
+                "css:background-image": "backgroundColourHoverGradient",
+                "css:border-color": "borderColourHover",
+                "css:border-color-gradient": "borderColourHoverGradient",
+                "css:box-shadow": "shadowHover"
+              }
+            }
+          },
+          "_note": "Renamed from 'card-tile' 2026-08-15 (element-manifest drift fix) — the real rendered class is `.sgs-card-grid__item` (render.php:694), not `.sgs-card-grid__card-tile`. `textColourHover` (not in this element's attrMap) already resolved to css_element='item' via the markup-fallback derivation before this rename — the key now matches every attr's real target, not just the attrMap-covered ones. Spec 35 FR-35-5 fix (2026-07-21, Task 4) — the card tile now has RESTING-STATE attrs (cardBackground/cardBorderColour/cardBorderWidth/cardRadius/cardShadow) alongside the existing hover-only ones, so backgroundColourHover/borderColourHover/shadowHover are STATE_OK not STATE_WITHOUT_BASE. An empty resting attr means the card inherits the theme token exactly as before (Bean's Option A — custom-property FALLBACK at style.css, never a baked default). The top-level `attrMap` on this element (not `clusters`) is deliberate: it resolves the 5 members for the states-axis base check without declaring the full fill/layout clusters, which would flood this repeater-item element with unrelated GAP findings (padding/width/aspect-ratio/etc. it genuinely doesn't have controls for)."
+        },
+        "image": {
+          "label": "Card image",
+          "order": 5,
+          "clusters": [],
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:filter": "grayscaleHover"
+              }
+            }
+          },
+          "_note": "Split from 'card-media' 2026-08-15 (element-manifest drift fix) — imageZoomHover/grayscaleHover resolve to css_element='image' via the cross-block classification override (scripts/attr-classification-overrides.json), the SAME vocabulary token already declared by sgs/gallery, sgs/post-grid and sgs/team-member for this identical hover-effect pattern. This element now names the actual `<img>`/`<video>` rendered by sgs_render_media(), not its wrapper (see 'image-wrap' below for that). Governed by the universal image-controls extension (supports.sgs.imageControls) plus aspectRatio/effectHover, not the Text/Fill/Layout style clusters. (overlayStyle removed 2026-08-06 — abandoned attribute, D338-cleared.) `grayscaleHover` claimed via `states.hover.attrMap` (css:filter) 2026-08-28 — real CSS behind a class toggle in style.css, invisible to the classifier's usual attrMap-scan shape until declared explicitly here."
+        },
+        "image-wrap": {
+          "label": "Image wrapper",
+          "order": 4,
+          "clusters": [],
+          "prefix": "",
+          "_note": "Split from 'card-media' 2026-08-15 — the wrapping `<div class=\"sgs-card-grid__image-wrap\">` (render.php:695) that sets aspect-ratio via the `--sgs-card-grid-aspect` custom property (aspectRatio attr; markup-fallback derivation already resolves it to css_element='image-wrap'). Mirrors sgs/gallery's own 'img-wrap' element (same split, same reasoning). `prefix: \"\"` opts this element out of orphan-candidate scanning — it has no other style attrs to claim, so any gap is reported honestly rather than force-claimed."
+        },
+        "title": {
+          "label": "Card title",
+          "order": 2,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "title",
+          "attrMap": {
+            "tag": "headingLevel",
+            "css:background-image": "titleColourGradient"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "titleColourHover"
+              }
+            }
+          },
+          "_note": "Renamed from 'card-title' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__title` (render.php:702,713), not `.sgs-card-grid__card-title`. `attrMap.tag` added (D-pending, E12 scoping fix) — `headingLevel` sets the rendered tag on this element (render.php:759, `.sgs-card-grid__title`) but doesn't match the `title` prefix convention, so it needs an explicit map for check-hardcoded-render-defaults.js's E12 gate to resolve it to THIS element. `titleColourGradient` (2026-09-03) is the text-colour gradient sibling to titleColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. `states.hover.attrMap` added 2026-09-03 — without it titleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
+        },
+        "subtitle": {
+          "label": "Card subtitle",
+          "order": 3,
+          "clusters": [
+            "text"
+          ],
+          "prefix": "subtitle",
+          "attrMap": {
+            "css:background-image": "subtitleColourGradient"
+          },
+          "states": {
+            "hover": {
+              "attrMap": {
+                "css:color": "subtitleColourHover"
+              }
+            }
+          },
+          "_note": "Renamed from 'card-subtitle' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__subtitle` (render.php:705,716), not `.sgs-card-grid__card-subtitle`. `subtitleColourGradient` (2026-09-03) is the text-colour gradient sibling to subtitleColour, same background-clip:text mechanism. `states.hover.attrMap` added 2026-09-03 — without it subtitleColourHover's css_property resolved via CSS-scan with no state signal, tripping check-hover-state-classification.py."
+        },
+        "badge": {
+          "label": "Card badge",
+          "order": 7,
+          "clusters": [],
+          "_note": "Renamed from 'card-badge' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__badge` (render.php:719), not `.sgs-card-grid__card-badge`. Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
+        }
+      }
+    }
+  },
+  "selectors": {
+    "root": ".wp-block-sgs-card-grid"
+  },
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "card"
+    },
+    "headingLevel": {
+      "type": "string",
+      "enum": [
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "p"
+      ],
+      "default": "h3"
+    },
+    "_comment_items_media": "Migrated 2026-05-05 â€” each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
+    "items": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "role": "text-content"
+          },
+          "subtitle": {
+            "type": "string",
+            "role": "text-content"
+          },
+          "media": {
+            "type": "string",
+            "role": "image-object",
+            "_note": "TWO shapes are accepted and both render. edit.js writes the OBJECT form { url, type, alt, ... } consumed by sgs_render_media(); a BARE URL STRING (what this declared type describes, and what the mega starter patterns use) is normalised to that object in render.php. Before 2026-07-29 the string form silently rendered NOTHING — sgs_render_media() bails on a non-array (helpers-media.php:168) — which cost both mega starter patterns all 8 card images through a green build. Do not 'tidy' the string branch away."
+          },
+          "badge": {
+            "type": "string",
+            "role": "text-content"
+          },
+          "link": {
+            "type": "string"
+          },
+          "linkTarget": {
+            "type": "string"
+          },
+          "linkRel": {
+            "type": "string"
+          },
+          "badgeVariant": {
+            "type": "string"
+          },
+          "decorative": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, this card image is purely decorative — rendered with an empty alt attribute and aria-hidden on its wrapper so screen readers skip it (WCAG 2.1 AA 1.1.1). Manual/query modes only; wc-product/cpt-collection cards pull an informative product photo the client does not author."
+          },
+          "_key": {
+            "type": "string",
+            "_note": "Client-generated stable identity (src/utils/generateItemKey.js), not a client-visible field — no label, no editor control. Scopes this item's own object-fit/focal-point CSS so a crop value survives reorder/add/remove instead of following array index (Spec 35 Part 4). Backfilled silently on mount for items created before this field existed."
+          },
+          "objectFit": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "contain",
+              "fill"
+            ],
+            "default": "cover"
+          },
+          "focalPoint": {
+            "type": "object",
+            "default": {
+              "x": 0.5,
+              "y": 0.5
+            }
+          }
+        }
+      }
+    },
+    "columns": {
+      "type": "object",
+      "default": {
+        "desktop": 3,
+        "tablet": 2,
+        "mobile": 1
+      }
+    },
+    "gap": {
+      "type": "object",
+      "default": {
+        "desktop": "1rem"
+      },
+      "_comment": "Was the bare number \"30\", which the old flat path read as WordPress spacing-scale SLUG 30 = 1rem (theme.json settings.spacing.spacingSizes). A bare number now means px (Bean-ruled 2026-08-10), so the value is stated explicitly to render EXACTLY as before rather than jumping to 30px."
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "16 / 9"
+    },
+    "effectHover": {
+      "type": "string",
+      "default": "zoom"
+    },
+    "titleColour": {
+      "type": "string",
+      "default": "primary"
+    },
+    "titleColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitleColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "subtitleColourGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "titleFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "titleFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "subtitleFontSize": {
+      "type": "object",
+      "default": {}
+    },
+    "subtitleFontSizeUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "cardBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBackgroundGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBorderColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the card border instead of a flat colour. Non-empty wins over cardBorderColour at render time (D636)."
+    },
+    "cardBorderWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "cardRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "cardShadow": {
+      "type": "string",
+      "default": ""
+    },
+    "cardShadowColour": {
+      "type": "string"
+    },
+    "backgroundColourHover": {
+      "type": "string"
+    },
+    "backgroundColourHoverGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "textColourHover": {
+      "type": "string"
+    },
+    "borderColourHover": {
+      "type": "string",
+      "default": "primary"
+    },
+    "borderColourHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "Hover-state sibling of cardBorderColourGradient. Non-empty wins over borderColourHover on :hover."
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease-in-out"
+    },
+    "scaleHover": {
+      "type": "string",
+      "default": ""
+    },
+    "shadowHover": {
+      "type": "string",
+      "default": ""
+    },
+    "shadowHoverColour": {
+      "type": "string"
+    },
+    "imageZoomHover": {
+      "type": "boolean",
+      "default": false
+    },
+    "grayscaleHover": {
+      "type": "boolean",
+      "default": false
+    },
+    "staggerDelay": {
+      "type": "number",
+      "default": 80
+    },
+    "sgsAnimation": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "default"
+    },
+    "source": {
+      "type": "string",
+      "default": "manual",
+      "enum": [
+        "manual",
+        "query",
+        "wc-product",
+        "cpt-collection"
+      ],
+      "description": "Where cards come from. 'wc-product' requires WooCommerce; 'cpt-collection' is the WooCommerce-INDEPENDENT path folded in from sgs/content-collection (2026-08-01) — it queries a custom post type (sgs_product by default) with the seven meta-driven selection rules and renders each result through sgs/product-card in sgs-cpt mode."
+    },
+    "_comment_cpt_collection": "── Attributes below ported verbatim (same names, same defaults) from sgs/content-collection when that block was folded into this one on 2026-08-01. Names were kept IDENTICAL so migrating an existing sgs/content-collection block is a near-identity attribute map plus source:'cpt-collection'. They are declared here because WordPress silently DISCARDS any attribute a block.json does not declare (D338) — an undeclared port would look correct in render.php and do nothing. Engine: includes/class-cpt-collection-query.php.",
+    "contentType": {
+      "type": "string",
+      "default": "sgs_product",
+      "description": "Post type queried in cpt-collection mode. Whitelisted server-side; extend via the sgs_content_collection_post_types filter."
+    },
+    "selectionRule": {
+      "type": "string",
+      "default": "newest",
+      "enum": [
+        "newest",
+        "featured",
+        "most-expensive",
+        "cheapest",
+        "most-popular",
+        "handpicked",
+        "category"
+      ],
+      "description": "cpt-collection mode only. The seven meta-driven selection rules. Mirrors CPT_Collection_Query::SELECTION_RULES."
+    },
+    "count": {
+      "type": "number",
+      "default": 12,
+      "description": "cpt-collection mode only. Items per page (1–24, capped server-side)."
+    },
+    "handpickedIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      },
+      "description": "cpt-collection mode, selectionRule 'handpicked'. Explicit post IDs; the operator's order is preserved."
+    },
+    "categoryTerm": {
+      "type": "number",
+      "default": 0,
+      "description": "cpt-collection mode, selectionRule 'category'. Term ID in the {contentType}_cat taxonomy."
+    },
+    "emptyMessage": {
+      "type": "string",
+      "default": "No items to show yet. Check back soon.",
+      "description": "cpt-collection mode empty state (FR-24-6). Never renders blank."
+    },
+    "showPickers": {
+      "type": "boolean",
+      "default": true,
+      "description": "Forwarded to each rendered product-card in cpt-collection mode. When false, suppresses in-card option-picker UI (axis and pill pickers)."
+    },
+    "ctaBehaviour": {
+      "type": "string",
+      "default": "learn-more",
+      "enum": [
+        "learn-more",
+        "add-to-basket",
+        "buy-now"
+      ],
+      "description": "Forwarded to each rendered product-card in cpt-collection mode. learn-more = link to the product page; add-to-basket = SGS cart proxy; buy-now = add then redirect to checkout."
+    },
+    "showLadder": {
+      "type": "boolean",
+      "default": false,
+      "description": "Forwarded to each rendered product-card in cpt-collection mode. Browsing grids default false (price + per-unit note only, no multi-row value ladder)."
+    },
+    "pagination": {
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "standard",
+        "load-more",
+        "infinite"
+      ],
+      "description": "cpt-collection mode only. Rendered by the shared includes/class-grid-pagination.php helper in MODE_LINK — real <a href> links, so it works without JavaScript and is crawlable. This block has no view.js, so 'load-more' and 'infinite' degrade to numbered links rather than emitting controls nothing would hydrate."
+    },
+    "productSource": {
+      "type": "string",
+      "default": "collection",
+      "enum": [
+        "collection",
+        "handpick"
+      ],
+      "description": "How products are selected: 'collection' = smart preset + filters; 'handpick' = explicit IDs."
+    },
+    "productCollection": {
+      "type": "string",
+      "default": "latest",
+      "enum": [
+        "best-selling",
+        "price-high",
+        "price-low",
+        "top-rated",
+        "latest"
+      ],
+      "description": "Smart collection preset. Ignored when productSource = 'handpick'."
+    },
+    "productCategories": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      },
+      "description": "WC product category term IDs to filter by (multi-select). Empty = all categories."
+    },
+    "productTags": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      },
+      "description": "WC product tag term IDs to filter by (multi-select). Empty = all tags."
+    },
+    "productFeatured": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, only featured products are returned."
+    },
+    "productOnSale": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, only on-sale products are returned (uses wc_get_product_ids_on_sale index)."
+    },
+    "productInStock": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, only in-stock products are returned."
+    },
+    "productLimit": {
+      "type": "number",
+      "default": 6,
+      "description": "Maximum number of products to return (1â€“24). Server-side cap enforced at 24. The on-sale filter over-fetches and refills to this limit; fewer are returned only when fewer on-sale products exist."
+    },
+    "productIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "number"
+      },
+      "description": "Explicit product IDs for handpick mode. Order is respected."
+    },
+    "productShowLadder": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show the per-pack price ladder on each card. Off by default â€” grids are a browsing context; the ladder does its upsell work on the product page."
+    },
+    "productEmptyMessage": {
+      "type": "string",
+      "default": "No products to show at the moment. Check back soon.",
+      "description": "Message shown when the product query returns zero results (FR-24-6 empty state)."
+    },
+    "queryPostType": {
+      "type": "string",
+      "default": "post"
+    },
+    "queryPostsPerPage": {
+      "type": "number",
+      "default": 6
+    },
+    "queryCategory": {
+      "type": "number",
+      "default": 0
+    },
+    "contentWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "maxWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "layout": {
+      "type": "string",
+      "enum": [
+        "",
+        "flex",
+        "stack",
+        "grid"
+      ],
+      "default": ""
+    },
+    "gridTemplateColumns": {
+      "type": "object",
+      "default": {}
+    },
+    "gridTemplateRows": {
+      "type": "object",
+      "default": {}
+    },
+    "gridAutoRows": {
+      "type": "string",
+      "default": ""
+    },
+    "flexDirection": {
+      "type": "string",
+      "default": ""
+    },
+    "flexWrap": {
+      "type": "string",
+      "default": "wrap"
+    },
+    "justifyContent": {
+      "type": "string",
+      "default": ""
+    },
+    "justifyItems": {
+      "type": "string",
+      "default": ""
+    },
+    "alignContent": {
+      "type": "string",
+      "default": ""
+    },
+    "alignItems": {
+      "type": "string",
+      "default": ""
+    },
+    "borderWidth": {
+      "type": "object",
+      "default": {}
+    },
+    "borderStyle": {
+      "type": "string",
+      "enum": [
+        "none",
+        "solid",
+        "dashed",
+        "dotted",
+        "double",
+        "groove",
+        "ridge",
+        "inset",
+        "outset"
+      ],
+      "default": "solid"
+    },
+    "borderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColourGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the border with a masked ring instead of a flat colour (D636 border-gradient rollout). Non-empty wins over borderColour."
+    },
+    "borderRadius": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      }
+    },
+    "titleColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitleColourHover": {
+      "type": "string",
+      "default": ""
+    },
+    "titleFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "titleFontStyle": {
+      "type": "string",
+      "enum": [
+        "",
+        "normal",
+        "italic"
+      ],
+      "default": ""
+    },
+    "titleLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "titleLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "subtitleFontWeight": {
+      "type": "string",
+      "default": ""
+    },
+    "subtitleFontStyle": {
+      "type": "string",
+      "enum": [
+        "",
+        "normal",
+        "italic"
+      ],
+      "default": ""
+    },
+    "subtitleLineHeight": {
+      "type": "object",
+      "default": {}
+    },
+    "subtitleLineHeightUnit": {
+      "type": "string",
+      "default": "em"
+    },
+    "textColourHoverGradient": {
+      "type": "string",
+      "default": "",
+      "description": "CSS gradient string painting the card text on :hover instead of a flat colour. Non-empty wins over textColourHover (colour-conformance text-colour trio closeout, 2026-09-07). This attribute has NO resting counterpart — hover-only by design."
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "example": {
+    "attributes": {
+      "variant": "card",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Fresh Produce",
+          "subtitle": "Farm-fresh vegetables and fruits"
+        },
+        {
+          "title": "Dairy & Eggs",
+          "subtitle": "Sourced from trusted local farms"
+        },
+        {
+          "title": "Bakery",
+          "subtitle": "Baked fresh every morning"
+        }
+      ]
+    }
+  }
 }

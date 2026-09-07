@@ -43,6 +43,9 @@ $is_open                  = ! empty( $attributes['isOpen'] );
 $style                    = $block->context['sgs/accordionStyle'] ?? 'bordered';
 $icon_pos                 = $block->context['sgs/accordionIconPosition'] ?? 'right';
 $header_col               = $block->context['sgs/accordionHeaderColour'] ?? '';
+$header_col_gradient      = $block->context['sgs/accordionHeaderColourGradient'] ?? '';
+$header_col_hover         = $block->context['sgs/accordionHeaderColourHover'] ?? '';
+$header_col_hover_gradient = $block->context['sgs/accordionHeaderColourHoverGradient'] ?? '';
 $header_bg                = $block->context['sgs/accordionHeaderBackground'] ?? '';
 $header_bg_gradient       = $block->context['sgs/accordionHeaderBackgroundGradient'] ?? '';
 $header_bg_hover          = $block->context['sgs/accordionHeaderBackgroundHover'] ?? '';
@@ -61,30 +64,23 @@ $root_sel = '.' . $uid . '.wp-block-sgs-accordion-item';
 
 $responsive_css = '';
 
-// Header text/background colour — was inline `style="…"` on <summary>, now a
-// scoped rule keyed off the item's own uid.
-$header_decls = array();
-if ( $header_col ) {
-	$header_slug = $sgs_css_slug( $header_col );
-	if ( '' !== $header_slug ) {
-		$header_decls[] = 'color:var(--wp--preset--color--' . $header_slug . ')';
-	}
+// Header background — moved to ::after layer (D292) so text-colour gradient
+// can use background-clip:text on the same element. Emitted BEFORE the text
+// colour decl so the background-layer rule establishes the ::after backdrop.
+$header_bg_paint_decl = sgs_background_paint_decl( $header_bg, $header_bg_gradient );
+if ( '' !== $header_bg_paint_decl ) {
+	$responsive_css .= sgs_block_background_layer_css( $root_sel . ' .sgs-accordion-item__header', $header_bg_paint_decl );
 }
-// headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) —
-// bypasses the preset-slug mechanism entirely when set (a gradient cannot be
-// a swatch name). Unset behaviour (slug -> var(--wp--preset--color--{slug}))
-// is completely unchanged.
-$header_bg_gradient_value = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( $header_bg_gradient ) : '';
-if ( '' !== $header_bg_gradient_value ) {
-	$header_decls[] = 'background-image:' . $header_bg_gradient_value;
-} elseif ( $header_bg ) {
-	$header_bg_slug = $sgs_css_slug( $header_bg );
-	if ( '' !== $header_bg_slug ) {
-		$header_decls[] = 'background-color:var(--wp--preset--color--' . $header_bg_slug . ')';
+
+// Header text colour — was inline `style="…"` on <summary>, now a scoped
+// rule keyed off the item's own uid. Gradient wins when set+valid.
+$header_col_effective = sgs_resolve_text_colour_or_gradient( $header_col, $header_col_gradient );
+if ( '' !== $header_col_effective ) {
+	$header_col_decl = sgs_text_colour_decl( $header_col_effective );
+	if ( '' !== $header_col_decl ) {
+		$responsive_css .= $root_sel . ' .sgs-accordion-item__header{' . $header_col_decl . ';}';
 	}
-}
-if ( $header_decls ) {
-	$responsive_css .= $root_sel . ' .sgs-accordion-item__header{' . implode( ';', $header_decls ) . '}';
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-accordion-item__header', $header_col_effective );
 }
 
 // headerBackgroundHover/HoverGradient (colour-conformance FILL closeout,
@@ -105,6 +101,19 @@ if ( '' !== $header_bg_hover_gradient_value ) {
 }
 if ( $header_hover_decls ) {
 	$responsive_css .= sgs_hover_state_rules( $root_sel . ' .sgs-accordion-item__header', implode( ';', $header_hover_decls ) );
+}
+
+// headerColourHover/HoverGradient (colour-conformance text-colour trio closeout,
+// 2026-09-07) — the header text colour on :hover/:focus-visible, with optional
+// gradient sibling. Emitted via the shared helper with sgs_hover_state_rules()
+// for touch-safe :hover + :focus-visible pair.
+$header_col_hover_effective = sgs_resolve_text_colour_or_gradient( $header_col_hover, $header_col_hover_gradient );
+if ( '' !== $header_col_hover_effective ) {
+	$header_col_hover_decl = sgs_text_colour_decl( $header_col_hover_effective );
+	if ( '' !== $header_col_hover_decl ) {
+		$responsive_css .= sgs_hover_state_rules( $root_sel . ' .sgs-accordion-item__header', $header_col_hover_decl );
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-accordion-item__header', $header_col_hover_effective );
 }
 
 // Icon colour — was inline `style="…"` on both icon spans, now a scoped rule.

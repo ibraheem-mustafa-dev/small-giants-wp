@@ -73,13 +73,17 @@
 					"attrMap": {
 						"css:color": "attributionColour",
 						"css:color-gradient": "attributionColourGradient",
-						"css:margin-top": "attributionMarginTop"
+						"css:margin-top": "attributionMarginTop",
+						"css:color-link": "attributionLinkColour",
+						"css:color-link-gradient": "attributionLinkColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "attributionColourHover",
-								"css:color-gradient": "attributionColourHoverGradient"
+								"css:color-gradient": "attributionColourHoverGradient",
+								"css:color-link": "attributionLinkColourHover",
+								"css:color-link-gradient": "attributionLinkColourHoverGradient"
 							}
 						}
 					},
@@ -177,6 +181,16 @@
 		"attributionLinkColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"attributionLinkColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the attribution link text via background-clip:text. Non-empty wins over attributionLinkColour."
+		},
+		"attributionLinkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of attributionLinkColourHover. Non-empty wins over attributionLinkColourHover on :hover/:focus-visible."
 		},
 		"attributionFontSize": {
 			"type": "object",

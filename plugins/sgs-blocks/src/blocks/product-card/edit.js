@@ -678,11 +678,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		ctaBehaviour,
 		pickerLabelFontSize,
 		pickerLabelColour,
+		pickerLabelColourGradient,
 		pickerColourPreset,
 		pickerShowSelectedTick,
 		pickerPillBgColour,
 		pickerPillBgColourGradient,
 		pickerPillTextColour,
+		pickerPillTextColourGradient,
 		pickerPillBorderColour,
 		pickerPillBorderRadius,
 		pickerPillSelectedBgColour,
@@ -697,6 +699,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descColourGradient,
 		descLinkColour,
 		descLinkColourHover,
+		descLinkColourGradient,
+		descLinkColourHoverGradient,
 		priceNoteColour,
 		priceNoteColourGradient,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
@@ -1158,6 +1162,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		colourRows.push( {
 			key: 'desc-link',
 			label: __( 'Description link colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1165,6 +1170,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: descLinkColour,
 					onChange: ( val ) => setAttributes( { descLinkColour: val ?? '' } ),
 					linked: true,
+					gradientValue: descLinkColourGradient,
+					onGradientChange: ( val ) => setAttributes( { descLinkColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'hover',
@@ -1172,6 +1179,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: descLinkColourHover,
 					onChange: ( val ) => setAttributes( { descLinkColourHover: val ?? '' } ),
 					linked: true,
+					gradientValue: descLinkColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { descLinkColourHoverGradient: val ?? '' } ),
 				},
 			],
 		} );
@@ -1331,6 +1340,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'pickerLabel',
 			label: __( 'Picker label colour', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1338,6 +1348,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: pickerLabelColour,
 					onChange: ( val ) => setAttributes( { pickerLabelColour: val ?? '' } ),
 					linked: true,
+					gradientValue: pickerLabelColourGradient,
+					onGradientChange: ( val ) => setAttributes( { pickerLabelColourGradient: val ?? '' } ),
 				},
 			],
 		},
@@ -1367,6 +1379,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			key: 'pickerPillText',
 			label: __( 'Picker pill text', 'sgs-blocks' ),
+			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
@@ -1374,6 +1387,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: pickerPillTextColour,
 					onChange: ( val ) => setAttributes( { pickerPillTextColour: val ?? '' } ),
 					linked: true,
+					gradientValue: pickerPillTextColourGradient,
+					onGradientChange: ( val ) => setAttributes( { pickerPillTextColourGradient: val ?? '' } ),
 				},
 				{
 					key: 'selected',
