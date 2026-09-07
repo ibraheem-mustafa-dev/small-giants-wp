@@ -578,6 +578,13 @@ function sgs_fx_effect_param_scope(): array {
 			'fxGenColour3',
 			'fxGenColour4',
 			'fxGenGround',
+			// 2026-09-07: was MISSING, and check-fx-list-drift's I4 caught it.
+			// An FX_ATTR_MAP key no effect claims is stripped by
+			// sgs_fx_clear_stale_params() below, so the client's chosen backdrop
+			// was silently dropped on the way to the page -- the same trap this
+			// row's own docblock describes for colours/ground. Pairs with
+			// fxGenGround (fx.js defaults it to 'ground').
+			'fxGenBackdrop',
 			'fxGenSpeed',
 			'fxGenFoldFreq1',
 			'fxGenFoldFreq2',
