@@ -158,7 +158,7 @@
 				"inner": {
 					"label": "Inner (grid / flex layout)",
 					"layer": "GRID",
-					"order": 2,
+					"order": 4,
 					"clusters": [
 						"layout"
 					],
@@ -192,7 +192,7 @@
 				"content": {
 					"label": "Content column",
 					"layer": "GRID_AREA",
-					"order": 4,
+					"order": 2,
 					"clusters": [
 						"fill",
 						"layout"
