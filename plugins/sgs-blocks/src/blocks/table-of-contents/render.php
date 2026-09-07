@@ -59,8 +59,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -88,14 +88,14 @@ $list_style        = $attributes['listStyle'] ?? 'numbered';
 // `attributes.style` object (used by the color/spacing/border/typography
 // supports below); a string value here ("card"/"minimal"/"flush") vs. an
 // object there would clobber one another.
-$toc_style         = $attributes['tocStyle'] ?? 'card';
+$toc_style = $attributes['tocStyle'] ?? 'card';
 // Fallbacks match block.json defaults so the scoped colour rules always emit
 // (matches the pre-migration behaviour where inline styles were always emitted).
-$title_colour  = $attributes['titleColour'] ?? 'text';
-$title_colour_gradient = $attributes['titleColourGradient'] ?? '';
-$link_colour   = $attributes['linkColour'] ?? 'text-muted';
-$link_colour_gradient  = $attributes['linkColourGradient'] ?? '';
-$active_colour = $attributes['activeLinkColour'] ?? 'primary';
+$title_colour           = $attributes['titleColour'] ?? 'text';
+$title_colour_gradient  = $attributes['titleColourGradient'] ?? '';
+$link_colour            = $attributes['linkColour'] ?? 'text-muted';
+$link_colour_gradient   = $attributes['linkColourGradient'] ?? '';
+$active_colour          = $attributes['activeLinkColour'] ?? 'primary';
 $active_colour_gradient = $attributes['activeLinkColourGradient'] ?? '';
 
 // ---------------------------------------------------------------------------
@@ -200,10 +200,10 @@ if ( empty( $headings ) ) {
 // or with this block's own native `anchor` support id.
 // ---------------------------------------------------------------------------
 
-$uid       = 'sgs-toc-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel  = '.' . $uid . '.wp-block-sgs-table-of-contents';
-$title_sel = $root_sel . ' .sgs-toc__title';
-$link_sel  = $root_sel . ' .sgs-toc__link';
+$uid        = 'sgs-toc-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel   = '.' . $uid . '.wp-block-sgs-table-of-contents';
+$title_sel  = $root_sel . ' .sgs-toc__title';
+$link_sel   = $root_sel . ' .sgs-toc__link';
 $active_sel = $root_sel . ' .sgs-toc__link.sgs-toc__link--active';
 
 $scoped_css = array();
@@ -307,7 +307,7 @@ if ( $mobile_decls ) {
 // --- Responsive border-radius tiers — SGS custom 4-CORNER object attrs,
 // routed through the same stable core style-engine API (mirrors sgs/media's
 // proven borderRadiusTablet/borderRadiusMobile pattern). ---
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers             = sgs_border_radius_tiers( $attributes );
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];
 
@@ -336,14 +336,23 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // raw CSS colours, and var() passthrough identically to sgs/label). Emitted
 // scoped, never inline. Active rule emitted AFTER the base link rule so it
 // wins the tie on equal specificity by source order. ---
-$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
-if ( '' !== $title_colour_effective ) {
-	$title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
-	if ( '' !== $title_colour_decl ) {
-		$scoped_css[] = "{$title_sel}{{$title_colour_decl};}";
-	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $title_sel, $title_colour_effective );
-}
+// Hover state (colour-conformance bg-layer pass, 2026-09-07): the "title"
+// element's block.json attrMap ONLY carries css:color (titleColour) and its
+// own css:background-image gradient sibling (titleColourGradient) — no
+// css:background-color exists on this element at all (verified: this block
+// declares no background support and no block-private backgroundColour attr
+// anywhere in the schema). There is no real background paint to collide
+// with; sgs_text_states_css() is safe to call directly.
+$scoped_css[]          = sgs_text_states_css(
+	$title_sel,
+	$attributes,
+	array(
+		'base'           => 'titleColour',
+		'hover'          => 'titleColourHover',
+		'gradient'       => 'titleColourGradient',
+		'hover_gradient' => 'titleColourHoverGradient',
+	)
+);
 $link_colour_effective = sgs_resolve_text_colour_or_gradient( $link_colour, $link_colour_gradient );
 if ( '' !== $link_colour_effective ) {
 	$link_colour_decl = sgs_text_colour_decl( $link_colour_effective );
@@ -411,10 +420,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 

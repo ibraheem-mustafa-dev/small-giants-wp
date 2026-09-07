@@ -175,7 +175,15 @@
 						"css:color": "labelColour",
 						"css:background-image": "labelColourGradient"
 					},
-					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:background-image": "labelColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Same conceptual node as `label` above, but a DIFFERENT class name (.sgs-trust-bar__badge-label, render.php:281) rendered only by the text-only/image-badge variants — split into its own element because the DB's css_element column holds one name per attribute and the two variants genuinely use two different class names. `labelColourHover`/`labelColourHoverGradient` (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
 				"title": {
 					"label": "Title",
@@ -187,7 +195,16 @@
 					"attrMap": {
 						"css:color": "titleColour",
 						"css:background-image": "titleColourGradient"
-					}
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "titleColourHover",
+								"css:background-image": "titleColourHoverGradient"
+							}
+						}
+					},
+					"_note": "titleColourHover/titleColourHoverGradient (2026-09-07) added the hover pair — this element declares no css:background-color of its own (that lives on the separate `wrapper` element/selector), so no bg-layer precondition applies."
 				},
 				"badge-item": {
 					"label": "Badge item",
@@ -353,6 +370,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"titleColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"titleColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of titleColourHover. Non-empty wins over titleColourHover on :hover/:focus-visible."
+		},
 		"titleFontSize": {
 			"type": "object",
 			"default": {}
@@ -383,6 +409,15 @@
 		"labelColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
 		},
 		"labelFontSize": {
 			"type": "object",

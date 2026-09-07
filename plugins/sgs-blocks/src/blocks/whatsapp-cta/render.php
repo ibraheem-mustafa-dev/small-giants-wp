@@ -53,20 +53,15 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$phone_number          = $attributes['phoneNumber'] ?? '';
-$message               = $attributes['message'] ?? '';
-$variant               = $attributes['variant'] ?? 'floating';
-$label                 = $attributes['label'] ?? '';
-$show_on_obj           = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
-$show_on_mobile        = $show_on_obj['mobile'] ?? true;
-$show_on_desktop       = $show_on_obj['desktop'] ?? true;
-$label_colour_raw      = (string) ( $attributes['labelColour'] ?? '' );
-$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
-// D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
-// numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
-$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour_raw, $label_colour_gradient );
-$bg_colour              = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
-$bg_gradient            = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
+$phone_number    = $attributes['phoneNumber'] ?? '';
+$message         = $attributes['message'] ?? '';
+$variant         = $attributes['variant'] ?? 'floating';
+$label           = $attributes['label'] ?? '';
+$show_on_obj     = sgs_responsive_normalise_object( $attributes['showOn'] ?? null );
+$show_on_mobile  = $show_on_obj['mobile'] ?? true;
+$show_on_desktop = $show_on_obj['desktop'] ?? true;
+$bg_colour       = sgs_colour_value( $attributes['backgroundColour'] ?? 'whatsapp' );
+$bg_gradient     = sgs_css_gradient_value( $attributes['backgroundColourGradient'] ?? '' );
 // backgroundColourHover (2026-09-06, FILL closeout) — the button's :hover rule
 // previously only animated opacity/transform (style.css), no colour change
 // existed. Empty means "no override" — the hover rule below falls back to the
@@ -204,15 +199,27 @@ if ( $btn_decls ) {
 // inherits from the root to the child span, but `background-image`/
 // `background-clip` do not, so a gradient set on $root_sel left the visible
 // label text with inherited color:transparent and no gradient behind it —
-// invisible, live-verified on the sandybrown canary. ---
-if ( '' !== $label_colour_effective ) {
-	$label_colour_sel  = '.' . $uid . ' .sgs-whatsapp-cta__label';
-	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
-	if ( '' !== $label_colour_decl ) {
-		$scoped_css[] = "{$label_colour_sel}{{$label_colour_decl};}";
-	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_colour_sel, $label_colour_effective );
-}
+// invisible, live-verified on the sandybrown canary.
+//
+// Hover state (colour-conformance bg-layer pass, 2026-09-07): the label span
+// (.sgs-whatsapp-cta__label) is a SEPARATE selector from $root_sel, where
+// backgroundColour/backgroundColourHover actually paint (render.php ~196-199)
+// — confirmed via block.json's own attrMap note (labelColourGradient re-keyed
+// 2026-09-06 to css:color-gradient precisely so this element's manifest entry
+// no longer collides with the root's real background-fill gradient). No
+// sgs_block_background_layer_css() precondition is needed: this selector
+// never paints a background at all. sgs_text_states_css() handles both
+// states + both gradient fallback rules in one call. ---
+$scoped_css[] = sgs_text_states_css(
+	'.' . $uid . ' .sgs-whatsapp-cta__label',
+	$attributes,
+	array(
+		'base'           => 'labelColour',
+		'hover'          => 'labelColourHover',
+		'gradient'       => 'labelColourGradient',
+		'hover_gradient' => 'labelColourHoverGradient',
+	)
+);
 
 // --- Base spacing + border-radius via the stable core style engine (skip-
 // serialised in block.json — exactly how WP core outputs `layout` support). ---

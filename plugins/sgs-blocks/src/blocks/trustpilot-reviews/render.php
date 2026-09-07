@@ -34,44 +34,44 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // Attribute resolution
 // ───────────────────────────────────────────────────────────────────────────
 
-$variant            = isset( $attributes['variant'] ) ? $attributes['variant'] : 'carousel';
+$variant = isset( $attributes['variant'] ) ? $attributes['variant'] : 'carousel';
 // Card-title heading level — an out-of-enum stored value is otherwise
 // silently coerced to the block.json default (blockjson-enum-coerces-
 // invalid-to-default), so it is validated here too (mirrors sgs/icon-list).
 $allowed_heading_levels = array( 'h2', 'h3', 'h4', 'h5', 'h6', 'p' );
-$heading_level      = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
+$heading_level          = in_array( $attributes['headingLevel'] ?? '', $allowed_heading_levels, true )
 	? $attributes['headingLevel']
 	: 'h3';
-$data_source        = isset( $attributes['dataSource'] ) ? sanitize_key( $attributes['dataSource'] ) : 'synced';
-$empty_state        = isset( $attributes['emptyState'] ) ? $attributes['emptyState'] : 'hide';
-$business_url       = isset( $attributes['businessUnitUrl'] ) ? $attributes['businessUnitUrl'] : '';
-$reviews_attr       = isset( $attributes['reviews'] ) ? $attributes['reviews'] : array();
-$trust_score        = isset( $attributes['trustScore'] ) ? floatval( $attributes['trustScore'] ) : 0.0;
-$trust_score_label  = isset( $attributes['trustScoreLabel'] ) ? $attributes['trustScoreLabel'] : '';
-$total_reviews      = isset( $attributes['totalReviews'] ) ? intval( $attributes['totalReviews'] ) : 0;
-$reviews_average    = isset( $attributes['reviewsAverage'] ) ? floatval( $attributes['reviewsAverage'] ) : 0.0;
-$show_source_header = isset( $attributes['showSourceHeader'] ) ? (bool) $attributes['showSourceHeader'] : true;
-$show_subtitle      = isset( $attributes['showSubtitle'] ) ? (bool) $attributes['showSubtitle'] : false;
-$subtitle_text      = isset( $attributes['subtitleText'] ) ? $attributes['subtitleText'] : 'Showing our latest reviews';
-$show_logo          = isset( $attributes['showTrustpilotLogo'] ) ? (bool) $attributes['showTrustpilotLogo'] : true;
-$show_verified      = isset( $attributes['showVerifiedBadge'] ) ? (bool) $attributes['showVerifiedBadge'] : true;
-$show_date          = isset( $attributes['showDate'] ) ? (bool) $attributes['showDate'] : true;
-$show_author        = isset( $attributes['showAuthor'] ) ? (bool) $attributes['showAuthor'] : true;
-$show_schema        = isset( $attributes['showSchema'] ) ? (bool) $attributes['showSchema'] : true;
+$data_source            = isset( $attributes['dataSource'] ) ? sanitize_key( $attributes['dataSource'] ) : 'synced';
+$empty_state            = isset( $attributes['emptyState'] ) ? $attributes['emptyState'] : 'hide';
+$business_url           = isset( $attributes['businessUnitUrl'] ) ? $attributes['businessUnitUrl'] : '';
+$reviews_attr           = isset( $attributes['reviews'] ) ? $attributes['reviews'] : array();
+$trust_score            = isset( $attributes['trustScore'] ) ? floatval( $attributes['trustScore'] ) : 0.0;
+$trust_score_label      = isset( $attributes['trustScoreLabel'] ) ? $attributes['trustScoreLabel'] : '';
+$total_reviews          = isset( $attributes['totalReviews'] ) ? intval( $attributes['totalReviews'] ) : 0;
+$reviews_average        = isset( $attributes['reviewsAverage'] ) ? floatval( $attributes['reviewsAverage'] ) : 0.0;
+$show_source_header     = isset( $attributes['showSourceHeader'] ) ? (bool) $attributes['showSourceHeader'] : true;
+$show_subtitle          = isset( $attributes['showSubtitle'] ) ? (bool) $attributes['showSubtitle'] : false;
+$subtitle_text          = isset( $attributes['subtitleText'] ) ? $attributes['subtitleText'] : 'Showing our latest reviews';
+$show_logo              = isset( $attributes['showTrustpilotLogo'] ) ? (bool) $attributes['showTrustpilotLogo'] : true;
+$show_verified          = isset( $attributes['showVerifiedBadge'] ) ? (bool) $attributes['showVerifiedBadge'] : true;
+$show_date              = isset( $attributes['showDate'] ) ? (bool) $attributes['showDate'] : true;
+$show_author            = isset( $attributes['showAuthor'] ) ? (bool) $attributes['showAuthor'] : true;
+$show_schema            = isset( $attributes['showSchema'] ) ? (bool) $attributes['showSchema'] : true;
 // `columns` is a TIER OBJECT (Spec 35 pass 4, 2026-08-11) — read each tier via
 // the normaliser, never the raw attribute (intval() on an unresolved array
 // throws "Array to int conversion", the D569/D570 bug class this normaliser
 // exists to prevent).
-$columns_obj        = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
-$columns            = intval( $columns_obj['desktop'] ?? 3 );
-$columns_tablet     = intval( $columns_obj['tablet'] ?? 2 );
-$columns_mobile     = intval( $columns_obj['mobile'] ?? 1 );
-$theme              = isset( $attributes['theme'] ) ? $attributes['theme'] : 'light';
-$card_style         = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
-$autoplay           = isset( $attributes['autoplay'] ) ? (bool) $attributes['autoplay'] : false;
-$autoplay_speed     = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 5000;
-$show_dots          = isset( $attributes['showDots'] ) ? (bool) $attributes['showDots'] : false;
-$show_arrows        = isset( $attributes['showArrows'] ) ? (bool) $attributes['showArrows'] : true;
+$columns_obj    = sgs_responsive_normalise_object( $attributes['columns'] ?? null );
+$columns        = intval( $columns_obj['desktop'] ?? 3 );
+$columns_tablet = intval( $columns_obj['tablet'] ?? 2 );
+$columns_mobile = intval( $columns_obj['mobile'] ?? 1 );
+$theme          = isset( $attributes['theme'] ) ? $attributes['theme'] : 'light';
+$card_style     = isset( $attributes['cardStyle'] ) ? $attributes['cardStyle'] : 'elevated';
+$autoplay       = isset( $attributes['autoplay'] ) ? (bool) $attributes['autoplay'] : false;
+$autoplay_speed = isset( $attributes['autoplaySpeed'] ) ? intval( $attributes['autoplaySpeed'] ) : 5000;
+$show_dots      = isset( $attributes['showDots'] ) ? (bool) $attributes['showDots'] : false;
+$show_arrows    = isset( $attributes['showArrows'] ) ? (bool) $attributes['showArrows'] : true;
 
 // DMCC FR-30-10: whitelist the data source. Any unsanitised / invalid / REST-injected
 // value must NEVER fall through to fake demo reviews — coerce it to the safe synced
@@ -249,43 +249,72 @@ $tp_responsive_css = '';
 // background-clip:text declaration, so once a gradient is present this
 // bypasses wp_style_engine_get_styles() entirely and emits via the shared
 // text-colour-or-gradient helpers instead (mirrors sgs/counter).
-$tp_text_colour          = (string) ( $attributes['textColour'] ?? '' );
-$tp_text_colour_gradient = (string) ( $attributes['textColourGradient'] ?? '' );
-$tp_text_colour_effective = sgs_resolve_text_colour_or_gradient( $tp_text_colour, $tp_text_colour_gradient );
-if ( '' !== $tp_text_colour_effective ) {
-	$tp_text_colour_decl = sgs_text_colour_decl( $tp_text_colour_effective );
-	if ( '' !== $tp_text_colour_decl ) {
-		$tp_responsive_css .= "{$tp_root_sel}{{$tp_text_colour_decl};}";
+//
+// Precondition (bg-layer subset, colour-conformance, 2026-09-07): textColour
+// and backgroundColour paint the SAME $tp_root_sel (block.json wrapper
+// attrMap: css:color=textColour, css:background-color=backgroundColour) —
+// confirmed via block.json, not guessed. A flat textColourHover is harmless
+// (a plain `color:` declaration), but a GRADIENT hover paints
+// `background-image` on `$tp_root_sel:hover` via background-clip:text, the
+// exact property backgroundColourHover's own fill rule also writes at the
+// same selector + state. Only when the resolved hover value is actually a
+// gradient do we move the background paint onto its own `::after` layer
+// first — the common flat-colour case (background emitted directly on
+// $tp_root_sel) is completely unchanged.
+$tp_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+if ( str_contains( $tp_text_colour_hover_effective, 'gradient(' ) ) {
+	$tp_bg_resting_decl = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColour'] ?? '' ),
+		(string) ( $attributes['backgroundColourGradient'] ?? '' )
+	);
+	$tp_bg_hover_decl   = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColourHover'] ?? '' ),
+		(string) ( $attributes['backgroundColourHoverGradient'] ?? '' )
+	);
+	$tp_responsive_css .= sgs_block_background_layer_css( $tp_root_sel, $tp_bg_resting_decl, $tp_bg_hover_decl );
+} else {
+	// Background (colour + gradient, resting + hover) is owned by the shared
+	// fill emitter, NOT by the style engine and NOT by supports.color.gradients.
+	//
+	// supports.color.gradients was `true` here, so CORE rendered its own gradient
+	// panel in the Styles tab, competing with the SGS colour panel — the client saw
+	// two and could not tell which won. Switching the flag off alone would have
+	// REMOVED the only gradient control this block had, because the sole gradient
+	// read was $attributes['style']['color']['gradient'] (core's own storage). The
+	// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+	// exposed through fillRow(), so capability is moved rather than lost.
+	$tp_fill_css = sgs_fill_states_css(
+		$tp_root_sel,
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	if ( '' !== $tp_fill_css ) {
+		$tp_responsive_css .= $tp_fill_css;
 	}
-	$tp_responsive_css .= sgs_text_colour_gradient_fallback_rule( $tp_root_sel, $tp_text_colour_effective );
 }
 
-// Background (colour + gradient, resting + hover) is owned by the shared fill
-// emitter, NOT by the style engine and NOT by supports.color.gradients.
-//
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $attributes['style']['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
-$tp_fill_css = sgs_fill_states_css(
+$tp_responsive_css .= sgs_text_states_css(
 	$tp_root_sel,
 	$attributes,
 	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
 	)
 );
-if ( '' !== $tp_fill_css ) {
-	$tp_responsive_css .= $tp_fill_css;
-}
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// are block-private attrs now, emitted below)
 
 // The native style-engine colour path is GONE, deliberately. Text colour now
 // renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
@@ -631,10 +660,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt                = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                = '' !== $border_width_left ? $border_width_left : '0';
 		$tp_responsive_css .= $tp_root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -668,7 +697,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

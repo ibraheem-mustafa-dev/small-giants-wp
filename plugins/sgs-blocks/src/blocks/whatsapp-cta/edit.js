@@ -11,7 +11,7 @@ import {
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, ResponsiveBorderRadiusControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const VARIANT_OPTIONS = [
@@ -108,22 +108,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'label',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-								linked: true,
-								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'labelColour',
+							hover: 'labelColourHover',
+							gradient: 'labelColourGradient',
+							hoverGradient: 'labelColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),
