@@ -1118,6 +1118,19 @@ function addFxAttributes( settings, name ) {
 			 */
 			fxGenGround: { type: 'string', default: '' },
 			/*
+			 * Colour-field backdrop mode (owner-requested, live canary
+			 * testing, page 3371). '' / 'ground' is TODAY'S SHIPPED
+			 * BEHAVIOUR — the layer-2 colour-field canvas fades out once
+			 * the WebGL folded shape starts drawing, leaving the flat
+			 * ground colour around it — and MUST stay the default so no
+			 * existing instance changes. 'field' keeps the colour-field
+			 * canvas visible behind the shape instead of fading it out.
+			 * String with a '' default, so wired through the truthy-
+			 * filtered `optional` data-attr group below alongside
+			 * `fxGenGround`, NOT the numeric group.
+			 */
+			fxGenBackdrop: { type: 'string', default: '' },
+			/*
 			 * Generative background — geometry mechanism (v1.2 rewrite,
 			 * 2026-08-28). `fxGenSpeed` mirrors `fxWaveSpeed`'s own shape
 			 * (undefined-when-untouched, engine reads it 5-150 -> ×1/50 —
@@ -1482,6 +1495,7 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-gen-colour-3': attributes.fxGenColour3,
 		'data-sgs-fx-gen-colour-4': attributes.fxGenColour4,
 		'data-sgs-fx-gen-ground': attributes.fxGenGround,
+		'data-sgs-fx-gen-backdrop': attributes.fxGenBackdrop,
 	};
 	Object.entries( optional ).forEach( ( [ key, value ] ) => {
 		if ( value ) {
@@ -3209,6 +3223,36 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											}
 											help={ __(
 												'Resolved from your theme colours — light reads as a bounded shape with text placed beside it; dark reads as a richer, moodier field.',
+												'sgs-blocks'
+											) }
+										/>
+									</ToolsPanelItem>
+
+								<ToolsPanelItem
+										hasValue={ () =>
+											undefined !== attributes.fxGenBackdrop &&
+											'' !== attributes.fxGenBackdrop
+										}
+										label={ __( 'Backdrop', 'sgs-blocks' ) }
+										onDeselect={ () =>
+											setParam( { fxGenBackdrop: '' } )
+										}
+										isShownByDefault
+									>
+										<SelectControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ __( 'Backdrop', 'sgs-blocks' ) }
+											value={ attributes.fxGenBackdrop || 'ground' }
+											options={ [
+												{ label: __( 'Ground — flat colour around the shape', 'sgs-blocks' ), value: 'ground' },
+												{ label: __( 'Colour field — rich colour fills the whole background, shape moves over it', 'sgs-blocks' ), value: 'field' },
+											] }
+											onChange={ ( value ) =>
+												setParam( { fxGenBackdrop: value } )
+											}
+											help={ __(
+												'Ground keeps the folded shape on a flat background; colour field keeps the full-bleed colour visible behind it.',
 												'sgs-blocks'
 											) }
 										/>

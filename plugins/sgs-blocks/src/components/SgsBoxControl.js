@@ -256,8 +256,20 @@ export default function SgsBoxControl( {
 
 		const selectValue = knownPreset ? slug : isUnknownPreset ? UNKNOWN_VALUE : value ? CUSTOM_VALUE : '';
 
+		// "Default" (value: '', i.e. unset) mirrors WP core's own spacing
+		// dropdown, where the initial/default selection is a real "Default"
+		// entry rather than an explicit "None". An unset side already renders
+		// with no SGS-emitted value (the wrapper falls back to whatever the
+		// surrounding layer provides — e.g. core's `.has-global-padding`
+		// gutter for a content band), so this is a LABEL fix only: the stored
+		// value stays '', nothing about resolution/precedence changes. Do NOT
+		// read this as introducing a distinct explicit-zero "None" state —
+		// that would need its own sentinel + render-side handling and was
+		// deliberately left out (see 2026-09-07 inspector-fix report; the
+		// last hardcoded default here compounded on nesting and was reverted,
+		// D555/D706 — a speculative second state risks the same class of bug).
 		const options = [
-			{ label: __( '— none —', 'sgs-blocks' ), value: '' },
+			{ label: __( 'Default', 'sgs-blocks' ), value: '' },
 			...filteredSizes.map( ( s ) => ( { label: `${ s.name || s.slug } (${ s.size })`, value: s.slug } ) ),
 			{ label: __( 'Custom…', 'sgs-blocks' ), value: CUSTOM_VALUE },
 		];

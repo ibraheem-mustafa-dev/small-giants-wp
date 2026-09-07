@@ -9,7 +9,6 @@ import {
   PanelBody,
   SelectControl,
   TextControl,
-  BoxControl,
 } from "@wordpress/components";
 import { useSelect } from "@wordpress/data";
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBorderControl, TypographyControls, SgsBoxControl } from "../../components";
@@ -17,6 +16,7 @@ import { resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTi
 import {
   LayoutPanel,
   WidthPanel,
+  ContentBandWidthControl,
   BackgroundPanel,
   ShapeDividersPanel,
   GridItemDefaultsPanel,
@@ -84,18 +84,11 @@ const TAG_NAME_OPTIONS = [
   { label: __( "Main (page landmark)", "sgs-blocks" ), value: "main" },
 ];
 
-// Mirrors sgs/icon and sgs/info-box, which hoist the identical list. "" is the
-// INHERIT option deliberately: an unset container emits no text-align, so the
-// value cascades from its own parent — that inheritance is the whole reason
-// this attribute exists (the draft carries alignment on the section, not on
-// each child).
-const TEXT_ALIGN_OPTIONS = [
-  { label: __( "— inherit —", "sgs-blocks" ), value: "" },
-  { label: __( "Left", "sgs-blocks" ), value: "left" },
-  { label: __( "Centre", "sgs-blocks" ), value: "center" },
-  { label: __( "Right", "sgs-blocks" ), value: "right" },
-  { label: __( "Justify", "sgs-blocks" ), value: "justify" },
-];
+// TEXT_ALIGN_OPTIONS (the "— inherit —"/Left/Centre/Right/Justify list) was
+// REMOVED 2026-09-07 with the duplicate Layout-panel "Text align" control it
+// fed — see the removal note at the old Layout PanelBody call site. The
+// Typography panel's "Text alignment" ToggleGroupControl (SGS_TEXT_ALIGN_OPTIONS
+// inside TypographyControls.js) is the one surviving control for this attribute.
 
 export default function Edit({ attributes, setAttributes, name, clientId }) {
   const {
@@ -559,7 +552,13 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             enableColumnShapePicker
           />
           <hr style={ { margin: "16px 0" } } />
-          <WidthPanel attributes={ attributes } setAttributes={ setAttributes } />
+          {/* showContentBand={false} — Bean-reported placement fix, 2026-09-07:
+              "Content band width" now mounts inside the "Content band" panel
+              below (alongside Band padding/margin), not here under Layout.
+              Outer max-width stays here; it's a Layout-panel concern (caps the
+              OUTER block, not the inner band). See ContentBandWidthControl's
+              own docblock in WidthPanel.js for the split. */}
+          <WidthPanel attributes={ attributes } setAttributes={ setAttributes } showContentBand={ false } />
           { /* `minHeight` is a TIER OBJECT — {desktop,tablet,mobile} — so it uses
                ResponsiveOverride. */ }
           <ResponsiveOverride
@@ -580,14 +579,15 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
               />
             ) }
           </ResponsiveOverride>
-          <SelectControl
-            label={ __( "Text align", "sgs-blocks" ) }
-            value={ attributes.textAlign || "" }
-            options={ TEXT_ALIGN_OPTIONS }
-            onChange={ ( val ) => setAttributes( { textAlign: val } ) }
-            __nextHasNoMarginBottom
-            __next40pxDefaultSize
-          />
+          {/* Duplicate "Text align" control REMOVED 2026-09-07 (Bean-reported).
+              This SelectControl wrote the SAME `textAlign` attribute as the
+              "Text alignment" ToggleGroupControl already rendered by
+              <TypographyControls showTextAlign> in the Typography panel above
+              (Styles tab) — verified by reading typographyAttrName('', 'TextAlign')
+              -> 'textAlign', the same attribute key. Two controls bound to one
+              attribute is the exact silent-confusion shape THE PLACEMENT RULE
+              (Spec 35) exists to prevent; the Typography-panel control is kept
+              (correct tab per Spec 35 A3/PART O — typography lives in Styles). */}
         </PanelBody>
 
         {/* Responsive spacing (padding + margin) — Spec 35 / D555 gutter-default
@@ -647,14 +647,23 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
           </ResponsiveOverride>
         </PanelBody>
 
-        {/* Content band (Layer 2 __inner) padding — per-area object attr (contract §2),
-            not a WP-native attr since the band is an SGS-only inner element. Background +
-            responsive width controls stay on GridItemDefaultsPanel's neighbour BackgroundPanel
-            / WidthPanel; this panel is scoped to band padding only. */}
+        {/* Content band (Layer 2 __inner) width + padding — per-area object attrs
+            (contract §2), not WP-native attrs since the band is an SGS-only inner
+            element. Background stays on BackgroundPanel (band-scoped background
+            was retired, see the note below); everything else about the band
+            (width + padding + margin) now lives together in this ONE panel —
+            Bean-reported placement fix, 2026-09-07: "Content band width" used
+            to render under the Layout panel via WidthPanel's combined output,
+            separated from Band padding/margin two panels below. Moved here via
+            ContentBandWidthControl (WidthPanel.js's own split-out piece; see its
+            docblock), so a client styling the band finds every band control in
+            one place instead of hunting across Layout + Content band. */}
         <PanelBody title={ __( "Content band", "sgs-blocks" ) } initialOpen={ false }>
           <p className="components-base-control__help">
             { __( "Styles the inner content band (the max-width wrapper set by Content width). The band exists by default — set Content width to Full to remove it.", "sgs-blocks" ) }
           </p>
+          <ContentBandWidthControl attributes={ attributes } setAttributes={ setAttributes } />
+          <hr style={ { margin: "16px 0" } } />
           {/* ⛔ "Band background colour" (contentBandBackground) was REMOVED
               2026-08-12, and the attribute retired framework-wide. Bean's rule:
               a background colour or media fills the max-width of its CONTAINER
@@ -686,13 +695,12 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             onChange={ ( obj ) => setAttributes( { contentBandPadding: obj } ) }
           >
             { ( { ownValue, setOwnValue } ) => (
-              <BoxControl
+              <SgsBoxControl
                 label={ __( "Band padding", "sgs-blocks" ) }
                 values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
                 units={ BOX_UNITS }
-                splitOnAxis={ false }
+                presets
                 onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              	__next40pxDefaultSize
               />
             ) }
           </ResponsiveOverride>
@@ -711,13 +719,12 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             onChange={ ( obj ) => setAttributes( { contentBandMargin: obj } ) }
           >
             { ( { ownValue, setOwnValue } ) => (
-              <BoxControl
+              <SgsBoxControl
                 label={ __( "Band margin", "sgs-blocks" ) }
                 values={ ownValue && typeof ownValue === "object" ? ownValue : {} }
                 units={ BOX_UNITS }
-                splitOnAxis={ false }
+                presets
                 onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
-              	__next40pxDefaultSize
               />
             ) }
           </ResponsiveOverride>

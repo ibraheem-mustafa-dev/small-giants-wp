@@ -49,8 +49,17 @@
  * ground colour no matter what the client picks — the fallback's job ends
  * once the real layer is drawing. background-color stays untouched, so the
  * ground preset is finally visible in the space around the shape.
+ *
+ * BACKDROP MODE (owner-requested, live canary testing, page 3371):
+ * `data-sgs-fx-gen-backdrop="field"` skips this fade-out — the client wants
+ * the rich colour-field canvas to stay visible full-bleed behind the shape
+ * instead of a flat ground colour around it. `:not([data-sgs-fx-gen-backdrop
+ * ="field"])` on the SAME element that already carries
+ * `data-sgs-genbg-webgl-active` keeps this rule at the default (unset/
+ * "ground") behaviour byte-identical to today; only an explicit `field`
+ * value changes anything.
  */
-[data-sgs-genbg-webgl-active="1"] {
+[data-sgs-genbg-webgl-active="1"]:not( [data-sgs-fx-gen-backdrop="field"] ) {
 	background-image: none;
 }
 
@@ -84,8 +93,13 @@
  * higher, z-index-1 layer), the static canvas underneath it has nothing left
  * to contribute and — being opaque — was hiding the ground colour exactly
  * like the background-image did. Fades it out the same way it faded in.
+ *
+ * BACKDROP MODE — same gate as the background-image rule above: skipped when
+ * `data-sgs-fx-gen-backdrop="field"`, so the colour-field canvas stays
+ * visible (opacity 1, its "faded in" state above) behind the WebGL shape
+ * instead of fading out. Default (unset/"ground") behaviour is unchanged.
  */
-[data-sgs-genbg-webgl-active="1"] .sgs-generative-background__canvas {
+[data-sgs-genbg-webgl-active="1"]:not( [data-sgs-fx-gen-backdrop="field"] ) .sgs-generative-background__canvas {
 	opacity: 0;
 }
 

@@ -227,37 +227,56 @@ const DEFAULT_FOLD_POWER = REFERENCE_PRESET.twistPower;
  * `REFERENCE_PRESET`'s own values EXACTLY — the whole point being that an
  * instance with none of these attributes set renders byte-for-byte what
  * ships today.
+ *
+ * ── OFFSET IS VIEWPORT-RELATIVE, NOT A FIXED WORLD-UNIT PAN ─────────────────
+ *
+ * `resize()` rebuilds the orthographic frustum from the canvas's CSS
+ * width/height every time it runs (`buildTransform()`'s `halfW = canvasWidth
+ * / 2`), so the frustum's world-space width shrinks as the container
+ * narrows. A FIXED world-unit `offsetX`/`offsetY` therefore represents a much
+ * larger fraction of the visible frame on a narrow mobile canvas than on a
+ * wide desktop one, and pans the shape off-screen at small widths (owner
+ * report, live canary: "I tried changing to mobile ... the effect goes off
+ * screen"). `OFFSET_REFERENCE_WIDTH`/`_HEIGHT` are the exact canvas
+ * dimensions `scripts/generative-background/sweep-position-ranges.mjs` used
+ * to measure `fx-genbg-position-ranges.json`'s offsetX/offsetY bounds — the
+ * offset is scaled by `canvasWidth / OFFSET_REFERENCE_WIDTH` (and the Y axis
+ * by canvas height / _HEIGHT) so a given slider value holds the same
+ * RELATIVE framing position at every width, and reproduces exactly the
+ * calibrated bounds at the reference size. This is applied in `resize()`
+ * below (the ONE place the frustum is already rebuilt per width/height),
+ * NOT as a second framing mechanism — same matrix, same call, just fed a
+ * width-scaled position instead of a fixed one.
  */
 const DEG2RAD = Math.PI / 180;
 
+/** Canvas dimensions `sweep-position-ranges.mjs` used to calibrate offsetX/Y's bounds. */
+const OFFSET_REFERENCE_WIDTH = 1440;
+const OFFSET_REFERENCE_HEIGHT = 900;
+
 /**
- * Build a preset object with the eight static-transform overrides applied on
- * top of `basePreset`, without mutating it.
+ * Build a preset object with the rotation/scale static-transform overrides
+ * applied on top of `basePreset`, without mutating it. Viewport-independent
+ * — rotation/scale are absolute, unlike the offset (see
+ * `applyOffsetOverride()` below), so they are computed once rather than
+ * per-resize.
  *
  * @param {Object} basePreset `PRESETS.light` (or any preset shape).
- * @param {Object} opts       The engine's own `opts` — only the eight
- *                            override keys are read.
- * @return {Object} A new preset object; every other key is copied through
- *                   from `basePreset` unchanged (twist/displacement fields
- *                   are untouched by this function).
+ * @param {Object} opts       The engine's own `opts` — only the six
+ *                            rotation/scale override keys are read.
+ * @return {Object} A new preset object; every other key (including position)
+ *                   is copied through from `basePreset` unchanged.
  */
-function applyStaticTransformOverrides( basePreset, opts ) {
+function applyRotationScaleOverrides( basePreset, opts ) {
 	const rotationXDeg = typeof opts.rotationX === 'number' ? opts.rotationX : 0;
 	const rotationYDeg = typeof opts.rotationY === 'number' ? opts.rotationY : 0;
 	const rotationZDeg = typeof opts.rotationZ === 'number' ? opts.rotationZ : 0;
 	const scaleXMult = typeof opts.scaleX === 'number' ? opts.scaleX : 1;
 	const scaleYMult = typeof opts.scaleY === 'number' ? opts.scaleY : 1;
 	const scaleZMult = typeof opts.scaleZ === 'number' ? opts.scaleZ : 1;
-	const offsetX = typeof opts.offsetX === 'number' ? opts.offsetX : 0;
-	const offsetY = typeof opts.offsetY === 'number' ? opts.offsetY : 0;
 
 	return {
 		...basePreset,
-		position: [
-			basePreset.position[ 0 ] + offsetX,
-			basePreset.position[ 1 ] + offsetY,
-			basePreset.position[ 2 ],
-		],
 		rotation: [
 			basePreset.rotation[ 0 ] + rotationXDeg * DEG2RAD,
 			basePreset.rotation[ 1 ] + rotationYDeg * DEG2RAD,
@@ -267,6 +286,38 @@ function applyStaticTransformOverrides( basePreset, opts ) {
 			basePreset.scale[ 0 ] * scaleXMult,
 			basePreset.scale[ 1 ] * scaleYMult,
 			basePreset.scale[ 2 ] * scaleZMult,
+		],
+	};
+}
+
+/**
+ * Apply the viewport-relative framing pan on top of a preset already carrying
+ * the rotation/scale overrides. Scales `opts.offsetX/Y` by how the CURRENT
+ * canvas dimensions compare to the reference size the slider bounds were
+ * calibrated against, so the same slider value holds the same relative
+ * on-screen position at every width — see the module doc above.
+ *
+ * @param {Object} preset       A preset already passed through
+ *                               `applyRotationScaleOverrides()`.
+ * @param {Object} opts         The engine's own `opts` — only `offsetX`/`offsetY`
+ *                               are read.
+ * @param {number} canvasWidth  Current CSS canvas width, px (world units).
+ * @param {number} canvasHeight Current CSS canvas height, px (world units).
+ * @return {Object} A new preset object with `position` adjusted; every other
+ *                   key is copied through from `preset` unchanged.
+ */
+function applyOffsetOverride( preset, opts, canvasWidth, canvasHeight ) {
+	const offsetX = typeof opts.offsetX === 'number' ? opts.offsetX : 0;
+	const offsetY = typeof opts.offsetY === 'number' ? opts.offsetY : 0;
+	const scaledOffsetX = offsetX * ( canvasWidth / OFFSET_REFERENCE_WIDTH );
+	const scaledOffsetY = offsetY * ( canvasHeight / OFFSET_REFERENCE_HEIGHT );
+
+	return {
+		...preset,
+		position: [
+			preset.position[ 0 ] + scaledOffsetX,
+			preset.position[ 1 ] + scaledOffsetY,
+			preset.position[ 2 ],
 		],
 	};
 }
@@ -1045,9 +1096,17 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	 * verifier against re-extracted ground truth — do not reintroduce a
 	 * second framing mechanism here.
 	 */
-	const effectivePreset = applyStaticTransformOverrides( REFERENCE_PRESET, opts );
+	// Rotation/scale are absolute — computed once. Offset is viewport-relative
+	// (see the module doc above `applyOffsetOverride()`) — recomputed inside
+	// `resize()` below, the one place the frustum is already rebuilt per
+	// width/height, rather than baked in here as a fixed world-unit pan.
+	const presetWithRotationScale = applyRotationScaleOverrides( REFERENCE_PRESET, opts );
 
-	let projection = buildTransform( effectivePreset, 1, 1 ).mvp;
+	let projection = buildTransform(
+		applyOffsetOverride( presetWithRotationScale, opts, OFFSET_REFERENCE_WIDTH, OFFSET_REFERENCE_HEIGHT ),
+		1,
+		1
+	).mvp;
 
 	const resize = ( width, height, dpr ) => {
 		// DPR capped at 1.5 — same fillrate-bound precedent as
@@ -1066,6 +1125,19 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 		// change with device pixel ratio — a retina visitor would see a
 		// differently-framed picture from everyone else. The backing store
 		// still drives `gl.viewport` above; only the frustum uses CSS pixels.
+		//
+		// The offset override is recomputed HERE, scaled against the CURRENT
+		// CSS width/height, every time the frustum is rebuilt — that is what
+		// makes a fixed slider value hold the same relative on-screen
+		// position as the viewport narrows (see `applyOffsetOverride()`'s
+		// doc). offsetX/Y unset (0) scales to 0 at any width, so this is a
+		// no-op for every instance that has not touched the framing sliders.
+		const effectivePreset = applyOffsetOverride(
+			presetWithRotationScale,
+			opts,
+			Math.max( 1, width ),
+			Math.max( 1, height )
+		);
 		projection = buildTransform(
 			effectivePreset,
 			Math.max( 1, width ),

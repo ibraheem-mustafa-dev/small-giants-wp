@@ -175,8 +175,44 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 
 			{ showContentBand && (
 				<>
-			<hr style={ { margin: '16px 0' } } />
+					<hr style={ { margin: '16px 0' } } />
+					<ContentBandWidthControl attributes={ attributes } setAttributes={ setAttributes } />
+				</>
+			) }
+		</>
+	);
+}
 
+/**
+ * ContentBandWidthControl — the "Content band width" piece of WidthPanel,
+ * split out 2026-09-07 so a caller can mount it in a DIFFERENT panel from
+ * the outer max-width control, without duplicating the ToggleGroupControl /
+ * literal-length logic.
+ *
+ * Extracted verbatim from WidthPanel's own `showContentBand` branch — no
+ * behaviour change for WidthPanel's ~30 existing call sites, which still get
+ * both controls together via `showContentBand` (default true). The first
+ * (and today only) consumer of the split form is `sgs/container`'s own
+ * edit.js, which mounts `<WidthPanel showContentBand={false} />` in its
+ * Layout panel (outer max-width only) and this component directly inside
+ * its "Content band" panel — Bean-reported placement fix, 2026-09-07: the
+ * band-width control belongs beside Band padding/margin, not under Layout.
+ *
+ * Same props/attrs as the extracted branch: reads/writes `contentWidth`
+ * (a TIER OBJECT — {desktop,tablet,mobile} — via ResponsiveOverride, same
+ * discipline as every other tier-object attr in this codebase; see
+ * WidthPanel's own docblock for why ResponsiveControl + a flat attrMap is
+ * NOT safe here).
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes object.
+ * @param {Function} props.setAttributes Block setAttributes function.
+ */
+export function ContentBandWidthControl( { attributes, setAttributes } ) {
+	const literalOf = ( raw ) => ( ! isToken( raw ) && /\d/.test( raw || '' ) ? raw : '' );
+
+	return (
+		<>
 			{ /* ---- CONTENT BAND width — one control, all three tiers ---- */ }
 			<ResponsiveOverride
 				label={ __( 'Content band width', 'sgs-blocks' ) }
@@ -241,8 +277,6 @@ export function WidthPanel( { attributes, setAttributes, showContentBand = true 
 			<p className="components-base-control__help">
 				{ __( 'Caps the inner content band. Normal ≈ 1200px (content-size) is the default, Wide ≈ 1400px (wide-size), Full = no cap.', 'sgs-blocks' ) }
 			</p>
-				</>
-			) }
 		</>
 	);
 }

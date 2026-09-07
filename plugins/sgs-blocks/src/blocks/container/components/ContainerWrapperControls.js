@@ -64,7 +64,7 @@ import { Fragment } from '@wordpress/element';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
 
-import { WidthPanel } from './WidthPanel';
+import { WidthPanel, ContentBandWidthControl } from './WidthPanel';
 import { LayoutPanel } from './LayoutPanel';
 import { BackgroundPanel } from './BackgroundPanel';
 import { ShapeDividersPanel } from './ShapeDividersPanel';
@@ -73,6 +73,7 @@ import { GridItemDefaultsPanel } from './GridItemDefaultsPanel';
 // Re-exported for the existing call sites (and for `import { X } from './ContainerWrapperControls'`).
 export {
 	WidthPanel,
+	ContentBandWidthControl,
 	LayoutPanel,
 	BackgroundPanel,
 	ShapeDividersPanel,
