@@ -75,3 +75,10 @@ timestamp | script | type | reason
 2026-09-06 21:18:47 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap
 2026-09-06 23:11:13 | db-consistency/run.py | MANUAL SKIP | pre-existing @babel/parser gap, unrelated
 2026-09-07 00:30:35 | db-consistency/run.py | MANUAL SKIP | archival move of already-run one-off migration scripts, no functional change
+2026-09-07 04:24:42 | db-consistency/run.py | MANUAL SKIP | 6 NEW cssprop mismatches are a concurrent session's in-flight linkColour work (collapsible-text, product-card, quote, testimonial, text, timeline) -- every one of those blocks is in that session's uncommitted dirty set, none mentions multi-button or childBtnBorderRadius, and the fix is a --stage 1 reseed owned by that session. This commit touches only multi-button + check-box-flat.py.
+2026-09-07 04:25:47 | db-consistency/run.py | MANUAL SKIP | 6 NEW cssprop mismatches are a concurrent session's in-flight linkColour work (collapsible-text, product-card, quote, testimonial, text, timeline); all six are in that session's uncommitted dirty set, none mentions multi-button, and the fix is a --stage 1 reseed owned by them.
+2026-09-07 04:26:28 | db-consistency/run.py | MANUAL SKIP | probe
+2026-09-07 04:27:17 | db-consistency/run.py | MANUAL SKIP | probe
+2026-09-07 04:28:33 | db-consistency/run.py | MANUAL SKIP | probe
+2026-09-07 04:28:58 | db-consistency/run.py | MANUAL SKIP | probe
+2026-09-07 04:32:08 | db-consistency/run.py | MANUAL SKIP | 6 NEW cssprop mismatches are a concurrent session's in-flight linkColour work on collapsible-text, heading, product-card, quote, testimonial, text and timeline. All seven blocks are in that session's UNCOMMITTED dirty set right now; the findings are exactly 2 per block (linkColour + linkColourHover, declared in block.json and wired in edit.js but not yet read by render.php); none names multi-button or childBtnBorderRadius; and the fix is theirs to finish. Verified not-mine and disclosed, not routed around.
