@@ -1,3 +1,108 @@
+## D993 [INCIDENT] — Task B: worktree-isolated build+deploy is now the default in `build-deploy.py`, after a live incident it fixes
+
+**2026-09-07.** `plugins/sgs-blocks/build/` is gitignored and shared across every concurrent
+session on this machine (150+ per this project's own git-hygiene docs). `npm run build` runs
+`rm -rf build` first. A deploy's gate window is long enough for a concurrent session's build to
+wipe the shared `build/` mid-deploy — measured live earlier the same session (see
+`.claude/memory/sdd-progress.md`'s incident section, and D-adjacent to but distinct from D991's
+`--dry-run` incident above): the live canary served a `sgs-blocks` plugin with ZERO working
+render.php files for several minutes, and the deploy's own `[payload-verify]` step only caught
+it AFTER the broken plugin was already live, because the checksum comparison ran against the
+now-also-deleted local reference copy, not the tarball's actual contents at pack time.
+
+**Fix shipped:** `should_isolate()`/`run_isolated()` — `git worktree add <tmp-dir> HEAD`, then
+RE-EXEC this same script's WORKTREE COPY with `--no-isolate` appended, rather than threading a
+repo-root parameter through `step_build()`/`step_tar()`/etc. `REPO_ROOT`/`PLUGIN_DIR`/`BUILD_DIR`
+are all derived from `Path(__file__)`, so running the worktree's own copy makes every existing
+step function resolve worktree paths automatically with zero changes to any of them.
+`node_modules`/`vendor` (both gitignored) are symlinked read-only into the worktree. New
+`--no-isolate` opt-out flag; `--skip-build`/`--dry-run` skip isolation entirely (no build race
+to protect against in either case). This is a lock-file ALTERNATIVE, chosen deliberately: a lock
+only protects a session that respects it, and this repo cannot assume that.
+
+**A second, real design gap was found and fixed live the same session** (follow-up commit,
+rebased to `1e371f95b`): the PRE-EXISTING dirty-tree gate runs BEFORE isolation is even
+considered and scans the SHARED checkout — it wrongly aborted a fully-committed,
+isolation-eligible deploy (Priority 4's hero fix, D992 below) because six OTHER concurrent
+sessions had unrelated uncommitted blocks sitting in the tree. Fixed by reordering `main()` to
+decide `intends_dirty_ship` (true only when `--allow-dirty`/full `--payload` coverage) BEFORE
+running the abort check, and isolating instead of aborting whenever the run does not intend to
+ship anything uncommitted — a worktree at HEAD is dirty-immune by construction, so the check is
+moot for that run.
+
+**Known, stated limitation:** isolation cannot help a deploy that genuinely needs to ship
+uncommitted content (`--allow-dirty`/`--payload`) — that case still builds against the shared
+checkout and still carries the original race. Accepted, bounded trade-off, not an oversight.
+
+**D991's flagged item is STILL OPEN, not addressed by this fix:** `--dry-run`'s name still
+doesn't match its behaviour (it still builds/ships for real when NOT combined with the isolation
+work here — `--dry-run` disables isolation too, matching its existing skip-the-gates behaviour
+unchanged). Task B's scope was the concurrent-build race, not the dry-run naming mismatch; that
+remains an open, separately-scoped fix for whoever next touches this script.
+
+**Verified three ways:** `--self-test` (8/8, unchanged, run 3× across both commits); a REAL
+concurrency test (two parallel `git worktree add`/build/remove cycles with distinct markers, run
+simultaneously via background shell jobs, both PASS with no cross-contamination, `git worktree
+list` clean after); a REAL production deploy of D992's hero fix, with six unrelated dirty blocks
+present at deploy time (isolated worktree created, build succeeded, packaged and shipped,
+payload-verify 83/83 PASS, motion-QA 3/3 PASS, completed in 71s).
+
+Commits: `84755960d` (isolation), `73dd4e619`→rebased `1e371f95b` (dirty-gate reorder). Full
+detail: `.claude/memory/sdd-progress.md`'s "Task B" close-out section.
+
+## D992 — Priority 4 close: `sgs/hero`'s `splitMediaObjectPosition` + `splitMediaWidth` folded to tier-object, closing the tier-object migration arc across Priorities 1-4
+
+**2026-09-07.** Closes the tier-object migration arc that started with Priority 1 (accordion/
+button/table-of-contents padding), continued through Priority 2 (the shared media-padding atom
++ hero's `splitMediaPadding`/`mediaPadding`), and finishes here with hero's remaining two VALUE
+attributes: `splitMediaObjectPosition`/Tablet/Mobile (object-position) and `splitMediaWidth`/
+Tablet/Mobile (width), both folded into single `{desktop,tablet,mobile}` tier-object attributes.
+
+**`splitMediaObjectPosition` required a genuine cross-block fix, not just hero's own files.**
+The shared `focal-point` media atom (used by 7 blocks: before-after/card-grid/decorative-image/
+hero/media/product-card/testimonial) hard-coded a 3-flat-key read/write shape in its JS twin,
+PHP twin, and JSX control. Migrating hero's storage alone would have silently broken the shared
+control for hero specifically. Fixed by making all three surfaces SHAPE-AWARE: read the base key
+first — a migrated caller's tier-object, if present — falling back to the sibling flat
+Tablet/Mobile keys only when a tier comes back empty. Byte-identical output for the 6
+still-unmigrated callers (verified via `test-media-atom-parity.mjs`, 16/16 atoms unchanged); full
+tier-object support for hero. Added a `registry.js` `reads` exception so `inspector-scan` rule
+`38-media-attr-parity` — a real, working detector that correctly caught the deliberate type
+divergence — stays green.
+
+**`splitMediaWidth` needed no atom-level fix at all.** `box-shape.js`'s `resolveWidth()` (and its
+PHP twin) already tolerated both a scalar number and a tier-object at this key. Only hero's own
+separate hand-rolled `'custom' === $image_object_fit` width emission in render.php needed the
+fix, via `sgs_responsive_normalise_object()` matching the already-proven minHeight/
+splitMediaPadding pattern. Side effect: hero's Width control is now genuinely tier-object-native
+for the first time — previously tablet/mobile were "editor-inert, render.php-only" per
+`registry.js`'s own prior documentation.
+
+**Real content-compat incident caught and fixed BEFORE deploy, not after:** the pre-deploy
+`oldshape-audit` gate found the block.json type change (string → object) would have silently
+discarded the stored focal-point value on 2 published posts — including **2742, the LIVE
+PRODUCTION HOMEPAGE**. The general Track B migration tool doesn't cover this shape (a different
+migration class). Wrote a narrowly-scoped, SURGICAL substring-level migration (locate-and-replace
+the exact JSON key/value substrings via REST, never re-serialising the whole attrs blob — which
+would have silently changed WP's own escaping on unrelated fields like `sgsCustomCss`). Dry-run
+first, then applied live with round-trip byte-identical verification per post.
+
+**Live-verified, both attributes, all 3 tiers, on the real homepage + a dev probe page:**
+`splitMediaObjectPosition` desktop `51% 50%` / mobile `47% 29%` (computed style, live homepage);
+`splitMediaWidth` desktop `40%` / tablet `60%` / mobile `90%` (confirmed via the deployed CSS
+source AND computed style, dev probe page). Zero new console errors.
+
+**Classification, so a future session doesn't re-investigate:** `splitMediaType`/`thumbnail` are
+ART-DIRECTION (select which sibling markup renders / documented poster-tier pattern) — correctly
+excluded from this migration. The "six `videoAutoplay*` booleans" an earlier handoff note named
+do not exist anywhere in `sgs/hero` (verified via grep, zero matches) — a wrong candidate, not a
+missed one. **NOT claimed:** "every remaining flat-trio attribute framework-wide is closed" — a
+full `migrate-tier-object.py --survey` across the whole attribute list was not run this session;
+Priority 4 closes hero's media-family VALUE attributes specifically.
+
+Commit: `ae0c2bff1`. Full detail: `.claude/memory/sdd-progress.md`'s "Priority 4" close-out
+section.
+
 ## D991 [INCIDENT] — Typography track Tasks 6-7 close: deployed + live-verified; `build-deploy.py --dry-run` is not dry and shipped a peer session's uncommitted work
 
 **2026-09-07.** Closes Tracks D's remaining scope (Tasks 6-7, per D990) — the whole typography
