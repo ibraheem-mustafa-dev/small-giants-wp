@@ -74,13 +74,18 @@ and heights doing nothing. All fixed; none confirmed live — see Blockers.
 
 ## Blockers
 
-⛔ **DEPLOY BLOCKED — stranded content on the LIVE HOMEPAGE, from this session's hero rename
-(`41ac811e5`).** `post 2742` carries SIX pre-rename attrs (splitImageAlt/AltMobile/Id/IdMobile/
-Url/UrlMobile), `post 3355` one; `hero/block.json` declares none. Verified over SSH. Deploy, then
-an editor SAVE on 2742, and WP drops all six — the split image AND its alt text. `oldshape-audit`
-correctly refuses. `621482e0e` fixed the CONVERTER; it does not touch stored content.
-⚠ **Bean's call:** re-clone 2742 (D554-B: canary pages are TRASHED not migrated; a correct fresh
-clone exists at page 3405) vs a stored-attr migration. Do NOT rewrite the homepage unilaterally.
+✅ **HOMEPAGE CONTENT FIXED (Bean-approved).** The hero rename (`41ac811e5`) stranded six
+pre-rename attrs on live post 2742; RE-CLONED with the current converter (D554-B: canary pages
+are re-cloned, not migrated). Now stores `splitMediaImage*`. Verified over SSH.
+
+⛔ **DEPLOY STILL BLOCKED, NOT by our work.** `check-no-inline` reports `sgs/trust-bar style="--…"`
+on the canary. It does NOT reproduce: an authoritative BeautifulSoup parse of the raw HTML and a
+rendered-DOM check both find ZERO trust-bar nodes with an inline style (13 nodes, none). The only
+inline-styled `sgs-*` element is a CORE `wp-block-list` carrying `sgs-link-list`, authored in
+`theme/sgs-theme/patterns/framework-footer-default.php`, absent from 2742's content. Pre-existing
+theme debt on a core block, mis-attributed by the gate to an sgs block. Not safely bypassable:
+`--skip-build` is the only route past and it disables isolation, shipping three other sessions'
+uncommitted plugin work (D991). ⚠ Owed: fix the footer pattern; fix the gate's attribution.
 
 **All 95 fast gates PASS as of 2026-09-07 (`b98a14ad1`).** The last blocker —
 `check-element-manifest-conformance` — closed by the colour track: 4 of its 7 findings were NOT
