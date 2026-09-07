@@ -997,3 +997,45 @@ deploy that GENUINELY needs to ship uncommitted content (`--allow-dirty`/`--payl
 case still builds against the shared checkout and still carries the original race this whole
 task exists to close. This is an accepted, bounded trade-off (documented in the commit and in
 `build-deploy.py`'s own module-level comment), not an oversight.
+
+## SDD progress — border-radius render fix, Task 2 live-verify closed, 2026-09-07
+
+Plan: `.claude/plans/2026-09-06-border-radius-render-fix.md` (now archived — see
+`.claude/plans/archive/`). Task 1 (accordion/container/product-card/icon-list render.php fix +
+guard-gate extension) was already merged (`5bb246df4` → PR #51, cleanup `e002bd8b1`) and
+`check-render-tier-object-spacing.py --check` already reported 0 findings tree-wide — but the
+plan's own Task 2 (live verification against the real deployed code) had never actually been
+run; the plan's status header still said "outstanding" and no probe-page evidence existed in
+any living doc.
+
+Closed it: created a throwaway REST page (id 3370, deleted immediately after) with a bare
+`sgs/container` carrying distinct desktop/tablet/mobile `borderRadius` corner values
+(20px/10px/4px), fetched the rendered page to find its `sgs-cst-{hash}` supports class, then
+read the LIFTED external CSS file (`wp-content/uploads/sgs-css/sgs-3364-....css` — not an
+inline `<style>` tag, per D977's established method) and confirmed all three tiers, including
+the `@media` guards:
+
+```
+.sgs-cst-101ac7ba.wp-block-sgs-container{border-top-left-radius:20px;border-top-right-radius:20px;border-bottom-left-radius:20px;border-bottom-right-radius:20px;}
+@media(max-width:1023px){.sgs-cst-101ac7ba.wp-block-sgs-container{border-radius:10px 10px 10px 10px;}}
+@media(max-width:767px){.sgs-cst-101ac7ba.wp-block-sgs-container{border-radius:4px 4px 4px 4px;}}
+```
+
+Exactly matches what `container/render.php`'s `sgs_responsive_normalise_object()` +
+`sgs_corner_object_shorthand()` reads should produce. Probe page force-deleted after capture;
+zero server-side artefacts left. **Border-radius render fix (Priority 3 of the tier-object
+migration arc) is now fully closed — Task 1 and Task 2 both done and evidenced.**
+
+The plan's own "residual scope: whatsapp-cta" note is also resolved — a separate investigation
+this session (see the Priority 2/3 section above) found whatsapp-cta needs no fix at all (its
+tablet/mobile radius was never on the stale-flat-attr pattern to begin with).
+
+## SDD progress — dead-pattern-attrs border migration confirmed complete, 2026-09-07
+
+Plan: `.claude/plans/2026-09-07-dead-pattern-attrs-border-migration.md` (now archived). Verified
+via `check-dead-pattern-attrs.py --check` → 0 findings (was 40) and commit `4f3127a04`
+("migrate dead style.border to typed border attributes"), merged on `main`, covering all 15
+pattern files + 6 template files named in the plan. Task 1 (confirm border-control completeness
+on `sgs/button`/`sgs/container`/`sgs/media`) needed no new build — the codemod only touched
+theme pattern/template files, never a block's own `block.json`/`edit.js`, confirming the
+controls already existed in full. Nothing left on this track.
