@@ -194,6 +194,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls group="styles">
+				{ /* Media type switch + per-type source/meaning/svg-presentation +
+				     Image Styling (object-fit/focal-point/motion) + Box & Border
+				     (box-shape) + Playback (video-behaviour) + Overlay — the full
+				     Wave 5b atom layer (MediaPanelLayout.js). Replaces the old
+				     hand-rolled media-type ButtonGroup, the Image panel's
+				     Replace/Remove + art-direction + decorative/alt controls, the
+				     SVG content/animation controls, the Video source/URL/poster
+				     workflow, the old Media Styling ToolsPanel's sizing/border
+				     rows, and the old Playback Options ToolsPanel — all now owned
+				     by the atom layer. This block's Media Styling ToolsPanel
+				     (further below) keeps only Alignment/Opacity/Box shadow, none
+				     of which any atom owns.
+				     Moved from the default (Settings) group to Styles 2026-09-07:
+				     object-fit/box/border/overlay/shadow here are pure styling —
+				     mounted first, adjacent to "Caption typography" below, so the
+				     block's styling panels stay together on the Styles tab. Media
+				     Type/Source/Playback ride along in this one component mount
+				     (MediaPanelLayout.js is not owned by this task and cannot be
+				     split without touching it — flagged in the session report). */ }
+				<MediaPanelLayout
+					group="styles"
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					mediaType={ mediaType || 'image' }
+					blockSlug="sgs/media"
+					previewUrl={ isImage ? imageUrl : '' }
+				/>
 				<PanelBody title={ __( 'Caption typography', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
 						attributes={ attributes }
@@ -218,25 +245,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 			</InspectorControls>
 			<InspectorControls>
-			{ /* Media type switch + per-type source/meaning/svg-presentation +
-			     Image Styling (object-fit/focal-point/motion) + Box & Border
-			     (box-shape) + Playback (video-behaviour) + Overlay — the full
-			     Wave 5b atom layer (MediaPanelLayout.js). Replaces the old
-			     hand-rolled media-type ButtonGroup, the Image panel's
-			     Replace/Remove + art-direction + decorative/alt controls, the
-			     SVG content/animation controls, the Video source/URL/poster
-			     workflow, the old Media Styling ToolsPanel's sizing/border
-			     rows, and the old Playback Options ToolsPanel — all now owned
-			     by the atom layer. This block's Media Styling ToolsPanel
-			     (further below) keeps only Alignment/Opacity/Box shadow, none
-			     of which any atom owns. */ }
-			<MediaPanelLayout
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				mediaType={ mediaType || 'image' }
-				blockSlug="sgs/media"
-				previewUrl={ isImage ? imageUrl : '' }
-			/>
+				{ /* SETTINGS half of the atom layer (2026-09-07): media type,
+				     source/alt, video playback, caption + link target. These are
+				     what the media IS and how it behaves; the appearance half
+				     (Image Styling / Box & Border / Overlay) mounts on the Styles
+				     tab above with `group="styles"`.
+				     Split because mounting the whole component into one tab put
+				     "choose your image" — the client's commonest action — on the
+				     wrong tab. Mounted FIRST so source selection is the first
+				     thing in Settings. */ }
+				<MediaPanelLayout
+					group="settings"
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					mediaType={ mediaType || 'image' }
+					blockSlug="sgs/media"
+					previewUrl={ isImage ? imageUrl : '' }
+				/>
 
 			{ /* Media styling — writes the block's NATIVE styling attributes
 			     (single source of truth the cloning converter also writes).

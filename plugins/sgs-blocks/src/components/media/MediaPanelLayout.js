@@ -40,7 +40,9 @@ import MediaElementPanel from '../MediaElementPanel.js';
  * @param {string}   props.mediaType     'image' | 'video' | 'svg'.
  * @param {string}   [props.blockSlug]   Defaults to 'sgs/media'.
  * @param {string}   [props.previewUrl]  Image URL for the focal-point preview.
- * @return {JSX.Element} The full panel-layout section list.
+ * @param {string}   [props.group]       Which inspector TAB's panels to render:
+ *                                       'settings' | 'styles' | 'all' (default).
+ * @return {JSX.Element} The panel-layout section list for the requested group.
  */
 export default function MediaPanelLayout( {
 	attributes,
@@ -48,6 +50,7 @@ export default function MediaPanelLayout( {
 	mediaType,
 	blockSlug = 'sgs/media',
 	previewUrl = '',
+	group = 'all',
 } ) {
 	const commonProps = {
 		attributes,
@@ -57,18 +60,38 @@ export default function MediaPanelLayout( {
 		mediaType,
 	};
 
+	// WHICH TAB (2026-09-07). These seven panels span BOTH inspector tabs, so a
+	// caller that mounts the whole component into one tab necessarily puts the
+	// other tab's panels in the wrong place. That is not hypothetical: moving
+	// this mount wholesale into `group="styles"` dragged Media Type and Source
+	// — "choose your image", the client's single most common action — out of
+	// Settings, where they would look for it.
+	//
+	// SETTINGS = what the media IS and how it behaves (type, source, alt text,
+	// playback, caption/link text). STYLES = how it LOOKS (object-fit, box,
+	// border, overlay). The caller mounts this component once per tab with the
+	// matching `group`.
+	//
+	// 'all' stays the default so an existing single-mount caller is unchanged.
+	const wants = ( g ) => 'all' === group || g === group;
+
 	return (
 		<>
+			{ wants( 'settings' ) && (
 			<PanelBody title={ __( 'Media Type', 'sgs-blocks' ) } initialOpen>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'media-type' ] } mediaType={ undefined } />
 			</PanelBody>
+			) }
 
+			{ wants( 'settings' ) && (
 			<PanelBody title={ __( 'Source', 'sgs-blocks' ) } initialOpen>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'source' ] } />
 				<MediaElementPanel { ...commonProps } atoms={ [ 'meaning' ] } />
 				<MediaElementPanel { ...commonProps } atoms={ [ 'svg-presentation' ] } />
 			</PanelBody>
+			) }
 
+			{ wants( 'styles' ) && (
 			<PanelBody title={ __( 'Image Styling', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel
 					{ ...commonProps }
@@ -76,37 +99,48 @@ export default function MediaPanelLayout( {
 					previewUrl={ previewUrl }
 				/>
 			</PanelBody>
+			) }
 
 			{ /* Wave 5c (2026-09-01): padding/opacity/shadow join box-shape here —
 			     all four are box-presentation controls for the same element,
 			     so they share one panel rather than each opening its own. */ }
+			{ wants( 'styles' ) && (
 			<PanelBody title={ __( 'Box & Border', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'box-shape', 'media-padding', 'opacity', 'shadow' ] } />
 			</PanelBody>
+			) }
 
 			{ /* video-behaviour's `types:['video']` gate returns no rows for
 			     image/svg — mounting the PanelBody unconditionally would open
 			     onto blank space for those types (empty-inspector-container),
 			     so this section is gated on mediaType here rather than inside
-			     MediaElementPanel. */ }
-			{ 'video' === mediaType && (
+			     MediaElementPanel. Playback is BEHAVIOUR, not appearance, so it
+			     belongs in Settings. */ }
+			{ wants( 'settings' ) && 'video' === mediaType && (
 				<PanelBody title={ __( 'Playback', 'sgs-blocks' ) } initialOpen={ false }>
 					<MediaElementPanel { ...commonProps } atoms={ [ 'video-behaviour' ] } />
 				</PanelBody>
 			) }
 
+			{ wants( 'styles' ) && (
 			<PanelBody title={ __( 'Overlay', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'overlay' ] } />
 			</PanelBody>
+			) }
 
 			{ /* Wave 5c: caption is image/video; link is image-only — each
 			     atom's own `types` gate already returns no rows outside its
 			     media type, so this section is safe to mount unconditionally
 			     (unlike Playback above, which would open onto blank space for
-			     every non-video type and is gated in JSX instead). */ }
+			     every non-video type and is gated in JSX instead).
+			     Caption TEXT and the link target are content, so this sits in
+			     Settings; the block's separate "Caption typography" panel is
+			     the styling half and stays on the Styles tab. */ }
+			{ wants( 'settings' ) && (
 			<PanelBody title={ __( 'Caption & Link', 'sgs-blocks' ) } initialOpen={ false }>
 				<MediaElementPanel { ...commonProps } atoms={ [ 'caption', 'link' ] } />
 			</PanelBody>
+			) }
 		</>
 	);
 }

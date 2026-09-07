@@ -288,7 +288,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitMediaMaxWidthUnit,
 		splitMediaMaxHeight,
 		splitMediaMaxHeightUnit,
-		splitMediaMaxWidthPercent,
 		contentBackground,
 		contentBackgroundGradient,
 		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
@@ -921,13 +920,37 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						/>
 					</PanelBody>
 				) }
+			</InspectorControls>
+
+			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
+			   layout/grid geometry, hover/effects. ── */}
+			<InspectorControls group="styles">
+				{/* Typography — replaces the old WP-native supports.typography
+				    (fontSize/lineHeight/letterSpacing/textTransform/fontWeight/
+				    fontStyle) with the shared TypographyControls component +
+				    sgs_typography_css_rule() render.php helper (D971/D972
+				    full-replacement track). Root prefix "" — the wrapper element,
+				    matching block.json's corrected `selectors.typography` (the
+				    root `.wp-block-sgs-hero`, not the never-emitted
+				    `.sgs-hero__headline`). showLetterSpacing/showTransform are
+				    enabled because the native support being replaced actually
+				    declared and rendered both. */}
+				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix=""
+						showLetterSpacing
+						showTransform
+					/>
+				</PanelBody>
+
+				{ /* ── Border (gap 2, 2026-09-02) — moved from the Settings tab to the
+				   Styles tab 2026-09-07: border colour/gradient/radius and transition
+				   duration/easing are pure styling, not settings. Gap 2's own
+				   colourStates rationale (Normal/Hover tabs for
+				   borderColourHover/borderColourHoverGradient) is unchanged. */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Gap 2 (2026-09-02) — colourValue/onColourChange (single-state
-					   form) replaced with colourStates (multi-state Normal/Hover
-					   form) so borderColourHover/borderColourHoverGradient (declared,
-					   read by render.php:221-223, previously no editor control) gain
-					   a "Hover" tab in the same popover — mirrors sgs/container's and
-					   sgs/quote's identically-shaped colourStates wiring. */ }
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }
@@ -970,13 +993,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Hover (gap 2, 2026-09-02) — transitionDuration/
+				{ /* ── Hover (gap 2, 2026-09-02) — moved from the Settings tab to the
+				   Styles tab 2026-09-07, adjacent to Border: transitionDuration/
 				   transitionEasing are declared and consumed by
-				   sgs_transition_vars() (render.php) but had no editor control.
-				   Mirrors sgs/quote's identically-shaped "Hover" panel controls
-				   (edit.js:849-870) — scale/shadow-on-hover controls are NOT
-				   added here, hero declares no scaleHover/boxShadowHover attrs,
-				   only the transition pair is in scope for this fix. */ }
+				   sgs_transition_vars() (render.php) and are pure styling. Mirrors
+				   sgs/quote's identically-shaped "Hover" panel controls —
+				   scale/shadow-on-hover controls are NOT added here, hero declares
+				   no scaleHover/boxShadowHover attrs, only the transition pair is
+				   in scope for this fix. */ }
 				<PanelBody title={ __( 'Hover', 'sgs-blocks' ) } initialOpen={ false }>
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -1003,30 +1027,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-			</InspectorControls>
 
-			{/* ── Styles tab — appearance: colour, spacing, borders, shadows,
-			   layout/grid geometry, hover/effects. ── */}
-			<InspectorControls group="styles">
-				{/* Typography — replaces the old WP-native supports.typography
-				    (fontSize/lineHeight/letterSpacing/textTransform/fontWeight/
-				    fontStyle) with the shared TypographyControls component +
-				    sgs_typography_css_rule() render.php helper (D971/D972
-				    full-replacement track). Root prefix "" — the wrapper element,
-				    matching block.json's corrected `selectors.typography` (the
-				    root `.wp-block-sgs-hero`, not the never-emitted
-				    `.sgs-hero__headline`). showLetterSpacing/showTransform are
-				    enabled because the native support being replaced actually
-				    declared and rendered both. */}
-				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix=""
-						showLetterSpacing
-						showTransform
-					/>
-				</PanelBody>
 				{/* ── 2. Container / Entire Block ── */}
 				{ /* Converted to ToolsPanel/ToolsPanelItem (Spec 35 T4.1 tail, audit-inspector-conformance
 				     dense-panel-candidate — 14 control-like elements). hasValue/onDeselect check against
@@ -1611,8 +1612,15 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				   already covers every variant, so it is the one that stays. This panel is
 				   now entirely split-specific, so it is gated + retitled to say so. */ }
 				{ isSplit && (
+					<PanelBody title={ __( 'Split image styling', 'sgs-blocks' ) } initialOpen={ false }>
+					{ /* The ToolsPanel `label` deliberately does NOT repeat the PanelBody
+					   title above it — a ToolsPanel names the CLUSTER it resets, not its
+					   parent (same convention as the "Container / Entire Block" and
+					   "Alignment & grid" panels elsewhere on this file). Wrapped in
+					   PanelBody 2026-09-07: a bare ToolsPanel has no collapse mechanism at
+					   all, which is why this panel would not collapse. */ }
 					<ToolsPanel
-						label={ __( 'Split image styling', 'sgs-blocks' ) }
+						label={ __( 'Split media', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
 								splitMediaObjectFit: 'cover',
@@ -1632,7 +1640,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaMaxWidthUnit: 'px',
 								splitMediaMaxHeight: {},
 								splitMediaMaxHeightUnit: 'px',
-								splitMediaMaxWidthPercent: undefined,
 								splitMediaBorderRadius: {},
 								splitMediaBorderRadiusTablet: {},
 								splitMediaBorderRadiusMobile: {},
@@ -1730,7 +1737,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaMaxWidthUnit !== 'px' ||
 								Object.keys( splitMediaMaxHeight ?? {} ).length > 0 ||
 								splitMediaMaxHeightUnit !== 'px' ||
-								!! splitMediaMaxWidthPercent ||
 								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
 								splitMediaBorderStyle !== 'none' ||
 								splitMediaBorderColour !== '' ||
@@ -1756,8 +1762,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaMaxWidthUnit: 'px',
 									splitMediaMaxHeight: {},
 									splitMediaMaxHeightUnit: 'px',
-									splitMediaMaxWidthPercent: undefined,
-									splitMediaBorderRadius: {},
+										splitMediaBorderRadius: {},
 									splitMediaBorderRadiusTablet: {},
 									splitMediaBorderRadiusMobile: {},
 									splitMediaBorderStyle: 'none',
@@ -1832,6 +1837,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
+					</PanelBody>
 				) }
 
 				{ /* WS-4: mirrored sgs/container wrapper controls (section KIND).

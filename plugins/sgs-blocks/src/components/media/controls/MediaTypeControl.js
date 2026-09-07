@@ -17,7 +17,6 @@
  * A `ToggleGroupControl` button-group (2026-09-01, Bean's direction), NOT a
  * dropdown — matching `box-shape`'s own "pick one of a few options" control
  * (`MediaBoxShapeControls.js`'s `MODE_OPTIONS`/`ToggleGroupControl` block).
- * Four options (Inherit + Image/Video/SVG) fit the segmented control fine.
  *
  * ⛔ WRITTEN WITH `createElement()`, NOT JSX. This module is imported by
  * `scripts/tests/test-media-atom-parity.mjs` directly under plain Node (no
@@ -39,9 +38,16 @@ export const MEDIA_TYPE_OPTIONS = [
 ];
 
 const INHERIT_OPTION = {
-	label: __( 'Inherit from tier above', 'sgs-blocks' ),
+	label: __( 'Inherit', 'sgs-blocks' ),
 	value: '',
 };
+
+/** Explanation for `allowInherit`'s short "Inherit" label — shown as the
+ * control's `help` text so the segmented button stays narrow. */
+const INHERIT_HELP = __(
+	'Inherit uses whatever media type the tier above has set.',
+	'sgs-blocks'
+);
 
 /**
  * @param {Object}   props
@@ -72,7 +78,11 @@ export default function MediaTypeControl( {
 		ToggleGroupControl,
 		{
 			label: label || __( 'Media type', 'sgs-blocks' ),
-			help: disabled ? hiddenReason || undefined : undefined,
+			help: disabled
+				? hiddenReason || undefined
+				: allowInherit
+				? INHERIT_HELP
+				: undefined,
 			value: resolved,
 			onChange,
 			isBlock: true,
