@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
@@ -285,6 +285,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					{
+						key: 'starColour',
+						label: __( 'Star colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: starColour,
+								onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
+								gradientValue: starColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { starColourGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			) }
@@ -318,23 +334,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ ! isTpOfficial && (
-						<DesignTokenPicker
-							label={ __( 'Star colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: starColour,
-									onChange: ( val ) => setAttributes( { starColour: val ?? '' } ),
-									gradientValue: starColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { starColourGradient: val ?? '' } ),
-									linked: true,
-								},
-							] }
-						/>
-					) }
 				</PanelBody>
 
 				{ /* padding/margin are each a single block-owned tier-object attr

@@ -1245,131 +1245,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							/>
 						</ToolsPanelItem>
 
-						{ isSplit && (
-							<ToolsPanelItem
-								label={ __( 'Split layout grid', 'sgs-blocks' ) }
-								hasValue={ () =>
-									!! gridTemplateColumns ||
-										!! splitContentOrder?.desktop ||
-									!! splitContentOrder?.tablet ||
-									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first'
-								}
-								onDeselect={ () =>
-									setAttributes( {
-										gridTemplateColumns: '',
-										splitContentOrder: { mobile: 'media-first' },
-									} )
-								}
-							>
-								<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
-								{ /*
-								     `gridTemplateColumns` is a TIER OBJECT (Spec 35 pass 3a) —
-								     ONE attr holding {desktop,tablet,mobile}. ResponsiveOverride
-								     owns the active tier, so the old per-tier attr map is gone;
-								     the desktop PRESET picker is preserved by keying it on the
-								     desktop tier's own value rather than on a separate attr.
-								*/ }
-								<ResponsiveOverride
-									label={ __( 'Column ratio', 'sgs-blocks' ) }
-									value={ gridTemplateColumns }
-									onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
-								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) => {
-										// The preset picker is a DESKTOP affordance: the presets are
-										// whole-layout ratios, while a tablet/mobile override is a
-										// free-text refinement of the inherited desktop choice.
-										// `tier` comes straight from ResponsiveOverride's render-prop
-										// payload (ResponsiveOverride.js:116) — the active tier from
-										// the ONE global device toggle.
-										if ( 'desktop' === tier ) {
-											const isCustom = ! COLUMN_RATIO_PRESETS.some(
-												( p ) => p.value !== 'custom' && p.value === ownValue
-											);
-											return (
-												<>
-													<SelectControl
-														label={ __( 'Preset', 'sgs-blocks' ) }
-														value={ isCustom ? 'custom' : ownValue }
-														options={ COLUMN_RATIO_PRESETS }
-														onChange={ ( val ) => { if ( val !== 'custom' ) { setOwnValue( val ); } } }
-														__nextHasNoMarginBottom
-														__next40pxDefaultSize
-													/>
-													{ isCustom && (
-														<TextControl
-															label={ __( 'Custom ratio', 'sgs-blocks' ) }
-															help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
-															value={ ownValue || '' }
-															onChange={ ( val ) => setOwnValue( val ) }
-															__nextHasNoMarginBottom
-															__next40pxDefaultSize
-														/>
-													) }
-												</>
-											);
-										}
-										return (
-											<TextControl
-												help={ __( 'Blank = inherit the tier above.', 'sgs-blocks' ) }
-												value={ ownValue || '' }
-												placeholder={ inherited ? effectiveValue || '' : '' }
-												onChange={ ( val ) => setOwnValue( val ) }
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										);
-									} }
-								</ResponsiveOverride>
-								{ /* Column gap de-duped 2026-07-06 — the split grid gap is
-								     the container gap, controlled by the shared "Gap" control
-								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
-								     bespoke splitGap* "Column gap" control was a duplicate. */ }
-								{ /* splitContentOrder is a TIER OBJECT {desktop,tablet,mobile}
-								     (Spec 35 pass 3b) — ONE attr, bound via
-								     <ResponsiveOverride> (mirrors gridTemplateColumns above).
-								     Per-tier option lists/labels/help still vary, so the
-								     render-prop's `tier` selects them exactly as the old
-								     breakpoint-keyed maps did. */ }
-								<ResponsiveOverride
-									label={ __( 'Column / stacking order', 'sgs-blocks' ) }
-									value={ splitContentOrder }
-									onChange={ ( obj ) => setAttributes( { splitContentOrder: obj } ) }
-								>
-									{ ( { ownValue, setOwnValue, tier } ) => {
-										const orderOptionsMap = {
-											desktop: DESKTOP_ORDER_OPTIONS,
-											tablet: TABLET_ORDER_OPTIONS,
-											mobile: MOBILE_ORDER_OPTIONS,
-										};
-										const orderLabelMap = {
-											desktop: __( 'Desktop order', 'sgs-blocks' ),
-											tablet: __( 'Tablet order', 'sgs-blocks' ),
-											mobile: __( 'Mobile stacking order', 'sgs-blocks' ),
-										};
-										const orderHelpMap = {
-											desktop: __( 'Which column sits on the left when content and image are side by side.', 'sgs-blocks' ),
-											tablet: __( 'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.', 'sgs-blocks' ),
-											mobile: __( 'Mobile always stacks into a single column — this sets which section shows on top.', 'sgs-blocks' ),
-										};
-										// Mobile has no blank/inherit option (MOBILE_ORDER_OPTIONS
-										// mirrors render.php's own 'media-first' fallback default);
-										// desktop/tablet keep the blank = inherit convention.
-										const value = 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' );
-										return (
-											<SelectControl
-												label={ orderLabelMap[ tier ] }
-												value={ value }
-												options={ orderOptionsMap[ tier ] }
-												help={ orderHelpMap[ tier ] }
-												onChange={ ( val ) => setOwnValue( val ) }
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										);
-									} }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-						) }
 					</ToolsPanel>
 					{ [ 'nav', 'aside' ].includes( attributes.tagName ) && (
 						<TextControl
@@ -1587,6 +1462,131 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									/>
 								</ToolsPanelItem>
 							</>
+						) }
+						{ isSplit && (
+							<ToolsPanelItem
+								label={ __( 'Split layout grid', 'sgs-blocks' ) }
+								hasValue={ () =>
+									!! gridTemplateColumns ||
+										!! splitContentOrder?.desktop ||
+									!! splitContentOrder?.tablet ||
+									( splitContentOrder?.mobile ?? 'media-first' ) !== 'media-first'
+								}
+								onDeselect={ () =>
+									setAttributes( {
+										gridTemplateColumns: '',
+										splitContentOrder: { mobile: 'media-first' },
+									} )
+								}
+							>
+								<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
+								{ /*
+								     `gridTemplateColumns` is a TIER OBJECT (Spec 35 pass 3a) —
+								     ONE attr holding {desktop,tablet,mobile}. ResponsiveOverride
+								     owns the active tier, so the old per-tier attr map is gone;
+								     the desktop PRESET picker is preserved by keying it on the
+								     desktop tier's own value rather than on a separate attr.
+								*/ }
+								<ResponsiveOverride
+									label={ __( 'Column ratio', 'sgs-blocks' ) }
+									value={ gridTemplateColumns }
+									onChange={ ( obj ) => setAttributes( { gridTemplateColumns: obj } ) }
+								>
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue, tier } ) => {
+										// The preset picker is a DESKTOP affordance: the presets are
+										// whole-layout ratios, while a tablet/mobile override is a
+										// free-text refinement of the inherited desktop choice.
+										// `tier` comes straight from ResponsiveOverride's render-prop
+										// payload (ResponsiveOverride.js:116) — the active tier from
+										// the ONE global device toggle.
+										if ( 'desktop' === tier ) {
+											const isCustom = ! COLUMN_RATIO_PRESETS.some(
+												( p ) => p.value !== 'custom' && p.value === ownValue
+											);
+											return (
+												<>
+													<SelectControl
+														label={ __( 'Preset', 'sgs-blocks' ) }
+														value={ isCustom ? 'custom' : ownValue }
+														options={ COLUMN_RATIO_PRESETS }
+														onChange={ ( val ) => { if ( val !== 'custom' ) { setOwnValue( val ); } } }
+														__nextHasNoMarginBottom
+														__next40pxDefaultSize
+													/>
+													{ isCustom && (
+														<TextControl
+															label={ __( 'Custom ratio', 'sgs-blocks' ) }
+															help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) }
+															value={ ownValue || '' }
+															onChange={ ( val ) => setOwnValue( val ) }
+															__nextHasNoMarginBottom
+															__next40pxDefaultSize
+														/>
+													) }
+												</>
+											);
+										}
+										return (
+											<TextControl
+												help={ __( 'Blank = inherit the tier above.', 'sgs-blocks' ) }
+												value={ ownValue || '' }
+												placeholder={ inherited ? effectiveValue || '' : '' }
+												onChange={ ( val ) => setOwnValue( val ) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										);
+									} }
+								</ResponsiveOverride>
+								{ /* Column gap de-duped 2026-07-06 — the split grid gap is
+								     the container gap, controlled by the shared "Gap" control
+								     (ContainerWrapperControls, gap/gapTablet/gapMobile). The
+								     bespoke splitGap* "Column gap" control was a duplicate. */ }
+								{ /* splitContentOrder is a TIER OBJECT {desktop,tablet,mobile}
+								     (Spec 35 pass 3b) — ONE attr, bound via
+								     <ResponsiveOverride> (mirrors gridTemplateColumns above).
+								     Per-tier option lists/labels/help still vary, so the
+								     render-prop's `tier` selects them exactly as the old
+								     breakpoint-keyed maps did. */ }
+								<ResponsiveOverride
+									label={ __( 'Column / stacking order', 'sgs-blocks' ) }
+									value={ splitContentOrder }
+									onChange={ ( obj ) => setAttributes( { splitContentOrder: obj } ) }
+								>
+									{ ( { ownValue, setOwnValue, tier } ) => {
+										const orderOptionsMap = {
+											desktop: DESKTOP_ORDER_OPTIONS,
+											tablet: TABLET_ORDER_OPTIONS,
+											mobile: MOBILE_ORDER_OPTIONS,
+										};
+										const orderLabelMap = {
+											desktop: __( 'Desktop order', 'sgs-blocks' ),
+											tablet: __( 'Tablet order', 'sgs-blocks' ),
+											mobile: __( 'Mobile stacking order', 'sgs-blocks' ),
+										};
+										const orderHelpMap = {
+											desktop: __( 'Which column sits on the left when content and image are side by side.', 'sgs-blocks' ),
+											tablet: __( 'Overrides desktop for tablet screens only. If your tablet grid is side by side this sets left/right; if it stacks (single column) this sets top/bottom.', 'sgs-blocks' ),
+											mobile: __( 'Mobile always stacks into a single column — this sets which section shows on top.', 'sgs-blocks' ),
+										};
+										// Mobile has no blank/inherit option (MOBILE_ORDER_OPTIONS
+										// mirrors render.php's own 'media-first' fallback default);
+										// desktop/tablet keep the blank = inherit convention.
+										const value = 'mobile' === tier ? ( ownValue || 'media-first' ) : ( ownValue || '' );
+										return (
+											<SelectControl
+												label={ orderLabelMap[ tier ] }
+												value={ value }
+												options={ orderOptionsMap[ tier ] }
+												help={ orderHelpMap[ tier ] }
+												onChange={ ( val ) => setOwnValue( val ) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										);
+									} }
+								</ResponsiveOverride>
+							</ToolsPanelItem>
 						) }
 					</ToolsPanel>
 				</PanelBody>

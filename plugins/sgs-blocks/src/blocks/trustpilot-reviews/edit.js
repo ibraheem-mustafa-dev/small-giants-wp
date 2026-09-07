@@ -233,7 +233,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							value={ emptyState }
 							options={ EMPTY_STATE_OPTIONS }
 							onChange={ ( value ) => setAttributes( { emptyState: value } ) }
-							help={ __( 'Controls what shows when the synced source is empty or unreachable. "Hide" leaves no gap; "Reviews coming soon" shows a placeholder message.', 'sgs-blocks' ) }
+							help={ __( 'Controls what shows when the synced source is empty or unreachable. "Hide" removes the section entirely; "Reviews coming soon" shows a placeholder message.', 'sgs-blocks' ) }
 							__next40pxDefaultSize
 						/>
 					) }

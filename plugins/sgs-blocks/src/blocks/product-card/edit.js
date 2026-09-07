@@ -1471,22 +1471,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							{ /* Typed mode only — a bound/live product photo is genuine
-							     shopping content and must never be hidden from
-							     assistive tech; this control only exists here,
-							     inside the isBuiltIn gate. */ }
-							<ToggleControl
-								label={ __( 'Product image is decorative', 'sgs-blocks' ) }
-								checked={ !! imageDecorative }
-								onChange={ ( val ) =>
-									setAttributes( { imageDecorative: val } )
-								}
-								help={ __(
-									'Turn on when this image is a visual/promotional tile rather than a real product photo — screen readers will skip it instead of reading the alt text.',
-									'sgs-blocks'
-								) }
-								__nextHasNoMarginBottom
-							/>
 							{ isTrial && (
 								<TextControl
 									label={ __( 'Trial tag text', 'sgs-blocks' ) }
@@ -2010,11 +1994,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Button style panel (appearance: primary/secondary style
-				     presets; text/URL/behaviour live in the Settings tab's
-				     "Buttons" panel) ── */ }
+				{ /* ── Call to action panel — merged "Button style" (appearance:
+				     primary/secondary style presets; text/URL/behaviour live in
+				     the Settings tab's "Buttons" panel) + "CTA Button Style"
+				     (both modes — the primary button in typed mode uses
+				     .sgs-button--{style} + a stable .sgs-product-card__cta--primary
+				     marker; bound mode uses .product-card__view /
+				     .product-card__add-to-cart) into one panel (rule 41). ── */ }
 				<PanelBody
-					title={ __( 'Button style', 'sgs-blocks' ) }
+					title={ __( 'Call to action', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<SelectControl
@@ -2087,16 +2075,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-				</PanelBody>
 
-				{ /* ── CTA Button Style panel (both modes — the primary button in
-				     typed mode uses .sgs-button--{style} + a stable
-				     .sgs-product-card__cta--primary marker; bound mode uses
-				     .product-card__view / .product-card__add-to-cart) ── */ }
-				<PanelBody
-					title={ __( 'CTA Button Style', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<p style={ { marginTop: 0 } }>
 						{ __(
 							'Colour, border, corner radius, and padding for the primary button.',
@@ -2386,6 +2365,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						mediaType="image"
 						scope="element"
 					/>
+					{ /* Typed mode only — a bound/live product photo is genuine
+					     shopping content and must never be hidden from
+					     assistive tech; this control only exists here,
+					     inside the isBuiltIn gate. */ }
+					{ isBuiltIn && (
+						<ToggleControl
+							label={ __( 'Product image is decorative', 'sgs-blocks' ) }
+							checked={ !! imageDecorative }
+							onChange={ ( val ) =>
+								setAttributes( { imageDecorative: val } )
+							}
+							help={ __(
+								'Turn on when this image is a visual/promotional tile rather than a real product photo — screen readers will skip it instead of reading the alt text.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				{ /* ── Picker style panel (R4 — pill-style forwarding to every

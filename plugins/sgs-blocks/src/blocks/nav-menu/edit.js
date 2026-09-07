@@ -927,53 +927,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Featured items', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ 0 === ref && (
-						<p>
-							{ __(
-								'Choose a specific menu above to pick which items are featured.',
-								'sgs-blocks'
-							) }
-						</p>
-					) }
-					{ 0 !== ref && 0 === resolvedItems.length && (
-						<p>
-							{ __(
-								'This menu has no top-level items yet.',
-								'sgs-blocks'
-							) }
-						</p>
-					) }
-					{ resolvedItems.map( ( item ) => (
-						/*
-						 * Nested items are indented so the list reads as the menu's
-						 * own shape. Children appear at all now — the list was
-						 * top-level only, which made render.php's featured-child
-						 * support unreachable from the editor.
-						 */
-						<div
-							key={ item.identifier }
-							style={ {
-								marginLeft: `${ ( item.depth || 0 ) * 20 }px`,
-							} }
-						>
-							<CheckboxControl
-								label={ item.label }
-								checked={ ( featuredItemIds || [] ).includes(
-									item.identifier
-								) }
-								onChange={ ( checked ) =>
-									toggleFeatured( item.identifier, checked )
-								}
-								__nextHasNoMarginBottom
-							/>
-						</div>
-					) ) }
-				</PanelBody>
-
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Navigation label', 'sgs-blocks' ) }
@@ -1015,28 +968,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 
-					<ResponsiveControl label={ __( 'Panel columns', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
-							<RangeControl
-								label={ __( 'Panel columns', 'sgs-blocks' ) }
-								hideLabelFromVision
-								help={ __(
-									'How many columns this list uses when it renders inside a menu panel (a horizontal bar always stays one row). 1 is the default.',
-									'sgs-blocks'
-								) }
-								min={ 1 }
-								max={ 4 }
-								value={ listColumns?.[ breakpoint ] || 1 }
-								onChange={ ( value ) =>
-									setAttributes( {
-										listColumns: { ...listColumns, [ breakpoint ]: value || undefined },
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
-					</ResponsiveControl>
 				</PanelBody>
 
 				<PanelBody
@@ -1152,6 +1083,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							presets={ false }
 						/>
 					</ToolsPanelItem>
+
+					<ResponsiveControl label={ __( 'Panel columns', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<RangeControl
+								label={ __( 'Panel columns', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __(
+									'How many columns this list uses when it renders inside a menu panel (a horizontal bar always stays one row). 1 is the default.',
+									'sgs-blocks'
+								) }
+								min={ 1 }
+								max={ 4 }
+								value={ listColumns?.[ breakpoint ] || 1 }
+								onChange={ ( value ) =>
+									setAttributes( {
+										listColumns: { ...listColumns, [ breakpoint ]: value || undefined },
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveControl>
+
 					{ /*
 					 * No Max width control here, deliberately (D540, Bean).
 					 * sgs/nav-menu is ALWAYS a child — of a site-header-row or of
@@ -1360,6 +1315,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+
+					<ToggleControl
+						label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
+						checked={ !! itemMagnetEnabled }
+						onChange={ ( val ) =>
+							setAttributes( { itemMagnetEnabled: val } )
+						}
+						help={ __(
+							'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -1392,19 +1360,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ /* Indicator colour moved to the top-level SgsColourPanel
 					   (D618/D609) — shown there only when the indicator is
 					   On, mirroring this panel's own visibility gate. */ }
-
-					<ToggleControl
-						label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
-						checked={ !! itemMagnetEnabled }
-						onChange={ ( val ) =>
-							setAttributes( { itemMagnetEnabled: val } )
-						}
-						help={ __(
-							'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
 				</PanelBody>
 
 				{ 'underline' === hoverStyle && (
@@ -1453,6 +1408,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) }
 
 				<PanelBody title={ __( 'Featured', 'sgs-blocks' ) } initialOpen={ false }>
+					{ 0 === ref && (
+						<p>
+							{ __(
+								'Choose a specific menu above to pick which items are featured.',
+								'sgs-blocks'
+							) }
+						</p>
+					) }
+					{ 0 !== ref && 0 === resolvedItems.length && (
+						<p>
+							{ __(
+								'This menu has no top-level items yet.',
+								'sgs-blocks'
+							) }
+						</p>
+					) }
+					{ resolvedItems.map( ( item ) => (
+						/*
+						 * Nested items are indented so the list reads as the menu's
+						 * own shape. Children appear at all now — the list was
+						 * top-level only, which made render.php's featured-child
+						 * support unreachable from the editor.
+						 */
+						<div
+							key={ item.identifier }
+							style={ {
+								marginLeft: `${ ( item.depth || 0 ) * 20 }px`,
+							} }
+						>
+							<CheckboxControl
+								label={ item.label }
+								checked={ ( featuredItemIds || [] ).includes(
+									item.identifier
+								) }
+								onChange={ ( checked ) =>
+									toggleFeatured( item.identifier, checked )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</div>
+					) ) }
+
 					{ /* Text/background colour (Normal + Hover) moved to the
 					   top-level SgsColourPanel (D618/D609). Radius and font
 					   weight are not colours, so they stay here as plain

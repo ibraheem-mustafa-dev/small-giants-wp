@@ -649,6 +649,75 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					   elsewhere in this file. */ }
 				</ToolsPanel>
 
+				{ /* ============================================================
+				     Settings tab — Drop cap (TIER-1, its own already-exempt
+				     element panel; left untouched per Spec 35 THE PLACEMENT RULE)
+				     ============================================================ */ }
+				<PanelBody
+					title={ __( 'Drop cap', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Enable drop cap', 'sgs-blocks' ) }
+						checked={ dropCap }
+						onChange={ ( val ) =>
+							setAttributes( { dropCap: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ dropCap && (
+						<>
+							{ /* First-letter size — SgsLengthControl (number + unit in one input) */ }
+							<SgsLengthControl
+								label={ __( 'First-letter size', 'sgs-blocks' ) }
+								value={ composeUnit( firstLetterFontSize, firstLetterFontSizeUnit ) }
+								units={ FIRST_LETTER_SIZE_UNITS }
+								onChange={ ( raw ) => {
+									const { num, unit } = parseUnit( raw, firstLetterFontSizeUnit || 'em' );
+									setAttributes( {
+										firstLetterFontSize: num,
+										firstLetterFontSizeUnit: unit,
+									} );
+								} }
+								presets={ false }
+							/>
+							<SelectControl
+								label={ __( 'First-letter weight', 'sgs-blocks' ) }
+								value={ firstLetterFontWeight }
+								options={ FONT_WEIGHT_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( {
+										firstLetterFontWeight: val,
+									} )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<GradientCapableColourControl
+								label={ __( 'First-letter colour', 'sgs-blocks' ) }
+								states={ [
+									{
+										key: 'normal',
+										label: __( 'Normal', 'sgs-blocks' ),
+										value: firstLetterColour,
+										onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
+										linked: true,
+										gradientValue: firstLetterColourGradient,
+										onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: firstLetterColourHover,
+										onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
+										linked: true,
+									},
+								] }
+							/>
+						</>
+					) }
+				</PanelBody>
+
 				{ /* ---- Background — `background`'s own TIER-1 panel ----
 				   A real declared element (the block's `::after` paint layer,
 				   Spec 35 element manifest), not a wrapper — it gets its own
@@ -891,77 +960,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					onChange={ ( val ) => setAttributes( { inheritStyle: val } ) }
 				/>
 			</InspectorAdvancedControls>
-
-			{ /* ============================================================
-			     Settings tab — Drop cap (TIER-1, its own already-exempt
-			     element panel; left untouched per Spec 35 THE PLACEMENT RULE)
-			     ============================================================ */ }
-			<InspectorControls>
-				<PanelBody
-					title={ __( 'Drop cap', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Enable drop cap', 'sgs-blocks' ) }
-						checked={ dropCap }
-						onChange={ ( val ) =>
-							setAttributes( { dropCap: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					{ dropCap && (
-						<>
-							{ /* First-letter size — SgsLengthControl (number + unit in one input) */ }
-							<SgsLengthControl
-								label={ __( 'First-letter size', 'sgs-blocks' ) }
-								value={ composeUnit( firstLetterFontSize, firstLetterFontSizeUnit ) }
-								units={ FIRST_LETTER_SIZE_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit( raw, firstLetterFontSizeUnit || 'em' );
-									setAttributes( {
-										firstLetterFontSize: num,
-										firstLetterFontSizeUnit: unit,
-									} );
-								} }
-								presets={ false }
-							/>
-							<SelectControl
-								label={ __( 'First-letter weight', 'sgs-blocks' ) }
-								value={ firstLetterFontWeight }
-								options={ FONT_WEIGHT_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( {
-										firstLetterFontWeight: val,
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<GradientCapableColourControl
-								label={ __( 'First-letter colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: firstLetterColour,
-										onChange: ( val ) => setAttributes( { firstLetterColour: val ?? '' } ),
-										linked: true,
-										gradientValue: firstLetterColourGradient,
-										onGradientChange: ( val ) => setAttributes( { firstLetterColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: firstLetterColourHover,
-										onChange: ( val ) => setAttributes( { firstLetterColourHover: val ?? '' } ),
-										linked: true,
-									},
-								] }
-							/>
-						</>
-					) }
-				</PanelBody>
-			</InspectorControls>
 
 			<RichText
 				{ ...blockProps }

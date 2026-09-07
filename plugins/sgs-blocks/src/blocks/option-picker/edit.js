@@ -851,36 +851,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							} );
 						} }
 					/>
-				</PanelBody>
 
-				{ /* Swatch image — the image-swatch <img> (render.php §"Swatch
-				   rendering") is a fixed 2rem crop of a WooCommerce attribute
-				   term's image, not a picker this block's own attributes drive —
-				   but the fit MODE is still a legitimate client choice, so this
-				   panel is always available (which options actually carry an
-				   image swatch depends on WC term-meta, invisible to the editor
-				   ahead of render). */ }
-				<PanelBody title={ __( 'Swatch image', 'sgs-blocks' ) } initialOpen={ false }>
-					<MediaElementPanel
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						prefix="swatch"
-						blockSlug="sgs/option-picker"
-						insertion="element"
-						atoms={ [ 'object-fit' ] }
-						mediaType="image"
-						scope="element"
-					/>
-				</PanelBody>
-
-				{ /* Selection appearance — colours moved to the top-level
-				   SgsColourPanel (D619, Normal/Current states per swatch).
-				   This ToolsPanel now holds only the non-colour selection
-				   behaviour: selected pill radius + the tick toggle. */ }
-				<PanelBody
-					title={ __( 'Selection appearance', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
+					{ /* Selection appearance — colours moved to the top-level
+					   SgsColourPanel (D619, Normal/Current states per swatch).
+					   This ToolsPanel now holds only the non-colour selection
+					   behaviour: selected pill radius + the tick toggle. */ }
 					<ToolsPanel
 						className="sgs-nested-tools-panel"
 						label={ __( 'Selection appearance', 'sgs-blocks' ) }
@@ -928,6 +903,26 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>
+				</PanelBody>
+
+				{ /* Swatch image — the image-swatch <img> (render.php §"Swatch
+				   rendering") is a fixed 2rem crop of a WooCommerce attribute
+				   term's image, not a picker this block's own attributes drive —
+				   but the fit MODE is still a legitimate client choice, so this
+				   panel is always available (which options actually carry an
+				   image swatch depends on WC term-meta, invisible to the editor
+				   ahead of render). */ }
+				<PanelBody title={ __( 'Swatch image', 'sgs-blocks' ) } initialOpen={ false }>
+					<MediaElementPanel
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="swatch"
+						blockSlug="sgs/option-picker"
+						insertion="element"
+						atoms={ [ 'object-fit' ] }
+						mediaType="image"
+						scope="element"
+					/>
 				</PanelBody>
 
 				{ /* Width / spacing — hand-rolled (no shared wrapper, contract §B3
