@@ -43,7 +43,12 @@
 	width: var( --sgs-media-width, auto );
 	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
 	min-height: var( --sgs-media-min-height, 0 );
-	max-width: var( --sgs-media-max-width, none );
+	/* Fallback 100%, NOT `none` (2026-09-07, D998) — twin of the same line in
+	 * media-element.css. `none` cancelled core's `img { max-width: 100% }` from a
+	 * shared (0,1,0) rule loading after every block stylesheet, so any media
+	 * element that had not set the custom property rendered at intrinsic size and
+	 * escaped its container. An explicit `--sgs-media-max-width` still wins. */
+	max-width: var( --sgs-media-max-width, 100% );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
 	border-radius: var( --sgs-media-border-radius, 0 );
@@ -82,7 +87,7 @@
  * via the same custom-property/initial-fallback contract as every other
  * declaration here. */
 .sgs-media-el {
-	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, none ) );
+	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, 100% ) );
 }
 
 @media ( max-width: 1023px ) {

@@ -274,7 +274,18 @@
 	width: var( --sgs-media-width, auto );
 	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
 	min-height: var( --sgs-media-min-height, 0 );
-	max-width: var( --sgs-media-max-width, none );
+	/* Fallback is 100%, NOT `none` (2026-09-07, D998). `.sgs-media-el` is a
+	 * single-class selector that loads AFTER every block stylesheet, so at equal
+	 * (0,1,0) specificity it wins on source order — and `none` actively CANCELLED
+	 * core's `img { max-width: 100% }` on every media element that had not set the
+	 * custom property. Measured on the homepage clone: the hero split image
+	 * rendered at its intrinsic 1536x1536 inside a 737px column (2249px document
+	 * scroll width at a 1440px viewport) and 1080x1920 inside a 375px screen.
+	 * `100%` is what every surface actually measures and what core sets; an
+	 * explicit `--sgs-media-max-width` still overrides it, so no capability is
+	 * lost. Same class of bug as the banned `initial`/`unset`/`revert` fallbacks
+	 * — a non-measured default in a shared rule that out-ranks the block's own. */
+	max-width: var( --sgs-media-max-width, 100% );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
 	border-radius: var( --sgs-media-border-radius, 0 );
@@ -313,7 +324,7 @@
  * via the same custom-property/initial-fallback contract as every other
  * declaration here. */
 .sgs-media-el {
-	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, none ) );
+	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, 100% ) );
 }
 
 @media ( max-width: 1023px ) {

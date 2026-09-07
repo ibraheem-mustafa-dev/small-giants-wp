@@ -1,3 +1,56 @@
+## D998 [INCIDENT] — a shared `max-width: none` fallback cancelled core's `img{max-width:100%}` on every media element
+
+**2026-09-07.** Bean reported the hero split image "escaping the screen on all platforms".
+
+**The defect.** `.sgs-media-el` in `assets/css/media-element.css` (and its twin in
+`assets/css/media-atoms/box-shape.css`) declared
+`max-width: var( --sgs-media-max-width, none )`. That is a single-class selector in a shared
+stylesheet that loads AFTER every block stylesheet, so at equal `(0,1,0)` specificity it wins
+on source order. Any media element that had not explicitly set `--sgs-media-max-width` got
+`max-width: none`, which **cancels core's `img { max-width: 100% }`** — so the image rendered
+at its intrinsic size with nothing capping it.
+
+**Measured on the homepage clone (page 3405), not inferred:** the hero desktop image computed
+`1536x1536` inside a `737px` column; the mobile image `1080x1920` inside a `375px` screen.
+Document scroll width was **2249px at a 1440px viewport** and **1056px at 375px**. Bean
+independently isolated the same lever by unticking `max-width` in DevTools and watching the
+overflow stop.
+
+**Fix.** Fallback `none` -> `100%` at all four sites (two per stylesheet: the base declaration
+and the `max-width-percent` composite). `100%` is what every surface actually measures and what
+core sets. An explicit `--sgs-media-max-width` still overrides it, so no client capability is
+lost and no block that sets the property changes behaviour.
+
+⚠ **This is the SAME class as the banned `initial`/`unset`/`revert` fallbacks, and the gate did
+not catch it.** `check-media-atom-purity.js` bans exactly those three keywords
+(`/var\(\s*--sgs-media-[a-z0-9-]+\s*,\s*(initial|unset|revert)\s*\)/`). `none` and `auto` are
+real CSS values, not reset keywords, so they pass — while doing the identical damage: a
+NON-MEASURED default in a shared rule that out-ranks the block's own. The rule the codebase
+already states ("a shared fallback must be the value the surfaces actually MEASURE") is
+broader than the regex enforcing it. Widening the gate is owed, not done here.
+
+**Two related contributors, NOT fixed in this commit and deliberately named rather than
+bundled:**
+1. `hero/style.css` has `.sgs-hero--split, .sgs-hero--split .sgs-hero__media { overflow: visible }`
+   overriding `.sgs-hero { overflow: hidden }`, so nothing clipped the blowout. The override
+   looks deliberate (something is presumably meant to escape the hero); needs its own
+   investigation before being flipped.
+2. The converter never emitted `--sgs-media-width`/`--sgs-media-height` for the split image,
+   so the fallbacks were what applied. `sgs/hero` DOES declare `splitMediaWidth`/
+   `splitMediaHeight`/`splitMediaMaxWidth`, so destinations exist — but
+   `fold_helpers.route_area_css_to_block_attrs` puts `width`, `height`, `max-width`,
+   `min-width`, `max-height` and `min-height` in its `_area_excluded` set, so a per-area
+   element's own sizing CSS is never routed at all. That exclusion is why the draft's
+   `.sgs-hero__split-image { width: 100% }` and `--mobile { height: 340px }` did not transfer.
+   Fixing it is a faithful-transfer change with its own blast radius; separate work.
+
+**Not a defect, checked and cleared:** the mobile stacking order. The draft's own
+`grid-template-areas: "media" "content"` puts the image ABOVE the content on mobile, and
+measurement confirms the clone matches at both 375 (media above content) and 1440 (content on
+the left). Reported as inverted; it is not.
+
+---
+
 ## D997 [INCIDENT] — every cloned border-radius rendered NOTHING: side keys written into a corner-keyed attr
 
 **2026-09-07.** Found by the post-D996 measurement pass, not by any gate.
