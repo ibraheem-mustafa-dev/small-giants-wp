@@ -221,13 +221,20 @@ if ( ! empty( $style_color['background'] ) ) {
 	$color_args['background'] = $style_color['background'];
 }
 
-$style_spacing = ( isset( $attributes['style']['spacing'] ) && is_array( $attributes['style']['spacing'] ) ) ? $attributes['style']['spacing'] : array();
-$spacing_args  = array();
-if ( ! empty( $style_spacing['padding'] ) ) {
-	$spacing_args['padding'] = $style_spacing['padding'];
+// [D-tier-object-render-fix 2026-09-07] Desktop padding/margin come from the
+// owned tier-object attrs ($sgs_tor_padding_desktop/$sgs_tor_margin_desktop,
+// normalised near the top of this file), NOT from WP-native
+// `style.spacing.padding`/`margin` — this block declares `padding`/`margin`
+// as its own custom object attrs, so an operator's desktop value is stored
+// at $attributes['padding']['desktop'] and never reaches $attributes['style'].
+// Reading style.spacing here silently dropped every desktop padding/margin
+// value while tablet/mobile (already reading the tier object below) worked.
+$spacing_args = array();
+if ( ! empty( $sgs_tor_padding_desktop ) ) {
+	$spacing_args['padding'] = $sgs_tor_padding_desktop;
 }
-if ( ! empty( $style_spacing['margin'] ) ) {
-	$spacing_args['margin'] = $style_spacing['margin'];
+if ( ! empty( $sgs_tor_margin_desktop ) ) {
+	$spacing_args['margin'] = $sgs_tor_margin_desktop;
 }
 
 // Native border group (colour/width/style/radius) — base only, via the
