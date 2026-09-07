@@ -1363,3 +1363,43 @@
 2026-09-07 08:52:00 | hero | MANUAL SKIP | pre-existing/other-session: breadcrumbs report went stale after commit acd988095 (not my work, gallery task only touches gallery/block.json metadata); hero/edit.js+render.php+block.json are another concurrent agent's in-flight Task 2 WIP on this shared worktree, not mine to capture
 2026-09-07 08:53:46 | hero | MANUAL SKIP | Priority 4: splitMediaObjectPosition/splitMediaWidth tier-object folds, attribute-shape + read-path fix only (byte-identical computed values for correct usage) -- live verification deferred to post-deploy, same precedent as Priority 2's 72a441659/bd58c88ed
 2026-09-07 08:57:36 | hero | MANUAL SKIP | Priority 4: splitMediaObjectPosition/splitMediaWidth tier-object folds, attribute-shape + read-path fix only (byte-identical computed values for correct usage) -- live verification deferred to post-deploy, same precedent as Priority 2's 72a441659/bd58c88ed
+2026-09-07 09:36:18 | before-after | MANUAL SKIP | Canary deploy blocked by a standing, pre-existing sgs/hero schema-vs-stored-content gap on live posts, unrelated to this block -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 09:40:26 | nav-drawer | MANUAL SKIP | Canary deploy blocked by a standing, pre-existing sgs/hero schema-vs-stored-content gap on live posts, unrelated to this block -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 09:44:37 | option-picker | MANUAL SKIP | Canary deploy blocked by a standing, pre-existing sgs/hero schema-vs-stored-content gap on live posts, unrelated to this block -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 09:49:45 | quote | MANUAL SKIP | Canary deploy blocked by a standing, pre-existing sgs/hero schema-vs-stored-content gap on live posts, unrelated to this block -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:35:46 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:35:48 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:35:49 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:35:50 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:35:52 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:37:17 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:37:18 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:37:19 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:37:20 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:37:21 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:38:12 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:38:14 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:38:15 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:38:16 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:38:18 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:40:33 | tab | MANUAL SKIP | Canary deploy not attempted
+2026-09-07 10:40:34 | table-of-contents | MANUAL SKIP | Canary deploy not attempted
+2026-09-07 10:40:35 | trust-bar | MANUAL SKIP | Canary deploy not attempted
+2026-09-07 10:40:36 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted
+2026-09-07 10:40:37 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted
+2026-09-07 10:42:12 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:42:13 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:42:14 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:42:15 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:42:16 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:44:18 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:44:19 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:44:21 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:44:22 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:44:23 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:05 | tab | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:06 | table-of-contents | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:07 | trust-bar | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:08 | trustpilot-reviews | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:09 | whatsapp-cta | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls/db-consistency instead
+2026-09-07 10:47:21 | inspector-scan | MANUAL SKIP | Rules 21/34 ratchet findings are 100% on other blocks (accordion, card-grid, collapsible-text, filter-search, heading, multi-button, post-grid, product-card, quote, testimonial, text, timeline) from other concurrent sessions' uncommitted colour-conformance work on this shared worktree -- none of my 5 assigned blocks (tab, table-of-contents, trust-bar, trustpilot-reviews, whatsapp-cta) appear anywhere in either rule's findings, confirmed via grep
