@@ -299,11 +299,21 @@ def test_hover_child_image_zoom_does_not_leak_into_card_effecthover():
 
 
 def test_hover_transform_and_shadow_card_grid_picks_lift():
-    """Both scaleHover AND shadowHover written -> 'lift' (more specific, 2
-    properties) beats 'zoom' (1 property)."""
+    """Both scaleHover AND cardShadowHover written -> 'lift' (more specific, 2
+    properties) beats 'zoom' (1 property).
+
+    ATTR RENAMED 2026-09-07 (Wave A1 ShadowControl redesign, D1000): sgs/card-grid's
+    hover shadow moved `shadowHover` -> `cardShadowHover` when its two ShadowControl
+    mounts collapsed onto one tabbed control and the whole family converged on the
+    `cardShadow*` base. Production was never wrong here -- `_resolve_present_props`
+    reads the attr name from the DB via `attrs_for_css_property_state()`, which now
+    returns `('cardShadowHover',)`. It was THIS test that hardcoded the old name, so
+    it silently stopped exercising the two-property path and asserted 'lift' against
+    a result that had legitimately become 'zoom'.
+    """
     result = apply_preset_absence(
         _rec("sgs/card-grid"),
-        attrs_so_far={"scaleHover": "1.05", "shadowHover": "0 8px 24px rgba(0,0,0,0.12)"},
+        attrs_so_far={"scaleHover": "1.05", "cardShadowHover": "0 8px 24px rgba(0,0,0,0.12)"},
         base_decls={},
         state_decls={},
     )
