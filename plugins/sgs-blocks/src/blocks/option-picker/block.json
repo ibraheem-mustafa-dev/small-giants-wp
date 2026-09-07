@@ -80,6 +80,14 @@
 					"attrMap": {
 						"css:color-gradient": "labelColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient"
+							}
+						}
+					},
 					"_note": "labelFontSize/labelColour/labelFontWeight/labelFontStyle/labelMarginBottom resolve via the default {prefix}{suffix} convention (labelMarginBottom -> css:margin-bottom, Spec 35 vocabulary fix; render.php:492-495 legend `margin-bottom:...`). line-height/letter-spacing/text-transform/text-decoration/text-align/font-family have no labelX equivalent — honest gaps. labelColourGradient is the text-colour gradient sibling to labelColour (background-clip:text mechanism, same recipe as sgs/quote's attributionColour/attributionColourGradient) — needs an explicit attrMap entry since the default prefix convention only covers css:color, not the gradient sibling."
 				},
 				"pill": {
@@ -182,6 +190,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the label legend's text via background-clip:text (D636 text builder). Non-empty wins over labelColour."
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
 		},
 		"labelFontWeight": {
 			"type": "string",

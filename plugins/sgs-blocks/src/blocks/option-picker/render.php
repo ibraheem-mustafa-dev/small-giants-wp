@@ -576,6 +576,19 @@ if ( '' !== $label_colour_gradient_fallback ) {
 	$scoped_css[] = $label_colour_gradient_fallback;
 }
 
+// labelColour hover state — same trio, :hover/:focus-visible variant of the
+// same selector.
+$label_colour_hover           = $attributes['labelColourHover'] ?? '';
+$label_colour_hover_gradient  = $attributes['labelColourHoverGradient'] ?? '';
+$label_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $label_colour_hover, $label_colour_hover_gradient );
+if ( '' !== $label_colour_effective_hover ) {
+	$label_colour_hover_decl = sgs_text_colour_decl( $label_colour_effective_hover );
+	if ( '' !== $label_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $sel_label, $label_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $sel_label . ':hover', $label_colour_effective_hover );
+}
+
 // Pill resting TEXT flat-or-gradient (D636 "text" builder) — same recipe as
 // the legend colour above and the pillBorderColourGradient border builder
 // (§7, ~line 421). $sel_pill (root_sel + .sgs-option-picker__pill, 3

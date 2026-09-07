@@ -26,7 +26,7 @@ import {
 	FlexBlock,
 	Notice,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { TypographyControls, ResponsiveControl, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl, SgsBorderControl, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, borderPaintPreview } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -372,23 +372,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			   triples per pill property, all `linked: true`. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'label',
 						label: __( 'Label colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-								linked: true,
-								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { labelColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'labelColour',
+							hover: 'labelColourHover',
+							gradient: 'labelColourGradient',
+							hoverGradient: 'labelColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'pillBackground',
 						label: __( 'Pill background', 'sgs-blocks' ),
