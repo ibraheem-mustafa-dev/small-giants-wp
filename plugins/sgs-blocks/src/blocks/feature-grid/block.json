@@ -66,7 +66,8 @@
 						"css:flex-direction": "flexDirection",
 						"css:flex-wrap": "flexWrap",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:background-image": "textColourGradient"
+						"css:background-image": "textColourGradient",
+						"css:color-gradient": "textColourGradient"
 					},
 					"states": {
 						"hover": {

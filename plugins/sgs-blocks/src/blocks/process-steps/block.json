@@ -133,7 +133,10 @@
 								"css:background-color": "numberBackgroundHover",
 								"css:color": "numberColourHover",
 								"css:color-gradient": "numberColourHoverGradient"
-							}
+							},
+							"noBaseByDesign": [
+								"css:color-gradient"
+							]
 						}
 					},
 					"_note": "numberStyle (circle/square/none variant) is a structural/variant selector, not a style-cluster member — not mapped. Both colour members resolve via default convention (`number`+`Colour`/`Background`). numberColourHoverGradient (2026-09-05) mirrors the wrapper element's textColourHoverGradient sibling pattern — hover text colour or gradient, ancestor-hover shape (`.step:hover .number{color}`), lifted from sgs/post-grid's textColourHover precedent (see the block's own CLAUDE.md known-precedent registry)."

@@ -65,7 +65,8 @@
 						"css:border-radius": "borderRadius",
 						"css:max-width": "maxWidth",
 						"css:border-color-gradient": "borderColourGradient",
-						"css:background-image": "textColourGradient"
+						"css:background-image": "textColourGradient",
+						"css:color-gradient": "textColourGradient"
 					},
 					"states": {
 						"hover": {
