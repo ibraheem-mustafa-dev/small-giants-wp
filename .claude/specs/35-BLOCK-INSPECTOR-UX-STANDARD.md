@@ -26,11 +26,19 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > (C7, 4 blocks), block-bindings widened 3→37 blocks (C15-5). **Newly built, advisory:** rule
 > `41-co2-element-grouping-order.js` — found **61 live violations** the moment it ran (PART A4
 > / CO-2 element grouping); PART L's "element-first panels — UNVERIFIABLE STATICALLY" line
-> (below) is now FALSE, this rule is exactly that static check. **Genuinely still open:** rule
-> `31-golden-colour-control`'s colour-completeness backlog (**195 live findings** at audit
-> time — actively worked by `.claude/plans/phase-colour-conformance.md` +
-> `.claude/plans/2026-09-03-golden-colour-staged-rollout.md`, re-run the survey for the
-> current count, do not trust this number); the 61 element-grouping findings above; and,
+> (below) is now FALSE, this rule is exactly that static check. **STATUS 2026-09-07 — the colour-completeness backlog is CLOSED, and
+> the two plan docs named below are ARCHIVED** (`.claude/plans/archive/`; both were superseded
+> by the `classify-end-shape.js` census, which became the day-to-day vehicle on 2026-09-05).
+> Rule 31 was NARROWED that day, on Bean's ruling, to the editor-side gap the census cannot see
+> — a >2-state requirement derived from `supports.sgs.elements`, `mechanism-mismatch`, and the
+> shared-owner scan. Everything overlapping the census was dropped. Live now: **rule 31 = 2**
+> (both `sgs/tabs`, which genuinely needs 3 states and declares 2), **rule 41 = 1**
+> (`sgs/breadcrumbs`, a manifest gap), **rule 43 = 0** (its 5 WCAG 1.4.1 findings were fixed,
+> not exempted). Ratchet retuned 167 → 2. See D999.
+> ⛔ **Do not quote the 195 or the 61 below as current** — both are audit-time figures from a
+> superseded instrument. Re-run `node scripts/inspector-scan/run.js`. *(Historical text:)*
+> rule `31-golden-colour-control`'s colour-completeness backlog (**195 live findings** at audit
+> time); the 61 element-grouping findings above; and,
 > per a 5-agent investigation into PART F's ungated anti-patterns, **4 of 5 turned out
 > genuinely buildable** ("no reset", "colour-only focus/selected", "help text not
 > `aria-describedby`-linked" — none of these hit the false-positive wall that killed

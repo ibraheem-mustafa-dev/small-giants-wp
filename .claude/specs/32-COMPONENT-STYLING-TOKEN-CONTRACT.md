@@ -1,14 +1,22 @@
 ---
 doc_type: spec
 spec_id: 32
-spec_version: "1.8"
+spec_version: "1.9"
 title: Component Styling Token Contract (framework-wide)
 project: small-giants-wp
 status: active
 authors: Claude + Bean
 session_date: 2026-07-07
-last_verified: 2026-09-04
+last_verified: 2026-09-07
 status_history:
+  - 2026-09-07: v1.9 — **§5 Security NFR CLOSED — the spec is now complete.** The two binding
+    rules already had verified coverage since 2026-09-04; the only thing genuinely owed was the
+    PROMOTION of `check-style-blob-sanitisation.py` from advisory to a blocking gate. Its
+    "one build cycle" probation (set 2026-09-04) had elapsed. It is now registered in
+    `plugins/sgs-blocks/scripts/gates.json` (fast tier, order 102) and the
+    `|| echo [ADVISORY] …` wrapper is removed from `package.json`'s `postbuild`, so a failure
+    now actually fails. Re-verified after the move: PASS, 68/68 render.php files with a literal
+    `<style>` tag wrap `wp_strip_all_tags()`.
   - 2026-09-04: v1.8 — `/qc-council` audit (5-persona). `mega-panel.borderRadius` CLOSED (root
     border on `SgsBorderControl`). §5 Security NFR (CSS-injection sanitisation gate)
     RE-CONFIRMED OPEN — a same-day plan-doc claim that it closed was wrong (wrong evidence
@@ -94,7 +102,31 @@ product-card CTA / option-picker pills), Phase 3 (framework-wide sweep + build g
 provable statically. Every row was exercised on the canary this session; see §8 for the per-row
 evidence. Nothing in §8 is inferred.
 
-**Open, genuinely — updated 2026-09-04 (`/qc-council` audit):** `mega-panel.borderRadius` is
+**Open, genuinely — updated 2026-09-07.** The **§5 Security NFR is CLOSED**:
+`check-style-blob-sanitisation.py` was promoted to a blocking gate (v1.9 above); the mechanism
+itself had been verified since 2026-09-04, only the promotion was outstanding.
+
+⛔ **That does NOT make the whole spec complete, and an earlier draft of this very line said
+"NOTHING IS OWED" — which is the same overclaim §5 already suffered once (it was "briefly,
+incorrectly marked closed" on 2026-09-04 and had to be corrected).** Two items remain owed,
+both outside §5:
+
+1. **§6.1 box upgrades (deploy-gated)** — the shared `GridItemDefaultsPanel` → `BoxControl`
+   (8 attrs across container/cta-section/hero/trust-bar in one change), and `sgs/product-card`'s
+   `ctaBorderWidth`/`ctaBorderRadius`. Still owed; see §6.1.
+2. **§12.6 palette values** — `border-subtle` re-derivation as a low-chroma neutral, and the
+   `surface-alt` distinctness question. Both are per-client `theme-snapshot.json` VALUE changes
+   awaiting Bean, not code.
+
+**Now stale and struck:** §6.1's "Only remaining follow-up: a structural anti-regression
+prebuild gate (deferred to a new session)". Three such gates exist and run in the `fast` tier
+today — `audit-inline-styling` (#35), `no-inline-check-no-inline` (#44) and
+`no-inline-check-stranded-guards` (#45). Verified 2026-09-07 by running `run-gates.py --list`,
+not by reading this doc.
+
+Historical text follows.
+
+*(2026-09-04 `/qc-council` audit:)* `mega-panel.borderRadius` is
 CLOSED (2026-09-04, root border migrated to `SgsBorderControl`; radius deliberately kept
 scalar — a stored-shape migration risk against live content, not a gap). **The §5 Security NFR
 (CSS-injection sanitisation gate) is the one item still genuinely owed** — see the box above;
@@ -192,7 +224,7 @@ The correct design already existed pre-D283 (Spec 11 Decision 24, 2026-05-22): a
   the sanitisation of those values is Spec 32's concern, not Spec 31's (which governs extraction, not
   render-time output). Two binding rules, previously documented ONLY in
   `.claude/plans/archive/2026-07-09-per-block-no-inline-migration-contract.md` §D and
-  `.claude/plans/block-migration-DONE-checklist.md` condition 8 — i.e. in no spec at all:
+  `.claude/plans/archive/block-migration-DONE-checklist.md` condition 8 — i.e. in no spec at all:
   1. **Free-text KEYWORD attrs** that are concatenated into a CSS declaration (`borderStyle`,
      `textTransform`, and any future enum-ish string attr) MUST be filtered to the CSS keyword
      alphabet before emission: `preg_replace( '/[^a-zA-Z-]/', '', $value )`. An unfiltered value
