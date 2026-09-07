@@ -28,9 +28,33 @@
  * containment loses nothing visually. This fixes the block INTRINSICALLY —
  * no container/grid-layer change needed.
  */
+/*
+ * width:100% is REQUIRED alongside the containment above — it is not a
+ * redundant "fill the parent" declaration (verified live on page 2742,
+ * 2026-09-07: without it this block and every descendant measured width:0).
+ *
+ * `contain: inline-size` forces this element's own intrinsic (min/max-content)
+ * inline size to 0. In block flow and in a grid track that is harmless — the
+ * used width comes from the container, not from intrinsics. But as a FLEX ITEM
+ * of a row container (which is what `sgs/container` renders for its default
+ * `layout:"flex"`), the initial `flex: 0 1 auto` resolves `flex-basis:auto`
+ * against this element's own max-content contribution — which containment has
+ * just zeroed. flex-grow:0 then never grows it back, so the block lays out at
+ * literally 0px wide and drags every descendant to 0 with it.
+ *
+ * width:100% gives `flex-basis:auto` a definite value to resolve against, in
+ * the INLINE axis only, so it is inert in the three contexts that already
+ * worked: a column flex container (inline axis is the cross axis — already
+ * stretched), a grid track (already stretched), and block flow (already the
+ * container width). Deliberately NOT `flex:1` or `flex-basis:100%` — both act
+ * on the MAIN axis, so in a `layout:"stack"` (column) container they would
+ * change this block's HEIGHT, which is a different bug in the other direction.
+ * flex-shrink stays at its initial 1, so siblings in a row still fit.
+ */
 .sgs-testimonial-slider {
 	position: relative;
 	contain: inline-size;
+	width: 100%;
 }
 
 /* ===== Track — transform-based carousel viewport ===== */
