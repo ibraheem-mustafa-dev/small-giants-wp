@@ -1,3 +1,39 @@
+## D989 [INCIDENT] — 5.65 GB of orphaned git packs traced to auto-gc racing on the shared tree; `gc.auto` disabled
+
+**2026-09-07.** `git count-objects -vH` reported **5.64 GiB of garbage** — 9 pack files with no
+matching `.idx`, so unreadable by git — plus 5 abandoned `next-index-*.lock` files. Ages spanned
+**8.5 to 120 days** (largest single pack: 2.8 GB, dated 9 May), i.e. this had been accumulating
+for four months unnoticed. Every git command was printing "too many unreachable loose objects".
+
+**Cause, evidenced not inferred.** Loose objects stood at **7,412** against `gc.auto`'s default
+threshold of **6,700**, so auto-gc was firing on essentially every git command. `gc.autoDetach`
+defaults to true, so each ran detached in the background. On a tree with 150+ concurrent
+sessions, any of those killed mid-repack leaves exactly this signature: a completed `.pack` with
+no `.idx`.
+
+**Control that rules out an environmental cause:** three other repos on the same machine
+(`~/.claude`, `booking-system`, `insight-graph`) have **0 orphaned packs and 0 stale locks**. Not
+Windows, not antivirus, not the git version — the differentiator is this repo's concurrency
+combined with auto-gc firing constantly.
+
+**Fix (cause-agnostic, local to this repo):** `gc.auto = 0` so automatic gc never races across
+concurrent sessions, and `gc.autoDetach = false` so a manually-run gc stays in the foreground and
+fails visibly instead of leaving an orphan. Verified `--global` is unset, so no other repo is
+affected.
+
+⚠ **This creates a maintenance requirement, deliberately:** with auto-gc off, loose objects
+accumulate until someone runs `git gc` manually. Run it when the tree is quiet (no `index.lock`,
+no session mid-commit). Do NOT use `--prune=now` — the 2-week default expiry is what protects a
+concurrent session's recent objects.
+
+**Cleanup performed:** `git gc --prune=2.weeks.ago` packed 7,412 loose objects down to 8
+(24.16 MiB → 95.88 KiB), but did NOT remove the garbage — `git gc` reports unreadable packs
+without deleting them. The 9 packs and 5 stale locks were then removed explicitly after
+confirming each pack had no `.idx` (so git could not read it), none was newer than 8.5 days (so
+nothing was in-flight), and `git fsck --connectivity-only` reported no missing objects. Also
+pruned a stale agent worktree and its merged branch — checked for a `node_modules` junction
+first, since `worktree remove --force` through one has twice emptied the real shared directory.
+
 ## D988 [ROUTINE] — db-consistency loses its baseline entirely; the gate now fails on ANY violation
 
 **2026-09-07, Bean.** SUPERSEDES the third part of D987 (`--prune-stale` + its
