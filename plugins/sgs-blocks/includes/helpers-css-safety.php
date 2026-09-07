@@ -19,6 +19,43 @@
  * @package SGS\Blocks
  */
 
+if ( ! function_exists( 'sgs_css_length_value_preset_slugs' ) ) {
+	/**
+	 * Return the currently-registered WP spacing-preset slugs (e.g. ['10','20',
+	 * '30','40','50','60']), read live from theme.json via wp_get_global_settings()
+	 * — never a hardcoded list, so this self-corrects if the theme's spacing
+	 * scale ever changes.
+	 *
+	 * Falls back to an empty array outside a WordPress bootstrap (the standalone
+	 * CLI self-test below provides its own stub matching the real theme scale,
+	 * the same pattern already used there for esc_attr()).
+	 *
+	 * @return string[] Registered spacing-preset slugs.
+	 */
+	function sgs_css_length_value_preset_slugs(): array {
+		static $slugs = null;
+
+		if ( null !== $slugs ) {
+			return $slugs;
+		}
+
+		$slugs = array();
+
+		if ( function_exists( 'wp_get_global_settings' ) ) {
+			$sizes = wp_get_global_settings( array( 'spacing', 'spacingSizes' ) );
+			if ( is_array( $sizes ) ) {
+				foreach ( $sizes as $size ) {
+					if ( isset( $size['slug'] ) ) {
+						$slugs[] = (string) $size['slug'];
+					}
+				}
+			}
+		}
+
+		return $slugs;
+	}
+}
+
 if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	/**
 	 * Validate and normalise a CSS length-shaped value for safe inline emission.
@@ -28,9 +65,27 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	 * calc()/var() since Trac #55966, and core's theme.json spacingSizes
 	 * documents clamp() as a valid preset value):
 	 *
-	 *   1. A BARE SLUG — a value whose characters are ALL digits (e.g. "40") —
-	 *      is a WP spacing-preset slug, wrapped in var(--wp--preset--spacing--N)
-	 *      for back-compat with the original sgs_container_gap_value() slug rule.
+	 *   1. A BARE NUMBER — a value whose characters are ALL digits (e.g. "40")
+	 *      — is DISAMBIGUATED against the theme's ACTUAL registered spacing-
+	 *      preset slugs (sgs_css_length_value_preset_slugs(), read live from
+	 *      theme.json, never hardcoded): a digit string that IS a real slug
+	 *      (currently 10/20/30/40/50/60) is a WP spacing-preset reference,
+	 *      wrapped in var(--wp--preset--spacing--N); anything else is a plain
+	 *      pixel length and gets 'px' appended.
+	 *
+	 *      Fixed 2026-09-07 — every bare digit used to be treated as a slug
+	 *      unconditionally (back-compat with the original
+	 *      sgs_container_gap_value() rule). That was already proven a trap on
+	 *      the sibling responsive-tier path (class-sgs-container-wrapper.php's
+	 *      "THE BARE-NUMBER RULE", 2026-08-10): theme.json redefines the
+	 *      spacing scale as 10/20/30/40/50/60, so a caller passing a genuine
+	 *      pixel value like sgs/label's `borderRadius: 6` got wrapped in
+	 *      `var(--wp--preset--spacing--6)` — an UNDEFINED custom property that
+	 *      computes to the CSS initial value (0px), silently squaring off the
+	 *      badge's corners. The same trap hits ANY bare-digit length that
+	 *      isn't coincidentally also a valid slug (e.g. the old self-test's own
+	 *      "16"/"24"/"32" compat cases were resolving to nothing for the exact
+	 *      same reason before this fix — corrected below, not preserved).
 	 *   2. Otherwise, the value is checked for three raw dangerous substrings
 	 *      (url(, expression(, @import) BEFORE any parsing — belt and braces;
 	 *      core does not need this guard because `gap` is not in its
@@ -70,9 +125,14 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 			return '';
 		}
 
-		// 1. Bare slug: digits only → wrap in WP spacing-preset var().
+		// 1. Bare number: digits only. Disambiguate against the theme's REAL
+		// registered spacing-preset slugs — a genuine slug wraps in
+		// var(--wp--preset--spacing--N); anything else is a plain pixel length.
 		if ( preg_match( '/^\d+$/', $value ) ) {
-			return 'var(--wp--preset--spacing--' . esc_attr( $value ) . ')';
+			if ( in_array( $value, sgs_css_length_value_preset_slugs(), true ) ) {
+				return 'var(--wp--preset--spacing--' . esc_attr( $value ) . ')';
+			}
+			return $value . 'px';
 		}
 
 		// 2. Belt-and-braces reject of dangerous raw substrings, checked on the
@@ -188,6 +248,35 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 		}
 	}
 
+	// wp_get_global_settings() is a WordPress core function and is not loaded
+	// in this standalone CLI context — stub it with the CURRENT real theme
+	// scale (theme/sgs-theme/theme.json styles.spacing.spacingSizes: 10/20/
+	// 30/40/50/60) so the disambiguation logic under test behaves identically
+	// to a live WordPress request, rather than silently degrading to "every
+	// bare digit is a plain length" (which would hide a real regression in
+	// the slug branch).
+	if ( ! function_exists( 'wp_get_global_settings' ) ) {
+		/**
+		 * Minimal CLI-only stand-in for WordPress core's wp_get_global_settings().
+		 *
+		 * @param array $path Settings path, e.g. ['spacing', 'spacingSizes'].
+		 * @return mixed The stubbed spacing-preset scale for the 'spacing'.'spacingSizes' path, else null.
+		 */
+		function wp_get_global_settings( $path = array() ) {
+			if ( array( 'spacing', 'spacingSizes' ) === $path ) {
+				return array(
+					array( 'slug' => '10' ),
+					array( 'slug' => '20' ),
+					array( 'slug' => '30' ),
+					array( 'slug' => '40' ),
+					array( 'slug' => '50' ),
+					array( 'slug' => '60' ),
+				);
+			}
+			return null;
+		}
+	}
+
 	/**
 	 * Run every accept/reject/backward-compat case and report an honest count.
 	 *
@@ -202,7 +291,18 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 			array( '16px', '16px' ),
 			array( '1rem', '1rem' ),
 			array( '50%', '50%' ),
-			array( '30', 'var(--wp--preset--spacing--30)' ), // bare slug.
+			array( '30', 'var(--wp--preset--spacing--30)' ), // bare slug — a REAL theme.json spacing preset.
+
+			// --- Bare-number disambiguation fix (this task, 2026-09-07) -----
+			// sgs/label's real live defect: borderRadius:6 is not a registered
+			// spacing-preset slug (theme.json only defines 10/20/30/40/50/60),
+			// so it must become a plain pixel length, not an undefined custom
+			// property that silently computes to 0.
+			array( '6', '6px' ), // NOT a valid slug -> plain px length.
+			array( '0', '0px' ), // NOT a valid slug (theme scale starts at 10) -> plain px length.
+			array( '16', '16px' ), // NOT a valid slug -> plain px length.
+			array( '10', 'var(--wp--preset--spacing--10)' ), // IS a valid slug -> preset var().
+			array( '50', 'var(--wp--preset--spacing--50)' ), // IS a valid slug -> preset var().
 			array( 'var(--x, 1rem)', 'var(--x, 1rem)' ),
 			array( 'clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)', 'clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)' ),
 			array( 'calc(100% - 48px)', 'calc(100% - 48px)' ),
@@ -308,17 +408,27 @@ if ( PHP_SAPI === 'cli' && isset( $argv ) && in_array( '--self-test', $argv, tru
 		// bare slugs and simple non-function lengths, which is the entire
 		// domain the old allowlist covered (it stripped every paren/comma,
 		// so it never accepted a function call in the first place).
+		// CORRECTED 2026-09-07 (this task) -- this corpus used to assert
+		// EVERY bare digit resolves to var(--wp--preset--spacing--N),
+		// including 0/8/16/24/32/48/56/64/80. None of those are registered
+		// slugs in the current theme.json spacing scale (only 10/20/30/40/
+		// 50/60 exist) -- so those "expected" values were documenting the
+		// live bug: each one resolved to an UNDEFINED custom property
+		// (silently 0px), the same defect class as the sgs/label
+		// borderRadius:6 finding this task fixes. Only '40' (a real slug)
+		// still resolves to a preset var(); the rest now correctly resolve
+		// to a plain pixel length.
 		$compat_corpus = array(
-			'0'         => 'var(--wp--preset--spacing--0)',
-			'8'         => 'var(--wp--preset--spacing--8)',
-			'16'        => 'var(--wp--preset--spacing--16)',
-			'24'        => 'var(--wp--preset--spacing--24)',
-			'32'        => 'var(--wp--preset--spacing--32)',
+			'0'         => '0px',
+			'8'         => '8px',
+			'16'        => '16px',
+			'24'        => '24px',
+			'32'        => '32px',
 			'40'        => 'var(--wp--preset--spacing--40)',
-			'48'        => 'var(--wp--preset--spacing--48)',
-			'56'        => 'var(--wp--preset--spacing--56)',
-			'64'        => 'var(--wp--preset--spacing--64)',
-			'80'        => 'var(--wp--preset--spacing--80)',
+			'48'        => '48px',
+			'56'        => '56px',
+			'64'        => '64px',
+			'80'        => '80px',
 			'0px'       => '0px',
 			'1.5rem'    => '1.5rem',
 			'2vw'       => '2vw',
