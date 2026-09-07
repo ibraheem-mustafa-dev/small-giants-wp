@@ -83,7 +83,8 @@
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:color": "textColourHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:box-shadow": "shadowHover"
 							}
 						}
 					}
@@ -458,6 +459,10 @@
 			"type": "string"
 		},
 		"shadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"shadowHover": {
 			"type": "string",
 			"default": ""
 		},

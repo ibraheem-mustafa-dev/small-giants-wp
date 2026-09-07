@@ -101,12 +101,22 @@ $gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allo
 // raw box-shadow SHAPE string (x/y/blur/spread, no colour) built by the
 // shared ShadowControl (Spec 35 T2.2); colour is a SEPARATE sibling attr
 // (`shadowColour`, D621/D622 colour-panel split) composed back in by
-// sgs_shadow_value_composed(). No-inline contract (§A): route the resolved box-shadow
+// sgs_shadow_decls(). No-inline contract (§A): route the resolved box-shadow
 // into cta-section's OWN scoped <style> instead of the wrapper's
 // extra_styles. $cta_helper_attrs nulls `shadow` below (C3 double-emit
 // guard) so the wrapper never re-emits it.
-$shadow_value = sgs_shadow_value_composed( $attributes['shadow'] ?? '', $attributes['shadowColour'] ?? '' );
-$shadow_value_hover = sgs_shadow_value_composed( $attributes['shadow'] ?? '', $attributes['shadowColourHover'] ?? '' );
+// `shadowHover` (hover SHAPE, added alongside the pre-existing hover colour
+// attr `shadowColourHover`) composes with the resting shape as a fallback —
+// see sgs_shadow_decls()'s own fallback note (helpers-colour-variants.php).
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'shadow',
+		'colour'       => 'shadowColour',
+		'hover'        => 'shadowHover',
+		'hover_colour' => 'shadowColourHover',
+	)
+);
 
 // Generate a unique ID for responsive CSS scoping. This is a CLASS (contract
 // §B3-style scoping — matches the container/hero/quote convention).
@@ -290,15 +300,16 @@ if ( $hover_decls || $cta_resting_decls ) {
 // since background-image does not ride on the inline style attribute.
 $has_bg_image_class = $has_image_bg;
 
-if ( $shadow_value ) {
-	$responsive_css .= $root_sel . '{box-shadow:' . $shadow_value . '}';
+if ( $box_shadow_decls['normal'] ) {
+	$responsive_css .= $root_sel . '{' . implode( ';', $box_shadow_decls['normal'] ) . '}';
 }
 
-// HOVER-state shadow colour (Rule 31, 2026-08-22) — reuses the resting SHAPE
-// with the hover colour composed in. Only emitted when a hover colour is set,
-// so no shadow attr set at all still emits no CSS.
-if ( $shadow_value && $shadow_value_hover && ( $attributes['shadowColourHover'] ?? '' ) ) {
-	$responsive_css .= sgs_hover_state_rules( $root_sel, 'box-shadow:' . $shadow_value_hover, ':focus-within' );
+// HOVER-state shadow (Rule 31, 2026-08-22; shape sibling added since) — reuses
+// the resting SHAPE and/or colour as a fallback via sgs_shadow_decls(). Only
+// emitted when a hover shape or hover colour is actually set, so no shadow
+// attr set at all still emits no CSS.
+if ( $box_shadow_decls['hover'] ) {
+	$responsive_css .= sgs_hover_state_rules( $root_sel, implode( ';', $box_shadow_decls['hover'] ), ':focus-within' );
 }
 
 // Build wrapper classes.

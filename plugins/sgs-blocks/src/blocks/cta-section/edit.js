@@ -718,6 +718,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						attrNames={ {
 							base: 'shadow',
 							colour: 'shadowColour',
+							hover: 'shadowHover',
 							hoverColour: 'shadowColourHover',
 						} }
 					/>
