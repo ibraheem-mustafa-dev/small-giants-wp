@@ -216,6 +216,35 @@ def _check_conservation(result: ElementResult) -> None:
         if len(ws) < 2:
             continue
         if all(isinstance(w.value, dict) for w in ws):
+            # TIER-of-BOXES box-family attr (mirrors ElementResult.attrs()'s own
+            # branch above): each tier's write legitimately carries a FULL box
+            # dict with the SAME side keys as every other tier (Base writes
+            # {top,right,bottom,left}, Tablet writes {top,right,bottom,left}
+            # too) — attrs() nests them under separate tier keys, so a side
+            # name repeating ACROSS tiers is not a collision. Scope the
+            # key-collision check to WITHIN one tier's own writes instead of
+            # across the whole attr, so only two writes for the SAME tier
+            # claiming the same side are flagged.
+            if db_lookup.box_family_is_tier_shaped(result.block_slug, attr):
+                by_tier: dict[str, list] = {}
+                for w in ws:
+                    by_tier.setdefault(tier_object_key(w.tier) or "desktop", []).append(w)
+                for tier_key, tier_ws in by_tier.items():
+                    seen_tier_keys: set[str] = set()
+                    tier_key_dupes: set[str] = set()
+                    for w in tier_ws:
+                        for k in w.value:
+                            if k in seen_tier_keys:
+                                tier_key_dupes.add(k)
+                            seen_tier_keys.add(k)
+                    if tier_key_dupes:
+                        raise ConservationError(
+                            f"COLLISION: tier-of-boxes attr {attr!r} for "
+                            f"{result.block_slug} received ≥2 writes for the "
+                            f"same key(s) {sorted(tier_key_dupes)} within tier "
+                            f"{tier_key!r} — one would be silently lost."
+                        )
+                continue  # merge-safe: each tier's own keys are collision-free
             seen_keys: set[str] = set()
             key_dupes: set[str] = set()
             for w in ws:

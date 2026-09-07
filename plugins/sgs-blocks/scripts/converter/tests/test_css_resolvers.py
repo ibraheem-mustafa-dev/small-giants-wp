@@ -277,6 +277,9 @@ def test_typography_colour_bare_slug_bug1(conn):
     assert (out.attr, out.value) == ("textColour", "primary")
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT (sgs/heading.lineHeight, same as its fontSize sibling above), so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md. (Marker added 2026-09-07 - this test was overlooked when its font-size sibling got the same marker at D554/79d13366d, 2026-08-12.)"
+))
 def test_typography_line_height_unitless_sentinel_bug2(conn):
     out = typography.resolve(Decl("line-height", "1.15", "Base"), _ctx(conn, slug="sgs/heading"))
     pairs = {(w.attr, w.value) for w in out}
