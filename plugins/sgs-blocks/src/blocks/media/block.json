@@ -47,6 +47,9 @@
 				"borderRadius": [
 					"borderRadiusTablet",
 					"borderRadiusMobile"
+				],
+				"padding": [
+					"padding"
 				]
 			},
 			"elements": {
@@ -412,6 +415,13 @@
 		"borderRadiusTablet": {
 			"type": "object",
 			"default": {}
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"_comment": "media-padding atom's own tier-object attr (prefix '' -> key 'padding') -- BRAND NEW, this block never had a padding control before. See includes/media/atoms/media-padding.php."
 		},
 		"borderRadiusMobile": {
 			"type": "object",
