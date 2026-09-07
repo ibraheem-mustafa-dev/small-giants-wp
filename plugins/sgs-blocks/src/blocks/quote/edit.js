@@ -44,7 +44,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -219,8 +219,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attribution,
 		attributionTag,
 		attributionEnabled,
-		attributionColour,
-		attributionColourGradient,
 		attributionLinkColour,
 		attributionLinkColourHover,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
@@ -405,23 +403,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
-					{
+					textRow( {
 						key: 'attributionColour',
 						label: __( 'Attribution colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributionColour,
-								onChange: ( val ) => setAttributes( { attributionColour: val ?? '' } ),
-								linked: true,
-								gradientValue: attributionColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { attributionColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'attributionColour',
+							hover: 'attributionColourHover',
+							gradient: 'attributionColourGradient',
+							hoverGradient: 'attributionColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'attributionLinkColour',
 						label: __( 'Attribution link colour', 'sgs-blocks' ),

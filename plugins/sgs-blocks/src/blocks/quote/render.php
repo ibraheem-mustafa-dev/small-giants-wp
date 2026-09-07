@@ -247,6 +247,21 @@ if ( '' !== $attrib_colour_decl ) {
 $css_attrib_base            = $attrib_decls ? ( $attrib_scope . '{' . implode( ';', $attrib_decls ) . ';}' ) : '';
 $css_attrib_colour_fallback = sgs_text_colour_gradient_fallback_rule( $attrib_scope, $attrib_colour_effective );
 
+// attributionColour hover state — same trio, :hover/:focus-visible variant of
+// the same selector.
+$attrib_colour_hover           = $attributes['attributionColourHover'] ?? '';
+$attrib_colour_hover_gradient  = $attributes['attributionColourHoverGradient'] ?? '';
+$attrib_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $attrib_colour_hover, $attrib_colour_hover_gradient );
+$css_attrib_hover              = '';
+$css_attrib_hover_fallback     = '';
+if ( '' !== $attrib_colour_effective_hover ) {
+	$attrib_colour_hover_decl = sgs_text_colour_decl( $attrib_colour_effective_hover );
+	if ( '' !== $attrib_colour_hover_decl ) {
+		$css_attrib_hover = sgs_hover_state_rules( $attrib_scope, $attrib_colour_hover_decl );
+	}
+	$css_attrib_hover_fallback = sgs_text_colour_gradient_fallback_rule( $attrib_scope . ':hover', $attrib_colour_effective_hover );
+}
+
 // Attribution font-size/weight/style/family/decoration/transform/line-height —
 // the shared TypographyControls companion helper, sgs_typography_css_rule()
 // (Bean R-22-13), so this ONE call replaces the bespoke per-property
@@ -526,6 +541,12 @@ if ( $css_attrib_base ) {
 }
 if ( $css_attrib_colour_fallback ) {
 	$scoped_css[] = $css_attrib_colour_fallback;
+}
+if ( $css_attrib_hover ) {
+	$scoped_css[] = $css_attrib_hover;
+}
+if ( $css_attrib_hover_fallback ) {
+	$scoped_css[] = $css_attrib_hover_fallback;
 }
 if ( $css_attrib_typography ) {
 	$scoped_css[] = $css_attrib_typography;
