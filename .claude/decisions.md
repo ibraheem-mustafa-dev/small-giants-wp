@@ -1,3 +1,44 @@
+## D988 [ROUTINE] — db-consistency loses its baseline entirely; the gate now fails on ANY violation
+
+**2026-09-07, Bean.** SUPERSEDES the third part of D987 (`--prune-stale` + its
+`/sgs-update` wiring), written hours earlier the same day. Both are removed.
+
+**What changed.** `db-consistency-baseline.json` is DELETED, along with every
+baselining code path in `db-consistency/run.py`: `_BASELINE_PATH`,
+`_load_baseline`, `_save_baseline`, the re-baseline mode, `--prune-stale`, the
+NEW-vs-baselined split in the report, and the stale-entry reporting. Only
+`--report` and `--check` remain, and `--check` now exits 1 on **any** violation.
+The `db-consistency-prune` entry added to `/sgs-update`'s post-reseed scanners is
+removed too, and that function's docstring is back to promising its scanners never
+mutate state — the exception D987 carved out no longer exists.
+
+**Why this is the STRICTEST setting, not a relaxation.** A baseline's whole job is
+to let a gate be switched on despite pre-existing debt. This one had done that job
+and then frozen: 4 `roleguess:*` keys against ZERO live violations, because a
+reseed fixed the underlying ambiguity and nothing ever shrinks a baseline. D987
+answered that by making staleness visible and auto-pruning it. Bean's ruling goes
+further and is better: **the way to stop a list going stale is to not keep one.**
+Debt here is now fixed or the build fails; there is no third state.
+
+**What is deliberately KEPT.** The gate itself, all ten checks — including check
+#12 (order-dependent role resolution), the guard against the defect class that
+silently dropped a draft's `<img>` when `sgs/trust-bar`'s `media` slot resolved to
+`sgs/media.videoUrl`'s rich-text role instead of `imageUrl`'s image role. That is a
+silent content-loss bug with no error anywhere, and it is exactly what this suite
+exists to catch. Removing the list is not removing the protection.
+
+**Generalisable test (Bean's, from the same exchange).** *Would a NEW violation
+here be worth failing a build over?* If yes, keep the gate and let its baseline go
+to zero. If no, delete the gate — do not maintain a list nobody acts on. A baseline
+is a promise to look again later, and nothing enforces that promise.
+
+**Verified.** Clean tree: `--report` 0 violations, `--check` exit 0. NEGATIVE
+CONTROL: a synthetic violation injected at the check-collection seam makes
+`--check` exit 1 and print the finding — so the gate can still fail with no
+baseline to absorb anything. POSITIVE CONTROL: restoring the real collector returns
+exit 0. Baseline file confirmed absent.
+
+
 ## D987 [ROUTINE] — logical-props gate wired in + RTL fixes; db-consistency gains subtract-only auto-prune
 
 **2026-09-07, Bean.** Three linked changes, all from the same root problem: a

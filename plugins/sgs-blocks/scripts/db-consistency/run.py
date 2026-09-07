@@ -6,14 +6,19 @@ Usage
 -----
     python scripts/db-consistency/run.py              # --report (default)
     python scripts/db-consistency/run.py --report     # print all violations, exit 0
-    python scripts/db-consistency/run.py --check      # exit 1 if any NEW violation key (not in baseline)
-    python scripts/db-consistency/run.py --update-baseline  # write current keys to baseline, exit 0
-    python scripts/db-consistency/run.py --prune-stale      # drop keys that no longer occur (subtract-only)
+    python scripts/db-consistency/run.py --check      # exit 1 if there is ANY violation
 
-Baseline file
-    db-consistency-baseline.json  (alongside this file — a JSON list of key strings)
-    Violation keys present in the baseline are grandfathered (treated as known).
-    --check only fails on NEW keys not yet in the baseline.
+No baseline (2026-09-07, Bean)
+    This suite has NO baseline file and no re-baseline mode. `--check` fails on
+    ANY violation, which is the STRICTEST setting, not a relaxation.
+
+    Why it was removed rather than maintained: the baseline existed to let the
+    gate be switched on despite pre-existing debt, then froze at 4 `roleguess:*`
+    keys against ZERO live violations — a reseed had fixed the underlying
+    ambiguity, and nothing ever shrinks a baseline, so the file claimed problems
+    that no longer existed. Bean's ruling: the ratchet is what earns its keep,
+    the list is not, and the way to stop a list going stale is to not keep one.
+    Debt here is now fixed or the build fails; there is no third state.
 
 Plain-English report
     Grouped by check.  Each violation shows: block, problem, exact fix command.
@@ -91,32 +96,6 @@ _check_role_resolution_guess_mod = _load_sibling("check_role_resolution_guess")
 Violation = _models_mod.Violation
 
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-_BASELINE_PATH = _SCRIPT_DIR / "db-consistency-baseline.json"
-
-
-# ---------------------------------------------------------------------------
-# Baseline helpers
-# ---------------------------------------------------------------------------
-
-def _load_baseline() -> set[str]:
-    if not _BASELINE_PATH.exists():
-        return set()
-    try:
-        data = json.loads(_BASELINE_PATH.read_text(encoding="utf-8"))
-        if isinstance(data, list):
-            return set(data)
-    except Exception:  # noqa: BLE001
-        pass
-    return set()
-
-
-def _save_baseline(keys: set[str]) -> None:
-    _BASELINE_PATH.write_text(
-        json.dumps(sorted(keys), indent=2),
-        encoding="utf-8",
-    )
-
-
 # ---------------------------------------------------------------------------
 # Report formatting
 # ---------------------------------------------------------------------------
@@ -151,7 +130,7 @@ _CHECK_ORDER = (
 )
 
 
-def _print_report(violations: list, baseline: set[str]) -> None:
+def _print_report(violations: list) -> None:
     if not violations:
         print("[F6] All checks passed — 0 violations.")
         return
@@ -161,10 +140,7 @@ def _print_report(violations: list, baseline: set[str]) -> None:
     for v in violations:
         groups.setdefault(v.check, []).append(v)
 
-    new_count = sum(1 for v in violations if v.key not in baseline)
-    base_count = sum(1 for v in violations if v.key in baseline)
-
-    print(f"[F6] {len(violations)} violation(s) total — {new_count} NEW, {base_count} baselined")
+    print(f"[F6] {len(violations)} violation(s) — ALL must be fixed (this suite has no baseline).")
     print()
 
     for check_name in _CHECK_ORDER:
@@ -176,9 +152,7 @@ def _print_report(violations: list, baseline: set[str]) -> None:
         print(f"  {label}  ({len(group)} finding(s))")
         print(f"{'='*60}")
         for v in group:
-            is_new = v.key not in baseline
-            tag = "[NEW]" if is_new else "[baselined]"
-            print(f"\n  {tag} Block: {v.block}")
+            print(f"\n  Block: {v.block}")
             print(f"  Problem: {v.detail}")
             print(f"  Fix:     {v.fix}")
             print(f"  Key:     {v.key}")
@@ -204,29 +178,12 @@ def main() -> int:
         "--check",
         action="store_true",
         default=False,
-        help="Exit 1 if any violation key is NOT in the baseline file.",
-    )
-    mode.add_argument(
-        "--update-baseline",
-        action="store_true",
-        default=False,
-        help="Write current violation keys to the baseline file and exit 0.",
-    )
-    mode.add_argument(
-        "--prune-stale",
-        action="store_true",
-        default=False,
-        help=(
-            "Remove baseline keys whose violation no longer occurs, and NOTHING "
-            "else. Never adds a key, so it can only make the gate stricter -- "
-            "which is why, unlike the re-baseline mode, it is safe to run "
-            "automatically after a reseed."
-        ),
+        help="Exit 1 if there is ANY violation (this suite has no baseline).",
     )
     args = parser.parse_args()
 
     # Default mode is --report.
-    if not args.check and not args.update_baseline and not args.prune_stale:
+    if not args.check:
         args.report = True
 
     # DB availability. The DB is DELIBERATELY UNVERSIONED (see
@@ -285,61 +242,17 @@ def main() -> int:
     finally:
         conn.close()
 
-    baseline = _load_baseline()
+    _print_report(violations)
 
-    current = {v.key for v in violations}
-    stale = sorted(baseline - current)
-
-    if args.prune_stale:
-        # ONLY subtraction. A key is dropped when its violation no longer occurs,
-        # so this can never bless anything -- the gate gets stricter or stays the
-        # same. That asymmetry is the whole reason this is safe to automate and
-        # the re-baseline mode is not.
-        if not stale:
-            print("[F6] Nothing to prune -- every baselined key still occurs.")
-            return 0
-        _save_baseline(baseline - set(stale))
-        print(f"[F6] Pruned {len(stale)} stale baseline key(s) "
-              f"(their violations no longer occur):")
-        for k in stale:
-            print(f"    [RESOLVED] {k}")
-        print(f"[F6] Baseline now {len(baseline) - len(stale)} key(s).")
-        return 0
-
-    if args.update_baseline:
-        new_baseline = current
-        _save_baseline(new_baseline)
-        print(f"[F6] Baseline updated — {len(new_baseline)} key(s) written to {_BASELINE_PATH}")
-        return 0
-
-    _print_report(violations, baseline)
-
-    # STALE ENTRIES ARE A FINDING TOO (2026-09-07). Reporting only NEW violations
-    # means a baselined entry whose cause was fixed sits here for ever, and the
-    # file then claims N known problems when the real number is smaller. That is
-    # exactly how this baseline came to hold 4 roleguess keys against 0 live
-    # violations. Mirrors consistency/check-box-flat.py's [REMOVED] block.
-    if stale:
-        print()
-        print(f"[F6] {len(stale)} baselined key(s) NO LONGER OCCUR -- the fix landed "
-              f"but the baseline was never shrunk. Run --prune-stale to drop them "
-              f"(subtract-only, so it cannot bless anything):")
-        for k in stale:
-            print(f"    [RESOLVED] {k}")
 
     if args.check:
-        new_violations = [v for v in violations if v.key not in baseline]
-        if new_violations:
-            print(
-                f"\n[F6] GATE FAILED — {len(new_violations)} new violation(s) not in baseline.\n"
-                "  Fix the problems above or run --update-baseline to accept them as known.\n"
-                "  Do NOT blindly baseline without understanding each finding."
-            )
-            return 1
         if violations:
             print(
-                f"[F6] Gate passed — all {len(violations)} violation(s) are baselined."
+                f"\n[F6] GATE FAILED — {len(violations)} violation(s)."
+                " Fix them. This suite has NO baseline: there is deliberately no"
+                " mode that accepts a violation as known (see the header)."
             )
+            return 1
         return 0
 
     # --report: always exit 0

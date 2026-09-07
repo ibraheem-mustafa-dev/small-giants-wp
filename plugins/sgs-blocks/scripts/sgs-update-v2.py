@@ -7192,15 +7192,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     mode); safe to run repeatedly during the same reseed run without side
     effects.
 
-    ONE DELIBERATE EXCEPTION (2026-09-07, D987): the `db-consistency-prune`
-    entry runs --prune-stale, which DOES write the db-consistency baseline. It
-    is listed here rather than hidden because the no-mutation rule above is
-    otherwise load-bearing. It is safe to automate because it only SUBTRACTS
-    keys whose violation no longer occurs -- it can never add one, so the gate
-    can only get stricter. It is also idempotent: a second run finds nothing to
-    prune. A full re-baseline (which ACCEPTS current findings) stays manual and
-    human-gated, and is not run from here.
-
     Output format: per-scanner findings count + summary, then final count.
     Do NOT re-raise errors; findings are metadata on the post-reseed state.
     """
@@ -7215,13 +7206,6 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
     scanners = [
         ("consistency/build-roster.py", "build-roster", []),
         ("consistency/run-consistency-gates.py", "consistency-gates", ["--report"]),
-        # PRUNE BEFORE REPORT (2026-09-07, D987). A reseed is exactly when a
-        # baselined violation stops occurring -- the DB row it described has just
-        # been rewritten -- so this is the right moment to drop it. --prune-stale
-        # ONLY subtracts keys whose violation no longer occurs; it can never add
-        # one, so it can only make the gate stricter. That asymmetry is why this
-        # is safe to automate where a full re-baseline is not.
-        ("db-consistency/run.py", "db-consistency-prune", ["--prune-stale"]),
         ("db-consistency/run.py", "db-consistency", ["--report"]),
         ("check-fx-list-drift.py", "fx-list-drift", ["--check"]),
         ("check-box-family-guard.py", "box-family-guard", ["--report"]),
