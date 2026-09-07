@@ -19,6 +19,8 @@
 	"supports": {
 		"sgs": {
 			"scalarStylingLift": true,
+			"scalarContentLift": true,
+			"_comment_scalarContentLift": "Added 2026-09-08. Without this capability, extraction.py's extract_content() (Case 4: delegates_content==0, no scalar-content-lift, no array-content-lift) emits a loud ContentGap for EVERY sgs/media instance recognised as an atomic leaf (an <img>/<video>/<svg> matched directly via atomic_tag_map, not as a composite-interior column) instead of ever attempting the imageUrl/imageId/videoUrl/thumbnail lift — role='image-object' attrs existed on this block's own schema the whole time with nothing wired to read them for this shape. See resolvers/scalar_content.py's 2026-09-08 fix comment for the companion self-match + flat-trio-explosion changes this capability now reaches.",
 			"_comment_mediaElements": "Wave 5b (2026-09-01). box-shape/video-behaviour/overlay are now wired, closing the Wave 5a gap list. `box-shape` REPLACES this block's old native `__experimentalBorder` (width/style/colour/radius) AND the old native `supports.dimensions.aspectRatio` — the atom's own borderRadius/borderRadiusTablet/borderRadiusMobile/borderWidth/borderStyle/borderColour/borderColourGradient/aspectRatio/height/width/maxWidth/maxHeight attrs are the sole mechanism now. `video-behaviour` renders its 6 boolean bases through the shared tiered BooleanResponsiveControl (promoted to src/components/), matching this block's existing Tablet/Mobile playback tiers. `overlay` paints via `.sgs-media-box::after`; render.php adds the `sgs-media-box` marker class to the figure wrapper whenever a box atom is declared and gates naked-mode off in that case, per `SGS_Media_Element::requires_box()`.",
 			"mediaElements": [
 				{
