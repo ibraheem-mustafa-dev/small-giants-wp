@@ -20,7 +20,6 @@
 		"html": false,
 		"spacing": {
 			"padding": true,
-			"blockGap": true,
 			"__experimentalSkipSerialization": true
 		},
 		"color": {
