@@ -72,7 +72,15 @@
 						"css:text-align": "native:typography.textAlign",
 						"css:background-image": "textColourGradient"
 					},
-					"_note": "typography.fontSize is deliberately disabled at block level (supports.typography.fontSize:false) — this block's own bare fontSize/fontWeight/fontStyle/lineHeight attrs are the real, non-native control set for the body text. An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy), so every member here needs an explicit attrMap entry rather than relying on bare-attribute matching."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "typography.fontSize is deliberately disabled at block level (supports.typography.fontSize:false) — this block's own bare fontSize/fontWeight/fontStyle/lineHeight attrs are the real, non-native control set for the body text. An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy), so every member here needs an explicit attrMap entry rather than relying on bare-attribute matching. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance) paint at $root_sel in render.php (same as the base textColour, not the body-specific selector) — the wrapper's backgroundColour ALSO paints at $root_sel via sgs_fill_states_css(), a genuine same-selector text+background conflict, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() whenever the resolved hover text value is a gradient (CLAUDE.md's text+background-on-one-selector precondition)."
 				}
 			}
 		}
@@ -153,6 +161,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"linkColour": {
 			"type": "string",

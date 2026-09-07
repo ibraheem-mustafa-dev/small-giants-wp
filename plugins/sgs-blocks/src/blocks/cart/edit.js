@@ -35,6 +35,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		badgeColourGradient,
 		badgeTextColour,
 		badgeTextColourGradient,
+		badgeTextColourHover,
+		badgeTextColourHoverGradient,
 		ariaLabel,
 		showZero,
 		hideWhenEmpty,
@@ -52,6 +54,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		panelBgGradient,
 		panelTextColour,
 		panelTextColourGradient,
+		panelTextColourHover,
+		panelTextColourHoverGradient,
 	} = attributes;
 
 	const hasPanel = 'link' !== ( displayMode || 'link' );
@@ -134,6 +138,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: badgeTextColourGradient,
 								onGradientChange: ( val ) => setAttributes( { badgeTextColourGradient: val ?? '' } ),
 							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: badgeTextColourHover,
+								onChange: ( val ) => setAttributes( { badgeTextColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: badgeTextColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { badgeTextColourHoverGradient: val ?? '' } ),
+							},
 						],
 					},
 					hasPanel && {
@@ -165,6 +178,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 								gradientValue: panelTextColourGradient,
 								onGradientChange: ( val ) => setAttributes( { panelTextColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: panelTextColourHover,
+								onChange: ( val ) => setAttributes( { panelTextColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: panelTextColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { panelTextColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

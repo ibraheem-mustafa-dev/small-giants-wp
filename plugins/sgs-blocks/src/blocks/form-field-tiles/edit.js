@@ -9,7 +9,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { IconPicker, IconPreview, SgsColourPanel, fillRow,
+import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -120,24 +120,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>

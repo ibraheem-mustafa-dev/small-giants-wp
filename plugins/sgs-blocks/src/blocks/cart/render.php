@@ -199,6 +199,20 @@ if ( '' !== $badge_text_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel, $badge_text_effective );
 }
+// Hover — safe to paint directly (no precondition swap needed): the badge's
+// own background always lives on its ::after layer above, never on
+// $badge_sel itself, so background-clip:text here can never clip a
+// background (colour-conformance, 2026-09-07).
+$badge_text_hover           = (string) ( $attributes['badgeTextColourHover'] ?? '' );
+$badge_text_hover_gradient  = (string) ( $attributes['badgeTextColourHoverGradient'] ?? '' );
+$badge_text_hover_effective = sgs_resolve_text_colour_or_gradient( $badge_text_hover, $badge_text_hover_gradient );
+if ( '' !== $badge_text_hover_effective ) {
+	$badge_text_hover_decl = sgs_text_colour_decl( $badge_text_hover_effective );
+	if ( '' !== $badge_text_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $badge_sel, $badge_text_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel . ':hover', $badge_text_hover_effective );
+}
 
 // Panel: panelBg (fill) / panelTextColour (text) share .sgs-cart__panel —
 // same split, only rendered when $has_panel (flyout|drawer displayMode).
@@ -225,6 +239,20 @@ if ( $has_panel ) {
 			$scoped_css[] = $panel_sel . '{' . $panel_text_decl . ';}';
 		}
 		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $panel_sel, $panel_text_effective );
+	}
+	// Hover — safe to paint directly (no precondition swap needed): the
+	// panel's own background always lives on its ::after layer above, never
+	// on $panel_sel itself, so background-clip:text here can never clip a
+	// background (colour-conformance, 2026-09-07).
+	$panel_text_hover           = (string) ( $attributes['panelTextColourHover'] ?? '' );
+	$panel_text_hover_gradient  = (string) ( $attributes['panelTextColourHoverGradient'] ?? '' );
+	$panel_text_hover_effective = sgs_resolve_text_colour_or_gradient( $panel_text_hover, $panel_text_hover_gradient );
+	if ( '' !== $panel_text_hover_effective ) {
+		$panel_text_hover_decl = sgs_text_colour_decl( $panel_text_hover_effective );
+		if ( '' !== $panel_text_hover_decl ) {
+			$scoped_css[] = sgs_hover_state_rules( $panel_sel, $panel_text_hover_decl );
+		}
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $panel_sel . ':hover', $panel_text_hover_effective );
 	}
 }
 

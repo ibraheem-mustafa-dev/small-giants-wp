@@ -98,7 +98,15 @@
 						"css:color": "badgeTextColour",
 						"css:color-gradient": "badgeTextColourGradient"
 					},
-					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings added 2026-09-04: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "badgeTextColourHover",
+								"css:color-gradient": "badgeTextColourHoverGradient"
+							}
+						}
+					},
+					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings added 2026-09-04: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text. badgeTextColourHover/badgeTextColourHoverGradient (2026-09-07, colour-conformance) are safe to paint directly on .sgs-cart__badge because the badge's own background always lives on its ::after layer, never on the badge element itself — background-clip:text on hover cannot clip a background that isn't there."
 				},
 				"panel": {
 					"label": "Mini-cart panel",
@@ -111,7 +119,15 @@
 						"css:color": "panelTextColour",
 						"css:color-gradient": "panelTextColourGradient"
 					},
-					"_note": "FR-36-19 Phase 2 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings added 2026-09-04, same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "panelTextColourHover",
+								"css:color-gradient": "panelTextColourHoverGradient"
+							}
+						}
+					},
+					"_note": "FR-36-19 Phase 2 — the flyout/drawer panel surface. panelBg/panelTextColour do not follow {prefix}{suffix} — explicit attrMap. Only rendered when displayMode is flyout|drawer. Gradient siblings added 2026-09-04, same hand-built ::after reasoning as the badge element above (the panel's own --flyout/--drawer modifiers declare position:absolute/fixed, at the same specificity a uid-scoped sgs_block_background_layer_css() rule would carry). panelTextColourHover/panelTextColourHoverGradient (2026-09-07, colour-conformance) are safe for the same reason as the badge above — the panel's own background always lives on its ::after layer."
 				}
 			}
 		}
@@ -170,6 +186,15 @@
 		"badgeTextColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"badgeTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"badgeTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of badgeTextColourHover. Non-empty wins over badgeTextColourHover on :hover/:focus-visible."
 		},
 		"ariaLabel": {
 			"type": "string",
@@ -234,6 +259,15 @@
 		"panelTextColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"panelTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"panelTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of panelTextColourHover. Non-empty wins over panelTextColourHover on :hover/:focus-visible."
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { SgsColourPanel, ResponsiveBoxControl, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, textPaintPreview, backgroundPaintPreview } from '../../utils';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -144,8 +144,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColourGradient,
 		labelColour,
 		labelColourGradient,
-		textColour,
-		textColourGradient,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -196,21 +194,18 @@ export default function Edit( { attributes, setAttributes } ) {
 			   no native colour UI to overlap with this panel. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'wrapperText',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'wrapperBackground',
 						label: __( 'Background colour', 'sgs-blocks' ),
