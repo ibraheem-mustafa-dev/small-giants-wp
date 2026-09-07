@@ -1,0 +1,9 @@
+{
+	"name": "sgs/colour-row-dom-order-not-flagged",
+	"attributes": {
+		"headlineColour": { "type": "string" },
+		"headlineColourHover": { "type": "string" },
+		"metaA": { "type": "string" },
+		"metaB": { "type": "string" }
+	}
+}

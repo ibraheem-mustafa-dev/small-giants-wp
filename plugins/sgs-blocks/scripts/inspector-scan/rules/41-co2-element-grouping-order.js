@@ -84,20 +84,24 @@
 //     place regardless of authoring order (PART O "Where the tabs go"),
 //     so axis D only ever compares two of THIS block's own JSX mounts.
 //
-// COLOUR-ROW EXEMPTION (D533/D537/D618/D609/D622, added 2026-09-05): a
-// read-only audit found axis A false-flagging every block that follows the
-// framework's OWN documented colour architecture (plugins/sgs-blocks/CLAUDE.md
-// "Colour controls" — D609/D618/D622) — "colour lives as one row inside the
-// single shared `<SgsColourPanel>`, everything else about that element lives
-// in the element's own panel" is a deliberate TWO-MECHANISM design, not
-// scattering. `nav-menu/edit.js` and `trust-bar/edit.js` are the canonical
-// examples, both explicitly protected by D618/D609 against exactly this
-// split being collapsed back into one panel (that collapse previously
-// reintroduced a duplicate-control bug those decisions fixed).
+// COLOUR-ROW EXEMPTION (D533/D537/D618/D609/D622, added 2026-09-05; EXTENDED
+// TO AXIS C 2026-09-07): a read-only audit found axis A false-flagging every
+// block that follows the framework's OWN documented colour architecture
+// (plugins/sgs-blocks/CLAUDE.md "Colour controls" — D609/D618/D622) —
+// "colour lives as one row inside the single shared `<SgsColourPanel>`,
+// everything else about that element lives in the element's own panel" is a
+// deliberate TWO-MECHANISM design, not scattering. `nav-menu/edit.js` and
+// `trust-bar/edit.js` are the canonical examples, both explicitly protected
+// by D618/D609 against exactly this split being collapsed back into one
+// panel (that collapse previously reintroduced a duplicate-control bug
+// those decisions fixed).
 //
-// The exemption is narrow on purpose, matching the same "narrow beats broad"
-// discipline as the isWrapper gate below: an element's controls are exempt
-// from axis A ONLY when the split is EXACTLY colour-row + one other panel —
+// The exemption applies to BOTH axis A and axis C, reusing the SAME
+// panel-location resolution for both (`panelTagName()`) rather than two
+// drifting checks:
+//
+//   AXIS A (scattered-element): an element's controls are exempt ONLY when
+//   the split is EXACTLY colour-row + one other panel —
 //   - exactly 2 distinct panel locations total (not 3+),
 //   - exactly ONE of those two is a `<SgsColourPanel` mount (identified by
 //     JSX tag name — `panelTagNames()` already lists it as a panel because
@@ -107,9 +111,29 @@
 //     one panel (an attribute mentioned inside BOTH the colour panel and
 //     another panel is real scattering of that attribute, colour or not,
 //     and must still be flagged).
-// Anything wider — 3+ locations, colour split across MULTIPLE non-colour
-// panels, or a colour control duplicated across panels — is NOT exempted and
-// falls through to the normal scattered-element finding.
+//   Anything wider — 3+ locations, colour split across MULTIPLE non-colour
+//   panels, or a colour control duplicated across panels — is NOT exempted
+//   and falls through to the normal scattered-element finding.
+//
+//   AXIS C (dom-order-vs-declared-order, extended 2026-09-07): an element
+//   whose ONLY matched attributes are colour rows inside the shared,
+//   early-mounted `SgsColourPanel` gets a computed "first panel position"
+//   pulled artificially early by that panel's mount point — regardless of
+//   the element's REAL declared `order` — producing a false dom-order
+//   violation when compared against a sibling element whose real (non-
+//   colour) panel sits later in the file. The exemption excludes an element
+//   from axis C's comparison set entirely whenever its EARLIEST matched
+//   panel resolves to `SgsColourPanel` — the same signal axis A already
+//   computes (`panelTagName( firstPanelIndex ) === 'SgsColourPanel'`), so
+//   this covers both the single-colour-panel case (distinctPanels.size===1)
+//   and the documented colour-row + one-other-panel split above
+//   (isDocumentedColourRowModel), since in both shapes the colour panel is
+//   the earliest-mounted location. Colour-panel mounting order is a
+//   separate, deliberate mechanism (D609/D618/D622) and was never meant to
+//   represent an element's true DOM position — see `colour-row-dom-order-
+//   not-flagged` fixture for the proof (negative control), alongside the
+//   pre-existing `dom-order-mismatch` fixture (positive control — a genuine,
+//   colour-uninvolved violation still flags).
 //
 // Proven with BOTH a positive and negative control fixtures (not just
 // asserted in prose, per this rule's own standing discipline demonstrated
@@ -331,16 +355,12 @@ module.exports = {
 
 			const elMeta = placement.elements[ elementKey ] || {};
 			const firstPanelIndex = Math.min( ...[ ...attrPanelIndices.values() ].map( ( hits ) => hits[ 0 ] ) );
-			if ( typeof elMeta.order === 'number' ) {
-				orderedElementPanels.push( { elementKey, order: elMeta.order, firstPanelIndex } );
-			}
 
 			// Distinct panels touched, counting each attr's FIRST match only —
 			// an attr legitimately mentioned again elsewhere (e.g. a hover-state
 			// sibling read inside the SAME panel further down) must not inflate
 			// the panel count.
 			const distinctPanels = new Set( [ ...attrPanelIndices.values() ].map( ( hits ) => hits[ 0 ] ) );
-			if ( distinctPanels.size <= 1 ) continue; // correctly grouped
 
 			// ── Colour-row exemption (D533/D537/D618/D609/D622) — see header. ──
 			// "Colour lives as one row inside the shared SgsColourPanel, everything
@@ -380,6 +400,31 @@ module.exports = {
 				distinctPanels.size === 2 &&
 				colourPanelIndices.length === 1 &&
 				nonColourPanelIndices.length === 1;
+
+			// ── Axis C exemption (extended 2026-09-07 — see header for the
+			// full rationale). An element's EARLIEST matched panel — the one
+			// `firstPanelIndex` above resolved to — is what axis C compares
+			// against sibling elements' declared order. When that earliest
+			// panel IS the shared, early-mounted SgsColourPanel, the position
+			// reflects the colour panel's mount point, not this element's own
+			// declared position — whether that's because every one of the
+			// element's matched attrs is a colour row (distinctPanels.size===1,
+			// the colour panel alone) or because it's the documented colour-row
+			// + one-other-panel split above (isDocumentedColourRowModel, where
+			// the colour panel still happens to mount earliest). Either shape
+			// produces the SAME false dom-order-vs-declared-order finding this
+			// task fixes, so this reuses the SAME colour-panel-location signal
+			// axis A's exemption already resolves (`panelTagName`), rather than
+			// re-deriving a second check. Exclude the element from axis C's
+			// comparison set entirely — colour-panel mounting order is a
+			// separate, deliberate mechanism (D609/D618/D622), never a stand-in
+			// for the element's true position.
+			const isColourAnchoredPosition = panelTagName( firstPanelIndex ) === 'SgsColourPanel';
+			if ( typeof elMeta.order === 'number' && ! isColourAnchoredPosition ) {
+				orderedElementPanels.push( { elementKey, order: elMeta.order, firstPanelIndex } );
+			}
+
+			if ( distinctPanels.size <= 1 ) continue; // correctly grouped
 			if ( isDocumentedColourRowModel ) continue; // D609/D618/D622 model — not scattering
 
 			const panelNames = [ ...distinctPanels ]
@@ -476,6 +521,7 @@ module.exports = {
 			'single-owned-attr',
 			'wrapper-element-not-flagged',
 			'colour-row-one-panel',
+			'colour-row-dom-order-not-flagged',
 		],
 	},
 };

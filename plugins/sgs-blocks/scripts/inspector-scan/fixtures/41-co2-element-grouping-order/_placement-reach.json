@@ -84,5 +84,19 @@
 		"ownership": { "titleColourA": "title", "titleColourB": "title" },
 		"blockLevel": [],
 		"contested": {}
+	},
+	"sgs/colour-row-dom-order-not-flagged": {
+		"elements": {
+			"meta": { "label": "Meta", "order": 1, "prefix": "meta" },
+			"headline": { "label": "Headline", "order": 2, "prefix": "headline" }
+		},
+		"ownership": {
+			"metaA": "meta",
+			"metaB": "meta",
+			"headlineColour": "headline",
+			"headlineColourHover": "headline"
+		},
+		"blockLevel": [],
+		"contested": {}
 	}
 }
