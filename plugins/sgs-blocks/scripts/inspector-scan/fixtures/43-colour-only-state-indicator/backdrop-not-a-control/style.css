@@ -1,0 +1,3 @@
+.sgs-x__dialog[open]::backdrop {
+	opacity: var( --sgs-x-backdrop-opacity, 0.5 );
+}

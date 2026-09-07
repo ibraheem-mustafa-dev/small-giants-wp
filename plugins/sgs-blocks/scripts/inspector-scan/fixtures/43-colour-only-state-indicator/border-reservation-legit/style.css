@@ -1,0 +1,9 @@
+.sgs-x__row {
+	border-left: 3px solid transparent;
+	background: transparent;
+}
+
+.sgs-x__row[aria-current="true"] {
+	border-left-color: var( --wp--preset--color--primary, #000 );
+	background: var( --wp--preset--color--surface-alt, #f9f4ef );
+}
