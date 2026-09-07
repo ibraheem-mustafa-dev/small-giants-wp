@@ -727,3 +727,60 @@ unplanned defect. Not touched this session.
 **Net effect:** Priority 3 required zero code changes. The `check-box-family-guard.py` scope
 question from the original plan is moot — there is no confirmed render.php-level border-radius
 defect left to gate against on either originally-named block.
+
+## SDD progress — Priority 2 fully complete + a live-incident + recovery, 2026-09-07
+
+**Priority 2 is now fully done and live-verified.** Beyond the block.json fold (72a441659)
+and edit.js reset-control fix (d42cc76c9), found and fixed one more gap: hero's actual CSS
+emission for `splitMediaPadding` is a SEPARATE, hand-rolled code path in render.php
+(targeting `.sgs-hero__split-media` directly) — NOT routed through the shared media-padding
+atom at all (hero only dispatches the atom for `object-fit`/`focal-point`, a Wave 6 partial
+migration). The fold silently broke this hand-rolled path, since it still read the three
+now-nonexistent flat attributes. Fixed in `bd58c88ed` by redirecting through
+`sgs_responsive_normalise_object()`, matching every other already-migrated block.
+`sgs/media` needed no equivalent fix — its render.php already dispatches the FULL atom list
+including `media-padding` via `SGS_Media_Element::style()`.
+
+**Live-verified, all three tiers, both blocks:**
+- hero `splitMediaPadding` (`.sgs-hero__split-media`): desktop 18px, tablet 9px — both
+  confirmed via computed style at 1445px/1000px.
+- `sgs/media` `padding` (`img.wp-block-sgs-media`, carries `.sgs-media-el`): desktop 22px,
+  tablet 11px — confirmed.
+
+**A genuine live incident happened during this verification pass, self-caused, and was
+fixed the same session.** The shared dev machine runs many concurrent Claude sessions all
+building/deploying against the SAME `plugins/sgs-blocks/build/` directory (gitignored,
+un-versioned). A deploy attempt's ~155s pre-deploy gate run gave enough of a window for
+another session's `npm run build` (which does `rm -rf build` first) to wipe the build
+output out from under an in-flight deploy — the tarball got packaged from a build directory
+that had JUST been deleted, and every block's `render.php`/compiled JS was silently
+missing from what shipped. The deploy's own `[payload-verify]` step caught this
+(`local build dir missing`) but only AFTER the (broken) plugin was already live, because
+the checksum comparison runs against the now-also-deleted local reference copy, not
+against the tarball's actual contents at pack time. **The live canary served a
+`sgs-blocks` plugin with ZERO working blocks for several minutes** — every block's
+render.php was missing, so every dynamic block on the site rendered nothing.
+
+**Root cause, verified property (not assumed):** confirmed by SSH-listing the deployed
+`plugins/sgs-blocks/build/blocks/` directory — it did not exist at all. Confirmed NOT a
+PHP fatal (no entries in `wp-content/error_log`, `wp_eval` `try/catch(\Throwable)` around
+`render_block()` caught nothing) — the file was genuinely absent, so `include()` silently
+returned nothing, no error path.
+
+**Fix: build and deploy from an isolated `git worktree` instead of the shared live
+directory.** `git worktree add /tmp/sgs-deploy-wt HEAD`, symlink `node_modules`/`vendor`
+from the main checkout (both gitignored, safe to share read-only), `npm run build` there —
+completely immune to another session's concurrent `rm -rf build` on the main checkout.
+Deployed successfully from the worktree once (`--allow-dirty`, since the worktree's own
+status is irrelevant to the main checkout's dirty state) — payload-verify PASSED (83/83
+block.json checksums matched), motion QA PASSED. Confirmed live via SSH + Playwright
+immediately after: `hero/render.php` and `media/render.php` both present, all previously
+verified fixes (table-of-contents, accordion, button padding tiers; whatsapp-cta
+border-radius) still correct with zero regression. Worktree removed after (`git worktree
+remove --force`) — the technique, not the worktree itself, is the durable takeaway.
+
+**For any future deploy on this shared machine while multiple sessions are active:
+build+deploy from an isolated worktree, not the shared checkout.** The dirty-tree gate
+protects against committing someone else's uncommitted SOURCE changes; it has no equivalent
+protection against someone else's BUILD OUTPUT changing during YOUR deploy's multi-minute
+gate-and-package window, because `build/` is gitignored and invisible to it.
