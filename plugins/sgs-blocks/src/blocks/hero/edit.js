@@ -1826,7 +1826,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							}
 						>
 							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
-							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
+							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the space between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
 							<ResponsiveBoxControl
 								label={ __( 'Media padding', 'sgs-blocks' ) }
 								presets
