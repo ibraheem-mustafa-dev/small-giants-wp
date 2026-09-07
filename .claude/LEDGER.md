@@ -66,6 +66,8 @@ zero salvage). Full detail in "Shipped today" below and D983/D985-D988.
 | **`logical-props` RTL gate WIRED IN** + 3 nav conversions (2 kept physical, one JS-coupled) | D987 · `559d05e16` |
 | **`multi-button.childBtnBorderRadius` → standard responsive tier object** (+ its check's stale advice fixed) | `0e338b28e` |
 | **db-consistency baseline DELETED** — gate now fails on ANY violation (strictest setting) | D988 · `a4e83e46c` |
+| **Priority 4: `sgs/hero`'s `splitMediaObjectPosition`+`splitMediaWidth` folded to tier-object** — closes the whole tier-object arc across Priorities 1-4 for hero's media family; the shared 7-block `focal-point` atom made shape-aware (byte-identical for 6 unmigrated callers); 2 published posts (incl. the live homepage, 2742) content-migrated before deploy so nothing stranded | D992 · `ae0c2bff1` |
+| **Task B: worktree-isolated build+deploy is now the default** in `build-deploy.py`, closing the concurrent-build-race incident from earlier this session; a second live design gap (dirty-tree gate false-aborting an isolation-eligible deploy) found + fixed same session | D993 [INCIDENT] · `84755960d` + `1e371f95b` |
 
 ## Blockers
 
@@ -115,9 +117,14 @@ longer exists.
 Supersedes the deleted `2026-09-06-tier-object-phase-3-remaining-work.md`, which cited two
 orphaned commit SHAs, a stale pytest baseline, and work another session had already started.
 **Groups 0+1 done, merged, and now live-verified** — canary page 3355 proves a padding-only
-container emits padding (the exact Group 0 bug shape). Remaining: finish Priority 1's other
-3 checks (accordion + button three-tier, table-of-contents editor canvas), the mediaPadding
-atom, one border-radius block (`whatsapp-cta`), and the media-atom pilot.
+container emits padding (the exact Group 0 bug shape). **Priorities 1-4 are ALL now closed**
+(2026-09-07, later the same day): accordion/button/table-of-contents padding tiers (Priority 1),
+the shared mediaPadding atom + hero's `splitMediaPadding`/`mediaPadding` (Priority 2, D-adjacent
+commits `72a441659`/`bd58c88ed`/`97dbc5d66`), `whatsapp-cta` border-radius required NO fix on
+investigation (Priority 3), and hero's `splitMediaObjectPosition`/`splitMediaWidth` media-atom
+pilot (Priority 4, D992, `ae0c2bff1`). **NOT claimed:** every remaining flat-trio attribute
+framework-wide — a full `migrate-tier-object.py --survey` across the whole attribute list has
+not been run; this closes hero's media family specifically.
 ⚠ **Box-shape radius work is deliberately OUT** — another session owns those files and
 committed `e76586a9e` to them 2026-09-07. Ask before scheduling.
 ⚠ `migrate-border-radius-render.py --survey` returns UNCLEAR for 46 of 51 blocks including
@@ -204,19 +211,27 @@ Bean can close these PRs at leisure; no further investigation needed.
   with no clean way to force it without risking another session's in-progress work. Correct
   response is to report COULDN'T-TEST and retry later, or use a distinct browser tool
   (`chrome-devtools-mcp`) that holds its own profile — never kill the lock-holding process.
+- **NEW (2026-09-07, D993): `build-deploy.py` now builds+deploys from an isolated `git worktree
+  add <dir> HEAD` by DEFAULT** — a shared `build/` dir is un-clobberable by a concurrent
+  session's `npm run build`, and other sessions' unrelated uncommitted files in the checkout no
+  longer block a fully-committed deploy (a worktree at HEAD is dirty-immune by construction). Use
+  `--no-isolate` only if genuinely deploying uncommitted `--payload`/`--allow-dirty` content.
 
 ## State Snapshot
 
 - **Branch:** `main`. `origin/main` at `32815ab12` (confirmed pushed, this session). Re-check
   `git status`/`git log` yourself before trusting this — 150+ concurrent sessions share this
   tree and it moves fast.
-- **D-ceiling:** **D991** — verify with
+- **D-ceiling:** **D993** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Build:** `npm run build` (sgs-blocks) — full 93-gate chain passes clean as of this session's
   last commit (`f7cb3ba36`), including the two new detectors this session added
   (`migrate-typography-full-controls.js --check`, `audit-typography-attr-declarations.js
   --check`).
-- **Canary:** ✅ **Typography track deployed and live-verified 2026-09-07** (D991). The
+- **Canary:** ✅ **Typography track deployed and live-verified 2026-09-07** (D991). ✅ **Priority 4
+  (hero splitMediaObjectPosition/splitMediaWidth) also deployed and live-verified same day**
+  (D992) via `build-deploy.py`'s new default worktree isolation (D993) — the deploy succeeded
+  cleanly despite six unrelated dirty blocks sitting in the shared checkout at deploy time. The
   pre-commit visual-diff gate's earlier disclosed-bypasses (`reports/visual-diff/manual-skips.log`)
   are now closed out by this live check.
 - **Open PRs:** **NONE** (D983 bans them; unchanged from earlier today).
