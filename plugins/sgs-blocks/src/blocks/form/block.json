@@ -108,7 +108,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "submitBackgroundHover",
-								"css:background-image": "submitBackgroundHoverGradient"
+								"css:background-image": "submitBackgroundHoverGradient",
+								"css:color": "submitColourHover",
+								"css:color-gradient": "submitColourHoverGradient"
 							}
 						}
 					},

@@ -63,6 +63,14 @@
 						"css:line-height": "native:typography.lineHeight",
 						"css:background-image": "numberColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "numberColourHover",
+								"css:color-gradient": "numberColourHoverGradient"
+							}
+						}
+					},
 					"_note": "selectors.typography targets .sgs-counter__number, so the block-level typography.fontSize/lineHeight supports serialise onto this element specifically, not the wrapper — unlike quote's root-level inherited-default case. numberColourGradient (D636 Task 1b) is the text-colour gradient sibling to numberColour — background-clip:text mechanism."
 				},
 				"label": {
@@ -74,6 +82,14 @@
 					"prefix": "label",
 					"attrMap": {
 						"css:background-image": "labelColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient"
+							}
+						}
 					},
 					"_note": "labelColourGradient is the text-colour gradient sibling to labelColour, same background-clip:text mechanism as the number element's numberColourGradient (D636 Task 1b). Finishes the text-colour gradient rollout 778879732 started and explicitly left open."
 				},

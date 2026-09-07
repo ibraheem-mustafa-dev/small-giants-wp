@@ -42,7 +42,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "triggerBackgroundHover",
-								"css:background-image": "triggerBackgroundHoverGradient"
+								"css:background-image": "triggerBackgroundHoverGradient",
+								"css:color": "triggerColourHover",
+								"css:color-gradient": "triggerColourHoverGradient"
 							}
 						}
 					},
