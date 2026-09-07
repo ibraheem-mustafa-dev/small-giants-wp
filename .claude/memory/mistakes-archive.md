@@ -981,3 +981,18 @@ Programmatic translation captures structure + tokens but misses design choices i
   functional damage, but on a shared checkout this is how another session's half-finished work escapes.
 - **Rule:** After ANY commit on a shared checkout, verify what actually landed with `git show --stat HEAD`
   and `git show HEAD -- <file>` — never assume careful partial staging survived into the commit.
+
+<!-- archived 2026-09-07 (gates-honesty handoff): 2 oldest entries moved to hold the ~30 cap -->
+
+### [2026-08-17] A file's metadata (name, line count, existence) never decides what is inside it — open the file
+- **Pattern key:** `a-files-metadata-never-decides-what-is-inside-it`
+- **Feedback file:** [feedback_a_files_metadata_never_decides_what_is_inside_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_files_metadata_never_decides_what_is_inside_it.md)
+
+### [2026-08-17] A worktree-isolated agent's gate failures unrelated to its own diff can be pure staleness vs main, not real regressions
+- **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures`
+- **Feedback file:** [feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md)
+
+*(18 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
+by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
+history of prunes.)*
+

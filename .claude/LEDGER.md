@@ -203,9 +203,14 @@ Bean can close these PRs at leisure; no further investigation needed.
   `origin/main` only, plus whatever a live track has opened since. No new PRs will be opened —
   D983 bans them.
 - **Uncommitted:** ⚠ the ~55-file border-radius codemod a previous LEDGER entry attributed to
-  "another track" was in fact THIS track's, and it LANDED (`e002bd8b1`). Still uncommitted and
-  genuinely NOT ours: a concurrent session's `linkColour` work across collapsible-text, heading,
-  product-card, quote, testimonial, text and timeline + `.claude/handovers/
+  "another track" was in fact THIS track's, and it LANDED (`e002bd8b1`). This session's own doc
+  work (`LEDGER.md`, `STOP-CATALOGUE.md`, `mistakes.md`, `memory/mistakes-archive.md`) commits
+  with the handoff itself — if you are reading a dirty tree containing those four, that is this
+  handoff mid-flight, not someone else's work. `decisions.md` is NOT among them: D983/D986/D987/
+  D988 each landed inside their own code commit (`75dfd3058`, `1b1ad4712`, `559d05e16`,
+  `a4e83e46c`), which is the intended shape — a decision ships with the change it describes. Genuinely NOT ours: a
+  concurrent session's `linkColour` work across collapsible-text, heading, product-card, quote,
+  testimonial, text and timeline + `.claude/handovers/
   2026-08-26-product-card-media-panel.md` (shown deleted) + root `CLAUDE.md`. Re-check
   `git status` yourself before assuming any of this is safe to touch.
 

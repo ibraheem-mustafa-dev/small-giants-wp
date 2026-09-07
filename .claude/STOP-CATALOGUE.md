@@ -23,6 +23,43 @@ points here. Neither ever silently drops a STOP.
 
 ## A. Process / workflow STOPs (govern every session)
 
+- **STOP-A-A-CHECKS-OWN-ADVICE-CAN-BE-STALER-THAN-THE-CODE** — NEW 2026-09-07. `check-box-flat.py`
+  told the reader to "upgrade to a box-object attr driven by WP's native BoxControl", full stop.
+  That wording was last touched 2026-08-03; the tier-object migration landed 2026-09-06. It reads
+  as "one flat box, no breakpoints" — the PRE-migration shape — so **following the check's own Fix
+  line would have rebuilt the exact debt the check reports.** I quoted it to Bean verbatim as the
+  requirement and he corrected me: "why not our standardised responsive box object exactly the same
+  as the multi-button?" He was right; the parent attr on the very same block was already the correct
+  shape. **A gate's finding is evidence; its FIX text is prose, and prose rots at a different rate
+  from the rule it describes.** Before acting on a Fix line, date it (`git log -1 -- <the script>`)
+  against the migration it references, and check what a migrated sibling ACTUALLY looks like —
+  `sgs-db` / a sibling attribute in the same block.json beats any instruction written months ago.
+  Sibling of `diff-against-a-surface-where-it-already-works`.
+
+- **STOP-A-A-GATE-THAT-ALWAYS-FAILS-IS-A-GATE-NOBODY-READS** — NEW 2026-09-07. `wp-pre-merge-gate.py`
+  printed a red `[FAIL] 212 non-SGS hooks` on EVERY commit. Three compounding bugs: it validated
+  `hooks_registered` (hooks the plugin CREATES — custom by definition, so the answer is always "not
+  a core hook") when its own docstring said it should validate what the plugin CONSUMES; it scanned
+  all of `plugins/sgs-blocks/`, including a 278MB vendored copy of a competitor plugin that is
+  gitignored AND deploy-excluded, contributing 220 of the 228 findings; and it could not resolve WP
+  DYNAMIC hooks, whose concrete runtime names never appear in the docs DB. **Standing red output
+  trains every reader to skip it, so the one real finding it might one day produce is invisible.**
+  Treat a permanently-failing advisory gate as a P1 defect in the gate, not as ambient noise —
+  and when you fix one, re-run the negative control AFTER the fix, because a gate that now passes
+  because it stopped looking is worse than the red you removed.
+
+- **STOP-A-THE-WAY-TO-STOP-A-LIST-GOING-STALE-IS-NOT-TO-KEEP-ONE** — NEW 2026-09-07 (Bean, D988).
+  A baseline exists to let a gate be switched on despite pre-existing debt; it is a PROMISE to look
+  again later, and nothing enforces that promise. Measured this session: `db-consistency` held 4
+  keys against ZERO live violations; `block-file-consistency` held 131 where only 20 still occurred;
+  `oldshape-audit` held 197 of which 182 were dead. A file claiming "N known problems" when the real
+  number is smaller does not merely waste time — it teaches the next reader to distrust every
+  baseline. **The test: would a NEW violation here be worth failing a build over? If yes, keep the
+  gate and drive its baseline to zero. If no, delete the GATE.** Do not maintain a list nobody acts
+  on. Where a baseline must persist, it has to REPORT its own stale entries (the
+  `consistency/check-box-flat.py` `[REMOVED]` precedent) — staleness that is invisible is
+  indistinguishable from debt that is real.
+
 - **STOP-A-NO-PR-NO-STASH-DIRECT-TO-MAIN** — NEW 2026-09-07 (Bean-locked). **Never open a pull
   request on this project, and never `git stash`.** Commit straight to `main`. Bean does not
   review PRs, so a PR is a queue of one that nobody reads — it does not gate anything, it just
@@ -1695,6 +1732,28 @@ for real before claiming done?
     (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
 
 ## D. D101 count-check receipt
+
+- **2026-09-07 (session 2 — gates-honesty track: three STOP entries added to §A, none removed, no
+  question added):** measured with this file's own canonical commands AFTER writing.
+  DEFINED entries (`grep -c '^- \*\*STOP-'`) 275 -> **278** (+3). Unique `STOP-*` tokens
+  (`grep -oE 'STOP-[A-Z0-9-]+' | sort -u | wc -l`) 341 -> **344** (+3). Bullet defences
+  (`grep -cE '^- \*\*'`) 344 -> **348** (+4: the 3 new entries plus THIS receipt line, itself a
+  `- **` bullet). Ritual questions (§C) 15 -> **15**, unchanged.
+  ⚠ CORRECTED at the handoff QC gate: this receipt first labelled the 275->278 delta "Unique
+  `STOP-*` tokens". That is the DEFINED-entries metric; the file's own unique-token command gives
+  341->344. An independent QC subagent caught it. Nothing decreased on ANY metric either way, so
+  the D101 guarantee held — but a receipt whose own labels are wrong cannot be audited later,
+  which is the entire point of writing one.
+  ADDED 3 (`STOP-A-A-CHECKS-OWN-ADVICE-CAN-BE-STALER-THAN-THE-CODE`,
+  `STOP-A-A-GATE-THAT-ALWAYS-FAILS-IS-A-GATE-NOBODY-READS`,
+  `STOP-A-THE-WAY-TO-STOP-A-LIST-GOING-STALE-IS-NOT-TO-KEEP-ONE`) and SUBTRACTED **none**.
+  278 >= 275 (defined). 344 >= 341 (unique tokens). 348 >= 344 (bullets). 15 >= 15 (ritual). ALL PASS. No ritual question added: all three are instances of
+  existing question 11's "is my verification method capable of seeing the thing I'm checking" class,
+  applied to the INSTRUMENT rather than the code. Earned by things that actually happened this
+  session: a check's Fix line instructed the pre-migration shape and Bean caught it; a gate had
+  printed FAIL on every commit for months because it scanned a vendored competitor plugin; and
+  three separate baselines were found holding 182, 111 and 4 entries for findings that no longer
+  occurred.
 
 - **2026-09-07 (branch/PR cleanup + git-hygiene standards: three STOP entries added to §A, one
   existing entry AMENDED, no question added):** measured with this file's own canonical commands

@@ -1,11 +1,37 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-07 (box-shape hover handoff) (1 new entry added — picking a reuse
-precedent by surface similarity instead of matching contracts; 1 oldest entry pruned to archive
-to hold the ~30 cap.)
+**Last updated:** 2026-09-07 (gates-honesty handoff) (2 new entries added — a gate's Fix text
+rotting independently of its rule; and a baseline being wrong in ways a count cannot show.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-07] Relayed a gate's own Fix text as the requirement; it described the PRE-migration shape
+- **Pattern key:** `a-checks-own-advice-can-be-staler-than-the-code`
+- **Evidence:** `check-box-flat.py` flagged `multi-button::childBtnBorderRadius` and its Fix line
+  read "upgrade to a box-object attr driven by WP's native BoxControl". I passed that to Bean as
+  the requirement. He pushed back — "why not our standardised responsive box object exactly the
+  same as the multi-button?" — and was right. `git log -1` on that script: last touched
+  2026-08-03. The tier-object migration landed 2026-09-06. The advice described the shape the
+  migration REPLACED, so following it would have rebuilt the exact debt the check reports. The
+  correct shape was already in the same block.json as the parent `borderRadius`.
+- **Rule:** a gate's FINDING is evidence; its FIX text is prose, and prose rots at a different
+  rate from the rule it enforces. Before acting on a Fix line, date the script against the
+  migration it cites, and read what a migrated sibling actually looks like. Sibling of
+  `diff-against-a-surface-where-it-already-works`.
+
+### [2026-09-07] Reported nine baselines as "accepted debt, gates passing" — true, but three were structurally broken
+- **Pattern key:** `a-baseline-can-be-wrong-in-ways-a-count-cannot-show`
+- **Evidence:** I summarised ~485 baselined findings for Bean as passing/accepted debt. An
+  independent verification pass (dispatched at his request) confirmed every COUNT but found
+  three things a count cannot reveal: `db-consistency` held 4 entries against 0 live violations;
+  `logical-props` had accurate findings and a working self-test but was wired into NOTHING, so a
+  new RTL defect would pass every build silently; and `box-flat` carried a genuinely new,
+  un-triaged finding that could never fail a build because that check is informational-only.
+- **Rule:** "the gate passes" and "the gate is doing its job" are different claims. For each
+  baseline ask three separate questions — is the count right, is the gate WIRED, and do the
+  entries still OCCUR. Bean's resulting test: would a NEW violation here be worth failing a
+  build over? If yes keep the gate and drive the baseline to zero; if no, delete the gate.
+
 ### [2026-09-07] Picking a reuse precedent by surface similarity instead of matching contracts nearly shipped a contract violation
 - **Pattern key:** `match-helper-precedent-by-contract-not-surface-similarity`
 - **Evidence:** building `box-shape`'s (shared media atom) hover/gradient border, the obvious
@@ -278,15 +304,3 @@ to hold the ~30 cap.)
   fixture reporting it no longer flagged.
 - **The rule:** a rule that cannot fail is not a rule. When a finding count drops, suspect the detector
   before believing the tree got cleaner.
-### [2026-08-17] A file's metadata (name, line count, existence) never decides what is inside it — open the file
-- **Pattern key:** `a-files-metadata-never-decides-what-is-inside-it`
-- **Feedback file:** [feedback_a_files_metadata_never_decides_what_is_inside_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_files_metadata_never_decides_what_is_inside_it.md)
-
-### [2026-08-17] A worktree-isolated agent's gate failures unrelated to its own diff can be pure staleness vs main, not real regressions
-- **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures`
-- **Feedback file:** [feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md)
-
-*(18 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
-by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
-history of prunes.)*
-
