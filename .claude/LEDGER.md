@@ -9,50 +9,39 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**A live editor crash got fixed, then you asked for a full sweep of every remaining build-gate
-finding — 92 of 92 fast-tier gates now pass, for the first time this ledger has on record.**
+**Both items the last session flagged as needing your decision are done — you said "let's fix
+both of these now" and they shipped the same session, live-verified.**
 
-**The crash first.** Opening `sgs/text`'s Styles tab threw an error and the block couldn't be
-previewed — a same-day typography rework had switched on a font-family control that, on this
-theme, hits a known WordPress data-shape bug. Fixed, then verified live in the real editor via
-Playwright (not just code review) on both `sgs/text` and `sgs/heading`.
+**`sgs/media` and `sgs/hero` borders can now change colour on hover.** Same capability
+`sgs/button` and `sgs/container` already had; the shared media-atom that owns their border
+never got it. Checked live on the canary — hover the image, the border colour changes; move
+away, it goes back. Confirmed by you directly in the editor too.
 
-**Then a full gate sweep, all via subagents, none of it in the main session as you asked.**
-Dead-looking controls that turned out to be real bugs one layer down (a child block missing
-3 context keys, not "dead" at all). A vocabulary gap in the shared design-token registry —
-drafted first, applied once you confirmed. A detector blind spot in the cheat-gate check that was
-flagging legitimate WCAG motion-reduction overrides on some blocks while letting identical ones
-through elsewhere by pure luck — found, fixed, and it found a THIRD genuine edge case beyond what
-was predicted. A 40-finding border-styling bug across 15 theme patterns, migrated via a proper
-implementer+reviewer workflow. Every step verified with a real command, not a guess.
+**The cheat-gate false alarm is gone.** A legitimate, tested line of pipeline code was tripping
+a fraud-detection check meant to catch a different, real problem (a converter accidentally
+copying a draft's own styling class onto a clone). Told the checker about that one legitimate
+line by name, proved it still catches a real violation elsewhere.
 
-**What's still open, by design — not lost work.** Two items need your decision, not mine — full
-detail under "Two items genuinely needing Bean's decision" below, deliberately NOT added to
-`parking.md` without asking first. Separately, 8 branches of real work sitting orphaned in the
-repo (a hero drag-crosshair feature, a QA-tooling build, an unfinished border-migration
-initiative) got rescued onto GitHub as draft PRs instead of being silently deleted during a
-worktree cleanup — see Track C below.
+**Bonus, found along the way:** the box-shape deploy's full test run surfaced two unrelated,
+pre-existing test failures elsewhere in the pipeline (nothing to do with the border work) —
+root-caused properly (not guessed) and fixed, so the deploy gate is fully green again rather
+than needing a bypass every time.
 
-## Shipped today (2026-09-06/07)
+## Shipped today (2026-09-07)
 
 | What | Detail lives at |
 |---|---|
-| **`sgs/text` Styles-tab crash fixed + live-verified** (Playwright, real canary) | D978-D981 · `bcdbde978` · PR #61 |
-| **4 heading Typography-panel UX fixes** (dup label, letter-case reset, combined rows, font-family parity) | D978-D981 · `bcdbde978` |
-| **5 original gate findings closed** (scaleHover exemption, typography role reclass, role-map auto-regen, missing WP-native props, `contentBandMargin` wire-up) | D978-D981 · `bcdbde978` |
-| **All 6 remaining gate clusters resolved or correctly deferred — 92/92 fast-tier gates pass** | D982 · `328fa44f3` `c311ef491` `21d6fcd03` `2575a41f5` `8c61ba2c2` `073d56659` `4f3127a04` `e86533f7f` |
-| **dead-pattern-attrs (40 findings) — border migration via `/subagent-driven-development`** | D982 · `.claude/plans/2026-09-07-dead-pattern-attrs-border-migration.md` |
-| **8 orphaned branches with real work recovered as draft PRs** (not deleted) | PRs #53-#60, all OPEN, unreviewed |
-| **~50 fully-merged worktree/branch clutter removed**, all stashes cleared | git housekeeping only, no commit |
+| **`sgs/media`/`sgs/hero` border hover/gradient state** (matches button/container's pattern) | D985 · `11f1e2386` (merged direct to `main`, no PR — D983) |
+| **Cheat-gate Check #9 allowlist** for `section_passes.py`'s legitimate anchor-class write | D985 · `3e20518c7` |
+| **Two pre-existing converter test failures root-caused + fixed** (tier-of-boxes COLLISION false-positive; missing `xfail` marker) | D985 · `efeb0b8e7` |
 
 ## Blockers
 
-**None load-bearing.** The two decision items below are genuine design calls, not blockers.
+**None.**
 
 ## THE FRONT — three live tracks, pick one
 
-No single "next task" — this session closed gate debt, not one narrow track. Three genuinely
-active, mutually independent prompts exist:
+Untouched this session — still the live front from 2026-09-06.
 
 ### Track A — colour conformance, TEXT surface
 **Read first (full, not skim):** `.claude/prompts/2026-09-06-colour-conformance-text-surface-next.md`.
@@ -64,32 +53,27 @@ Groups 0+1 done and merged; Priorities 1-6 remain (media-atom migration, border-
 a compliance gate — live order in the file). Independent of Tracks A/C.
 
 ### Track C — the 8 orphaned-branch draft PRs (#53-#60)
-Bean decides per PR whether to pursue: `#53` (hero drag-crosshair, 3.5 weeks old — highest
-conflict risk), `#54` (hover-guard QA tooling, 90 files), `#55-#60` (6 branches of an unfinished
-"border Shape B" migration, unclear if superseded by tier-object work). None mergeable as-is —
-each needs a fresh rebase + real conflict resolution first. Do not merge blind.
+**Superseded/verified salvage-free 2026-09-07 (D983's trigger event) — every one already
+superseded by work on `main`, zero salvage.** Several would have REGRESSED `main` if merged.
+Bean can close these PRs at leisure; no further investigation needed.
 
-### Two items genuinely needing Bean's decision (NOT in parking.md — his call whether to add them)
-1. **Cheat-gate Check #9 vs section-anchor classes** — `section_passes.py`'s
-   `ensure_root_section_class` (`:134,144`) writes a real, intentional `sgs-{section_id}` class
-   Check #9 can't distinguish from an actual Rule-1 violation, so it's baselined not closed. Option
-   A: special-case Check #9 for this write site (recommended, same idiom as Check #2's allowlist).
-   Option B: remove the write, but trace its downstream consumers first (unknown blast radius).
-2. **`sgs/media`'s border has no hover-colour/gradient variant** — owned by the shared `box-shape`
-   atom (also used by `sgs/hero`), no hover-colour capability at all. Rule-7 design-gate item.
-
-## Open — carried from before this session (not touched, still real)
+## Open — carried from before (not touched this session, still real)
 
 - **`push-theme-snapshot.py`** — last known (2026-08-18): aborts safely for mamas-munches, refuses
-  to write `wp_global_styles` without a verified backup. NOT re-verified this session.
+  to write `wp_global_styles` without a verified backup. NOT re-verified since.
 - **`text-secondary` client-only slug read by framework code** (`sgs-text-variations.php:83`) —
   needs per-client resolution or a decision to seed it for all clients.
 - **5 blocks missing `:focus-visible`** on `:hover`: `hero`, `icon-list`, `mega-panel`,
   `process-steps`, `testimonial` (35 comply).
 - **45 attributes a client can never reach** — needs per-attribute judgement, not a blind fix.
 - **Two dead components** (`StateToggleControl`, `SgsLinkControl`) — clutter, not gaps.
+- **`box-shape`/`overlay`'s `:hover` rules are unguarded against touch-hover-stuck** — flagged,
+  not fixed, this session (D985 detail): `scripts/hover-guard/` only scans `build/blocks/*/style.css`
+  and PHP render surfaces, never `assets/css/media-atoms/*.css`. A real, named gap in the
+  hover-guard tooling's coverage, shared by the whole media-atom family — not unique to this
+  session's change.
 
-## Methodology guardrails (carried forward — all still true; extended this session)
+## Methodology guardrails (carried forward — all still true)
 
 - ⛔ **`git grep` only, never `grep -r`** — stale worktrees can inflate counts massively.
 - ⛔ **Never pipe a population-defining survey through `head -N`.** Count first (`| wc -l`).
@@ -106,31 +90,48 @@ each needs a fresh rebase + real conflict resolution first. Do not merge blind.
   the scoped `SGS_VISUAL_GATE_SKIP`/`SGS_INSPECTOR_GATE_SKIP`/`SGS_F5_SKIP` + `*_REASON`.
 - **Run builds synchronously, never backgrounded.**
 - **/qc multi-rater before every commit** touching converter / pipeline / SGS block logic.
-- **NEW (2026-09-07): a new `block.json` attribute needs `sgs-update-v2.py --stage 1` +
-  `generate-attr-role-map.py` immediately, not at session end** — hit `orphan_unclassified`/
-  `orphan_role_map_stale` twice this session from declaring an attribute the DB hadn't rescanned.
-- **NEW (2026-09-07): a "dead control" can mean the CHILD block is missing context** — `accordion`'s
-  3 "dead" attrs were fully wired on the parent; `accordion-item` never declared `usesContext`.
-- **NEW (2026-09-07): an exemption heuristic must check what CONTAINS a rule** (`@media`,
-  `@container`), not just the rule's own selector text.
+- **A new `block.json` attribute needs `sgs-update-v2.py --stage 1` + `generate-attr-role-map.py`
+  immediately, not at session end.**
+- **A "dead control" can mean the CHILD block is missing context**, not that the control is dead.
+- **An exemption heuristic must check what CONTAINS a rule** (`@media`, `@container`), not just
+  the rule's own selector text.
+- **NEW (2026-09-07, D983): commit straight to `main`, never open a PR, never `git stash`;
+  integrate with `origin/main` after every completed task, not per session.**
+- **NEW (2026-09-07): a shared custom-property-only atom (values only, never bare CSS rules)
+  needing a hover/gradient pair should NOT reach for `sgs_border_gradient_css()` (masked
+  `::before`-ring, emits full rules) — use the atom's own paired-custom-property pattern
+  instead (`overlay.js`'s `hoverPaint`). Check the atom's OWN contract before borrowing a
+  helper by analogy to a different block's border mechanism.**
+- **NEW (2026-09-07): `build-deploy.py --payload` breaks the deploy↔commit deadlock** when the
+  pre-commit visual-diff gate demands a live capture — scoped canary-deploy the uncommitted
+  payload, capture the report, then commit.
+- **NEW (2026-09-07): a dirty file in a SHARED worktree overlapping an incoming merge blocks
+  the fast-forward** — don't stash/checkout over it (another track's work); rely on
+  `origin/main` as the source of truth, or merge via an isolated `git worktree add`.
 
 ## State Snapshot
 
-- **Branch:** `main` at `9a3ee9e01` (pre-this-write; this handoff's own commits land after). All
-  session commits pushed directly to `main`, no feature branches — per Bean's explicit correction
-  this session against defaulting to branch+PR for everything.
-- **D-ceiling:** **D982** — verify with
+- **Branch:** `main`. `origin/main` at `11f1e2386` (confirmed pushed). **The local primary
+  worktree's HEAD may lag behind this** — it could not fast-forward past `efeb0b8e7` because
+  `plugins/sgs-blocks/src/blocks/hero/render.php` carries a concurrent session's uncommitted
+  work (a border-radius-legacy-args codemod, `strip-dead-radius-legacy-args.py`, unrelated to
+  this session). Do not stash or discard it — re-check `git status` and let that track land its
+  own commit, then `git pull --ff-only`.
+- **D-ceiling:** **D985** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
-- **Build:** `npx wp-scripts build` exit 0. **`python scripts/run-gates.py --tier fast` — 92/92
-  gates pass** (verified this session, not assumed).
-- **Canary:** deployed and live-verified via Playwright this session (crash fix + UX fixes +
-  `contentBandMargin` CSS emission all confirmed on sandybrown, not just code-reviewed).
-  `push-theme-snapshot.py`/`wp_global_styles` status from 2026-08-18 NOT re-checked this session.
-- **Open PRs:** #53-#60 (8 draft PRs, orphaned-branch recovery, awaiting Bean's per-branch
-  decision — see Track C above). No other open PRs; #31/#32/#35/#52/#61 all merged this session.
-- **Uncommitted:** `.claude/handovers/2026-08-26-product-card-media-panel.md` shows deleted —
-  NOT from this session, left untouched per shared-worktree discipline. Re-check `git status`
-  yourself; ask before removing it.
+- **Build:** `npm run build` (sgs-blocks) — full gate chain including `hover-guard`,
+  `check-dead-controls`, `check-hardcoded-render-defaults`, payload-verify (83/83) all pass.
+  `npm run gate:full` (the exact pre-deploy pytest scope) — clean, 1055 passed / 0 failed.
+- **Canary:** deployed + live-verified via Playwright this session (box-shape hover, both
+  `sgs/media` and `sgs/hero`). Probe page (3350) created and deleted after verification —
+  nothing left on the canary from this session. `push-theme-snapshot.py` status from
+  2026-08-18 NOT re-checked.
+- **Open PRs:** #53-#60 still open on GitHub, confirmed salvage-free (Track C) — Bean can close
+  at leisure. No new PRs opened this session (D983: commit straight to `main`).
+- **Uncommitted (NOT this session's, left untouched):** ~55 files under `plugins/sgs-blocks/`
+  (a border-radius-legacy-args codemod in progress on another track) + `.claude/handovers/
+  2026-08-26-product-card-media-panel.md` (shown deleted) + root `CLAUDE.md`. Re-check
+  `git status` yourself before assuming any of this is safe to touch.
 
 ## Pointers
 
@@ -139,10 +140,10 @@ each needs a fresh rebase + real conflict resolution first. Do not merge blind.
 | **Colour conformance TEXT surface (Track A)** | `.claude/prompts/2026-09-06-colour-conformance-text-surface-next.md` |
 | **Tier-object migration Phase 3 (Track B)** | `.claude/prompts/2026-09-06-tier-object-phase-3-remaining-work.md` |
 | **Typography Task 3 status (PARTIAL — re-verify before trusting)** | `.claude/prompts/2026-09-06-typography-task3-close-plus-converter-bug.md` |
-| **This session's dead-pattern-attrs plan (SDD)** | `.claude/plans/2026-09-07-dead-pattern-attrs-border-migration.md` |
-| **8 recovered orphaned-branch PRs (Track C)** | GitHub PRs #53-#60 |
-| **Open design decisions from this session (NOT in parking.md — Bean's call)** | This file's "Two items genuinely needing Bean's decision" section above |
+| **This session's box-shape hover work** | D985 in `decisions.md`; `reports/visual-diff/{media,hero}-2026-09-07.md` |
+| **Known gap: media-atom `:hover` rules unguarded against touch-hover-stuck** | This file's "Open" section above; `scripts/hover-guard/check.js` (scope) |
 | Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Governing spec for inspector UX | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
+| Border controls standard (`SgsBorderControl`, colour helper registry) | `plugins/sgs-blocks/CLAUDE.md` "Border controls" + "Colour EMISSION helpers" |
 | Build / deploy / SSH / credentials | `dev-setup.md` · deploy = `build-deploy.py --target sandybrown` |

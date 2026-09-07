@@ -1,11 +1,27 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-06 (typography-migration handoff) (1 new entry added — a shared-mechanism
-doc committed mid-session can still get violated minutes later; 1 oldest entry pruned to archive
+**Last updated:** 2026-09-07 (box-shape hover handoff) (1 new entry added — picking a reuse
+precedent by surface similarity instead of matching contracts; 1 oldest entry pruned to archive
 to hold the ~30 cap.)
 
 <!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-07] Picking a reuse precedent by surface similarity instead of matching contracts nearly shipped a contract violation
+- **Pattern key:** `match-helper-precedent-by-contract-not-surface-similarity`
+- **Evidence:** building `box-shape`'s (shared media atom) hover/gradient border, the obvious
+  reuse target was `sgs_border_gradient_css()` — the same helper `sgs/button`/`sgs/container`
+  already use for border-hover-gradient, matching Bean's own instruction to "use the same
+  colour helper files as container and button borders". Re-reading `box-shape`'s own contract
+  first ("custom-property VALUES only, never bare rules") caught that this helper builds a full
+  CSS rule via a masked `::before` ring — a real conflict. The correct precedent was a sibling
+  ALREADY inside the same atom family (`overlay.js`'s `hoverPaint`), solving the identical
+  "hover pair for a custom-property-only emitter" shape under the same constraints.
+- **Rule:** when reusing a pattern for a new capability, do not pick the precedent by surface
+  similarity ("this other block has the same visible feature") — read the target's own
+  contract/constraints first, then look for a precedent built under the SAME contract, usually a
+  sibling in the same shared-mechanism family, before reaching for the analog from a
+  structurally different component.
+
 ### [2026-09-06] An already-documented architecture rule still got violated because nobody checked the doc before building the mechanism it forbids
 - **Pattern key:** `an-already-documented-architecture-rule-still-got-violated`
 - **Evidence:** `plugins/sgs-blocks/CLAUDE.md`'s "Colour controls" section explicitly forbade
@@ -270,11 +286,7 @@ to hold the ~30 cap.)
 - **Pattern key:** `merge-main-before-trusting-a-stale-worktrees-gate-failures`
 - **Feedback file:** [feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_merge_main_before_trusting_a_stale_worktrees_gate_failures.md)
 
-### [2026-08-16] A session brief's claimed branch/HEAD/D-ceiling/deploy-status is a claim to verify, not a fact to relay
-- **Pattern key:** `verify-incoming-session-brief-against-repo`
-- **Feedback file:** [feedback_verify_incoming_session_brief_against_repo.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_incoming_session_brief_against_repo.md)
-
-*(17 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
+*(18 entries dated 2026-08-04 through 2026-08-16 pruned to `memory/mistakes-archive.md` — oldest
 by date, moved verbatim, to make room at cap. See `memory/mistakes-archive.md` for the full
 history of prunes.)*
 

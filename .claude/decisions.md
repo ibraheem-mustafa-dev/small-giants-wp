@@ -1,3 +1,45 @@
+## D985 [ROUTINE] — Two Bean-flagged design-gate items closed: box-shape border hover + cheat-gate Check #9 allowlist
+
+**2026-09-07.** Both items from LEDGER's "Two items genuinely needing Bean's decision" —
+resolved after Bean's go-ahead in-session ("let's fix both of these now").
+
+1. **`sgs/media`/`sgs/hero` border gains a hover/gradient state.** `box-shape` (the shared
+   media atom, also consumed by `sgs/hero`'s split-media) had colour but no hover capability —
+   `sgs/button`/`sgs/container` both already had it. Colour-only hover pair
+   (`borderColourHover`/`borderColourHoverGradient`), matching those two blocks' own
+   `states.hover.attrMap` convention. `box-shape.js`/`.php` mirror `overlay.js`'s existing
+   hover-paint shape (gradient wins, one custom property emitted, never both) — NOT
+   `sgs_border_gradient_css()`, which builds a full CSS rule via a masked `::before` ring and
+   conflicts with this atom's custom-property-only contract. `sgs/hero`'s split-media border
+   renders through a separate bespoke `render.php` mechanism (not the atom's `css()` emitter),
+   so it got its own hover wiring mirroring `sgs/button`'s own accepted limitation: the
+   masked-gradient hover only applies when the resting state is already a gradient. Editor UI
+   reused `SgsBorderControl`'s existing `colourStates` (Normal/Hover) form, already proven on
+   button/container, wired through the shared `box-shape.control.js` → `MediaElementPanel`
+   dispatch so both consumers picked it up from one control-side change — confirmed only
+   `sgs/media`/`sgs/hero` declare the `box-shape` atom (no scope creep to product-card/
+   decorative-image). Live-verified on sandybrown (page 3350, deleted after): computed
+   `border-color` flips resting-black → hover-red on real `:hover`, reverts cleanly on
+   pointer-leave, for both blocks. `reports/visual-diff/{media,hero}-2026-09-07.md`
+   (`intent_capture_passed`). Merged direct to `main` (`11f1e2386`), no PR (D983).
+2. **Cheat-gate Check #9 whole-file allowlist for `section_passes.py`.** Its `ensure_root_section_class()`
+   writes a real, load-bearing `sgs-{section_id}` anchor class (pattern-registration selectors
+   in `register_patterns.py:216` depend on it) that Check #9's AST visitor couldn't distinguish
+   from a real Rule-1 mirror violation. Added to `_CONVERTER_WHOLE_FILE_ALLOWLIST` in
+   `check_converter_source.py`, matching `check_hardcoded_dicts.py`'s existing allowlist idiom
+   exactly (Bean's explicit choice over a narrower symbol-scoped AST distinction). Verified with
+   a negative control (a dummy className write in a non-allowlisted file still gets flagged).
+   `3e20518c7` on `main`.
+
+**Bonus, found mid-work (D983 rule 3 — fix pre-existing issues while already in there):** the
+box-shape deploy's `gate:full` surfaced two UNRELATED pre-existing converter-pipeline test
+failures (confirmed via `git blame`/`git log -S`, not guessed) — `_check_conservation`'s
+COLLISION check had no tier-of-boxes awareness (false-positive on `sgs/button.padding`,
+migrated at `c829647c8`), and `test_typography_line_height_unitless_sentinel_bug2` was missing
+the same `xfail(strict=True)` D554 marker its `font-size` sibling already carries. Both fixed
+(`efeb0b8e7`); `npm run gate:full` — the exact scope `build-deploy.py` runs pre-deploy — is
+clean.
+
 ## D983 - Git hygiene standards: no PRs, no stashes, integrate after every task [ROUTINE]
 
 **2026-09-07, Bean-locked.** Three standing rules, applied to this project AND globally
