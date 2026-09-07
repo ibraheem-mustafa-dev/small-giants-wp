@@ -16,7 +16,7 @@ import {
 	RangeControl,
 	RadioControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, GradientCapableColourControl, IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, linkColourPreviewCss } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
@@ -804,14 +804,107 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								},
 						  ]
 						: [] ),
-					/* connector/connectorFill/date colour rows moved OUT of
-					   this shared panel (Spec 35 D622 / SgsColourPanel's own
-					   docblock: "an element-scoped colour belongs in ITS OWN
-					   element's TIER 1 panel" — this panel is only for the
-					   wrapper + unclaimed [row-stripe] colours). connector/
-					   connectorFill now render inside the existing
-					   "Connector" element panel below; date now renders
-					   inside the new "Entry date" element panel. */
+					/* connector/connectorFill/date/description-link colour rows —
+					   these used to live in their own element panels below
+					   ("Connector", "Entry date", "Entry description"), each
+					   citing D622 (SgsColourPanel's own docblock: "an
+					   element-scoped colour belongs in ITS OWN element's
+					   TIER 1 panel"). D622 is superseded (2026-09-07): every
+					   fill/text/link colour lives in this shared panel now,
+					   only border/media-overlay/shadow colour stay
+					   element-scoped. Moved back in here, alongside the
+					   wrapper/row-stripe rows above. Same row shape, same
+					   attributes, just relocated — see SgsColourPanel.js's
+					   own docblock for the current placement rule. */
+					{
+						key: 'connector',
+						label: __( 'Connector colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorColour,
+								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+								linked: true,
+								gradientValue: connectorColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: connectorColourHover,
+								onChange: ( val ) => setAttributes( { connectorColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: connectorColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'connectorFill',
+						label: __( 'Connector fill colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: connectorFillColour,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColour: val ?? '' } ),
+								gradientValue: connectorFillColourGradient,
+								onGradientChange: ( val ) => setAttributes( { connectorFillColourGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: connectorFillColourHover,
+								onChange: ( val ) =>
+									setAttributes( { connectorFillColourHover: val ?? '' } ),
+								gradientValue: connectorFillColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { connectorFillColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'date',
+						label: __( 'Date colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: dateColour,
+								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'descriptionLink',
+						label: __( 'Entry description link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: descriptionLinkColour,
+								onChange: ( val ) =>
+									setAttributes( { descriptionLinkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: descriptionLinkColourHover,
+								onChange: ( val ) =>
+									setAttributes( { descriptionLinkColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
@@ -936,70 +1029,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					{ /* Moved in from the shared SgsColourPanel (Spec 35 D622 —
-					     an element-scoped colour belongs in its own element's
-					     TIER 1 panel; "connector" is a declared element whose
-					     attrMap claims both of these). Same row shape, same
-					     attributes, just relocated. */ }
-					<GradientCapableColourControl
-						label={ __( 'Connector colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorColour,
-								onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
-								linked: true,
-								gradientValue: connectorColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { connectorColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: connectorColourHover,
-								onChange: ( val ) => setAttributes( { connectorColourHover: val ?? '' } ),
-								gradientValue: connectorColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { connectorColourHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Connector fill colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: connectorFillColour,
-								onChange: ( val ) =>
-									setAttributes( { connectorFillColour: val ?? '' } ),
-								gradientValue: connectorFillColourGradient,
-								onGradientChange: ( val ) => setAttributes( { connectorFillColourGradient: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: connectorFillColourHover,
-								onChange: ( val ) =>
-									setAttributes( { connectorFillColourHover: val ?? '' } ),
-								gradientValue: connectorFillColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { connectorFillColourHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
 				</PanelBody>
 
 				{ /* ── Entry date (TIER 1 — matches the `date` element's own
 				     "Entry date" label in supports.sgs.elements, block.json).
-				     dateColour moved in from the shared SgsColourPanel for the
-				     same D622 reason as Connector's rows. Positioned here
-				     (before Milestone size & media) so DOM order matches the
-				     declared order: date=4 must render before entry=5, and
-				     Milestone size & media owns entry's milestoneMinHeight/
-				     entryGap attrs. */ }
+				     Colour moved to the shared SgsColourPanel above (D622,
+				     which used to route it here, is superseded — see that
+				     component's own docblock); this panel now holds only the
+				     non-colour date-position control. Positioned here (before
+				     Milestone size & media) so DOM order matches the declared
+				     order: date=4 must render before entry=5, and Milestone
+				     size & media owns entry's milestoneMinHeight/entryGap
+				     attrs. */ }
 				<PanelBody title={ __( 'Entry date', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* Date position is an AXIS OF ITS OWN, not a content-layout
 					     value. MUI, Ant Design, PrimeReact and Vuetify all model it
@@ -1020,49 +1061,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							__next40pxDefaultSize
 						/>
 					) }
-					<DesignTokenPicker
-						label={ __( 'Date colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: dateColour,
-								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
-				</PanelBody>
-
-				{ /* ── Entry description (Task 3, 2026-09-07) — the per-entry
-				     description field permits `core/link`, so a linked
-				     selection needs its own colour independent of the
-				     surrounding text. No other per-entry description style
-				     control exists yet (see the `entry` element note in
-				     block.json), so this is a new, minimal panel rather than
-				     a row bolted onto an unrelated element. */ }
-				<PanelBody title={ __( 'Entry description', 'sgs-blocks' ) } initialOpen={ false }>
-					<DesignTokenPicker
-						label={ __( 'Link colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: descriptionLinkColour,
-								onChange: ( val ) =>
-									setAttributes( { descriptionLinkColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: descriptionLinkColourHover,
-								onChange: ( val ) =>
-									setAttributes( { descriptionLinkColourHover: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
 				</PanelBody>
 
 				{ /* ── Milestone size & media ──

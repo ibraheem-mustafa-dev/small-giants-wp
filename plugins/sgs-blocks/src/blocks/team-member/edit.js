@@ -41,7 +41,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
@@ -426,6 +426,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes,
 					} ),
 					{
+						/* Name colour — was a ToolsPanelItem inside "Card Settings"
+						   (comment there cited D622, since superseded — every
+						   fill/text/link colour lives in this shared panel now,
+						   see SgsColourPanel.js's own docblock). Consolidated
+						   alongside its sibling roleColour row. */
+						key: 'nameColour',
+						label: __( 'Name colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
+								linked: true,
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
 						key: 'roleColour',
 						label: __( 'Role colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -517,40 +545,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-					</ToolsPanelItem>
-					{ /* Moved in from the shared SgsColourPanel (D622 — an
-					     element-scoped colour belongs in its own element's
-					     TIER 1 panel; "name" is a declared element whose
-					     attrMap claims nameColour). */ }
-					<ToolsPanelItem
-						label={ __( 'Name colour', 'sgs-blocks' ) }
-						hasValue={ () => !! nameColour || !! nameColourHover }
-						onDeselect={ () =>
-							setAttributes( { nameColour: '', nameColourGradient: '', nameColourHover: '' } )
-						}
-						isShownByDefault
-					>
-						<DesignTokenPicker
-							label={ __( 'Name colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: nameColour,
-									onChange: ( val ) => setAttributes( { nameColour: val ?? '' } ),
-									linked: true,
-									gradientValue: nameColourGradient,
-									onGradientChange: ( val ) => setAttributes( { nameColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: nameColourHover,
-									onChange: ( val ) => setAttributes( { nameColourHover: val ?? '' } ),
-									linked: true,
-								},
-							] }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

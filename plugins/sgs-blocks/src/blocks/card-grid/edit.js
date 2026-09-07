@@ -25,6 +25,7 @@ import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverFie
 	resolveColourToken,
 	DesignTokenPicker,
 	GradientCapableColourControl,
+	SgsColourPanel,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
@@ -451,31 +452,22 @@ export default function Edit( { attributes, setAttributes } ) {
 			   than forcing a shared-component change for 3 blocks (Rule 7 —
 			   shared-mechanism changes need a design gate). */ }
 
-			{ /* TITLE element — content (heading level) in Settings, colour+hover
-			   in Styles. Both panels share the "Title" name so they read as
-			   one conceptual element panel split across WP's native tabs
-			   (the interim state ahead of SGS's own 3-tab bar, Spec 35 PART O). */ }
-			<InspectorControls>
-				<PanelBody title={ __( 'Title', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Heading level', 'sgs-blocks' ) }
-						value={ headingLevel || 'h3' }
-						options={ HEADING_LEVEL_OPTIONS }
-						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
-						help={ __(
-							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-				</PanelBody>
-			</InspectorControls>
-			<InspectorControls group="styles">
-				<PanelBody title={ __( 'Title', 'sgs-blocks' ) } className="sgs-colour-panel">
-					<GradientCapableColourControl
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						states={ [
+			{ /* Title colour — was its own "Title" PanelBody, styled className="sgs-colour-panel"
+			   to LOOK like the shared panel without actually being it (comment there cited
+			   D622, since superseded — every fill/text/link colour lives in the real shared
+			   SgsColourPanel now, see that component's own docblock). Moved into a genuine
+			   SgsColourPanel mount, rendered first per that component's own ordering
+			   requirement (before any other same-group InspectorControls Fill). Subtitle/Card
+			   colour panels below stay as their own bespoke per-element panels — out of scope
+			   for this move (Card's panel also mixes in border colour, which is genuinely
+			   exempt from the shared panel). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
 							{
 								key: 'normal',
 								label: __( 'Normal', 'sgs-blocks' ),
@@ -492,8 +484,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
 								linked: true,
 							},
-						] }
-						{ ...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ) }
+						],
+						...( cardBackgroundForContrast ? { contrastAgainst: cardBackgroundForContrast } : {} ),
+					},
+				] }
+			/>
+			{ /* TITLE element — content (heading level) stays in Settings, unchanged
+			   (out of scope for this move — a separate, already-approved batch owns
+			   the headingLevel panel placement). */ }
+			<InspectorControls>
+				<PanelBody title={ __( 'Title', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Heading level', 'sgs-blocks' ) }
+						value={ headingLevel || 'h3' }
+						options={ HEADING_LEVEL_OPTIONS }
+						onChange={ ( val ) => setAttributes( { headingLevel: val } ) }
+						help={ __(
+							'Pick the level that fits your page outline — usually H2 or H3 depending on what comes before this grid.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 				</PanelBody>
 			</InspectorControls>

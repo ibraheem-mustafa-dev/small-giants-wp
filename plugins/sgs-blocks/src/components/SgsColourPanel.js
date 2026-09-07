@@ -28,21 +28,28 @@
  * `<InspectorControls>` block in their `edit()` return, since WordPress
  * concatenates same-group Fills in mount order.
  *
- * ⚠ CORRECTED 2026-08-19 — the 2026-08-14 quote this paragraph used to lean
- * on ("all of the blocks should have the colour section at the top with all
- * of their colours in that panel") was Bean's ROW-EXISTENCE-level reaction to
- * the D609 rebuild (colours must not be scattered per-element as bare rows);
- * it is NOT the framework's current colour-PLACEMENT ruling. That ruling is
- * D622 (Spec 35 PART O §1 field 4b, 2026-08-15, one day later): colour
- * placement follows the SAME D533/D537 resolver as every other property
- * family — an element-scoped colour belongs in ITS OWN element's TIER 1
- * panel, and only a colour NO element claims falls to a shared
- * property-family panel. "Pinned first, holds every colour on the block"
- * is not a rule this component enforces or a rule the spec still states;
- * every call site today mounts this component exactly once per block, so
- * that placement question belongs to each caller's `rows` array, not to
- * this file. Do not re-add "pinned first / all colours here" language
- * without re-reading field 4b first.
+ * ⚠ SUPERSEDED 2026-09-07 — D622 is STALE and no longer the ruling. D622
+ * (Spec 35 PART O §1 field 4b, 2026-08-15) said colour placement follows the
+ * SAME D533/D537 resolver as every other property family — an element-scoped
+ * colour belongs in ITS OWN element's TIER 1 panel, only a colour NO element
+ * claims falling to a shared property-family panel. That ruling predates the
+ * current gradient-colour helper set (`fillRow`/`textRow`, the
+ * `gradientCapable` row shape, `sgs_resolve_text_colour_or_gradient()` and
+ * friends) built afterwards specifically to let every fill/text/link colour
+ * live in ONE shared panel without losing gradient/hover capability per row —
+ * D622's per-element split stopped matching the tooling built to serve it.
+ *
+ * **THE CURRENT RULE (Bean-confirmed 2026-09-07): every fill/text/link
+ * colour on a block lives in THIS shared panel.** The only exemptions are
+ * border colour, media/section overlay colour, and shadow colour — those
+ * stay in their own dedicated composite controls (`SgsBorderControl`,
+ * the overlay controls inside a background/media panel, `ShadowControl`)
+ * because each pairs a colour with a genuinely non-colour sibling control
+ * (style/width, opacity/blend-mode, blur/spread) that this component has no
+ * slot for. A colour with no such pairing — including one a caller might be
+ * tempted to leave "scoped to its own element panel" for tidiness — belongs
+ * here. Do not re-add "element-scoped colour belongs in its own TIER 1
+ * panel" placement language without a fresh decision superseding this one.
  *
  * ⚠ TAB: `group="styles"` (D621, 2026-08-15) — Bean corrected D618's
  * original placement (default/Settings group): "the background panel which

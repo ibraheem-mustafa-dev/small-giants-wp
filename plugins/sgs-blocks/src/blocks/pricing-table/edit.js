@@ -270,6 +270,34 @@ export default function Edit( { attributes, setAttributes } ) {
 			<SgsColourPanel
 				rows={ [
 					{
+						/* Title colour — was a ToolsPanelItem inside "Pricing Table
+						   Settings" (comment there cited D622, since superseded —
+						   every fill/text/link colour lives in this shared panel
+						   now, see SgsColourPanel.js's own docblock). Consolidated
+						   alongside its sibling price/feature rows. */
+						key: 'title',
+						label: __( 'Title colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: titleColour,
+								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
+								linked: true,
+								gradientValue: titleColourGradient,
+								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: titleColourHover,
+								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
 						key: 'price',
 						label: __( 'Price colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -546,30 +574,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
-					{ /* Moved in from the shared SgsColourPanel (D622); "plan
-					     name" is a declared element whose attrMap claims
-					     titleColour. */ }
-					<DesignTokenPicker
-						label={ __( 'Title colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
-								linked: true,
-								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: titleColourHover,
-								onChange: ( val ) => setAttributes( { titleColourHover: val ?? '' } ),
-								linked: true,
-							},
-						] }
 					/>
 				</PanelBody>
 				{ /* Typography — replaces the old WP-native supports.typography (fontSize/

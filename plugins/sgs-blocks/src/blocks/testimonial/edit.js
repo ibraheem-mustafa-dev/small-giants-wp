@@ -413,6 +413,38 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						],
 					},
 					{
+						/* Name colour — was a bare DesignTokenPicker inside the
+						   "Typography" panel's nested ToolsPanel (comment there
+						   cited D622, since superseded — every fill/text/link
+						   colour lives in this shared panel now, see
+						   SgsColourPanel.js's own docblock). Consolidated
+						   alongside its sibling role row. */
+						key: 'name',
+						label: __( 'Name colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: nameColour,
+								onChange: ( val ) =>
+									setAttributes( { nameColour: val ?? '' } ),
+								linked: true,
+								gradientValue: nameColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { nameColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: nameColourHover,
+								onChange: ( val ) =>
+									setAttributes( { nameColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
 						key: 'role',
 						label: __( 'Role colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -1371,31 +1403,6 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
-						{ /* Moved in from the shared SgsColourPanel (D622). */ }
-						<DesignTokenPicker
-							label={ __( 'Name colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: nameColour,
-									onChange: ( val ) =>
-										setAttributes( { nameColour: val ?? '' } ),
-									linked: true,
-									gradientValue: nameColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { nameColourGradient: val ?? '' } ),
-								},
-								{
-									key: 'hover',
-									label: __( 'Hover', 'sgs-blocks' ),
-									value: nameColourHover,
-									onChange: ( val ) =>
-										setAttributes( { nameColourHover: val ?? '' } ),
-									linked: true,
-								},
-							] }
-						/>
 					</ToolsPanel>
 				</PanelBody>
 

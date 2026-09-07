@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { resolveColourToken, DesignTokenPicker } from '../../components';
+import { resolveColourToken, DesignTokenPicker, SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 
@@ -158,6 +158,68 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* Close button colour — was two DesignTokenPickers inside "Modal
+			   Settings" (comment there cited D622, since superseded — every
+			   fill/text/link colour lives in this shared panel now, see
+			   SgsColourPanel.js's own docblock). Rendered first per that
+			   component's own ordering requirement (before any other
+			   same-group InspectorControls Fill, e.g. the "Overlay" panel
+			   below). Backdrop/overlay colour stays where it is — that's a
+			   media/section overlay, genuinely exempt from this panel. */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'closeText',
+						label: __( 'Close button icon colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourText,
+								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
+								linked: true,
+								gradientValue: closeColourTextGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourTextHover,
+								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
+								linked: true,
+								gradientValue: closeColourTextHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'closeBackground',
+						label: __( 'Close button background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: closeColourBackground,
+								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
+								gradientValue: closeColourBackgroundGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: closeColourBackgroundHover,
+								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
+								gradientValue: closeColourBackgroundHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+				] }
+			/>
 			{ /* GROUND-TRUTH: block.json attributes.triggerColour /
 			   triggerBackground / modalBackground / overlayColour (4 plain
 			   string colour attrs, no shared prefix pairing — triggerColour
@@ -281,55 +343,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { closeOnOverlay: val } )
 						}
 						__nextHasNoMarginBottom
-					/>
-					{ /* Moved in from the shared SgsColourPanel (D622); "close
-					     button" is a declared element whose attrMap claims
-					     closeColourText/closeColourBackground. */ }
-					<DesignTokenPicker
-						label={ __( 'Close button icon colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: closeColourText,
-								onChange: ( val ) => setAttributes( { closeColourText: val ?? '' } ),
-								linked: true,
-								gradientValue: closeColourTextGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: closeColourTextHover,
-								onChange: ( val ) => setAttributes( { closeColourTextHover: val ?? '' } ),
-								linked: true,
-								gradientValue: closeColourTextHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourTextHoverGradient: val ?? '' } ),
-							},
-						] }
-					/>
-					<DesignTokenPicker
-						label={ __( 'Close button background colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: closeColourBackground,
-								onChange: ( val ) => setAttributes( { closeColourBackground: val ?? '' } ),
-								gradientValue: closeColourBackgroundGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundGradient: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: closeColourBackgroundHover,
-								onChange: ( val ) => setAttributes( { closeColourBackgroundHover: val ?? '' } ),
-								gradientValue: closeColourBackgroundHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { closeColourBackgroundHoverGradient: val ?? '' } ),
-								linked: true,
-							},
-						] }
 					/>
 				</PanelBody>
 			</InspectorControls>
