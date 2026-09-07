@@ -702,7 +702,10 @@ spot-check (3 sampled Task-1 blocks + `heading`/`label`/`text`'s font-size prese
 decoration dropdown) is the first item of the next session, per D971's own binding rule (R-31-13:
 script measurement never closes alone).
 
-Full task detail, remaining scope (Tasks 3/4/5/6): `.claude/prompts/2026-09-06-typography-full-replacement-next-session.md`.
+That remaining scope (Tasks 3-6) was carried forward and shipped in commits `0e2f58cc2`,
+`8b67f5651`, `96bc9e734`, `f7cb3ba36` — see D990 (2026-09-07). The prompt file this line
+originally pointed to was deleted once its scope was consumed; do not resurrect it from git
+history looking for open items — D990 supersedes it.
 
 ## D972 [ROUTINE] — Typography full-replacement foundation shipped: real census, detector, switcher; a suspected helper bug was investigated and DISPROVED
 
