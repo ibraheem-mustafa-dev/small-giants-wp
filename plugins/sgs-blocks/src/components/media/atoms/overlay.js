@@ -8,8 +8,8 @@
  *     `hero/render.php`'s own section-level overlay).
  *   - `sgs_overlay_decls_for()` (helpers-colour-variants.php:316) — the
  *     attribute-level façade wrapper.
- *   - `sgs/hero`'s SPLIT-COLUMN overlay (`mediaOverlayColour`/
- *     `mediaOverlayGradient`) — calls NEITHER, has no opacity, no blend
+ *   - `sgs/hero`'s SPLIT-COLUMN overlay (`splitMediaOverlayColour`/
+ *     `splitMediaOverlayGradient`) — calls NEITHER, has no opacity, no blend
  *     mode, no hover and no tiers. This atom is the fix: routing that
  *     surface through it gives it the missing four for free.
  *

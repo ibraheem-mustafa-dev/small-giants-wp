@@ -3,8 +3,8 @@
  *
  * Bases (registry.js): `KenBurns`, `Parallax`, `AnimationDuration`. A
  * mutually-exclusive pair — slow zoom vs scroll drift — already proven on TWO
- * working surfaces: `sgs/hero`'s split-media (`mediaKenBurns`/`mediaParallax`/
- * `mediaAnimationDuration`) and `sgs/container`'s background
+ * working surfaces: `sgs/hero`'s split-media (`splitMediaKenBurns`/`splitMediaParallax`/
+ * `splitMediaAnimationDuration`) and `sgs/container`'s background
  * (`bgKenBurns`/`bgParallax`/`bgAnimationDuration`, `class-sgs-container-
  * wrapper.php`). Neither base is tiered (`MEDIA_TIERED_BASES` does not carry
  * any of the three) — no `@media` responsive fan-out needed here.
@@ -163,7 +163,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 
 	// Parallax wins if somehow both attrs are true — mirrors the reference
 	// implementations' own defensive resolution (`hero/render.php`:
-	// `$media_ken_burns = !empty($attributes['mediaKenBurns']) && !$media_parallax;`).
+	// `$media_ken_burns = !empty($attributes['splitMediaKenBurns']) && !$media_parallax;`).
 	// The control's own onChange keeps them mutually exclusive in normal use;
 	// this is the fallback for a hand-authored or legacy attribute set.
 	const parallaxActive = validateBoolean( attributes[ keys.parallax ] );

@@ -89,7 +89,7 @@ const DEFAULT_ATTR_NAMES = {
  *
  *   solid                  gradient
  *   ---------------------  --------------------------
- *   mediaOverlayColour     mediaOverlayGradient
+ *   splitMediaOverlayColour     splitMediaOverlayGradient
  *   contentBackground      contentBackgroundGradient
  *   mediaBackground        mediaBackgroundGradient
  *

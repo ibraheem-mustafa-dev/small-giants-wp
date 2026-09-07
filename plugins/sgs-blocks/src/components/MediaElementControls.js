@@ -181,7 +181,7 @@ export const MEDIA_BASES = {
 	],
 	// Motion (atom 11, added 2026-09-01, Bean-directed). Harvested from two
 	// working implementations rather than designed fresh — sgs/hero's
-	// mediaParallax/mediaKenBurns/mediaAnimationDuration (split-media, element
+	// splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration (split-media, element
 	// scope) and sgs/container's bgParallax/bgKenBurns/bgAnimationDuration
 	// (backdrop scope). Mutually exclusive pair (KenBurns/Parallax), enforced
 	// in the control's own onChange exactly as hero already does — the

@@ -2,8 +2,8 @@
  * MediaMotionControls — shared bare-row control set for the `motion` atom
  * (ken-burns zoom / parallax drift for a media element, mutually exclusive).
  *
- * Mirrors `sgs/hero`'s split-media motion pair (`mediaKenBurns`/
- * `mediaParallax`/`mediaAnimationDuration`, `hero/edit.js` ~845-869) and
+ * Mirrors `sgs/hero`'s split-media motion pair (`splitMediaKenBurns`/
+ * `splitMediaParallax`/`splitMediaAnimationDuration`, `hero/edit.js` ~845-869) and
  * `sgs/container`'s background pair (`bgKenBurns`/`bgParallax`/
  * `bgAnimationDuration`) — same client-facing question re-expressed as a
  * generic atom, so a new block adopting `motion` gets the identical
