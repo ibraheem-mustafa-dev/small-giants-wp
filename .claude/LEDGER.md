@@ -48,7 +48,28 @@ now carry a second, non-colour signal, so they work for anyone who cannot distin
 
 ## Blockers
 
-**None.**
+**ONE, and it blocks every deploy — not just mine.**
+
+`check-fx-list-drift` is a HARD prebuild gate, so `npm run build` aborts before webpack, and
+`build-deploy.py` (which runs its own build) cannot ship. `run-gates.py` has no skip flag, so
+there is no way round it other than fixing it.
+
+    I4: `fxGenBackdrop` has an `FX_ATTR_MAP` row but is claimed by NO effect in
+        `sgs_fx_effect_param_scope()`. Non-universal keys no effect claims are
+        stripped as leftovers at render time — the value is silently dropped.
+
+The control exists, a client can set it, and nothing reaches the page — the same dead-control
+class as the ShadowControl hover tab closed today. It lives at `includes/fx-attributes.php:192`,
+**already committed at `83ba79b73`**, so it is not uncommitted work. Left for the session that
+owns the generative-background track (that file holds their uncommitted changes); they have been
+notified. Fix is one line: add `fxGenBackdrop` to its owning effect's row in
+`sgs_fx_effect_param_scope()`.
+
+Two other gates are also red and were red before this session (verified against a clean HEAD
+worktree), but neither would block a build on its own — see "Open" below.
+
+⚠ **Consequence: Wave E's canary deploy and live verification DID NOT RUN.** The 17 blocks
+committed today under a scoped visual-gate skip are still unverified on a real page.
 
 ## THE FRONT — what to pick up next
 
