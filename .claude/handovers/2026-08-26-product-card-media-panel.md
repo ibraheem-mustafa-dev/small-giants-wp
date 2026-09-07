@@ -38,7 +38,7 @@ Whatever shape the standard media panel takes:
 2. **Replace** is reachable without removing first — a Replace button beside Remove, an
    inspector media panel, or both. Bean did not pick a shape; that is yours to decide.
 3. The usual per-block definition of done applies —
-   `.claude/plans/block-migration-DONE-checklist.md`.
+   `.claude/plans/archive/block-migration-DONE-checklist.md`.
 
 ## Pointers
 

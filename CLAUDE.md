@@ -305,7 +305,7 @@ earned, not because the masking bug still hides it.**
 (static, real failing path) and `no-inline/check-no-inline.py` (**note the `no-inline/` subdirectory**;
 it is a LIVE canary check that **WARNS + PASSES when the canary is unreachable**, so a green run on a
 disconnected machine proves nothing). Per-block definition of done:
-`.claude/plans/block-migration-DONE-checklist.md`.
+`.claude/plans/archive/block-migration-DONE-checklist.md`.
 Visual-diff reports: repo-ROOT `reports/visual-diff/` (STOP-67).
 
 ### Image controls discipline

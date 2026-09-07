@@ -1,3 +1,61 @@
+## D999 — rule 31 narrowed to the editor-side gap; the census becomes the gated instrument
+
+**2026-09-07. Bean-ruled.** Two detectors covered one domain and disagreed, and the less
+accurate one was still gated.
+
+**What was true.** `classify-end-shape.js` was created 2026-09-05 and committed six times in
+three days -- its last commit IS the TEXT-surface migration. Rule 31 had no migration work
+after 2026-08-24, only two false-positive fixes (`c3864134f`, `ee9e46a4c`). It kept emitting
+solely because it stayed wired into inspector-scan. Bean's account ("we switched to the
+endshape script, this is the first time in sessions I have had to deal with the old scanner")
+matched the git history exactly.
+
+**The measurement that settled it.** Rule 31's 57 findings deduped to **43 rows**, of which
+**34 sat on blocks the census already called complete**, and every row sampled was a deliberate
+single-state design with no machine-readable exemption: `quote`'s native `style.color.text` on
+a documented typography holdout, `separator`'s decorative line, `audio`'s canvas row.
+
+**Ruling.** Keep ONLY what the census structurally cannot see -- it reads `render.php`/
+`block.json`, rule 31 reads `edit.js`. Retained: a >2-state requirement derived from
+`supports.sgs.elements` (the census hardcodes a floor of 2), `mechanism-mismatch`, and the
+shared-owner scan (shared component files the census never visits). Dropped: the whole
+`missing-gradient` kind and the floor-2 half of `below-min-states`. 43 -> 2 findings, ratchet
+167 -> 2. `classify-end-shape.js` gained `--check` and is now the gated instrument.
+
+**The correction worth keeping.** I first quoted the raw 57 as a workload. It was an upper
+bound. A detector count is not a workload until it is deduped to rows and cross-checked against
+what another tool already calls complete.
+
+## D1000 — ShadowControl: a state that cannot write a shape must not render shape controls
+
+**2026-09-07. Bean design-gated, after asking to SEE the control rather than accept a
+recommendation.** That request found a live client-facing bug the gates could not.
+
+**Proven on the sandybrown canary, not inferred.** `sgs/container`'s Shadow panel rendered a
+Normal/Hover TabPanel; the Hover tab showed the full preset row; clicking "Raised" changed NO
+block attribute and only logged `ShadowControl: onValueHoverChange prop is missing`. About ten
+mounts pass a hover COLOUR but no hover SHAPE, so all of them rendered a clickable, inert
+half-control. Bean then found the alternative pattern was worse: the two-mount blocks put hover
+shadow in a separate panel with no state toggle, and the shadow colour in the global colour
+panel entirely.
+
+**Bean's ruling (4 parts).** Container-style tabs are the base, with shape AND colour per
+state; relabel the presets "Shadow shape"; move the shadow colour into the shadow panel as a
+2-state no-gradient control; migrate all 7 two-mount blocks (`button`, `card-grid`, `heading`,
+`text`, `quote`, `post-grid`, `team-member`) onto the one control.
+
+**Built.** All four landed. `ShadowStateBuilder` now takes `canEditShape`, derived from whether
+a real shape setter exists; when false the preset row and offset/blur/spread builder are not
+rendered, while the colour picker still is -- a hover colour genuinely IS writable there. The
+attribute-naming split that made `text`/`quote`/`heading` reject these tabs was resolved
+framework-wide in favour of `<base>ColourHover`.
+
+**Note for whoever extends this.** `hasHoverState` is deliberately an OR: a hover colour alone
+is a real capability and earns its tab. The defect was never the OR -- it was rendering shape
+controls inside a tab that could not save a shape. `container`, `physics-canvas`, `hero` and
+`trust-bar` still lack a hover shape because theirs is emitted by `SGS_Container_Wrapper`,
+which another session held uncommitted at the time.
+
 ## D998 [INCIDENT] — a shared `max-width: none` fallback cancelled core's `img{max-width:100%}` on every media element
 
 **2026-09-07.** Bean reported the hero split image "escaping the screen on all platforms".

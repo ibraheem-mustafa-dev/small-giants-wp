@@ -80,7 +80,7 @@ shape, not buried in a doc pass.
 ## Wave C — cleanup (only once Waves A + B confirm complete)
 
 1. Archive the three plan docs above to `.claude/plans/archive/`.
-2. Archive `.claude/plans/block-migration-DONE-checklist.md`.
+2. Archive `.claude/plans/archive/block-migration-DONE-checklist.md`.
 3. Delete the now-closed colour-conformance entries from `.claude/parking.md`
    (move to `memory/parking-archive.md` verbatim + completion date — the archive-on-resolve rule).
 4. Wipe `.claude/LEDGER.md` back to project essentials plus: migrations complete, **Spec 32 and

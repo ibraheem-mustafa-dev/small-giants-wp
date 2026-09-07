@@ -27,7 +27,7 @@ the capability roster + FR-S9-6 work and are being handled separately. Touching 
 7. Do NOT commit the pre-existing dirt: `lucide-icons.php`, `package-lock.json`, `phase4-*.txt`,
    root `.db`, `rr.json`.
 
-## Checklist this must satisfy (per `.claude/plans/block-migration-DONE-checklist.md`)
+## Checklist this must satisfy (per `.claude/plans/archive/block-migration-DONE-checklist.md`)
 
 - No hardcoded client value in any framework file — Site Info or a theme token, always (R-31-1).
 - A core block with an SGS replacement is never used — DB `blocks.replaces` is authoritative.
