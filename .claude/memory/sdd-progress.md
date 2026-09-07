@@ -646,3 +646,39 @@ control. Created canary page 3355 ("SGS verification probe"), a container carryi
 
   Page 3355 is LEFT IN PLACE deliberately — it is the positive control this canary never had, and
   its absence is what made these two claims unverifiable twice. Delete only with a replacement.
+
+## SDD progress — Priority 1 close-out: accordion/button/table-of-contents padding tiers, 2026-09-07
+
+Extended canary page 3355 with three more probe instances (accordion with an accordion-item
+child, button, table-of-contents), each with distinct desktop/tablet/mobile padding+margin values,
+to close the "3 of 4 parts remain" item left open from the prior session's Priority 1.
+
+- **Accordion (layout-kind, routes through `SGS_Container_Wrapper`)**: VERIFIED live at all 3
+  tiers via computed style — desktop 30/20/40 (pad-top/pad-left/margin-top), tablet 20/15/24,
+  mobile matches the wrapper's `sgs-container-{uid}` scoped rules. Accordion's own render.php has
+  NO direct `attributes['padding']` read (confirmed by reading the file, not its docblock) — the
+  wrapper owns this entirely, and it works correctly for the `layout` kind specifically, not just
+  `container`.
+- **Button**: VERIFIED live at all 3 tiers via computed style — desktop 20/20/32, tablet 14/14/20,
+  matching `sgs_responsive_normalise_object()` reads in its own render.php.
+- **Table-of-contents editor canvas**: VERIFIED — `buildRootPreviewStyle()` correctly shows
+  `padding: 25px` inline in the editor canvas for the desktop tier set. The bug the prior prompt
+  described (missing `attributes` param, reading `style?.spacing`) is not present; already fixed.
+
+⛔ **NEW BUG FOUND, not previously known: table-of-contents' DESKTOP tier padding/margin is
+silently dropped on the FRONTEND (editor canvas and frontend disagree).** `render.php:14-24`'s own
+docblock says base padding/margin should be WP-native `style.spacing.padding`/`margin`, and the
+code reads `$attributes['style']['spacing']['padding']` (line 224-227) for the desktop value — but
+this block's `padding`/`margin` attributes are SGS custom tier-objects, not WP-native
+`supports.spacing`, so the operator's desktop value lives at `$attributes['padding']['desktop']`
+and never reaches `$style_spacing`. `$sgs_tor_padding_desktop`/`$sgs_tor_margin_desktop` (computed
+at lines 64-65, presumably added in the 2026-09-06 fix) are dead — never read anywhere else in the
+file. Only the tablet/mobile override reads (lines 268-269) are correct, because those already
+read the tier object directly. Live-measured: desktop padding set to 25px renders as 24px (the
+block's own `style.css` variant default) on the frontend at 1445px, while tablet (1000px) and
+mobile correctly show the overridden values. Not yet fixed — this is a real, separate defect from
+what Priority 1 set out to verify, found only because the live check was extended to computed
+style rather than trusting the editor canvas or the render.php docblock.
+
+Page 3355 now also carries the accordion/button/table-of-contents probes; kept in place
+alongside the container probe for future re-checks.
