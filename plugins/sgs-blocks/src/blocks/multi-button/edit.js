@@ -454,14 +454,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourValue={ childBtnBorderColour }
 						onColourChange={ ( val ) => setAttributes( { childBtnBorderColour: val ?? '' } ) }
 						colourLinked={ true }
-					/>
-					<TextControl
-						label={ __( 'Button border radius', 'sgs-blocks' ) }
-						help={ __( 'A CSS length, e.g. 8px or 999px for a pill shape. Leave blank to use the framework default.', 'sgs-blocks' ) }
-						value={ childBtnBorderRadius }
-						onChange={ ( val ) => setAttributes( { childBtnBorderRadius: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						radiusValues={ {
+							base: childBtnBorderRadius?.desktop ?? {},
+							tablet: childBtnBorderRadius?.tablet ?? {},
+							mobile: childBtnBorderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( {
+								childBtnBorderRadius: { ...childBtnBorderRadius, [ key ]: next },
+							} );
+						} }
 					/>
 					<TextControl
 						label={ __( 'Button font size', 'sgs-blocks' ) }

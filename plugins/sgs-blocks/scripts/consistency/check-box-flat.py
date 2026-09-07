@@ -347,12 +347,24 @@ def main() -> int:
         print()
         print(
             "[check-box-flat] These attributes are 4-side/4-corner-capable "
-            "and stored as flat scalars. Per the box-object interface "
-            "contract, upgrade to a box-object attr driven by WP's native "
-            "BoxControl, gated by the DB `block_attributes.box_family` "
-            "column. If this addition is deliberate short-term debt, run "
-            "--update-baseline to accept it consciously — it will land as "
-            "'untriaged' until a status is recorded in the baseline file."
+            "and stored as flat scalars. Upgrade each to the STANDARD "
+            "RESPONSIVE TIER OBJECT — {\"type\":\"object\",\"default\":"
+            "{\"desktop\":{}}} holding a side/corner object per tier — driven "
+            "by the shared control (SgsBorderControl's radiusValues/"
+            "onRadiusChange for radius, BoxControl per tier for spacing), and "
+            "gated by the DB `block_attributes.box_family` column. Copy the "
+            "shape from a migrated sibling in the SAME block rather than "
+            "inventing one: sgs/multi-button's `borderRadius` and "
+            "`childBtnBorderRadius` are both this shape. "
+            "⚠ CORRECTED 2026-09-07: this text used to say 'a box-object attr "
+            "driven by WP's native BoxControl' full stop, which predates the "
+            "tier-object migration and reads as 'one flat box, no breakpoints' "
+            "— the PRE-migration shape. BoxControl is the primitive INSIDE each "
+            "tier, not the alternative to tiering. Following the old wording "
+            "would have rebuilt the very debt this check reports. "
+            "If an addition is deliberate short-term debt, accept it "
+            "consciously via the baseline — it lands as 'untriaged' until a "
+            "status is recorded there."
         )
 
     if removed_entries:

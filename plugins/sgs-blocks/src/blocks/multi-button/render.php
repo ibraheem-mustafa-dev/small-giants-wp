@@ -135,6 +135,26 @@ $css .= 'justify-content:' . $justify_content_mobile . ';';
 $css .= 'align-items:' . $align_items_mobile . ';';
 $css .= '}}';
 
+// ── Child button radius tiers ──────────────────────────────────────────────
+// `--sgs-mb-btn-radius-default` is the fallback the child buttons' own style.css
+// reads via var(); each tier re-declares it inside the matching @media so a
+// per-breakpoint radius actually reaches them. sgs_corner_object_shorthand()
+// returns null when every corner is empty, so an untouched tier emits nothing
+// and the framework default stands.
+$mb_radius_tiers = sgs_responsive_normalise_object( $attributes['childBtnBorderRadius'] ?? null, true );
+$mb_radius_base  = sgs_corner_object_shorthand( $mb_radius_tiers['desktop'] ?? array() );
+$mb_radius_tab   = sgs_corner_object_shorthand( $mb_radius_tiers['tablet'] ?? array() );
+$mb_radius_mob   = sgs_corner_object_shorthand( $mb_radius_tiers['mobile'] ?? array() );
+if ( null !== $mb_radius_base ) {
+	$css .= $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_base . ';}';
+}
+if ( null !== $mb_radius_tab ) {
+	$css .= '@media(max-width:1023px){' . $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_tab . ';}}';
+}
+if ( null !== $mb_radius_mob ) {
+	$css .= '@media(max-width:767px){' . $root_sel . '{--sgs-mb-btn-radius-default:' . $mb_radius_mob . ';}}';
+}
+
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 // Emit them scoped to the SAME `#{uid}.sgs-multi-button` selector the flex
@@ -283,9 +303,11 @@ if ( null !== $mb_child_border_width_shorthand ) {
 if ( isset( $attributes['childBtnBorderStyle'] ) && '' !== $attributes['childBtnBorderStyle'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-border-style-default:' . sgs_css_keyword_sanitise( (string) $attributes['childBtnBorderStyle'] );
 }
-if ( isset( $attributes['childBtnBorderRadius'] ) && '' !== $attributes['childBtnBorderRadius'] ) {
-	$mb_child_defaults[] = '--sgs-mb-btn-radius-default:' . $mb_css_length( $attributes['childBtnBorderRadius'] );
-}
+// childBtnBorderRadius is a RESPONSIVE TIER OBJECT (2026-09-07), matching this
+// block's own `borderRadius` and every other radius attr in the framework. Its
+// three tiers are emitted into this block's own scoped <style> below (search
+// "child button radius tiers") rather than here, because $mb_child_defaults
+// becomes a single flat `.{wrapper-uid}{…}` rule with no @media of its own.
 if ( isset( $attributes['childBtnFontSize'] ) && '' !== $attributes['childBtnFontSize'] ) {
 	$mb_child_defaults[] = '--sgs-mb-btn-font-size-default:' . $mb_css_length( $attributes['childBtnFontSize'] );
 }
