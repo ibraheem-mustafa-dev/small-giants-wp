@@ -8,6 +8,15 @@ retention: delete once consumed
 
 # Typography close-out (Tasks 3-5) + container padding-shape bug
 
+**PARTIAL UPDATE, 2026-09-07:** the "converter padding-shape bug" half of this prompt is
+CONFIRMED FIXED — `python -m pytest scripts/converter/tests/test_outer_box.py -q` now passes
+12/12 (was failing 2 when this prompt was written). Task 3's 4-block double-writer question
+(`testimonial`/`card-grid`/`icon-list`/`collapsible-text`) was NOT re-verified this session —
+a fresh scan found `sgs_typography_css_rule`/native-typography references still present in all
+4 blocks' `render.php`, but that alone doesn't confirm the conflict is still live (could be one
+mechanism cleanly co-existing with a dead reference). Re-verify Task 3 specifically before
+trusting the rest of this prompt as current.
+
 Invoke `/autopilot` first. Check `ListAgents` — this tree runs many concurrent sessions.
 
 ## Mandatory reading
