@@ -554,7 +554,6 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'matchHighlightColourHoverGradient',
 	'resultHoverBackgroundColourHover',
 	'resultHoverBackgroundColourHoverGradient',
-	'resultHoverBackgroundColour',
 	'shadowHoverColour',
 	'textColourHover',
 	'textDecorationHover',

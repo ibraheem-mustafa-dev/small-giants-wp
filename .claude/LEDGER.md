@@ -48,28 +48,27 @@ now carry a second, non-colour signal, so they work for anyone who cannot distin
 
 ## Blockers
 
-**ONE, and it blocks every deploy — not just mine.**
+**NONE for the build. The deploy is still un-run — see below.**
 
-`check-fx-list-drift` is a HARD prebuild gate, so `npm run build` aborts before webpack, and
-`build-deploy.py` (which runs its own build) cannot ship. `run-gates.py` has no skip flag, so
-there is no way round it other than fixing it.
+⛔ **Do not trust gate state written as prose here.** This section named
+`check-fx-list-drift` as a hard blocker at 20:28 and it was FIXED at 20:41 (`275806bd0`), then
+`check-hover-state-classification` was fixed at 20:44 (`2032a2b50`) — the doc was wrong 13
+minutes after it was written, in the same session, by the same author. An adversarial council
+caught it. **Regenerate gate truth, never read it from here:**
 
-    I4: `fxGenBackdrop` has an `FX_ATTR_MAP` row but is claimed by NO effect in
-        `sgs_fx_effect_param_scope()`. Non-universal keys no effect claims are
-        stripped as leftovers at render time — the value is silently dropped.
+```
+cd plugins/sgs-blocks && python scripts/run-gates.py --tier fast
+```
 
-The control exists, a client can set it, and nothing reaches the page — the same dead-control
-class as the ShadowControl hover tab closed today. It lives at `includes/fx-attributes.php:192`,
-**already committed at `83ba79b73`**, so it is not uncommitted work. Left for the session that
-owns the generative-background track (that file holds their uncommitted changes); they have been
-notified. Fix is one line: add `fxGenBackdrop` to its owning effect's row in
-`sgs_fx_effect_param_scope()`.
+As at the last run: **1 of 95 red — `check-element-manifest-conformance`**
+(`total_state_without_base=7` vs a baseline of 4). It is pre-existing at clean HEAD. Its baseline
+file states a rise is **stop-the-line and needs Bean's sign-off**, so it was NOT raised. The root
+cause is a framework-wide vocabulary split, not a per-block defect: base gradients are keyed
+`css:background-image` at ~150 sites but `css:color-gradient` in 43 blocks, so the gate correctly
+sees "hover state with no base". Fixing it is a vocabulary decision, not a patch.
 
-Two other gates are also red and were red before this session (verified against a clean HEAD
-worktree), but neither would block a build on its own — see "Open" below.
-
-⚠ **Consequence: Wave E's canary deploy and live verification DID NOT RUN.** The 17 blocks
-committed today under a scoped visual-gate skip are still unverified on a real page.
+**That one gate is why `npm run build` aborts and the canary deploy has NOT run.** No code from
+this session has been seen on a rendered page.
 
 ## THE FRONT — what to pick up next
 
@@ -117,8 +116,17 @@ page 3389). Do not edit that file until it lands.
 
 ## Open — real, not blocking
 
-- **Visual verification owed** for the 15 blocks committed under a scoped visual-gate skip this
-  session (logged in `reports/visual-diff/manual-skips.log`). No verdict was claimed for any.
+- **Visual verification owed for 18 entries from this session** (corrected: this line said 15 and
+  another said 17; both were wrong and they contradicted each other — counted properly from
+  `reports/visual-diff/manual-skips.log`). No verdict was claimed for any.
+- ⚠ **THE SKIP LOG IS NOT A CONTROL ANY MORE, and this is a project-level finding, not mine.**
+  That log is **1,438 lines**; **204 entries are dated 2026-09-07 alone, across 63 distinct
+  blocks** — roughly the whole roster, ~24 waivers a day for two months. Every entry carries a
+  written reason and many are good ones; that is what makes it dangerous. A gate waived more
+  often than it passes is measuring patience, not code. Nothing reads the log back, which is how
+  63 blocks of debt could be reported to Bean as "15". **Suggested fix (Bean's call): make a skip
+  cost something** — fail the build above N unresolved entries, where an entry resolves when a
+  later `reports/visual-diff/<block>-<date>.md` supersedes it, and ratchet N down.
 - **3 gates fail on `main` and are nobody's current work** — verified by running each against a
   clean HEAD worktree: `check-fx-list-drift` (⚠ **corrected**: NOT uncommitted work — it trips on
   `fxGenBackdrop` via `includes/fx-attributes.php`, already COMMITTED at `83ba79b73`),
@@ -192,7 +200,7 @@ page 3389). Do not edit that file until it lands.
 
 ## State Snapshot
 
-- **Branch:** `main`, at `b70ef0e4f`, pushed. Re-check yourself — 150+ sessions share this tree.
+- **Branch:** `main`. **Do not trust a SHA written here** — this line said `b70ef0e4f` while HEAD was five commits later. Run `git rev-parse --short HEAD`. Re-check yourself — 150+ sessions share this tree.
 - **D-ceiling:** **D1000** (D999 rule-31 narrowing, D1000 ShadowControl) — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Gates:** 92 of 95 fast gates pass. The 3 failures are listed under "Open" and none is this
