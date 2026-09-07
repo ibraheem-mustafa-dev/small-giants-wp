@@ -1048,90 +1048,105 @@ function TypographyControlsFields( {
 			     RangeControl ], the UnitControl carries min=0 and hides its
 			     label, and the RangeControl is withInputField={false},
 			     initialPosition={0}, with core's own unit-dependent max/step.
-			     ⚠ Its label is "Line indent", NOT "Text indent". */ }
+			     ⚠ Its label is "Line indent", NOT "Text indent".
+
+			     ── Shared row (2026-09-07, Bean-directed) ── both are niche,
+			     neither needs a full-width row of its own, so they sit side by
+			     side on one Flex row (same isBlock + FlexItem template as the
+			     other paired rows in this file). Line indent gets the larger
+			     share (it hosts two sub-controls, unit + slider); Columns is
+			     one narrow NumberControl. Each half is independently
+			     conditional so the row degrades cleanly to a single full-width
+			     control when only one of the two is shown (`sgs/heading` shows
+			     neither — this whole block doesn't render for it), and to
+			     nothing when neither is shown. */ }
 			{ ( showTextIndent || showTextColumns ) && (
-				<VStack spacing={ 1 }>
+				<Flex gap={ 2 } align="flex-start">
 					{ showTextIndent && (
-						<VStack spacing={ 1 }>
-							<BaseControl.VisualLabel>
-								{ __( 'Line indent', 'sgs-blocks' ) }
-							</BaseControl.VisualLabel>
-							{ ( () => {
-								const raw = attributes[ k.textIndent ] || '';
-								const parsed = parseUnitValue( raw, 'px' );
-								const bounds = textIndentSliderBounds( parsed.unit );
-								return (
-									<Flex gap={ 2 } align="flex-end">
-										<FlexItem isBlock>
-											<UnitControl
-												label={ __( 'Line indent', 'sgs-blocks' ) }
-												hideLabelFromVision
-												value={ raw }
-												units={ TEXT_INDENT_UNITS }
-												min={ 0 }
-												onChange={ ( val ) =>
-													setAttributes( { [ k.textIndent ]: val ?? '' } )
-												}
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										</FlexItem>
-										<FlexItem isBlock style={ { flexGrow: 2 } }>
-											<RangeControl
-												label={ __( 'Line indent', 'sgs-blocks' ) }
-												hideLabelFromVision
-												value={ parsed.num }
-												withInputField={ false }
-												initialPosition={ 0 }
-												min={ 0 }
-												max={ bounds.max }
-												step={ bounds.step }
-												onChange={ ( val ) =>
-													setAttributes( {
-														[ k.textIndent ]:
-															val === undefined || val === null
-																? ''
-																: `${ val }${ parsed.unit || 'px' }`,
-													} )
-												}
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										</FlexItem>
-									</Flex>
-								);
-							} )() }
-						</VStack>
+						<FlexItem isBlock style={ { flexGrow: 2 } }>
+							<VStack spacing={ 1 }>
+								<BaseControl.VisualLabel>
+									{ __( 'Line indent', 'sgs-blocks' ) }
+								</BaseControl.VisualLabel>
+								{ ( () => {
+									const raw = attributes[ k.textIndent ] || '';
+									const parsed = parseUnitValue( raw, 'px' );
+									const bounds = textIndentSliderBounds( parsed.unit );
+									return (
+										<Flex gap={ 2 } align="flex-end">
+											<FlexItem isBlock>
+												<UnitControl
+													label={ __( 'Line indent', 'sgs-blocks' ) }
+													hideLabelFromVision
+													value={ raw }
+													units={ TEXT_INDENT_UNITS }
+													min={ 0 }
+													onChange={ ( val ) =>
+														setAttributes( { [ k.textIndent ]: val ?? '' } )
+													}
+													__nextHasNoMarginBottom
+													__next40pxDefaultSize
+												/>
+											</FlexItem>
+											<FlexItem isBlock style={ { flexGrow: 2 } }>
+												<RangeControl
+													label={ __( 'Line indent', 'sgs-blocks' ) }
+													hideLabelFromVision
+													value={ parsed.num }
+													withInputField={ false }
+													initialPosition={ 0 }
+													min={ 0 }
+													max={ bounds.max }
+													step={ bounds.step }
+													onChange={ ( val ) =>
+														setAttributes( {
+															[ k.textIndent ]:
+																val === undefined || val === null
+																	? ''
+																	: `${ val }${ parsed.unit || 'px' }`,
+														} )
+													}
+													__nextHasNoMarginBottom
+													__next40pxDefaultSize
+												/>
+											</FlexItem>
+										</Flex>
+									);
+								} )() }
+							</VStack>
+						</FlexItem>
 					) }
 					{ showTextColumns && (
-						<NumberControl
-							label={ __( 'Columns', 'sgs-blocks' ) }
-							min={ 1 }
-							max={ 6 }
-							spinControls="custom"
-							initialPosition={ 1 }
-							value={
-								attributes[ k.textColumns ] === undefined
-									|| attributes[ k.textColumns ] === null
-									|| '' === attributes[ k.textColumns ]
-									? ''
-									: attributes[ k.textColumns ]
-							}
-							onChange={ ( val ) => {
-								const parsed = ( val === undefined || val === null
-									|| '' === String( val ).trim() )
-									? undefined
-									: parseInt( val, 10 );
-								setAttributes( {
-									[ k.textColumns ]:
-										parsed === undefined || isNaN( parsed ) ? undefined : parsed,
-								} );
-							} }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
+						<FlexItem isBlock style={ { flexGrow: 1 } }>
+							<NumberControl
+								label={ __( 'Columns', 'sgs-blocks' ) }
+								min={ 1 }
+								max={ 6 }
+								spinControls="custom"
+								initialPosition={ 1 }
+								value={
+									attributes[ k.textColumns ] === undefined
+										|| attributes[ k.textColumns ] === null
+										|| '' === attributes[ k.textColumns ]
+										? ''
+										: attributes[ k.textColumns ]
+								}
+								onChange={ ( val ) => {
+									const parsed = ( val === undefined || val === null
+										|| '' === String( val ).trim() )
+										? undefined
+										: parseInt( val, 10 );
+									setAttributes( {
+										[ k.textColumns ]:
+											parsed === undefined || isNaN( parsed ) ? undefined : parsed,
+									} );
+								} }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</FlexItem>
 					) }
-				</VStack>
+				</Flex>
 			) }
 
 			{ /* ── Decoration + Letter case ── Decoration is THE REAL core
@@ -1260,7 +1275,7 @@ function TypographyControlsFields( {
 			{ ( showWritingMode || showTextAlign ) && (
 				<Flex gap={ 2 } align="flex-start">
 					{ showWritingMode && (
-						<FlexItem isBlock>
+						<FlexItem isBlock style={ { flexGrow: 1 } }>
 							<WritingModeControl
 								value={ attributes[ k.writingMode ] || undefined }
 								onChange={ ( val ) =>
@@ -1270,7 +1285,7 @@ function TypographyControlsFields( {
 						</FlexItem>
 					) }
 					{ showTextAlign && (
-						<FlexItem isBlock>
+						<FlexItem isBlock style={ { flexGrow: 2 } }>
 							<ToggleGroupControl
 								isDeselectable
 								label={ __( 'Text alignment', 'sgs-blocks' ) }
