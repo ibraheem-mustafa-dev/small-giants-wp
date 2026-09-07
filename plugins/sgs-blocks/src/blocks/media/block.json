@@ -51,10 +51,19 @@
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
+						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
 						"css:object-fit": "objectFit",
 						"css:object-position": "objectPosition"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient"
+							}
+						}
 					}
 				},
 				"caption": {
@@ -418,6 +427,15 @@
 			"default": ""
 		},
 		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourHover": {
+			"type": "string",
+			"default": "",
+			"_comment": "box-shape atom's hover colour, colour-only (2026-09-07) — no hover variant for width/style/radius, matching sgs/button's/sgs/container's own states.hover.attrMap convention."
+		},
+		"borderColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

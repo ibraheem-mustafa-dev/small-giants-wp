@@ -125,6 +125,9 @@ const FIXTURE = {
 		borderStyle: 'dashed',
 		borderColour: 'primary',
 		borderColourGradient: '',
+		// box-shape — hover pair (2026-09-07), colour-only.
+		borderColourHover: 'secondary',
+		borderColourHoverGradient: '',
 		// overlay
 		overlayColour: 'primary',
 		overlayOpacity: 40,

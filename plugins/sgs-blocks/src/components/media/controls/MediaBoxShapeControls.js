@@ -160,6 +160,14 @@ function LengthFieldRow( {
  * @param {Function} [props.onBorderColourChange]
  * @param {string}   [props.borderColourGradientValue]
  * @param {Function} [props.onBorderColourGradientChange]
+ * @param {string}   [props.borderColourHoverValue]      Hover pair (2026-09-07),
+ *                                          colour-only — no hover variant for
+ *                                          width/style/radius, matching
+ *                                          sgs/button's/sgs/container's own
+ *                                          states.hover.attrMap convention.
+ * @param {Function} [props.onBorderColourHoverChange]
+ * @param {string}   [props.borderColourHoverGradientValue]
+ * @param {Function} [props.onBorderColourHoverGradientChange]
  * @param {Object}   [props.borderRadiusValues]   `{base,tablet,mobile}` 4-corner
  *                                          objects — `SgsBorderControl`'s own
  *                                          `radiusValues` shape. Shown UNGATED,
@@ -207,6 +215,10 @@ export default function MediaBoxShapeControls( {
 	onBorderColourChange,
 	borderColourGradientValue,
 	onBorderColourGradientChange,
+	borderColourHoverValue,
+	onBorderColourHoverChange,
+	borderColourHoverGradientValue,
+	onBorderColourHoverGradientChange,
 	borderRadiusValues,
 	onBorderRadiusChange,
 	heightDisabled = false,
@@ -282,11 +294,24 @@ export default function MediaBoxShapeControls( {
 					styleValue={ borderStyleValue }
 					onStyleChange={ onBorderStyleChange }
 					colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-					colourValue={ borderColourValue }
-					onColourChange={ onBorderColourChange }
-					colourGradientValue={ borderColourGradientValue }
-					onColourGradientChange={ onBorderColourGradientChange }
-					colourLinked={ true }
+					colourStates={ [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: borderColourValue,
+							onChange: onBorderColourChange,
+							gradientValue: borderColourGradientValue,
+							onGradientChange: onBorderColourGradientChange,
+						},
+						{
+							key: 'hover',
+							label: __( 'Hover', 'sgs-blocks' ),
+							value: borderColourHoverValue,
+							onChange: onBorderColourHoverChange,
+							gradientValue: borderColourHoverGradientValue,
+							onGradientChange: onBorderColourHoverGradientChange,
+						},
+					] }
 					radiusLabel={ __( 'Corner radius', 'sgs-blocks' ) }
 					radiusValues={ borderRadiusValues || {} }
 					onRadiusChange={ onBorderRadiusChange }
