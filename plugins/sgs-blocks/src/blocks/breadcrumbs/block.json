@@ -85,6 +85,16 @@
 						"text"
 					],
 					"prefix": "link",
+					"attrMap": {
+						"css:color-link": "linkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-link": "linkColourHover"
+							}
+						}
+					},
 					"_note": "Renamed from 'link' 2026-08-15 (element-manifest drift fix) — no `.sgs-breadcrumbs__link` class exists anywhere in render.php; the anchor carries no class at all, and its parent `<li>` is `.sgs-breadcrumbs__item` (render.php:347). `linkColour` already resolved to css_element='item' via the markup-fallback derivation before this rename. `prefix` stays 'link' (the attribute-name prefix, e.g. linkColour) — unrelated to the element key."
 				},
 				"separator": {

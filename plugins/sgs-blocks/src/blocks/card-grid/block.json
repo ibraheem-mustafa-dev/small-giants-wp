@@ -103,7 +103,7 @@
 				},
 				"item": {
 					"label": "Card",
-					"order": 2,
+					"order": 4,
 					"clusters": [],
 					"attrMap": {
 						"css:background-color": "cardBackground",
@@ -129,7 +129,7 @@
 				},
 				"image": {
 					"label": "Card image",
-					"order": 3,
+					"order": 5,
 					"clusters": [],
 					"states": {
 						"hover": {
@@ -149,7 +149,7 @@
 				},
 				"title": {
 					"label": "Card title",
-					"order": 5,
+					"order": 2,
 					"clusters": [
 						"text"
 					],
@@ -169,7 +169,7 @@
 				},
 				"subtitle": {
 					"label": "Card subtitle",
-					"order": 6,
+					"order": 3,
 					"clusters": [
 						"text"
 					],

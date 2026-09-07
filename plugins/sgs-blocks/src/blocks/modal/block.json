@@ -63,7 +63,7 @@
 				},
 				"backdrop": {
 					"label": "Backdrop / overlay",
-					"order": 3,
+					"order": 5,
 					"clusters": [
 						"fill"
 					],

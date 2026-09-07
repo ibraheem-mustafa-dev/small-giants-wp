@@ -77,7 +77,8 @@
 						"css:max-width": "maxWidth",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing",
-						"css:color-gradient": "textColourGradient"
+						"css:color-gradient": "textColourGradient",
+						"css:color-link": "linkColour"
 					},
 					"states": {
 						"hover": {
@@ -86,7 +87,8 @@
 								"css:box-shadow": "boxShadowHover",
 								"css:box-shadow-color": "boxShadowHoverColour",
 								"css:color-gradient": "textColourHoverGradient",
-								"css:border-color": "borderColourHover"
+								"css:border-color": "borderColourHover",
+								"css:color-link": "linkColourHover"
 							}
 						}
 					},

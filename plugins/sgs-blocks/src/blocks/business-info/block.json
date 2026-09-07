@@ -543,7 +543,7 @@
 				},
 				"label": {
 					"label": "Label",
-					"order": 3,
+					"order": 4,
 					"clusters": [
 						"text"
 					],
@@ -555,7 +555,7 @@
 				},
 				"icon": {
 					"label": "Icon",
-					"order": 4,
+					"order": 3,
 					"clusters": [
 						"text",
 						"fill"

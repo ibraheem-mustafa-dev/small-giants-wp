@@ -91,7 +91,7 @@
 				},
 				"title": {
 					"label": "Step title",
-					"order": 2,
+					"order": 3,
 					"clusters": [
 						"text"
 					],
@@ -116,7 +116,7 @@
 				},
 				"number": {
 					"label": "Step number badge",
-					"order": 3,
+					"order": 2,
 					"clusters": [
 						"text",
 						"fill"
