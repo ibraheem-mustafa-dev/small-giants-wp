@@ -86,6 +86,14 @@
 						"css:background-image": "labelBackgroundColourGradient",
 						"css:background-color": "labelBackgroundColour"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient"
+							}
+						}
+					},
 					"_note": "'fill' cluster added 2026-08-15 so labelBackgroundColour (previously an unclaimed style-defect orphan) resolves via the default convention: label + BackgroundColour. labelColour already resolved fine under 'text' (css:color, suffix Colour). Gradient siblings for both added 2026-09-04 as explicit attrMap entries (the default convention's suffix table doesn't cover *ColourGradient/*BackgroundColourGradient) — labelBackgroundColourGradient moved to its own ::after layer (sgs_block_background_layer_css()) to free the element's background-image for labelColourGradient's background-clip:text.",
 					"_note_bg": "labelBackgroundColour declared 2026-09-05: read at render.php:141 and painted as the label's own background. render.php:283 records it was deliberately moved OFF the shared mechanism, which is why nothing declared it and it showed as a rogue seed."
 				},
@@ -356,6 +364,15 @@
 		"labelColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
 		},
 		"labelBackgroundColour": {
 			"type": "string",

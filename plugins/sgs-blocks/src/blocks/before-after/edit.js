@@ -35,6 +35,7 @@ import {
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	textRow,
 	DesignTokenPicker,
 	ShadowControl,
 	TypographyControls,
@@ -463,8 +464,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showLabels,
 		beforeLabel,
 		afterLabel,
-		labelColour,
-		labelColourGradient,
 		labelBackgroundColour,
 		labelBackgroundColourGradient,
 		orientation,
@@ -500,27 +499,25 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* D609/D618 uniformity rollout — ONE grouped, SGS-owned colour
 			   panel, rendered FIRST. Replaces the scattered DesignTokenPicker
 			   rows previously inline inside the Divider/Labels panels below.
-			   No hover siblings exist for these attrs. boxShadow's colour
-			   row (D621/D622) lives here too — the shape stays with
-			   ShadowControl in the Frame styling ToolsPanel below, colour is
-			   externally managed per the shared colour-architecture. */ }
+			   labelColour gained a hover pair 2026-09-07 (Task 1,
+			   colour-conformance); labelBackground below still has none.
+			   boxShadow's colour row (D621/D622) lives here too — the shape
+			   stays with ShadowControl in the Frame styling ToolsPanel below,
+			   colour is externally managed per the shared colour-architecture. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'labelText',
 						label: __( 'Label text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val } ),
-								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) => setAttributes( { labelColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'labelColour',
+							hover: 'labelColourHover',
+							gradient: 'labelColourGradient',
+							hoverGradient: 'labelColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'labelBackground',
 						label: __( 'Label background colour', 'sgs-blocks' ),

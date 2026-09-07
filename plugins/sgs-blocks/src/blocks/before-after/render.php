@@ -440,6 +440,20 @@ if ( '' !== $label_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
 
+// labelColour hover state — same trio, :hover/:focus-visible variant of the
+// same selector (already safe for text-gradient: the background moved onto
+// its own ::after layer above, unconditionally).
+$label_colour_hover           = (string) ( $attributes['labelColourHover'] ?? '' );
+$label_colour_hover_gradient  = (string) ( $attributes['labelColourHoverGradient'] ?? '' );
+$label_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $label_colour_hover, $label_colour_hover_gradient );
+if ( '' !== $label_colour_effective_hover ) {
+	$label_colour_hover_decl = sgs_text_colour_decl( $label_colour_effective_hover );
+	if ( '' !== $label_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $label_sel, $label_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel . ':hover', $label_colour_effective_hover );
+}
+
 // Label typography — delegate to shared helper which handles the full set
 // of properties from TypographyControls (font-family, font-size, font-weight,
 // font-style, text-decoration, text-transform, letter-spacing, text-align,
