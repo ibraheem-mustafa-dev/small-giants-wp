@@ -34,6 +34,11 @@ of trusting my earlier search.
 **Accessibility:** five places where an active or selected item was shown only by a colour change
 now carry a second, non-colour signal, so they work for anyone who cannot distinguish the colours.
 
+**A second track ran today on the media/image side — mostly invisible breakage.** Four times, one
+CSS instruction was written twice on the same element and the second silently cancelled the first:
+hence the hero photo bursting out of the page, rounded corners never appearing on a cloned page,
+and heights doing nothing. All fixed; none confirmed live — see Blockers.
+
 ## Shipped this session (2026-09-07)
 
 | What | Where |
@@ -51,9 +56,40 @@ now carry a second, non-colour signal, so they work for anyone who cannot distin
 | **`CLAUDE.md`: 3 plugins listed, 5 exist** — `sgs-accessibility`/`sgs-configurator-pro` missing ~5 months | `2786debad` |
 | 4 colour plan docs archived; all live referrers repointed | this session |
 
+**Media / converter surface — a SECOND track (10 commits, pushed):**
+
+| What | Where |
+|---|---|
+| **Cloned pages lost every tablet/mobile spacing value** — the L4 path built a tier-SUFFIXED destination but D295 pruned those siblings, so both tiers dropped silently | `d442ec6d4` (D996) |
+| **Every cloned `border-radius` rendered NOTHING** — SIDE keys written into a CORNER-keyed attr; the reader returns null when no corner is set. 44 emissions broken; TWO mirrored sites | `2d2bfb678` (D997) |
+| **Hero image escaped the viewport at every width** — a shared `max-width: var(--x, none)` cancelled core's `img{max-width:100%}`. Measured 1536×1536 in a 737px column | `92ac71dbd` (D998) |
+| **Media sizing mode DERIVED, not defaulted** — `"default":"auto"` rejected: auto IS the state that hides the Height control. Its parity gate was vacuous too | `f009f1b54` (D1001) |
+| **A THIRD same-selector collision** — two partials both declared `min-height` on `.sgs-media-el`; alphabetical concatenation let the later win, nullifying every authored min-height incl. tiers. Composed in `_base.css` via `max()` | `7c357db70` (D1002) |
+| Three width caps → one (`maxWidthPercent` was THREE unrelated mechanisms sharing a name) | `7c357db70` |
+| Media panels split by inspector tab; `Inherit` label; the un-collapsible panel was a bare `ToolsPanel` | `2e05db28b` |
+| Hero split-media: 24 attrs off three prefixes onto one | `41ac811e5` |
+| **New gate:** `check-converter-destination-shape.py` — destination NAME + SHAPE vs what the block declares. UNWIRED, 9 findings | `877cba6c4` |
+| Two half-migrations an Opus review caught that my verification wrongly cleared | `621482e0e` |
+
+
 ## Blockers
 
-**NONE for the build. The deploy is still un-run — see below.**
+⛔ **DEPLOY BLOCKED — stranded content on the LIVE HOMEPAGE, from this session's hero rename
+(`41ac811e5`).** `post 2742` carries SIX pre-rename attrs (splitImageAlt/AltMobile/Id/IdMobile/
+Url/UrlMobile), `post 3355` one; `hero/block.json` declares none. Verified over SSH. Deploy, then
+an editor SAVE on 2742, and WP drops all six — the split image AND its alt text. `oldshape-audit`
+correctly refuses. `621482e0e` fixed the CONVERTER; it does not touch stored content.
+⚠ **Bean's call:** re-clone 2742 (D554-B: canary pages are TRASHED not migrated; a correct fresh
+clone exists at page 3405) vs a stored-attr migration. Do NOT rewrite the homepage unilaterally.
+
+**All 95 fast gates PASS as of 2026-09-07 (`b98a14ad1`).** The last blocker —
+`check-element-manifest-conformance` — closed by the colour track: 4 of its 7 findings were NOT
+a capability gap (the resting text gradient existed, mapped under `css:background-image` since a
+gradient on text paints as a clipped background, while the check looks for `css:color-gradient`);
+now mapped under both keys. The other 3 are by-design.
+
+⛔ **Consequence: NOTHING from either track is verified live.** Rule 5 is unmet for the day's
+work — every fix below is committed and unproven on a rendered page.
 
 ⛔ **Do not trust gate state written as prose here.** This section named
 `check-fx-list-drift` as a hard blocker at 20:28 and it was FIXED at 20:41 (`275806bd0`), then
@@ -104,6 +140,10 @@ and emit those four blocks into the header/footer CPTs.
 ⛔ **This outranks Spec 39 (below).** Motion recognition is research-grade work behind a classifier
 that does not exist; this is named, design-gated, dependency-complete, and its absence is visible
 on every cloned page.
+
+### 1a. The duplicate-declaration gate — FOUR defects of one class in one day
+
+`.sgs-media-el` had ONE property declared TWICE on the SAME selector four times over (`max-width` twice, `min-height`, plus `opacity`/`animation-name` on 2026-09-01). Full record: D998, D1002. **No gate exists against it** — that gate, not a fifth patch, is the fix. Whole generated file as its population, never a diff (a peer's census gate failed exactly there). Natural home: `check-media-atom-purity.js`, which separately bans only `initial`/`unset`/`revert` while its stated rule is broader, so `none`/`auto` walk through.
 
 ### 1b. Cloning-pipeline rework (Spec 39) — after the header/footer
 

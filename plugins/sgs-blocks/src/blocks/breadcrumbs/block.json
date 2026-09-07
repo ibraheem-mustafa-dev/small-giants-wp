@@ -86,12 +86,14 @@
 					],
 					"prefix": "link",
 					"attrMap": {
-						"css:color-link": "linkColour"
+						"css:color-link": "linkColour",
+						"css:color-link-gradient": "linkColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color-link": "linkColourHover"
+								"css:color-link": "linkColourHover",
+								"css:color-link-gradient": "linkColourHoverGradient"
 							}
 						}
 					},
@@ -107,7 +109,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color-separator": "separatorColourHover"
+								"css:color": "separatorColourHover",
+								"css:color-gradient": "separatorColourHoverGradient"
 							}
 						}
 					}
@@ -122,7 +125,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color-current": "currentColourHover"
+								"css:color": "currentColourHover",
+								"css:color-gradient": "currentColourHoverGradient"
 							}
 						}
 					},

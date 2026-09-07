@@ -1039,3 +1039,70 @@ pattern files + 6 template files named in the plan. Task 1 (confirm border-contr
 on `sgs/button`/`sgs/container`/`sgs/media`) needed no new build — the codemod only touched
 theme pattern/template files, never a block's own `block.json`/`edit.js`, confirming the
 controls already existed in full. Nothing left on this track.
+
+---
+
+# SDD progress — media control surface, slices 2-6 (2026-09-07)
+
+Base commit: f009f1b54 (main). Scoped by a 6-persona /adversarial-council; council report
+findings live in D1001. Bean confirmed NO LIVE CLIENTS (pre-launch), so no stored-content
+migration is owed and renames are free.
+
+⚠ Council scope correction, load-bearing: the job was mis-scoped ~8x. Of 25 element
+declarations across 19 blocks, 17 carry a SINGLE atom (object-fit). The real surface is
+`sgs/media` + `sgs/hero`, and `src/components/media/MediaPanelLayout.js` is ALREADY the
+coherent seven-panel surface — `sgs/hero` was simply never ported onto it.
+
+Slice 1 (derived sizing mode + un-vacuumed parity gate): COMPLETE, committed f009f1b54,
+pushed. Negative control verified by the controller (disable derivation -> exactly the 2
+derivation cases fail, parity stays green).
+
+Slice 2 (dead-control audit, READ-ONLY): dispatched sonnet [AUDIT].
+Slice 6 (collapse 3 width caps -> 1, delete maxWidthPercent): dispatched sonnet [WIDTHCAP].
+  Runs parallel to slice 2 — disjoint from hero files; audit writes nothing.
+Slices 3+4+5 (Inherit label, ToolsPanel collapse, hero prefix collapse, hero panel port):
+  ONE owner, because all three touch src/blocks/hero/edit.js. Dispatched after Round A.
+Slice 2 (dead-control audit): COMPLETE. ~74 PAINT, ~54 NOT-CSS, 1 DEAD:OVERRIDDEN, 6 UNKNOWN.
+  Nothing safe to delete. Found a THIRD same-selector collision (min-height) — fixed.
+  Report: scratchpad/slice2-dead-control-audit.md. 3 "looks dead but paints" traps recorded in D1002.
+Slice 6 (width caps -> one): COMPLETE, committed 7c357db70. maxWidthPercent was THREE
+  unrelated mechanisms; hero's was hand-rolled in render.php, never through the atom.
+Slices 3+5 (Inherit label, ToolsPanel collapse, tab split): COMPLETE, committed 2e05db28b.
+  MediaPanelLayout gained a `group` prop; sgs/media mounts once per tab. My original brief
+  was WRONG (said move the whole mount) — the implementer flagged it instead of shipping it.
+Slice 4 (hero prefix collapse split/splitMedia/media -> one): NEXT. All-or-nothing; needs
+  hero/block.json + HeroSplitMediaPanelLayout.js + hero/edit.js + hero/render.php.
+Slice 4 (hero prefix collapse): COMPLETE, committed 41ac811e5. 24 renames onto splitMedia.
+  Implementer OVERRODE my brief on mediaOverlay*/mediaParallax/mediaKenBurns (I said leave;
+  ground truth said they are split-media feature attrs). Verified — it was right, I was wrong.
+  Known documented asymmetry: parallax/kenBurns emit on .sgs-hero__media, same wrapper as
+  mediaBackground/mediaPadding which were NOT renamed. Deliberate, recorded in the commit.
+  Half-migration check PASSED: 0 old names remain, 0 read-but-undeclared (6 apparent hits were
+  4 comments + 2 local vars), 12 apparently-unread tier attrs are read via dynamic key concat.
+ALL FIVE SLICES COMPLETE. Commits: f009f1b54, 7c357db70, 2e05db28b, 41ac811e5.
+NEXT: final whole-branch review (most capable model) over f009f1b54^..HEAD.
+OWED (not done, named not dropped):
+  - a gate against ONE property declared TWICE on one selector in the generated stylesheet
+    (would have caught D998, its follow-on, AND the min-height collision — 3 in one day)
+  - the deploy is still blocked by other sessions' committed debt (fx-list-drift,
+    element-manifest-conformance, hover-state-classification); hero max-width fix unverified live
+FINAL WHOLE-BRANCH REVIEW (opus): CHANGES REQUIRED -> now RESOLVED, committed 621482e0e.
+  Found 2 CRITICAL half-migrations my own verification had wrongly cleared:
+  C1 splitMediaSizing rename broke the control-writes/render-reads pair. MISSED because the
+     attribute is RUNTIME-INJECTED by the atom registration and never appears in block.json,
+     so a block.json-derived census (mine, and check-dead-controls) is structurally blind.
+     Reverted + rationale comment added so it is not re-attempted.
+  C2 the CLONING CONVERTER still emitted the pre-rename names (51 refs) -> every cloned hero
+     would render an empty split-media slot. Scoping error in MY brief: I scoped the
+     implementer to hero's 4 files and never told it the pipeline writes the same names.
+  LESSON: a rename's blast radius is the whole WRITE PATH (editor, renderer, converter,
+  converter tests, baselines, self-tests) — checking the files in scope proves nothing about
+  the ones outside it.
+  Also fixed: hero never received the D1001 derived-mode fix (2-arg call site); dead editor
+  overlay preview prefix; a self-test positive control asserting a deleted attr; a baseline
+  entry whose premise was false; stale comments in 9 files.
+  DB was stale vs block.json after the rename window -> reseeded (--stage 1) + orphan pruned
+  (--stage 9). Fixed at the declaration, never the row.
+  Converter suite now 819 passed / 0 failed.
+STATUS: all five slices COMPLETE and reviewed. Commits f009f1b54, 7c357db70, 2e05db28b,
+41ac811e5, 621482e0e — all pushed.
