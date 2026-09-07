@@ -299,13 +299,42 @@ section.sgs-hero {
    silently override a client's own Object fit choice — removing it makes the
    shared atom rule the single source of truth instead of a coin-flip. */
 
-/* ── Split-image hover zoom (restored from prior session; measured off the
- * source draft) ── The split media zooms slightly on hover. The split section
- * + its media column are set overflow:visible so the zoomed image spills past
- * its box rather than being clipped (the outer .sgs-hero{overflow:hidden} is
- * for the STANDARD variant's full-bleed/ken-burns layers, which the split
- * variant does not use). Gated on reduced-motion. */
-.sgs-hero--split,
+/* ── Split-image hover zoom ── The split media zooms slightly on hover and is
+ * MEANT to spill past its own column rather than being clipped inside it.
+ *
+ * ⚠ The previous version of this comment claimed the effect was "measured off
+ * the source draft". It was not: `sites/mamas-munches/mockups/homepage/
+ * index.html` has no hover rule and no scale() anywhere in its hero, and sets
+ * `.sgs-hero`/`.sgs-hero__media` to overflow:hidden (verified 2026-09-07).
+ * This is a deliberate framework enhancement BEYOND the draft (Bean's call) —
+ * do not "restore" it to match a draft that never had it.
+ *
+ * The two elements need DIFFERENT overflow, and collapsing them back into one
+ * shared `overflow: visible` rule reintroduces a page-level bug:
+ *
+ *   · .sgs-hero__media (the image COLUMN) — visible, so the zoom escapes it.
+ *     This is the effect itself.
+ *   · .sgs-hero--split (the SECTION) — clipped in the inline axis. The split
+ *     hero is full-bleed, so its own edges ARE the viewport edges; with this
+ *     visible too, the zoomed image extended past the viewport and inflated
+ *     document.scrollWidth, giving the whole page a horizontal scrollbar
+ *     (measured live on page 2742: 1449px -> 1467px against a 1440px viewport
+ *     the moment the transform fired). Clipping here costs the effect nothing
+ *     — the spill a viewer actually sees is the one ACROSS the text column,
+ *     which happens inside this box and is unaffected.
+ *
+ * `overflow-x: clip` specifically, NOT `hidden`: clip does not create a scroll
+ * container, so it cannot break `position: sticky` on any descendant, and it
+ * is the one overflow value that may legally pair with a `visible` other axis
+ * (a `hidden`/`visible` mix silently computes the visible axis to `auto`,
+ * which would add the scrollbar straight back). overflow-y stays visible —
+ * the outer .sgs-hero{overflow:hidden} is for the STANDARD variant's
+ * full-bleed/ken-burns layers, which the split variant does not use. */
+.sgs-hero--split {
+	overflow-x: clip;
+	overflow-y: visible;
+}
+
 .sgs-hero--split .sgs-hero__media {
 	overflow: visible;
 }
