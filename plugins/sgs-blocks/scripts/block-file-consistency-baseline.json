@@ -61,11 +61,106 @@
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
-      "type": "undeclared_render_ref",
-      "block": "sgs/collapsible-text",
-      "attr": "textAlign",
-      "file": "render.php",
-      "reason": "render.php reads 'textAlign' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/before-after",
+      "attr": "labelWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/brand-strip",
+      "attr": "nameFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/brand-strip",
+      "attr": "nameTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/brand-strip",
+      "attr": "nameTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/brand-strip",
+      "attr": "nameTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/brand-strip",
+      "attr": "nameWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/counter",
+      "attr": "labelWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
       "type": "undeclared_render_ref",
@@ -76,10 +171,161 @@
     },
     {
       "type": "undeclared_render_ref",
-      "block": "sgs/icon-list",
-      "attr": "textAlign",
+      "block": "sgs/hero",
+      "attr": "splitMediaPaddingMobile",
       "file": "render.php",
-      "reason": "render.php reads 'textAlign' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+      "reason": "render.php reads 'splitMediaPaddingMobile' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/hero",
+      "attr": "splitMediaPaddingTablet",
+      "file": "render.php",
+      "reason": "render.php reads 'splitMediaPaddingTablet' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "headingWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "itemWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/icon-list",
+      "attr": "textElWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/media",
+      "attr": "captionWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
       "type": "orphan_attr",
@@ -89,8 +335,362 @@
     },
     {
       "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-menu",
+      "attr": "itemWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "labelWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/option-picker",
+      "attr": "pillWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/post-grid",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "ctaWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "featureWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "priceWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/pricing-table",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/process-steps",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
       "block": "sgs/product-card",
       "attr": "descFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "descWritingMode",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
@@ -108,7 +708,139 @@
     {
       "type": "orphan_attr",
       "block": "sgs/product-card",
+      "attr": "tagFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "tagTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "tagTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "tagTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "tagTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "tagWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
       "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/product-card",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/quote",
+      "attr": "attributionTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/quote",
+      "attr": "attributionTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/quote",
+      "attr": "attributionTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/quote",
+      "attr": "attributionTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/quote",
+      "attr": "attributionWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/separator",
+      "attr": "contentWritingMode",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     },
     {
@@ -134,6 +866,330 @@
       "block": "sgs/site-header",
       "attr": "paddingTablet",
       "reason": "edit.js binds a control to 'paddingTablet' but block.json does not declare it \u2014 WP silently drops the value on save"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "bioWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "nameWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/team-member",
+      "attr": "roleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "nameWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/testimonial",
+      "attr": "quoteWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/timeline",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "labelWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/trust-bar",
+      "attr": "titleWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelFontFamily",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelTextAlign",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelTextColumns",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelTextIndent",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelTextWrap",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/whatsapp-cta",
+      "attr": "labelWritingMode",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup \u2014 fully unused"
     }
   ]
 }
