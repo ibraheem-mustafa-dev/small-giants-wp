@@ -239,6 +239,20 @@ if ( '' !== $sgs_gallery_caption_effective ) {
 	$gallery_responsive_css .= sgs_text_colour_gradient_fallback_rule( $sgs_gallery_caption_sel, $sgs_gallery_caption_effective );
 }
 
+// captionColour hover state (2026-09-07, colour-conformance bg-layer batch).
+// Already safe from the background-clip precondition: captionBgColour lives
+// permanently on its own ::after layer (above), never on $sgs_gallery_caption_sel
+// itself, so no extra swap is needed here (mirrors sgs/before-after's labelColour).
+$sgs_gallery_caption_hover_grad      = (string) ( $attributes['captionColourHoverGradient'] ?? '' );
+$sgs_gallery_caption_hover_effective = sgs_resolve_text_colour_or_gradient( (string) ( $attributes['captionColourHover'] ?? '' ), $sgs_gallery_caption_hover_grad );
+if ( '' !== $sgs_gallery_caption_hover_effective ) {
+	$sgs_gallery_caption_hover_decl = sgs_text_colour_decl( $sgs_gallery_caption_hover_effective );
+	if ( '' !== $sgs_gallery_caption_hover_decl ) {
+		$gallery_responsive_css .= sgs_hover_state_rules( $sgs_gallery_caption_sel, $sgs_gallery_caption_hover_decl );
+	}
+	$gallery_responsive_css .= sgs_text_colour_gradient_fallback_rule( $sgs_gallery_caption_sel . ':hover', $sgs_gallery_caption_hover_effective );
+}
+
 // -------------------------------------------------------------------------
 // Media-element atom layer (rule 37-media-no-handroll fix) — grid-thumbnail
 // object-fit only. `class_exists()` guards a class the plugin loader always

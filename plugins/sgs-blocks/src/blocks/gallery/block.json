@@ -133,7 +133,15 @@
 						"css:color-gradient": "captionColourGradient",
 						"css:color": "captionColour"
 					},
-					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "captionColourHover",
+								"css:color-gradient": "captionColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Only shown when showCaptions is true. css:color resolves via the default convention (captionColour). Gradient siblings added 2026-09-04: captionBgColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — .sgs-gallery__caption is already position:absolute, which that helper would silently override), freeing the element's own background-image for captionColourGradient's background-clip:text. captionColourHover/captionColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — this row is ALREADY SAFE from the background-clip precondition: captionBgColour lives permanently on its own ::after layer (never on the caption's own selector), so a hover text-gradient here needs no extra swap, same as sgs/before-after's labelColour precedent.",
 					"_note_colour": "captionColour declared 2026-09-05: render.php:118 reads it and it paints the caption's text colour. It previously had css_property='color' in the DB with no authored source (a rogue seed that would vanish on the next reseed); declaring it here makes that value legitimate and durable."
 				},
 				"item": {
@@ -260,6 +268,15 @@
 		"captionColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"captionColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of captionColourHover. Non-empty wins over captionColourHover on :hover/:focus-visible."
 		},
 		"captionBgColour": {
 			"type": "string",

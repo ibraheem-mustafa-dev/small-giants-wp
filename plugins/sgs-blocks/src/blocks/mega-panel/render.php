@@ -533,12 +533,48 @@ $css .= '@media (prefers-reduced-motion: reduce){'
 // to the identical resting-state values when neither hover attr is set, so
 // this emission is a behaviour-neutral no-op by construction until an
 // operator picks a hover colour/gradient.
-$css .= sgs_hover_state_rules(
-	$style_crd . $rel_group,
-	'background-color:var(--sgs-mm-icon-hover-bg, var(--sgs-mm-soft));background-image:var(--sgs-mm-icon-hover-bg-gradient, var(--sgs-mm-soft-gradient, none));',
-	':focus-within',
-	' .sgs-icon-list__icon'
-);
+// iconColourHover/iconColourHoverGradient (2026-09-07, colour-conformance
+// bg-layer batch) — this SAME `.sgs-icon-list__icon` selector ALSO paints the
+// hover background above, so a hover text-GRADIENT's background-clip:text
+// would clip/overwrite it. Only intervene when the resolved hover value is
+// actually a gradient (mirrors the brand-strip itemTextColourHover fix,
+// c785a3b7a): move the hover background onto its own ::after layer instead
+// of the icon's own background-image, and neutralise the icon's own hover
+// background. The flat-colour case (the common one, and every pre-existing
+// instance) emits the ORIGINAL unconditional rule byte-identical.
+$icon_colour_hover_raw          = isset( $attributes['iconColourHover'] ) ? (string) $attributes['iconColourHover'] : '';
+$icon_colour_hover_gradient_raw = isset( $attributes['iconColourHoverGradient'] ) ? (string) $attributes['iconColourHoverGradient'] : '';
+$icon_colour_hover_effective    = sgs_resolve_text_colour_or_gradient( $icon_colour_hover_raw, $icon_colour_hover_gradient_raw );
+$icon_colour_hover_decl         = '' !== $icon_colour_hover_effective ? sgs_text_colour_decl( $icon_colour_hover_effective ) : '';
+$icon_colour_hover_is_gradient  = '' !== $icon_colour_hover_decl && str_contains( $icon_colour_hover_effective, 'gradient(' );
+
+if ( $icon_colour_hover_is_gradient ) {
+	$css .= $style_crd . $rel_icon . '{position:relative;isolation:isolate;}';
+	$css .= sgs_hover_state_rules(
+		$style_crd . $rel_group,
+		'background-color:transparent;background-image:none;',
+		':focus-within',
+		' .sgs-icon-list__icon'
+	);
+	$css .= sgs_hover_state_rules(
+		$style_crd . $rel_group,
+		'content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background-color:var(--sgs-mm-icon-hover-bg, var(--sgs-mm-soft));background-image:var(--sgs-mm-icon-hover-bg-gradient, var(--sgs-mm-soft-gradient, none));',
+		':focus-within',
+		' .sgs-icon-list__icon::after'
+	);
+} else {
+	$css .= sgs_hover_state_rules(
+		$style_crd . $rel_group,
+		'background-color:var(--sgs-mm-icon-hover-bg, var(--sgs-mm-soft));background-image:var(--sgs-mm-icon-hover-bg-gradient, var(--sgs-mm-soft-gradient, none));',
+		':focus-within',
+		' .sgs-icon-list__icon'
+	);
+}
+
+if ( '' !== $icon_colour_hover_decl ) {
+	$css .= sgs_hover_state_rules( $style_crd . $rel_group, $icon_colour_hover_decl, ':focus-within', ' .sgs-icon-list__icon' );
+	$css .= sgs_text_colour_gradient_fallback_rule( $style_crd . $rel_icon . ':hover', $icon_colour_hover_effective );
+}
 
 // Accent border gradient (D636 border builder) — masked ::before ring, scoped
 // to ONLY the hover/focus-within state (mirrors groupBorderColour above,

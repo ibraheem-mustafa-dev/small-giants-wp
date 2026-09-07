@@ -292,6 +292,36 @@ if ( '' !== $text_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
 
+// textColour hover state (2026-09-07, colour-conformance bg-layer batch).
+// $root_sel ALSO paints a background via sgs_fill_states_css() above
+// (backgroundColour/backgroundColourHover on the SAME selector), so a hover
+// text-GRADIENT's background-clip:text would clip/overwrite that background.
+// Only intervene when the resolved hover value is actually a gradient
+// (mirrors the brand-strip itemTextColourHover fix, c785a3b7a, and
+// sgs/form-step's identical fix in this same batch): neutralise the
+// on-element hover background and repaint the identical resolved hover
+// background on its own ::after layer instead.
+$style_color_text_hover           = isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '';
+$style_color_text_hover_gradient  = isset( $attributes['textColourHoverGradient'] ) ? (string) $attributes['textColourHoverGradient'] : '';
+$text_colour_hover_effective       = sgs_resolve_text_colour_or_gradient( $style_color_text_hover, $style_color_text_hover_gradient );
+if ( '' !== $text_colour_hover_effective ) {
+	$text_colour_hover_decl = sgs_text_colour_decl( $text_colour_hover_effective );
+	if ( '' !== $text_colour_hover_decl ) {
+		if ( str_contains( $text_colour_hover_effective, 'gradient(' ) ) {
+			$pf_bg_hover_paint = sgs_background_paint_decl(
+				isset( $attributes['backgroundColourHover'] ) ? (string) $attributes['backgroundColourHover'] : '',
+				isset( $attributes['backgroundColourHoverGradient'] ) ? (string) $attributes['backgroundColourHoverGradient'] : ''
+			);
+			if ( '' !== $pf_bg_hover_paint ) {
+				$scoped_css[] = sgs_hover_state_rules( $root_sel, 'position:relative;isolation:isolate;background-image:none;background-color:transparent;' );
+				$scoped_css[] = sgs_hover_state_rules( $root_sel, 'content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $pf_bg_hover_paint . ';', ':focus-visible', '::after' );
+			}
+		}
+		$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $text_colour_hover_effective );
+}
+
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
 // mechanism (D971/D972 full-replacement track). Replaces the old WP-native
 // supports.typography (fontSize + lineHeight only) with the framework's own

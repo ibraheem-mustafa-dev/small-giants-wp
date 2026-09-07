@@ -268,6 +268,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		captionReveal,
 		captionColour,
 		captionColourGradient,
+		captionColourHover,
+		captionColourHoverGradient,
 		captionBgColour,
 		captionBgColourGradient,
 		overlayColourHover,
@@ -1054,6 +1056,15 @@ export default function Edit( { attributes, setAttributes } ) {
 										linked: true,
 										gradientValue: captionColourGradient,
 										onGradientChange: ( val ) => setAttributes( { captionColourGradient: val ?? '' } ),
+									},
+									{
+										key: 'hover',
+										label: __( 'Hover', 'sgs-blocks' ),
+										value: captionColourHover,
+										onChange: ( val ) => setAttributes( { captionColourHover: val ?? '' } ),
+										linked: true,
+										gradientValue: captionColourHoverGradient,
+										onGradientChange: ( val ) => setAttributes( { captionColourHoverGradient: val ?? '' } ),
 									},
 								] }
 							/>

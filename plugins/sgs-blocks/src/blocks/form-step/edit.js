@@ -8,7 +8,7 @@ import {
 import { PanelBody, TextControl } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
-import { SgsColourPanel, fillRow,
+import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -59,24 +59,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
