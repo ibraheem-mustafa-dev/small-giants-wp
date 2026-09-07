@@ -16,7 +16,59 @@ import { __ } from '@wordpress/i18n';
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import ResponsiveControl from '../../ResponsiveControl.js';
 import FocalPositionField from '../../FocalPositionField.js';
+import { patchTier } from '../../../utils/patch-tier.js';
 import { validate, disclosure } from './focal-point.js';
+
+/**
+ * Whether the base-key value is a migrated tier-object (Priority 4,
+ * 2026-09-07 — `{desktop,tablet,mobile}`, all three tiers under ONE
+ * attribute) rather than this atom's pre-fold flat shape (three separate
+ * attributes). Mirrors the same detection `focal-point.js`'s `css()` and
+ * `sgs_media_atom_focal_point_css()` (PHP twin) use.
+ *
+ * @param {*} baseValue The value currently stored at the desktop/base key.
+ * @return {boolean}
+ */
+function isTierObjectValue( baseValue ) {
+	return !! baseValue && 'object' === typeof baseValue && ! Array.isArray( baseValue );
+}
+
+/**
+ * Read one tier's OWN value, tolerating both storage shapes.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Object} tierKeys   `{desktop, tablet, mobile}` attribute names.
+ * @param {string} tier       'desktop' | 'tablet' | 'mobile'.
+ * @return {*} The tier's own value (may be undefined/empty).
+ */
+function readTierOwnValue( attributes, tierKeys, tier ) {
+	const baseValue = attributes[ tierKeys.desktop ];
+	if ( isTierObjectValue( baseValue ) ) {
+		return baseValue[ tier ];
+	}
+	return attributes[ tierKeys[ tier ] ];
+}
+
+/**
+ * Write one tier's value, tolerating both storage shapes. A migrated
+ * tier-object writes via `patchTier()` (the only safe way to update one
+ * tier of a tier-object attribute without discarding the others); an
+ * unmigrated flat shape writes its own separate attribute directly,
+ * unchanged from this control's pre-fold behaviour.
+ *
+ * @param {Object}   attributes    Block attributes.
+ * @param {Function} setAttributes Block `setAttributes`.
+ * @param {Object}   tierKeys      `{desktop, tablet, mobile}` attribute names.
+ * @param {string}   tier          'desktop' | 'tablet' | 'mobile'.
+ * @param {*}        value         The new value for that tier.
+ */
+function writeTierOwnValue( attributes, setAttributes, tierKeys, tier, value ) {
+	if ( isTierObjectValue( attributes[ tierKeys.desktop ] ) ) {
+		patchTier( attributes, setAttributes, tierKeys.desktop, tier, value );
+		return;
+	}
+	setAttributes( { [ tierKeys[ tier ] ]: value } );
+}
 
 /**
  * Resolve what a tier VISUALLY falls back to, for the inherit hint — mirrors
@@ -31,9 +83,13 @@ import { validate, disclosure } from './focal-point.js';
 function resolveInheritedPosition( attributes, tierKeys, tier ) {
 	const fallback = __( 'centre centre', 'sgs-blocks' );
 	if ( 'mobile' === tier ) {
-		return attributes[ tierKeys.tablet ] || attributes[ tierKeys.desktop ] || fallback;
+		return (
+			readTierOwnValue( attributes, tierKeys, 'tablet' ) ||
+			readTierOwnValue( attributes, tierKeys, 'desktop' ) ||
+			fallback
+		);
 	}
-	return attributes[ tierKeys.desktop ] || fallback;
+	return readTierOwnValue( attributes, tierKeys, 'desktop' ) || fallback;
 }
 
 /**
@@ -97,13 +153,13 @@ export function control( {
 					label={ __( 'Focal point', 'sgs-blocks' ) }
 					value={ attributes[ tierKeys.desktop ] }
 					isInherited={ ( tier ) =>
-						'desktop' !== tier && ! attributes[ tierKeys[ tier ] ]
+						'desktop' !== tier && ! readTierOwnValue( attributes, tierKeys, tier )
 					}
 					resolvedValue={ ( tier ) =>
 						resolveInheritedPosition( attributes, tierKeys, tier )
 					}
 					onReset={ ( tier ) =>
-						setAttributes( { [ tierKeys[ tier ] ]: '' } )
+						writeTierOwnValue( attributes, setAttributes, tierKeys, tier, '' )
 					}
 				>
 					{ ( breakpoint ) => (
@@ -113,14 +169,17 @@ export function control( {
 							format={ format }
 							disabled={ 'disabled' === disc.state }
 							help={ disc.hiddenReason || undefined }
-							value={ attributes[ tierKeys[ breakpoint ] ] }
+							value={ readTierOwnValue( attributes, tierKeys, breakpoint ) }
 							onChange={ ( next ) =>
-								setAttributes( {
-									[ tierKeys[ breakpoint ] ]:
-										'css-string' === format
-											? validate( next, 'ObjectPosition' )
-											: next,
-								} )
+								writeTierOwnValue(
+									attributes,
+									setAttributes,
+									tierKeys,
+									breakpoint,
+									'css-string' === format
+										? validate( next, 'ObjectPosition' )
+										: next
+								)
 							}
 						/>
 					) }

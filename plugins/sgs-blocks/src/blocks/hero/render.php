@@ -9,8 +9,8 @@
  *
  * Scalar STYLING/LAYOUT attributes still consumed here (wrapper/shell level):
  *   variant, alignment, backgroundImage, backgroundOverlayColour, overlayOpacity,
- *   splitImage, splitImageMobile, splitMediaObjectPositionMobile,
- *   splitMediaObjectPositionTablet, minHeight*, background/text/border colour
+ *   splitImage, splitImageMobile, splitMediaObjectPosition (TIER OBJECT, Priority 4
+ *   2026-09-07), minHeight*, background/text/border colour
  *   (resting + Hover, each with a {attr}Gradient sibling — D702),
  *   transitionDuration, transitionEasing, bgParallax, bgKenBurns,
  *   bgVideo*,
@@ -245,9 +245,15 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 // directly now (Wave 6).
 $image_object_fit = $attributes['splitMediaObjectFit'] ?? 'cover';
 
-$image_width        = $attributes['splitMediaWidth'] ?? null;
-$image_width_tablet = $attributes['splitMediaWidthTablet'] ?? null;
-$image_width_mobile = $attributes['splitMediaWidthMobile'] ?? null;
+// splitMediaWidth is a TIER OBJECT {desktop,tablet,mobile} as of Priority 4
+// (2026-09-07, migrate-tier-object.py --fix) — the splitMediaWidthTablet/
+// Mobile siblings no longer exist. sgs_responsive_normalise_object() is the
+// canonical reader (helpers-responsive.php:273), matching minHeight/
+// splitMediaPadding above.
+$image_width_obj    = sgs_responsive_normalise_object( $attributes['splitMediaWidth'] ?? null );
+$image_width        = $image_width_obj['desktop'] ?? null;
+$image_width_tablet = $image_width_obj['tablet'] ?? null;
+$image_width_mobile = $image_width_obj['mobile'] ?? null;
 $image_width_unit   = sgs_css_length_value( $attributes['splitMediaWidthUnit'] ?? '%' );
 
 // splitMediaHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,

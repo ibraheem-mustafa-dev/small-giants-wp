@@ -233,12 +233,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		shadow,
 		// Phase 1 — image display.
 		splitMediaObjectFit,
+		// splitMediaObjectPosition is a TIER OBJECT {desktop,tablet,mobile} as of
+		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
+		// splitMediaObjectPositionTablet/Mobile siblings no longer exist.
 		splitMediaObjectPosition,
-		splitMediaObjectPositionTablet,
-		splitMediaObjectPositionMobile,
+		// splitMediaWidth is a TIER OBJECT {desktop,tablet,mobile} as of
+		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
+		// splitMediaWidthTablet/Mobile siblings no longer exist.
 		splitMediaWidth,
-		splitMediaWidthTablet,
-		splitMediaWidthMobile,
 		splitMediaWidthUnit,
 		// splitMediaHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
 		// the splitMediaHeightTablet/splitMediaHeightMobile siblings no longer exist.
@@ -568,8 +570,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// CSS builder (render.php:576-626, 561-573) for the Phase-1 image-display
 	// attributes so the editor canvas stops silently disagreeing with the
 	// frontend. Desktop tier only, matching every other preview builder in
-	// this file (splitMediaWidthTablet/splitMediaWidthMobile stay editor-only-inert
-	// here, same as the other *Tablet/*Mobile pairs above).
+	// this file.
 	const imagePreviewStyle = {
 		// Wave 6 — object-fit + focal-point (+ tablet/mobile) now come from
 		// the shared atom's own custom-property VALUES (prefix 'splitMedia'),
@@ -594,9 +595,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// width — render.php:597-599, gated behind splitMediaObjectFit==='custom'.
 	// splitMediaWidth itself has no dedicated ticket item here, but splitMediaWidthUnit
 	// is meaningless without it (same CSS declaration), so both are applied
-	// together, desktop tier only.
-	if ( 'custom' === splitMediaObjectFit && splitMediaWidth ) {
-		imagePreviewStyle.width = `${ splitMediaWidth }${ splitMediaWidthUnit || '%' }`;
+	// together, desktop tier only. TIER OBJECT (Priority 4, 2026-09-07).
+	if ( 'custom' === splitMediaObjectFit && splitMediaWidth?.desktop ) {
+		imagePreviewStyle.width = `${ splitMediaWidth.desktop }${ splitMediaWidthUnit || '%' }`;
 	}
 	// height — render.php:618-619, deliberately UNGATED (not tied to
 	// splitMediaObjectFit==='custom' — see render.php's "UNGATED reach" comment
@@ -1615,12 +1616,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						resetAll={ () =>
 							setAttributes( {
 								splitMediaObjectFit: 'cover',
-								splitMediaObjectPosition: 'center center',
-								splitMediaObjectPositionTablet: '',
-								splitMediaObjectPositionMobile: 'center 20%',
-								splitMediaWidth: undefined,
-								splitMediaWidthTablet: undefined,
-								splitMediaWidthMobile: undefined,
+								// TIER OBJECT (Priority 4, 2026-09-07) — mirrors block.json's
+								// own default shape exactly (tablet omitted -> inherits).
+								splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
+								// TIER OBJECT (Priority 4, 2026-09-07) — mirrors block.json's default ({}).
+								splitMediaWidth: {},
 								splitMediaWidthUnit: '%',
 								splitMediaHeight: {},
 								splitMediaHeightUnit: 'px',
@@ -1670,12 +1670,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							label={ __( 'Split media styling', 'sgs-blocks' ) }
 							hasValue={ () =>
 								splitMediaObjectFit !== 'cover' ||
-								splitMediaObjectPosition !== 'center center' ||
-								splitMediaObjectPositionTablet !== '' ||
-								splitMediaObjectPositionMobile !== 'center 20%' ||
-								splitMediaWidth ||
-								splitMediaWidthTablet ||
-								splitMediaWidthMobile ||
+								( splitMediaObjectPosition?.desktop ?? 'center center' ) !== 'center center' ||
+								( splitMediaObjectPosition?.tablet ?? '' ) !== '' ||
+								( splitMediaObjectPosition?.mobile ?? 'center 20%' ) !== 'center 20%' ||
+								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
 								splitMediaWidthUnit !== '%' ||
 								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
 								splitMediaHeightUnit !== 'px'
@@ -1683,12 +1681,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							onDeselect={ () =>
 								setAttributes( {
 									splitMediaObjectFit: 'cover',
-									splitMediaObjectPosition: 'center center',
-									splitMediaObjectPositionTablet: '',
-									splitMediaObjectPositionMobile: 'center 20%',
-									splitMediaWidth: undefined,
-									splitMediaWidthTablet: undefined,
-									splitMediaWidthMobile: undefined,
+									splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
+									splitMediaWidth: {},
 									splitMediaWidthUnit: '%',
 									splitMediaHeight: {},
 									splitMediaHeightUnit: 'px',
@@ -1727,9 +1721,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								!! splitMediaMediaSizing ||
 								splitMediaShape !== 'none' ||
 								!! splitMediaAspectRatio ||
-								!! splitMediaWidth ||
-								!! splitMediaWidthTablet ||
-								!! splitMediaWidthMobile ||
+								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
 								splitMediaWidthUnit !== '%' ||
 								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
 								splitMediaHeightUnit !== 'px' ||
@@ -1755,9 +1747,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaMediaSizing: undefined,
 									splitMediaShape: 'none',
 									splitMediaAspectRatio: '',
-									splitMediaWidth: undefined,
-									splitMediaWidthTablet: undefined,
-									splitMediaWidthMobile: undefined,
+									splitMediaWidth: {},
 									splitMediaWidthUnit: '%',
 									splitMediaHeight: {},
 									splitMediaHeightUnit: 'px',

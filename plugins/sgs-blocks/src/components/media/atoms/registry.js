@@ -251,6 +251,21 @@ export const MEDIA_ATOMS = {
 			'*': {
 				sgsObjectPosition: '{x,y} floats 0-1 (FocalPointPicker native shape)',
 			},
+			'sgs/hero': {
+				// Priority 4 (2026-09-07, migrate-tier-object.py --fix). Diverges
+				// DELIBERATELY from the atom's base ObjectPosition type (string):
+				// all three tiers now live under this ONE key as a
+				// {desktop,tablet,mobile} object, matching the pattern already
+				// proven on splitMediaPadding/mediaPadding. focal-point.js's css()/
+				// focal-point.php's sgs_media_atom_focal_point_css() and
+				// focal-point.control.js's control() are all shape-aware: they read
+				// the base key first (tier-object, when migrated) and fall back to
+				// the sibling flat ObjectPositionTablet/Mobile keys only when a tier
+				// comes back empty — byte-identical output for every other caller of
+				// this atom (before-after/card-grid/decorative-image/media/
+				// product-card/testimonial), which still use the flat 3-key shape.
+				splitMediaObjectPosition: 'TIER OBJECT {desktop,tablet,mobile}, not the atom base string',
+			},
 		},
 	},
 

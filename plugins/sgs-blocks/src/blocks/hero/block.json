@@ -579,25 +579,12 @@
 			"default": "cover"
 		},
 		"splitMediaObjectPosition": {
-			"type": "string",
-			"default": "center center"
-		},
-		"splitMediaObjectPositionTablet": {
-			"type": "string",
-			"default": ""
-		},
-		"splitMediaObjectPositionMobile": {
-			"type": "string",
-			"default": "center 20%"
+			"type": "object",
+			"default": {"desktop": "center center", "mobile": "center 20%"}
 		},
 		"splitMediaWidth": {
-			"type": "number"
-		},
-		"splitMediaWidthTablet": {
-			"type": "number"
-		},
-		"splitMediaWidthMobile": {
-			"type": "number"
+			"type": "object",
+			"default": {}
 		},
 		"splitMediaWidthUnit": {
 			"type": "string",

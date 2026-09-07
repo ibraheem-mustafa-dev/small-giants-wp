@@ -154,6 +154,29 @@ export function disclosure( { attributes = {}, prefix = '', blockSlug = '', scop
 }
 
 /**
+ * Normalise a base-key value to `{desktop,tablet,mobile}`, tolerating BOTH
+ * real storage shapes: a migrated caller's tier-object (all three tiers
+ * under the ONE base key), or an unmigrated caller's plain scalar (this
+ * atom's pre-fold shape, where tablet/mobile live in sibling flat keys).
+ * Mirrors `sgs_responsive_normalise_object()`'s scalar-degrades-to-desktop
+ * rule (helpers-responsive.php) — kept local rather than shared because no
+ * JS twin of that helper exists yet.
+ *
+ * @param {*} raw Raw value at the base key.
+ * @return {{desktop: *, tablet: *, mobile: *}}
+ */
+function normaliseTierValue( raw ) {
+	if ( raw && 'object' === typeof raw && ! Array.isArray( raw ) ) {
+		return {
+			desktop: raw.desktop ?? null,
+			tablet: raw.tablet ?? null,
+			mobile: raw.mobile ?? null,
+		};
+	}
+	return { desktop: raw, tablet: null, mobile: null };
+}
+
+/**
  * Custom-property declarations for this atom. Mirrors
  * `includes/media/atoms/focal-point.php`'s `sgs_media_atom_focal_point_css()`
  * exactly.
@@ -168,18 +191,34 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const decls = [];
 
 	// Element scope, tiered (MEDIA_TIERED_BASES carries `ObjectPosition`).
+	// TWO storage shapes are real here (Priority 4, 2026-09-07) — see
+	// `normaliseTierValue()`'s docblock. Read the base key first; fall back
+	// to the sibling flat Tablet/Mobile keys only when that tier is empty,
+	// so an unmigrated caller's behaviour is untouched.
 	const posKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPosition' );
-	const pos = validate( attributes[ posKey ], 'ObjectPosition' );
+	const posTiers = normaliseTierValue( attributes[ posKey ] );
+
+	const pos = validate( posTiers.desktop, 'ObjectPosition' );
 	if ( pos ) {
 		decls.push( `--sgs-media-object-position:${ pos }` );
 	}
-	const posTabletKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionTablet' );
-	const posTablet = validate( attributes[ posTabletKey ], 'ObjectPosition' );
+
+	let posTabletRaw = posTiers.tablet;
+	if ( null === posTabletRaw || '' === posTabletRaw ) {
+		const posTabletKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionTablet' );
+		posTabletRaw = attributes[ posTabletKey ];
+	}
+	const posTablet = validate( posTabletRaw, 'ObjectPosition' );
 	if ( posTablet ) {
 		decls.push( `--sgs-media-object-position-tablet:${ posTablet }` );
 	}
-	const posMobileKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionMobile' );
-	const posMobile = validate( attributes[ posMobileKey ], 'ObjectPosition' );
+
+	let posMobileRaw = posTiers.mobile;
+	if ( null === posMobileRaw || '' === posMobileRaw ) {
+		const posMobileKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectPositionMobile' );
+		posMobileRaw = attributes[ posMobileKey ];
+	}
+	const posMobile = validate( posMobileRaw, 'ObjectPosition' );
 	if ( posMobile ) {
 		decls.push( `--sgs-media-object-position-mobile:${ posMobile }` );
 	}
