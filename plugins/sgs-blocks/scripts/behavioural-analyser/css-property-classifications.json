@@ -662,7 +662,8 @@
       "slug": "sgs/business-info",
       "attr": "letterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_element": "text"
       }
     },
     {
@@ -677,14 +678,16 @@
       "slug": "sgs/business-info",
       "attr": "textDecoration",
       "fields": {
-        "css_property": "text-decoration"
+        "css_property": "text-decoration",
+        "css_element": "text"
       }
     },
     {
       "slug": "sgs/business-info",
       "attr": "textTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_element": "text"
       }
     },
     {

@@ -274,8 +274,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		textColourHover,
 		textColourHoverGradient,
 		splitMediaPadding,
-		splitMediaPaddingTablet,
-		splitMediaPaddingMobile,
 		// C19 item 3 (2026-09-04) — box-shape atom's remaining bases, only used
 		// for this ToolsPanelItem's hasValue()/onDeselect() below; the control
 		// UI itself reads/writes via MediaElementPanel's own atom composition.
@@ -1642,9 +1640,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaBorderWidth: {},
 								splitMediaBorderColour: '',
 								splitMediaBorderColourGradient: '',
-								splitMediaPadding: {},
-								splitMediaPaddingTablet: {},
-								splitMediaPaddingMobile: {},
+								splitMediaPadding: { desktop: {} },
 								mediaBackground: '',
 								mediaBackgroundGradient: '',
 								mediaPadding: {},
@@ -1752,9 +1748,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								Object.keys( splitMediaBorderRadius ?? {} ).length > 0 ||
 								Object.keys( splitMediaBorderRadiusTablet ?? {} ).length > 0 ||
 								Object.keys( splitMediaBorderRadiusMobile ?? {} ).length > 0 ||
-								Object.keys( splitMediaPadding ?? {} ).length > 0 ||
-								Object.keys( splitMediaPaddingTablet ?? {} ).length > 0 ||
-								Object.keys( splitMediaPaddingMobile ?? {} ).length > 0
+								Object.values( splitMediaPadding ?? {} ).some(
+									( tierBox ) => tierBox && Object.keys( tierBox ).length > 0
+								)
 							}
 							onDeselect={ () =>
 								setAttributes( {
@@ -1780,9 +1776,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaBorderWidth: {},
 									splitMediaBorderColour: '',
 									splitMediaBorderColourGradient: '',
-									splitMediaPadding: {},
-									splitMediaPaddingTablet: {},
-									splitMediaPaddingMobile: {},
+									splitMediaPadding: { desktop: {} },
 								} )
 							}
 							isShownByDefault
