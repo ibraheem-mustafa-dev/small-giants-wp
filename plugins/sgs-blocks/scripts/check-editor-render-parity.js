@@ -555,6 +555,13 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'resultHoverBackgroundColourHover',
 	'resultHoverBackgroundColourHoverGradient',
 	'shadowHoverColour',
+	// sgs/button, 2026-09-07. Same hover-VALUE class as `shadowHoverColour` directly
+	// above; it is a SEPARATE entry, not a rename of it, because two blocks still
+	// declare the older `shadowHoverColour` spelling. Created by the ShadowControl
+	// naming convergence on <base>ColourHover (D1000) -- a static editor canvas has
+	// no pointer hover, so a :hover-only shadow colour cannot be shown without
+	// faking the state. Button's RESTING shadow colour is previewed as normal.
+	'boxShadowColourHover',
 	'textColourHover',
 	'textDecorationHover',
 	// sgs/pricing-table hover-colour rows (2026-09-04) — same client-set
