@@ -221,6 +221,31 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 # route_area_css_to_block_attrs (convert.py:2405 — ported verbatim, renamed)
 # ---------------------------------------------------------------------------
 
+def _tier_key_for_suffix(suffix: str) -> "str | None":
+    """Map this module's tier SUFFIX ('' / 'Tablet' / 'Mobile') to a tier-object
+    KEY ('desktop' / 'tablet' / 'mobile').
+
+    Delegates to the shared ``tier_object.tier_object_key`` (R-31-9: ONE
+    mechanism), which derives the key from ``modifier_suffixes('breakpoint')``
+    — a DB read, not a literal. No ``{suffix: key}`` dict is introduced here;
+    ``cheat-gate/check_hardcoded_dicts.py`` gates exactly that.
+
+    The EMPTY suffix is this module's spelling of the Base (desktop) tier —
+    the same structural convention ``tier_object._BASE_TIER`` names on the
+    other side, and the one permitted R-31-1 constant (an unsuffixed BASE has
+    no DB row to source). Returns ``None`` for a tier outside the DB
+    vocabulary so the caller can gap it honestly rather than invent a key.
+
+    Local import: ``tier_object`` pulls in ``services.validate`` /
+    ``services.gap_writer``, and a module-level import here risks the same
+    circular-import chain ``content_band.py`` already documents at its own
+    ``root_supports`` import site. Import is cached after the first call.
+    """
+    from converter.services.tier_object import tier_object_key
+
+    return tier_object_key(suffix or "Base")
+
+
 def route_area_css_to_block_attrs(
     child_node: Tag,
     area: str,
@@ -342,6 +367,31 @@ def route_area_css_to_block_attrs(
         _pad_object_base = f"{area[0].lower()}{area[1:]}Padding"
     if db_lookup.box_family_for(owning_block, _pad_object_base) is not None:
         _skip_padding_flat = True
+        # TIER-of-BOXES: BOTH axes at once (Spec 35 §12 — "a property may have
+        # one, both or neither"). A migrated block declares ONE object attr
+        # holding {desktop,tablet,mobile}, each a {top,right,bottom,left} box,
+        # and its flat {attr}Tablet/{attr}Mobile siblings were PRUNED.
+        #
+        # Before this branch existed, the suffixed `_dest` below could not
+        # resolve for those blocks, so `_dest in block_attr_names` was False and
+        # every tablet/mobile override was dropped SILENTLY — no gap row, no
+        # trace, because the padding props are `continue`d out of the flat loop
+        # at the `_skip_padding_flat` guard and never reach its trace calls.
+        # The base write also landed FLAT; it only appeared to work because
+        # sgs_responsive_normalise_object($raw, $is_box=true) promotes a flat
+        # box to the desktop tier (helpers-responsive.php:293-299), so desktop
+        # rendered and the other two tiers vanished.
+        #
+        # c829647c8 built this shape for the RESOLVER spine (dispatch_spine's
+        # ElementResult.attrs()); this function writes straight into
+        # parent_attrs and bypasses it, which is why it was missed.
+        #
+        # Gated on box_family_is_tier_shaped — a DB classification, never a name
+        # regex (§3/§6 box-family-guard AST gate; `box_family` stays referenced
+        # in this function's body for that gate).
+        _pad_tier_shaped = db_lookup.box_family_is_tier_shaped(
+            owning_block, _pad_object_base
+        )
         for _tier_sfx, _src in (("", base_decls), ("Tablet", tab), ("Mobile", mob_override)):
             _obj: dict = {}
             for _side in ("top", "right", "bottom", "left"):
@@ -349,6 +399,34 @@ def route_area_css_to_block_attrs(
                 if _v is not None:
                     _obj[_side] = strip_important(_v).strip()
             if not _obj:
+                continue
+            if _pad_tier_shaped:
+                if _pad_object_base not in block_attr_names:
+                    continue
+                _tier_key = _tier_key_for_suffix(_tier_sfx)
+                if _tier_key is None:
+                    trace(
+                        "cross_node_gap_candidate",
+                        owning_block=owning_block,
+                        element_token=area,
+                        css_property="padding",
+                        reason="tier_key_unresolved",
+                        attr_name=_pad_object_base,
+                    )
+                    continue
+                # Merge PER TIER KEY. A setdefault on the ATTR would let the
+                # first tier win and discard the other two — the three tiers
+                # must accumulate into one object.
+                _existing_pad = parent_attrs.get(_pad_object_base)
+                if _existing_pad is None:
+                    parent_attrs[_pad_object_base] = {_tier_key: _obj}
+                elif isinstance(_existing_pad, dict) and not (
+                    set(_existing_pad) & {"top", "right", "bottom", "left"}
+                ):
+                    _existing_pad.setdefault(_tier_key, _obj)
+                # else: an earlier path already wrote a FLAT box (or a
+                # non-dict) here — earlier paths win (the Step-3 setdefault
+                # contract), so leave it rather than mixing two shapes.
                 continue
             _dest = f"{_pad_object_base}{_tier_sfx}" if _tier_sfx else _pad_object_base
             if _dest in block_attr_names:
@@ -391,10 +469,22 @@ def route_area_css_to_block_attrs(
         _attr_meta = block_attr_names.get(attr_base) or {}
         _is_number = (_attr_meta.get("attr_type") == "number")
         _family_unit_attr = _strip_side_suffix(attr_base) + "Unit"
+        # SCALAR TIER OBJECT — the non-box half of the same defect as the
+        # padding branch above. A migrated block holds {desktop,tablet,mobile}
+        # on ONE attr and no longer declares the suffixed siblings, so the
+        # suffixed `dest` below cannot resolve. That case at least fails
+        # honestly today (it traces `area_attr_tier_missing`), but the value is
+        # still lost. Gated on tier_object_base, which requires box_family IS
+        # NULL — so it and `_pad_tier_shaped` are mutually exclusive by
+        # construction and cannot both claim one attr.
+        _attr_tier_shaped = db_lookup.tier_object_base(owning_block, attr_base)
         for tier_suffix, value in tier_values:
             if value is None:
                 continue
-            dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base
+            if _attr_tier_shaped:
+                dest = attr_base
+            else:
+                dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base
             if dest not in block_attr_names:
                 trace(
                     "cross_node_gap_candidate",
@@ -437,7 +527,31 @@ def route_area_css_to_block_attrs(
                         continue
             else:
                 store_val = raw_val
-            parent_attrs.setdefault(dest, store_val)
+            if _attr_tier_shaped:
+                _tier_key = _tier_key_for_suffix(tier_suffix)
+                if _tier_key is None:
+                    trace(
+                        "cross_node_gap_candidate",
+                        owning_block=owning_block,
+                        element_token=area,
+                        css_property=css_prop,
+                        reason="tier_key_unresolved",
+                        attr_name=dest,
+                    )
+                    continue
+                # Per-tier-key merge, same reasoning as the padding branch: a
+                # setdefault on the attr would let the first tier win.
+                _existing_tier = parent_attrs.get(dest)
+                if _existing_tier is None:
+                    parent_attrs[dest] = {_tier_key: store_val}
+                elif isinstance(_existing_tier, dict):
+                    _existing_tier.setdefault(_tier_key, store_val)
+                else:
+                    # An earlier path wrote a bare scalar here — earlier paths
+                    # win (Step-3 setdefault contract); do not clobber it.
+                    continue
+            else:
+                parent_attrs.setdefault(dest, store_val)
             trace(
                 "cross_node_css_lifted",
                 owning_block=owning_block,

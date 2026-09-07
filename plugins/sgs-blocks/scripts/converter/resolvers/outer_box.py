@@ -309,7 +309,8 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # (`maxWidthHover`) resolved independently, and v1 hover is base-tier
     # only, so the flat path below remains correct for it.
     if not decl.state and db_lookup.tier_object_base(ctx.block_slug, base_attr):
-        return _outer_tier_object_write(decl, ctx, prop, base_attr)
+        result = _outer_tier_object_write(decl, ctx, prop, base_attr)
+        return _with_media_sizing_companion(result, decl, ctx, prop, base_attr)
 
     # Step 4 + 4a: re-append the tier suffix THEN the interaction-state suffix
     # (universal shared helper — §3.A). A :hover/:focus/:active decl routes to the
@@ -547,6 +548,101 @@ def _outer_tier_object_write(
     # etc. are exact literals; token_snap is identity for a length literal).
     value = token_snap(prop, value_serialise("string", None, decl.value), ctx.conn)
     return tier_object_write(ctx, decl, prop, base_attr, value, validate_raw=str(value))
+
+
+# ---------------------------------------------------------------------------
+# MEDIA SIZING-MODE COMPANION — a `height` write is INERT on the two blocks
+# that declare a sizing-mode switch (`sgs/media.mediaSizing`,
+# `sgs/hero.splitMediaMediaSizing`) unless that switch is ALSO set to
+# `'height'`. Rendering is gated in PHP at
+# `includes/media/atoms/box-shape.php`
+# (`sgs_media_atom_box_shape_resolve_sizing_mode()`, ~L76-85 + its consumer
+# ~L315-337): the `--sgs-media-height` custom property is emitted ONLY when
+# the mode resolves to `'height'`, and an undeclared `mediaSizing` key
+# resolves to `'auto'` (the object-fit-driven default) — so a faithfully
+# stored `height:{"desktop":"440px"}` renders nothing at all. Both switch
+# attrs have `css_property IS NULL` in the DB (no `property_suffixes` row
+# routes to them), so no CSS declaration can ever reach them through the
+# ordinary dispatch chain — this companion write is the only path.
+#
+# Symmetric case: `aspect-ratio` is gated by the SAME switch (mode
+# `'ratio'`). NOT handled here — verified live (2026-09) that
+# `sgs/media.aspectRatio` ALSO has `css_property IS NULL`, so an
+# `aspect-ratio` declaration never reaches `attr_resolve()`/this resolver's
+# tier-object branch at all (it NO_DESTINATION-gaps upstream of
+# `_outer_tier_object_write` — `base_attr` resolves to `None` for the
+# property itself, long before a companion write could be considered). That
+# is a separate, pre-existing routing gap on the primary attr, not a
+# transfer-vs-companion split this resolver could close — flagged, not
+# chased (out of this fix's scope).
+# ---------------------------------------------------------------------------
+
+def _media_sizing_switch_attr(block_slug: str, base_attr: str) -> str | None:
+    """Derive the block's media sizing-mode switch attr name from `base_attr`
+    (the block's OWN attr for `height`) by the SAME prefix/suffix convention
+    the PHP-side naming helper uses (`sgs_media_element_attr()` /
+    `sgs_media_element_stored_attr()`, `includes/helpers-media-element.php`):
+    a surface attr is `prefix + Base` (or `lcfirst(Base)` when `prefix==''`).
+
+    `base_attr` is itself `sgs_media_element_attr(prefix, 'Height')`, so
+    stripping a trailing `'Height'` recovers that SAME prefix — re-applying
+    it to `'MediaSizing'` reproduces the switch attr's real stored name
+    exactly: `'height'` -> prefix `''` -> `'mediaSizing'` (sgs/media);
+    `'splitMediaHeight'` -> prefix `'splitMedia'` -> `'splitMediaMediaSizing'`
+    (sgs/hero). No hardcoded per-block name table (R-31-1 /
+    `check_hardcoded_dicts.py`) — this is arithmetic on the string the DB
+    already gave us, mirroring an existing PHP convention rather than
+    inventing a new one.
+
+    Gated on the DERIVED name actually being a real attr the block declares
+    (`db_lookup.block_attrs`, DB-backed) — a block with no matching switch
+    (i.e. every block except sgs/media and sgs/hero today) returns None and
+    the caller leaves the height write untouched, unchanged from current
+    behaviour.
+    """
+    if base_attr == "height":
+        prefix = ""
+    elif base_attr.endswith("Height"):
+        prefix = base_attr[: -len("Height")]
+    else:
+        return None
+    candidate = f"{prefix}MediaSizing" if prefix else "mediaSizing"
+    if candidate in db_lookup.block_attrs(block_slug):
+        return candidate
+    return None
+
+
+def _with_media_sizing_companion(
+    result: "Write | list[Write] | GAP", decl: Any, ctx: Any, prop: str, base_attr: str
+) -> "Write | list[Write] | GAP":
+    """Append a `{switch}: 'height'` companion Write alongside a real `height`
+    tier-object write, on a block that declares a media sizing-mode switch.
+    A GAP (the height value itself failed to transfer) passes through
+    unchanged — never invent a companion for a write that didn't happen.
+    Any OTHER property (`max-width`, `min-height`, `order`, …) passes
+    through unchanged — the switch is `height`/`ratio`-specific.
+
+    ⚠ Known limitation, not silently assumed away (see module CLAUDE.md rule
+    "prove the cause before the fix" — flagged rather than guessed):
+    `resolve()` runs per-declaration and has no visibility into a SIBLING
+    declaration's already-computed writes, so this cannot detect "the author
+    already set the switch explicitly" and skip. In the CURRENT codebase
+    that is a purely theoretical conflict — grepped 2026-09: nothing else
+    anywhere in `converter/` ever writes `mediaSizing`/`splitMediaMediaSizing`,
+    and `aspect-ratio` (the only other decl that would want the switch) never
+    reaches this branch at all (see the module comment above). If a future
+    change gives `aspect-ratio` a real destination on these blocks, this
+    unconditional companion write would need re-examining alongside it.
+    """
+    if prop != "height" or isinstance(result, GAP):
+        return result
+    switch_attr = _media_sizing_switch_attr(ctx.block_slug, base_attr)
+    if switch_attr is None:
+        return result
+    companion = Write(attr=switch_attr, value="height", property=prop, tier=decl.tier)
+    if isinstance(result, list):
+        return [*result, companion]
+    return [result, companion]
 
 
 def _block_supports_full_align(ctx: Any) -> bool:

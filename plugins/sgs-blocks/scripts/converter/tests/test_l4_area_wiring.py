@@ -41,9 +41,6 @@ def test_area_resolver_skips_band_alias_for_cta_section():
         )
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_area_resolver_routes_per_area_padding_to_object_for_hero():
     """Post-D295 (no-inline box-object rollout) hero migrated its per-area padding
     flat→OBJECT (``contentPadding``, box_family-seeded), so the FLAT per-area
@@ -54,12 +51,32 @@ def test_area_resolver_routes_per_area_padding_to_object_for_hero():
     object instead (folded by the orchestrator accumulator; see
     ``test_route_area_css_folds_per_area_padding_to_object_for_hero`` below for the
     live-path assertion). A NON-box per-area attr (background, tested below) still
-    resolves flat."""
+    resolves flat.
+
+    ⚑ De-xfailed 2026-09-07 (D996). It carried ``xfail(strict=True)`` citing D554
+    ruling C ("the converter STAYS FLAT until the Spec 39 rework"), written to
+    fail loud the moment the converter began emitting tier objects. That moment
+    is now: ``fold_helpers.route_area_css_to_block_attrs`` emits the TIER-of-BOXES
+    envelope, completing for the L4 per-area path what ``c829647c8`` had already
+    shipped for the resolver spine. D554-C is superseded for
+    padding/margin/borderRadius.
+
+    Its final assertion was also factually wrong and is corrected here: it
+    required ``box_family_for('sgs/hero', 'contentPaddingTablet')`` to be
+    non-None, but the D295 box-object migration PRUNED the flat tier siblings —
+    that attribute does not exist and must not come back. Asserting its ABSENCE
+    is the real regression guard, since a reintroduced flat sibling is exactly
+    what would silently re-split the tier object."""
     assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-top") is None
     assert db_lookup.attr_for_area_property("sgs/hero", "content", "padding-left") is None
     # the per-area padding OBJECT family IS declared (box_family seeded, D295).
     assert db_lookup.box_family_for("sgs/hero", "contentPadding") is not None
-    assert db_lookup.box_family_for("sgs/hero", "contentPaddingTablet") is not None
+    # ...and it is TIER-shaped ({desktop,tablet,mobile} of boxes), which is what
+    # makes the suffixed siblings unnecessary AND wrong to reintroduce.
+    assert db_lookup.box_family_is_tier_shaped("sgs/hero", "contentPadding") is True
+    # The pruned flat siblings must STAY pruned.
+    assert db_lookup.box_family_for("sgs/hero", "contentPaddingTablet") is None
+    assert db_lookup.box_family_for("sgs/hero", "contentPaddingMobile") is None
 
 
 def test_area_resolver_non_band_secondary_suffix_still_resolves():
@@ -82,16 +99,31 @@ def test_route_area_css_folds_per_area_padding_to_object_for_hero():
     from converter.services.fold_helpers import route_area_css_to_block_attrs
 
     node = BeautifulSoup('<div class="sgs-hero__content"></div>', "html.parser").find(True)
-    css_rules = {".sgs-hero__content": {"padding": "28px 20px 40px 20px"}}
+    # ⚑ The fixture now carries THREE tiers (2026-09-07, D996). It previously
+    # supplied only a base rule, which meant it could not detect the very defect
+    # it is here to guard: the tablet/mobile writes were being dropped SILENTLY
+    # (no gap, no trace) because they targeted the pruned contentPaddingTablet /
+    # contentPaddingMobile siblings. A single-tier fixture passes either way.
+    # max-width:1023 applies at the Tablet (800) and Mobile (375) samples;
+    # max-width:767 applies at Mobile only and overrides it there.
+    css_rules = {
+        ".sgs-hero__content": {"padding": "72px 64px"},
+        "max-width: 1023 :: .sgs-hero__content": {"padding": "48px 32px"},
+        "max-width: 767 :: .sgs-hero__content": {"padding": "28px 20px 40px 20px"},
+    }
     parent_attrs: dict = {}
     route_area_css_to_block_attrs(node, "content", "sgs/hero", parent_attrs, css_rules)
 
-    # The four padding sides fold into ONE contentPadding object (base tier).
+    # All three tiers fold into ONE contentPadding TIER-of-BOXES object, each
+    # tier holding its own {top,right,bottom,left} box.
     assert parent_attrs.get("contentPadding") == {
-        "top": "28px", "right": "20px", "bottom": "40px", "left": "20px",
+        "desktop": {"top": "72px", "right": "64px", "bottom": "72px", "left": "64px"},
+        "tablet": {"top": "48px", "right": "32px", "bottom": "48px", "left": "32px"},
+        "mobile": {"top": "28px", "right": "20px", "bottom": "40px", "left": "20px"},
     }
-    # No flat per-side contentPadding{Side} attr is written (the object holds all sides).
+    # No flat per-side contentPadding{Side} attr, and no resurrected tier-suffixed
+    # sibling — the single object holds every tier and every side.
     assert not any(
-        k.startswith("contentPadding") and k not in ("contentPadding", "contentPaddingTablet", "contentPaddingMobile")
+        k.startswith("contentPadding") and k != "contentPadding"
         for k in parent_attrs
     )

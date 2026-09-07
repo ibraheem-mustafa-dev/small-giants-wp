@@ -1,3 +1,61 @@
+## D996 [INCIDENT] — the L4 per-area path could not emit TIER-of-BOXES; D554-C superseded for padding/margin/borderRadius
+
+**2026-09-07.** The canary homepage (post 2742) rendered desktop spacing at every viewport.
+Root-caused to `fold_helpers.route_area_css_to_block_attrs` — the assembly step-3d path that
+writes `sgs/hero.contentPadding`.
+
+**The mechanism.** A migrated block declares ONE object attr holding `{desktop,tablet,mobile}`,
+each a `{top,right,bottom,left}` box, and its flat `{attr}Tablet`/`{attr}Mobile` siblings were
+PRUNED at D295. This function still built a tier-SUFFIXED destination name, so
+`_dest in block_attr_names` was False for tablet and mobile and both were dropped **silently —
+no gap row, no trace**, because the padding props are `continue`d out of the flat loop at the
+`_skip_padding_flat` guard and never reach its `trace()` calls. The base write landed FLAT and
+only appeared to work because `sgs_responsive_normalise_object( $raw, $is_box = true )` promotes
+a flat box to the desktop tier (`helpers-responsive.php:293-299`). Measured:
+`.sgs-hero__content` computed `56px 48px` at 375px against a draft mobile value of `28px 20px 40px`.
+
+**Why it was missed.** `c829647c8` (2026-09-05) built this exact shape —
+`box_family_is_tier_shaped()`, `tier_suffix()` returning the bare base attr at every tier, and a
+nesting branch in `ElementResult.attrs()` — but only for the RESOLVER spine. This function writes
+straight into `parent_attrs` and bypasses the orchestrator entirely, so it inherited none of it.
+
+**D554 ruling C is SUPERSEDED for padding/margin/borderRadius.** It said "the converter stays flat
+until the Spec 39 rework" and rejected a temporary shim by name. Three things retire it here:
+D552's ordering precondition ("the block standard LEADS") is satisfied — 216 object-typed attrs
+declare a tier-shaped default and `check-render-tier-object-spacing.py` is clean across 83 blocks;
+D884 already recorded that "Spec 39 does not pace this track, converter cost is scheduled work";
+and `c829647c8` had ALREADY shipped an object emitter, so this completes an existing mechanism
+rather than opening a new breach. Not a shim — the same DB predicate the spine uses, applied at
+the second write site.
+
+**Blast radius.** ~150 box-family tier-shaped attrs (borderRadius x54, padding x41, margin x38,
+contentBandPadding x7, plus gridItemPadding/contentPadding/mediaPadding/splitMediaPadding/
+asidePadding/panelPadding/cardBorderWidth). The scalar-tier half of the same loop was fixed in the
+same commit, gated on `tier_object_base` — mutually exclusive with the box path by construction,
+since that predicate requires `box_family IS NULL`.
+
+**Two pinned tests flipped.** `test_l4_area_wiring.py:44` carried `xfail(strict=True)` citing
+D554-C, written to fail loud the moment the converter emitted tier objects; de-xfailed. Its final
+assertion was also factually WRONG — it required
+`box_family_for('sgs/hero','contentPaddingTablet')` to be non-None, an attr D295 pruned; inverted
+to assert its ABSENCE, which is the real regression guard. The golden test at `:75` supplied only
+a BASE css rule, so it could not detect the very defect it guards; the fixture now carries three
+tiers.
+
+**Companion fix, same commit family.** `sgs/media.height` stored `{"desktop":"440px"}` correctly
+and rendered nothing: `box-shape.php`'s `sgs_media_atom_box_shape_resolve_sizing_mode()` emits
+`--sgs-media-height` only when a SEPARATE `mediaSizing` attr equals `'height'`, that attr has no
+default, and the converter never wrote it. `outer_box.py` now emits a companion write. The switch
+name is derived by the PHP-side prefix convention (`'height'` -> `mediaSizing`;
+`'splitMediaHeight'` -> `splitMediaMediaSizing`), never a per-block table (R-31-1). Measured
+consequence of the bug: a 130x73px source rendered at `height:1500px`.
+
+⚠ `aspect-ratio` is gated by the SAME switch and is NOT fixed — `sgs/media.aspectRatio` has
+`css_property IS NULL`, so the declaration NO_DESTINATION-gaps upstream and never reaches the
+resolver. A separate, pre-existing routing gap on the primary attr; flagged, not chased.
+
+---
+
 ## D995 [ROUTINE] — rule 41's last two false-positive classes root-caused at the AST level; `sgs/product-card`'s CTA becomes "Button" and its panels merge
 
 **2026-09-07.** Detector fixes first, because every block-side change below only became
