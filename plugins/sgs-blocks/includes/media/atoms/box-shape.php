@@ -73,7 +73,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
 	 * @param mixed $object_fit The surface's own object-fit value (may be 'custom').
 	 * @return string 'auto' | 'height' | 'ratio'.
 	 */
-	function sgs_media_atom_box_shape_resolve_sizing_mode( $raw_sizing, $object_fit ) {
+	function sgs_media_atom_box_shape_resolve_sizing_mode( $raw_sizing, $object_fit, array $attributes = array(), $prefix = '', $block_slug = '' ) {
 		$vocabulary = array( 'auto', 'height', 'ratio' );
 		if ( is_string( $raw_sizing ) && in_array( $raw_sizing, $vocabulary, true ) ) {
 			return $raw_sizing;
@@ -81,6 +81,42 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
 		if ( 'custom' === $object_fit ) {
 			return 'height';
 		}
+
+		// DERIVED MODE (D1001). An absent `MediaSizing` used to fall straight to
+		// 'auto' -- which is the one mode that HIDES the Height control AND
+		// suppresses its CSS. The result was a stored value that rendered
+		// nothing while the control that would reveal it was invisible: a clone
+		// stored `height: {"desktop":"440px"}` and the image rendered at
+		// intrinsic size, with the client unable to find any control to fix it.
+		//
+		// `MediaSizing` deliberately has NO block.json default, and adding
+		// `"default": "auto"` would ship the SAME bug behind a defensible-looking
+		// diff, because 'auto' is precisely the hiding state. So the mode is
+		// DERIVED from what the client actually stored: a Height value means
+		// they meant 'height'; an AspectRatio means they meant 'ratio'.
+		//
+		// Presence is tested with the SAME helpers `css()` uses to EMIT
+		// (`resolve_tier_object` / `normalise_ratio`), never a second notion of
+		// "set" -- a divergence there would resurrect the original defect from
+		// the opposite side (mode says height, emitter finds nothing).
+		//
+		// An explicit in-vocabulary value ALWAYS wins (checked first), so a
+		// client who deliberately chooses Auto keeps Auto even with a stale
+		// height stored from a previous mode.
+		if ( array() !== $attributes ) {
+			$height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Height' );
+			$resolved   = sgs_media_atom_box_shape_resolve_tier_object( $attributes[ $height_key ] ?? null );
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+				if ( isset( $resolved[ $tier ] ) && '' !== (string) $resolved[ $tier ] ) {
+					return 'height';
+				}
+			}
+			$ratio_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'AspectRatio' );
+			if ( '' !== sgs_media_atom_box_shape_normalise_ratio( $attributes[ $ratio_key ] ?? null ) ) {
+				return 'ratio';
+			}
+		}
+
 		return 'auto';
 	}
 }
@@ -287,7 +323,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_requires' ) ) {
 	function sgs_media_atom_box_shape_requires( array $attributes, $prefix = '', $block_slug = '' ) {
 		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
 		$fit_key    = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
-		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null );
+		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null, $attributes, $prefix, $block_slug );
 
 		return array(
 			'state'        => 'shown',
@@ -314,7 +350,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 
 		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
 		$fit_key    = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
-		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null );
+		$mode       = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[ $sizing_key ] ?? null, $attributes[ $fit_key ] ?? null, $attributes, $prefix, $block_slug );
 
 		if ( 'height' === $mode ) {
 			$height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Height' );
@@ -394,7 +430,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$max_width_percent_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidthPercent' );
 		$max_width_percent     = $attributes[ $max_width_percent_key ] ?? null;
 		if ( is_numeric( $max_width_percent ) ) {
-			$decls[] = '--sgs-media-max-width-percent:' . $max_width_percent . '%;';
+			$decls[] = '--sgs-media-max-width-percent:' . $max_width_percent . '%';
 		}
 
 		$shape_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Shape' );

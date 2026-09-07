@@ -153,7 +153,7 @@ const EMITS_CSS = [
 	'overlay',
 ];
 /** Run one atom's PHP emitter through the CLI and return its declarations. */
-function phpDeclarations( id ) {
+function phpDeclarations( id, fixture = FIXTURE ) {
 	const fn = `sgs_media_atom_${ id.replace( /-/g, '_' ) }_css`;
 	const body =
 		`define("ABSPATH","${ P }/");` +
@@ -162,10 +162,86 @@ function phpDeclarations( id ) {
 		'function _doing_it_wrong($f,$m,$v){}' +
 		`require "${ P }/includes/media/atoms/${ id }.php";` +
 		`$out=${ fn }(` +
-		`json_decode(${ JSON.stringify( JSON.stringify( FIXTURE.attributes ) ) },true),` +
-		`${ JSON.stringify( FIXTURE.prefix ) },${ JSON.stringify( FIXTURE.blockSlug ) });` +
+		`json_decode(${ JSON.stringify( JSON.stringify( fixture.attributes ) ) },true),` +
+		`${ JSON.stringify( fixture.prefix ) },${ JSON.stringify( fixture.blockSlug ) });` +
 		'echo json_encode(array_values($out));';
 	return JSON.parse( execFileSync( 'php', [ '-r', body ], { encoding: 'utf8' } ) );
+}
+
+/**
+ * BOX-SHAPE CASE MATRIX (2026-09-07, D1001).
+ *
+ * The single `FIXTURE` above pins `mediaSizing: 'ratio'` — an explicitly
+ * in-vocabulary value — so the mode resolver returned early and its DERIVATION
+ * branch was never reached on either side. Both halves skipped the height path
+ * and "agreed" by emitting nothing from it. The fixture also carries no
+ * `maxWidth` / `maxWidthPercent`, which is how a trailing-semicolon divergence
+ * between the PHP and JS emitters sat uncovered in a gate whose entire purpose
+ * is byte-identical output.
+ *
+ * Parity between two skipped branches is not parity. Each case forces a
+ * DIFFERENT branch and asserts the real emitted declarations, not the mode.
+ */
+const BOX_SHAPE_CASES = [
+	{
+		name: 'derived: Height stored, mode ABSENT -> height emits',
+		patch: { mediaSizing: undefined, aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },
+		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-height:' ) ),
+		because: 'a stored height with no mode used to render nothing at all',
+	},
+	{
+		name: 'derived: AspectRatio stored, mode ABSENT -> ratio emits',
+		patch: { mediaSizing: undefined, height: {}, aspectRatio: '4 / 3' },
+		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-aspect-ratio:' ) ),
+		because: 'the ratio half of the same derivation',
+	},
+	{
+		name: 'derived: neither stored, mode ABSENT -> auto, no sizing decls',
+		patch: { mediaSizing: undefined, height: {}, aspectRatio: '' },
+		expect: ( d ) => ! d.some( ( x ) => x.startsWith( '--sgs-media-height:' ) || x.startsWith( '--sgs-media-aspect-ratio:' ) ),
+		because: 'derivation must not invent a mode from nothing',
+	},
+	{
+		name: 'NEGATIVE CONTROL: explicit auto + stored Height -> height SUPPRESSED',
+		patch: { mediaSizing: 'auto', aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },
+		expect: ( d ) => ! d.some( ( x ) => x.startsWith( '--sgs-media-height:' ) ),
+		because: 'an explicit client choice must still beat the derivation, or the fix has replaced one silent override with another',
+	},
+	{
+		name: 'both width caps set (covers the emitter that broke parity)',
+		patch: { maxWidth: { desktop: 640 }, maxWidthUnit: 'px', maxWidthPercent: 80 },
+		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-max-width' ) ),
+		because: 'the uncovered emitter whose stray semicolon broke byte-parity',
+	},
+];
+
+{
+	const mod = await import( 'file:///' + jsModule( 'box-shape' ).split( BS ).join( '/' ) );
+	for ( const c of BOX_SHAPE_CASES ) {
+		const attributes = { ...FIXTURE.attributes, ...c.patch };
+		for ( const k of Object.keys( c.patch ) ) {
+			if ( undefined === c.patch[ k ] ) {
+				delete attributes[ k ];
+			}
+		}
+		const fixture = { ...FIXTURE, attributes };
+		const jsOut = mod.css( { attributes, prefix: fixture.prefix, blockSlug: fixture.blockSlug } );
+		const phpOut = phpDeclarations( 'box-shape', fixture );
+		const a = [ ...jsOut ].sort();
+		const b = [ ...phpOut ].sort();
+		const onlyJs = a.filter( ( d ) => ! b.includes( d ) );
+		const onlyPhp = b.filter( ( d ) => ! a.includes( d ) );
+		ck(
+			`box-shape [${ c.name }]: JS and PHP identical (${ a.length })`,
+			! onlyJs.length && ! onlyPhp.length,
+			`JS-only: [${ onlyJs.join( ', ' ) }]  PHP-only: [${ onlyPhp.join( ', ' ) }]`
+		);
+		ck(
+			`box-shape [${ c.name }]: behaviour`,
+			c.expect( a ),
+			`${ c.because } — emitted: [${ a.join( ', ' ) }]`
+		);
+	}
 }
 
 process.stdout.write( 'media atom value-setter parity\n\n' );

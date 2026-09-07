@@ -143,7 +143,13 @@ export function normaliseRatio( value ) {
  * @param {*} objectFit The surface's own object-fit value (may be `custom`).
  * @return {string} 'auto' | 'height' | 'ratio'.
  */
-export function resolveSizingMode( rawSizing, objectFit ) {
+export function resolveSizingMode(
+	rawSizing,
+	objectFit,
+	attributes = null,
+	prefix = '',
+	blockSlug = ''
+) {
 	const vocabulary = MEDIA_ATOMS[ ATOM_ID ].vocabulary.sizing;
 	if ( vocabulary.includes( rawSizing ) ) {
 		return rawSizing;
@@ -151,6 +157,30 @@ export function resolveSizingMode( rawSizing, objectFit ) {
 	if ( 'custom' === objectFit ) {
 		return 'height';
 	}
+
+	// DERIVED MODE (D1001) — byte-identical twin of
+	// `sgs_media_atom_box_shape_resolve_sizing_mode()`; read that function's
+	// comment for the full rationale. Summary: an absent `MediaSizing` fell to
+	// 'auto', the one mode that HIDES the Height control and suppresses its
+	// CSS, so a stored height rendered nothing with no reachable control.
+	// `"default": "auto"` in block.json would ship the same bug, because 'auto'
+	// IS the hiding state — so the mode is derived from what was stored.
+	// Presence uses the SAME helpers `css()` emits with (`resolveHeight` /
+	// `normaliseRatio`), never a second notion of "set". An explicit
+	// in-vocabulary value always wins, checked above.
+	if ( attributes ) {
+		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
+		const resolved = resolveHeight( attributes[ heightKey ] );
+		const tiers = [ 'desktop', 'tablet', 'mobile' ];
+		if ( tiers.some( ( tier ) => '' !== String( ( resolved && resolved[ tier ] ) ?? '' ) ) ) {
+			return 'height';
+		}
+		const ratioKey = mediaStoredAttrName( blockSlug, prefix, 'AspectRatio' );
+		if ( '' !== normaliseRatio( attributes[ ratioKey ] ) ) {
+			return 'ratio';
+		}
+	}
+
 	return 'auto';
 }
 
@@ -475,7 +505,7 @@ function formatLength( value, unit, alreadyEmbedded ) {
 export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
 	const sizingKey = mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' );
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
-	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ] );
+	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
 	return {
 		state: 'shown',
 		hiddenReason: null,
@@ -522,7 +552,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 
 	const sizingKey = mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' );
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
-	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ] );
+	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
 
 	if ( 'height' === mode ) {
 		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );

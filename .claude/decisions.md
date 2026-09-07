@@ -1,3 +1,69 @@
+## D1001 [INCIDENT] — media sizing mode is DERIVED, not defaulted; and the parity gate that guarded it was vacuous
+
+**2026-09-07.** Slice 1 of the media control-surface work, scoped by a six-persona
+`/adversarial-council`. Bean confirmed there are **no live clients** (pre-launch), so no
+stored-content migration is owed.
+
+**The defect.** `MediaSizing` has no `block.json` default. An absent value resolved to
+`'auto'` — which is the one mode that both HIDES the Height control
+(`sgs_media_atom_box_shape_requires()` sets `heightState => 'hidden'`) and suppresses its
+CSS. So a stored `height: {"desktop":"440px"}` rendered nothing AND the control that would
+have revealed it was invisible. Measured live: a cloned Brand Story image at 1536x1536
+inside a 737px column, with no reachable control.
+
+**Why `"default": "auto"` was REJECTED.** Four of six council personas proposed it. The
+ship-PM persona refused it and is right: `auto` IS the hiding state, so declaring it as the
+default ships the identical bug behind a defensible-looking diff. (`media/block.json`'s own
+`_comment_mediaSizing` separately warns that `"default": null` 400s SSR — a correct
+diagnosis of a different problem, which is how the attribute ended up with no default at all.)
+
+**The fix.** The mode is DERIVED from what the client actually stored: a Height value means
+`height`, an AspectRatio means `ratio`, neither means `auto`. Presence is tested with the
+SAME helpers `css()` emits with (`resolve_tier_object` / `normalise_ratio`) — never a second
+notion of "set", which would resurrect the defect from the opposite side (mode says height,
+emitter finds nothing). An explicit in-vocabulary value is checked FIRST and always wins, so
+a client who deliberately picks Auto keeps Auto even with a stale height stored.
+
+Both twins changed identically (`includes/media/atoms/box-shape.php`,
+`src/components/media/atoms/box-shape.js`) — the atom layer holds them to byte-identical
+output.
+
+⚠ **THE GATE GUARDING THAT GUARANTEE WAS VACUOUS, and this is the more important finding.**
+`test-media-atom-parity.mjs` ran **one fixture**, which pinned `mediaSizing: 'ratio'` — an
+explicitly in-vocabulary value. The resolver returned early, the derivation branch was never
+reached on either side, and both halves "agreed" by skipping the same path and emitting
+nothing from it. The fixture also carried no `maxWidth`/`maxWidthPercent`, which is how a
+**real PHP/JS divergence sat uncovered**: `box-shape.php` emitted
+`'--sgs-media-max-width-percent:…%;'` with a trailing semicolon while its JS twin did not,
+breaking both the byte-identical claim in the file's own docblock and the atom contract at
+`helpers-media-element.php:245` (declarations carry NO trailing semicolon; the joiner adds
+separators). Fixed in the same commit.
+
+Parity between two skipped branches is not parity. A five-case matrix now forces each branch
+of the resolver and asserts the EMITTED declarations, not the internal mode — including a
+NEGATIVE CONTROL (explicit `auto` + a stored Height must still suppress the height), so the
+fix cannot be "improved" into overriding the client's own choice.
+
+**Proven, not asserted:** disabling the derivation in both twins makes exactly the two
+derivation cases FAIL while parity stays green and the other three cases still pass — i.e.
+the new assertions test the fix and nothing else. Restored and re-verified after.
+
+**This is the fifth gate this session whose green tick proved nothing** (after the
+destination-shape gate's body-wide scan, `check-media-atom-purity`'s three-keyword list,
+`check-element-manifest-conformance`'s invented member names, and the L4 golden test's
+single-tier fixture). The pattern is consistent: the gate tested a narrower question than the
+rule it was written to enforce.
+
+**Council scope correction, recorded so it is not re-derived.** The dossier framed this as a
+10-block redesign. Measured: of 25 element declarations across 19 blocks, **17 carry a single
+atom** (object-fit). The real surface is `sgs/media` and `sgs/hero`, and
+`src/components/media/MediaPanelLayout.js` is ALREADY the coherent seven-panel surface the
+brief asked for — `sgs/hero` was simply never ported onto it. Remaining slices in the
+council report: dead-control audit, label/collapse fixes, hero prefix collapse, hero panel
+port, and collapsing the three width caps into one.
+
+---
+
 ## D999 — rule 31 narrowed to the editor-side gap; the census becomes the gated instrument
 
 **2026-09-07. Bean-ruled.** Two detectors covered one domain and disagreed, and the less
