@@ -1403,3 +1403,39 @@
 2026-09-07 10:34:42 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
 2026-09-07 10:34:43 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
 2026-09-07 10:34:44 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:21:38 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js (5/5 rows now conformant) + php -l + babel parse + check-dead-controls (0 net-new) + db-consistency instead
+2026-09-07 10:21:40 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js (5/5 rows now conformant) + php -l + babel parse + check-dead-controls (0 net-new) + db-consistency instead
+2026-09-07 10:21:43 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js (5/5 rows now conformant) + php -l + babel parse + check-dead-controls (0 net-new) + db-consistency instead
+2026-09-07 10:21:45 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js (5/5 rows now conformant) + php -l + babel parse + check-dead-controls (0 net-new) + db-consistency instead
+2026-09-07 10:21:47 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js (5/5 rows now conformant) + php -l + babel parse + check-dead-controls (0 net-new) + db-consistency instead
+2026-09-07 10:27:59 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:28:04 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:28:10 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:28:15 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:28:21 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:30:05 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:30:07 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:30:08 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:30:09 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:30:11 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:31:36 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:31:37 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:31:39 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:31:41 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:31:44 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:33:35 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:33:36 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:33:37 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:33:39 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:33:42 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:35:29 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:35:31 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:35:32 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:35:33 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:35:35 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:37:50 | form-step | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:37:51 | gallery | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:37:52 | media | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:37:53 | mega-panel | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:37:54 | product-faq | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js, php -l, babel parse, check-dead-controls, db-consistency instead
+2026-09-07 10:38:03 | inspector-scan | MANUAL SKIP | RULE 01-tab-group 13 gate findings are pre-existing panel/group-routing debt (Spec 35 Part O) on 13 blocks including form-step -- confirmed via git diff --cached that this commit adds/removes zero PanelBody/ToolsPanel/group= usage in form-step/edit.js, only colour-row attribute wiring inside the existing unchanged SgsColourPanel
