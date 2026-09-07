@@ -22,6 +22,17 @@ a fraud-detection check meant to catch a different, real problem (a converter ac
 copying a draft's own styling class onto a clone). Told the checker about that one legitimate
 line by name, proved it still catches a real violation elsewhere.
 
+**Separately (second track, same day): the gates got honest.** Several checks were either
+crying wolf or quietly protecting nothing. The pre-merge gate had printed a red FAIL on every
+single commit for months — 220 of its 228 "failures" came from a vendored copy of a competitor
+plugin that never ships. A gate that always fails is a gate nobody reads, so it was fixed at
+the root. The RTL check (does the nav still work in Arabic/Hebrew?) was real, tested, and wired
+to nothing — now it runs on every build. And ~480 findings sitting in "known debt" lists turned
+out to be mostly resolved years-of-the-week ago; those lists are now accurate or gone.
+
+**The 8 draft PRs and 30 branches are gone.** Every one was checked properly first: all
+superseded, nothing lost. Several would have *broken* main if merged.
+
 **Bonus, found along the way:** the box-shape deploy's full test run surfaced two unrelated,
 pre-existing test failures elsewhere in the pipeline (nothing to do with the border work) —
 root-caused properly (not guessed) and fixed, so the deploy gate is fully green again rather
@@ -34,6 +45,16 @@ than needing a bypass every time.
 | **`sgs/media`/`sgs/hero` border hover/gradient state** (matches button/container's pattern) | D985 · `11f1e2386` (merged direct to `main`, no PR — D983) |
 | **Cheat-gate Check #9 allowlist** for `section_passes.py`'s legitimate anchor-class write | D985 · `3e20518c7` |
 | **Two pre-existing converter test failures root-caused + fixed** (tier-of-boxes COLLISION false-positive; missing `xfail` marker) | D985 · `efeb0b8e7` |
+| **Git hygiene locked: no PRs, no stashes, integrate after every task** (project + GLOBAL `~/.claude`) | D983 · `75dfd3058` |
+| **8 draft PRs closed + all 30 remote branches deleted** — every one verified superseded, zero salvage | D983 · `045af1ba8` |
+| **Dead border-radius tier code purged** — 5 duplicate stanzas + 49 always-null arg pairs + the 3 GENERATORS that re-emit them | `e002bd8b1` |
+| **wp-pre-merge-gate stopped failing on every commit** (3 bugs: wrong list, vendored scope, WP dynamic hooks) | D987 · `b166bd164` |
+| **gallery `!important` → specificity**; cheat-gate 1 violation → 0, baseline emptied | `b166bd164` |
+| **Canary oldshape debt cleared**: dead domain removed, 8 spent probe pages trashed, baseline 197 → 0 | `1e9721cb3` |
+| **Enum control-shape band 2-5 → 2-4, five is NEUTRAL** (Bean ruling); 46 → 29 violations | D986 · `1b1ad4712` |
+| **`logical-props` RTL gate WIRED IN** + 3 nav conversions (2 kept physical, one JS-coupled) | D987 · `559d05e16` |
+| **`multi-button.childBtnBorderRadius` → standard responsive tier object** (+ its check's stale advice fixed) | `0e338b28e` |
+| **db-consistency baseline DELETED** — gate now fails on ANY violation (strictest setting) | D988 · `a4e83e46c` |
 
 ## Blockers
 
@@ -41,11 +62,11 @@ than needing a bypass every time.
 
 ## THE FRONT — five live tracks, pick one
 
-Tracks D and E are new (2026-09-07); B was rewritten the same day. All three replaced prompts
-that cited stale counts, orphaned commit SHAs, or work another session had already done — read
-the prompt, not a remembered summary. Track A is untouched and still carries its 2026-09-06
-numbers, which an audit found overstated (61 rows, not 58; 3 of 4 sampled rows were false
-positives needing a docs entry, not code). Track C is closed-out salvage.
+**All four live tracks were rewritten from measurement on 2026-09-07** (A, B, E replaced their
+prompts; D is new). Every superseded prompt cited stale counts, orphaned commit SHAs, or work
+another session had already finished — so read the prompt, never a remembered summary. The
+recurring finding across all four: detectors and censuses flag correct framework usage, so a
+headline count is an upper bound, not a workload. Track C is closed-out salvage.
 
 ### Track D — typography: surface-type taxonomy + helper extension (NEWEST, has a design gate)
 **Read first (full, not skim):** `.claude/prompts/2026-09-07-typography-surface-taxonomy-next.md`.
@@ -63,8 +84,18 @@ it from current usage would launder an accident into a standard.
 D973's own next-session first item, never done.
 
 ### Track A — colour conformance, TEXT surface
-**Read first (full, not skim):** `.claude/prompts/2026-09-06-colour-conformance-text-surface-next.md`.
-FILL surface closed 2026-09-06 (`b30c6bfc4`); TEXT is the next-largest colour category.
+**Read first (full, not skim):** `.claude/prompts/2026-09-07-colour-conformance-text-next.md`.
+Supersedes the deleted `2026-09-06-colour-conformance-text-surface-next.md`.
+**TEXT is 68 rows, but only 29 are real work** (measured 2026-09-07): 39 are already correctly
+wired and flagged solely for a missing hover state.
+**Bean-ruled 2026-09-07:** every text row gets a base + hover pair — the uniform contract, not
+hover-restricted-to-interactive. 36 rows take the hover; 3 (`brand-strip.itemTextColourHover`,
+`post-grid.textColourHover`, `quote.textColourHover`) are hover-only by design with no base
+partner and need a `colourExemptions` entry, not a fix. Triage the 29 before migrating.
+⚠ FILL is NOT fully closed — 15 rows remain, and the old prompt's closure figures don't
+reconcile with commit `b30c6bfc4`'s own message.
+⚠ `.claude/plans/phase-colour-conformance.md` is stale — it points at a prompt file that no
+longer exists.
 
 ### Track B — tier-object migration, Phase 3 remainder
 **Read first:** `.claude/prompts/2026-09-07-tier-object-phase-3-next.md` (full read).
@@ -158,7 +189,7 @@ Bean can close these PRs at leisure; no further investigation needed.
   work (a border-radius-legacy-args codemod, `strip-dead-radius-legacy-args.py`, unrelated to
   this session). Do not stash or discard it — re-check `git status` and let that track land its
   own commit, then `git pull --ff-only`.
-- **D-ceiling:** **D985** — verify with
+- **D-ceiling:** **D988** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Build:** `npm run build` (sgs-blocks) — full gate chain including `hover-guard`,
   `check-dead-controls`, `check-hardcoded-render-defaults`, payload-verify (83/83) all pass.
@@ -167,10 +198,14 @@ Bean can close these PRs at leisure; no further investigation needed.
   `sgs/media` and `sgs/hero`). Probe page (3350) created and deleted after verification —
   nothing left on the canary from this session. `push-theme-snapshot.py` status from
   2026-08-18 NOT re-checked.
-- **Open PRs:** #53-#60 still open on GitHub, confirmed salvage-free (Track C) — Bean can close
-  at leisure. No new PRs opened this session (D983: commit straight to `main`).
-- **Uncommitted (NOT this session's, left untouched):** ~55 files under `plugins/sgs-blocks/`
-  (a border-radius-legacy-args codemod in progress on another track) + `.claude/handovers/
+- **Open PRs:** **NONE.** #53-#60 are all CLOSED, each with a per-PR reason naming the specific
+  evidence that superseded it, and all 30 remote branches are DELETED (D983). `git branch -r` is
+  `origin/main` only, plus whatever a live track has opened since. No new PRs will be opened —
+  D983 bans them.
+- **Uncommitted:** ⚠ the ~55-file border-radius codemod a previous LEDGER entry attributed to
+  "another track" was in fact THIS track's, and it LANDED (`e002bd8b1`). Still uncommitted and
+  genuinely NOT ours: a concurrent session's `linkColour` work across collapsible-text, heading,
+  product-card, quote, testimonial, text and timeline + `.claude/handovers/
   2026-08-26-product-card-media-panel.md` (shown deleted) + root `CLAUDE.md`. Re-check
   `git status` yourself before assuming any of this is safe to touch.
 
