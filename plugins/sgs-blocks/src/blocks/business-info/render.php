@@ -48,7 +48,6 @@ $sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin']
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
-
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
@@ -595,6 +594,18 @@ if ( '' !== $label_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
 }
+
+$label_colour_hover = $attributes['labelColourHover'] ?? '';
+$label_colour_gradient_hover = $attributes['labelColourHoverGradient'] ?? '';
+$label_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $label_colour_hover, $label_colour_gradient_hover );
+if ( '' !== $label_colour_effective_hover ) {
+	$label_colour_effective_hover_decl = sgs_text_colour_decl( $label_colour_effective_hover );
+	if ( '' !== $label_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $label_sel, $label_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel . ':hover', $label_colour_effective_hover );
+}
+
 // Attribution hover-sweep — same omit-when-unset contract as the icon colour
 // above. Unset falls back to style.css's `var(--sgs-bi-link-hover-bg, #e7d768)` /
 // `var(--sgs-bi-link-hover-text, #e7d768)`, the SGS credit sweep colour. Two

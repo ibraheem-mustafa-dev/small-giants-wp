@@ -105,6 +105,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the label text (currently only visible on .sgs-business-hours__day) instead of a flat colour. Non-empty wins over labelColour at render time (D636 text-colour gradient rollout, 778879732 finish)."
 		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
+		},
 		"attributionHoverColour": {
 			"type": "string",
 			"default": ""

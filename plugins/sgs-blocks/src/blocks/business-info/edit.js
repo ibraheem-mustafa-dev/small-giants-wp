@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { ResponsiveBoxControl, SgsColourPanel, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 
 /** Labels for the type selector drop-down. */
 const TYPE_OPTIONS = [
@@ -43,8 +43,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
-		labelColour,
-		labelColourGradient,
 		attributionHoverColour,
 		attributionHoverColourFallback,
 		borderColour,
@@ -127,22 +125,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					   here — this block never split into per-element TIER 1 panels).
 					   Same ICON_TYPES gate as before, per D609 9c (omit, don't
 					   disable). */
-					ICON_TYPES.has( displayType ) && {
-						key: 'label',
-						label: __( 'Label colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: labelColour,
-								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-								gradientValue: labelColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { labelColourGradient: val ?? '' } ),
+					ICON_TYPES.has( displayType ) &&
+						textRow( {
+							key: 'label',
+							label: __( 'Label colour', 'sgs-blocks' ),
+							attrs: {
+								base: 'labelColour',
+								hover: 'labelColourHover',
+								gradient: 'labelColourGradient',
+								hoverGradient: 'labelColourHoverGradient',
 							},
-						],
-					},
+							attributes,
+							setAttributes,
+						} ),
 				] }
 			/>
 			<InspectorControls>

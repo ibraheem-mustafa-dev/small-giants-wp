@@ -286,6 +286,17 @@ if ( '' !== $submit_colour_effective || $submit_fill_decls['normal'] || $submit_
 	);
 }
 
+$submit_colour_hover = $attributes['submitColourHover'] ?? '';
+$submit_colour_gradient_hover = $attributes['submitColourHoverGradient'] ?? '';
+$submit_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $submit_colour_hover, $submit_colour_gradient_hover );
+if ( '' !== $submit_colour_effective_hover ) {
+	$submit_colour_effective_hover_decl = sgs_text_colour_decl( $submit_colour_effective_hover );
+	if ( '' !== $submit_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( '.' . $sgs_form_uid . ' .sgs-form__button--submit', $submit_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( '.' . $sgs_form_uid . ' .sgs-form__button--submit:hover', $submit_colour_effective_hover );
+}
+
 // Progress-bar colour custom-property VALUE (FR-32-4, D345) — scoped rule on
 // `.uid .sgs-form__progress`, NOT an inline `style="--x:y"` attribute. Uses the
 // SAME uid as the color/border/typography/submit-button supports above

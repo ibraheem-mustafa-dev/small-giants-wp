@@ -61,7 +61,6 @@ $sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin']
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
-
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
@@ -133,6 +132,18 @@ if ( '' !== $number_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel, $number_colour_effective );
 }
+
+$number_colour_hover = $attributes['numberColourHover'] ?? '';
+$number_colour_gradient_hover = $attributes['numberColourHoverGradient'] ?? '';
+$number_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $number_colour_hover, $number_colour_gradient_hover );
+if ( '' !== $number_colour_effective_hover ) {
+	$number_colour_effective_hover_decl = sgs_text_colour_decl( $number_colour_effective_hover );
+	if ( '' !== $number_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $number_sel, $number_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $number_sel . ':hover', $number_colour_effective_hover );
+}
+
 $label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
 if ( '' !== $label_colour_effective ) {
 	$label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
@@ -144,6 +155,17 @@ if ( '' !== $label_colour_effective ) {
 	// lacking that support gets a bare `color:` holding a gradient string,
 	// which it drops silently. No-op for a flat colour.
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel, $label_colour_effective );
+}
+
+$label_colour_hover = $attributes['labelColourHover'] ?? '';
+$label_colour_gradient_hover = $attributes['labelColourHoverGradient'] ?? '';
+$label_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $label_colour_hover, $label_colour_gradient_hover );
+if ( '' !== $label_colour_effective_hover ) {
+	$label_colour_effective_hover_decl = sgs_text_colour_decl( $label_colour_effective_hover );
+	if ( '' !== $label_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $label_sel, $label_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $label_sel . ':hover', $label_colour_effective_hover );
 }
 
 // ---------------------------------------------------------------------------

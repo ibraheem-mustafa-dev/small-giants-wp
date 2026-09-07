@@ -146,6 +146,18 @@ if ( $trigger_rules ) {
 	// when $trigger_colour_effective is a flat colour.
 	$scoped_css_rules[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective );
 }
+
+$trigger_colour_hover = $attributes['triggerColourHover'] ?? '';
+$trigger_colour_gradient_hover = $attributes['triggerColourHoverGradient'] ?? '';
+$trigger_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $trigger_colour_hover, $trigger_colour_gradient_hover );
+if ( '' !== $trigger_colour_effective_hover ) {
+	$trigger_colour_effective_hover_decl = sgs_text_colour_decl( $trigger_colour_effective_hover );
+	if ( '' !== $trigger_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $root_sel . ' .sgs-modal__trigger', $trigger_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ' .sgs-modal__trigger:hover', $trigger_colour_effective_hover );
+}
+
 if ( $trigger_bg_css ) {
 	$scoped_css_rules[] = $trigger_bg_css;
 }

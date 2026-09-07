@@ -14,7 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
-import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveTextColourPreviewStyle, backgroundPaintPreview } from '../../utils';
@@ -254,26 +254,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   generates no native colour UI to overlap with this panel.
 			   submitColour/submitBackground are TWO separate rows (different
 			   CSS properties on the SAME element — text vs background — not
-			   two states of one property). No hover pair exists for any of
-			   these four attributes on this block. */ }
+				   two states of one property). submitColour gained a hover pair
+				   2026-09-07 (Task 1, colour-conformance); submitBackground still
+				   has none. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'submit-text',
 						label: __( 'Submit button text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: submitColour,
-								onChange: ( val ) => setAttributes( { submitColour: val ?? '' } ),
-								linked: true,
-								gradientValue: attributes.submitColourGradient,
-								onGradientChange: ( val ) => setAttributes( { submitColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'submitColour',
+							hover: 'submitColourHover',
+							gradient: 'submitColourGradient',
+							hoverGradient: 'submitColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'submit-background',
 						label: __( 'Submit button background colour', 'sgs-blocks' ),

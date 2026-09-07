@@ -56,6 +56,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		triggerStyle,
 		triggerColour,
 		triggerColourGradient,
+		triggerColourHover,
+		triggerColourHoverGradient,
 		triggerBackground,
 		triggerBackgroundHover,
 		triggerBackgroundHoverGradient,
@@ -231,8 +233,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   overlayColour -> the `--sgs-modal-backdrop-colour` custom
 			   property) — confirmed 2026-08-15 against the live source and
 			   this edit.js's own pre-existing comments before wiring these
-			   rows. All 4 are single-state (no hover pair exists for any of
-			   them), `linked: true` per D619. None of the old
+			   rows. triggerColour gained a hover pair 2026-09-07 (Task 1,
+			   colour-conformance); the other 3 remain single-state.
+			   `linked: true` per D619. None of the old
 			   DesignTokenPickers below passed `linked`, so this migration
 			   also fixes a pre-existing gap (a converter-written slug would
 			   previously have shown as "unset"). */ }
@@ -275,6 +278,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange: ( val ) => setAttributes( { triggerColour: val ?? '' } ),
 								gradientValue: triggerColourGradient,
 								onGradientChange: ( val ) => setAttributes( { triggerColourGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: triggerColourHover,
+								onChange: ( val ) => setAttributes( { triggerColourHover: val ?? '' } ),
+								gradientValue: triggerColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { triggerColourHoverGradient: val ?? '' } ),
 								linked: true,
 							},
 						] }

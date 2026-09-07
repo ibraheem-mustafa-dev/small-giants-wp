@@ -155,6 +155,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"numberColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"numberColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of numberColourHover. Non-empty wins over numberColourHover on :hover/:focus-visible."
+		},
 		"labelColour": {
 			"type": "string",
 			"default": "text-muted"
@@ -162,6 +171,15 @@
 		"labelColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
 		},
 		"labelFontSize": {
 			"type": "object",

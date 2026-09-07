@@ -146,6 +146,15 @@
 			"type": "string",
 			"default": ""
 		},
+		"triggerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"triggerColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of triggerColourHover. Non-empty wins over triggerColourHover on :hover/:focus-visible."
+		},
 		"triggerBackground": {
 			"type": "string"
 		},

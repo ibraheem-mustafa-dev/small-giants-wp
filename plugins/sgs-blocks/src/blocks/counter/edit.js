@@ -10,7 +10,7 @@ import {
   RangeControl,
   ToggleControl,
 } from "@wordpress/components";
-import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from "../../utils";
 
 
@@ -82,38 +82,30 @@ export default function Edit({ attributes, setAttributes }) {
          panel. No hover pair exists for either attribute on this block. */ }
       <SgsColourPanel
         rows={ [
-          {
+          textRow({
             key: "number",
             label: __("Number colour", "sgs-blocks"),
-            gradientCapable: true,
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: numberColour,
-                onChange: (val) => setAttributes({ numberColour: val ?? "" }),
-                linked: true,
-                gradientValue: numberColourGradient,
-                onGradientChange: (val) => setAttributes({ numberColourGradient: val ?? "" }),
-              },
-            ],
-          },
-          {
+            attrs: {
+              base: "numberColour",
+              hover: "numberColourHover",
+              gradient: "numberColourGradient",
+              hoverGradient: "numberColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
+          textRow({
             key: "label",
             label: __("Label colour", "sgs-blocks"),
-            gradientCapable: true,
-            states: [
-              {
-                key: "normal",
-                label: __("Normal", "sgs-blocks"),
-                value: labelColour,
-                onChange: (val) => setAttributes({ labelColour: val ?? "" }),
-                linked: true,
-                gradientValue: labelColourGradient,
-                onGradientChange: (val) => setAttributes({ labelColourGradient: val ?? "" }),
-              },
-            ],
-          },
+            attrs: {
+              base: "labelColour",
+              hover: "labelColourHover",
+              gradient: "labelColourGradient",
+              hoverGradient: "labelColourHoverGradient",
+            },
+            attributes,
+            setAttributes,
+          }),
         ] }
       />
       <InspectorControls>

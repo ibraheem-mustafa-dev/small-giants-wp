@@ -9,7 +9,7 @@ import {
 	SelectControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, textRow, SgsLengthControl } from '../../components';
 import {
 	colourVar,
 	SGS_LENGTH_UNITS,
@@ -215,8 +215,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
 		style,
-		textColour,
-		textColourGradient,
 		backgroundColour,
 		backgroundColourGradient,
 		fontSize,
@@ -248,26 +246,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
 			   Replaces the inline DesignTokenPicker rows that used to live in
-			   the "Colour" panel below. Neither attr has a hover pair, so both
-			   render as single-state rows. Links to the theme palette (D619). */ }
+			   the "Colour" panel below. textColour gained a hover pair
+			   2026-09-07 (Task 1, colour-conformance); background still has
+			   none. Links to the theme palette (D619). */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'background',
 						label: __( 'Background colour', 'sgs-blocks' ),

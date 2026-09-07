@@ -168,6 +168,17 @@ if ( '' !== $text_colour_fallback_rule ) {
 	$scoped_css[] = $text_colour_fallback_rule;
 }
 
+$text_colour_hover = $attributes['textColourHover'] ?? '';
+$text_colour_gradient_hover = $attributes['textColourHoverGradient'] ?? '';
+$text_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $text_colour_hover, $text_colour_gradient_hover );
+if ( '' !== $text_colour_effective_hover ) {
+	$text_colour_effective_hover_decl = sgs_text_colour_decl( $text_colour_effective_hover );
+	if ( '' !== $text_colour_effective_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_colour_effective_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $text_colour_effective_hover );
+}
+
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
 // mechanism (D971/D972 full-replacement track). Covers fontSize (base +
 // tablet + mobile tiers, same cascade-order Pattern A as before) plus
