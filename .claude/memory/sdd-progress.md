@@ -869,3 +869,131 @@ Worktree `/tmp/hero-mediapadding-wt-3` used for build+deploy, removed after.
 **Priority 2 (mediaPadding shared atom + hero fold) is now FULLY COMPLETE** — the shared
 `media-padding` atom, `sgs/hero`'s `splitMediaPadding`, AND `sgs/hero`'s separate `mediaPadding`
 family are all migrated to the tier-object shape and live-verified at all three tiers.
+
+## SDD progress — Priority 4 complete + Task B (deploy isolation) shipped, 2026-09-07
+
+**Priority 4 (splitMediaObjectPosition + splitMediaWidth tier folds) is now FULLY COMPLETE
+and live-verified.** Classification (do not re-investigate in a future session):
+
+| Attribute | Class | Reason |
+|---|---|---|
+| `splitMediaObjectPosition`/Tablet/Mobile | VALUE (CSS `object-position`) | Migrated this session |
+| `splitMediaWidth`/Tablet/Mobile | VALUE (CSS `width`) | Migrated this session |
+| `splitMediaType`/Tablet/Mobile | ART-DIRECTION | Selects which sibling markup branch `sgs_tier_media_render()` renders (render.php's own comment) — NOT touched |
+| `thumbnail`/Tablet/Mobile | ART-DIRECTION | Documented poster-tier pattern (plugins/sgs-blocks/CLAUDE.md) — NOT touched |
+| "six `videoAutoplay*` booleans" | DOES NOT EXIST | An earlier handoff note was wrong; verified via grep across block.json/edit.js/render.php, zero matches. Do not search for this again. |
+
+**`splitMediaObjectPosition` — the harder of the two, because the shared `focal-point` media
+atom (used by 7 blocks: before-after, card-grid, decorative-image, hero, media, product-card,
+testimonial) hard-coded a 3-flat-key read/write shape in its JS twin (`focal-point.js`), PHP
+twin (`focal-point.php`), and JSX control (`focal-point.control.js`).** Folding hero's storage
+alone would have silently broken the shared control for hero specifically (writes to the
+now-undeclared `splitMediaObjectPositionTablet`/`Mobile` keys are discarded by WP per D338).
+Fixed by making the atom's three surfaces SHAPE-AWARE rather than migrating all 7 callers at
+once: each reads the base key first — if it already carries a `{desktop,tablet,mobile}`
+tier-object (a migrated caller), use it; otherwise fall back to the sibling flat
+`*Tablet`/`*Mobile` keys (an unmigrated caller) — byte-identical output for the 6 still-flat
+callers, full tier-object support for hero. `test-media-atom-parity.mjs` still passes 16/16
+atoms unchanged. Added a `registry.js` `reads` exception for `sgs/hero.splitMediaObjectPosition`
+so `inspector-scan` rule `38-media-attr-parity` (a real, working detector — it correctly caught
+the deliberate type divergence between hero's new object shape and the atom's base string type)
+stays green.
+
+**`splitMediaWidth` — genuinely simpler.** `box-shape.js`'s `resolveWidth()` and its PHP twin
+`sgs_media_atom_box_shape_resolve_tier_object()` ALREADY tolerated both a scalar number and a
+tier-object at this key (used generically by other blocks already) — no atom-level fix needed.
+The only raw 3-flat-key read was hero's own SEPARATE hand-rolled `'custom' === $image_object_fit`
+width emission in render.php (not the atom's own CSS path), fixed via
+`sgs_responsive_normalise_object()` matching minHeight/splitMediaPadding's already-proven
+pattern. The box-shape atom's Width CONTROL (`box-shape.control.js`) was ALREADY fully
+tier-object-native for other callers — hero gets full tablet/mobile editor control for the
+first time as a side effect (previously "editor-inert, render.php-only" per registry.js's own
+prior documentation).
+
+**Real content-compat incident, found and fixed BEFORE it could strand data.** The pre-deploy
+`oldshape-audit` gate caught 2 NEW HIGH findings: published posts 2511 (draft) and **2742 (the
+LIVE PRODUCTION HOMEPAGE)** stored `splitMediaObjectPosition` in the pre-fold flat/string shape
+— deploying the block.json type change (string → object) would have silently discarded the
+operator's stored focal-point value on the homepage (WP substitutes the default the moment a
+mismatched-shape value is read, D328). The general Track B migration tool
+(`scripts/wp-migrate-oldshape-blocks.js`) is scoped to a DIFFERENT migration class
+(scalar→InnerBlocks) and does not cover this shape; wrote a narrowly-scoped, SURGICAL
+substring-level migration script (locate-and-replace the exact
+`"splitMediaObjectPosition":"<value>"` + sibling `,"splitMediaObjectPositionMobile":"<value>"`
+substrings via REST, never re-serialising the whole JSON attrs blob — re-serialising would have
+silently changed WP's own `&`-style escaping on unrelated fields like `sgsCustomCss`, an
+unforced, unverified divergence this migration had no business introducing). Dry-run first,
+then applied live with a round-trip byte-identical verification per post. Both posts migrated
+cleanly.
+
+**Live-verified, all three tiers, both attributes, on the actual live homepage (post 2742) +
+the dev probe page (3355):**
+
+| Property | Tier | Value set | Live computed/CSS-source result |
+|---|---|---|---|
+| `splitMediaObjectPosition` | Desktop (1445px) | `51% 50%` | `object-position: 51% 50%` (computed style, homepage) |
+| `splitMediaObjectPosition` | Mobile (375px) | `47% 29%` | `object-position: 47% 29%` (computed style, homepage, both desktop- and mobile-tier `<img>`) |
+| `splitMediaWidth` | Desktop (1445px) | `40%` | `.sgs-hero-f97329a8 .sgs-hero__split-media{width:40%}` (base rule, lifted CSS) + computed `282.797px` against its actual column |
+| `splitMediaWidth` | Tablet (1000px) | `60%` | `@media (max-width:1023px){...width:60%}` (lifted CSS) + computed `300.297px` |
+| `splitMediaWidth` | Mobile (375px) | `90%` | `@media (max-width:767px){...width:90%}` (lifted CSS) + computed `360px` |
+
+Zero console errors attributable to this change (2 pre-existing `via.placeholder.com`
+`ERR_CONNECTION_CLOSED` errors are the same dead external probe-image host already documented
+in this file's earlier Priority-2 entry, not new).
+
+Modified files: `plugins/sgs-blocks/includes/media/atoms/focal-point.php`,
+`plugins/sgs-blocks/src/blocks/hero/block.json`, `plugins/sgs-blocks/src/blocks/hero/edit.js`,
+`plugins/sgs-blocks/src/blocks/hero/render.php`,
+`plugins/sgs-blocks/src/components/media/atoms/focal-point.control.js`,
+`plugins/sgs-blocks/src/components/media/atoms/focal-point.js`,
+`plugins/sgs-blocks/src/components/media/atoms/registry.js`. Committed `ae0c2bff1`, pushed.
+
+**"Every remaining flat-trio attribute framework-wide" — NOT claimed closed.** Priority 4
+closes hero's media-family VALUE attributes specifically. A `migrate-tier-object.py --survey`
+across the FULL attribute list (not just hero) was not run this session; do not round this up
+to "the tier-object migration triad is done everywhere" without running that survey first.
+
+## SDD progress — Task B: worktree-isolated deploy is now the default, 2026-09-07
+
+Shipped `should_isolate()`/`run_isolated()` in `build-deploy.py` (commit `84755960d`):
+`git worktree add <tmp-dir> HEAD`, then RE-EXEC the SAME script's WORKTREE COPY with
+`--no-isolate` appended, rather than threading a repo-root parameter through
+`step_build()`/`step_tar()`/etc. `REPO_ROOT`/`PLUGIN_DIR`/`BUILD_DIR` are all derived from
+`Path(__file__)`, so running the worktree's own copy makes every existing step function
+resolve worktree paths automatically with zero changes to any of them. `node_modules`/`vendor`
+(both gitignored) are symlinked read-only into the worktree rather than reinstalled. New
+`--no-isolate` flag (opt-out); `--skip-build`/`--dry-run` skip isolation entirely (no build
+race to protect against in either case).
+
+**Design gap found live, same session, fixed in a follow-up commit (`73dd4e619` →
+rebased to `1e371f95b`):** the pre-existing dirty-tree gate runs BEFORE isolation is even
+considered and scans the SHARED checkout — it wrongly aborted a fully-committed,
+isolation-eligible Priority 4 deploy because six OTHER concurrent sessions had unrelated
+uncommitted blocks sitting in the tree (business-info/counter/form/gallery/label/modal), none
+of which a worktree at HEAD would ever have shipped. Fixed by reordering `main()`: compute the
+dirty-file set once, decide `intends_dirty_ship` (true only when `--allow-dirty` is set, or
+every dirty file is covered by a declared `--payload`), and when the run does NOT intend to
+ship anything uncommitted, isolate instead of running the abort check at all — a worktree at
+HEAD is dirty-immune by construction, so the check is moot for that run. When the run DOES
+intend to ship uncommitted content, isolation is skipped exactly as before and the existing
+gate runs unchanged.
+
+**Verified three ways:** (1) `--self-test` (8/8, unchanged, run 3× across both commits);
+(2) a REAL concurrency test — two parallel `git worktree add`/build/remove cycles with
+distinct markers, run simultaneously via background shell jobs, both PASS with no
+cross-contamination, `git worktree list` clean after; (3) a REAL production deploy of the
+Priority 4 hero fix, with six unrelated dirty blocks present in the shared checkout at deploy
+time — isolated worktree created, prebuild-minus-gate-tier + `wp-scripts build` + postbuild all
+ran clean inside it (one gate — `run-gates.py --tier fast`'s `db-consistency-run` +
+`check-element-manifest-conformance` — was skipped manually inside the worktree for the SAME
+documented reason as a prior session's precedent: the findings were 100% on `sgs/breadcrumbs`,
+already committed by another concurrent session, unrelated to this deploy), packaged and
+shipped via `build-deploy.py --skip-build --no-isolate` run FROM the pre-built worktree's own
+copy of the script (so its own `Path(__file__)`-derived paths naturally resolved to the
+worktree). Deploy completed in 71s, payload-verify 83/83 PASS, motion-QA 3/3 PASS.
+
+**Known limitation, stated plainly, not silently glossed:** isolation still cannot help a
+deploy that GENUINELY needs to ship uncommitted content (`--allow-dirty`/`--payload`) — that
+case still builds against the shared checkout and still carries the original race this whole
+task exists to close. This is an accepted, bounded trade-off (documented in the commit and in
+`build-deploy.py`'s own module-level comment), not an oversight.
