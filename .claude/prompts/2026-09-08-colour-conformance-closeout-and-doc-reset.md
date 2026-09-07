@@ -53,6 +53,14 @@ parallelise them.
 custom-property fills. **Not** the text trio — that is a different mechanism, and picking a helper
 by proximity to a neighbouring attribute is exactly what produced two bugs on 2026-09-07.
 
+**Codemods before hand-edits.** `.claude/THE-MIGRATION-METHOD.md` binds at this size: check for an
+existing `scripts/migrate-*.py` or `colour-codemod/` script that already covers these two shapes
+before touching a block by hand, and extend it rather than hand-editing six blocks. If you build
+one, it ships as the full triad — `--survey` (census) / `--fix` (parameterised, `--apply` to
+write) / `--check` (the gate) — plus a `--self-test` with a negative control. Two shapes across
+six blocks is exactly the band where a codemod pays for itself; a hand-edit here is a judgement
+call you should state, not a default.
+
 Each row needs all three layers or it is not done: render.php emission, the `SgsColourPanel` row
 (`gradientCapable` + `gradientValue`/`onGradientChange`), and an editor-canvas preview. Verify
 with `classify-end-shape.js`, `check-editor-render-parity.js`, and `npm run build`.
@@ -85,9 +93,15 @@ shape, not buried in a doc pass.
    work falsified.
 2. **`CLAUDE.md`** — clean up. Cached counts and rosters drift; cut them to pointers.
 3. **`.claude/plans/spec-39-seed-requirements.md`** — review for the cloning-pipeline rework.
-   Name the gaps, especially anything the Spec 32/35 conformance work changed: the pipeline must
-   now clone **motion/animation** as well as colour/typography, and route through the upgraded DB
-   rather than the old logic.
+   Name the gaps, especially anything the Spec 32/35 conformance work changed.
+
+   **Bean's bar for that rework — record it, do not soften it:** the pipeline should match
+   **modern AI-design standards and Awwwards-level output** — motion effects and the other
+   high-craft touches that were never in it before — and it should use **at least the full
+   potential of the theme's existing functionality**, which today it does not. Concretely that
+   means: clone **motion/animation**, not just colour/typography; lean on the block standards and
+   the upgraded DB to produce a **cleaner, better routing setup** in the routing logic. Judge the
+   spec against that bar and say plainly where it falls short.
 4. **`.claude/architecture.md`** — rewrite from scratch. It is 48KB and years stale.
 5. **`.claude/goals.md`** — review and refresh.
 6. Finish with **`/qc-council`** on the doc set.

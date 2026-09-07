@@ -106,13 +106,14 @@ safety one (smooth-scroll would fight the editor's own scrolling). You were righ
 
 **None.**
 
-## THE FRONT — five live tracks, pick one
+## THE FRONT — two live tracks, pick one
 
-**Three live tracks remain (A, B, E) — Track D is CLOSED, Track C is closed-out salvage.**
-A, B, E were rewritten from measurement on 2026-09-07. Every superseded prompt cited stale
-counts, orphaned commit SHAs, or work another session had already finished — so read the
-prompt, never a remembered summary. The recurring finding across all of them: detectors and
-censuses flag correct framework usage, so a headline count is an upper bound, not a workload.
+**Two live tracks remain (B, E). Tracks A, C, D are all CLOSED as of 2026-09-07.**
+Next brief: `.claude/prompts/2026-09-08-colour-conformance-closeout-and-doc-reset.md` (last 10
+colour migrations, then Spec 32/35 close-out + architecture rewrite).
+Read the prompt, never a remembered summary — every superseded one cited stale counts, orphaned
+SHAs, or work another session had finished. Detectors flag correct usage, so a headline count is
+an upper bound, not a workload.
 
 ### Track D — typography surface-taxonomy — CLOSED 2026-09-07, all 7 tasks done
 **No open work. No prompt file — deleted once consumed; do not resurrect it from git history.**
