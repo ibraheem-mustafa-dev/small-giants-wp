@@ -967,12 +967,18 @@ ISOLATION_WORKTREE_PREFIX = "sgs-deploy-wt"
 def should_isolate(args: "argparse.Namespace", dirty_files: list[str]) -> bool:
     """Whether THIS run should build+deploy from an isolated worktree.
 
-    False for: --no-isolate (explicit opt-out), --skip-build (no build race
-    to protect against — reusing an existing build/ touches nothing that a
-    concurrent `rm -rf build` could clobber during THIS run), --dry-run
-    (nothing is built), --self-test (never reaches main()'s deploy path), and
-    any run that would ship uncommitted deploy-relevant files (see the
-    module-level note above this function).
+    ONLY the flag-based eligibility checks live here: --no-isolate (explicit
+    opt-out), --skip-build (no build race to protect against — reusing an
+    existing build/ touches nothing that a concurrent `rm -rf build` could
+    clobber during THIS run), --dry-run (nothing is built), --self-test
+    (never reaches main()'s deploy path).
+
+    Whether this run INTENDS to ship uncommitted content (and must therefore
+    skip isolation regardless of these flags, since a worktree at HEAD cannot
+    carry it) is decided by the CALLER before this function is even invoked
+    — see `intends_dirty_ship` in main(). `dirty_files` is accepted only for
+    an informational log line; it is not itself a disqualifying condition
+    here, because the caller already screened for the disqualifying case.
     """
     if args.no_isolate:
         return False
@@ -981,10 +987,9 @@ def should_isolate(args: "argparse.Namespace", dirty_files: list[str]) -> bool:
     if args.dry_run:
         return False
     if dirty_files:
-        log("[isolate] SKIPPED — this run would ship uncommitted deploy-relevant "
-            "file(s); a worktree at HEAD would not carry them. Building against "
-            "the shared checkout instead (same behaviour as before this change).")
-        return False
+        log(f"[isolate] {len(dirty_files)} dirty deploy-relevant file(s) exist in "
+            "the shared checkout, none declared for THIS run to ship — isolating "
+            "anyway (a worktree at HEAD cannot carry them regardless).")
     return True
 
 
@@ -1722,33 +1727,6 @@ def main() -> int:
         print(f"[ABORTED] reason: explicit-opt-in-required ({target_key})", flush=True)
         return 1
 
-    # Git cleanliness guard — scoped to files that ship AND execute on the site.
-    if not args.allow_dirty and not args.dry_run:
-        # Scope the guard to what THIS run ships: a --blocks-only deploy cannot
-        # write a theme file, so another track's dirty template is not a risk
-        # this invocation can create. Narrowing keeps the guard credible — a
-        # guard that cries wolf gets --allow-dirty'd, and that reflex is D336.
-        dirty = deployed_dirty_files(
-            roots=deploy_roots_for_scope(args.theme_only, args.blocks_only)
-        )
-        if dirty:
-            covered, uncovered = split_dirty_by_payload(dirty, args.payload)
-            if covered:
-                log("[payload] declared --payload covers these dirty files — "
-                    "deploying them uncommitted:")
-                for path in covered:
-                    log(f"    {path}")
-            if uncovered:
-                err("uncommitted changes in files this deploy would push live, "
-                    "NOT covered by --payload:")
-                for path in uncovered:
-                    err(f"    {path}")
-                err("commit them, add them to --payload if they are THIS wave's "
-                    "intended payload, or re-run with --allow-dirty if this is "
-                    "deliberate")
-                print("[ABORTED] reason: deployed-files-dirty", flush=True)
-                return 1
-
     # Resolve scope
     deploy_theme = not args.blocks_only
     deploy_blocks = not args.theme_only
@@ -1757,16 +1735,54 @@ def main() -> int:
         print("[ABORTED] reason: empty-scope", flush=True)
         return 1
 
-    # Deploy isolation (Task B, D-incident 2026-09-07) — see the module-level
-    # note above run_isolated(). Computed regardless of --allow-dirty (that
-    # flag governs whether THIS shared checkout may proceed with dirty files;
-    # isolation additionally needs to know whether dirty files exist at all,
-    # since a worktree at HEAD would not carry them).
-    isolation_dirty = deployed_dirty_files(
+    # Git cleanliness guard — scoped to files that ship AND execute on the site.
+    # Computed once, unconditionally (also feeds the isolation decision below).
+    dirty = deployed_dirty_files(
         roots=deploy_roots_for_scope(args.theme_only, args.blocks_only)
     )
-    if should_isolate(args, isolation_dirty):
+    covered, uncovered = split_dirty_by_payload(dirty, args.payload) if dirty else ([], [])
+    # Whether THIS invocation actually intends to ship uncommitted content —
+    # either every dirty file is a declared --payload, or the operator passed
+    # --allow-dirty outright. Only this case needs the shared (non-isolated)
+    # checkout: a worktree built from `git worktree add <dir> HEAD` cannot
+    # carry uncommitted content by construction, so it would silently DROP an
+    # intended dirty payload.
+    intends_dirty_ship = bool(dirty) and (args.allow_dirty or not uncovered)
+
+    # Deploy isolation (Task B, D-incident 2026-09-07) — see the module-level
+    # note above run_isolated(). A worktree at HEAD is dirty-immune BY
+    # CONSTRUCTION: it can only ever contain committed content, so when this
+    # run does not intend to ship anything uncommitted, isolating makes the
+    # git-cleanliness guard below MOOT for THIS run — other sessions' unrelated
+    # dirty files in the shared checkout (a near-certainty on a 150+-session
+    # tree) cannot leak into a worktree checkout regardless, so there is
+    # nothing left to abort on. This was measured live 2026-09-07: a
+    # fully-committed hero-only deploy was wrongly aborted by six OTHER
+    # sessions' unrelated dirty blocks (business-info/counter/form/gallery/
+    # label/modal) sitting in the shared checkout — none of which a worktree
+    # at HEAD would have shipped in the first place.
+    if not intends_dirty_ship and should_isolate(args, dirty):
+        log("[isolate] dirty-tree gate satisfied by construction (worktree "
+            "checks out committed HEAD only) — skipping the shared-checkout "
+            "dirty-file abort for this run.")
         return run_isolated(args)
+
+    if not args.allow_dirty and not args.dry_run and dirty:
+        if covered:
+            log("[payload] declared --payload covers these dirty files — "
+                "deploying them uncommitted:")
+            for path in covered:
+                log(f"    {path}")
+        if uncovered:
+            err("uncommitted changes in files this deploy would push live, "
+                "NOT covered by --payload:")
+            for path in uncovered:
+                err(f"    {path}")
+            err("commit them, add them to --payload if they are THIS wave's "
+                "intended payload, or re-run with --allow-dirty if this is "
+                "deliberate")
+            print("[ABORTED] reason: deployed-files-dirty", flush=True)
+            return 1
 
     use_alias = ssh_has_alias(SSH_ALIAS)
     host_label = target["host"]
