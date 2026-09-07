@@ -34,13 +34,9 @@ $uid = wp_unique_id( 'sgs-tb-' );
 // CSS length/unit sanitiser — for free-text length values (border-width etc.)
 // concatenated into raw CSS declarations. Mirrors sgs/hero's sgs_css_length_value().
 // --- Shared attributes --------------------------------------------------------
-$badge_style           = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
-$badge_size            = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
-$block_title           = $attributes['title'] ?? '';
-$title_colour          = $attributes['titleColour'] ?? 'text-muted';
-$title_colour_gradient = $attributes['titleColourGradient'] ?? '';
-$label_colour          = $attributes['labelColour'] ?? 'text';
-$label_colour_gradient = $attributes['labelColourGradient'] ?? '';
+$badge_style = sanitize_html_class( $attributes['badgeStyle'] ?? 'icon-circle' );
+$badge_size  = sanitize_html_class( $attributes['badgeSize'] ?? 'medium' );
+$block_title = $attributes['title'] ?? '';
 
 // --- icon-circle attributes ---------------------------------------------------
 $icon_circle_size = absint( $attributes['iconCircleSize'] ?? 44 );
@@ -110,10 +106,6 @@ $circle_bg_hover_value          = sgs_colour_value( $icon_circle_bg_hover );
 $circle_bg_gradient_hover_value = sgs_css_gradient_value( $icon_circle_bg_gradient_hover );
 $icon_colour_value              = sgs_colour_value( $icon_colour );
 $text_colour_value              = sgs_colour_value( $text_colour );
-// D636 — sibling gradient attribute wins when set+valid (mirrors sgs/counter's
-// numberColour/labelColour wiring, helpers-tokens.php:1086,1124,1166).
-$title_colour_effective = sgs_resolve_text_colour_or_gradient( $title_colour, $title_colour_gradient );
-$label_colour_effective = sgs_resolve_text_colour_or_gradient( $label_colour, $label_colour_gradient );
 
 // --- Wrapper CSS custom properties --------------------------------------------
 // Gap is handled by the shared wrapper helper (WS-4 mirror), which reads the
@@ -356,7 +348,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
@@ -391,14 +383,23 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 // Colour is emitted into $tb_extra_scoped_css below (keyed on $uid_scope); the
 // element itself carries only its class — font-size/weight/style land via the
 // existing sgs_typography_css_rule() helper further down.
-$tb_title_sel = $uid_scope . ' .sgs-trust-bar__title';
-if ( '' !== $title_colour_effective ) {
-	$tb_title_colour_decl = sgs_text_colour_decl( $title_colour_effective );
-	if ( '' !== $tb_title_colour_decl ) {
-		$tb_extra_scoped_css .= "{$tb_title_sel}{{$tb_title_colour_decl};}";
-	}
-	$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $tb_title_sel, $title_colour_effective );
-}
+// Hover state (colour-conformance bg-layer pass, 2026-09-07): the "title"
+// element's block.json attrMap ONLY carries css:color (titleColour) and its
+// own css:background-image gradient sibling (titleColourGradient) — no
+// css:background-color exists on this element (that lives on the separate
+// "wrapper" element, a different selector: $root_sel, not $tb_title_sel).
+// No real background paint to collide with; sgs_text_states_css() is safe.
+$tb_title_sel         = $uid_scope . ' .sgs-trust-bar__title';
+$tb_extra_scoped_css .= sgs_text_states_css(
+	$tb_title_sel,
+	$attributes,
+	array(
+		'base'           => 'titleColour',
+		'hover'          => 'titleColourHover',
+		'gradient'       => 'titleColourGradient',
+		'hover_gradient' => 'titleColourHoverGradient',
+	)
+);
 
 // D636/D644 icon/SVG gradient — one rule paints every outline (default,
 // non-'filled') badge's icon stroke; a 'filled' badge's `fill` paint is
@@ -433,14 +434,23 @@ $items = $attributes['items'] ?? array();
 // variant's label colour is a separate mechanism (--sgs-trust-badge-text-colour
 // CSS var, emitted above). Colour lands in $tb_extra_scoped_css below (keyed on
 // $uid_scope); font-size/weight/style via sgs_typography_css_rule() further down.
-$tb_badge_label_sel = $uid_scope . ' .sgs-trust-bar__badge-label';
-if ( '' !== $label_colour_effective ) {
-	$tb_label_colour_decl = sgs_text_colour_decl( $label_colour_effective );
-	if ( '' !== $tb_label_colour_decl ) {
-		$tb_extra_scoped_css .= "{$tb_badge_label_sel}{{$tb_label_colour_decl};}";
-	}
-	$tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $tb_badge_label_sel, $label_colour_effective );
-}
+// Hover state (colour-conformance bg-layer pass, 2026-09-07): the
+// "badge-label" element's block.json attrMap ONLY carries css:color
+// (labelColour) and its own css:background-image gradient sibling
+// (labelColourGradient) — no css:background-color exists on this element
+// (that lives on the separate "wrapper" element, a different selector).
+// No real background paint to collide with; sgs_text_states_css() is safe.
+$tb_badge_label_sel   = $uid_scope . ' .sgs-trust-bar__badge-label';
+$tb_extra_scoped_css .= sgs_text_states_css(
+	$tb_badge_label_sel,
+	$attributes,
+	array(
+		'base'           => 'labelColour',
+		'hover'          => 'labelColourHover',
+		'gradient'       => 'labelColourGradient',
+		'hover_gradient' => 'labelColourHoverGradient',
+	)
+);
 
 // --- image-badge appearance (no-inline contract: scoped rule, not inline style=) -----
 // Mirrors icon-circle's own control set (size/shadow/border-radius) plus an

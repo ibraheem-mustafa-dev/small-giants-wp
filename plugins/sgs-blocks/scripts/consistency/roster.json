@@ -157,7 +157,7 @@
         "colour": true,
         "link": false,
         "media": false,
-        "animation": false
+        "animation": true
       },
       "qualifies": {
         "paintDeclarations": 17,

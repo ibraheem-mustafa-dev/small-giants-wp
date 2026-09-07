@@ -51,6 +51,14 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient"
+							}
+						}
+					},
 					"_note": "CONTENT-KIND composite mirror (SGS_Container_Wrapper 'content' kind) — no `layer` (this is the tab PANEL wrapper, a leaf, not a grid/section layer). block.json declares no `spacing`/`typography` supports on this block, so padding/margin/font-* are honest gaps."
 				},
 				"innerBlocks": {
@@ -108,6 +116,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"borderWidth": {
 			"type": "object",

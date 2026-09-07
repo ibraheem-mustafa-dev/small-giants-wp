@@ -731,7 +731,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
 						key: 'title-colour',
 						label: __( 'Title colour', 'sgs-blocks' ),
-						attrs: { base: 'titleColour', gradient: 'titleColourGradient' },
+						attrs: {
+							base: 'titleColour',
+							hover: 'titleColourHover',
+							gradient: 'titleColourGradient',
+							hoverGradient: 'titleColourHoverGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
@@ -744,7 +749,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					( badgeStyle === 'text-only' || badgeStyle === 'image-badge' ) && textRow( {
 						key: 'label-colour',
 						label: __( 'Label colour', 'sgs-blocks' ),
-						attrs: { base: 'labelColour', gradient: 'labelColourGradient' },
+						attrs: {
+							base: 'labelColour',
+							hover: 'labelColourHover',
+							gradient: 'labelColourGradient',
+							hoverGradient: 'labelColourHoverGradient',
+						},
 						attributes,
 						setAttributes,
 					} ),
