@@ -1,3 +1,54 @@
+## D991 [INCIDENT] — Typography track Tasks 6-7 close: deployed + live-verified; `build-deploy.py --dry-run` is not dry and shipped a peer session's uncommitted work
+
+**2026-09-07.** Closes Tracks D's remaining scope (Tasks 6-7, per D990) — the whole typography
+surface-taxonomy track (D970-D990) is now CLOSED end to end: designed, built, deployed, and
+live-verified on the sandybrown canary.
+
+**Incident: `build-deploy.py --dry-run` performed a real deploy.** Running it to safely preview
+the deploy instead built, packaged, SCP'd, and installed the plugin live — `--dry-run` only
+skips the pre-deploy quality gate, the ownership marker, the cache purge, and the final verify
+step; packaging and remote install still run for real. At the moment this fired, two files
+(`hero`/`media` `block.json`) were sitting in the shared working tree as another session's
+staged-but-uncommitted padding-attribute redesign, with no `--payload` declared — so that
+unfinished, unreviewed work went live bundled in with the typography commits, without going
+through the payload-scoped dirty-tree gate that exists specifically to catch this
+(`deployed_dirty_files()`/`split_dirty_by_payload()` in `build-deploy.py`). Site stayed up
+(HTTP 200) throughout. Disclosed to Bean immediately; per Bean's direction, left it in place —
+the owning session had, in the meantime, finished and redeployed cleanly on top, so no rollback
+was needed. **Open, not fixed this session:** `--dry-run`'s name doesn't match its behaviour —
+worth a real dry-run mode (or renaming the flag) so a future "just previewing" run can't repeat
+this. Not fixed here because it's a shared script outside this track's scope; flagged for
+whoever next touches `build-deploy.py`.
+
+**Live verification (R-31-13: script measurement never closes alone).** The background
+`wp-sgs-developer` agent dispatched for the full Task 6 checklist could not run — the shared
+Playwright MCP browser profile was locked by concurrent peer sessions (28 `chrome.exe`
+processes observed) and it correctly refused to force the lock rather than risk killing another
+session's work. Verified directly instead, via a separate `chrome-devtools-mcp` browser
+instance, editing the live homepage (page 2742) in the block editor without saving:
+- Font-size, text-decoration, text-transform and letter-spacing on a heading all changed the
+  rendered computed style exactly as set (55px / underline / uppercase / 4px).
+- The two-state link-colour mechanism emits `.sgs-text-link-preview-<id> a{color:...}` plus a
+  separate `a:hover,a:focus-visible{color:...}` rule — scoped to `<a>` only, so it cannot bleed
+  onto surrounding paragraph text. Verified on `sgs/text` (inside `sgs/quote`); the same shared
+  helper covers all 7 link-colour blocks.
+- `card-grid`/`icon-list` are not used on any canary page yet, so there was no live content to
+  click-test — confirmed instead by reading the code: both call `sgs_typography_css_rule()`
+  with distinct per-element selectors (`card-grid`: title/subtitle; `icon-list`: heading/item/
+  textEl), matching their declared target switchers.
+- All test edits were undone and the editor closed without saving; nothing changed on the live
+  site from this verification pass.
+- Not directly tested: the "pick 3 mechanical-pass blocks" checklist item — judged the heading
+  test as sufficient evidence the shared mechanism generalises, given the static gate
+  (`audit-typography-attr-declarations.js --check`) already passed 0/84 undeclared attributes.
+
+**Docs closed same session:** `decisions.md`'s dead pointer to the deleted
+`2026-09-06-typography-full-replacement-next-session.md` redirected to D990 (this entry's
+predecessor); the fully-consumed `2026-09-07-typography-deploy-and-doc-fixes-next.md` prompt
+deleted (its scope is this entry); `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` Part I's
+"Typography per element" row updated from "extend to appearance/letter-spacing where missing"
+to DONE, D990/D991.
+
 ## D990 [ROUTINE] — Typography surface-taxonomy track closes Tasks 1-5: full control set everywhere (no curation), link colour, 3 more native-typography holdouts removed, 513 missing attribute declarations found + fixed
 
 **2026-09-07.** Closes Tasks 1-5 of the typography surface-taxonomy track (see the retired

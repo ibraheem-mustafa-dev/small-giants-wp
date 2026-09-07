@@ -29,9 +29,15 @@ One thing to flag: a task I dispatched to a helper committed a change directly t
 codebase without being told to. The change itself was fine, but it should not have done that
 on its own — noted for how I brief that kind of task going forward.
 
-**What's left:** none of today's typography work has been deployed to the test site yet, so
-none of it has been checked live in a real browser — that is the very next thing. Full detail:
-`.claude/prompts/2026-09-07-typography-deploy-and-doc-fixes-next.md`.
+**Update, later the same day:** the whole typography track is now deployed to the sandybrown
+canary and live-verified (font-size, decoration, transform, letter-spacing, and the two-state
+link colour all confirmed working on the real rendered page, not just the editor). One real
+mishap along the way: the deploy script's `--dry-run` flag isn't actually dry — it still ships
+for real, it just skips the safety checks — so it deployed another session's unrelated
+in-progress work bundled in with mine, without going through the gate that would normally have
+caught that. Told you immediately; the other session had already finished and redeployed
+cleanly by the time we talked, so nothing needed rolling back. Full detail: D991 in
+`decisions.md`.
 
 **Earlier the same day (separate session, unrelated track):** media/hero border hover, a
 cheat-gate false alarm cleared, the pre-merge gate fixed after it had been failing on every
@@ -46,6 +52,7 @@ zero salvage). Full detail in "Shipped today" below and D983/D985-D988.
 | **Typography: full control set turned on across 29 blocks** (mechanical codemod, new detector `migrate-typography-full-controls.js`) | D990 · `8b67f5651` |
 | **Typography: 8 harder blocks** — target-switcher conversions, 2 render-side rewiring bugs fixed (`media`/`before-after` had a dead editor control), new-coverage extension | D990 · `96bc9e734` |
 | **Critical fix: 513 missing attribute declarations** across 84 blocks, found + fixed with a new detector (`audit-typography-attr-declarations.js`); plus card-grid/collapsible-text/icon-list native-typography holdouts closed | D990 · `f7cb3ba36` |
+| **Typography track deployed to canary + live-verified** (Tasks 6-7 close the track); `build-deploy.py --dry-run` incident found + disclosed (not a dry run — ships for real, skips gates only) | D991 · `780be1a91`/`2568ce0f1` (doc fixes; the deploy itself is not a git commit) |
 | **`sgs/media`/`sgs/hero` border hover/gradient state** (matches button/container's pattern) | D985 · `11f1e2386` (merged direct to `main`, no PR — D983) |
 | **Cheat-gate Check #9 allowlist** for `section_passes.py`'s legitimate anchor-class write | D985 · `3e20518c7` |
 | **Two pre-existing converter test failures root-caused + fixed** (tier-of-boxes COLLISION false-positive; missing `xfail` marker) | D985 · `efeb0b8e7` |
@@ -66,28 +73,28 @@ zero salvage). Full detail in "Shipped today" below and D983/D985-D988.
 
 ## THE FRONT — five live tracks, pick one
 
-**All four live tracks were rewritten from measurement on 2026-09-07** (A, B, E replaced their
-prompts earlier the same day; D's Tasks 1-5 closed and its prompt was rewritten a second time,
-this session, to cover only what's left). Every superseded prompt cited stale counts, orphaned
-commit SHAs, or work another session had already finished — so read the prompt, never a
-remembered summary. The recurring finding across all four: detectors and censuses flag correct
-framework usage, so a headline count is an upper bound, not a workload. Track C is closed-out
-salvage.
+**Three live tracks remain (A, B, E) — Track D is CLOSED, Track C is closed-out salvage.**
+A, B, E were rewritten from measurement on 2026-09-07. Every superseded prompt cited stale
+counts, orphaned commit SHAs, or work another session had already finished — so read the
+prompt, never a remembered summary. The recurring finding across all of them: detectors and
+censuses flag correct framework usage, so a headline count is an upper bound, not a workload.
 
-### Track D — typography: deploy + verify, then one doc fix (Tasks 1-5 CLOSED this session)
-**Read first (full, not skim):** `.claude/prompts/2026-09-07-typography-deploy-and-doc-fixes-next.md`.
-Supersedes the deleted `2026-09-07-typography-surface-taxonomy-next.md` — Tasks 1-5 are done
-(D990, commits `0e2f58cc2`/`8b67f5651`/`96bc9e734`/`f7cb3ba36`), not open for re-litigation.
-**Settled, not designed:** Task 1's curated 6-way taxonomy was rejected live — every text
-surface gets the full `TypographyControls` set by default, no curation. Link colour shipped on
-7 blocks. Full control set is live on all in-scope adopters. 3 more native-typography holdouts
-closed (`card-grid` real bug, `collapsible-text`/`icon-list` policy cleanup) — `counter`/`quote`
-remain, D972 already ruled them false alarms.
-**The one thing that mattered most:** turning the controls on exposed 513 undeclared attributes
-across 84 blocks (client sets a value, WordPress silently discards it) — found and fixed with a
-new detector, `scripts/audit-typography-attr-declarations.js`.
-**Open:** the WHOLE track has never been deployed to the canary or checked live in a browser —
-Task 6, first item in the new prompt. Task 7 is now just one dead-link fix in `decisions.md`.
+### Track D — typography surface-taxonomy — CLOSED 2026-09-07, all 7 tasks done
+**No open work. No prompt file — it was deleted once consumed; do not resurrect it from git
+history looking for open items.** Full record: D990 (design + build, Tasks 1-5) and D991
+(deploy + live-verify + doc fixes, Tasks 6-7) in `decisions.md`.
+Settled architecture: every text surface gets the FULL `TypographyControls` set by default, no
+per-element curation. Two-state link colour shipped on 7 blocks. A 513-attribute
+undeclared-in-block.json regression this rollout exposed was found and fixed with a new
+detector (`audit-typography-attr-declarations.js`). Deployed to the sandybrown canary and
+live-verified (font-size/decoration/transform/letter-spacing/link-colour all confirmed on the
+real rendered page). One incident along the way: `build-deploy.py --dry-run` is not actually
+dry — it ships for real, only skipping the safety gates — and shipped a peer session's
+unrelated in-progress work bundled in; disclosed immediately, no rollback needed since that
+session had already finished and redeployed cleanly. **Not fixed, flagged for whoever next
+touches `build-deploy.py`:** the `--dry-run` flag's name doesn't match its behaviour.
+`counter`/`quote` remain native-typography holdouts by design (D972 ruled them false alarms —
+each governs a genuinely different element than the shared component would).
 
 ### Track A — colour conformance, TEXT surface
 **Read first (full, not skim):** `.claude/prompts/2026-09-07-colour-conformance-text-next.md`.
@@ -186,28 +193,37 @@ Bean can close these PRs at leisure; no further investigation needed.
 - **NEW (2026-09-07): a dirty file in a SHARED worktree overlapping an incoming merge blocks
   the fast-forward** — don't stash/checkout over it (another track's work); rely on
   `origin/main` as the source of truth, or merge via an isolated `git worktree add`.
+- **NEW (2026-09-07, D991): `build-deploy.py --dry-run` is NOT a safe preview** — it still
+  builds, packages, SCPs and installs for real; it only skips the pre-deploy gate, ownership
+  marker, cache purge and final verify. On a shared tree, that means it can ship another
+  session's uncommitted dirty files with no `--payload` declared and no gate to catch it. Never
+  reach for `--dry-run` expecting a no-op; if genuinely just previewing, read the script's plan
+  output style instead of running it.
+- **NEW (2026-09-07, D991): a Playwright MCP browser profile is SHARED across concurrent
+  sessions** — a dispatched verification agent can find it locked (`Browser is already in use`)
+  with no clean way to force it without risking another session's in-progress work. Correct
+  response is to report COULDN'T-TEST and retry later, or use a distinct browser tool
+  (`chrome-devtools-mcp`) that holds its own profile — never kill the lock-holding process.
 
 ## State Snapshot
 
 - **Branch:** `main`. `origin/main` at `32815ab12` (confirmed pushed, this session). Re-check
   `git status`/`git log` yourself before trusting this — 150+ concurrent sessions share this
   tree and it moves fast.
-- **D-ceiling:** **D990** — verify with
+- **D-ceiling:** **D991** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Build:** `npm run build` (sgs-blocks) — full 93-gate chain passes clean as of this session's
   last commit (`f7cb3ba36`), including the two new detectors this session added
   (`migrate-typography-full-controls.js --check`, `audit-typography-attr-declarations.js
   --check`).
-- **Canary:** ⚠ **NOT deployed this session.** Every typography commit above shipped with the
-  pre-commit visual-diff gate disclosed-bypassed (`reports/visual-diff/manual-skips.log`) — no
-  live WP environment was attached to this session. Task 6 of the new Track D prompt is
-  entirely this: deploy + live-verify. Do not assume any of today's typography work is live on
-  sandybrown until that runs.
+- **Canary:** ✅ **Typography track deployed and live-verified 2026-09-07** (D991). The
+  pre-commit visual-diff gate's earlier disclosed-bypasses (`reports/visual-diff/manual-skips.log`)
+  are now closed out by this live check.
 - **Open PRs:** **NONE** (D983 bans them; unchanged from earlier today).
-- **Uncommitted (this session's own doc work):** `LEDGER.md` (this file), `decisions.md` (D990
-  added), the new prompt `2026-09-07-typography-deploy-and-doc-fixes-next.md`, and the deleted
-  `2026-09-07-typography-surface-taxonomy-next.md` — all part of this same handoff, commit
-  together. Genuinely not this session's: check `git status` fresh, this tree changes fast.
+- **This session's doc work (Track D close-out) is committed and pushed:** `decisions.md` (D991
+  added), `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` (Part I typography row updated), and this
+  file. Commits `780be1a91`/`2568ce0f1`, `origin/main` confirmed up to date at push time — check
+  `git status`/`git log` fresh regardless, this tree moves fast.
 
 ## Pointers
 
@@ -216,9 +232,7 @@ Bean can close these PRs at leisure; no further investigation needed.
 | **Colour conformance TEXT surface (Track A)** | `.claude/prompts/2026-09-07-colour-conformance-text-next.md` |
 | **Tier-object migration Phase 3 (Track B)** | `.claude/prompts/2026-09-07-tier-object-phase-3-next.md` |
 | **Inspector gates, rule 41/43 (Track E)** | `.claude/prompts/2026-09-07-inspector-gates-rule41-43-next.md` |
-| **Typography — deploy + verify, one doc fix (Track D)** | `.claude/prompts/2026-09-07-typography-deploy-and-doc-fixes-next.md` |
-| **Remaining doc fix (Track D Task 7)** | `decisions.md`'s existing pointer to the deleted `2026-09-06-typography-full-replacement-next-session.md` needs redirecting — `plugins/sgs-blocks/CLAUDE.md:814` was checked and found NOT stale, do not touch it |
-| **This session's typography work** | D990 in `decisions.md`; commits `0e2f58cc2`/`8b67f5651`/`96bc9e734`/`f7cb3ba36` |
+| **Typography track (Track D) — CLOSED, all 7 tasks done** | D990 + D991 in `decisions.md`; commits `0e2f58cc2`/`8b67f5651`/`96bc9e734`/`f7cb3ba36` (build), `780be1a91`/`2568ce0f1` (doc close-out). No prompt file — deleted once consumed. |
 | **Earlier session's box-shape hover work** | D985 in `decisions.md`; `reports/visual-diff/{media,hero}-2026-09-07.md` |
 | **Known gap: media-atom `:hover` rules unguarded against touch-hover-stuck** | This file's "Open" section above; `scripts/hover-guard/check.js` (scope) |
 | Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
