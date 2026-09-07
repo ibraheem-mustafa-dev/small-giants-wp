@@ -87,7 +87,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 	// A plain dropdown (3b, rule 41) lists the first page rather than
 	// searching-as-you-type, so this always fetches unfiltered.
 	const { cptRecords, cptResolving } = useSelect( ( select ) => {
-		const query = { per_page: 20 };
+		const query = { per_page: 100 };
 		return {
 			cptRecords: select( coreStore ).getEntityRecords(
 				'postType',
@@ -105,7 +105,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 	useEffect( () => {
 		let cancelled = false;
 		setWcLoading( true );
-		apiFetch( { path: '/wc/v3/products?per_page=20' } )
+		apiFetch( { path: '/wc/v3/products?per_page=100' } )
 			.then( ( items ) => {
 				if ( cancelled ) {
 					return;
@@ -149,7 +149,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 		...cptOptions,
 	];
 
-	// Current combobox value derived from sourceMode + productId.
+	// Current dropdown value derived from sourceMode + productId.
 	let currentValue = TYPED_VALUE;
 	if ( 'wc-product' === sourceMode && productId ) {
 		currentValue = `wc:${ productId }`;
@@ -1916,8 +1916,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     the Typography panel above) — keeping the merged panel in
 				     Settings pulled its DOM position earlier than "tag"/"pill",
 				     contradicting the block's own declared element order
-				     (rule 41 axis C). Styles-tab placement, positioned last,
-				     satisfies both rules at once. Order follows the card's own
+				     (rule 41 axis C). Styles-tab placement — after "Typography",
+				     before "Card layout"/"Picker style" — satisfies both rules
+				     at once. Order follows the card's own
 				     authoring flow: primary text/URL/behaviour, then primary
 				     style, then secondary text/URL/style. ── */ }
 				<PanelBody
