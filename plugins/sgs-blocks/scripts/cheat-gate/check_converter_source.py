@@ -47,6 +47,27 @@ _SCRIPTS_DIR = _HERE.parent                        # scripts/
 _CONVERTER_DIR = _SCRIPTS_DIR / "converter"        # the NEW modular converter tree
 _DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
+# ---------------------------------------------------------------------------
+# converter/ tree — whole-file allowlist for the className-write sub-check (a).
+#
+# Mirrors check_hardcoded_dicts.py's _CONVERTER_WHOLE_FILE_ALLOWLIST idiom
+# exactly (same relative-path-string frozenset, same skip-whole-file
+# behaviour) — paths here are relative to _SCRIPTS_DIR (this file's own
+# _rel() base), NOT to _CONVERTER_DIR like that sibling file's allowlist.
+#
+# services/section_passes.py's ensure_root_section_class() writes
+# className="sgs-{section_id}" onto every converted section's first block —
+# a real, tested, load-bearing anchor class that orchestrator/register_
+# patterns.py:216 depends on for pattern-registration selectors. It is not
+# a re-emitted draft BEM class (the Rule-1 violation this check exists to
+# catch); it is a synthetic pipeline-generated id. Accepted trade-off (same
+# as Check #2's own allowlisted files): this is blind to any NEW className
+# write later added to this specific file.
+# ---------------------------------------------------------------------------
+_CONVERTER_WHOLE_FILE_ALLOWLIST: frozenset[str] = frozenset({
+    "converter/services/section_passes.py",
+})
+
 # Structural suffix kinds whose vocabulary, if hardcoded as an identity dict, is the
 # R-31-1 violation. state/variant excluded (not the box/grid suffix grammar).
 _STRUCTURAL_KINDS = ("breakpoint", "side", "corner", "unit")
@@ -205,13 +226,21 @@ def run(converter_dir: Path | None = None) -> list[Violation]:
     for py_path in sorted(scan_dir.rglob("*.py")):
         if py_path.name.startswith("test_") or "tests" in {p.name for p in py_path.parents}:
             continue
+        file_rel = _rel(py_path)
+
+        # Normalise to forward-slash for the allowlist comparison — file_rel is
+        # OS-native (backslash on Windows), allowlist entries are written
+        # forward-slash-style. Without this, the allowlist silently never
+        # matches on Windows (same fix as check_hardcoded_dicts.py's _scan_tree).
+        if file_rel.replace("\\", "/") in _CONVERTER_WHOLE_FILE_ALLOWLIST:
+            continue
+
         try:
             tree = ast.parse(py_path.read_text(encoding="utf-8", errors="replace"), filename=str(py_path))
         except SyntaxError:
             continue
         visitor = _SourceVisitor(suffix_vocab, side_vocab)
         visitor.visit(tree)
-        file_rel = _rel(py_path)
         for kind, lineno, symbol in visitor.hits:
             violations.append(Violation(
                 check="converter_source",
