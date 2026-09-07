@@ -60,6 +60,26 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > buttons, not one focusable control, so the wrapper uses `role="group"` +
 > `aria-describedby={helpId}` — the same ARIA-group pattern `CircularOptionPicker`/`IconPicker`
 > already use elsewhere in this codebase). Re-run `run.js --json`: **0 live findings.**
+>
+> **Rule 41 detector fixes, 2026-09-05/07/08 — the 42-finding figure above is stale, do not cite
+> it as current.** Two real false-positive classes were found and fixed in
+> `41-co2-element-grouping-order.js` itself: (a) the rule could not tell a genuine bound WRITE
+> control apart from an attribute merely being READ elsewhere (e.g. handed to another component
+> as a prop) — fixed via per-occurrence AST write/read classification, only WRITE occurrences now
+> count toward "which panel holds the control"; (b) a panel whose JSX is returned by a
+> SEPARATELY-DECLARED helper component (defined early in the file, invoked late in the render
+> tree — the proven case is `sgs/product-card`'s `ContentOverridesPanel`, defined at edit.js:359
+> but invoked at edit.js:1791) was sorting by file position, which is NOT DOM position for an
+> indirect sub-component — fixed by excluding such panels from the position comparison entirely
+> (safe-default false-absence, not a guess). The COLOUR-ROW EXEMPTION documented as axis-A-only
+> above (`colour-row + one-other-panel` split not counted as scattering) now also covers **axis C
+> (dom-order-vs-declared-order)** — an element whose only matched attribute is a colour row in the
+> shared, early-mounted `SgsColourPanel` was getting an artificially-early computed position that
+> had nothing to do with its real declared order; the exemption now excludes such elements from
+> axis C's comparison set too. Both fixes are proven with positive+negative control fixtures, not
+> just asserted — see the rule's own header comment
+> (`plugins/sgs-blocks/scripts/inspector-scan/rules/41-co2-element-grouping-order.js`) for the
+> fixture names. Re-run `run.js --json` for the current finding count before quoting one.
 
 ## Why this exists
 
@@ -1892,13 +1912,28 @@ wrapper blocks (`container`, `hero`, `trust-bar`, `cta-section`) reach the fork,
    that **Styles holds root CSS and visuals**, which is why the Background panel (media uploads
    included) lives there. A colour is a visual.
 
- **(b) WHICH PANEL — the D533/D537 resolver, exactly like every other property family (D622).**
-   An element-scoped colour goes in **its element's panel**; a colour no element claims falls to its
- **property-family panel**. ⛔ There is no bespoke colour-placement rule, and one must not be
-   invented — colour was the last family still placed by hand, and any separate rule would build a
-   second placement system beside the working one. `placement-reach.py` resolves all 2,262 declared
-   attributes with zero human judgement; `check-element-manifest-conformance.js --check` gates it in
-   `prebuild`.
+ **(b) WHICH PANEL — ⚠ SUPERSEDED 2026-09-07, Bean-confirmed. D622 is STALE and no longer the
+   ruling.** D622 said colour placement follows the SAME D533/D537 resolver as every other
+   property family — an element-scoped colour belongs in ITS OWN element's TIER 1 panel, only a
+   colour no element claims falling to a shared property-family panel. That ruling predates the
+   gradient-colour helper set (`fillRow`/`textRow`, the `gradientCapable` row shape,
+   `sgs_resolve_text_colour_or_gradient()` and friends) built afterwards specifically to let every
+   fill/text/link colour live in ONE shared panel without losing gradient/hover capability per
+   row — D622's per-element split stopped matching the tooling built to serve it.
+
+   **THE CURRENT RULE: every fill/text/link colour on a block lives in the shared
+   `SgsColourPanel`.** The only exemptions are border colour, media/section overlay colour, and
+   shadow colour — those stay in their own dedicated composite controls (`SgsBorderControl`, the
+   overlay controls inside a background/media panel, `ShadowControl`) because each pairs a colour
+   with a genuinely non-colour sibling control (style/width, opacity/blend-mode, blur/spread) that
+   `SgsColourPanel` has no slot for. A colour with no such pairing — including one a caller might
+   be tempted to leave "scoped to its own element panel" for tidiness — belongs in the shared
+   panel. Do not re-add "element-scoped colour belongs in its own TIER 1 panel" placement language
+   without a fresh decision superseding this one. Canonical statement: `SgsColourPanel.js`'s own
+   docblock (`plugins/sgs-blocks/src/components/SgsColourPanel.js`), which carries this exact
+   correction and is the file to re-read if this rule is disputed again. `placement-reach.py`
+   still resolves the TIER-2/property-family split correctly for every OTHER property family;
+   colour is now the one family it does not decide placement for.
 
    ⭐ **Leaf blocks group by construction, not by exception.** `sgs/button`'s `colourText`,
    `colourBackground` and `colourBorder` all sit on the same element (`wrapper`), so they render side
@@ -1968,9 +2003,10 @@ table); detection target `role='color'` (50 blocks, 261 rows). ⚠ The "14-block
    - **9a. ONE CONTROL SHAPE, EVERYWHERE.** Every colour renders as the same thin row: a compact
      rectangular control carrying its swatch(es), showing **how many states are pickable for that
      setting**, with the picker itself in a **popover**. This holds regardless of where the control
-     sits — an element-scoped colour that stays in its element's TIER 1 panel (per THE PLACEMENT RULE)
-     uses the identical row. Placement and shape are independent axes; moving a colour must never
-     change what it looks like.
+     sits — an element-scoped colour that stays in its element's own panel (⚠ 2026-09-07: now only
+     the border/overlay/shadow exemption class — see field 4b's correction; general element-scoped
+     placement per THE PLACEMENT RULE no longer applies to colour) uses the identical row. Placement
+     and shape are independent axes; moving a colour must never change what it looks like.
    - **9b. STATES LIVE INSIDE THE CONTROL, NEVER BESIDE IT.** Normal / hover / active are reached by a
      tab toggle **within the popover**, not by separate sibling controls and not by a second panel.
      ⛔ This RETIRES the pattern of a distinct `*Hover` colour control mounted next to its resting

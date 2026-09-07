@@ -881,7 +881,7 @@ styles, fail-closed (a missing browser exits non-zero, never green). ⚠ It meas
 the OUTERMOST `.wp-block-sgs-<name>`, so it cannot target `sgs/container` on a
 page with a header, and NOT RUN is not a pass.
 
-### Colour controls — `SgsColourPanel` is the standard (D609/D618/D622)
+### Colour controls — `SgsColourPanel` is the standard (D609/D618, D622 SUPERSEDED)
 
 **65 of 83 blocks mount `<SgsColourPanel`** (verify: `grep -l "<SgsColourPanel" src/blocks/*/edit.js | wc -l`)
 — **never cache this count, re-run the grep.** It is ONE SGS-owned `PanelBody` titled
@@ -889,6 +889,20 @@ page with a header, and NOT RUN is not a pass.
 group, that takes a `rows` array and renders one `DesignTokenPicker`
 (or `GradientCapableColourControl` for a `gradientCapable: true` row) per entry. Do NOT
 hand-roll a bespoke colour `PanelBody` — mount this component instead.
+
+⚠ **CORRECTED 2026-09-08 — the placement rule below was REVERSED, not just amended.** This
+section used to say a colour belongs in its own element's TIER 1 panel per D622 (Spec 35
+PART O §1 field 4b), with the shared panel only catching a colour no element claims. **D622 is
+now STALE and superseded (Bean-confirmed 2026-09-07, recorded in `SgsColourPanel.js`'s own
+docblock).** It predates the gradient-colour helper set (`fillRow`/`textRow`, the
+`gradientCapable` row shape, `sgs_resolve_text_colour_or_gradient()` and friends) built
+afterwards specifically to let every fill/text/link colour live in ONE shared panel without
+losing gradient/hover capability per row. **THE CURRENT RULE: every fill/text/link colour on a
+block lives in `SgsColourPanel`.** The only exemptions are border colour, media/section overlay
+colour, and shadow colour — those stay element-scoped because each pairs a colour with a
+genuinely non-colour sibling control (style/width, opacity/blend-mode, blur/spread) that
+`SgsColourPanel` has no slot for. Do not re-add "element-scoped colour belongs in its own TIER 1
+panel" placement language without a fresh decision superseding this one.
 
 - **A row that doesn't apply is OMITTED, not disabled (D609 field 9c).** `SgsColourPanel`
   runs `rows.filter(Boolean)` and returns `null` outright if every row is falsy — no empty
