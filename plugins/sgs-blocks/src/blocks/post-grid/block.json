@@ -252,7 +252,12 @@
 				],
 				"_comment_providesNatively": "Spec 38 FR-38-13 / §7. This block owns drag-to-scroll through its OWN inspector toggle, which targets the DESCENDANT element that actually scrolls. The generic 'Scroll & effects' picker stamps data-sgs-fx onto the block ROOT, which is not the scroller here — so offering `draggable` there too would give the client TWO controls for ONE capability, and the picker's one would silently do nothing. Declaring it here removes the dud picker entry via generate-fx-qualifying-blocks.py without removing the capability, exactly as sgs/responsive-logo does for `draw`. Ruled 2026-07-31 after the roster derivation surfaced it on five blocks at once (gallery had it latently already). NOTE sgs/timeline deliberately does NOT carry this: its scroller IS the block root, so the picker lands correctly there."
 			},
-			"colourExemptions": {},
+			"colourExemptions": {
+				"text-hover": {
+					"rule": "states",
+					"reason": "textColourHover is one shared ancestor-hover accent overriding four independently-based colours (titleColour/excerptColour/metaColour/readMoreColour on title-link/excerpt/meta/read-more, render.php:660-696) on card hover — not paired 1:1 by name, by design (Bean 2026-09-07): a single hover accent for the whole card, not four independent per-element hovers. Confirmed via investigation, not a missing per-element hover state."
+				}
+			},
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadius"
