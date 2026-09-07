@@ -919,6 +919,141 @@ def step_local_cleanup(dry_run: bool) -> int:
     return 0
 
 
+# ---------------------------------------------------------------------------
+# Deploy isolation (Task B, D-incident 2026-09-07) — worktree-isolated
+# build+deploy is the DEFAULT, not opt-in.
+# ---------------------------------------------------------------------------
+# `plugins/sgs-blocks/build/` is gitignored and shared across every concurrent
+# session on this machine (150+ per the project's own git-hygiene docs).
+# `npm run build` runs `rm -rf build` first. A deploy's gate window (gate:full
+# alone is ~47s+) is long enough for a concurrent session's `npm run build` to
+# wipe the shared `build/` out from under an in-flight deploy — measured live
+# 2026-09-07 (see `.claude/memory/sdd-progress.md`'s incident section): the
+# canary served a `sgs-blocks` plugin with ZERO working render.php files for
+# several minutes, and the deploy's own `[payload-verify]` step only caught it
+# AFTER the broken plugin was already live (the checksum comparison runs
+# against the now-also-deleted local reference copy, not the tarball's actual
+# contents at pack time).
+#
+# CHOSEN DESIGN: a `git worktree add <tmp-dir> HEAD` (proven manually the same
+# session), THEN A RE-EXEC of this same script — the WORKTREE'S OWN COPY of
+# `build-deploy.py` — with `--no-isolate` appended, rather than threading a
+# repo-root parameter through step_build()/step_tar()/etc. `REPO_ROOT` /
+# `PLUGIN_DIR` / `BUILD_DIR` are all derived from `Path(__file__)`, so running
+# the WORKTREE'S copy of the script makes every existing step function resolve
+# worktree paths automatically, with ZERO changes to any of them and therefore
+# no new risk to the already-hardened build/tar/scp/verify chain. This is a
+# lock-file alternative chosen DELIBERATELY (Bean-locked design, per the
+# handoff prompt): a lock only protects a session that respects it, and this
+# repo cannot assume that.
+#
+# ⚠ ISOLATION ONLY COVERS A COMMITTED (or clean) DEPLOY. `git worktree add
+# <dir> HEAD` checks out the committed tree — it does NOT carry this
+# checkout's uncommitted working-directory edits into the new worktree. A
+# `--payload`/`--allow-dirty` deploy of UNCOMMITTED files would silently ship
+# a STALE build from the worktree (missing the very payload the operator
+# intended to deploy) if isolation ran anyway. Rather than build a
+# patch-and-apply mechanism to carry dirty state across (real, separate
+# engineering, and a wrong copy would be a worse bug than the race this
+# exists to fix), isolation AUTO-SKIPS whenever this run would ship any
+# deploy-relevant dirty file — the exact same `deployed_dirty_files()` check
+# `main()` already runs for the dirty-tree gate, scoped the same way. That
+# deploy proceeds against the shared checkout exactly as before this change
+# (the pre-existing race is not newly introduced, only no longer the default
+# for the common case: a normal deploy of committed work).
+ISOLATION_WORKTREE_PREFIX = "sgs-deploy-wt"
+
+
+def should_isolate(args: "argparse.Namespace", dirty_files: list[str]) -> bool:
+    """Whether THIS run should build+deploy from an isolated worktree.
+
+    False for: --no-isolate (explicit opt-out), --skip-build (no build race
+    to protect against — reusing an existing build/ touches nothing that a
+    concurrent `rm -rf build` could clobber during THIS run), --dry-run
+    (nothing is built), --self-test (never reaches main()'s deploy path), and
+    any run that would ship uncommitted deploy-relevant files (see the
+    module-level note above this function).
+    """
+    if args.no_isolate:
+        return False
+    if args.skip_build:
+        return False
+    if args.dry_run:
+        return False
+    if dirty_files:
+        log("[isolate] SKIPPED — this run would ship uncommitted deploy-relevant "
+            "file(s); a worktree at HEAD would not carry them. Building against "
+            "the shared checkout instead (same behaviour as before this change).")
+        return False
+    return True
+
+
+def run_isolated(args: "argparse.Namespace") -> int:
+    """Create an isolated worktree at HEAD, re-exec this script's WORKTREE COPY
+    with the same argv plus --no-isolate, and clean the worktree up after —
+    success, failure, or exception. Returns the child process's exit code.
+    """
+    wt_dir = Path(tempfile.gettempdir()) / f"{ISOLATION_WORKTREE_PREFIX}-{os.getpid()}-{int(time.time())}"
+    log(f"[isolate] creating worktree at {wt_dir}")
+    created = subprocess.run(
+        ["git", "worktree", "add", str(wt_dir), "HEAD"],
+        cwd=str(REPO_ROOT), capture_output=True, text=True, check=False,
+    )
+    if created.returncode != 0:
+        err(f"[isolate] git worktree add failed: {created.stderr.strip()}")
+        print("[ABORTED] reason: worktree-create-failed", flush=True)
+        return 1
+
+    try:
+        # node_modules/vendor are both gitignored and were never part of the
+        # worktree checkout — symlink them read-only from the main checkout
+        # rather than reinstalling. Safe to share: neither is written to by a
+        # build (npm run build only writes build/; composer_dump_autoload()
+        # writes vendor/autoload_*.php, which is why it is regenerated INSIDE
+        # the worktree by the normal step_tar() call, same as any other run —
+        # the symlink target is the shared vendor/, so that write lands in the
+        # shared checkout too; this mirrors the existing single-checkout
+        # behaviour exactly and is not a new hazard).
+        for rel in (
+            Path("plugins/sgs-blocks/node_modules"),
+            Path("plugins/sgs-blocks/vendor"),
+        ):
+            src = REPO_ROOT / rel
+            dst = wt_dir / rel
+            if not src.exists() or dst.exists():
+                continue
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                os.symlink(src, dst, target_is_directory=True)
+            except OSError as exc:
+                err(f"[isolate] symlink failed for {rel}: {exc} — on Windows this "
+                    "needs Developer Mode enabled or an elevated shell for "
+                    "os.symlink(); re-run with --no-isolate to opt out.")
+                print("[ABORTED] reason: worktree-symlink-failed", flush=True)
+                return 1
+
+        wt_script = wt_dir / "plugins" / "sgs-blocks" / "scripts" / "build-deploy.py"
+        if not wt_script.exists():
+            err(f"[isolate] worktree script missing: {wt_script}")
+            print("[ABORTED] reason: worktree-script-missing", flush=True)
+            return 1
+
+        child_argv = [sys.executable, str(wt_script)] + sys.argv[1:] + ["--no-isolate"]
+        log(f"[isolate] re-exec: {fmt_cmd(child_argv)}")
+        proc = subprocess.run(child_argv, check=False)
+        return proc.returncode
+    finally:
+        log(f"[isolate] removing worktree {wt_dir}")
+        cleanup = subprocess.run(
+            ["git", "worktree", "remove", "--force", str(wt_dir)],
+            cwd=str(REPO_ROOT), capture_output=True, text=True, check=False,
+        )
+        if cleanup.returncode != 0:
+            err(f"[isolate] worktree remove failed (leaked at {wt_dir}): "
+                f"{cleanup.stderr.strip()} — clean up by hand: "
+                f"git worktree remove --force {wt_dir}")
+
+
 def step_purge_caches(dry_run: bool, use_alias: bool, wp_content: str,
                       host: str) -> int:
     """Post-deploy cache purge - TWO DIFFERENT CACHES, deliberately both.
@@ -1563,6 +1698,12 @@ def parse_args() -> argparse.Namespace:
                    help="Run the payload-scoped dirty gate's self-test against an "
                         "isolated temp repo (proves it still rejects the unsafe case) "
                         "and exit. Touches no real git state.")
+    p.add_argument("--no-isolate", action="store_true",
+                   help="Build+deploy directly from this shared checkout instead of "
+                        "an isolated git worktree. Isolation is the DEFAULT (D-incident "
+                        "2026-09-07 — a concurrent session's `npm run build` wiped the "
+                        "shared build/ mid-deploy and shipped a broken plugin). Only "
+                        "use this if you understand the race it reopens.")
     return p.parse_args()
 
 
@@ -1615,6 +1756,17 @@ def main() -> int:
         err("nothing to deploy (theme and blocks both excluded)")
         print("[ABORTED] reason: empty-scope", flush=True)
         return 1
+
+    # Deploy isolation (Task B, D-incident 2026-09-07) — see the module-level
+    # note above run_isolated(). Computed regardless of --allow-dirty (that
+    # flag governs whether THIS shared checkout may proceed with dirty files;
+    # isolation additionally needs to know whether dirty files exist at all,
+    # since a worktree at HEAD would not carry them).
+    isolation_dirty = deployed_dirty_files(
+        roots=deploy_roots_for_scope(args.theme_only, args.blocks_only)
+    )
+    if should_isolate(args, isolation_dirty):
+        return run_isolated(args)
 
     use_alias = ssh_has_alias(SSH_ALIAS)
     host_label = target["host"]
