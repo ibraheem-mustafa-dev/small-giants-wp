@@ -62,10 +62,24 @@
     },
     {
       "type": "undeclared_render_ref",
+      "block": "sgs/collapsible-text",
+      "attr": "textAlign",
+      "file": "render.php",
+      "reason": "render.php reads 'textAlign' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
       "block": "sgs/decorative-image",
       "attr": "fx",
       "file": "render.php",
       "reason": "render.php reads 'fx' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
+    },
+    {
+      "type": "undeclared_render_ref",
+      "block": "sgs/icon-list",
+      "attr": "textAlign",
+      "file": "render.php",
+      "reason": "render.php reads 'textAlign' from attributes but block.json does not declare it \u2014 PHP does NOT drop an undeclared attribute before render.php runs, so this read may still be live (e.g. from a hand-authored theme pattern/template); verify against the actual render before treating it as dead"
     },
     {
       "type": "orphan_attr",
