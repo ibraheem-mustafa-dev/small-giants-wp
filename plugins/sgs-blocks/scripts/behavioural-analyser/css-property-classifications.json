@@ -8222,6 +8222,25 @@
       }
     },
     {
+      "slug": "sgs/accordion-item",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/accordion-item",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/audio",
       "attr": "borderColour",
       "fields": {
