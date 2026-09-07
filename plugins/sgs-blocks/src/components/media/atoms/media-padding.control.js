@@ -12,7 +12,10 @@
 import { __ } from '@wordpress/i18n';
 
 import ResponsiveBoxControl from '../../ResponsiveBoxControl.js';
-import { attrKeys, validate } from './media-padding.js';
+import { patchTier } from '../../../utils/patch-tier.js';
+import { attrKey, validate } from './media-padding.js';
+
+const BOX_CONTROL_TIER_TO_ATTR_TIER = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
 
 /**
  * Bare inspector row for this atom. Mounts no `InspectorControls`/`PanelBody`.
@@ -25,19 +28,21 @@ import { attrKeys, validate } from './media-padding.js';
  * @return {JSX.Element} A bare row.
  */
 export function control( { attributes, setAttributes, prefix = '', blockSlug = '' } ) {
-	const keys = attrKeys( prefix, blockSlug );
-	const TIER_KEYS = { base: keys.base, tablet: keys.tablet, mobile: keys.mobile };
+	const key = attrKey( prefix, blockSlug );
+	const tiers = attributes[ key ] && 'object' === typeof attributes[ key ] ? attributes[ key ] : {};
 
 	return (
 		<ResponsiveBoxControl
 			key={ `${ blockSlug }-${ prefix }-media-padding` }
 			label={ __( 'Padding', 'sgs-blocks' ) }
 			values={ {
-				base: attributes[ keys.base ] ?? {},
-				tablet: attributes[ keys.tablet ] ?? {},
-				mobile: attributes[ keys.mobile ] ?? {},
+				base: tiers.desktop ?? {},
+				tablet: tiers.tablet ?? {},
+				mobile: tiers.mobile ?? {},
 			} }
-			onChange={ ( tier, next ) => setAttributes( { [ TIER_KEYS[ tier ] ]: validate( next ) } ) }
+			onChange={ ( tier, next ) =>
+				patchTier( attributes, setAttributes, key, BOX_CONTROL_TIER_TO_ATTR_TIER[ tier ], validate( next ) )
+			}
 		/>
 	);
 }

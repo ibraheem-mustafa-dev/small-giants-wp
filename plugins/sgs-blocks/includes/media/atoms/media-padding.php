@@ -82,18 +82,21 @@ if ( ! function_exists( 'sgs_media_atom_media_padding_css' ) ) {
 	function sgs_media_atom_media_padding_css( array $attributes, $prefix, $block_slug ) {
 		$decls = array();
 
-		$base_key   = sgs_media_element_stored_attr( $block_slug, $prefix, 'Padding' );
-		$tablet_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'PaddingTablet' );
-		$mobile_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'PaddingMobile' );
+		// [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
+		// attribute {desktop,tablet,mobile}, matching the pattern already proven
+		// on accordion/button/container — not three separate flat attrs.
+		require_once dirname( __DIR__, 2 ) . '/helpers-responsive.php';
+		$key   = sgs_media_element_stored_attr( $block_slug, $prefix, 'Padding' );
+		$tiers = sgs_responsive_normalise_object( $attributes[ $key ] ?? null, true );
 
-		$tiers = array(
-			$base_key   => '',
-			$tablet_key => '-tablet',
-			$mobile_key => '-mobile',
+		$suffixes = array(
+			'desktop' => '',
+			'tablet'  => '-tablet',
+			'mobile'  => '-mobile',
 		);
 
-		foreach ( $tiers as $key => $suffix ) {
-			$shorthand = sgs_media_atom_media_padding_sides_to_shorthand( $attributes[ $key ] ?? null );
+		foreach ( $suffixes as $tier => $suffix ) {
+			$shorthand = sgs_media_atom_media_padding_sides_to_shorthand( $tiers[ $tier ] ?? null );
 			if ( '' !== $shorthand ) {
 				$decls[] = '--sgs-media-padding' . $suffix . ':' . $shorthand;
 			}

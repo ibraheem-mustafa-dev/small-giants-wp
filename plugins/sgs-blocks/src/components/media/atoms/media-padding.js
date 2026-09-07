@@ -35,16 +35,15 @@
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 
 /**
+ * [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
+ * attribute {desktop,tablet,mobile}, not three separate flat attrs.
+ *
  * @param {string} prefix    Surface prefix.
  * @param {string} blockSlug Block slug, for STORED_AS resolution.
- * @return {{base: string, tablet: string, mobile: string}} Stored attribute names.
+ * @return {string} The stored tier-object attribute name.
  */
-export function attrKeys( prefix, blockSlug ) {
-	return {
-		base: mediaStoredAttrName( blockSlug, prefix, 'Padding' ),
-		tablet: mediaStoredAttrName( blockSlug, prefix, 'PaddingTablet' ),
-		mobile: mediaStoredAttrName( blockSlug, prefix, 'PaddingMobile' ),
-	};
+export function attrKey( prefix, blockSlug ) {
+	return mediaStoredAttrName( blockSlug, prefix, 'Padding' );
 }
 
 /**
@@ -106,16 +105,17 @@ export function validate( value ) {
  */
 export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const decls = [];
-	const keys = attrKeys( prefix, blockSlug );
+	const key = attrKey( prefix, blockSlug );
+	const tiers = attributes[ key ] && 'object' === typeof attributes[ key ] ? attributes[ key ] : {};
 
 	[
-		[ keys.base, '' ],
-		[ keys.tablet, '-tablet' ],
-		[ keys.mobile, '-mobile' ],
+		[ tiers.desktop, '' ],
+		[ tiers.tablet, '-tablet' ],
+		[ tiers.mobile, '-mobile' ],
 	].forEach( ( pair ) => {
-		const key = pair[ 0 ];
+		const sides = pair[ 0 ];
 		const suffix = pair[ 1 ];
-		const shorthand = sidesToShorthand( attributes[ key ] );
+		const shorthand = sidesToShorthand( sides );
 		if ( shorthand ) {
 			decls.push( `--sgs-media-padding${ suffix }:${ shorthand }` );
 		}
