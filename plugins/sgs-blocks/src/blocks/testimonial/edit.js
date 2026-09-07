@@ -25,7 +25,7 @@ import {
 	BaseControl,
 } from '@wordpress/components';
 import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, SgsColourPanel, DesignTokenPicker, TypographyControls, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, MediaElementPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // No-inline migration contract §B3 (D294): testimonial is a content-KIND
@@ -153,7 +153,7 @@ const VARIANTS = [
 	},
 ];
 
-export default function Edit( { attributes, setAttributes, context } ) {
+export default function Edit( { attributes, setAttributes, context, clientId } ) {
 	const {
 		style,
 		maxWidth,
@@ -182,6 +182,8 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		quoteMarginBottom,
 		quoteColour,
 		quoteColourHover,
+		quoteLinkColour,
+		quoteLinkColourHover,
 		quoteColourGradient,
 		quoteFontStyle,
 		quoteLineHeight,
@@ -247,7 +249,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 		setAttributes( patch );
 	};
 
-	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }` ]
+	// Editor-canvas preview scope for the quote link-colour CSS below (Task 3,
+	// 2026-09-07).
+	const linkPreviewUid = `sgs-testimonial-link-preview-${ clientId }`;
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid } .sgs-testimonial__quote`,
+		quoteLinkColour,
+		quoteLinkColourHover
+	);
+
+	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }`, linkPreviewUid ]
 		.filter( Boolean )
 		.join( ' ' );
 
@@ -308,6 +319,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			{ /* D618/D619 — ONE grouped, SGS-OWNED colour panel, mounted FIRST
 			   so it sits at the top of the inspector Styles tab. Replaces the
 			   scattered DesignTokenPicker rows that used to sit in "Rating
@@ -1186,6 +1198,27 @@ export default function Edit( { attributes, setAttributes, context } ) {
 									value: quoteColourHover,
 									onChange: ( val ) =>
 										setAttributes( { quoteColourHover: val ?? '' } ),
+									linked: true,
+								},
+							] }
+						/>
+						<DesignTokenPicker
+							label={ __( 'Quote link colour', 'sgs-blocks' ) }
+							states={ [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: quoteLinkColour,
+									onChange: ( val ) =>
+										setAttributes( { quoteLinkColour: val ?? '' } ),
+									linked: true,
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: quoteLinkColourHover,
+									onChange: ( val ) =>
+										setAttributes( { quoteLinkColourHover: val ?? '' } ),
 									linked: true,
 								},
 							] }

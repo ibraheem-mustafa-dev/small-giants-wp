@@ -135,6 +135,14 @@
 					"note": "Added 2026-08-16, gradient-rollout merge. Sibling to css:color the way css:background-image is sibling to css:background-color. Real CSS mechanism is background-image + background-clip:text (see sgs_text_colour_decl() in helpers-tokens.php) — deliberately NOT css:background-image itself, because that key is already claimed by the box-fill gradient (css:background-color's sibling) and a text element can legitimately have both a box background gradient and a text-fill gradient at once."
 				},
 				{
+					"key": "css:color-link",
+					"label": "Link colour",
+					"suffixes": [
+						"LinkColour"
+					],
+					"note": "Added 2026-09-07, Task 3 (two-state link colour). Sibling to css:color the way css:color-gradient is — a SEPARATE member because a RichText field can legitimately have both its own base text colour (css:color, e.g. descColour) AND an independent colour for an inline `core/link` inside it (descLinkColour). Both attributes end in the literal suffix 'Colour', so without this sibling member the css:color member's suffix list would resolve first and the link-colour attribute would be permanently unclaimable on any element that already has a base text-colour sibling — same class of gap as css:box-shadow-color's own history (a member claims exactly one attribute; a second colour concept on the same element needs its own member, not a wider suffix list on the existing one). sgs_link_colour_css() (includes/helpers-typography.php) is the real emitter, scoped to `{selector} a`."
+				},
+				{
 					"key": "css:text-align",
 					"label": "Text align",
 					"suffixes": [

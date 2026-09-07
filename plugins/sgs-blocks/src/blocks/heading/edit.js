@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, SgsLengthControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
 
@@ -253,7 +253,7 @@ function buildWrapperStyle( attributes ) {
 
 // ─── Main edit component ──────────────────────────────────────────────────────
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		headingRole,
 		content,
@@ -263,6 +263,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
+		linkColour,
+		linkColourHover,
 		backgroundColour,
 		backgroundColourGradient,
 		backgroundColourHover,
@@ -311,16 +313,29 @@ export default function Edit( { attributes, setAttributes } ) {
 	// (matches render.php). It carries the block class + BOTH the box/background/
 	// border preview AND the typography preview, so the two style builders merge
 	// onto the single root element.
+	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
+	// 2026-09-07) — the block root IS the h-tag (no wrapper div), so the
+	// scope class lands directly on the element the RichText content's own
+	// `a` descendants are inside.
+	const linkPreviewUid = `sgs-hdg-link-preview-${ clientId }`;
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid }`,
+		linkColour,
+		linkColourHover
+	);
+
 	const blockProps = useBlockProps( {
 		className: [
 			'wp-block-sgs-heading',
 			isSubheading ? 'wp-block-sgs-heading--subheading' : '',
+			linkPreviewUid,
 		].filter( Boolean ).join( ' ' ),
 		style: { ...buildWrapperStyle( attributes ), ...buildTextStyle( attributes ) },
 	} );
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			{ /* D609/D618 — ONE grouped, SGS-OWNED colour panel, rendered FIRST.
 			   Replaces the scattered inline DesignTokenPicker rows that used to
 			   live in the "Colour" and "Border" panels below. Every state links
@@ -350,6 +365,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: linkColour,
+								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: linkColourHover,
+								onChange: ( val ) => setAttributes( { linkColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},

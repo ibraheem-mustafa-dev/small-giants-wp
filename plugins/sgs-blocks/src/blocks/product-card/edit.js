@@ -37,7 +37,7 @@ import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle } from '../../utils';
+import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
@@ -702,6 +702,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		priceColourGradient,
 		descColour,
 		descColourGradient,
+		descLinkColour,
+		descLinkColourHover,
 		priceNoteColour,
 		priceNoteColourGradient,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
@@ -993,6 +995,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		? `${ ctaHoverSelector }:hover,${ ctaHoverSelector }:focus-visible{${ ctaHoverDecls.join( '' ) }}`
 		: '';
 
+	// Two-state link colour preview (Task 3, 2026-09-07) — the description
+	// RichText field permits `core/link`. Reuses the same clientId-derived
+	// preview scope as the CTA hover CSS above.
+	const descLinkPreviewCss = linkColourPreviewCss(
+		`.${ ctaPreviewUid } .sgs-product-card__description, .${ ctaPreviewUid } .product-desc`,
+		descLinkColour,
+		descLinkColourHover
+	);
+
 	// Bound mode: render.php (via ServerSideRender) supplies the full
 	// `.product-card` wrapper itself, so the editor wrapper must NOT also add
 	// it — otherwise the preview shows a double `.product-card` (double
@@ -1148,6 +1159,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					linked: true,
 					gradientValue: descColourGradient,
 					onGradientChange: ( val ) => setAttributes( { descColourGradient: val ?? '' } ),
+				},
+			],
+		} );
+		colourRows.push( {
+			key: 'desc-link',
+			label: __( 'Description link colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: descLinkColour,
+					onChange: ( val ) => setAttributes( { descLinkColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: descLinkColourHover,
+					onChange: ( val ) => setAttributes( { descLinkColourHover: val ?? '' } ),
+					linked: true,
 				},
 			],
 		} );
@@ -2478,6 +2509,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					     instance's ctaPreviewUid class so it never leaks to a
 					     sibling product-card in the same editor canvas. */ }
 					{ ctaHoverCss && <style>{ ctaHoverCss }</style> }
+					{ descLinkPreviewCss && <style>{ descLinkPreviewCss }</style> }
 					{ /* Image */ }
 					{ image ? (
 						<div style={ { position: 'relative' } }>

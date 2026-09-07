@@ -440,6 +440,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"quoteLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"quoteFontStyle": {
 			"type": "string",
 			"default": "",

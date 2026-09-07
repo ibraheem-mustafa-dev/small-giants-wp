@@ -2306,6 +2306,17 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "splitMediaBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -9889,6 +9900,25 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "splitMediaBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaObjectFit",
       "fields": {
         "css_property": "object-fit",
@@ -10289,6 +10319,33 @@
         "css_property": "border-color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "borderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -11334,6 +11391,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "categoryBadgeBgColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "category-badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "categoryBadgeBgColourHover",
       "fields": {
         "css_property": "background-color",
@@ -12084,6 +12149,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "tagBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagBackgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -12113,7 +12186,7 @@
       "slug": "sgs/product-card",
       "attr": "tagTextColourGradient",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "color-gradient",
         "css_element": "tag"
       }
     },
@@ -14945,6 +15018,14 @@
         "css_property": "background-image",
         "css_element": "progress",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkColour",
+      "fields": {
+        "css_property": "color-link",
+        "css_element": "entry"
       }
     },
     {

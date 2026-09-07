@@ -828,6 +828,14 @@
 			"default": "",
 			"description": "CSS gradient string painting the product description text with a background-clip:text mechanism instead of a flat colour (mirrors the tagTextColour/tagTextColourGradient D636 rollout). Non-empty wins over descColour."
 		},
+		"descLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"descLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"descFontFamily": {
 			"type": "string",
 			"default": "",

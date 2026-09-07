@@ -324,6 +324,10 @@ $css_base_and_tiers = sgs_typography_css_rule(
 	'.wp-block-sgs-text + ' . $scope
 );
 
+// Two-state link colour (Task 3, 2026-09-07) — the body RichText permits
+// `core/link`, so a linked selection needs its own colour.
+$css_base_and_tiers .= sgs_link_colour_css( $attributes, '', $scope );
+
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).
 $css_base_decls = $base_decls ? $scope . '{' . implode( ';', $base_decls ) . ';}' : '';

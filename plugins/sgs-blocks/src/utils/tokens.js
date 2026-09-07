@@ -232,3 +232,36 @@ export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
 
 	return { backgroundColor: colour };
 }
+
+/**
+ * Editor-canvas preview CSS for a two-state LINK colour (Task 3, 2026-09-07)
+ * — the JS mirror of `sgs_link_colour_css()` (includes/helpers-typography.php).
+ *
+ * A RichText field's own `<a>` elements cannot take an inline style directly
+ * (WP renders that markup internally), so the preview is a scoped `<style>`
+ * tag rendered alongside the block, matching the precedent already used for
+ * product-card's `ctaHoverCss` — a per-instance scope class + a plain
+ * `:hover`/`:focus-visible` pair (no touch guard needed here; that's a
+ * frontend-only concern, `helpers-hover-state.php`).
+ *
+ * @param {string} selector     Fully-formed CSS selector for the field's own
+ *                               element (NOT the `a` itself), scoped to this
+ *                               block instance (e.g. via a clientId-derived class).
+ * @param {string} colour       The link's normal-state colour attribute value.
+ * @param {string} colourHover  The link's hover-state colour attribute value.
+ * @return {string} CSS text; '' when nothing is set.
+ */
+export function linkColourPreviewCss( selector, colour, colourHover ) {
+	const linkSelector = `${ selector } a`;
+	const normal = colourVar( colour );
+	const hover = colourVar( colourHover );
+
+	let css = '';
+	if ( normal ) {
+		css += `${ linkSelector }{color:${ normal };}`;
+	}
+	if ( hover ) {
+		css += `${ linkSelector }:hover,${ linkSelector }:focus-visible{color:${ hover };}`;
+	}
+	return css;
+}

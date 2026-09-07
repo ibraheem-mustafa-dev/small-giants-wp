@@ -393,6 +393,11 @@ if ( '' !== $quote_colour_hover ) {
 		. '{color:' . sgs_colour_value( $quote_colour_hover ) . ';}';
 }
 
+// Two-state link colour (Task 3, 2026-09-07) — the quote field permits
+// `core/link`, so a linked selection needs its own colour, independent of the
+// ancestor-hover mechanism above.
+$scoped_css[] = sgs_link_colour_css( $attributes, 'quote', $quote_colour_sel );
+
 // Reviewer name — colour stays on the shared per-element rule builder;
 // font-size (new, Spec 35 tier-object shape) + font-weight (pre-existing,
 // unchanged attribute/default/control) now route through the shared

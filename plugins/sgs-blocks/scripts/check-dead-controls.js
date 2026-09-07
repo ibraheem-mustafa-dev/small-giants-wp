@@ -839,6 +839,16 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'Padding',
 		'WidthType',
 	],
+	// Added 2026-09-07 (Task 3, two-state link colour). sgs_link_colour_css()
+	// (includes/helpers-typography.php) reads `{prefix}LinkColour` /
+	// `{prefix}LinkColourHover` via the same sgs_typography_attr( $prefix,
+	// 'Suffix' ) string-concatenation convention as sgs_typography_css_rule
+	// above — the literal attribute name appears in neither the control
+	// (TypographyControls.js-adjacent SgsColourPanel rows build the key
+	// per-block, not via a shared JS helper) nor the render (the shared PHP
+	// helper builds it), so this checker's SIX-corpus literal scan cannot see
+	// either end without this entry.
+	sgs_link_colour_css: [ 'LinkColour', 'LinkColourHover' ],
 };
 
 /**

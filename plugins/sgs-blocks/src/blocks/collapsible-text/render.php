@@ -98,6 +98,10 @@ $root_sel = '.' . $uid . '.sgs-collapsible-text';
 
 $typography_selector = '.' . esc_attr( $uid ) . ' .sgs-collapsible-text__body';
 $typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector );
+// Two-state link colour (Task 3, 2026-09-07) — the body's RichText permits
+// `core/link`, so a linked selection needs its own colour independent of the
+// surrounding text.
+$typography_css      .= sgs_link_colour_css( $attributes, '', $typography_selector );
 
 // ---------------------------------------------------------------------------
 // 2. Box shorthand builder (hand-built, mirrors sgs/label/sgs/container).

@@ -1338,6 +1338,34 @@
 			"notes": "Added 2026-08-16 (coordinator, gradient-rollout merge). Sibling to css:color the same way css:background-image is sibling to css:background-color — one member per flat/gradient pair, per distinct visual role, not per literal CSS property name."
 		},
 		{
+			"setting_key": "css:color-link",
+			"category": "css-property",
+			"label": "Link colour",
+			"optimal_control": {
+				"component": "DesignTokenPicker",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true,
+					"disableCustomColors": false
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "hover",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": true,
+				"reset_disclosure": "native ColorPalette Clear button; sits in the block's colour ToolsPanel group",
+				"colour_channel": "solid only, same as css:color",
+				"a11y": "swatch/preset names exposed to screen readers"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Task 3, 2026-09-07 (two-state link colour)",
+			"current_state": "7 blocks (collapsible-text, heading, product-card, quote, testimonial, text, timeline), 2026-09-07 build",
+			"divergence": "none — first rollout",
+			"divergence_severity": "low",
+			"notes": "Sibling to css:color the same way css:color-gradient is — a SEPARATE member because a RichText field whose `allowedFormats` permits `core/link` can legitimately have both its own base text colour (css:color) AND an independent colour for a linked selection inside it, and both attribute names end in the literal suffix 'Colour' so they would otherwise contend for the same manifest slot. Real emitter: sgs_link_colour_css() (includes/helpers-typography.php), scoped to `{selector} a`."
+		},
+		{
 			"setting_key": "css:display",
 			"category": "css-property",
 			"label": "Display type",

@@ -147,6 +147,14 @@
 			"default": "",
 			"description": "CSS gradient string painting the attribution element's text via background-clip:text (D636 text builder). Non-empty wins over attributionColour."
 		},
+		"attributionLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"attributionFontSize": {
 			"type": "object",
 			"default": {}

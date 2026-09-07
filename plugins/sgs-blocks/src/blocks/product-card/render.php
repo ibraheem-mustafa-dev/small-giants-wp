@@ -250,6 +250,9 @@ if ( '' !== $sgs_pc_desc_colour_effective ) {
 	}
 	$sgs_card_typo_css .= sgs_text_colour_gradient_fallback_rule( $sgs_pc_desc_colour_sel, $sgs_pc_desc_colour_effective );
 }
+// Two-state link colour (Task 3, 2026-09-07) — the description field permits
+// `core/link`, so a linked selection needs its own colour.
+$sgs_card_typo_css .= sgs_link_colour_css( $attributes, 'desc', $sgs_pc_desc_colour_sel );
 
 $sgs_pc_price_colour_sel       = '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount';
 $sgs_pc_price_colour_effective = sgs_resolve_text_colour_or_gradient(

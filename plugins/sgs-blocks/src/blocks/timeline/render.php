@@ -317,11 +317,21 @@ $border_style           = in_array( $border_style_raw, $allowed_border_styles, t
 // the ToC, so the `id` attribute stays free for the anchor).
 // ---------------------------------------------------------------------------
 
-$uid       = 'sgs-tl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel  = '.' . $uid . '.sgs-timeline';
-$title_sel = $root_sel . ' .sgs-timeline__title';
+$uid             = 'sgs-tl-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel        = '.' . $uid . '.sgs-timeline';
+$title_sel       = $root_sel . ' .sgs-timeline__title';
+$description_sel = $root_sel . ' .sgs-timeline__description';
 
 $scoped_css = array();
+
+// Two-state link colour (Task 3, 2026-09-07) — the per-entry description
+// field permits `core/link`, so a linked selection needs its own colour.
+// Applies block-wide to every entry's description, matching how the
+// block-wide title/date colours above already work.
+$description_link_css = sgs_link_colour_css( $attributes, 'description', $description_sel );
+if ( '' !== $description_link_css ) {
+	$scoped_css[] = $description_link_css;
+}
 
 // --- Root box/border declarations (custom borderWidth/Colour/Style — no WP
 // native support for per-side width, matches sgs/quote + sgs/button). ---

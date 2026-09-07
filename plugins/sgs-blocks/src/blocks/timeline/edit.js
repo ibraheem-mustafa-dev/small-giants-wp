@@ -17,7 +17,7 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, GradientCapableColourControl, IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, linkColourPreviewCss } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
@@ -473,7 +473,7 @@ function EntryEditor( { entry, index, onChange, onRemove } ) {
 
 // ── Main Edit component ─────────────────────────────────────────────────────
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		orientation,
 		contentLayout,
@@ -492,6 +492,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorFillColourHover,
 		connectorFillColourHoverGradient,
 		dateColour,
+		descriptionLinkColour,
+		descriptionLinkColourHover,
 		scrollEffect,
 		revealOnScroll,
 		revealTrigger,
@@ -522,6 +524,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Build preview class list mirroring render.php. The class name IS the
 	// contentLayout value (Task 3b — 'same-side' has its own CSS shape and no
 	// longer folds into 'content-alternating').
+	// Editor-canvas preview scope for the description link-colour CSS below
+	// (Task 3, 2026-09-07).
+	const linkPreviewUid = `sgs-tl-link-preview-${ clientId }`;
+
 	const previewClasses = [
 		'sgs-timeline',
 		`sgs-timeline--${ orientation }`,
@@ -551,7 +557,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		connectorProgressFill && 'connector' === revealTrigger
 			? 'sgs-timeline--reveal-connector'
 			: '',
+		linkPreviewUid,
 	].filter( Boolean ).join( ' ' );
+
+	// Editor-canvas preview CSS for the per-entry description link colour
+	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid } .sgs-timeline__description`,
+		descriptionLinkColour,
+		descriptionLinkColourHover
+	);
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
 	// custom-property VALUES stay inline (a `--var:value` is not a property
@@ -680,6 +695,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -1012,6 +1028,37 @@ export default function Edit( { attributes, setAttributes } ) {
 								label: __( 'Normal', 'sgs-blocks' ),
 								value: dateColour,
 								onChange: ( val ) => setAttributes( { dateColour: val ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</PanelBody>
+
+				{ /* ── Entry description (Task 3, 2026-09-07) — the per-entry
+				     description field permits `core/link`, so a linked
+				     selection needs its own colour independent of the
+				     surrounding text. No other per-entry description style
+				     control exists yet (see the `entry` element note in
+				     block.json), so this is a new, minimal panel rather than
+				     a row bolted onto an unrelated element. */ }
+				<PanelBody title={ __( 'Entry description', 'sgs-blocks' ) } initialOpen={ false }>
+					<DesignTokenPicker
+						label={ __( 'Link colour', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: descriptionLinkColour,
+								onChange: ( val ) =>
+									setAttributes( { descriptionLinkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: descriptionLinkColourHover,
+								onChange: ( val ) =>
+									setAttributes( { descriptionLinkColourHover: val ?? '' } ),
 								linked: true,
 							},
 						] }

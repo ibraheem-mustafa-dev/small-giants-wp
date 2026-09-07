@@ -258,6 +258,10 @@ $css_attrib_colour_fallback = sgs_text_colour_gradient_fallback_rule( $attrib_sc
 // normalise-and-refeed needed here any more.
 $css_attrib_typography = sgs_typography_css_rule( $attributes, 'attribution', $attrib_scope );
 
+// Two-state link colour (Task 3, 2026-09-07) — the attribution field permits
+// `core/link`, so a linked selection needs its own colour.
+$css_attrib_typography .= sgs_link_colour_css( $attributes, 'attribution', $attrib_scope );
+
 // Attribution margin-top — base + tablet + mobile on the SAME selector
 // (Pattern A). A KEPT-SCALAR single-side family (contract §C), NOT part of
 // the shared typography helper above.

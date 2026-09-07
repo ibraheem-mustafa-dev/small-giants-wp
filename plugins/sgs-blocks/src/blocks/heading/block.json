@@ -211,6 +211,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"fontStyle": {
 			"type": "string",
 			"enum": [

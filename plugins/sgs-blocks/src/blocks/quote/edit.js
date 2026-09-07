@@ -45,7 +45,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 // ---------------------------------------------------------------------------
@@ -213,7 +213,7 @@ function buildAttribStyle( attributes ) {
 // Edit component
 // ---------------------------------------------------------------------------
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		style,
 		attribution,
@@ -221,6 +221,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributionEnabled,
 		attributionColour,
 		attributionColourGradient,
+		attributionLinkColour,
+		attributionLinkColourHover,
 		// attributionFontSize / attributionMarginTop are TIER OBJECTS
 		// {desktop,tablet,mobile} as of Spec 35 pass 3b (2026-08-11) — the
 		// *Tablet/*Mobile siblings no longer exist.
@@ -269,9 +271,18 @@ export default function Edit( { attributes, setAttributes } ) {
 	// Contract §B3: NO wrapper <div> — the <blockquote> IS the block root
 	// (matches render.php). It carries the block class + the wrapper preview
 	// style, so the canvas mirrors the scoped frontend output.
+	// Editor-canvas preview scope for the attribution link-colour CSS below
+	// (Task 3, 2026-09-07).
+	const linkPreviewUid = `sgs-quote-link-preview-${ clientId }`;
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
+		attributionLinkColour,
+		attributionLinkColourHover
+	);
+
 	const blockProps = useBlockProps( {
 		as: 'blockquote',
-		className: 'wp-block-sgs-quote',
+		className: [ 'wp-block-sgs-quote', linkPreviewUid ].join( ' ' ),
 		style: buildWrapperStyle( attributes ),
 	} );
 
@@ -300,6 +311,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			{ /* D618/D609 — grouped, SGS-owned colour panel, rendered FIRST so it
 			   sits at the top of the inspector (Styles tab). Replaces 5
 			   scattered DesignTokenPicker rows below (Attribution's "Text
@@ -407,6 +419,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: attributionColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { attributionColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'attributionLinkColour',
+						label: __( 'Attribution link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributionLinkColour,
+								onChange: ( val ) =>
+									setAttributes( { attributionLinkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributionLinkColourHover,
+								onChange: ( val ) =>
+									setAttributes( { attributionLinkColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},

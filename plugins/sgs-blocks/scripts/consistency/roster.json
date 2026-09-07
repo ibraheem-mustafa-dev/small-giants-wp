@@ -258,7 +258,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
@@ -791,7 +791,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
@@ -1311,7 +1311,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
@@ -1634,7 +1634,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
@@ -1660,7 +1660,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": false
       },

@@ -19,13 +19,23 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, fillRow, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { textPaintPreview } from '../../utils';
+import { textPaintPreview, linkColourPreviewCss } from '../../utils';
 
-export default function Edit( { attributes, setAttributes } ) {
-	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient } = attributes;
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const { text, collapsible, collapsedLines, backgroundColour, textColour, textColourGradient, linkColour, linkColourHover } = attributes;
+
+	// Editor-canvas preview scope for the link-colour CSS below (Task 3,
+	// 2026-09-07) — mirrors render.php's uid scope, matching product-card's
+	// clientId-derived preview-scope precedent.
+	const linkPreviewUid = `sgs-ct-link-preview-${ clientId }`;
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid } .sgs-collapsible-text__body`,
+		linkColour,
+		linkColourHover
+	);
 
 	const blockProps = useBlockProps( {
-		className: 'sgs-collapsible-text',
+		className: [ 'sgs-collapsible-text', linkPreviewUid ].join( ' ' ),
 	} );
 
 	// D288/D636 pattern (mirrors sgs/container): render.php scopes textColour/
@@ -36,6 +46,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			<SgsColourPanel
 				rows={ [
 					fillRow( {
@@ -65,6 +76,28 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: textColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { textColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: linkColour,
+								onChange: ( val ) =>
+									setAttributes( { linkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: linkColourHover,
+								onChange: ( val ) =>
+									setAttributes( { linkColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},

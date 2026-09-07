@@ -37,7 +37,7 @@ import {
 // TypographyControls' own tier-aware line-height field.
 import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { colourVar, fontSizeVar, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, fontSizeVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -335,7 +335,7 @@ function parseUnit( raw, currentUnit ) {
 // Edit component
 // ---------------------------------------------------------------------------
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		text,
 		textColour,
@@ -372,6 +372,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
+		linkColour,
+		linkColourHover,
 		scaleHover,
 		customWidth,
 		customWidthUnit,
@@ -384,9 +386,21 @@ export default function Edit( { attributes, setAttributes } ) {
 	// (mirrors sgs/container's ::before media-layer gating, editor.css) so no
 	// other sgs/text block in the canvas gains the pseudo-element.
 	const dropCapStyle = buildDropCapStyle( attributes );
-	const editorClassName = dropCap
-		? 'wp-block-sgs-text wp-block-sgs-text--has-drop-cap'
-		: 'wp-block-sgs-text';
+	const linkPreviewUid = `sgs-text-link-preview-${ clientId }`;
+	const editorClassName = [
+		dropCap
+			? 'wp-block-sgs-text wp-block-sgs-text--has-drop-cap'
+			: 'wp-block-sgs-text',
+		linkPreviewUid,
+	].join( ' ' );
+
+	// Editor-canvas preview CSS for the link-colour row below (Task 3,
+	// 2026-09-07).
+	const linkPreviewCss = linkColourPreviewCss(
+		`.${ linkPreviewUid }`,
+		linkColour,
+		linkColourHover
+	);
 
 	// Contrast check for text colour — warn if text fails WCAG AA contrast
 	// against the text block's own background. When the text has no background
@@ -414,6 +428,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
 			{ /* D609/D618/D970 — ONE grouped, SGS-OWNED colour panel, rendered
 			   FIRST, matching sgs/heading's pattern. Text colour used to live
 			   as a scattered ToolsPanelItem inside the Typography panel below
@@ -448,6 +463,26 @@ export default function Edit( { attributes, setAttributes } ) {
 								linked: true,
 								gradientValue: textColourHoverGradient,
 								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'link',
+						label: __( 'Link colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: linkColour,
+								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: linkColourHover,
+								onChange: ( val ) => setAttributes( { linkColourHover: val ?? '' } ),
+								linked: true,
 							},
 						],
 					},

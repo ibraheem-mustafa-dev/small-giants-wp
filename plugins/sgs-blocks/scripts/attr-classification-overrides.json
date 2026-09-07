@@ -3198,6 +3198,69 @@
         "role": "typography"
       },
       "_why": "2026-09-06, Bean-directed. Had no role at all (unclassified) -- text-indent is a typography-panel control, same reasoning as textColumns immediately above, and belongs with the rest of sgs/text's typography attributes (fontSize/lineHeight/textAlign/textWrap/textColumns)."
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "body-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css() (includes/helpers-typography.php), called from render.php as sgs_link_colour_css( $attributes, '', $typography_selector ). The classifier cannot trace it: the attribute key is built at runtime by sgs_typography_attr()'s string concatenation inside the shared helper, so the literal token 'linkColour' never appears in render.php's own text for the emission scanner to match against a selector/property pair in one statement -- same class as tagTextColour above."
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "content-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, '', $root_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLinkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "description-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'desc', $sgs_pc_desc_colour_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLinkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "attribution-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'attribution', $attrib_scope ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLinkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "quote-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'quote', $quote_colour_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "text-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, '', $scope ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "entry-link"
+      },
+      "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'description', $description_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
     }
   ]
 }

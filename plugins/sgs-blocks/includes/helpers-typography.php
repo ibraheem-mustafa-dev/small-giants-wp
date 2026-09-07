@@ -39,6 +39,9 @@ require_once __DIR__ . '/helpers-responsive.php';
 // declares its own dependencies explicitly rather than relying on
 // render-helpers.php's load order, matching the two requires above.
 require_once __DIR__ . '/helpers-css-safety.php';
+// sgs_hover_state_rules() — the touch-safe hover pair sgs_link_colour_css()
+// below builds its hover state from.
+require_once __DIR__ . '/helpers-hover-state.php';
 
 if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	/**
@@ -370,6 +373,50 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			// Prepend so base-only props sit before the responsive rules — same
 			// computed result either way (disjoint properties, same selector).
 			$css = $selector . '{' . implode( '', $base_decls ) . '}' . $css;
+		}
+
+		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_link_colour_css' ) ) {
+	/**
+	 * Two-state LINK colour for a RichText field whose `allowedFormats`
+	 * permits `core/link` — a linked selection and the surrounding plain text
+	 * coexist in the same field, so they need independent colours (Task 3,
+	 * 2026-09-07). Scoped to `{$selector} a` so it overrides the field's own
+	 * text colour ONLY where a link actually exists.
+	 *
+	 * GROUND-TRUTH: source=file evidence=confirmed against
+	 * includes/helpers-hover-state.php's sgs_hover_state_rules() signature
+	 * and src/components/SgsColourPanel.js's row/state shape before wiring
+	 * this helper to either.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Attribute prefix ('' | 'desc' | 'attribution' | …).
+	 * @param string $selector   Fully-formed, already-safe CSS selector for the
+	 *                           RichText field's own element (NOT the `a` itself).
+	 * @return string CSS text; '' when nothing is set.
+	 */
+	function sgs_link_colour_css( array $attributes, $prefix, $selector ) {
+		$k_colour = sgs_typography_attr( $prefix, 'LinkColour' );
+		$k_hover  = sgs_typography_attr( $prefix, 'LinkColourHover' );
+
+		$colour = isset( $attributes[ $k_colour ] ) ? (string) $attributes[ $k_colour ] : '';
+		$hover  = isset( $attributes[ $k_hover ] ) ? (string) $attributes[ $k_hover ] : '';
+
+		if ( '' === $colour && '' === $hover ) {
+			return '';
+		}
+
+		$link_selector = $selector . ' a';
+		$css           = '';
+
+		if ( '' !== $colour ) {
+			$css .= $link_selector . '{color:' . sgs_colour_value( $colour ) . ';}';
+		}
+		if ( '' !== $hover ) {
+			$css .= sgs_hover_state_rules( $link_selector, 'color:' . sgs_colour_value( $hover ) . ';' );
 		}
 
 		return $css;

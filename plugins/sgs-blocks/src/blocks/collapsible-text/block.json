@@ -159,6 +159,14 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",
