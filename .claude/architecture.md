@@ -1,358 +1,352 @@
-﻿---
+---
 doc_type: architecture
 scope: forever
 title: SGS WordPress Framework — System Architecture
-split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, system design), .claude/dev-setup.md (build/deploy/SSH), .claude/plans/archive/2026-02-21-feature-audit.md (354-feature graded roadmap)"
+last_updated: 2026-09-07
+note: "Full rewrite 2026-09-07 (was stale since 2026-07-13, citing up to D590 against a live D995 ceiling). Counts and D-ceilings are never cached here — every one is a query, not a number. Verify via .claude/LEDGER.md for anything live-status-shaped."
 ---
-
-> Last updated: 2026-07-13. Recent: Header + Footer + Navigation SYSTEM design-gate APPROVED (Bean sign-off 2026-07-13) — see "Header/Footer/Navigation system architecture" section below + `.claude/plans/2026-07-13-header-footer-nav-system-design-gate.md` + Spec 37. New specialised container blocks `sgs/site-header` / `sgs/site-footer` / `sgs/adaptive-nav` PERMITTED inside the existing template-part architecture (rule evolution of `no-header-footer-block.py`); P0 (off-canvas drawer `inert`-freeze bug fix) SHIPPED + live-verified; P1-P5 (the new blocks `sgs/site-header`/`sgs/site-footer`/`sgs/adaptive-nav`) are BUILT + LIVE (D323-D333, §S9 11/11) — pending final Bean sign-off. See `.claude/specs/37-HEADER-FOOTER-BUILDER.md` for current §S9 status (not edited by this reconciliation pass). Prior: D222 (2026-06-13) name-free align/grid LAYER-ROUTER SHIPPED — hardcoded `verticalAlign`/`alignItems` attr-name fork removed from `convert.py`; align resolves via `db.attr_for_layer_property(slug,"OUTER","align-items")` backed by a second `property_suffixes` row `align-items→AlignItems` added via dated migration `migrations/2026-06-13-property-suffixes-align-items.py` (the canonical way — NOT a module-load write side-effect). `iconCircleBackground` is the ONLY remaining named literal (trust-bar-specific, council-ruled legitimate). ALSO D222: notice-banner content-lift (IN-F) — nodes resolving to `has_inner_blocks` composites with direct rich-text + zero children now lift text into one `sgs/text` child, DB-gated, no per-slug branch. team-member D221 regression fixed — re-pinned `has_inner_blocks=0` via `HAS_INNER_BLOCKS_OVERRIDES` + `scalarContentLift` capability + `ATTR_CLASSIFICATION_OVERRIDES` (name/role→text-content, photo→image-object) in `sgs-update-v2.py`; reproducible via full `/sgs-update` reseed. **NEW OPEN DEBT (D222): ~13 per-block `if slug=="sgs/X"` literal carve-outs remain in `convert.py`** — de-literalisation programme scoped at `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`; universal DB-driven scalar-lift (`_lift_scalar_attrs_by_selector` via `block_attributes.derived_selector`) is the replacement mechanism. Prior: D209 — 70 SGS blocks (`/sgs-update` after announcement-bar RETIRED + merged); D206 testimonial rebuilt as 7-variant typed-attr block; D204 `sgs/product-card` built-in-element. Prior: 2026-06-07 last annotated. Prior: 2026-06-03 WS-1 A1+A2 SHIPPED D159 — `sgs/container` gained `contentWidth` attr; converter transfers section max-width → `widthMode`/`contentWidth` (D159; `widthMode`/`customWidth` subsequently RETIRED D230/D231 2026-06-18 → 3-layer `align`/`maxWidth`/`contentWidth`). Architecture programme CLOSED (2026-05-22, 31 decisions). **Cloning-pipeline canonical spec is Spec 31 (`31-UNIVERSAL-CLONING-PIPELINE.md`)** — Spec 22 was absorbed into Spec 31 §13 + archived (D253); every "Spec 22 / R-22-N / FR-22-N" citation in the Decisions section below is HISTORICAL and maps 1:1 to Spec 31 §13 / R-31-N / FR-31-N. **NOTE (post-D229): `convert.py` is FROZEN (D-MODULAR); the "~13 per-block carve-outs in convert.py" debt above lives in a file being REPLACED by the modular `converter/` engine, NOT active go-forward debt.** Live status (D-ceiling — illustrative example only, e.g. was D258 at time of writing; do not treat as current) is single-sourced to `state.md` + `decisions.md` head. See `.claude/handoff.md`.
->
-> **2026-05-29 D99 DATA LAYER UPDATE (references corrected 2026-06-03):** `slot_synonyms` table retired D99 and replaced by `slots` table (composite PK on `slot_name + scope`; 92 element-scope + 4 section-scope rows post-D111). `slot_synonyms.role_classification` retired into `roles` table (21 rows — 20 base + `scalar-media` added D128). Component diagram, DB table list, and integration-surface references now use `slots` / `roles`. Walker functions like `_slot_synonyms()` retain their names but query the `slots` table internally. See **Spec 31 §13 / §4** for the current table inventory (Spec 22 was absorbed there at D253 and is DEAD — never cite it as a live pointer).
 
 # SGS WordPress Framework — System Architecture
 
-## System Overview
+## 1. System overview
 
-SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Mama's Munches is the current pipeline canary, Indus Foods is the design-language proving ground, and every architectural decision must hold for any business type.
+SGS is an AI website-builder built by Small Giants Studio: a WordPress block theme
+(`sgs-theme`) + a Gutenberg blocks plugin (`sgs-blocks`, including forms) + a booking plugin
+(`sgs-booking`) + a client-notes plugin (`sgs-client-notes`), plus a **cloning pipeline**
+(`/sgs-clone`) that converts an SGS-BEM-authored HTML draft into native, attribute-driven SGS
+blocks on a real WordPress page. It competes with Kadence, Spectra and GenerateBlocks — every
+block must be fully configurable by a non-technical client through the block editor alone (root
+`CLAUDE.md` "Client experience is primary"). The framework is client-agnostic by design: no
+client colour, copy, imagery or structure may be hard-coded into the base theme or blocks
+plugin — see root `CLAUDE.md` "SGS is a standalone framework, not a client project".
 
-**Framework stats (counts are DB-authoritative — query `/sgs-db` or `python sgs-db.py`; do not trust any hardcoded number here):** SGS block count — query `/sgs-db` (DB-authoritative; stale hardcoded snapshots have repeatedly drifted, e.g. 74 was accurate 2026-06-13 but the DB held 79 by 2026-07-14); 2,935 block_attributes (DB 2026-06-13, also re-check via `/sgs-db`); `sgs/trust-bar` is ACTIVE (`sourceMode='typed'` canonical — bound-mode purged D182 2026-06-06); `block_composition.container_kind` column BUILT + 28-block roster populated (D152 2026-06-02); `sgs/container` v0.2.0 — `contentWidth` attr + `__inner` guarded wrapper SHIPPED (WS-1 A1 D159 2026-06-03); converter width model: ~~`widthMode`/`customWidth` (D159)~~ → **3-layer `align`/`maxWidth`/`contentWidth` SHIPPED D230/D231 2026-06-18** (`widthMode`/`customWidth`/`customWidthUnit` RETIRED end-to-end; `align:"full"` for full-bleed; `maxWidth` = exact literal; `contentWidth` tokens `normal`/`wide`/`full`, default `full`; LANDED-verified canary). All blocks at `apiVersion: 3`. WP 7.0. (Token/pattern/hook/capability counts: see CLAUDE.md.)
+**The 7 non-negotiable rules** (convert-don't-mirror, no cheats, universal-no-carve-outs,
+no-skipping, verify-on-the-real-homepage, responsive-values-in-attributes-not-inline-CSS,
+design-gate-sensitive-changes) are stated in full in root `CLAUDE.md` and gate every session —
+not restated here to avoid a second copy that drifts.
 
-**Feature audit (354 features, graded roadmap):** moved to `.claude/plans/archive/2026-02-21-feature-audit.md`.
+**Counts, rosters, D-ceilings are DB- or repo-authoritative — never hard-coded in this file.**
+Query them live:
+- Block / attribute / table counts: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`
+  or `python ~/.claude/hooks/wp-blocks.py dump`
+- D-ceiling: `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
+- Current live status / which tracks are open: `.claude/LEDGER.md`
 
-**Dev setup, build commands, and deploy instructions:** see `.claude/dev-setup.md`.
-
----
-
-## Stack
+## 2. Stack
 
 | Layer | Technology | Notes |
 |---|---|---|
-| CMS | WordPress 7.0 | Block theme, no classic editor. Sandybrown upgraded 2026-05-22. |
-| Theme | `sgs-theme` (block theme) | theme.json v3, template parts. Style variations retired (Phase 5a). |
-| Blocks plugin | `sgs-blocks` | Block count is DB-authoritative — query `/sgs-db` (drifts fast; do not hard-code — a 79-block 2026-07-14 snapshot was already stale within a month). Extensions in `src/blocks/extensions/`. `Sgs_Ai_Connector` wraps WP 7.0 AI Connectors API. |
-| Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
-| Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
-| Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
-| Fonts | Inter variable (default) | Self-hosted WOFF2, no CDN. Montserrat + Source Sans 3 for Indus Foods |
-| Hosting | Hostinger (`ssh hd`) | Shared hosting, LiteSpeed cache (removed from dev sites 2026-05-05) |
+| CMS | WordPress (canary on 7.1, upgraded 2026-08-20 — re-verify with `wp core version` over SSH, don't trust this line) | Block theme, no classic editor |
+| Theme | `sgs-theme` | `theme.json` v3, template parts. Per-client colour/typography lives outside the theme — see §7 |
+| Blocks plugin | `sgs-blocks` | Dynamic (render.php-driven) blocks; extensions in `src/blocks/extensions/` |
+| Block build | `@wordpress/scripts` | `--experimental-modules --webpack-copy-php` (PHP `render.php` copied to `build/`) |
+| Frontend JS | Vanilla ES modules + WordPress Interactivity API | No jQuery anywhere. `viewScriptModule` for interactive blocks |
+| Motion | Four-tier doctrine (V/G/H/W) — see §6 | All npm-bundled, conditionally loaded, zero CDN |
+| Data layer | `sgs-framework.db` (SQLite) | Source of truth for block schema, composition, slots, roles — see §5 |
+| Hosting | Hostinger, one canary site (`sandybrown-nightingale-600381.hostingersite.com`) | `palestine-lives.org` is gone, removed from deploy targets 2026-08-10 |
 
----
-
-## Directory Structure
+## 3. Directory structure
 
 ```
 small-giants-wp/
-├── theme/sgs-theme/
-│   ├── theme.json                  # Design tokens — all colour/spacing/typography vars
-│   ├── style.css                   # Theme header ONLY (16 lines, no CSS rules)
-│   ├── functions.php               # Enqueues, variation-specific CSS via wp_add_inline_style()
-│   ├── styles/                     # EMPTIED — Phase 5a. Per-client snapshots at sites/<client>/theme-snapshot.json
-│   ├── templates/                  # Full-page templates (index, page, single, etc.)
-│   ├── parts/
-│   │   ├── header.html             # Single canonical header (top bar, nav, mobile drawer, CTA buttons)
-│   │   └── footer.html             # Footer with sgs/business-info blocks
-│   └── patterns/                   # Reusable block patterns
-│
-├── plugins/sgs-blocks/
-│   ├── sgs-blocks.php              # Plugin entry, block registration
-│   ├── includes/                   # PHP helpers, form processing, REST endpoints
-│   ├── src/blocks/                 # Block source files (one folder per block)
-│   │   └── extensions/             # Universal extensions (animation, visibility, hover, spacing, CSS, defaults)
-│   ├── build/                      # Compiled output — deployed to server
-│   └── scripts/                    # Build helpers + sgs-update-v2.py + pipeline scripts
-│
-├── sites/
-│   └── indus-foods/                # Client-specific content, mockups, research, notes
-│       └── theme-snapshot.json     # Per-client theme.json snapshot (pushed via push-theme-snapshot.py)
-│
-├── .claude/                        # Dev context (architecture.md, specs, plans, reports)
-├── CLAUDE.md                       # Root dev instructions (this file is law)
-├── composer.json                   # Dev-only PHP stubs (wordpress-stubs v6.9.1, wp-cli-stubs v2.12.0)
-└── vendor/                         # Composer install target — gitignored, not deployed
+├── theme/sgs-theme/           # Block theme — theme.json, templates/, parts/, patterns/, styles/ (empty, see §7)
+├── plugins/
+│   ├── sgs-blocks/            # Gutenberg blocks + forms + the cloning-pipeline scripts (own CLAUDE.md)
+│   ├── sgs-booking/           # Appointment + event booking (own CLAUDE.md; deferred, Spec 03)
+│   ├── sgs-client-notes/      # Visual annotation system (own CLAUDE.md; deferred, Spec 05)
+│   ├── sgs-accessibility/     # A11y helpers (masonry, min-height, ARIA roles, form errors) — no own CLAUDE.md yet
+│   └── sgs-configurator-pro/  # Product-configurator plugin work (own CLAUDE.md)
+├── sites/<client>/            # Per-client mockups, content, theme-snapshot.json (own CLAUDE.md per active client)
+├── .claude/                   # Working area — specs/, decisions.md, LEDGER.md, plans/, reports/ (own CLAUDE.md)
+└── CLAUDE.md                  # Root rules — the spine; read this first every session
 ```
 
----
+`plugins/sgs-blocks/src/blocks/` holds one directory per block, each following the standard
+5-file pattern (`block.json`, `edit.js`, `render.php`, `style.css`, optionally `view.js`/
+`view-module.js`) — see `plugins/sgs-blocks/CLAUDE.md` "Block Pattern".
+`plugins/sgs-blocks/scripts/converter/` is the cloning-pipeline engine (§4).
 
-## Component Diagram
+## 4. The cloning pipeline
 
-The SGS framework has four primary components: the block theme (`sgs-theme`), the blocks plugin (`sgs-blocks`), the knowledge database (`sgs-framework.db`), and the cloning pipeline (`/sgs-clone`). The theme and plugin are deployed to WordPress hosting; the DB and pipeline run locally on the dev machine. Per-client snapshots (`sites/<client>/theme-snapshot.json`) bridge the two environments.
+**What it does.** Converts a draft HTML mockup authored in SGS-BEM (`.sgs-<block>__<element>--
+<modifier>`, Spec 00 §3.1) into native SGS blocks driven by their own attributes — never a
+div-by-div mirror of the draft's DOM/classes. Canonical spec: `.claude/specs/31-UNIVERSAL-
+CLONING-PIPELINE.md` — read it in full at the start of any pipeline session (project rule).
 
+**The walker.** ONE recursive function with exactly three permitted exceptions (R-31-3 /
+FR-31-3): atomic-tag swap (a bare `<p>`/`<h1>`/`<img>` etc. with no SGS classes routes via a
+DB-driven tag map), top-level chrome-skip (`header`/`footer`/`nav` — the only three permitted
+hardcoded tag names, R-31-1), and top-level container wrap. Every other decision comes from DB
+row data, never a 4th conditional or a slug literal. BEM is the *only* recognition signal
+(R-31-2) — HTML tag is rendering shape only.
+
+**The content fork.** Every content-bearing attribute has a universal functional *identity*
+(`equivalent_block_for` — what kind of content: text/heading/media/button) which is separate
+from its *emit shape* (`block_attributes.emit_shape`, `nested` vs `child` — does this block
+render the value itself, or hand it to an InnerBlocks child). One universal per-attribute walk
+replaces the old block-level `has_inner_blocks` dispatch, because a single block can genuinely
+mix both shapes (Spec 31 §13.3, FR-31-2.6).
+
+**CSS routing — three destinations (D0/D1/D2; D3 retired 2026-09-02, Spec 31 §13.4 FR-31-5):**
+
+| Destination | What |
+|---|---|
+| D0 | Global design tokens → `theme.json` |
+| D1 | Typed-attr lift → a native block attribute (when a `property_suffixes` row matches) |
+| D2 | Scoped variation CSS, inlined at deploy (`variation-d0-d2.css`) |
+
+A property with none of the above is captured as a `ResidualBand` (an out-of-device-tier
+breakpoint) and serialised into the block's own `sgsCustomCss` field — never silently dropped
+(R-31-15 "no mirror emit"; a draft class silently absent from the clone is a rule violation, not
+an acceptable gap).
+
+**The 3-layer wrapper model** (OUTER / CONTENT-WIDTH / PER-GRID-ITEM) is how every composite
+with a built-in wrapper mirrors `sgs/container`'s capabilities — see §5's composite-mirror rule.
+
+**Fidelity measurement — computed-parity, Stage 11.6 (Spec 20).** `scripts/parity/
+computed-parity.js` compares `getComputedStyle` on the rendered clone vs the draft, matched by
+normalised TEXT CONTENT (not wrapper class, not source-declaration diff — both were proven
+unreliable, root CLAUDE.md rule 4a). Runs automatically post-deploy. **This is a per-commit
+DIAGNOSTIC, never the closing gate (R-31-4)** — the pipeline never ships on a number alone.
+Closure requires the live per-section visual check plus Bean's eye (R-31-13) — script and human
+judgement are co-authoritative, neither closes alone.
+
+**Deleted, do not look for:** `convert.py` / `converter_v2/` (the frozen monolithic walker,
+deleted D276 — the modular `converter/` engine under `plugins/sgs-blocks/scripts/converter/` is
+the *only* converter, no flag, no fallback); the old `Stage 11 pixel-diff.py` (deleted — it
+scored an empty section as a false win and a correctly-reflowed section as a false loss).
+
+**Stage map.** Do not cache stage numbers here — they have drifted repeatedly. The pipeline is a
+contiguous numbered sequence; read the stage index in `/sgs-update`'s own module docstring
+(`plugins/sgs-blocks/scripts/sgs-update-v2.py`) or Spec 31 Appendix D.
+
+## 5. The data layer — `sgs-framework.db`
+
+**DB-first, no hardcoded dicts (R-31-1).** Every pipeline lookup — block→slot mapping, role
+classification, CSS property routing, variant discrimination — reads from `sgs-framework.db`
+via the accessor layer, never a hand-maintained Python dict. The only permitted hardcoded
+constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav).
+
+**Access pattern — read carefully, this has bitten agents before.** There is no plain read-only
+`db_lookup.py` at `plugins/sgs-blocks/scripts/`. The only module of that name is
+`converter/db/db_lookup.py`, which runs schema-migration functions against the shared live DB
+**as an import side effect** — do not import it from a read-only reporter. For a plain read,
+open the DB directly read-only:
+```python
+sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
 ```
-┌──────────────────────────────────────────────────────────┐
-│  WordPress 7.0 (Hostinger — sandybrown canary only)      │
-│                                                            │
-│  ┌─────────────────────┐   ┌──────────────────────────┐  │
-│  │  sgs-theme           │   │  sgs-blocks plugin        │  │
-│  │  (block theme)       │   │  (dynamic blocks —        │  │
-│  │                      │   │   query /sgs-db)          │  │
-│  │                      │   │                           │  │
-│  │  theme.json          │◄──┤  render.php (per block)   │  │
-│  │  templates/          │   │  block.json (attrs)       │  │
-│  │  parts/              │   │  src/blocks/extensions/   │  │
-│  │  patterns/           │   │  REST endpoints           │  │
-│  │  (styles/ EMPTY)     │   │  Sgs_Ai_Connector         │  │
-│  └─────────────────────┘   └──────────┬───────────────┘  │
-│                                        │                   │
-│  ┌─────────────────────────────────────▼────────────────┐ │
-│  │  sgs-framework.db (SQLite — via db_lookup.py)         │ │
-│  │  Tables: blocks, block_attributes, block_supports,    │ │
-│  │  slots, roles, property_suffixes, modifier_suffixes,  │ │
-│  │  block_capabilities, block_composition, variant_slots,│ │
-│  │  design_tokens, hooks, docs, patterns                 │ │
-│  └─────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────┘
-
-  /sgs-clone (cloning pipeline)   ← stage map is single-sourced to .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md
-                                     Appendix D; do NOT cache stage numbers here (they drift — this block did)
-  ├── Spec 33 extractor: draft computed styles → sites/<client>/theme-snapshot.json (runs FIRST,
-  │                      before any block conversion; FR-33-12 fail-closed freshness gate)
-  ├── Stage 0: SGS-BEM HTML draft (mockup → structured HTML; BEM is the only recognition signal)
-  ├── converter/ engine: single recursive walker (FR-31-3, exactly 3 permitted exceptions) —
-  │                      BEM → block slugs via the `slots` table; DB-first, no hardcoded dicts
-  ├── CSS routing (§3.A): 4 destinations — D0 theme.json / D1 block attr / D2 scoped variation CSS /
-  │                       D3 attribute_gap_candidates (no destination = logged, NEVER silently dropped)
-  ├── Stage 10: REST deploy (page PATCH)
-  └── Stage 11.6: computed-parity.js (Spec 20 — content-matched computed styles at 375/768/1440).
-                  THE fidelity signal, paired with Bean's eye (R-31-13). Diagnostic, not a gate (R-31-4).
-
-  ⚠️ PURGED — do not look for these: `convert.py` + `converter_v2/` (DELETED D276, 2026-07-05 — the
-     modular `plugins/sgs-blocks/scripts/converter/` engine is the ONLY converter; no flag, no fallback)
-     and `Stage 11 pixel-diff.py` (PURGED 2026-07-04, `220cb28a` — false-WIN on an empty section,
-     false-LOSS on a correctly-reflowed one).
-
-  sites/<client>/
-  └── theme-snapshot.json (per-client colours/typography deployed via push-theme-snapshot.py)
-```
-
----
-
-## Component styling architecture — no-inline styling contract (Spec 32, 2026-07-09)
-
-Every SGS block's styling is designed to serialise as scoped CSS, never inline `style="…"`. WP-native styling `supports` (`color`/`spacing`/`__experimentalBorder`/`typography`/`shadow`) are KEPT — they still drive the block's editor controls — but their auto-inline output is suppressed per-property via `__experimentalSkipSerialization`; the resulting `style` object is instead serialised through the stable core `wp_style_engine_get_styles($style, ['selector' => "#{$uid}"])['css']` and appended to the block's own scoped `<style>` block (the mechanism SGS already emits for other rules; this is how WP core itself outputs `layout` support as `.wp-container-{id}` rather than inline). This lives in the SHARED HELPERS, not per-block: `SGS_Container_Wrapper`, `sgs_typography_css_rule()`, `sgs_button_element_style_css()`, and `sgs_responsive_css_rule()` carry the base-layer flip centrally; only block-private render.php `style="…"` sites (object-fit, overlays, per-item colour, attribution typography, caption) need individual conversion into the same scoped-`<style>` pattern.
-
-Per-side and per-corner box properties (padding/margin/border-width/border-radius) merge into a single named **object attribute** — `{top,right,bottom,left}` for 4-side families, `{topLeft,topRight,bottomLeft,bottomRight}` for 4-corner (border-radius) families — driven by WP's native `BoxControl` (and its corner-mode equivalent) so the editor experience stays standard WP. Root padding/margin/border-radius route to the WP-native `style.spacing.*` / `style.border.radius` object (already object-shaped since Phase 0); per-area/per-element families (e.g. `contentBandPadding`, `imageBorderRadius`) are SGS custom object attrs using the same control. The collision guard is a DB column, not a name convention: `block_attributes.box_family` (+ `box_side`) is seeded ONLY for the 10 genuine box families via `ATTR_CLASSIFICATION_OVERRIDES` in `sgs-update-v2.py`; every scalar/single-side/shapeDivider family gets no `box_family` row and is excluded by construction. Because a DB column alone doesn't self-enforce, a structural AST gate (same shape as the existing cheat-gate scanner) fails the build if any per-side/per-corner grouping or migration operation runs without a `box_family` check in its call path — made structural, not convention.
-
-The pilot (container + button) proved both distinct mechanisms — 4-side padding/margin/tier-base top-up, and 4-corner border-radius + `:hover`-scoped state + editor `BoxControl` parity. Rollout has since gone framework-wide (D560–D590, 2026-08: gap on 21 blocks, a 41-property migration, columns/gridTemplateColumns/gridTemplateRows, the box-tier pass closed D580) — this is no longer 2-block pilot scope; check `.claude/LEDGER.md` for current rollout status. Canonical: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`, `.claude/plans/2026-07-09-no-inline-styling-design-gate.md` (Pilot Acceptance Test A1–A9), `.claude/plans/2026-07-09-box-object-interface-contract.md` (fixed cross-layer contract).
-
----
-
-## Header/Footer/Navigation system architecture (Spec 37 + design-gate 2026-07-13)
-
-**Architectural principle (Bean-directed rule evolution):** header and footer REMAIN WordPress template parts — `parts/header.html` / `parts/footer.html`, the `sgs_header`/`sgs_footer` CPT, the rules engine, and Site Info block-bindings (all Spec 37). A **specialised container block used INSIDE the template part** is permitted, exactly like `sgs/card-grid` or `sgs/feature-grid` are permitted inside a page — it is not a monolithic header/footer block that subsumes the template-part/CPT/rules system, which stays forbidden. `.claude/hooks/no-header-footer-block.py` and the `header-footer-are-template-parts-not-blocks` memory evolve accordingly: they now allow `src/blocks/{site-header,site-footer,adaptive-nav}/` while still blocking a bare monolithic header/footer/nav block.
-
-**The blocks** (5-file pattern, auto-registered by the standard `build/blocks` scandir loop — no new registration wiring):
-
-| Block | Role | KIND | Renders via |
-|---|---|---|---|
-| `sgs/site-header` | Header shell — 3 optional named rows (top utility / middle primary / bottom) of typed elements | section | `SGS_Container_Wrapper` |
-| `sgs/site-footer` | Footer shell — named rows + up-to-N columns | section | `SGS_Container_Wrapper` |
-| `sgs/nav-menu` | The nav bar — renders a classic `nav_menu` by `ref`; collapses to a burger at `collapsePoint`, pairing to the drawer via a shared `drawerRef` | layout | own scoped CSS + `store('sgs/nav')` |
-| `sgs/nav-drawer` | The off-canvas panel — a native `<dialog>`, opened by the paired `sgs/nav-menu` burger | — | own scoped CSS + `store('sgs/nav')` |
-
-> **⚠ Updated 2026-07-22 (FR-37-21 / D362).** This table previously listed `sgs/adaptive-nav` and
-> `sgs/mobile-nav`. **Both are DELETED** — `sgs/mobile-nav`(+`-toggle`) at D337, and `sgs/adaptive-nav`
-> + `sgs/mega-menu` (with the 7 `mega-menu-*` parts + 7 patterns + their `theme.json` entries) at
-> `23a3cf63`. Navigation is owned by **Spec 36** (`sgs/nav-menu` + `sgs/nav-drawer` + the `sgs_mega_menu`
-> CPT — note that CPT is a DIFFERENT thing from the deleted `sgs/mega-menu` block).
-
-Both `sgs/site-header` and `sgs/site-footer` are section-KIND composites that delegate outer rendering to `SGS_Container_Wrapper` — they follow the composite-mirror rule (Key Decision 28) rather than diverging with per-block CSS. Each element in the header/footer palette (logo, nav, search, cart, account, CTA, contact, social, HTML, widget-area) draws its defaults from two shared sources so the same data stays consistent across header AND footer with no re-entry per block: (1) global style tokens (`theme.json`/`wp_global_styles`, and for cloned sites the Spec 33 `theme-snapshot.json`), and (2) the SGS Site Info store (Spec 36 — `sgs_site_info` via block-bindings) for logo/contact/social/copyright data.
-
-**Off-canvas drawer bug fix (P0, shipped + live-verified 2026-07-13):** `view.js` set `inert` on `.wp-site-blocks` when the drawer opened, but `#sgs-mobile-nav` was a DOM **descendant** of `.wp-site-blocks` — the Popover top-layer painted it open while `inert` froze its own links (looked open, was unclickable). Fixed by re-parenting the drawer to be a direct child of `<body>` (sibling of `.wp-site-blocks`) before `showPopover()`. This is now the accessibility benchmark for the whole system — GOV.UK-grade focus trap, ESC-to-close, backdrop dismiss, body-scroll-lock, redundant state signalling (class + `aria-current` + no-CSS fallback), configurable screen-reader labels, and a published keyboard contract.
-
-**Key system properties (full detail in the design-gate + Spec 37):**
-- **Never-overflow layout (D455, 2026-08-01)** — the header Cluster row is locked `flex-wrap: nowrap` and NEVER wraps or stacks; `min-width:0` on children lets flexbox shrink them proportionally, each stopping at its own floor (interactive controls 44px, logo `min-width: min(100%, var(--sgs-header-logo-min, 7.5rem))`). This solves the sub-400px WCAG 1.4.10 header-overflow bug intrinsically rather than per-element. ⚠ `flex-shrink:0` on the logo was REMOVED — unshrinkable it overflows a 320px viewport once wrapping is gone. Fluid `clamp()` spacing IS shipped (D461/D462, 2026-08-02) — gap default `clamp(0.5rem, 0.25rem + 1.5cqi, 1rem)`, live-verified varying 16px→8.8px. Both the flat-scalar and object-model CSS-length paths now delegate to one validator, `sgs_css_length_value()` (`includes/helpers-css-safety.php`): WP core's recursive balanced-paren grammar for `var|calc|min|max|minmax|clamp|repeat`, a raw-input breakout check BEFORE consumption, and fail-closed on anything else.
-- **Per-breakpoint override model** — new-blocks-only (no migration of existing blocks): each responsive property is `{desktop, tablet, mobile}` with `null` meaning inherit from the tier above; breakpoints are 768/1024 plus a custom-px 4th tier, from one shared source (R-31-1 — never a per-block hardcode); container queries on the block's own wrapper plus media-query fallback.
-- **Per-device content adaptation** — per-tier visibility toggles, `showLabel`/`iconOnly` element behaviour, and a move-to-drawer drop-zone (no framework has a magic content-swap primitive; all use place-element + toggle-per-device).
-- **Mega-menu** — nestable per-item content, drill-down + auto-back-link on mobile, AJAX lazy-load for heavy content; desktop overflow auto-collapses into a "more" menu.
-- **Sticky/transparent/scroll** — ⚠ the original "per-row-combination sticky" plan was **REJECTED 2026-07-26 (D389)** on the short-parent trap: a row made `position:sticky` inside a ~250px `<header>` unpins the moment scroll passes the header's height. **Sticky is HEADER-level** (`body.sgs-header-behaviour-sticky` → `position:sticky` on `header.sgs-site-header`, whose containing block is `<body>`), and a row that should disappear while pinned **COLLAPSES out of flow** (height→0) rather than translating — `transform` never reclaims space, so translating leaves a gap the size of the hidden row. Per-row transparent / hide-on-scroll / shrink ARE per-row (FR-37-37/38/39). The `--sgs-header-height` ResizeObserver + scroll-padding-top anchor fix are preserved, but the publisher is now **gated on MEASURED pinning** and publishes an explicit `0px` otherwise (D391) — an unconditional publish reserved dead space on every non-sticky page. Transparent-at-rest → solid-on-scroll ships as a no-code toggle. Canonical: Spec 37 FR-37-40.
-- **Cloning pipeline Part 2** (parked, `P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER`) — the walker will map a draft's header/footer rows onto the named slots by BEM role (R-31-2/R-31-8) once P1-P3 land.
-
-Canonical spec: `.claude/specs/37-HEADER-FOOTER-BUILDER.md` (template-part + CPT + rules architecture, being extended with new FRs for the blocks above). Design-gate record + full rationale (5-system research basis: Bricks, Elementor, Blocksy, Material 3, GOV.UK, plus the Indus Foods live reference): `.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`.
-
----
-
-## Integration Surfaces
-
-### theme → sgs-blocks plugin
-- `theme.json` exports design tokens as CSS custom properties (`--wp--preset--color--*`, `--wp--preset--spacing--*`, `--wp--preset--font-size--*`). All block colour defaults reference these tokens via slug — never bare hex.
-- `functions.php` enqueues block-specific stylesheets and emits per-client CSS custom properties via `wp_add_inline_style()`.
-- Block Selectors API in `block.json` targets native typography controls to each block's primary text element.
-
-### sgs-blocks plugin → sgs-framework.db
-- `db_lookup.py` (read-only) exposes `slots`, `roles`, `block_attributes`, `property_suffixes`, `block_capabilities`, `modifier_suffixes` as Python-callable query helpers. (`slot_synonyms` retired D99; `slot_synonyms.role_classification` retired into `roles` table.)
-- `/sgs-update` (10-stage v3 `sgs-update-v2.py`) rebuilds the DB from 10 canonical sources: block.json files, render.php parse, REST API enumeration (variations, styles), hooks scan, design token parse, and pattern parse.
-- `wp-blocks.py` is the unified data CLI: `dump`, `block <slug>`, `capabilities`, `synonyms` — used by pipeline scripts and `/sgs-db` slash command.
-
-### cloning pipeline → WordPress REST API
-- Stage 10 deploy: `PATCH /wp/v2/pages/{id}` sets post content. (The old `POST sgs/v1/active-variation` + `theme_mod` style-variation activation is RETIRED — per-client tokens deploy via `push-theme-snapshot.py` → theme.json + `wp_global_styles`, Spec 33.)
-- Playwright: captures at 375/768/1440px against the live sandybrown staging site.
-- **Stage 11.6 computed-parity** (`scripts/parity/computed-parity.js`): compares computed styles on rendered elements, matched by TEXT CONTENT, at 375/768/1440 — Spec 20, THE fidelity signal, paired with Bean's eye. *(The former `Stage 11 pixel-diff.py --selector .sgs-{section}` was PURGED 2026-07-04, `220cb28a` — it scored an empty section as a false WIN and a correctly-reflowed one as a false LOSS.)*
-
-### sgs-blocks → N8N notification service
-- All form submission and booking notifications route to N8N webhook (`http://72.62.212.169/webhook/…`) rather than `wp_mail()`. Configured via `sgs_n8n_webhook_url` option.
-
-### sgs-blocks → WordPress Customiser
-- Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod` values. Frontend output via `wp_footer` hook. Customiser preview uses `customize_preview_init` + postMessage transport for live preview.
-
-### Per-client deployment
-- `sites/<client>/theme-snapshot.json` pushed to staging via `push-theme-snapshot.py --client <slug> --target <ssh-host>`. This replaces the retired style-variation system (Phase 5a). Client-specific overrides live in `sites/<client>/theme-overrides.css` or inside the snapshot's `styles.css` block.
-
----
-
-## Key Architectural Decisions
-
-1. **Dynamic blocks only** — All complex blocks use `render` in block.json pointing to `render.php`. `save()` returns `null` or `<InnerBlocks.Content />`. Avoids deprecation headaches; PHP controls output.
-
-2. **All block properties are attributes, never hard-coded CSS** — Every visual property (colour, spacing, font size, hover effect, image) is a block attribute with an editor control. CSS provides only structural defaults.
-
-3. **Colour system: DesignTokenPicker + `:not([style*="color"])` guard** — Colours set via `DesignTokenPicker` (returns slug or hex). In render.php, slugs become `var(--wp--preset--color--{slug})`. CSS fallbacks use `:not([style*="color"])` so inline styles always win.
-
-4. **`sgs/container` is the universal layout primitive** — Used for all multi-column and section layouts. Supports `layout` (stack/grid/flex), `columns`, `columnsTablet`, `columnsMobile`, `gap`, `backgroundImage`, `minHeight`, `htmlTag`. Nesting containers inside containers is the correct pattern.
-
-5. **Hover effects: universal extension** — The hover-effects extension at `src/blocks/extensions/hover-effects.js` registers 12 universal hover attributes available on every SGS block: colour shifts (bg/text/border), scale, shadow elevation, image zoom, grayscale, border-accent, tilt-3d, transition duration, stagger delay, 2 block-link attributes.
-
-6. **WordPress Interactivity API for most frontend JS; Post Grid uses vanilla ES module** — No jQuery. Stateful interactive blocks use `viewScriptModule` + `@wordpress/interactivity` store/state. The `--experimental-modules` build flag is required.
-
-7. **Per-device visibility via block extension, not separate templates** — Visibility panel extension applied to ALL blocks via `editor.BlockEdit` + PHP `render_block` filter. Clients build three layout groups inside one template, hiding each non-applicable group per breakpoint.
-
-8. **Animation extension uses WordPress filter API, not block styles** — Scroll animations applied to all SGS blocks (roster is DB-authoritative — query `/sgs-db`, do not hard-code a count) + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `render_block` PHP filter. 16 animation types; CSS initial states gated behind `.sgs-js` class + `prefers-reduced-motion: no-preference`.
-
-9. **Floating UI lives in the WordPress Customiser** — Back to Top, Reading Progress configured at `Appearance → Customise → SGS Floating UI`. Settings stored as `theme_mod`. Frontend output via `wp_footer` hook.
-
-10. **Palette tokens are mandatory for block colour defaults** — Every block colour default references a palette token via slug or `var(--wp--preset--color--X, #fallback)`. Bare hex defaults are forbidden (they don't switch when style variation changes). Brand colours (LinkedIn, Facebook, WhatsApp) are documented exceptions.
-
-11. **Per-client theming model** — `theme/sgs-theme/styles/` is empty. Per-client snapshots at `sites/<client>/theme-snapshot.json`, deployed via `push-theme-snapshot.py`.
-
-12. **DB-first architecture rule** — Converter / recogniser scripts read canonical vocabulary from `sgs-framework.db` via `db_lookup.py`. No hardcoded Python dicts duplicating DB data. `/sgs-update` keeps the DB in sync.
-
-13. **Rosetta Stone discipline** — Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks, vanilla HTML/CSS, Bootstrap, shadcn/Radix, Tailwind, React generic, and AI-builder outputs. Missing SGS equivalent = gap candidate, never silent drop.
-
-14. **Universal block-equivalent extraction (Spec 22 FR-31-3, locked 2026-05-26)** — The cloning-pipeline walker is a single recursive function with exactly 3 permitted exceptions (atomic-tag swap, top-level chrome skip, top-level container wrap). Every BEM-classed DOM node resolves to a block slug via the `slots` table lookup (via `db_lookup.py`; `slot_synonyms` retired D99); per-block behaviour comes from DB rows, not code branches. The "double-render" bug (sgs/product-card emitting 3.7× expected markup) is structurally eliminated because the same descendant cannot be consumed twice: Spec 22 FR-31-2's `equivalent_block_for()` check happens BEFORE attr lift; if the attr is block-equivalent, walker never lifts. See Spec 22 §1-§3 for the full architecture statement.
-
-15. **DB-driven atomic-tag map (Spec 22 Appendix B; SHIPPED 2026-05-27 Phase 1.2/1.2a)** — Bare HTML tags with no SGS classes route via DB-driven `db.atomic_tag_map()`. **Final shipped algorithm** (post-/qc-council 2026-05-28 hardening): R-31-1-compliant — the runtime path queries the `html_tag_to_core_block` table (14 rows, idempotent migration at module load) + `blocks.replaces` reverse-walk. Examples: `<p>` → sgs/text; `<h1>`–`<h6>` → sgs/heading; `<img>` → sgs/media; `<blockquote>` → sgs/quote; `<a>` / `<button>` → sgs/button; `<ul>`/`<ol>` → sgs/icon-list. Zero hardcoded `_HTML_TAG_TO_CORE_SLUG` dict. The new walker (`da3de993`) consumes `atomic_tag_map()` exclusively. Slot-contextual `slot_synonyms.html_semantic_tag` is NOT consulted — that column is slot-contextual rendering data, not html-canonical routing.
-
-16. **Cascade-fold (per-property default + override, NOT binary uniformity gate; locked 2026-05-25 per blub.db row 287)** — For N sibling wrappers sharing a BEM-element class, the walker compares CSS values per-property across siblings: most-common value hoists to parent's "per-direct-child default" attr; divergent values stay as override attrs on the specific child that contradicts. Wrapper blocks always exist (preserve className for CSS targeting); their attrs carry only the divergence; parent carries the defaults. Content uniformity is irrelevant — each grid item / column carries unique content; folding happens at the styling layer only. The canonical precedent is `sgs/multi-button` (14 parent attrs set group defaults; inner `sgs/button` children render via `$content` and override per-instance).
-
-17. **Hero is NOT a clean architectural reference** — Hero's prior pixel-diff wins were achieved via hardcoded cheats now removed. The universal walker (commit `da3de993`) has no per-slug guards. Do not use pre-walker figures as a baseline. See Spec 31 §1 + §7b. *(Annotated 2026-07-16: this entry named `stage-11-pixel-diff.json` as "the live measurement" — that tool + artefact were PURGED 2026-07-04. Current instrument = Stage 11.6 computed-parity, Spec 20.)*
-
-18. **Phases never ship as single commits (binding rule D73, blub.db row 288)** — Within any phase, every major task commits separately with: (a) `/qc-council` or `/qc-inline` pre-commit gate; (b) living-docs updates for the matched doc-type per trigger table; (c) `/sgs-clone --debug-trace` + Stage 11 measurement comparing pre/post values; (d) commit message citing predicted vs actual delta from the experiment frame. Per-task skill bindings: `/subagent-driven-development` for implementation (one implementer + 2 reviewers); `/delegate` for model routing; `/verify-loop` for 2-attestation. Anti-pattern of record: 2026-05-24 second-pass session (5 changes shipped as one wave, regressed pixel-diff 70.5% → 73.9%, regression unattributable).
-
-19. **Per-section, NOT mean (locked 2026-05-26; instrument superseded 2026-07-04)** — the durable half: judge **per section × 3 viewports**, because mean averaging hides individual failures; and **Bean's visual sign-off on cropped pairs is co-authoritative with script measurement (R-31-13)**. *(Annotated 2026-07-16: the "≤5% / ≤1% pixel-diff" thresholds and `pixel-diff.py` are PURGED — R-31-4 forbids an aggregate score as a closing gate. Current instrument = Stage 11.6 computed-parity per Spec 20; closure = live per-section visual check + Bean's eye.)*
-
-20. **Spec 22 universal block-equivalent extraction (locked 2026-05-26)** — Single universal walker path (FR-31-3); BEM is the only recognition signal (FR-31-1); block-equivalent attrs become child blocks via `equivalent_block_for()` (FR-31-2); render.php for hybrid blocks migrates to `echo $content` (FR-31-6); `wp-blocks.py` is the unified data CLI over sgs-framework.db + selected uimax tables (FR-31-8); cold replacement Phase 1 in 5 commits per R-31-5. Phase 1 acceptance ≤5%, Phase 1.5 stretch ≤1%. Council-validated 2026-05-26 via 4-rater /gap-analysis (Architectural Purist, Spec Checker, Pragmatic Engineer, Risk Auditor). Canonical reference: `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md`.
-
-21. **Section-root recognition via explicit operator flag, not algorithm (D107, 2026-05-30)** — Each block declares its tier via `supports.sgs.is_section_root` in `block.json` (per Bean D1=A: explicit > algorithmic). `/sgs-update` Stage 1 reads the flag and writes the new `blocks.tier` column (TEXT CHECK in `'block' | 'class-section' | 'pattern'`). XS-2 voter consults `blocks.tier` during recognition — section-root blocks bias toward section-scope matches. Replaces the proposed algorithmic detector that would have inferred tier from BEM patterns.
-
-22. **`block_composition` table + `container_kind` column (D108 2026-05-30 + D152 2026-06-02)** — Data layer LIVE (189 rows at the time — 188 seeded D108 + `sgs/option-picker` added D152); `container_kind` TEXT column added + populated D152 (commit `0d746073`). At the time, the container roster had `wraps_block` + `container_kind` (values `section|layout|content`) populated via the "wraps children" detection algorithm in `sync-container-wrapping-blocks.py` (rewritten D152 — validates from real InnerBlocks structure, not layout-attr heuristics). **Roster size is DB-authoritative — query `/sgs-db`, do not cache a count here; the 28-block D152-era figure has already drifted (dev-setup.md separately cites 29, and the live DB shows more).** Walker consumption DEFERRED pending WS-3 converter work. `sgs/trust-bar` and `sgs/modal` block.json gained `supports.sgs.containerKind:"section"` to source the column.
-
-23. **XS-3 walker code REVERTED post-regression (D109, 2026-05-30)** — The XS-3 walker condition (consult `blocks.tier` to gate section-root emission) was reverted after regression evidence on featured-product + social-proof sections. Regression artefacts preserved in pipeline-state for the refined-trigger session. The DB layer (D107 `blocks.tier`, D108 `block_composition`) remains LIVE — walker consumption is queued, not retired.
-
-24. **XS-4 canonical_slot assignment ported to D99 schema (D110, 2026-05-30)** — `assign-canonical.py` ported to post-D99 `slots` + `roles` table architecture. Current canonical_slot coverage: 31.8% of attrs. Re-run after every slot-vocabulary addition (new rows in `slots` table) to refresh canonical bindings.
-
-    **`canonical_slot` is content-fork metadata, NOT the layout router (D194, 2026-06-09).** Its only behavioural job is the CONTENT fork — child-InnerBlock vs scalar (FR-31-2.1, read together with `role` + `attr_type`). Structural wrapper box CSS routes **name-free** via layer-detection (OUTER/CONTENT/GRID by CSS signature + position) + `property_suffixes`; fake wrapper divs fold structurally by signature (FR-31-4.1 slug-None direct descendant), never by name. The Wave-2 "canonical_slot backfill as routing gate" conception is retired. See `.claude/decisions.md` D194 + `.claude/specs/archive/WRAPPER-CSS-ROUTING-DESIGN-GATE.md`.
-
-25. **Slot vocabulary hygiene — section-scope cleanup (D111, 2026-05-30)** — XS-5 retired 12 wrong / dead section-scope slot rows. Testimonial + testimonial-slider re-inserted at element scope (the correct scope for those slots; section-scope was the legacy miscategorisation). Schema gate: section-scope rows reserved for actual section-root semantics, never element-level slots.
-
-26. **Universal wrapper/container resolution (FR-31-4.1, D118, 2026-05-31)** — The single canonical rule for every wrapper below a section: block-match wins; a DIRECT descendant of a container FOLDS its CSS into the container (1-child = inner-CSS; grid/flex = container absorbs the grid + each item's CSS folds as grid-item CSS); a direct descendant matching a block becomes that block (the grid item); a NON-direct-descendant wrapper becomes its own `sgs/container`, never dropped. Supersedes the patchwork (walk_passthrough drop-and-bubble, depth-2 gate, `_absorb_transparent_wrappers`). Canonical text: Spec 22 §FR-31-4.1. Implementation (walker rewrite) is the active next task; the depth-2 gate (D117 G2) is the working interim. Content + side-by-side layout render correctly today (G1+G2, live-DOM verified).
-
-27. **Root-cause methodology is core + mandatory (D118, 2026-05-31)** — No assumptions / no probability / no trusting unverified claims or pixel-diff. Dig to the root cause from ALL logs+debug data; classify implementation-bug vs spec/plan-gap; verify every dependency (DB tables, block functionality, pipeline spec, truth-spec, pixel-diff-vs-live-DOM); attest with ≥2 evidence sources; roll back fast on regression. Full statement + tool list in root `CLAUDE.md` "Root-cause methodology". This is the working method for ALL future work on this project.
-
-28. **Composite-mirror rule + container_kind column (D152, 2026-06-02)** — No composite block with a built-in wrapper (sgs/hero, sgs/cta-section, sgs/trust-bar, sgs/modal, etc.) may diverge from `sgs/container`'s wrapper capabilities (R-31-9 extension, locked Bean). Composite blocks declare `supports.sgs.containerKind` in block.json (`section|layout|content`); `/sgs-update` reads this and writes `block_composition.container_kind`. The converter (WS-3) will read the column and apply the 3-layer OUTER/CONTENT-WIDTH/PER-GRID-ITEM model from Spec 22 §FR-31-21 uniformly. Capability gaps found during WS-2 audit become block attrs to ADD to the composite, never converter workarounds. `sync-container-wrapping-blocks.py` rewritten to validated "wraps children" detection. Container roster confirmed at the time (size is DB-authoritative — query `/sgs-db`, do not cache a count). Memory: `feedback_no_composite_evades_universal_rule`.
-
-29. **Header/footer/nav as specialised container blocks inside template parts, not a monolithic block (design-gate 2026-07-13, Bean sign-off)** — `no-header-footer-block.py` evolves from a blanket header/footer/nav ban to permitting `sgs/site-header`, `sgs/site-footer` and the nav blocks specifically because they are composites used *inside* the existing template-part/CPT/rules architecture (Spec 37), the same relationship `sgs/card-grid` has to a page — never a replacement for that architecture. `sgs/site-header`/`sgs/site-footer` are section-KIND, the nav blocks are layout-KIND *(the block named here was originally `sgs/adaptive-nav`, DELETED at FR-37-21/D362 — the permitted nav blocks are now `sgs/nav-menu` + `sgs/nav-drawer`, Spec 36)*; both header/footer follow the composite-mirror rule (Key Decision 28) via `SGS_Container_Wrapper`. A live P0 accessibility bug (the off-canvas drawer's `inert` attribute froze its own descendant nav because the drawer lived inside `.wp-site-blocks`) was fixed by re-parenting the drawer to `<body>` — fixed + verified live 2026-07-13. Full system: `.claude/plans/archive/2026-07-13-header-footer-nav-system-design-gate.md`; see "Header/Footer/Navigation system architecture" section above.
-
----
-
-## 2026-05-25 cloning-pipeline session summary
-
-The 2026-05-25 session ran a 4-rater `/qc-council` against the consolidated cloning-pipeline recovery plan and produced:
-
-- **`.claude/reports/2026-05-25-qc-council-issue-register.md`** — canonical register, ~110 items across Sections A-R:
-  - Section A (7 confirmed defects) — F1 universal-nesting + atomic_button missing CSS lift + brand empty body[] + D1 sidecar collisions
-  - Section B (7 DB-first violations) — hardcoded dicts to migrate
-  - Section P (27 binding design principles) — extracted from Bean's prior-session messages; THE rules every commit obeys
-  - Section Q (20-cheat inventory) — file:line + replacement path for every hardcoded shortcut in `convert.py` + `css_router.py`
-  - Section R (consolidated phase plan) + R1 (blocks.replaces audit) + R2 (allowed-nesting audit) + R5 (brand sgs/quote worked example end-to-end)
-
-- **`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`** — phase plan. Phase 1.1-1.4b SHIPPED 2026-05-27 (8 task-commits: 507d4f57 / 0ba53c72 / d4bfa41d / 35fdab62 / 909c971a / cd3bef5e / b58e5ca3 / da3de993). Phase 1.5 (empirical pixel-diff measurement + halt/proceed) opens next session.
-
-- **Decisions D70-D75 logged in `.claude/decisions.md`:**
-  - D70 — Stage 10 inline-CSS deploy of `variation-d0-d2.css` (closes 4-section pixel-diff regression; mean 74.1% → 68.4%)
-  - D71 — Step 1.7 G3 reframed (pixel-diff side closed by D70; failure-count side empirically misframed)
-  - D72 — sgs/trust-bar block retired in favour of universal-nesting (mean 68.4% → 63.2%)
-  - D73 — phases never ship as single commits (binding rule)
-  - D74 — Phase 1 scope = full universal-extraction backbone (one consolidated plan, NOT a series of small phases)
-  - D75 — qc-council verdict CONDITIONAL APPROVE pending F1 spike
-
-**Empirical baseline state — ⚠️ THIS WHOLE BLOCK IS HISTORICAL (superseded 2026-07-04/05; annotated 2026-07-16).** Both the instrument and the code it describes are gone. Do NOT quote these figures as a baseline, and do not go looking for these files.
-
-- ~~Pre-walker baseline (2026-05-27): `mean_mismatch_percent: 63.61%` at `…/stage-11-pixel-diff.json`~~ — **the artefact and the Stage 11 pixel-diff tool that produced it were PURGED 2026-07-04 (`220cb28a`).** R-31-4 also forbids an aggregate score as a closing gate.
-- ~~Earlier baseline (2026-05-26): mean 63.0%~~ — same purge.
-- ~~Walker at `orchestrator/converter_v2/convert.py` (1873 LoC)~~ — **that tree was DELETED at D276 (2026-07-05).** The walker now lives in the modular `plugins/sgs-blocks/scripts/converter/` engine (the ONLY converter; no flag, no fallback). The 3-permitted-exceptions rule (R-31-3) still holds.
-- **Current baseline:** re-run **Stage 11.6 computed-parity** on a fresh clone (Spec 20) — it is per-run, and any cached number here would drift. Closure = the live per-section visual check + Bean's eye (R-31-11 / R-31-13).
-
----
-
-## Variation-Concept Distinction (CRITICAL)
-
-Three concepts share similar names but have different fates:
-
-| Concept | What it is | Fate |
+— the convention used by `audit-declared-vs-seeded-roles.py`, `generate-db-catalogue.py`, and
+`audit-feature-parity.py`. For an ad-hoc query, use `python
+~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT …"` (the `/sgs-db` skill).
+
+**Key tables** (names only — row counts drift daily, query them, don't cache them here):
+
+| Table | What it's for |
+|---|---|
+| `blocks` | Block roster; `tier` (block / class-section / pattern), `variant_attr` (names the variant-selector attr) |
+| `block_attributes` | Per-attribute routing: `role`, `emit_shape`, `box_family`/`box_side`, `css_property`/`css_element`/`css_state`/`css_tier`, `canonical_slot` |
+| `block_composition` | `container_kind` (section / layout / content), `wraps_block` — the composite-mirror roster |
+| `block_supports` / `block_capabilities` | Native WP `supports` + SGS capability flags per block |
+| `slots` / `roles` | Element- and section-scope BEM vocabulary + role classification (replaced the retired `slot_synonyms`) |
+| `property_suffixes` | CSS property → device-tier attribute-name mapping (the D0/D1/D2 router's core lookup) |
+| `variant_slots` / `variant_composition_slots` | Per-variant discriminating attribute slots / discriminating child-block sets (for variants that share every attribute value) |
+| `preset_implications` | Auto-derived implied-CSS map for preset-selector attrs (e.g. `cardStyle`, `effectHover`), parsed from each block's own `style.css` |
+| `array_item_schema` | Per-field role declarations for repeater/array attributes |
+
+`/sgs-update` (`sgs-update-v2.py`) rebuilds the DB from block.json files, render.php parsing,
+REST enumeration, and pattern parsing. Its own module docstring is the authoritative stage
+index — do not cache a stage count here (this file has drifted on that count three times
+before).
+
+## 6. Component architecture
+
+### 6.1 No-inline styling contract (Spec 32)
+
+**No SGS block may render an inline `style="…"` property declaration.** Native WP `supports`
+(colour, spacing, border, typography) stay *declared* — they still drive the block's editor
+controls — but their auto-inline output is suppressed per-property
+(`__experimentalSkipSerialization`) and re-routed through `wp_style_engine_get_styles()` into
+the block's own scoped `<style>` block at class-level specificity (`.{uid}.{block-root-class}`,
+never `#{uid}` — the class-level scoping is load-bearing: it's what lets a `sgsCustomCss`
+residual override it by equal specificity + source order, matching the WP-core Additional-CSS
+idiom).
+
+Per-side/per-corner box properties (padding, margin, border-width, border-radius) merge into a
+single named object attribute — `{top,right,bottom,left}` for 4-side families,
+`{topLeft,topRight,bottomLeft,bottomRight}` for 4-corner — driven by WP's native `BoxControl`.
+The `block_attributes.box_family` DB column (seeded declaratively from each block's
+`block.json supports.sgs.boxFamilies`, never a name-regex) is the collision guard, and a
+structural AST gate fails the build if any box-property grouping runs without checking it.
+
+Verify current compliance: `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`.
+Canonical spec: `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md`.
+
+### 6.2 `SGS_Container_Wrapper` and the composite-mirror rule
+
+`sgs/container` is the canonical wrapper block (background image/video/parallax, shape
+dividers, width/content-width capping, grid/flex layout, responsive gap, grid-item defaults,
+shadow). Every composite block with a built-in outer wrapper (hero, cta-section, trust-bar,
+card-grid, …) must mirror its capabilities rather than diverge with per-block CSS hacks — this
+is a composite-mirror obligation (Spec 31 §13.6 FR-31-21.1), gated on the DB's
+`block_composition.container_kind` column (`section` / `layout` / `content`), propagated by
+`block.json supports.sgs.containerKind` → `/sgs-update`.
+
+**"Mirror capabilities" does not mean "must call `SGS_Container_Wrapper::render()`"** — this is
+a settled clarification, not an open design question. A **content-KIND composite that uses only
+box + width** (quote, info-box, testimonial, team-member) may render **block-private** — its own
+scoped `<style>`, no wrapper call — because the converter routes CSS by `block_attributes` keyed
+on `block_slug`, never by `wraps_block`/`container_kind`, so dropping the wrapper has zero walker
+impact. **Section/layout-KIND composites** (hero, cta-section, card-grid, feature-grid) **keep
+the wrapper** because they use its genuine grid/section machinery. This is the pattern selector;
+do not re-litigate it per block.
+
+A composite is never a separate system — its wrapper, when used, is the same shared helper
+(`plugins/sgs-blocks/includes/class-sgs-container-wrapper.php`) as every other section-KIND
+block. A capability gap discovered on one composite is a design gap to *add to the composite*,
+never a converter workaround.
+
+### 6.3 Block customisation standard
+
+Every block: (1) native `supports` for wrapper-level editor controls; (2) custom attrs +
+controls for each inner text element, colour via `SgsColourPanel` (the standard shared
+component); (3) custom attrs + controls for every CTA; (4) Block Selectors API in `block.json`
+targets native typography to the block's primary text element. Border controls standardise on
+`SgsBorderControl` (one shape for width + colour + style across the framework). Full detail +
+the colour/border helper registries: `plugins/sgs-blocks/CLAUDE.md` "Block Customisation
+Standard".
+
+## 7. Per-client theming
+
+`theme/sgs-theme/styles/` is deliberately empty — WordPress style variations were retired.
+Per-client colour/typography tokens live at `sites/<client>/theme-snapshot.json` (Spec 33 —
+extracted from the draft's own rendered computed styles, the opening step of the cloning
+pipeline, before any block conversion runs) and deploy via
+`plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`, which
+writes `wp_global_styles`. Client-specific CSS overrides go into the snapshot's `styles.css` or
+`sites/<client>/theme-overrides.css` — never into the framework's own `style.css`.
+
+## 8. Motion architecture (Spec 38)
+
+**Four-tier doctrine (constitutional, D406/D422/D479):**
+
+| Tier | What | Rule |
 |---|---|---|
-| WP style variations (`theme/sgs-theme/styles/<client>.json`) | Per-client colour/typography overlay | DELETED — do not add new files here; use `sites/<client>/theme-snapshot.json` |
-| Header/footer template parts (`parts/header.html`, `parts/footer.html`) | Brand-agnostic alternative templates | 100% PRESERVED |
-| Block-level variations (`register_block_variation()`) | Variants within ONE block (sgs/button primary/secondary/outline) | PRESERVED — DB-indexed in Phase 2 |
+| **V** — vanilla/CSS | The default for every effect | Used unless vanilla genuinely cannot do it |
+| **G** — GSAP | The bounded exception | Admitted only for what Tier V cannot do (pin+scrub, SplitText, Flip, Draggable, ScrollSmoother, DrawSVG, MorphSVG, image-sequence) |
+| **H** — helper/utility | A single-purpose library that is neither vanilla nor GSAP | A CLOSED list — currently Lenis alone, admitted per a documented four-part test |
+| **W** — rendering substrate | WebGL — a different rendering substrate, not "another library" | Admitted only on its own five-part test; carries a NAMED 120KB JS allowance for Tier-W pages alone (D479) |
 
----
+All tiers are npm-bundled and conditionally loaded — a page using none of them ships zero bytes
+of any. No CDN, ever. The cloning pipeline's `data-sgs-fx-*` grammar (Spec 38 §11) is the first
+home for how a draft declares which motion effect a section wants. Canonical spec:
+`.claude/specs/38-SGS-MOTION-SYSTEM.md` — its own §1 is the constitutional statement; §3 is the
+curated capability roster.
 
-## Data Flow
+## 9. Integration surfaces
 
-The runtime data flow runs from client block-editor interaction through WordPress rendering to final HTML output served with Interactivity API hydration. The cloning pipeline runs in the reverse direction: mockup HTML → converter → block markup → REST deploy → pixel-diff measurement.
+| Surface | Mechanism |
+|---|---|
+| Theme → blocks plugin | `theme.json` design tokens as CSS custom properties (`--wp--preset--*`); Block Selectors API targets native typography per block |
+| Blocks plugin → DB | Read-only queries against `sgs-framework.db` (§5's access pattern); `/sgs-update` writes it |
+| Cloning pipeline → WordPress REST | Deploy stage `PATCH /wp/v2/pages/{id}`; Playwright captures at 375/768/1440px against the live canary for verification |
+| Cloning pipeline → fidelity measurement | Stage 11.6 `computed-parity.js` (Spec 20), diagnostic only, never the gate |
+| Blocks plugin → notifications | Form/booking submissions route to an N8N webhook, never `wp_mail()` |
+| Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
+| Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
+| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` — the ONE path; never hand-rolled tar/scp (a hand-rolled recipe took two client sites down for ~2.5h, D336). Builds+deploys from an isolated `git worktree add HEAD` by default (D993) so a concurrent session's build or uncommitted dirty files can't collide with the deploy |
 
-```
-Client uses block editor
-        │
-        ▼
-Block attributes saved in post content (HTML comment delimiters for dynamic blocks)
-        │
-        ▼
-WordPress renders page → sgs-blocks render.php called per block
-        │
-        ▼
-render.php extracts attributes → builds inline styles + BEM class names
-        │
-        ▼
-get_block_wrapper_attributes() merges with native supports (colour, spacing, border)
-        │
-        ▼
-HTML output served → block CSS (from style.css) applied
-        │
-        ▼
-viewScriptModule loaded (Interactivity API) for interactive blocks
-```
+## 10. Key architectural decisions
 
----
+Only decisions verified present in `.claude/decisions.md` or its archive
+(`.claude/memory/decisions-archive.md`) at time of writing are cited below. For "what shipped
+today" or the current front, read `.claude/LEDGER.md` — it is the single live-status source and
+is not duplicated here.
 
-## Known Technical Debt
+1. **Dynamic blocks only.** Every non-trivial block uses `render` in `block.json` pointing to
+   `render.php`; `save()` returns `null` or `<InnerBlocks.Content />`. PHP controls output;
+   avoids deprecation churn.
+2. **Every visual property is a block attribute with an editor control** — never hard-coded CSS.
+   CSS supplies structural defaults only.
+3. **`sgs/container` is the universal layout primitive** for every multi-column/section layout.
+   Nesting containers inside containers is the correct pattern for complex layouts.
+4. **No-inline styling contract, framework-wide (D346, 2026-07-18)** — rollout complete, verified
+   live: zero `sgs/*` blocks emit an inline `style` property declaration (§6.1). Cite with its
+   caveat: the original win was partly accidental (four `render_block` injectors were having
+   their inline writes silently stripped, masking dead features until root-caused) — the claim
+   is true today because it was earned in a follow-up sweep, not because the masking bug still
+   hides it.
+5. **Composite-mirror rule + `container_kind` column (D152, 2026-06-02)** — no composite with a
+   built-in wrapper may diverge from `sgs/container`'s capabilities; `container_kind` gates which
+   3-layer panels a block exposes (§6.2).
+6. **Content-KIND composites may render block-private (D294, 2026-07-09, qc-council-settled)** —
+   the clarification that unblocked §6.2's pattern selector.
+7. **Spec 22 merged into Spec 31 (D253, 2026-06-30)** — single canonical cloning-pipeline spec;
+   `R-22-N`/`FR-22-N` citations in older docs map 1:1 to `R-31-N`/`FR-31-N`.
+8. **Converter completion executed in full; frozen engine deleted (D276, 2026-07-05)** — the
+   modular `converter/` engine is the only converter, no flag, no fallback (§4).
+9. **Root-cause methodology is mandatory, not optional (locked 2026-05-31)** — no fix without a
+   proven cause; verify every dependency a theory rests on; attest with ≥2 independent evidence
+   sources. Full statement: root `CLAUDE.md` "Root-cause methodology".
+10. **Git hygiene: commit straight to `main`, never open a PR, never `git stash` (D983,
+    2026-09-07)** — this project's shared worktree has 150+ concurrent sessions; a stash or a
+    glob-pathspec commit has repeatedly swept other sessions' uncommitted work. Full rules:
+    root `CLAUDE.md` "Git workflow" + `~/.claude/rules/git-hygiene.md`.
+11. **Motion four-tier doctrine locked (D406/D422, plus Tier-W admission D479)** — see §8.
+12. **Scalar-media routing extended to all 3 device tiers × 3 media types (D919, 2026-09-02)** —
+    closed a real bug where a draft's mobile/tablet art-directed image had no routing path; found
+    and fixed a related bug (video/SVG content stored but never rendered because its
+    type-selector attribute wasn't written alongside it) in the same pass.
+13. **Composition-based variant tiebreaker (D974, 2026-09-06)** — a second discriminating table,
+    `variant_composition_slots`, resolves variants that share every attribute value with a
+    sibling by discriminating child-block-name set instead; only fires when the attribute-value
+    pass genuinely ties. A new db-consistency check flags any future block that gets composition
+    rows without a working content-extraction path, closing off the same silent-dead-code shape.
+14. **Deploy now isolates via `git worktree add HEAD` by default (D993, 2026-09-07)** — closed a
+    concurrent-build-race incident; a shared `build/` directory was previously clobberable by a
+    concurrent session's `npm run build`.
 
-| Item | Severity | Notes |
-|---|---|---|
-| ~13 per-block `if slug=="sgs/X"` literal carve-outs in `convert.py` | High | D222 (2026-06-13): de-literalisation programme scoped at `.claude/plans/archive/2026-06-13-converter-de-literalisation-audit.md`. Replacement: universal `_lift_scalar_attrs_by_selector` via `block_attributes.derived_selector`. |
-| Colour/font-size helpers duplicated 4x | Medium | `info-box`, `hero`, `cta-section`, `testimonial-slider` all define the same closure. Extract to `includes/render-helpers.php`. |
-| Forms never end-to-end tested | High | REST endpoints built, submission never verified. |
-| `lucide-react` unused devDependency | Low | Adds ~1MB to node_modules. Remove from package.json. |
-| No `.gitattributes` file | Low | LF/CRLF warnings on every commit. |
+## 11. Known technical debt
 
----
+Real, current items only — verify each against `.claude/LEDGER.md`'s "Open — carried from
+before" section before treating any as stale.
 
-## External Dependencies
+| Item | Notes |
+|---|---|
+| Colour conformance, FILL surface | TEXT surface closed 2026-09-07 (Track A); FILL rows remain — separate track, count is a live census, don't cache it here |
+| Tier-object migration, remaining flat-trio attributes | Priorities 1-4 closed for hero's media family + accordion/button/table-of-contents/whatsapp-cta; a full framework-wide survey has not been run |
+| Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings still open; read `.claude/LEDGER.md` Track E for the current count |
+| `push-theme-snapshot.py` | Last known (2026-08-18): aborts safely for mamas-munches, refuses to write `wp_global_styles` without a verified backup — not re-verified since |
+| 5 blocks missing `:focus-visible` on `:hover` | `hero`, `icon-list`, `mega-panel`, `process-steps`, `testimonial` |
+| `box-shape`/`overlay` `:hover` rules unguarded against touch-hover-stuck | The hover-guard tooling only scans `build/blocks/*/style.css` and PHP render surfaces, never `assets/css/media-atoms/*.css` — a real gap shared by the whole media-atom family |
+| `build-deploy.py --dry-run` is not actually dry | It ships for real and only skips the safety gates; found live 2026-09-07 (D991) when it shipped a peer session's uncommitted work bundled in |
+| `sgs-accessibility` plugin has no `CLAUDE.md` yet | Exists in the tree with real commits; undocumented at the plugin level |
 
-| Service | Purpose | Notes |
-|---|---|---|
-| Hostinger | Web hosting | Shared hosting, `ssh hd` alias configured |
-| N8N (72.62.212.169) | Notifications | All form/booking notifications via webhook, not `wp_mail()` |
-| Stripe | Payments | Booking + forms Phase 2+ |
-| Google Calendar | Booking sync | Phase 5, not yet implemented |
-| ACF Pro | Custom fields | Legacy — usage decreasing, no new usage |
-| Rank Math Free | SEO | No plans to replace |
-| Playwright v1.58.2 | Visual testing | Globally installed on dev machine, Chromium ready |
+## 12. External dependencies
+
+| Service | Purpose |
+|---|---|
+| Hostinger | Web hosting for the canary site (`ssh hd` alias) |
+| N8N | Form/booking notification webhook, replaces `wp_mail()` |
+| Playwright | Visual/live-DOM verification, MCP + CLI |
+| Lucide | ~1900 icons, pre-generated to `lucide-icons.php` |
+| Inter (variable), Montserrat, Source Sans 3 | Self-hosted WOFF2 fonts, no CDN |
+
+## 13. Where the rest of the truth lives
+
+This file is deliberately altitude-limited. For anything below "system architecture", follow
+the pointer — do not duplicate the content here:
+
+| For | Read |
+|---|---|
+| Hard rules, deploy commands, the 7 non-negotiable rules | root `CLAUDE.md` |
+| Spec roster + the DEAD-never-cite list | `.claude/specs/README.md` |
+| Current live status, open tracks, what shipped today | `.claude/LEDGER.md` |
+| Structural defences / STOP catalogue | `.claude/STOP-CATALOGUE.md` |
+| D-numbered decision log | `.claude/decisions.md` (+ `.claude/memory/decisions-archive.md` for older ones) |
+| Open deferred work | `.claude/parking.md` |
+| Cloning pipeline full detail | `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
+| Styling/token contract full detail | `.claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
+| Inspector-UX standard | `.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
+| Motion system full detail | `.claude/specs/38-SGS-MOTION-SYSTEM.md` |
+| Block-level architecture, colour/border helper registries | `plugins/sgs-blocks/CLAUDE.md` |
+| Build / deploy / SSH / credentials | `.claude/dev-setup.md` |
