@@ -57,15 +57,24 @@ now carry a second, non-colour signal, so they work for anyone who cannot distin
 **Read `.claude/plans/spec-39-seed-requirements.md` IN FULL**, including the new "Bean's quality
 bar" section at the end.
 
-**The measured gap, re-runnable:** the framework declares **2,745 motion/FX attributes across 44
-blocks**, and **880 already carry a `css_property`** — but the converter contains **zero**
-references to any of them and does not read `animation`/`transition`/`transform` CSS at all. So
-motion cloning is a routing-CONSUMPTION problem, not a modelling one: the vocabulary is already
-seeded, the converter simply never reads it.
+**The gap, corrected 2026-09-07 by an adversarial fact-check — an earlier version of this entry
+was WRONG and would have sent Spec 39 rebuilding something that exists.** Motion cloning EXISTS:
+FR-38-22 (D949/D951/D952) lifts a draft's explicit `data-sgs-fx-*` markers into block attrs via
+`assembly.py` step 3a1, over a ~78-attr roster, guarded through the real entry point.
 
-R1–R7 of that seed doc are about attribute SHAPE only. A pipeline built to them alone would clone
-a faithful, well-shaped, **completely static** page. R8/R9/R10 (added this session) carry the
-motion requirement, the per-capability coverage method, and the routing precondition.
+**The real gap is narrower:** that lift requires the draft to ALREADY carry SGS fx
+data-attributes. The converter never infers motion from CSS — **0** `keyframes` references
+anywhere in it, and `preset_absence.py:72` reads `transform` only as a preset-absence signal.
+So an SGS-authored draft clones its motion; an arbitrary reference site's does not.
+
+Measured (re-run — the DB moves): `fx*` = **2,880 attrs / 32 blocks**, **832** with a
+`css_property`; the broader motion set = **3,033 / 44 blocks**, **925** with one.
+
+R1–R7 of that seed doc are about attribute SHAPE only. R8/R9/R10 (added this session) carry the
+motion requirement, the per-capability coverage method, and the routing precondition. Reaching
+Bean's Awwwards bar means reading `@keyframes`/`animation`/`transition` out of real CSS and
+RECOGNISING intent (a reveal, a parallax, a stagger) to map onto the fx roster — a recognition
+layer that does not exist today and is harder than R1–R7's shape work.
 
 ### 2. Mama's Munches go-live
 
@@ -90,8 +99,9 @@ page 3389). Do not edit that file until it lands.
 - **Visual verification owed** for the 15 blocks committed under a scoped visual-gate skip this
   session (logged in `reports/visual-diff/manual-skips.log`). No verdict was claimed for any.
 - **3 gates fail on `main` and are nobody's current work** — verified by running each against a
-  clean HEAD worktree: `check-fx-list-drift` (the generative-background session's uncommitted fx
-  files), `check-element-manifest-conformance` (`sgs/breadcrumbs`, 3 element-manifest orphans),
+  clean HEAD worktree: `check-fx-list-drift` (⚠ **corrected**: NOT uncommitted work — it trips on
+  `fxGenBackdrop` via `includes/fx-attributes.php`, already COMMITTED at `83ba79b73`),
+  `check-element-manifest-conformance` (`sgs/breadcrumbs`, 3 element-manifest orphans),
   `check-hover-state-classification` (`sgs/product-faq.backgroundColourHover`,
   `css_property=position` on a colour attr).
 - **12 advisory inspector findings**, grouped: 5 rule-34 on `sgs/team-member` (typography attrs
@@ -166,7 +176,7 @@ page 3389). Do not edit that file until it lands.
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Gates:** 92 of 95 fast gates pass. The 3 failures are listed under "Open" and none is this
   session's work (each verified against a clean HEAD worktree).
-- **Colour census:** `classify-end-shape.js --check` → **PASS**.
+- **Colour census:** `node plugins/sgs-blocks/scripts/colour-codemod/classify-end-shape.js --check` → **PASS**. (Full path given deliberately — a fact-check pass looked for it at `scripts/classify-end-shape.js` and did not find it.)
 - **Inspector scan:** 0 gating findings, 12 advisory.
 - **Canary:** sandybrown, WP 7.1. Homepage page **2742**. **NOT deployed this session** — the
   Wave E deploy + live verification has not run.

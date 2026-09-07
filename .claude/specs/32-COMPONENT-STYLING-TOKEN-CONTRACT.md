@@ -9,7 +9,7 @@ authors: Claude + Bean
 session_date: 2026-07-07
 last_verified: 2026-09-07
 status_history:
-  - 2026-09-07: v1.9 — **§5 Security NFR CLOSED — the spec is now complete.** The two binding
+  - 2026-09-07: v1.9 — **§5 Security NFR CLOSED.** (⚠ §5 only — the spec is NOT wholly complete; see the "Open, genuinely" block below for the two items still owed. An earlier draft of this line claimed completeness and contradicted that block.) The two binding
     rules already had verified coverage since 2026-09-04; the only thing genuinely owed was the
     PROMOTION of `check-style-blob-sanitisation.py` from advisory to a blocking gate. Its
     "one build cycle" probation (set 2026-09-04) had elapsed. It is now registered in

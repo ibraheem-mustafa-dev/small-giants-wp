@@ -1427,7 +1427,7 @@ section records what changed and why, so the two do not drift.
 invalid CSS. That exemption belongs in the DETECTOR, stated once, not as a per-block
 `colourExemptions` entry: the reason is a universal CSS fact, and N copies of one sentence is the
 boilerplate the exemption contract's own rule calls a finding. Open work, tracked in
-`.claude/plans/phase-colour-conformance.md`.
+`.claude/plans/archive/phase-colour-conformance.md`.
 
 ## PART O — THE CONTROL-TYPE CONTRACT *(folded in from **PART O** (this spec), 2026-08-17, Bean-approved)*
 

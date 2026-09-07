@@ -457,43 +457,54 @@ programme. It is worth doing, and it is orthogonal to whether the output is any 
 **zero times** across this file's original 433 lines. A pipeline built to this seed alone would
 clone a faithful, well-shaped, completely static page.
 
-## R8 — Motion is the largest unused capability in the framework
+## R8 — Motion cloning EXISTS but only for SGS-authored drafts (corrected 2026-09-07)
 
-The gap is NOT that the framework lacks motion. It is that the pipeline ignores what already
-exists.
+⛔ **An earlier draft of this section claimed the converter had "zero references" to motion and
+"does not read animation/transition/transform CSS at all". That was WRONG, and a Spec 39 built
+on it would have re-implemented something that already exists.** The error came from a malformed
+`git grep -licE` (combining the mutually exclusive `-l` and `-c`), which returned nothing and
+looked exactly like a clean result. Corrected by an adversarial fact-check pass; the lesson is in
+the LEDGER guardrails.
 
-| Measured (2026-09-07) | Figure |
+**What actually exists.** FR-38-22 (D949/D951/D952, 2026-09-04) built an fx-attribute lift:
+`converter/services/assembly.py` step 3a1 calls `db_lookup.lift_behavioural_attrs()`, which lifts
+a draft's explicit `data-sgs-fx-*` markers into the emitted block's attributes. It carries a
+roster of ~78 fx attrs, coerces booleans/numbers to real JSON types (D952), and handles
+irregularly-named attrs via a reverse lookup rather than a kebab-to-camel guess.
+`tests/test_fx_attribute_lift.py` guards it through the REAL entry point
+(`converter.entry.convert_section`) precisely because a unit test once passed while the walker
+silently dropped every fx attribute (D951).
+
+**The REAL gap, stated narrowly.** The lift is keyed on the draft ALREADY CARRYING SGS fx
+data-attributes — i.e. a draft authored for SGS. The converter does not infer motion from CSS:
+
+| Measured 2026-09-07 (re-run these; the DB moves) | Figure |
 |---|---|
-| Motion/FX attributes declared across the framework | **2,745** across **44 blocks** |
-| Of those, already carrying a `css_property` (i.e. DB-routable today) | **880** |
-| Converter files referencing any `fx*`/animation/parallax attribute | **0** |
-| `fx*` attribute writes anywhere in `scripts/converter/` | **0** |
-| Converter sites reading `animation` / `transition` / `transform` CSS | **0** |
+| `attr_name LIKE 'fx%'` | **2,880** attrs across **32** blocks; **832** carry a `css_property` |
+| Broader motion set (fx + animation + transition + parallax + scroll) | **3,033** across **44** blocks; **925** carry a `css_property` |
+| `keyframes` references anywhere in `scripts/converter/` | **0** |
+| Raw-CSS motion inference (draft `animation:`/`transition:` → an fx attr) | **none** — `preset_absence.py:72` reads `transform` ONLY as a preset-absence signal, never to route motion |
 
-Re-run:
 ```
-git grep -oE "'fx[A-Za-z]+'" -- plugins/sgs-blocks/scripts/converter/ | wc -l
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
-  "SELECT COUNT(*) FROM block_attributes WHERE attr_name LIKE 'fx%'"
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT COUNT(*), COUNT(DISTINCT block_slug) FROM block_attributes WHERE attr_name LIKE 'fx%'"
+git grep -c keyframes -- plugins/sgs-blocks/scripts/converter/
 ```
 
-**The consequence for Spec 39's shape.** Motion cloning is mostly a **routing-consumption**
-problem, not a modelling problem. The vocabulary already exists in `property_suffixes`, and
-`animation` / `transform` / `transition` / `transition-duration` / `transition-timing-function`
-are already live `css_property` values on 880 attributes. Spec 39 does not need to invent a motion
-data model — it needs to make the converter READ the one that is already seeded, and to finish
-seeding the remaining ~1,800.
+**So the question for Spec 39 is not "build motion cloning" — it is "extend it beyond
+SGS-authored drafts".** Cloning an arbitrary reference site to an Awwwards standard means reading
+`@keyframes`, `animation` and `transition` shorthand out of real CSS and RECOGNISING intent (a
+reveal, a parallax, a stagger) well enough to map onto the framework's named fx presets. That
+recognition layer does not exist in any form today, and it is a genuinely harder problem than the
+attribute-shape work in R1–R7.
 
 **Questions for Spec 39:**
-1. Does motion extraction read the draft's declared `animation`/`transition`/`transform` CSS, or
-   does it RECOGNISE intent (a reveal, a parallax, a stagger) and map to the framework's named FX
-   presets? The second produces better output and is the only one that can reach the bar, but it
-   needs a recognition layer this seed has no concept of.
-2. Motion is governed by Spec 38's four-tier doctrine (V vanilla / G GSAP / H helper / W WebGL).
-   Which tiers may a CLONE emit? A cloned page that silently pulls in the GSAP or WebGL bundle
-   changes the page's performance budget without anyone choosing it.
-3. `prefers-reduced-motion` is a hard accessibility requirement. It must be a property of the
-   emitter, not a per-block afterthought — a cloned page must honour it by construction.
+1. Does motion extraction map raw CSS to the existing ~78-attr fx roster, or does it need a new
+   intermediate vocabulary? The roster is the emit target either way.
+2. Spec 38's four-tier doctrine (V vanilla / G GSAP / H helper / W WebGL) governs motion. Which
+   tiers may a CLONE emit? A cloned page that silently pulls the GSAP or WebGL bundle changes the
+   page's performance budget without anyone choosing it.
+3. `prefers-reduced-motion` must be a property of the emitter, not a per-block afterthought — a
+   cloned page has to honour it by construction.
 
 ## R9 — "Full potential of the theme" is measurable, and motion is only the first axis
 

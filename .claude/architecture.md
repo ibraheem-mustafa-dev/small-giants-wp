@@ -316,7 +316,7 @@ before" section before treating any as stale.
 | Tier-object migration, remaining flat-trio attributes | Priorities 1-4 closed for hero's media family + accordion/button/table-of-contents/whatsapp-cta; a full framework-wide survey has not been run |
 | Inspector gates, rule 41/43 residuals | `co2-scattered-element` + `dom-order-vs-declared-order` findings still open; read `.claude/LEDGER.md` Track E for the current count |
 | `push-theme-snapshot.py` | Last known (2026-08-18): aborts safely for mamas-munches, refuses to write `wp_global_styles` without a verified backup — not re-verified since |
-| 5 blocks missing `:focus-visible` on `:hover` | `hero`, `icon-list`, `mega-panel`, `process-steps`, `testimonial` |
+| Blocks missing `:focus-visible` on `:hover` | As at 2026-09-07: `hero`, `icon-list`, `mega-panel`, `process-steps`, `testimonial`. **A dated finding, not a live roster — re-derive before acting** (`git grep -l ':hover' -- plugins/sgs-blocks/src/blocks/*/style.css` then check each for a `:focus-visible` counterpart). |
 | `box-shape`/`overlay` `:hover` rules unguarded against touch-hover-stuck | The hover-guard tooling only scans `build/blocks/*/style.css` and PHP render surfaces, never `assets/css/media-atoms/*.css` — a real gap shared by the whole media-atom family |
 | `build-deploy.py --dry-run` is not actually dry | It ships for real and only skips the safety gates; found live 2026-09-07 (D991) when it shipped a peer session's uncommitted work bundled in |
 | `sgs-accessibility` plugin has no `CLAUDE.md` yet | Exists in the tree with real commits; undocumented at the plugin level |
