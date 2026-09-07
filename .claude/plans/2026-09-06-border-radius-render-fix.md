@@ -1,8 +1,8 @@
 ---
 doc_type: plan
-title: Border-radius stale-flat-attr fix (tier-object migration, Priority 5)
+title: Border-radius stale-flat-attr fix (tier-object migration; was Priority 5, now Priority 3)
 date: 2026-09-06
-status: ready for execution
+status: Task 1 COMPLETE + merged (5bb246df4, fab4f92ac — branch deleted after merge). Task 2 PARTIAL: deploy done 2026-09-07, live verification outstanding. Residual scope: whatsapp-cta only — see .claude/prompts/2026-09-07-tier-object-phase-3-next.md Priority 3.
 ---
 
 # Border-radius stale-flat-attr fix

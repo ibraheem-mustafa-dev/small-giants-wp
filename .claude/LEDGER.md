@@ -63,9 +63,18 @@ D973's own next-session first item, never done.
 FILL surface closed 2026-09-06 (`b30c6bfc4`); TEXT is the next-largest colour category.
 
 ### Track B — tier-object migration, Phase 3 remainder
-**Read first:** `.claude/prompts/2026-09-06-tier-object-phase-3-remaining-work.md` (full read).
-Groups 0+1 done and merged; Priorities 1-6 remain (media-atom migration, border-radius stragglers,
-a compliance gate — live order in the file). Independent of Tracks A/C.
+**Read first:** `.claude/prompts/2026-09-07-tier-object-phase-3-next.md` (full read).
+Supersedes the deleted `2026-09-06-tier-object-phase-3-remaining-work.md`, which cited two
+orphaned commit SHAs, a stale pytest baseline, and work another session had already started.
+**Groups 0+1 done, merged, and now live-verified** — canary page 3355 proves a padding-only
+container emits padding (the exact Group 0 bug shape). Remaining: finish Priority 1's other
+3 checks (accordion + button three-tier, table-of-contents editor canvas), the mediaPadding
+atom, one border-radius block (`whatsapp-cta`), and the media-atom pilot.
+⚠ **Box-shape radius work is deliberately OUT** — another session owns those files and
+committed `e76586a9e` to them 2026-09-07. Ask before scheduling.
+⚠ `migrate-border-radius-render.py --survey` returns UNCLEAR for 46 of 51 blocks including
+already-fixed ones — it does not discriminate. Read `block.json`, not the survey.
+Independent of Tracks A/C/D.
 
 ### Track C — the 8 orphaned-branch draft PRs (#53-#60)
 **Superseded/verified salvage-free 2026-09-07 (D983's trigger event) — every one already
