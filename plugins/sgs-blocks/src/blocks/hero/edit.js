@@ -31,6 +31,7 @@ import {
 	textPaintPreview,
 	backgroundPaintPreview,
 	resolveResponsiveTier,
+	patchTier,
 } from '../../utils';
 // No-inline migration: hero no longer uses the default
 // <ContainerWrapperControls> aggregator — its unconditional "Content band" /
@@ -295,8 +296,6 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		mediaBackground,
 		mediaBackgroundGradient,
 		mediaPadding,
-		mediaPaddingTablet,
-		mediaPaddingMobile,
 		// contentBandPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
 		// (Spec 35 box-tier pass, 2026-08-11) — the contentBandPaddingTablet/
 		// Mobile sibling attrs no longer exist in this block's schema.
@@ -659,12 +658,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// extra isSplit gate is needed here.
 		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
 	};
-	// mediaPadding/mediaPaddingTablet/mediaPaddingMobile — outer padding on
-	// `.sgs-hero__media` (render.php:799-810, sgs_box_object_shorthand()).
-	// Desktop tier only, matching every other box preview in this file
+	// mediaPadding is a TIER-OBJECT {desktop,tablet,mobile} (Priority 2 fold,
+	// 2026-09-07) — outer padding on `.sgs-hero__media` (render.php:293-300,
+	// sgs_responsive_normalise_object() + sgs_box_object_shorthand()). Desktop
+	// tier only, matching every other box preview in this file
 	// (borderWidthPreview, bandPaddingPreview, splitMediaBorderWidthPreview
 	// above all resolve the desktop/base tier only).
-	const mediaPaddingPreview = boxShorthand( mediaPadding, [ 'top', 'right', 'bottom', 'left' ] );
+	const mediaPaddingPreview = boxShorthand( mediaPadding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
 	if ( mediaPaddingPreview ) {
 		mediaWrapperStyle.padding = mediaPaddingPreview;
 	}
@@ -1643,9 +1643,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaPadding: { desktop: {} },
 								mediaBackground: '',
 								mediaBackgroundGradient: '',
-								mediaPadding: {},
-								mediaPaddingTablet: {},
-								mediaPaddingMobile: {},
+								mediaPadding: { desktop: {} },
 							} )
 						}
 					>
@@ -1813,15 +1811,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Outer padding', 'sgs-blocks' ) }
 							hasValue={ () =>
-								Object.keys( mediaPadding ?? {} ).length > 0 ||
-								Object.keys( mediaPaddingTablet ?? {} ).length > 0 ||
-								Object.keys( mediaPaddingMobile ?? {} ).length > 0
+								Object.values( mediaPadding ?? {} ).some(
+									( tierBox ) => tierBox && Object.keys( tierBox ).length > 0
+								)
 							}
 							onDeselect={ () =>
 								setAttributes( {
-									mediaPadding: {},
-									mediaPaddingTablet: {},
-									mediaPaddingMobile: {},
+									mediaPadding: { desktop: {} },
 								} )
 							}
 						>
@@ -1831,17 +1827,17 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								label={ __( 'Media padding', 'sgs-blocks' ) }
 								presets
 								values={ {
-									base: mediaPadding ?? {},
-									tablet: mediaPaddingTablet ?? {},
-									mobile: mediaPaddingMobile ?? {},
+									base: mediaPadding?.desktop ?? {},
+									tablet: mediaPadding?.tablet ?? {},
+									mobile: mediaPadding?.mobile ?? {},
 								} }
 								onChange={ ( tier, next ) => {
-									const attrMap = {
-										base: 'mediaPadding',
-										tablet: 'mediaPaddingTablet',
-										mobile: 'mediaPaddingMobile',
+									const tierMap = {
+										base: 'desktop',
+										tablet: 'tablet',
+										mobile: 'mobile',
 									};
-									setAttributes( { [ attrMap[ tier ] ]: next } );
+									patchTier( attributes, setAttributes, 'mediaPadding', tierMap[ tier ], next );
 								} }
 							/>
 						</ToolsPanelItem>

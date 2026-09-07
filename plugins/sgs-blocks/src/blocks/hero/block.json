@@ -81,9 +81,7 @@
 					"contentPadding"
 				],
 				"mediaPadding": [
-					"mediaPadding",
-					"mediaPaddingTablet",
-					"mediaPaddingMobile"
+					"mediaPadding"
 				],
 				"splitMediaPadding": [
 					"splitMediaPadding"
@@ -739,15 +737,9 @@
 		},
 		"mediaPadding": {
 			"type": "object",
-			"default": {}
-		},
-		"mediaPaddingTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"mediaPaddingMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"contentBackground": {
 			"type": "string",

@@ -291,9 +291,13 @@ $image_padding_tablet_obj      = is_array( $sgs_split_media_padding_tiers['table
 $image_padding_mobile_obj      = is_array( $sgs_split_media_padding_tiers['mobile'] ) ? $sgs_split_media_padding_tiers['mobile'] : array();
 
 // mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
-$media_padding_obj        = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
-$media_padding_tablet_obj = is_array( $attributes['mediaPaddingTablet'] ?? null ) ? $attributes['mediaPaddingTablet'] : array();
-$media_padding_mobile_obj = is_array( $attributes['mediaPaddingMobile'] ?? null ) ? $attributes['mediaPaddingMobile'] : array();
+// Owned tier-object attr {desktop,tablet,mobile}, each { top, right, bottom,
+// left } (folded from the pre-migration flat trio, matching splitMediaPadding/
+// accordion/button/container's already-proven pattern).
+$sgs_media_padding_tiers  = sgs_responsive_normalise_object( $attributes['mediaPadding'] ?? null, true );
+$media_padding_obj        = is_array( $sgs_media_padding_tiers['desktop'] ) ? $sgs_media_padding_tiers['desktop'] : array();
+$media_padding_tablet_obj = is_array( $sgs_media_padding_tiers['tablet'] ) ? $sgs_media_padding_tiers['tablet'] : array();
+$media_padding_mobile_obj = is_array( $sgs_media_padding_tiers['mobile'] ) ? $sgs_media_padding_tiers['mobile'] : array();
 
 // contentPadding — padding on the .sgs-hero__content wrapper. TIER-OF-BOXES
 // OBJECT {desktop,tablet,mobile} as of Spec 35 box-tier migration (2026-08-11)

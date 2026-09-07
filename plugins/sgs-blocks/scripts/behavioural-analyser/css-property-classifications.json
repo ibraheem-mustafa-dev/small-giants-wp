@@ -556,7 +556,7 @@
       "slug": "sgs/breadcrumbs",
       "attr": "linkColour",
       "fields": {
-        "css_property": "color",
+        "css_property": "color-link",
         "css_element": "item"
       }
     },
@@ -2538,26 +2538,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaPaddingMobile",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaPaddingTablet",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "tablet",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "minHeight",
       "fields": {
         "css_property": "min-height",
@@ -2691,27 +2671,6 @@
       "attr": "splitMediaPadding",
       "fields": {
         "css_property": "padding",
-        "css_tier": "desktop",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaPaddingMobile",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaPaddingTablet",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "tablet",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }
@@ -16249,6 +16208,23 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "linkColour",
+      "fields": {
+        "css_property": "color-link",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkColourHover",
+      "fields": {
+        "css_property": "color-link",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -16954,6 +16930,26 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaPaddingMobile",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "mobile",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "mediaPaddingTablet",
+      "fields": {
+        "css_property": "padding",
+        "css_tier": "tablet",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
