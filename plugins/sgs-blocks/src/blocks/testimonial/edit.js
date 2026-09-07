@@ -256,7 +256,9 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-testimonial__quote`,
 		quoteLinkColour,
-		quoteLinkColourHover
+		quoteLinkColourHover,
+		quoteLinkColourGradient,
+		quoteLinkColourHoverGradient
 	);
 
 	const className = [ 'sgs-testimonial', `sgs-testimonial--${ effectiveVariant }`, linkPreviewUid ]

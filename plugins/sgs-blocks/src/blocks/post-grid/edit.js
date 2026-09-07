@@ -473,6 +473,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	 * stylesheet rule for the same property regardless of `:hover` matching,
 	 * so without it this rule would parse correctly and still never paint
 	 * whenever a resting badge colour is also set (the common case).
+	 *
+	 * categoryBadgeColourHover (text colour) applies to both `.sgs-post-grid__badge`
+	 * (card/overlay cardStyle) and `.sgs-post-grid__category` (flat/minimal cardStyle)
+	 * on hover. Same `!important` gate: without it, an inline style on the resting
+	 * text colour would shadow the hover rule.
 	 */
 	const postGridPreviewScope = `sgs-post-grid-preview-${ clientId }`;
 	const categoryBadgeBgHoverDecl =
@@ -481,9 +486,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: categoryBadgeBgColourHover
 				? `background-color:${ resolveColourToken( categoryBadgeBgColourHover, colourPalette ) } !important;`
 				: '';
-	const postGridHoverPreviewCss = categoryBadgeBgHoverDecl
-		? `.${ postGridPreviewScope } .sgs-post-grid__badge:hover,.${ postGridPreviewScope } .sgs-post-grid__badge:focus-visible{${ categoryBadgeBgHoverDecl }}`
+	const categoryBadgeTextHoverDecl = categoryBadgeColourHover
+		? `color:${ resolveColourToken( categoryBadgeColourHover, colourPalette ) } !important;`
 		: '';
+	const postGridHoverPreviewCss = [
+		categoryBadgeBgHoverDecl
+			? `.${ postGridPreviewScope } .sgs-post-grid__badge:hover,.${ postGridPreviewScope } .sgs-post-grid__badge:focus-visible{${ categoryBadgeBgHoverDecl }}`
+			: '',
+		categoryBadgeTextHoverDecl
+			? `.${ postGridPreviewScope } .sgs-post-grid__badge:hover,.${ postGridPreviewScope } .sgs-post-grid__badge:focus-visible,.${ postGridPreviewScope } .sgs-post-grid__category:hover,.${ postGridPreviewScope } .sgs-post-grid__category:focus-visible{${ categoryBadgeTextHoverDecl }}`
+			: ''
+	].filter( Boolean ).join( '' );
 
 	const blockProps = useBlockProps( {
 		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }`,

@@ -10,7 +10,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 // WS-4: shared sgs/container wrapper editor controls (layout kind).
 import ContainerWrapperControls, { BackgroundPanel } from '../container/components/ContainerWrapperControls';
 import { ResponsiveOverride, SpacingControl, SgsColourPanel, fillRow, ResponsiveBoxControl, SGS_FONT_WEIGHT_OPTIONS, textRow, SgsBorderControl, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { backgroundPreview, spacingPreview, svgBackgroundPreview, boxShorthand } from '../../utils';
+import { backgroundPreview, spacingPreview, svgBackgroundPreview, boxShorthand, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	PanelBody,
@@ -218,11 +218,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// CHECK A finding: textColour is written by the SgsColourPanel below
 		// and consumed by render.php's $mb_color_args -> wp_style_engine_get_styles
 		// on `$root_sel` (i.e. this same wrapper element) but was never applied
-		// to the canvas. No gradient sibling exists for this attribute on this
-		// block. `color` is a naturally-inheriting CSS property, so setting it
-		// here on the wrapper also matches the frontend's cascade to any
-		// sgs/button child that leaves its own text colour unset.
-		color: resolveColourToken( textColour, colourPalette ) || undefined,
+		// to the canvas. `textColourGradient` sibling attribute now mirrored
+		// (2026-09-07). `color` is a naturally-inheriting CSS property, so
+		// setting it here on the wrapper also matches the frontend's cascade to
+		// any sgs/button child that leaves its own text colour unset.
+		...resolveTextColourPreviewStyle( textColour, textColourGradient, (val) => resolveColourToken(val, colourPalette) ),
 		// CHECK A finding — child-button GROUP DEFAULTS (A2, D638 §4/§5). These
 		// are written by the "Button group defaults" panel and consumed by
 		// render.php as `--sgs-mb-btn-<prop>-default` CUSTOM PROPERTIES on this

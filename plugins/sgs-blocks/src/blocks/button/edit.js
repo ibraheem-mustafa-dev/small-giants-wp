@@ -25,6 +25,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { backgroundPaintPreview, textPaintPreview } from '../../utils';
+import { parseSvgGradient, SvgGradientDefs } from '../../utils/svg-gradient-preview';
 
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
@@ -130,7 +131,7 @@ function parseUnit( raw, currentUnit ) {
 // panel below reads/writes the three objects directly via the tier a shared
 // <ResponsiveOverride> exposes.
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { padding, margin,
 		label,
 		url,
@@ -378,14 +379,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		role: 'presentation',
 	} );
 
-	// Icon placeholder SVG for editor preview.
+	// Icon placeholder SVG for editor preview. When a gradient is set on
+	// iconColourGradient, inject SVG gradient defs and paint via url() reference;
+	// otherwise fall back to flat colour via currentColor (D938).
+	const iconGradient = iconColourGradient ? parseSvgGradient( iconColourGradient ) : null;
+	const iconGradientId = clientId ? `${ clientId }-icon-gradient` : null;
 	const iconPlaceholder = (
 		<span
 			className="sgs-button__icon"
 			style={ { display: 'inline-flex', alignItems: 'center', width: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', height: iconSize?.desktop ? iconSize.desktop + 'px' : '1em', color: iconColour || 'currentColor' } }
 			aria-hidden="true"
 		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
+			<svg viewBox="0 0 24 24" fill="none" stroke={ iconGradient && iconGradientId ? `url(#${ iconGradientId })` : 'currentColor' } strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
+				{ iconGradient && iconGradientId && (
+					<defs>
+						<SvgGradientDefs id={ iconGradientId } gradient={ iconGradient } />
+					</defs>
+				) }
 				<circle cx="12" cy="12" r="10" />
 				<line x1="12" y1="8" x2="12" y2="16" />
 				<line x1="8" y1="12" x2="16" y2="12" />

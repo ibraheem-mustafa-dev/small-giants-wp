@@ -31,7 +31,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-collapsible-text__body`,
 		linkColour,
-		linkColourHover
+		linkColourHover,
+		linkColourGradient,
+		linkColourHoverGradient
 	);
 
 	const blockProps = useBlockProps( {

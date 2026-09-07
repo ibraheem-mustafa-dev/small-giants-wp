@@ -234,8 +234,10 @@ export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
 }
 
 /**
- * Editor-canvas preview CSS for a two-state LINK colour (Task 3, 2026-09-07)
- * — the JS mirror of `sgs_link_colour_css()` (includes/helpers-typography.php).
+ * Editor-canvas preview CSS for a two-state, flat-or-gradient LINK colour
+ * (Task 3, 2026-09-07; gradient support added same-day addendum) — the JS
+ * mirror of `sgs_link_colour_css()` (includes/helpers-typography.php), now
+ * that helper supports gradient on both states too.
  *
  * A RichText field's own `<a>` elements cannot take an inline style directly
  * (WP renders that markup internally), so the preview is a scoped `<style>`
@@ -244,24 +246,39 @@ export function resolveBackgroundPaintPreviewStyle( flatValue, gradientValue ) {
  * `:hover`/`:focus-visible` pair (no touch guard needed here; that's a
  * frontend-only concern, `helpers-hover-state.php`).
  *
- * @param {string} selector     Fully-formed CSS selector for the field's own
- *                               element (NOT the `a` itself), scoped to this
- *                               block instance (e.g. via a clientId-derived class).
- * @param {string} colour       The link's normal-state colour attribute value.
- * @param {string} colourHover  The link's hover-state colour attribute value.
+ * Gradient wins over flat on each state independently, mirroring
+ * `sgs_resolve_text_colour_or_gradient()` + `sgs_text_colour_decl()`'s
+ * PHP-side precedence — the canvas cannot disagree with the render.
+ *
+ * @param {string} selector          Fully-formed CSS selector for the field's own
+ *                                    element (NOT the `a` itself), scoped to this
+ *                                    block instance (e.g. via a clientId-derived class).
+ * @param {string} colour            The link's normal-state colour attribute value.
+ * @param {string} colourHover       The link's hover-state colour attribute value.
+ * @param {string} [colourGradient]      The normal state's `{attr}Gradient` sibling value.
+ * @param {string} [colourHoverGradient] The hover state's `{attr}HoverGradient` sibling value.
  * @return {string} CSS text; '' when nothing is set.
  */
-export function linkColourPreviewCss( selector, colour, colourHover ) {
+export function linkColourPreviewCss( selector, colour, colourHover, colourGradient, colourHoverGradient ) {
 	const linkSelector = `${ selector } a`;
-	const normal = colourVar( colour );
-	const hover = colourVar( colourHover );
+	const isGradient = ( value ) => !! value && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( value.trim() );
+
+	const declFor = ( flat, gradient ) => {
+		if ( isGradient( gradient ) ) {
+			return `background-image:${ gradient.trim() };-webkit-background-clip:text;background-clip:text;color:transparent`;
+		}
+		const resolved = colourVar( flat );
+		return resolved ? `color:${ resolved }` : '';
+	};
 
 	let css = '';
-	if ( normal ) {
-		css += `${ linkSelector }{color:${ normal };}`;
+	const normalDecl = declFor( colour, colourGradient );
+	if ( normalDecl ) {
+		css += `${ linkSelector }{${ normalDecl };}`;
 	}
-	if ( hover ) {
-		css += `${ linkSelector }:hover,${ linkSelector }:focus-visible{color:${ hover };}`;
+	const hoverDecl = declFor( colourHover, colourHoverGradient );
+	if ( hoverDecl ) {
+		css += `${ linkSelector }:hover,${ linkSelector }:focus-visible{${ hoverDecl };}`;
 	}
 	return css;
 }

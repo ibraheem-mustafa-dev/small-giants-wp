@@ -408,9 +408,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					<div className="sgs-audio-editor-preview">
 						{ title && <p className="sgs-audio__title">{ title }</p> }
 						<audio className="sgs-audio__native" controls src={ audioUrl } style={ { width: '100%' } } />
+						{ isReactive && (
+							<div style={ { marginTop: '12px', display: 'flex', alignItems: 'flex-end', gap: '4px', height: '60px' } }>
+								{ [ 1, 2, 3, 4, 5, 6, 7 ].map( ( i ) => (
+									<div
+										key={ i }
+										style={ {
+											flex: 1,
+											height: `${ 20 + i * 8 }px`,
+											backgroundColor: spectrumColour
+												? resolveColourToken( spectrumColour, palette )
+												: 'var(--wp--preset--color--primary, #c9821f)',
+											opacity: 0.8,
+											borderRadius: '2px',
+										} }
+									/>
+								) ) }
+							</div>
+						) }
 						<Notice status="info" isDismissible={ false }>
 							{ __( 'Style:', 'sgs-blocks' ) } <strong>{ STYLE_OPTIONS.find( ( o ) => o.value === playerStyle )?.label }</strong>
-							{ isReactive && ' — ' + __( 'the reactive visualiser renders on the published page.', 'sgs-blocks' ) }
+							{ isReactive && ' — ' + __( 'the reactive visualiser renders on the published page; the colour preview above shows your chosen spectrum colour.', 'sgs-blocks' ) }
 							{ 'hidden' === playerStyle && ' — ' + __( 'no visible player on the published page.', 'sgs-blocks' ) }
 						</Notice>
 					</div>

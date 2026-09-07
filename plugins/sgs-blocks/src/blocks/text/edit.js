@@ -397,11 +397,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	].join( ' ' );
 
 	// Editor-canvas preview CSS for the link-colour row below (Task 3,
-	// 2026-09-07).
+	// 2026-09-07). Extended to include linkColourGradient and
+	// linkColourHoverGradient as new params (2026-09-07).
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid }`,
 		linkColour,
-		linkColourHover
+		linkColourHover,
+		linkColourGradient,
+		linkColourHoverGradient
 	);
 
 	// Contrast check for text colour — warn if text fails WCAG AA contrast

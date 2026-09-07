@@ -272,12 +272,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// (matches render.php). It carries the block class + the wrapper preview
 	// style, so the canvas mirrors the scoped frontend output.
 	// Editor-canvas preview scope for the attribution link-colour CSS below
-	// (Task 3, 2026-09-07).
+	// (Task 3, 2026-09-07). Extended to include gradient params (2026-09-07).
 	const linkPreviewUid = `sgs-quote-link-preview-${ clientId }`;
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid } .wp-block-sgs-quote__attribution`,
 		attributionLinkColour,
-		attributionLinkColourHover
+		attributionLinkColourHover,
+		attributionLinkColourGradient,
+		attributionLinkColourHoverGradient
 	);
 
 	const blockProps = useBlockProps( {

@@ -723,6 +723,63 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	// that doesn't exist. Real bug (wire real per-variant CSS, or retire the
 	// control), tracked separately, not faked here.
 	'selectedStyle',
+	// TEXT-surface colour-conformance closeout (2026-09-07) — 23 names moved
+	// here from scripts/editor-render-parity-baseline.json's manual accepted
+	// list, verified via `SELECT block_slug, attr_name, css_property FROM
+	// block_attributes WHERE attr_name IN (...)` rather than assumed. Two
+	// distinct sub-classes, both genuinely unpreviewable in a static canvas:
+	//
+	// (a) Pure server-behaviour/config/a11y attrs with NO css_property at all
+	// (verified NULL for every one): 'fieldName' (7 form-field-* blocks —
+	// stores the submitted field's machine name, never rendered),
+	// 'successMessage'/'successRedirect'/'honeypot' (sgs/form — server-only
+	// submission config), 'allowedTypes' (sgs/form-field-file — validation
+	// config), 'renderLandmark' (sgs/icon-list — a11y markup mode, no visual
+	// difference), 'thumbnailAlt' (sgs/image-sequence — alt text),
+	// 'headerShrink'/'headerHideOnScroll' (sgs/site-header — scroll-position-
+	// triggered, no resting-state difference), 'blockLabel' (sgs/tabs — ARIA
+	// label only), 'revealOnScroll'/'revealStagger' (sgs/timeline — reveal-
+	// animation timing, needs real scroll), 'autoScroll' (sgs/trust-bar —
+	// needs real overflow + time), 'message' (sgs/whatsapp-cta — pre-fills
+	// the opened chat, never rendered on-page), 'animateFrom' (sgs/nav-drawer
+	// — drawer-entry direction, only observable mid-open-animation).
+	//
+	// (b) GSAP ScrollTrigger / transition CONFIG whose css_property resolves
+	// to a namespaced motion key (`fx:*`) or a real CSS property that is
+	// observationally inert without a live interaction/scroll the static
+	// canvas cannot provide: 'fxStart'/'fxEnd'/'fxScrub'/'fxPin' (32 blocks —
+	// scroll-scrub configuration; same "means the same thing everywhere"
+	// reasoning already used for scaleHover above), 'fadeOnScroll'/
+	// 'pathDrawOnScroll' (sgs/decorative-image — scroll-intersection
+	// triggers, no static resting frame), 'transitionDuration'/
+	// 'transitionEasing' (8 blocks — css_property IS `transition-duration`/
+	// `transition-timing-function`, but a transition is only OBSERVABLE
+	// during an actual value change the canvas never triggers — same
+	// unpreviewable-without-interaction doctrine as scaleHover's :hover-only
+	// transform).
+	'fieldName',
+	'successMessage',
+	'successRedirect',
+	'honeypot',
+	'allowedTypes',
+	'renderLandmark',
+	'thumbnailAlt',
+	'headerShrink',
+	'headerHideOnScroll',
+	'blockLabel',
+	'revealOnScroll',
+	'revealStagger',
+	'autoScroll',
+	'message',
+	'animateFrom',
+	'fxStart',
+	'fxEnd',
+	'fxScrub',
+	'fxPin',
+	'fadeOnScroll',
+	'pathDrawOnScroll',
+	'transitionDuration',
+	'transitionEasing',
 ] );
 
 // WP-native block-supports attribute names, consumed automatically by

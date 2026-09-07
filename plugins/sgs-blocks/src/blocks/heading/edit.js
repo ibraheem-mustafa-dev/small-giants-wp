@@ -323,7 +323,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid }`,
 		linkColour,
-		linkColourHover
+		linkColourHover,
+		linkColourGradient,
+		linkColourHoverGradient
 	);
 
 	const blockProps = useBlockProps( {

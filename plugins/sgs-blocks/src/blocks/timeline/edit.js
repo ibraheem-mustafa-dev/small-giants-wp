@@ -17,7 +17,7 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { IconPicker, ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
-import { colourVar, linkColourPreviewCss } from '../../utils';
+import { colourVar, linkColourPreviewCss, resolveTextColourPreviewStyle } from '../../utils';
 import { sanitiseSvg } from '../../utils';
 
 // ── Select options ──────────────────────────────────────────────────────────
@@ -227,12 +227,12 @@ function boxShorthand( box, keys ) {
  * manual reconstruction for visual parity, exactly like sgs/quote.
  */
 function buildRootPreviewStyle( attributes ) {
-	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, backgroundColour } = attributes;
+	const { padding, margin, borderWidth, borderStyle, borderColour, borderColourGradient, borderRadius, textColour, textColourGradient, backgroundColour } = attributes;
 	const previewStyle = {};
 
-	if ( textColour ) {
-		previewStyle.color = /^#|^rgb|^hsl/.test( textColour ) ? textColour : colourVar( textColour );
-	}
+	// Use gradient-aware resolver for text colour + gradient sibling
+	const textColorStyle = resolveTextColourPreviewStyle( textColour, textColourGradient, colourVar );
+	Object.assign( previewStyle, textColorStyle );
 	if ( backgroundColour ) {
 		previewStyle.backgroundColor = /^#|^rgb|^hsl/.test( backgroundColour ) ? backgroundColour : colourVar( backgroundColour );
 	}
@@ -570,11 +570,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// Editor-canvas preview CSS for the per-entry description link colour
 	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
+	// Extended with gradient support (CHECK A, 2026-09-07).
 	const linkPreviewCss = linkColourPreviewCss(
 		`.${ linkPreviewUid } .sgs-timeline__description`,
 		descriptionLinkColour,
-		descriptionLinkColourHover
+		descriptionLinkColourHover,
+		descriptionLinkColourGradient,
+		descriptionLinkColourHoverGradient
 	);
+
+	// Editor-canvas preview STYLE for the date element's own text colour +
+	// gradient (CHECK A, 2026-09-07; corrected same session). dateColour paints
+	// the <time> element itself, not a nested link — linkColourPreviewCss()
+	// scopes to `{selector} a`, which never matches this element and silently
+	// produced a no-op rule (same "wrong helper by surface proximity" mistake
+	// caught earlier today on the PHP side for this exact attribute). The date
+	// text needs resolveTextColourPreviewStyle()'s inline-style object, applied
+	// directly to the <time> element, matching how textColour is previewed on
+	// the root above.
+	const dateColourStyle = resolveTextColourPreviewStyle( dateColour, dateColourGradient, colourVar );
 
 	// Contract §A: the pre-existing --sgs-connector-colour / --sgs-date-colour
 	// custom-property VALUES stay inline (a `--var:value` is not a property
@@ -1408,7 +1422,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							.filter( Boolean )
 							.join( ' ' ) }
 					>
-						<time className="sgs-timeline__date">
+						<time className="sgs-timeline__date" style={ dateColourStyle }>
 							{ entry.date || __( 'Date', 'sgs-blocks' ) }
 						</time>
 						{ /* The canvas has NEVER rendered milestone media — not
