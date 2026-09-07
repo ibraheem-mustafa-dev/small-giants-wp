@@ -414,6 +414,45 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
+			{ /* D609/D618/D970 — ONE grouped, SGS-OWNED colour panel, rendered
+			   FIRST, matching sgs/heading's pattern. Text colour used to live
+			   as a scattered ToolsPanelItem inside the Typography panel below
+			   (a bespoke per-element mount) — this is the one general
+			   mechanism, per `plugins/sgs-blocks/CLAUDE.md` "Colour controls"
+			   and D970's incident write-up. Background colour is left in its
+			   own TIER-1 panel below (out of scope for this move — it is a
+			   separate declared element, unrelated to the four textColour*
+			   attributes this row owns). */ }
+			<SgsColourPanel
+				rows={ [
+					{
+						key: 'text',
+						label: __( 'Text colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						contrastAgainst: textContrastAgainst,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: textColour,
+								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: textColourHover,
+								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: textColourHoverGradient,
+								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
+							},
+						],
+					},
+				] }
+			/>
 			{ /* ── Styles tab (Spec 35 THE PLACEMENT RULE, D537) ────────────────
 			   `text` is this block's isWrapper:true element with clusters
 			   [text, fill, layout, motion] — its controls split into
@@ -422,12 +461,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			   `::after` paint layer) and gets its own TIER-1 panel. */ }
 			<InspectorControls group="styles">
 				{ /* ---- Typography — `text`'s TIER-2 "Text" family panel ----
-				   Holds every text-cluster control: font properties, text
+				   Holds every text-cluster control: font properties and text
 				   align (moved out of the old standalone "Layout" panel —
-				   align is a text-family property, not a box/layout one) and
-				   the element's own colour (moved out of the shared Colour
-				   panel above — text's colour belongs with text's other
-				   properties, not bundled with `background`'s). */ }
+				   align is a text-family property, not a box/layout one).
+				   Text colour is NOT here any more (moved to the shared
+				   SgsColourPanel above, D970) — do not re-add a colour row
+				   to this panel. */ }
 				<ToolsPanel
 					label={ __( 'Typography', 'sgs-blocks' ) }
 					resetAll={ () =>
@@ -437,10 +476,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							fontFamily: '',
 							textAlign: '',
 							textWrap: '',
-							textColour: '',
-							textColourGradient: '',
-							textColourHover: '',
-							textColourHoverGradient: '',
 						} )
 					}
 				>
@@ -565,56 +600,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					     ⛔ Do not re-add any of the three. Their attributes are now
 					     covered by the Font item's own hasValue/onDeselect above. */ }
 
-					<ToolsPanelItem
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						hasValue={ () =>
-							( textColour ?? '' ) !== '' ||
-							( textColourGradient ?? '' ) !== '' ||
-							( textColourHover ?? '' ) !== '' ||
-							( textColourHoverGradient ?? '' ) !== ''
-						}
-						onDeselect={ () =>
-							setAttributes( {
-								textColour: '',
-								textColourGradient: '',
-								textColourHover: '',
-								textColourHoverGradient: '',
-							} )
-						}
-						isShownByDefault
-					>
-					{ /* Text colour — moved out of the shared Colour panel above
-					   (was jammed together with `background`'s colour there);
-					   this is `text`'s own css:color member and belongs with
-					   its other text-cluster properties. Same row component
-					   SgsColourPanel itself uses (`GradientCapableColourControl`,
-					   since this row previously carried `gradientCapable: true`),
-					   so the control is pixel-identical for the client. */ }
-					<GradientCapableColourControl
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: textColourHover,
-								onChange: ( val ) => setAttributes( { textColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourHoverGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourHoverGradient: val ?? '' } ),
-							},
-						] }
-						contrastAgainst={ textContrastAgainst }
-					/>
-					</ToolsPanelItem>
+					{ /* ⛔ The "Text colour" ToolsPanelItem that used to sit here
+					   (GradientCapableColourControl, textColour/
+					   textColourGradient/textColourHover/
+					   textColourHoverGradient) is GONE, not moved — it now
+					   lives as the "text" row in the shared SgsColourPanel
+					   mounted at the top of this block's edit() (D970). Do
+					   not re-add a colour control here; that would be exactly
+					   the scattered per-element colour mount D970 reverted
+					   framework-wide. `textContrastAgainst` above still feeds
+					   the contrast check wired into that row via the
+					   colourVar/resolveTextColourPreviewStyle helpers used
+					   elsewhere in this file. */ }
 				</ToolsPanel>
 
 				{ /* ---- Background — `background`'s own TIER-1 panel ----
