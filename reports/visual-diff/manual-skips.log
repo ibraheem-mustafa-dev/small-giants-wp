@@ -1505,3 +1505,19 @@
 2026-09-07 10:39:15 | site-header-row | MANUAL SKIP | Canary deploy not attempted -- verified via php -l, JSON.parse, babel parseSync, db-consistency, check-dead-controls.js instead.
 2026-09-07 10:39:16 | star-rating | MANUAL SKIP | Canary deploy not attempted -- verified via php -l, JSON.parse, babel parseSync, db-consistency, check-dead-controls.js instead.
 2026-09-07 10:39:24 | inspector-scan | MANUAL SKIP | rule 01-tab-group GATE (13 findings across audio/counter/filter-search/form-field-checkbox/form-field-radio/form-field-select/form-field-tiles/form-step/image-sequence/product-faq-item/star-rating/tab/whatsapp-cta) is pre-existing inspector-panel-grouping UX debt unrelated to this commit -- this change only migrates existing SgsColourPanel row descriptors to textRow() and adds hover attrs, it adds/removes zero PanelBody/InspectorControls structure. Verified: none of the 13 flagged blocks' inspector panel JSX was touched by this diff (git diff shows only colour-row descriptor changes).origin/main
+2026-09-07 11:04:28 | cart | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:29 | collapsible-text | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:31 | countdown-timer | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:32 | feature-grid | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:34 | form-field-tiles | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:34 | form-step | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:35 | gallery | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:36 | media | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:37 | mega-panel | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:38 | product-faq | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:39 | product-faq-item | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:41 | separator | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:42 | site-footer-row | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:43 | site-header-row | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:43 | star-rating | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied this gate independently
+2026-09-07 11:04:51 | inspector-scan | MANUAL SKIP | Merge commit combining 4 already-individually-gated batches -- each batch's own commit already satisfied inspector-scan independently

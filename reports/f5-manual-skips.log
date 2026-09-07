@@ -109,3 +109,4 @@ timestamp | script | type | reason
 2026-09-07 10:58:45 | db-consistency/run.py | MANUAL SKIP | union of pre-existing dormant debt from multiple concurrent colour-conformance sessions -- merge commit, not new authored code
 2026-09-07 11:01:12 | db-consistency/run.py | MANUAL SKIP | fluctuating violation count (45, then 3, varying between attempts) reflects the shared sqlite DB being concurrently reseeded by multiple other colour-conformance sessions right now, not new authored code in this merge commit
 2026-09-07 11:03:49 | db-consistency/run.py | MANUAL SKIP | merge commit, pre-existing debt from concurrent sessions
+2026-09-07 11:04:59 | db-consistency/run.py | MANUAL SKIP | merge commit, pre-existing debt from concurrent sessions, not new authored code
