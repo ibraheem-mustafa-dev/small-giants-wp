@@ -8944,28 +8944,6 @@ non-vacuous — against the old stripper the planted use drops 2 occurrences →
 24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
 four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
 
-## D661 [INCIDENT] — CHECK 5's comment stripper swallowed 715 lines; all 24 advisories were false (2026-08-18)
-
-`check-dead-controls.js` printed **24 dead-assignment advisories on every build, every one false,
-all on `sgs/hero`**. `stripPhpCommentsForAssignmentCheck()` stripped `/* */` block comments in a
-pass BEFORE `//` line comments. `hero/render.php:313` is an ordinary line comment reading
-`the *Tablet/*Mobile siblings …` — the `/*` inside it opened a phantom block comment that did not
-close until another `//` comment at `:1028` happened to contain `*/`. ~715 lines were deleted before
-the liveness check ran, including every genuine use of the attributes then reported dead.
-
-**The first diagnosis was wrong and is recorded here because the wrong one is instructive:** the
-liveness logic (Rule 3) was blamed and is in fact correct. Prescribing "make it test variable
-liveness" would have sent someone rewriting working code and left the bug. Fixed with a single
-alternation pass so whichever comment style STARTS FIRST wins — reordering the two passes instead
-would only mirror the defect (a `//` comment containing `*/` would leave an unterminated `/*` and
-leak comment text back in, a false NEGATIVE).
-
-CHECK 4's shared `stripComments()` already carried a regression test for this exact shape; CHECK 5's
-separate *"a simpler pass is sufficient"* stripper never did. It does now (Test G), proven
-non-vacuous — against the old stripper the planted use drops 2 occurrences → 1 and the test fails.
-24 → 0. Test A still passes, so the guard is not merely silenced. **This single bug caused three of
-four wrong findings in the audit wave that ran alongside it.** Commit `a2bdbae7`.
-
 ## D662 [ROUTINE] — device-tier breakpoint 599→767 on 4 stylesheets, NOT 9 (2026-08-18)
 
 `SGS_Breakpoints::MOBILE_MAX = 767`, but `info-box`, `tabs` (×2), `gallery` and `post-grid` still
