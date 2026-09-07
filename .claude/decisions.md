@@ -1,3 +1,79 @@
+## D1002 [INCIDENT] — a THIRD same-selector CSS collision (min-height); three width caps collapse to one; media inspector surface split by tab
+
+**2026-09-07.** Slices 2, 3, 5 and 6 of the media control-surface work, run as
+`/subagent-driven-development` (audit + two implementers, disjoint file sets, `/qc-inline`
+checkpoint). Bean confirmed **no live clients**, so renames are free and no content
+migration is owed.
+
+### 1. The third instance of one collision class, found by the dead-control audit
+
+`box-shape.css` declared `min-height` (base + tablet + mobile) and `svg-presentation.css`
+declared a bare, UNCONDITIONAL `min-height: var( --sgs-media-svg-min-height, 0 )` on the
+**same `.sgs-media-el` selector at the same specificity**. Partials concatenate `_base.css`
+first then ALPHABETICALLY (`generate-media-stylesheet.mjs`), so `svg-presentation` sorts
+after `box-shape` and won outright — including over box-shape's `@media` tiers, since a
+media query changes nothing about specificity and the svg rule sits later in the file.
+**Every authored min-height computed as `0`.**
+
+`opacity` and `animation-name` hit this EXACT collision on 2026-09-01 and were fixed by
+composing them once in `_base.css`. `min-height` was missed in that pass. Now composed the
+same way, with `max()` — both properties are FLOORS, so the binding floor is the larger and
+an unset atom contributes the `0px` identity. (Opacity multiplies; animation-name
+comma-lists; min-height maxes — the right composition is per-property, not one pattern.)
+
+⚠ **This is the third same-selector duplicate-declaration defect found in one day**, after
+D998 (`max-width: none` cancelling core's `img{max-width:100%}`) and the D998 follow-on
+(`.sgs-media-el` declaring `max-width` twice, the first unreachable). The generated
+stylesheet has no gate against a property being declared twice on one selector. That gate is
+owed and is the real fix for the class.
+
+### 2. Three width caps collapse to one — and `maxWidthPercent` was three unrelated things
+
+Deleted `maxWidthPercent` from the shared atom: both emitter twins, the CSS partial, the
+control row, the registry and the generated PHP. A percentage max-width IS a max-width with
+a `%` unit, and `%` was already in the control's unit list — zero capability lost.
+
+The investigation found the name covered **three unrelated mechanisms**, not one:
+- `sgs/media` — never declared it at all.
+- `sgs/hero`'s `splitMediaMaxWidthPercent` — shared the atom's editor CONTROL but its
+  storage and CSS were hand-rolled directly in `hero/render.php`, never routed through the
+  atom's `css()`. Removing the control alone would have left a live, unreachable emitter.
+- `sgs/decorative-image`'s `maxWidthPercent` — genuinely independent, correctly untouched.
+
+The implementer stopped at its ownership boundary and reported the dead references rather
+than reaching into files it did not own; the controller cleared them (`hero/edit.js`
+destructure + `hasValue` + two `onDeselect` resets, `hero/render.php`'s dead emission block,
+`box-shape.control.js`'s two dead props).
+
+### 3. Inspector surface
+
+- `'Inherit from tier above'` -> `'Inherit'`, explanation moved to `help`. The file's own
+  comment asserting *"Four options … fit the segmented control fine"* was DELETED, not
+  softened: it asserted a rendering outcome nobody had measured, and Bean's eyes disproved it.
+- The panel that would not collapse was a **bare `ToolsPanel`** (no collapse mechanism at
+  all), not the `PanelBody` at `hero/edit.js:885` which was always fine. Wrapped it.
+- Hero's `Border` and `Hover` panels moved from Settings to `group="styles"`.
+- **`MediaPanelLayout` gained a `group` prop** and `sgs/media` now mounts it once per tab.
+  Moving the whole component into Styles wholesale — which the controller's own brief told
+  the implementer to do — dragged Media Type and Source, the client's commonest action, out
+  of Settings. The implementer flagged it rather than shipping it; the brief was wrong.
+  SETTINGS = what the media IS and how it behaves; STYLES = how it looks.
+
+### 4. Audit result (slice 2), gating the remaining slices
+
+~74 attributes PAINT, ~54 are legitimately NOT-CSS, 1 DEAD:OVERRIDDEN (the min-height above),
+6 UNKNOWN (hero-only, outside the atom chain). **Nothing is safe to delete** — the one dead
+attribute was the symptom of the cascade bug, not dead weight.
+
+Three traps recorded for any future simplification pass — controls that LOOK redundant and
+paint: `borderColourHover`/`Gradient` on media and hero (absent from the shared registry,
+alive only because both blocks hand-declare them — a third adopter gets a silently dead
+control); `maxWidth` (a genuine duplicate declaration, but the winning rule's fallback chain
+re-includes the earlier variable); and 16 caption typography attributes (alive via
+`sgs_typography_css_rule()`'s naming convention, invisible to a literal grep).
+
+---
+
 ## D1001 [INCIDENT] — media sizing mode is DERIVED, not defaulted; and the parity gate that guarded it was vacuous
 
 **2026-09-07.** Slice 1 of the media control-surface work, scoped by a six-persona

@@ -1,7 +1,13 @@
 /**
  * MediaBoxShapeControls — shared bare-row control set for the `box-shape`
  * atom (sizing mode / ratio / named shape / border radius / height /
- * min-height / width / max-width / max-height / max-width-percent).
+ * min-height / width / max-width / max-height).
+ *
+ * `maxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
+ * max-width with a `%` unit, and `%` is already in `LENGTH_UNITS` below, so
+ * the dedicated RangeControl row duplicated the "Max width" field for zero
+ * capability loss. See `includes/media/atoms/box-shape.php` module docblock
+ * for the full removal rationale.
  *
  * Reuses `MediaSizingPanel`'s `RATIO_OPTIONS` verbatim rather than retyping
  * the six-value spaced ratio list — that list is already the framework's one
@@ -23,7 +29,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { RangeControl, SelectControl, TextControl } from '@wordpress/components';
+import { SelectControl, TextControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../primitives';
 import { RATIO_OPTIONS } from '../../MediaSizingPanel.js';
 import SgsBorderControl from '../../SgsBorderControl.js';
@@ -147,8 +153,6 @@ function LengthFieldRow( {
  * @param {Function} [props.onMaxHeightChange]
  * @param {string}   [props.maxHeightUnit]
  * @param {Function} [props.onMaxHeightUnitChange]
- * @param {number}   [props.maxWidthPercentValue] Bare percentage number.
- * @param {Function} [props.onMaxWidthPercentChange]
  * @param {Object}   [props.borderWidthValue]     `{top,right,bottom,left}` —
  *                                          `SgsBorderControl`'s own `widthValues`
  *                                          shape. Untiered — per-device border
@@ -205,8 +209,6 @@ export default function MediaBoxShapeControls( {
 	onMaxHeightChange,
 	maxHeightUnit,
 	onMaxHeightUnitChange,
-	maxWidthPercentValue,
-	onMaxWidthPercentChange,
 	borderWidthValue,
 	onBorderWidthChange,
 	borderStyleValue,
@@ -345,19 +347,6 @@ export default function MediaBoxShapeControls( {
 					unit={ maxHeightUnit }
 					onChangeValue={ ( v ) => onMaxHeightChange( { ...maxHeightObj, desktop: v } ) }
 					onChangeUnit={ onMaxHeightUnitChange }
-				/>
-			) }
-
-			{ onMaxWidthPercentChange && (
-				<RangeControl
-					label={ __( 'Max width (% of parent)', 'sgs-blocks' ) }
-					value={ maxWidthPercentValue }
-					onChange={ onMaxWidthPercentChange }
-					min={ 0 }
-					max={ 100 }
-					step={ 1 }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 			) }
 

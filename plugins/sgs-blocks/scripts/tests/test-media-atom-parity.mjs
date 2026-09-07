@@ -175,9 +175,11 @@ function phpDeclarations( id, fixture = FIXTURE ) {
  * in-vocabulary value — so the mode resolver returned early and its DERIVATION
  * branch was never reached on either side. Both halves skipped the height path
  * and "agreed" by emitting nothing from it. The fixture also carries no
- * `maxWidth` / `maxWidthPercent`, which is how a trailing-semicolon divergence
- * between the PHP and JS emitters sat uncovered in a gate whose entire purpose
- * is byte-identical output.
+ * `maxWidth`, which is how a trailing-semicolon divergence between the PHP
+ * and JS emitters sat uncovered in a gate whose entire purpose is
+ * byte-identical output. (`maxWidthPercent` — a second, redundant width
+ * cap — was DELETED 2026-09-07; the case below was updated to exercise
+ * `maxWidth` alone rather than removed.)
  *
  * Parity between two skipped branches is not parity. Each case forces a
  * DIFFERENT branch and asserts the real emitted declarations, not the mode.
@@ -208,9 +210,9 @@ const BOX_SHAPE_CASES = [
 		because: 'an explicit client choice must still beat the derivation, or the fix has replaced one silent override with another',
 	},
 	{
-		name: 'both width caps set (covers the emitter that broke parity)',
-		patch: { maxWidth: { desktop: 640 }, maxWidthUnit: 'px', maxWidthPercent: 80 },
-		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-max-width' ) ),
+		name: 'max-width set (covers the emitter that broke parity)',
+		patch: { maxWidth: { desktop: 640 }, maxWidthUnit: 'px' },
+		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-max-width:' ) ),
 		because: 'the uncovered emitter whose stray semicolon broke byte-parity',
 	},
 ];

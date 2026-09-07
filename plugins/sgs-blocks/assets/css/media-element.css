@@ -228,6 +228,58 @@
 	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
 }
 
+/* ── Cross-atom rule: composed min-height (`box-shape` + `svg-presentation`) ──
+ *
+ * THE THIRD instance of this exact collision class, found 2026-09-07 by a
+ * dead-control audit. `box-shape.css` declared `min-height` (base + tablet +
+ * mobile) and `svg-presentation.css` declared a bare, UNCONDITIONAL
+ * `min-height: var( --sgs-media-svg-min-height, 0 )` on the SAME
+ * `.sgs-media-el` selector at the same specificity. Partials are concatenated
+ * `_base.css` first then ALPHABETICALLY (generate-media-stylesheet.mjs), so
+ * `svg-presentation` sorts after `box-shape` and won outright — including over
+ * box-shape's @media tiers, since a media query changes nothing about
+ * specificity and the svg rule sits later in the file. Every authored
+ * min-height computed as `0`.
+ *
+ * Identical in shape to the composed `opacity` and `animation-name` rules
+ * above, both found live on 2026-09-01. `min-height` was missed then.
+ *
+ * Composition is `max()`, because both properties are FLOORS: the binding
+ * floor is the larger of the two, and an unset atom contributes `0px` which is
+ * the identity for `max`. (Opacity multiplies; animation-name comma-lists;
+ * min-height maxes. The right composition is per-property, not one pattern.)
+ *
+ * ⛔ Do NOT reintroduce a bare `min-height:` on `.sgs-media-el` in any partial.
+ * A fourth atom needing it extends THIS rule.
+ *
+ * `0px` not `0` deliberately — `max()` resolves against <length>, and a
+ * unitless zero is not a length in that context.
+ */
+.sgs-media-el {
+	min-height: max( var( --sgs-media-min-height, 0px ), var( --sgs-media-svg-min-height, 0px ) );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		min-height: max(
+			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) ),
+			var( --sgs-media-svg-min-height, 0px )
+		);
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		min-height: max(
+			var(
+				--sgs-media-min-height-mobile,
+				var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) )
+			),
+			var( --sgs-media-svg-min-height, 0px )
+		);
+	}
+}
+
 /* ── box-shape.css ───────────────────────────────────────────────────── */
 /*
  * box-shape — sizing mode (auto/height/ratio), named shape, min/max/width,
@@ -237,7 +289,7 @@
  * output exactly: `--sgs-media-height[-tablet|-mobile]`,
  * `--sgs-media-aspect-ratio`, `--sgs-media-width[-tablet|-mobile]`,
  * `--sgs-media-min-height[-tablet|-mobile]`, `--sgs-media-max-width`,
- * `--sgs-media-max-height`, `--sgs-media-max-width-percent`,
+ * `--sgs-media-max-height`,
  * `--sgs-media-clip-path`, `--sgs-media-border-radius[-tablet|-mobile]`,
  * `--sgs-media-border-width`, `--sgs-media-border-style`,
  * `--sgs-media-border-color`, `--sgs-media-border-image`,
@@ -262,7 +314,7 @@
  *
  * Height/Width/BorderRadius follow the mobile -> tablet -> desktop ->
  * initial fallback chain `_base.css` documents; min-height does the same.
- * Aspect-ratio, max-width/max-height/max-width-percent/clip-path/border-
+ * Aspect-ratio, max-width/max-height/clip-path/border-
  * width/border-style/border-color/border-image are single-value (no device
  * tiers — MEDIA_TIERED_BASES does not carry them; per-device border WIDTH
  * is cancelled outright, not merely untiered, per CLAUDE.md "Border
@@ -273,19 +325,6 @@
 	height: var( --sgs-media-height, auto );
 	width: var( --sgs-media-width, auto );
 	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
-	min-height: var( --sgs-media-min-height, 0 );
-	/* Fallback is 100%, NOT `none` (2026-09-07, D998). `.sgs-media-el` is a
-	 * single-class selector that loads AFTER every block stylesheet, so at equal
-	 * (0,1,0) specificity it wins on source order — and `none` actively CANCELLED
-	 * core's `img { max-width: 100% }` on every media element that had not set the
-	 * custom property. Measured on the homepage clone: the hero split image
-	 * rendered at its intrinsic 1536x1536 inside a 737px column (2249px document
-	 * scroll width at a 1440px viewport) and 1080x1920 inside a 375px screen.
-	 * `100%` is what every surface actually measures and what core sets; an
-	 * explicit `--sgs-media-max-width` still overrides it, so no capability is
-	 * lost. Same class of bug as the banned `initial`/`unset`/`revert` fallbacks
-	 * — a non-measured default in a shared rule that out-ranks the block's own. */
-	max-width: var( --sgs-media-max-width, 100% );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
 	border-radius: var( --sgs-media-border-radius, 0 );
@@ -294,6 +333,16 @@
 	border-color: var( --sgs-media-border-color, currentcolor );
 	border-image-source: var( --sgs-media-border-image, none );
 	border-image-slice: 1;
+	/* Fallback 100%, NOT `none` (2026-09-07, D998) — twin of the same line in
+	 * media-element.css. `none` cancelled core's `img { max-width: 100% }` from a
+	 * shared (0,1,0) rule loading after every block stylesheet, so any media
+	 * element that had not set the custom property rendered at intrinsic size and
+	 * escaped its container. An explicit `--sgs-media-max-width` still wins. This
+	 * used to be declared TWICE at equal specificity (the second, later
+	 * declaration always won, making this comment sit on dead CSS) — collapsed to
+	 * ONE declaration when `maxWidthPercent` was deleted (2026-09-07): it was the
+	 * only reason a second `max-width` rule existed at all. */
+	max-width: var( --sgs-media-max-width, 100% );
 }
 
 /* Hover colour pair (2026-09-07) — colour-only, no hover variant for
@@ -319,19 +368,10 @@
 	border-image-source: var( --sgs-media-border-image-hover, var( --sgs-media-border-image, none ) );
 }
 
-/* max-width-percent is a SEPARATE cap from max-width (a percentage floor
- * distinct from an absolute length) — only applied when the atom emits it,
- * via the same custom-property/initial-fallback contract as every other
- * declaration here. */
-.sgs-media-el {
-	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, 100% ) );
-}
-
 @media ( max-width: 1023px ) {
 	.sgs-media-el {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
-		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) );
 		border-radius: var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) );
 	}
 }
@@ -345,10 +385,6 @@
 		width: var(
 			--sgs-media-width-mobile,
 			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
-		);
-		min-height: var(
-			--sgs-media-min-height-mobile,
-			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) )
 		);
 		border-radius: var(
 			--sgs-media-border-radius-mobile,
@@ -897,7 +933,6 @@
 .sgs-media-el {
 	z-index: var( --sgs-media-svg-zindex, -1 );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
-	min-height: var( --sgs-media-svg-min-height, 0 );
 }
 
 @media ( prefers-reduced-motion: no-preference ) {

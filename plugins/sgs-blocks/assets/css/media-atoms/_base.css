@@ -215,3 +215,55 @@
 .sgs-media-el {
 	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
 }
+
+/* ── Cross-atom rule: composed min-height (`box-shape` + `svg-presentation`) ──
+ *
+ * THE THIRD instance of this exact collision class, found 2026-09-07 by a
+ * dead-control audit. `box-shape.css` declared `min-height` (base + tablet +
+ * mobile) and `svg-presentation.css` declared a bare, UNCONDITIONAL
+ * `min-height: var( --sgs-media-svg-min-height, 0 )` on the SAME
+ * `.sgs-media-el` selector at the same specificity. Partials are concatenated
+ * `_base.css` first then ALPHABETICALLY (generate-media-stylesheet.mjs), so
+ * `svg-presentation` sorts after `box-shape` and won outright — including over
+ * box-shape's @media tiers, since a media query changes nothing about
+ * specificity and the svg rule sits later in the file. Every authored
+ * min-height computed as `0`.
+ *
+ * Identical in shape to the composed `opacity` and `animation-name` rules
+ * above, both found live on 2026-09-01. `min-height` was missed then.
+ *
+ * Composition is `max()`, because both properties are FLOORS: the binding
+ * floor is the larger of the two, and an unset atom contributes `0px` which is
+ * the identity for `max`. (Opacity multiplies; animation-name comma-lists;
+ * min-height maxes. The right composition is per-property, not one pattern.)
+ *
+ * ⛔ Do NOT reintroduce a bare `min-height:` on `.sgs-media-el` in any partial.
+ * A fourth atom needing it extends THIS rule.
+ *
+ * `0px` not `0` deliberately — `max()` resolves against <length>, and a
+ * unitless zero is not a length in that context.
+ */
+.sgs-media-el {
+	min-height: max( var( --sgs-media-min-height, 0px ), var( --sgs-media-svg-min-height, 0px ) );
+}
+
+@media ( max-width: 1023px ) {
+	.sgs-media-el {
+		min-height: max(
+			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) ),
+			var( --sgs-media-svg-min-height, 0px )
+		);
+	}
+}
+
+@media ( max-width: 767px ) {
+	.sgs-media-el {
+		min-height: max(
+			var(
+				--sgs-media-min-height-mobile,
+				var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) )
+			),
+			var( --sgs-media-svg-min-height, 0px )
+		);
+	}
+}

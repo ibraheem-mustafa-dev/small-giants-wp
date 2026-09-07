@@ -6,7 +6,7 @@
  * output exactly: `--sgs-media-height[-tablet|-mobile]`,
  * `--sgs-media-aspect-ratio`, `--sgs-media-width[-tablet|-mobile]`,
  * `--sgs-media-min-height[-tablet|-mobile]`, `--sgs-media-max-width`,
- * `--sgs-media-max-height`, `--sgs-media-max-width-percent`,
+ * `--sgs-media-max-height`,
  * `--sgs-media-clip-path`, `--sgs-media-border-radius[-tablet|-mobile]`,
  * `--sgs-media-border-width`, `--sgs-media-border-style`,
  * `--sgs-media-border-color`, `--sgs-media-border-image`,
@@ -31,7 +31,7 @@
  *
  * Height/Width/BorderRadius follow the mobile -> tablet -> desktop ->
  * initial fallback chain `_base.css` documents; min-height does the same.
- * Aspect-ratio, max-width/max-height/max-width-percent/clip-path/border-
+ * Aspect-ratio, max-width/max-height/clip-path/border-
  * width/border-style/border-color/border-image are single-value (no device
  * tiers — MEDIA_TIERED_BASES does not carry them; per-device border WIDTH
  * is cancelled outright, not merely untiered, per CLAUDE.md "Border
@@ -42,13 +42,6 @@
 	height: var( --sgs-media-height, auto );
 	width: var( --sgs-media-width, auto );
 	aspect-ratio: var( --sgs-media-aspect-ratio, auto );
-	min-height: var( --sgs-media-min-height, 0 );
-	/* Fallback 100%, NOT `none` (2026-09-07, D998) — twin of the same line in
-	 * media-element.css. `none` cancelled core's `img { max-width: 100% }` from a
-	 * shared (0,1,0) rule loading after every block stylesheet, so any media
-	 * element that had not set the custom property rendered at intrinsic size and
-	 * escaped its container. An explicit `--sgs-media-max-width` still wins. */
-	max-width: var( --sgs-media-max-width, 100% );
 	max-height: var( --sgs-media-max-height, none );
 	clip-path: var( --sgs-media-clip-path, none );
 	border-radius: var( --sgs-media-border-radius, 0 );
@@ -57,6 +50,16 @@
 	border-color: var( --sgs-media-border-color, currentcolor );
 	border-image-source: var( --sgs-media-border-image, none );
 	border-image-slice: 1;
+	/* Fallback 100%, NOT `none` (2026-09-07, D998) — twin of the same line in
+	 * media-element.css. `none` cancelled core's `img { max-width: 100% }` from a
+	 * shared (0,1,0) rule loading after every block stylesheet, so any media
+	 * element that had not set the custom property rendered at intrinsic size and
+	 * escaped its container. An explicit `--sgs-media-max-width` still wins. This
+	 * used to be declared TWICE at equal specificity (the second, later
+	 * declaration always won, making this comment sit on dead CSS) — collapsed to
+	 * ONE declaration when `maxWidthPercent` was deleted (2026-09-07): it was the
+	 * only reason a second `max-width` rule existed at all. */
+	max-width: var( --sgs-media-max-width, 100% );
 }
 
 /* Hover colour pair (2026-09-07) — colour-only, no hover variant for
@@ -82,19 +85,10 @@
 	border-image-source: var( --sgs-media-border-image-hover, var( --sgs-media-border-image, none ) );
 }
 
-/* max-width-percent is a SEPARATE cap from max-width (a percentage floor
- * distinct from an absolute length) — only applied when the atom emits it,
- * via the same custom-property/initial-fallback contract as every other
- * declaration here. */
-.sgs-media-el {
-	max-width: var( --sgs-media-max-width-percent, var( --sgs-media-max-width, 100% ) );
-}
-
 @media ( max-width: 1023px ) {
 	.sgs-media-el {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
-		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) );
 		border-radius: var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) );
 	}
 }
@@ -108,10 +102,6 @@
 		width: var(
 			--sgs-media-width-mobile,
 			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
-		);
-		min-height: var(
-			--sgs-media-min-height-mobile,
-			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0 ) )
 		);
 		border-radius: var(
 			--sgs-media-border-radius-mobile,

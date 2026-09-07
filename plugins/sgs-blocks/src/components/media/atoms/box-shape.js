@@ -71,9 +71,13 @@
  *   - `sgs/hero`'s `splitMediaWidth` is a NUMBER paired with
  *     `splitMediaWidthUnit`, not a tier object. `resolveWidth()` accepts
  *     either.
- *   - `sgs/decorative-image`'s `maxWidthPercent` is a bare percentage
- *     number — already this atom's own canonical shape (`MaxWidthPercent`),
- *     no bridging needed.
+ *
+ * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
+ * max-width with a `%` unit, and `%` is already in `MaxWidthUnit`'s allowed
+ * values, so the dedicated attribute/custom-property/control row was a
+ * second cascade layer for zero capability loss. `sgs/decorative-image`'s
+ * OWN `maxWidthPercent` (block-private, never adopted this atom) is
+ * unaffected — see that block's own block.json.
  *
  * `css()` mirrors `includes/media/atoms/box-shape.php`'s
  * `sgs_media_atom_box_shape_css()` byte-for-byte — enforced by
@@ -616,12 +620,6 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const maxHeightDesktop = maxHeightRaw && 'object' === typeof maxHeightRaw ? maxHeightRaw.desktop : undefined;
 	if ( undefined !== maxHeightDesktop && null !== maxHeightDesktop && '' !== maxHeightDesktop ) {
 		decls.push( `--sgs-media-max-height:${ maxHeightDesktop }${ attributes[ maxHeightUnitKey ] || 'px' }` );
-	}
-
-	const maxWidthPercentKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthPercent' );
-	const maxWidthPercent = attributes[ maxWidthPercentKey ];
-	if ( 'number' === typeof maxWidthPercent ) {
-		decls.push( `--sgs-media-max-width-percent:${ maxWidthPercent }%` );
 	}
 
 	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );

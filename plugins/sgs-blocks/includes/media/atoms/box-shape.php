@@ -12,9 +12,15 @@
  * (`--sgs-media-border-radius`) targeting the MEDIA ELEMENT itself, not the
  * wrapper. See the JS twin's docblock for the full reasoning, the collision
  * risk this leaves open for a future block, the `custom` handoff from the
- * `object-fit` atom, the ratio format bridge, and the three `reads` traps
- * (product-card `imageHeight` flat string, hero `splitMediaWidth` number,
- * decorative-image `maxWidthPercent`).
+ * `object-fit` atom, the ratio format bridge, and the two `reads` traps
+ * (product-card `imageHeight` flat string, hero `splitMediaWidth` number).
+ *
+ * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
+ * max-width with a `%` unit, and `%` is already an allowed `MaxWidthUnit`
+ * value, so the dedicated attribute/custom-property/control row was a
+ * second cascade layer for zero capability loss. `sgs/decorative-image`'s
+ * OWN `maxWidthPercent` (block-private, never adopted this atom) is
+ * unaffected.
  *
  * `sgs_media_atom_box_shape_css()` must emit BYTE-IDENTICAL declarations to
  * the JS twin's `css()` for the same attribute set — enforced by
@@ -425,12 +431,6 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$max_height_desktop  = is_array( $max_height_raw ) ? ( $max_height_raw['desktop'] ?? null ) : null;
 		if ( null !== $max_height_desktop && '' !== $max_height_desktop ) {
 			$decls[] = '--sgs-media-max-height:' . $max_height_desktop . ( $attributes[ $max_height_unit_key ] ?? 'px' );
-		}
-
-		$max_width_percent_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidthPercent' );
-		$max_width_percent     = $attributes[ $max_width_percent_key ] ?? null;
-		if ( is_numeric( $max_width_percent ) ) {
-			$decls[] = '--sgs-media-max-width-percent:' . $max_width_percent . '%';
 		}
 
 		$shape_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Shape' );

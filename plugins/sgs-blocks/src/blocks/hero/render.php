@@ -932,13 +932,6 @@ if ( isset( $image_max_height_obj['desktop'] ) && '' !== $image_max_height_obj['
 	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-height:' . absint( $image_max_height_obj['desktop'] ) . esc_attr( $image_max_height_unit ) . '}';
 }
 
-// splitMediaMaxWidthPercent — a bare percentage, same concept sgs/decorative-image
-// uses (decorMedia's maxWidthPercent). Emitted AFTER the max-width object
-// block above so it wins the cascade when an operator sets both.
-$image_max_width_percent = $attributes['splitMediaMaxWidthPercent'] ?? null;
-if ( is_numeric( $image_max_width_percent ) ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-width:' . esc_attr( (string) $image_max_width_percent ) . '%}';
-}
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
 $media_pad_base = sgs_box_object_shorthand( $media_padding_obj );

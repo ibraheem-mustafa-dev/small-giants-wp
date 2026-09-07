@@ -40,7 +40,6 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const maxWidthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthUnit' );
 	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
 	const maxHeightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeightUnit' );
-	const maxWidthPercentKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthPercent' );
 	const borderRadiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
 	const borderRadiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
 	const borderRadiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
@@ -92,8 +91,6 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onMaxHeightChange={ ( v ) => setAttributes( { [ maxHeightKey ]: v } ) }
 			maxHeightUnit={ attributes[ maxHeightUnitKey ] }
 			onMaxHeightUnitChange={ ( v ) => setAttributes( { [ maxHeightUnitKey ]: v } ) }
-			maxWidthPercentValue={ attributes[ maxWidthPercentKey ] }
-			onMaxWidthPercentChange={ ( v ) => setAttributes( { [ maxWidthPercentKey ]: v } ) }
 			borderWidthValue={ attributes[ borderWidthKey ] ?? {} }
 			onBorderWidthChange={ ( v ) => setAttributes( { [ borderWidthKey ]: v } ) }
 			borderStyleValue={ attributes[ borderStyleKey ] }
