@@ -1363,3 +1363,43 @@
 2026-09-07 08:52:00 | hero | MANUAL SKIP | pre-existing/other-session: breadcrumbs report went stale after commit acd988095 (not my work, gallery task only touches gallery/block.json metadata); hero/edit.js+render.php+block.json are another concurrent agent's in-flight Task 2 WIP on this shared worktree, not mine to capture
 2026-09-07 08:53:46 | hero | MANUAL SKIP | Priority 4: splitMediaObjectPosition/splitMediaWidth tier-object folds, attribute-shape + read-path fix only (byte-identical computed values for correct usage) -- live verification deferred to post-deploy, same precedent as Priority 2's 72a441659/bd58c88ed
 2026-09-07 08:57:36 | hero | MANUAL SKIP | Priority 4: splitMediaObjectPosition/splitMediaWidth tier-object folds, attribute-shape + read-path fix only (byte-identical computed values for correct usage) -- live verification deferred to post-deploy, same precedent as Priority 2's 72a441659/bd58c88ed
+2026-09-07 10:16:29 | cart | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:16:31 | collapsible-text | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:16:32 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:16:33 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:16:35 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:17:44 | cart | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:17:45 | collapsible-text | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:17:47 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:17:48 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:17:50 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:21:20 | cart | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:21:21 | collapsible-text | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:21:22 | countdown-timer | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:21:23 | feature-grid | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:21:24 | form-field-tiles | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:22:50 | cart | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:22:51 | collapsible-text | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:22:52 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:22:54 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:22:55 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:24:20 | cart | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:24:22 | collapsible-text | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:24:23 | countdown-timer | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:24:25 | feature-grid | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:24:27 | form-field-tiles | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:27:53 | cart | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:27:58 | collapsible-text | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:28:03 | countdown-timer | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:28:09 | feature-grid | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:28:15 | form-field-tiles | MANUAL SKIP | verified via classify-end-shape.js etc
+2026-09-07 10:33:02 | cart | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:33:03 | collapsible-text | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:33:04 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:33:05 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:33:06 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:34:39 | cart | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:34:40 | collapsible-text | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:34:42 | countdown-timer | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:34:43 | feature-grid | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
+2026-09-07 10:34:44 | form-field-tiles | MANUAL SKIP | Canary deploy not attempted -- verified via classify-end-shape.js + php -l + babel parse + check-dead-controls + db-consistency instead
