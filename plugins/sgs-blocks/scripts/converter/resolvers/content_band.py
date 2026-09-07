@@ -355,6 +355,16 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         from converter.services.root_supports import (
             _parse_padding_shorthand as _parse_box_shorthand_value,
         )
+        # Elliptical radius (`border-radius: 16px / 8px`) has no box-object
+        # representation — the shared 1-4-value parser splits on the `/` and
+        # silently yields a mangled 3-value box. Gap it honestly.
+        if prop == "border-radius" and "/" in resolved:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"border-radius value {decl.value!r} is an ELLIPTICAL radius "
+                f"(x / y); the merged corner-object attr {attr!r} stores one "
+                f"length per corner and cannot represent it",
+            )
         sides = _parse_box_shorthand_value(resolved)
         if sides is None:
             return gap_writer(
@@ -362,6 +372,27 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
                 f"box shorthand for merged object attr {attr!r}",
             )
+        # CORNER-KEYED remap — the CONTENT-layer twin of the identical block in
+        # outer_box.resolve(); `border-radius` resolves at the CONTENT layer for
+        # sgs/button, sgs/product-card, sgs/media and friends, so BOTH mirrored
+        # self-merge branches need it. `border-radius`'s four positions are
+        # top-left / top-right / bottom-right / bottom-left, NOT padding's
+        # top/right/bottom/left, and the PHP reader is a DIFFERENT function:
+        # sgs_corner_object_shorthand() (helpers-box.php:207) reads topLeft/
+        # topRight/bottomRight/bottomLeft and returns NULL when all four are
+        # absent — so a SIDE-keyed radius object renders NOTHING AT ALL.
+        #
+        # Measured 2026-09-07: 44 borderRadius emissions on one homepage clone,
+        # ALL side-keyed, ZERO corner-keyed. Fixing only outer_box left the
+        # count at 40 — the trace (`attr_for_layer_property_column`, layer
+        # CONTENT) is what identified THIS as the live site.
+        #
+        # Positional mapping is exact for all 1-4 value forms: CSS expands
+        # `a b`, `a b c`, `a b c d` identically for both families, so only the
+        # KEY NAMES differ (pos1=TL, pos2=TR, pos3=BR, pos4=BL). Inlined at the
+        # call site so the corner tokens share a scope with the box_family gate
+        # above (§3 box-object interface contract / check-box-family-guard.py),
+        # as grid.py:59 records for its own radius-longhand set.
         # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
         # lifted: the band-rule emitter (class-sgs-container-wrapper.php
         # ~2721-2726) already writes `margin-inline:auto` on the `__inner`
@@ -382,6 +413,16 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"lifting it onto the OUTER {attr!r} attr would be the wrong "
                 f"layer and a duplicate.",
             )
+        # Applied AFTER the auto-centring guard above ON PURPOSE: that guard
+        # reads sides['left']/['right'], which no longer exist once these keys
+        # are renamed. Remapping first raises KeyError on every border-radius.
+        if prop == "border-radius":
+            sides = {
+                "topLeft": sides["top"],
+                "topRight": sides["right"],
+                "bottomRight": sides["bottom"],
+                "bottomLeft": sides["left"],
+            }
         return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
 
     if db_lookup.attr_is_colour_role(ctx.block_slug, attr):

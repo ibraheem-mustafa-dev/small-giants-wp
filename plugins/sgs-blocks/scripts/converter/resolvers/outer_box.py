@@ -389,13 +389,47 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         from converter.services.root_supports import (
             _parse_padding_shorthand as _parse_box_shorthand_value,
         )
-        sides = _parse_box_shorthand_value(strip_important(decl.value))
+        _raw_box_value = strip_important(decl.value)
+        # Elliptical radius (`border-radius: 16px / 8px`) has no box-object
+        # representation — the shared 1-4-value parser would split on the `/`
+        # and silently produce a mangled 3-value box. Gap it honestly instead.
+        if prop == "border-radius" and "/" in _raw_box_value:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"border-radius value {decl.value!r} is an ELLIPTICAL radius "
+                f"(x / y); the merged corner-object attr {attr!r} stores one "
+                f"length per corner and cannot represent it",
+            )
+        sides = _parse_box_shorthand_value(_raw_box_value)
         if sides is None:
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{prop} value {decl.value!r} is not a parseable 1-4-value CSS "
                 f"box shorthand for merged object attr {attr!r}",
             )
+        # CORNER-KEYED remap. `border-radius` is a box family whose four
+        # positions are top-left / top-right / bottom-right / bottom-left —
+        # NOT padding/margin's top/right/bottom/left. The PHP reader is a
+        # DIFFERENT function: sgs_corner_object_shorthand() (helpers-box.php:207)
+        # reads topLeft/topRight/bottomRight/bottomLeft and returns NULL when
+        # all four are absent, so a SIDE-keyed radius object renders NOTHING AT
+        # ALL — no CSS, no error, no failing gate.
+        #
+        # Measured 2026-09-07 on a full homepage clone: 44 borderRadius
+        # emissions, ALL side-keyed, ZERO corner-keyed. Live symptoms were a
+        # square "send to ward" strip (draft 10px), gift cards falling back to
+        # an 8px preset (draft 16px), and every pill/tag/badge losing its
+        # radius — read as five unrelated bugs until traced to this one line.
+        #
+        # The positional mapping is exact for all 1-4 value forms: CSS expands
+        # `a b`, `a b c` and `a b c d` identically for both families, so only
+        # the KEY NAMES differ (pos1=TL, pos2=TR, pos3=BR, pos4=BL).
+        #
+        # A closed, fixed CSS-spec vocabulary — NOT a per-block attr lookup —
+        # inlined at this ONE call site so the corner tokens stay in the SAME
+        # enclosing scope as `_box_family` above (§3 box-object interface
+        # contract / check-box-family-guard.py), exactly as grid.py:59 records
+        # for its own radius-longhand set.
         # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not
         # lifted: the band-rule emitter (class-sgs-container-wrapper.php
         # ~2721-2726) already writes `margin-inline:auto` on the `__inner`
@@ -417,6 +451,16 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
                 f"lifting it onto the OUTER {attr!r} attr would be the wrong "
                 f"layer and a duplicate.",
             )
+        # Applied AFTER the auto-centring guard above ON PURPOSE: that guard
+        # reads sides['left']/['right'], which no longer exist once these keys
+        # are renamed. Remapping first raises KeyError on every border-radius.
+        if prop == "border-radius":
+            sides = {
+                "topLeft": sides["top"],
+                "topRight": sides["right"],
+                "bottomRight": sides["bottom"],
+                "bottomLeft": sides["left"],
+            }
         return Write(attr=attr, value=sides, property=prop, tier=decl.tier)
 
     # --- colour-role attrs: SAME value-resolution the typography resolver uses

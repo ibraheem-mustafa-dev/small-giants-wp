@@ -1,3 +1,53 @@
+## D997 [INCIDENT] — every cloned border-radius rendered NOTHING: side keys written into a corner-keyed attr
+
+**2026-09-07.** Found by the post-D996 measurement pass, not by any gate.
+
+**The defect.** The converter's box-family self-merge parses a `border-radius` shorthand with
+the shared 1-4-value box parser and stored the result under `{top,right,bottom,left}`.
+`border-radius` is CORNER-keyed. The PHP reader is a different function —
+`sgs_corner_object_shorthand()` (`helpers-box.php:207`) reads
+`topLeft`/`topRight`/`bottomRight`/`bottomLeft` and **returns `null` when all four are
+absent**, emitting no declaration at all. So every cloned radius rendered nothing: no CSS,
+no error, no failing gate, no visible clue.
+
+**Measured on one homepage clone: 44 `borderRadius` emissions, ALL side-keyed, ZERO
+corner-keyed.** Live symptoms read as five unrelated bugs — a square "send to ward" strip
+(draft 10px), gift cards falling back to an 8px preset (draft 16px), and every pill, tag
+and badge losing its radius. The computed-parity report had independently clustered them as
+"one mechanism, not five bugs"; it was right.
+
+**TWO mirrored sites, and fixing one was not enough.** `content_band.py` and `outer_box.py`
+each carry a copy of the self-merge — `content_band`'s own comment says it "mirrors
+outer_box.resolve's D307 branches EXACTLY (ONE mechanism, R-31-9)". Patching `outer_box`
+alone moved the count 44 -> 40, not to 0. The live site was identified from the run's own
+`convert-trace-*.jsonl` (`attr_for_layer_property_column`, layer **CONTENT**) — inference had
+picked the wrong resolver twice before the trace settled it. R-31-9 says one mechanism; two
+copies means a fix lands in one and silently misses the other.
+
+**The mapping is a pure rename, and that is provable.** CSS expands `a b`, `a b c` and
+`a b c d` identically for both families — only the key NAMES differ (pos1=TL, pos2=TR,
+pos3=BR, pos4=BL). Inlined at both call sites rather than extracted to a helper, because
+`check-box-family-guard.py` requires side/corner tokens to share a scope with the
+`box_family` gate — the same constraint `grid.py:59` documents for its radius-longhand set.
+
+⚠ **Ordering hazard, hit during the fix and worth recording:** the remap must run AFTER the
+`margin: 0 auto` centring guard, which reads `sides['left']`/`sides['right']`. Placed before
+it, every `border-radius` raises `KeyError`. Both sites were written wrong first and
+corrected before running.
+
+**Elliptical radii now gap honestly.** `border-radius: 16px / 8px` has no box-object
+representation; the shared parser splits on the `/` and yields a mangled 3-value box. Both
+sites now return NO_DESTINATION rather than storing nonsense.
+
+**Result:** 0 side-keyed / 40 corner-keyed, and computed-parity moved 73% -> 76% overall CSS
+(375: 72->75, 768: 71->74, 1440: 76->79) — a uniform gain across all three viewports.
+
+⚠ **The D996 destination-shape gate did NOT catch this.** Its CHECK 2 tests tier-vs-flat
+shape but not key VOCABULARY, so a correctly-tiered, correctly-boxed, wrongly-KEYED value
+passes. A real scope gap in a gate shipped hours earlier; noted, not yet closed.
+
+---
+
 ## D996 [INCIDENT] — the L4 per-area path could not emit TIER-of-BOXES; D554-C superseded for padding/margin/borderRadius
 
 **2026-09-07.** The canary homepage (post 2742) rendered desktop spacing at every viewport.
