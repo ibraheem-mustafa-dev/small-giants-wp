@@ -2121,11 +2121,22 @@ EXTENSION SURFACE axis correction above.
 
    | options | longest label | shape | why |
    |---|---|---|---|
-   | 2–5 | ≤ 12 chars | **`ToggleGroupControl`** | every option visible at once; one tap, no menu |
-   | 2–5 | > 12 chars | `SelectControl` | TGC does not wrap, so long labels overflow the row |
+   | 2–4 | ≤ 12 chars | **`ToggleGroupControl`** | every option visible at once; one tap, no menu |
+   | 2–4 | > 12 chars | `SelectControl` | TGC does not wrap, so long labels overflow the row |
+   | **5** | any | **either — neutral** | both shapes correct; the gate records no opinion |
    | 6–10 | any | `SelectControl` | past ~6 TGC cannot fit a single row at all |
    | > 10 | any | `ComboboxControl` | searchable; scanning a 12-item menu is the anti-pattern |
    | multi-value | any | `FormTokenField` | unchanged from §125 |
+
+   ⚠ **AMENDED 2026-09-07 (Bean) — the enforced band is 2–4, and FIVE is neutral.** It previously
+   read 2–5. Five short options is the one genuine judgement call in this table: it is the width at
+   which a segmented row starts to crowd a narrow inspector sidebar, and where a dropdown stops
+   feeling heavy-handed. Both shapes are defensible there, so enforcing either produced churn
+   without improving the client's experience. The rule now declines to have an opinion rather than
+   booking the difference as debt. Note the 6-option ceiling below is UNCHANGED and still derived,
+   not chosen — this amendment narrows the *enforced* band, it does not move the evidence-backed
+   bound. Effect on the gate: 46 violations → 29, and 17 baseline entries dropped as no-longer-
+   violations (not as fixes) — see `check-enum-control-shape-baseline.json` `_meta.bandAmended`.
 
    **Where each bound comes from — none of it is taste:**
    - The **6-option ceiling** is not a preference: `ToggleGroupControl` **does not wrap**, which is

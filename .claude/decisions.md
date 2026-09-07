@@ -1,3 +1,33 @@
+## D986 [ROUTINE] — enum control-shape: enforced band narrowed to 2-4, FIVE options is neutral
+
+**2026-09-07, Bean.** Amends D812's threshold table (Spec 35 §3.1). The enforced band was
+2-5 options; it is now **2-4**, and **five options is a NEUTRAL band** where
+`ToggleGroupControl` and `SelectControl` are both correct and neither is a violation.
+
+**Why.** Five short options is the one genuine judgement call in D812's table — the width at
+which a segmented row starts to crowd a narrow inspector sidebar, and where a dropdown stops
+feeling heavy-handed. Both shapes are defensible there, so enforcing either produced churn
+without improving what the client actually experiences. The rule now declines to have an
+opinion rather than booking the difference as debt.
+
+⚠ This narrows the ENFORCED band only. D812's **6-option ceiling is untouched** and remains
+derived rather than chosen (`ToggleGroupControl` does not wrap, which is why core itself falls
+back past 6). The amendment does not move any evidence-backed bound.
+
+**Effect.** `check-enum-control-shape.py`: 46 violations -> **29**; 11 enums now report the new
+`five-option-neutral-band` skip reason. Baseline pruned 46 -> 29; the 17 removed entries are
+recorded in `_meta.bandAmendedDropped` and are explicitly **not fixes** — they are no longer
+violations under the amended rule. Among them is `quote.attributionFontStyle`, which had been
+the file's single permanent `by-design` exemption (it conflicted with the Bean-locked R-22-13
+TypographyControls SelectControl rule); at 5 options it is now simply neutral, so the exemption
+is no longer needed. Its reasoning is kept in `_meta.design_exempt_note` with a pointer, because
+it would apply again if the band ever narrowed back.
+
+**Verified.** `--check` exit 0; `--self-test` 11 cases pass including a watched-failing negative
+control, so the gate can still fail. Spec 35 §3.1 table + the script's own D812 table docstring
+both updated in the same commit as the code, so no copy is left stating 2-5.
+
+
 ## D985 [ROUTINE] — Two Bean-flagged design-gate items closed: box-shape border hover + cheat-gate Check #9 allowlist
 
 **2026-09-07.** Both items from LEDGER's "Two items genuinely needing Bean's decision" —

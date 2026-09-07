@@ -3,22 +3,36 @@
     "generated": "2026-08-27",
     "generator": "check-enum-control-shape.py --json (this file's own output)",
     "why": "Known-debt baseline for the D812 enum control-shape gate. These are 2-5-option enums whose RENDERED LABEL (not slug) is <=12 chars but which currently render as SelectControl instead of ToggleGroupControl. Ratchet: --check fails on any NEW violation, never on these. NOT a fix-immediately list -- see decisions.md D812 + this branch's session notes for why the gate's own count (45) differs from D812's slug-derived estimate (85).",
-    "design_exempt_note": "Entries carrying a 'reason' field are NOT debt -- they are correctly-resolved D812 violations that conflict with a separate, more specific Bean-locked rule and are baselined permanently, not pending conversion. quote.attributionFontStyle: its real control lives in the shared TypographyControls component (prefix='attribution', showStyle), whose font-style row is explicitly SelectControl per CLAUDE.md's Bean-locked R-22-13 ('weight + style = SelectControl dropdowns') -- converting it to ToggleGroupControl would violate that rule, which governs every TypographyControls adopter, not just this one block.",
+    "design_exempt_note": "Entries carrying a 'reason' field are NOT debt -- they are correctly-resolved D812 violations that conflict with a separate, more specific Bean-locked rule and are baselined permanently, not pending conversion. quote.attributionFontStyle: its real control lives in the shared TypographyControls component (prefix='attribution', showStyle), whose font-style row is explicitly SelectControl per CLAUDE.md's Bean-locked R-22-13 ('weight + style = SelectControl dropdowns') -- converting it to ToggleGroupControl would violate that rule, which governs every TypographyControls adopter, not just this one block.  ⚠ 2026-09-07: quote.attributionFontStyle is NO LONGER in this file -- it is a 5-option enum, so the amended band (see bandAmended) makes it a neutral case rather than a by-design exemption. This note is kept because the R-22-13 reasoning still explains WHY that control is a SelectControl, and would apply again if the band ever narrowed back.",
     "dispositionVocabulary": [
       "by-design",
       "accepted-debt",
       "detector-limitation",
       "blocked"
     ],
-    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
+    "dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md.",
+    "bandAmended": "2026-09-07 (Bean): the enforced band is 2-4 options, not 2-5. FIVE options is now a NEUTRAL band -- ToggleGroupControl and SelectControl are both correct there and neither is recorded as a violation. Five short options is the real judgement call in the D812 table: the width at which a segmented row starts to crowd a narrow inspector sidebar and a dropdown stops feeling heavy-handed. The gate now declines to have an opinion rather than booking churn as debt. Effect: 46 violations -> 29; the 17 entries dropped below are not FIXED, they are no longer violations by the amended rule.",
+    "bandAmendedDropped": [
+      "quote::attributionFontStyle",
+      "brand-strip::nameTextAlign",
+      "card-grid::source",
+      "container::textAlign",
+      "heading::textDecoration",
+      "icon::textAlign",
+      "icon-list::defaultIconSource",
+      "notice-banner::dismissBehaviour",
+      "notice-banner::displayMode",
+      "pricing-table::toggleStyle",
+      "product-card::ctaBorderStyle",
+      "product-faq::headingLevel",
+      "quote::attributionTextDecoration",
+      "quote::attributionTextTransform",
+      "text::textAlign",
+      "text::textDecoration",
+      "text::textTransform"
+    ]
   },
   "violations": [
-    {
-      "block": "quote",
-      "attr": "attributionFontStyle",
-      "reason": "TypographyControls font-style row is Bean-locked SelectControl (R-22-13) -- see _meta.design_exempt_note",
-      "disposition": "by-design"
-    },
     {
       "block": "audio",
       "attr": "audioPreload",
@@ -27,11 +41,6 @@
     {
       "block": "brand-strip",
       "attr": "logoFit",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "brand-strip",
-      "attr": "nameTextAlign",
       "disposition": "accepted-debt"
     },
     {
@@ -50,16 +59,6 @@
       "disposition": "accepted-debt"
     },
     {
-      "block": "card-grid",
-      "attr": "source",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "container",
-      "attr": "textAlign",
-      "disposition": "accepted-debt"
-    },
-    {
       "block": "google-reviews",
       "attr": "cardStyle",
       "disposition": "accepted-debt"
@@ -70,23 +69,8 @@
       "disposition": "accepted-debt"
     },
     {
-      "block": "heading",
-      "attr": "textDecoration",
-      "disposition": "accepted-debt"
-    },
-    {
       "block": "hero",
       "attr": "variant",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "icon",
-      "attr": "textAlign",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "icon-list",
-      "attr": "defaultIconSource",
       "disposition": "accepted-debt"
     },
     {
@@ -126,27 +110,7 @@
     },
     {
       "block": "notice-banner",
-      "attr": "dismissBehaviour",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "notice-banner",
-      "attr": "displayMode",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "notice-banner",
       "attr": "stickyPosition",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "pricing-table",
-      "attr": "toggleStyle",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "product-card",
-      "attr": "ctaBorderStyle",
       "disposition": "accepted-debt"
     },
     {
@@ -161,27 +125,12 @@
     },
     {
       "block": "product-faq",
-      "attr": "headingLevel",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "product-faq",
       "attr": "iconPosition",
       "disposition": "accepted-debt"
     },
     {
       "block": "quote",
       "attr": "attributionTag",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "quote",
-      "attr": "attributionTextDecoration",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "quote",
-      "attr": "attributionTextTransform",
       "disposition": "accepted-debt"
     },
     {
@@ -217,21 +166,6 @@
     {
       "block": "tabs",
       "attr": "tabStyle",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "text",
-      "attr": "textAlign",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "text",
-      "attr": "textDecoration",
-      "disposition": "accepted-debt"
-    },
-    {
-      "block": "text",
-      "attr": "textTransform",
       "disposition": "accepted-debt"
     },
     {

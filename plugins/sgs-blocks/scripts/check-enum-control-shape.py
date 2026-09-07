@@ -21,15 +21,24 @@ what a gate is forbidden to use.
 
 THE D812 THRESHOLD TABLE (Spec 35 SS3.1, ``decisions.md`` D812)
 -----------------------------------------------------------
-    2-5 options, longest RENDERED LABEL <= 12 chars  -> ToggleGroupControl
-    2-5 options, longest RENDERED LABEL >  12 chars  -> SelectControl
+    2-4 options, longest RENDERED LABEL <= 12 chars  -> ToggleGroupControl
+    2-4 options, longest RENDERED LABEL >  12 chars  -> SelectControl
+    5  options                                       -> EITHER (neutral band)
     6-10 options                                     -> SelectControl
     >10 options                                      -> ComboboxControl
 
-Only the 2-5 band needs a label at all -- the 6-10 and >10 bands are decided
-by option COUNT alone. That is why this gate only attempts label extraction
-for 2-5-option enums; asking harder for the other bands would be extra
-machinery with nothing to spend it on.
+⚠ AMENDED 2026-09-07 (Bean). The enforced band was 2-5; it is now 2-4, and
+FIVE options is a NEUTRAL band where both shapes are correct and neither is a
+violation. Five short options is the genuine judgement call in this table: it
+is the width at which a segmented row starts to crowd a narrow inspector
+sidebar, and where a dropdown stops feeling heavy-handed. Forcing either shape
+there produced churn without improving the client's experience, so the rule now
+declines to have an opinion instead of recording 5-option enums as debt.
+
+Only the 2-4 band needs a label at all -- 5, 6-10 and >10 are decided by option
+COUNT alone. That is why this gate only attempts label extraction for
+2-4-option enums; asking harder for the other bands would be extra machinery
+with nothing to spend it on.
 
 RESOLUTION IN TWO STAGES, BOTH ABLE TO REFUSE
 ----------------------------------------------
@@ -313,15 +322,21 @@ def extract_select_labels(src: str, tag_start: int) -> list[str] | None:
 
 
 def recommend(count: int, longest: int | None) -> str:
-    """The D812 table. longest is only consulted for the 2-5 band; it must be
-    non-None there or the caller has a bug (2-5 rows always attempt label
-    extraction before calling this)."""
+    """The D812 table (band amended 2026-09-07). longest is only consulted for
+    the 2-4 band; it must be non-None there or the caller has a bug (2-4 rows
+    always attempt label extraction before calling this).
+
+    Returns "either" for the 5-option neutral band -- callers must treat that as
+    "no recommendation, never a violation", not as a control name.
+    """
     if count > 10:
         return "ComboboxControl"
     if 6 <= count <= 10:
         return "SelectControl"
-    if 2 <= count <= 5:
-        assert longest is not None, "2-5 band must resolve a label before recommending"
+    if count == 5:
+        return "either"  # neutral band -- both shapes correct (Bean, 2026-09-07)
+    if 2 <= count <= 4:
+        assert longest is not None, "2-4 band must resolve a label before recommending"
         return "ToggleGroupControl" if longest <= 12 else "SelectControl"
     return "unclassified"  # count 0/1 -- outside the table, never reached by --check
 
@@ -356,18 +371,28 @@ def evaluate(rows: list[dict], sources: dict[str, str]) -> list[dict]:
         control = verdict  # a real primitive name
         entry["control"] = control
 
-        if 2 <= count <= 5:
+        # FIVE OPTIONS = NEUTRAL BAND (Bean, 2026-09-07). Both ToggleGroupControl
+        # and SelectControl are correct at five options, so this gate records no
+        # opinion -- skipped BEFORE label extraction, because the label only ever
+        # mattered for choosing between the two shapes it no longer chooses between.
+        if count == 5:
+            entry["status"] = "skip"
+            entry["reason"] = "five-option-neutral-band"
+            out.append(entry)
+            continue
+
+        if 2 <= count <= 4:
             labels: list[str] | None = None
             if control == "ToggleGroupControl":
                 labels = extract_toggle_labels(src, tag_start)
             elif control == "SelectControl":
                 labels = extract_select_labels(src, tag_start)
             else:
-                # RadioControl / FormTokenField / ComboboxControl in the 2-5
+                # RadioControl / FormTokenField / ComboboxControl in the 2-4
                 # band: not covered by the table's label-dependent branch;
                 # they only get judged if the corpus ever produces one.
                 entry["status"] = "skip"
-                entry["reason"] = "control-type-not-covered-by-2-5-band"
+                entry["reason"] = "control-type-not-covered-by-2-4-band"
                 out.append(entry)
                 continue
             if not labels:
