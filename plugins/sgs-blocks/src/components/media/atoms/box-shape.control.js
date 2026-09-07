@@ -48,6 +48,8 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const borderStyleKey = mediaStoredAttrName( blockSlug, prefix, 'BorderStyle' );
 	const borderColourKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColour' );
 	const borderColourGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourGradient' );
+	const borderColourHoverKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHover' );
+	const borderColourHoverGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHoverGradient' );
 
 	const disc = disclosure( { attributes, prefix, blockSlug } );
 	const minHeightObj = attributes[ minHeightKey ] && 'object' === typeof attributes[ minHeightKey ]
@@ -100,6 +102,10 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onBorderColourChange={ ( v ) => setAttributes( { [ borderColourKey ]: v ?? '' } ) }
 			borderColourGradientValue={ attributes[ borderColourGradientKey ] }
 			onBorderColourGradientChange={ ( v ) => setAttributes( { [ borderColourGradientKey ]: v ?? '' } ) }
+			borderColourHoverValue={ attributes[ borderColourHoverKey ] }
+			onBorderColourHoverChange={ ( v ) => setAttributes( { [ borderColourHoverKey ]: v ?? '' } ) }
+			borderColourHoverGradientValue={ attributes[ borderColourHoverGradientKey ] }
+			onBorderColourHoverGradientChange={ ( v ) => setAttributes( { [ borderColourHoverGradientKey ]: v ?? '' } ) }
 			borderRadiusValues={ {
 				base: attributes[ borderRadiusKey ] ?? {},
 				tablet: attributes[ borderRadiusTabletKey ] ?? {},

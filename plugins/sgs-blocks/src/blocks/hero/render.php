@@ -275,6 +275,11 @@ $image_border_width_obj = is_array( $attributes['splitMediaBorderWidth'] ?? null
 $image_border_colour    = $attributes['splitMediaBorderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $image_border_colour when set.
 $image_border_colour_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourGradient'] ?? '' );
+// Hover pair (2026-09-07), colour-only — mirrors sgs/button's own accepted
+// limitation (D636): the masked-::before gradient hover only exists when
+// the RESTING state is already a gradient (see the gradient builder below).
+$image_border_colour_hover          = $attributes['splitMediaBorderColourHover'] ?? '';
+$image_border_colour_hover_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourHoverGradient'] ?? '' );
 
 // splitMediaPadding — inner padding on the <img> element itself. Box-object
 // family: base + tablet + mobile, each { top, right, bottom, left }.
@@ -764,15 +769,27 @@ if ( $is_split ) {
 		if ( $img_border_decls ) {
 			$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{' . implode( ';', $img_border_decls ) . '}';
 		}
+		// Hover colour (2026-09-07), flat-only — the masked-gradient hover
+		// only exists when the resting state is already a gradient (handled
+		// below), matching sgs/button's own accepted limitation (D636): a
+		// hover gradient with a flat resting colour is unsupported here.
+		if ( $image_border_colour_hover && '' === $image_border_colour_gradient ) {
+			$responsive_css .= sgs_hover_state_rules(
+				'.' . $uid . ' .sgs-hero__split-media',
+				'border-color:' . sgs_colour_value( $image_border_colour_hover ) . ';'
+			);
+		}
 	}
 
 	// D636 border builder — masked ::before, wins over the flat border-color
-	// decl above (emitted after it so the cascade favours the mask).
+	// decl above (emitted after it so the cascade favours the mask). Hover
+	// pair (2026-09-07): hover gradient wins over hover flat colour, same
+	// ternary shape as sgs/button/render.php's own border-gradient call.
 	if ( '' !== $image_border_colour_gradient ) {
 		$responsive_css .= sgs_border_gradient_css(
 			'.' . $uid . ' .sgs-hero__split-media',
 			$image_border_colour_gradient,
-			null,
+			'' !== $image_border_colour_hover_gradient ? $image_border_colour_hover_gradient : sgs_colour_value( $image_border_colour_hover ),
 			$img_border_has_width ? $img_border_width_val : '1px'
 		);
 	}

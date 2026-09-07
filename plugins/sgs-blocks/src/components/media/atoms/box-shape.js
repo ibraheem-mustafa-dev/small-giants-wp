@@ -36,6 +36,12 @@
  * `BorderWidth` is an UNTIERED 4-side box object — per-device border width
  * is CANCELLED, not deferred (Bean, 2026-08-29).
  *
+ * `BorderColourHover`/`BorderColourHoverGradient` (2026-09-07) are the
+ * hover-state colour pair, colour-only — no hover variant for width/style/
+ * radius, matching `sgs/button`/`sgs/container`'s own `states.hover.attrMap`
+ * convention. Emission mirrors `overlay.js`'s `hoverPaint` shape exactly
+ * (gradient wins, one custom property emitted, never both).
+ *
  * ⚠ COLLISION RISK, NAMED NOT SOLVED: no block adopts this atom's `BorderRadius`
  * base AND a native/`SgsBorderControl` radius on the SAME element today
  * (`sgs/media` only declares `atoms:['object-fit','focal-point']` — verified
@@ -642,6 +648,24 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		const borderColour = resolveBorderColour( attributes[ borderColourKey ] );
 		if ( borderColour ) {
 			decls.push( `--sgs-media-border-color:${ borderColour }` );
+		}
+	}
+
+	// Hover colour pair — same gradient-wins-over-flat rule, same shape as
+	// `overlay.js`'s `hoverPaint` (2026-09-07). Only ONE of the two hover
+	// custom properties is ever emitted (never both), matching the base
+	// pair above; `box-shape.css`'s `:hover`/`:focus-visible` rule falls
+	// back through `var(--x-hover, var(--x, default))` so an unset hover
+	// leaves the resting value untouched.
+	const borderColourHoverKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHover' );
+	const borderColourHoverGradientKey = mediaStoredAttrName( blockSlug, prefix, 'BorderColourHoverGradient' );
+	const borderHoverGradient = validateBorderGradient( attributes[ borderColourHoverGradientKey ] );
+	if ( borderHoverGradient ) {
+		decls.push( `--sgs-media-border-image-hover:${ borderHoverGradient }` );
+	} else {
+		const borderHoverColour = resolveBorderColour( attributes[ borderColourHoverKey ] );
+		if ( borderHoverColour ) {
+			decls.push( `--sgs-media-border-color-hover:${ borderHoverColour }` );
 		}
 	}
 

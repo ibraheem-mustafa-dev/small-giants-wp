@@ -456,6 +456,23 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 			$decls[] = '--sgs-media-border-color:' . $border_paint['value'];
 		}
 
+		// Hover colour pair (2026-09-07) — same gradient-wins-over-flat rule,
+		// same shape as `sgs_media_atom_overlay_css()`'s hover pair. Only ONE
+		// of the two hover custom properties is ever emitted, mirroring the
+		// JS twin's `css()` byte-for-byte (enforced by
+		// test-media-atom-parity.mjs).
+		$border_colour_hover_key          = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColourHover' );
+		$border_colour_hover_gradient_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'BorderColourHoverGradient' );
+		$border_hover_paint               = sgs_background_paint_value(
+			$attributes[ $border_colour_hover_key ] ?? null,
+			$attributes[ $border_colour_hover_gradient_key ] ?? null
+		);
+		if ( 'background-image' === $border_hover_paint['property'] ) {
+			$decls[] = '--sgs-media-border-image-hover:' . $border_hover_paint['value'];
+		} elseif ( 'background-color' === $border_hover_paint['property'] ) {
+			$decls[] = '--sgs-media-border-color-hover:' . $border_hover_paint['value'];
+		}
+
 		return $decls;
 	}
 }
