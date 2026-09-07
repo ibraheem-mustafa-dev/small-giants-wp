@@ -361,7 +361,8 @@
 						"type": "string"
 					},
 					"selected": {
-						"type": "boolean"
+						"type": "boolean",
+						"role": "state-modifier-boolean"
 					}
 				}
 			}
