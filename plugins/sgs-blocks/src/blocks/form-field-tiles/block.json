@@ -51,7 +51,15 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient"
 					},
-					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "block.json declares no typography/spacing support on this block — the wrapper's font/padding/margin members are honest gaps. color+border are skip-serialised and emitted into a scoped style keyed to the field's uid class (render.php:59-114), mirroring sgs/container. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance): textColour and backgroundColour share this SAME element, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() whenever the resolved hover text value is a gradient (CLAUDE.md's text+background-on-one-selector precondition)."
 				},
 				"inner": {
 					"label": "Inner (grid / flex layout)",
@@ -285,6 +293,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"borderWidth": {
 			"type": "object",

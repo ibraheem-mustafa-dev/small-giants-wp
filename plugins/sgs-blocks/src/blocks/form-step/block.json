@@ -57,7 +57,15 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient"
 					},
-					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure)."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "CONTENT-kind composite (WS-4 composite-mirror, render.php:104-117) — width/spacing layer only via SGS_Container_Wrapper('content'). block.json declares no `margin` spacing support (only padding) and no typography support, so those members are honest gaps. Layer CONTENT names the structural role (naming discipline, FR-35-1) — this block has no GRID layer. textColourGradient is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). textColourHover/textColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — this element ALSO carries css:background-color (backgroundColour, painted via sgs_fill_states_css on the same $sgs_fs_sel selector, render.php), so a hover text-gradient's background-clip:text would clip/overwrite the background; render.php only swaps the background onto its own ::after layer for the specific instance where the resolved hover text value is actually a gradient (conditional-swap pattern, mirrors the brand-strip itemTextColourHover fix c785a3b7a)."
 				}
 			},
 			"boxFamilies": {
@@ -107,6 +115,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"borderWidth": {
 			"type": "object",

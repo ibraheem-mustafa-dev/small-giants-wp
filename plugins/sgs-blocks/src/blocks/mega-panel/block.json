@@ -91,11 +91,13 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "iconBackgroundHover",
-								"css:background-image": "iconBackgroundGradientHover"
+								"css:background-image": "iconBackgroundGradientHover",
+								"css:color": "iconColourHover",
+								"css:color-gradient": "iconColourHoverGradient"
 							}
 						}
 					},
-					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for). iconColourGradient (mega-panel.iconColour gradient-conformance close-out) is the sibling gradient attribute — added to this attrMap so it classifies to the SAME `icon` element instead of drifting ORPHAN:UNCLASSIFIED, matching `panel`/`group`'s own css:border-color-gradient siblings above. iconBackgroundHover/iconBackgroundGradientHover (2026-09-06, hover-controls task) are a NEW hover pair, scoped in render.php/style.css to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the one style where the icon chip's ancestor already has a real hover trigger (the group tile's own lift/shadow hover, see the `group` element note below). Default empty string on both: no colour override at hover until an operator sets one, matching the resting groupBorderColour pair's own default-empty convention. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state — painted raw, never re-derived through color-mix() (same design choice as accentBackgroundImageGradient on the `aside` element below)."
+					"_note": "CROSS-BLOCK REUSE (2026-08-28, NULL css_element fix proposal §5): the actual rendered selector is `.sgs-icon-list__icon` — a CHILD block's (sgs/icon-list) own BEM class, reused here as markup inside this panel's parent-paints-child model (CF-10, see the `panel` element's own note). This element exists so iconBackground/iconColour (the icon-chip background-color/color painted uniformly across all 3 group styles — columns/cards/minimal, render.php §4) classify to a real owning element instead of drifting to NULL css_element, matching the same cross-block-reuse documentation pattern already used elsewhere in this codebase (e.g. how a composite documents a child-owned selector it paints but does not declare controls for). iconColourGradient (mega-panel.iconColour gradient-conformance close-out) is the sibling gradient attribute — added to this attrMap so it classifies to the SAME `icon` element instead of drifting ORPHAN:UNCLASSIFIED, matching `panel`/`group`'s own css:border-color-gradient siblings above. iconBackgroundHover/iconBackgroundGradientHover (2026-09-06, hover-controls task) are a NEW hover pair, scoped in render.php/style.css to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the one style where the icon chip's ancestor already has a real hover trigger (the group tile's own lift/shadow hover, see the `group` element note below). Default empty string on both: no colour override at hover until an operator sets one, matching the resting groupBorderColour pair's own default-empty convention. When set, REPLACES the derived --sgs-mm-soft 10%-tint entirely for the hover state — painted raw, never re-derived through color-mix() (same design choice as accentBackgroundImageGradient on the `aside` element below). iconColourHover/iconColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch) — wired to the SAME `cards`-only ancestor-hover trigger as iconBackgroundHover immediately above, for the same reason (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). This element ALSO paints a real background on the SAME selector at BOTH states (the --sgs-mm-soft tint at rest, --sgs-mm-icon-hover-bg on hover) — render.php only swaps the HOVER background onto its own ::after layer for the specific instance where the resolved hover text value is actually a gradient (conditional-swap pattern, mirrors the brand-strip itemTextColourHover fix c785a3b7a); the flat-colour case (the common one) is byte-identical to the pre-existing iconBackgroundHover rule."
 				},
 				"group": {
 					"label": "Group tile",
@@ -194,6 +196,16 @@
 			"type": "string",
 			"default": "",
 			"_note": "Sibling gradient attribute (D636 text-colour/gradient pattern) for `iconColour` — closes the mega-panel.iconColour non-conformant colour row. A non-empty valid CSS gradient string wins over the flat `iconColour` on the icon-chip `color`, rendered via `sgs_text_colour_decl()`'s background-clip:text trio + its mandatory `sgs_text_colour_gradient_fallback_rule()` companion. `iconColour` itself is left completely untouched when this is set, matching every other flat/gradient sibling pair in this block (groupBorderColour/groupBorderColourGradient etc.)."
+		},
+		"iconColourHover": {
+			"type": "string",
+			"default": "",
+			"_note": "Hover-state sibling of iconColour (2026-09-07, colour-conformance bg-layer batch). Scoped in render.php to ONLY the `cards` style's `.sgs-mega-group:hover .sgs-icon-list__icon` — the same ancestor-hover trigger iconBackgroundHover already uses (columns/minimal have no genuine :hover moment on `.sgs-mega-group`). Default empty string: no override until an operator sets one."
+		},
+		"iconColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of iconColourHover. Non-empty wins over iconColourHover on the same `cards`-style hover/focus-within state."
 		},
 		"accentBackgroundImage": {
 			"type": "string",

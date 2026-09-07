@@ -423,6 +423,21 @@ if ( '' !== $caption_colour_effective ) {
 }
 $responsive_css .= sgs_text_colour_gradient_fallback_rule( $caption_sel, $caption_colour_effective );
 
+// captionColour hover state (2026-09-07, colour-conformance batch). No
+// background paint exists on .sgs-media__caption at any state (style.css
+// sets only margin/font-size/color) -- plain text-gradient row, no
+// precondition swap needed.
+$caption_colour_hover           = isset( $attributes['captionColourHover'] ) ? (string) $attributes['captionColourHover'] : '';
+$caption_colour_hover_gradient  = isset( $attributes['captionColourHoverGradient'] ) ? (string) $attributes['captionColourHoverGradient'] : '';
+$caption_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $caption_colour_hover, $caption_colour_hover_gradient );
+if ( '' !== $caption_colour_hover_effective ) {
+	$caption_colour_hover_decl = sgs_text_colour_decl( $caption_colour_hover_effective );
+	if ( '' !== $caption_colour_hover_decl ) {
+		$responsive_css .= sgs_hover_state_rules( $caption_sel, $caption_colour_hover_decl );
+	}
+	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $caption_sel . ':hover', $caption_colour_hover_effective );
+}
+
 // ---------------------------------------------------------------------------
 // 9. Build caption element (no inline style attr — see step 8 above).
 // The `caption` atom is registered for image/video only (`registry.js`

@@ -431,7 +431,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		label: __( 'Row text colour', 'sgs-blocks' ),
 		attrs: {
 			base: 'textColour',
+			hover: 'textColourHover',
 			gradient: 'textColourGradient',
+			hoverGradient: 'textColourHoverGradient',
 		},
 		attributes,
 		setAttributes,

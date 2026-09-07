@@ -65,6 +65,8 @@
 					"states": {
 						"hover": {
 							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient"
 							}
@@ -168,6 +170,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"backgroundColour": {
 			"type": "string",

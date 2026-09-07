@@ -7,7 +7,7 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import { SgsColourPanel, fillRow,
+import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -111,7 +111,7 @@ function buildWrapperStyle( attributes ) {
 }
 
 export default function Edit( { attributes, setAttributes, context } ) {
-	const { question, isOpen, textColour, textColourGradient, backgroundColour, backgroundColourGradient } = attributes;
+	const { question, isOpen, backgroundColour, backgroundColourGradient } = attributes;
 	// Editor-canvas desync fix (CHECK A, 2026-08-13): this used to hardcode
 	// useState( true ) with a comment justifying it as "always editable" —
 	// which meant the `isOpen` ("Open by default") toggle had ZERO visible
@@ -191,24 +191,18 @@ export default function Edit( { attributes, setAttributes, context } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>

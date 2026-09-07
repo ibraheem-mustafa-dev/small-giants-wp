@@ -23,7 +23,7 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsGradientPicker, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -275,22 +275,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
+					textRow( {
 						key: 'contentColour',
 						label: __( 'Content colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: contentColour,
-								onChange: ( val ) => setAttributes( { contentColour: val ?? '' } ),
-								linked: true,
-								gradientValue: contentColourGradient,
-								onGradientChange: ( val ) => setAttributes( { contentColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'contentColour',
+							hover: 'contentColourHover',
+							gradient: 'contentColourGradient',
+							hoverGradient: 'contentColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>

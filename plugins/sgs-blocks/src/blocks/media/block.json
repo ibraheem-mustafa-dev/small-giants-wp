@@ -96,7 +96,15 @@
 						"css:color": "captionColour",
 						"css:background-image": "captionColourGradient"
 					},
-					"_note": "captionColourGradient is the text-colour gradient sibling to captionColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). css:color was previously undeclared here even though render.php (step 8, `.sgs-media__caption`) already emits it — this attrMap entry documents the existing flat-colour path as well as adding the new gradient one."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "captionColourHover",
+								"css:color-gradient": "captionColourHoverGradient"
+							}
+						}
+					},
+					"_note": "captionColourGradient is the text-colour gradient sibling to captionColour, same background-clip:text mechanism as sgs/counter's labelColour/labelColourGradient (D636 gap-closure). css:color was previously undeclared here even though render.php (step 8, `.sgs-media__caption`) already emits it — this attrMap entry documents the existing flat-colour path as well as adding the new gradient one. captionColourHover/captionColourHoverGradient added 2026-09-07 (colour-conformance bg-layer batch): this element has NO real background paint of its own at any state (style.css:75-79 sets only margin/font-size/color, no background-color/-image) — the classifier's bg-layer flag on this row is a FALSE POSITIVE (it reads this element's own `css:background-image` member, which is captionColourGradient's own text-gradient sibling, not a genuine separate background paint), so this is a plain text-gradient hover row with no precondition swap."
 				}
 			}
 		},
@@ -525,6 +533,15 @@
 		"captionColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"captionColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"captionColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of captionColourHover. Non-empty wins over captionColourHover on :hover/:focus-visible."
 		},
 		"captionFontSize": {
 			"type": "integer"

@@ -234,6 +234,17 @@ if ( '' !== $wrapper_text_decl ) {
 	$scoped_css[] = "{$root_sel}{{$wrapper_text_decl};}";
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $wrapper_text_colour_value );
 }
+// Hover — safe to paint directly (no precondition swap needed): backgroundColour
+// is already isolated onto its own ::after layer above via
+// sgs_block_background_layer_css(), so background-clip:text on hover can
+// never clip a background painted on $root_sel itself (colour-conformance,
+// 2026-09-07).
+$wrapper_text_hover_value = sgs_resolve_text_colour_or_gradient( $attributes['textColourHover'] ?? '', $attributes['textColourHoverGradient'] ?? '' );
+$wrapper_text_hover_decl  = sgs_text_colour_decl( $wrapper_text_hover_value );
+if ( '' !== $wrapper_text_hover_decl ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, $wrapper_text_hover_decl );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $wrapper_text_hover_value );
+}
 if ( '' !== $wrapper_bg_paint_decl ) {
 	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }

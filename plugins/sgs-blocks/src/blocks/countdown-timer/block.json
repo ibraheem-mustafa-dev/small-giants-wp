@@ -68,7 +68,15 @@
 						"css:line-height": "lineHeight",
 						"css:text-align": "textAlign"
 					},
-					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). No selectors.typography is declared (only selectors.root), so the root-level typography serialises as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size. textAlign stays a plain (non-supports) attribute with its own SelectControl since TypographyControls does not offer a text-align field."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:color-gradient": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Typography migrated off WP-native supports.typography onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972 full-replacement track), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight). No selectors.typography is declared (only selectors.root), so the root-level typography serialises as an inherited default on the wrapper rather than a per-digit or per-label control — mirrors quote's root-typography-is-inherited-default precedent, so neither child element claims a text cluster for size. textAlign stays a plain (non-supports) attribute with its own SelectControl since TypographyControls does not offer a text-align field. textColourHover/textColourHoverGradient (2026-09-07, colour-conformance) are safe to paint directly on the wrapper's own selector because backgroundColour is ALREADY moved onto its own ::after layer via sgs_block_background_layer_css() (render.php) — background-clip:text on hover can never clip a background that isn't painted on this element."
 				},
 				"number": {
 					"label": "Number",
@@ -156,6 +164,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"backgroundColour": {
 			"type": "string",

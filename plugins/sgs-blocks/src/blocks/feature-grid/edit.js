@@ -11,7 +11,7 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel, fillRow, SgsLengthControl,
+import { ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -179,24 +179,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						attributes,
 						setAttributes,
 					} ),
-					{
+					textRow( {
 						key: 'text',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) =>
-									setAttributes( { textColour: val ?? '' } ),
-								linked: true,
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { textColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>

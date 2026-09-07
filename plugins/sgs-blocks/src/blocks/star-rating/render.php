@@ -34,8 +34,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -136,10 +136,11 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 // never populated — colour-conformance track fix, 2026-09-06). Text paints
 // via background-clip:text when a gradient is set, so the background is
 // moved onto its own `::after` layer rather than sharing $root_sel.
-$wrapper_text_colour_value = sgs_resolve_text_colour_or_gradient( $attributes['textColour'] ?? '', $attributes['textColourGradient'] ?? '' );
-$wrapper_bg_paint_decl     = sgs_background_paint_decl( $attributes['backgroundColour'] ?? '', $attributes['backgroundColourGradient'] ?? '' );
-$preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
-$preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
+$wrapper_text_colour_value       = sgs_resolve_text_colour_or_gradient( $attributes['textColour'] ?? '', $attributes['textColourGradient'] ?? '' );
+$wrapper_text_colour_hover_value = sgs_resolve_text_colour_or_gradient( $attributes['textColourHover'] ?? '', $attributes['textColourHoverGradient'] ?? '' );
+$wrapper_bg_paint_decl           = sgs_background_paint_decl( $attributes['backgroundColour'] ?? '', $attributes['backgroundColourGradient'] ?? '' );
+$preset_text_slug                = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
+$preset_bg_slug                  = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly. Root selector uses a CLASS (not the wrapper's `id`,
@@ -260,6 +261,17 @@ if ( '' !== $wrapper_text_decl ) {
 	$scoped_css[] = "{$root_sel}{{$wrapper_text_decl};}";
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $wrapper_text_colour_value );
 }
+
+// Hover — safe to paint directly on $root_sel: the background is already
+// permanently isolated on its own ::after layer above (never shares this
+// selector), so a hover text-gradient's background-clip:text here cannot
+// clip or overwrite the wrapper's background paint.
+$wrapper_text_hover_decl = sgs_text_colour_decl( $wrapper_text_colour_hover_value );
+if ( '' !== $wrapper_text_hover_decl ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, $wrapper_text_hover_decl . ';' );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $wrapper_text_colour_hover_value );
+}
+
 if ( '' !== $wrapper_bg_paint_decl ) {
 	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
 }

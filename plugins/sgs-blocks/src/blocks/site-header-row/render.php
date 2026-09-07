@@ -82,6 +82,29 @@ if ( '' !== $shr_text_colour_effective ) {
 	// browser-support rationale. No-op for a flat colour.
 	$css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $shr_text_colour_effective );
 }
+
+// Precondition check (colour-conformance pass, 2026-09-07): the `row`
+// manifest element shares BOTH css:color (textColour) and
+// css:background-color (backgroundColour) on this SAME $root_sel, so a
+// hover text-GRADIENT here (background-clip:text) would clip/overwrite the
+// wrapper's background paint if both stayed on the same selector. Only swap
+// the background onto its own ::after layer when the hover text value
+// actually resolves to a gradient — the flat-colour hover case is
+// unaffected and keeps the existing sgs_fill_states_css() emission untouched.
+// Mirrors sgs/site-footer-row exactly.
+$shr_text_colour_hover           = (string) ( $attributes['textColourHover'] ?? '' );
+$shr_text_colour_hover_gradient  = (string) ( $attributes['textColourHoverGradient'] ?? '' );
+$shr_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $shr_text_colour_hover, $shr_text_colour_hover_gradient );
+$shr_hover_is_gradient           = str_contains( $shr_text_colour_hover_effective, 'gradient(' );
+
+if ( '' !== $shr_text_colour_hover_effective ) {
+	$shr_text_colour_hover_decl = sgs_text_colour_decl( $shr_text_colour_hover_effective );
+	if ( '' !== $shr_text_colour_hover_decl ) {
+		$css .= sgs_hover_state_rules( $root_sel, $shr_text_colour_hover_decl . ';' );
+		$css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $shr_text_colour_hover_effective );
+	}
+}
+
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //
@@ -92,22 +115,39 @@ if ( '' !== $shr_text_colour_effective ) {
 // read was $attributes['style']['color']['gradient'] (core's own storage). The
 // flag flip is therefore PAIRED with a block-private backgroundColourGradient
 // exposed through fillRow(), so capability is moved rather than lost.
-$shr_fill_css = sgs_fill_states_css(
-	$root_sel,
-	$attributes,
-	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
-	)
-);
-if ( '' !== $shr_fill_css ) {
-	$css .= $shr_fill_css;
+if ( $shr_hover_is_gradient ) {
+	$shr_fill_decls = sgs_fill_decls(
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	$css           .= sgs_block_background_layer_css(
+		$root_sel,
+		implode( ';', $shr_fill_decls['normal'] ),
+		implode( ';', $shr_fill_decls['hover'] )
+	);
+} else {
+	$shr_fill_css = sgs_fill_states_css(
+		$root_sel,
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	if ( '' !== $shr_fill_css ) {
+		$css .= $shr_fill_css;
+	}
 }
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// are block-private attrs now, emitted below)
 
 // The native style-engine colour path is GONE, deliberately. Text colour now
 // renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
@@ -136,7 +176,7 @@ if ( '' !== $shr_preset_bg_slug ) {
 // This is a NEW parallel path: view.js scans `.sgs-row-behaviour` rows and
 // toggles per-row state classes based on the tiers listed in these data-attrs.
 // A behaviour off in every tier emits NOTHING (no attr at all).
-$shr_extra_attrs          = array( 'id' => $uid );
+$shr_extra_attrs = array( 'id' => $uid );
 // rowTransparent/rowHideOnScroll/rowShrink reshaped from a boolean-object
 // shape to the tri-state STRING enum ('on'/'off'/'inherit') at Spec 35 T1.4
 // fold-in (2026-07-28, D400+) — one cascade, one vocabulary shared with the
@@ -206,10 +246,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt  = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr  = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb  = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl  = '' !== $border_width_left ? $border_width_left : '0';
 		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -243,7 +283,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
@@ -287,9 +327,9 @@ echo SGS_Container_Wrapper::render(
 	$content,
 	'layout',
 	array(
-		'tag'              => 'div',
-		'extra_classes'    => $classes,
-		'extra_attrs'      => $shr_extra_attrs,
+		'tag'               => 'div',
+		'extra_classes'     => $classes,
+		'extra_attrs'       => $shr_extra_attrs,
 		// Spec 37 FR-37-16: gap is stored as the {desktop,tablet,mobile} object model; the
 		// shared wrapper emits its responsive CSS via sgs_emit_responsive_css().
 		'container_queries' => true,

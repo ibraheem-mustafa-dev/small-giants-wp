@@ -59,7 +59,15 @@
 						"css:color": "contentColour",
 						"css:background-image": "contentColourGradient"
 					},
-					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php, `.sgs-separator__content`). css:color resolves to the UNIFIED `contentColour` (2026-07-23: contentIconColour + contentTextColour merged — the slot renders an icon OR text, never both, so one foreground colour serves both modes; the former two mode-split colour attrs both painted color on .sgs-separator__content and collided). Typography (contentFontSize/FontWeight/FontStyle/LineHeight) resolves via the default `content`+suffix convention. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls (honest orphans). text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps. `contentColourGradient` (D636 text-colour gradient rollout) is deliberately only APPLIED when contentMode='text' (render.php) — background-clip:text clips to real glyph outlines, so it is safe for the literal text span but would silently blank a lucide/wp-icon inline-SVG glyph in 'icon' mode; the flat contentColour keeps painting the icon in that mode regardless of the gradient attr's value."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "contentColourHover",
+								"css:background-image": "contentColourHoverGradient"
+							}
+						}
+					},
+					"_note": "Optional centred icon OR text label, shown when contentMode is 'icon'/'text' (render.php, `.sgs-separator__content`). No background paint shares this element/selector (confirmed: `content` element declares no css:background-color member, and static style.css has no background rule on `.sgs-separator__content`) — a hover text-gradient here needs no background-layer precondition; hover added as a plain text trio (2026-09-07 colour-conformance pass). css:color resolves to the UNIFIED `contentColour` (2026-07-23: contentIconColour + contentTextColour merged — the slot renders an icon OR text, never both, so one foreground colour serves both modes; the former two mode-split colour attrs both painted color on .sgs-separator__content and collided). Typography (contentFontSize/FontWeight/FontStyle/LineHeight) resolves via the default `content`+suffix convention. contentIconSize/contentIconSource/contentIconName/contentIconEmoji/contentIconDashicon/contentIconWpIcon are bespoke icon-source controls (honest orphans). text-transform/text-decoration/text-align/font-family have no content-specific attribute — honest gaps. `contentColourGradient` (D636 text-colour gradient rollout) is deliberately only APPLIED when contentMode='text' (render.php) — background-clip:text clips to real glyph outlines, so it is safe for the literal text span but would silently blank a lucide/wp-icon inline-SVG glyph in 'icon' mode; the flat contentColour keeps painting the icon in that mode regardless of the gradient attr's value."
 				},
 				"icon": {
 					"label": "Icon",
@@ -189,6 +197,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the content slot's text with a background-clip:text mechanism instead of a flat colour (D636 text-colour gradient rollout). Non-empty wins over contentColour — but only when contentMode='text'; in 'icon' mode this attribute is read but has no visible effect (see the content element's manifest note)."
+		},
+		"contentColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"contentColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of contentColourHover. Non-empty wins over contentColourHover on :hover/:focus-visible."
 		},
 		"contentText": {
 			"type": "string",

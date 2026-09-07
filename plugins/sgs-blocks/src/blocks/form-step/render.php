@@ -127,6 +127,40 @@ if ( '' !== $sgs_fs_text_colour_effective ) {
 	}
 }
 
+// textColour hover state (2026-09-07, colour-conformance bg-layer batch).
+// $sgs_fs_sel ALSO paints a background via sgs_fill_states_css() below
+// (backgroundColour/backgroundColourHover on the SAME selector), so a hover
+// text-GRADIENT's background-clip:text would clip/overwrite that background.
+// Only intervene when the resolved hover value is actually a gradient
+// (mirrors the brand-strip itemTextColourHover fix, c785a3b7a): neutralise
+// the on-element hover background and repaint the identical resolved hover
+// background on its own ::after layer instead. The flat-colour case (the
+// common one) emits nothing extra and relies on the fill emitter below
+// exactly as before.
+$sgs_fs_text_colour_hover           = isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '';
+$sgs_fs_text_colour_hover_gradient  = isset( $attributes['textColourHoverGradient'] ) ? (string) $attributes['textColourHoverGradient'] : '';
+$sgs_fs_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $sgs_fs_text_colour_hover, $sgs_fs_text_colour_hover_gradient );
+if ( '' !== $sgs_fs_text_colour_hover_effective ) {
+	$sgs_fs_text_colour_hover_decl = sgs_text_colour_decl( $sgs_fs_text_colour_hover_effective );
+	if ( '' !== $sgs_fs_text_colour_hover_decl ) {
+		if ( str_contains( $sgs_fs_text_colour_hover_effective, 'gradient(' ) ) {
+			$sgs_fs_bg_hover_paint = sgs_background_paint_decl(
+				isset( $attributes['backgroundColourHover'] ) ? (string) $attributes['backgroundColourHover'] : '',
+				isset( $attributes['backgroundColourHoverGradient'] ) ? (string) $attributes['backgroundColourHoverGradient'] : ''
+			);
+			if ( '' !== $sgs_fs_bg_hover_paint ) {
+				$sgs_fs_supports_css .= sgs_hover_state_rules( $sgs_fs_sel, 'position:relative;isolation:isolate;background-image:none;background-color:transparent;' );
+				$sgs_fs_supports_css .= sgs_hover_state_rules( $sgs_fs_sel, 'content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $sgs_fs_bg_hover_paint . ';', ':focus-visible', '::after' );
+			}
+		}
+		$sgs_fs_supports_css .= sgs_hover_state_rules( $sgs_fs_sel, $sgs_fs_text_colour_hover_decl );
+	}
+	$sgs_fs_supports_css .= sgs_text_colour_gradient_fallback_rule( $sgs_fs_sel . ':hover', $sgs_fs_text_colour_hover_effective );
+	if ( ! in_array( $sgs_fs_uid, $sgs_fs_supports_classes, true ) ) {
+		$sgs_fs_supports_classes[] = $sgs_fs_uid;
+	}
+}
+
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //

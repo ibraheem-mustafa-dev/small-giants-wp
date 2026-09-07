@@ -138,6 +138,18 @@ if ( '' !== $sgs_ft_text_colour_effective ) {
 	$sgs_ft_supports_css .= sgs_text_colour_gradient_fallback_rule( $sgs_ft_sel, $sgs_ft_text_colour_effective );
 }
 
+// Hover — colour-conformance (2026-09-07). textColour and backgroundColour
+// share $sgs_ft_sel (below), so a gradient hover value needs the background
+// moved onto its own ::after layer FIRST — see the fill emitter below.
+$sgs_ft_text_colour_hover           = isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '';
+$sgs_ft_text_colour_hover_gradient  = isset( $attributes['textColourHoverGradient'] ) ? (string) $attributes['textColourHoverGradient'] : '';
+$sgs_ft_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $sgs_ft_text_colour_hover, $sgs_ft_text_colour_hover_gradient );
+$sgs_ft_text_colour_hover_decl      = sgs_text_colour_decl( $sgs_ft_text_colour_hover_effective );
+if ( '' !== $sgs_ft_text_colour_hover_decl ) {
+	$sgs_ft_supports_css .= sgs_hover_state_rules( $sgs_ft_sel, $sgs_ft_text_colour_hover_decl );
+	$sgs_ft_supports_css .= sgs_text_colour_gradient_fallback_rule( $sgs_ft_sel . ':hover', $sgs_ft_text_colour_hover_effective );
+}
+
 // Background (colour + gradient, resting + hover) is owned by the shared fill
 // emitter, NOT by the style engine and NOT by supports.color.gradients.
 //
@@ -148,16 +160,26 @@ if ( '' !== $sgs_ft_text_colour_effective ) {
 // read was $sgs_ft_style_group['color']['gradient'] (core's own storage). The
 // flag flip is therefore PAIRED with a block-private backgroundColourGradient
 // exposed through fillRow(), so capability is moved rather than lost.
-$sgs_ft_fill_css = sgs_fill_states_css(
-	$sgs_ft_sel,
-	$attributes,
-	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
-	)
+$sgs_ft_fill_map = array(
+	'base'           => 'backgroundColour',
+	'hover'          => 'backgroundColourHover',
+	'gradient'       => 'backgroundColourGradient',
+	'hover_gradient' => 'backgroundColourHoverGradient',
 );
+if ( str_contains( $sgs_ft_text_colour_hover_decl, 'background-clip:text' ) ) {
+	// The text hover value resolved to a GRADIENT — background-clip:text
+	// would clip $sgs_ft_sel's own background too, so move the background
+	// onto its own ::after layer first (CLAUDE.md "Precondition" section /
+	// colour-conformance, 2026-09-07).
+	$sgs_ft_fill_decls = sgs_fill_decls( $attributes, $sgs_ft_fill_map );
+	$sgs_ft_fill_css   = sgs_block_background_layer_css(
+		$sgs_ft_sel,
+		implode( ';', $sgs_ft_fill_decls['normal'] ),
+		implode( ';', $sgs_ft_fill_decls['hover'] )
+	);
+} else {
+	$sgs_ft_fill_css = sgs_fill_states_css( $sgs_ft_sel, $attributes, $sgs_ft_fill_map );
+}
 if ( '' !== $sgs_ft_fill_css ) {
 	$sgs_ft_supports_css .= $sgs_ft_fill_css;
 	if ( ! in_array( $sgs_ft_uid, $sgs_ft_supports_classes, true ) ) {

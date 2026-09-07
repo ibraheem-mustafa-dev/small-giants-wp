@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import {
 	SgsColourPanel,
+	textRow,
 	MediaPanelLayout,
 	mediaElementScopeClass,
 	mediaElementCustomProperties,
@@ -148,32 +149,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const inspectorControls = (
 		<>
 			{ /* GROUND-TRUTH: block.json attributes.captionColour (no default,
-			   type string) + render.php:118 ($caption_colour, styled onto the
-			   caption element) — confirmed 2026-08-15 against the live source
-			   before wiring this row. Single-state colour (no hover pair
-			   exists for the caption), `linked: true` per D619.
+			   type string) + render.php:404-424 ($caption_colour, styled onto
+			   the caption element) — confirmed 2026-08-15 against the live
+			   source before wiring this row. captionColourHover/
+			   captionColourHoverGradient added 2026-09-07 (colour-conformance
+			   batch) via textRow() — no background paint exists on
+			   .sgs-media__caption at any state, so this is a plain text-
+			   gradient row, no precondition swap needed.
 			   boxShadowColour row (D621/D622) added 2026-08-16 — colour lives
 			   here, shape stays with ShadowControl in the Media Styling
 			   ToolsPanel below, per the shared colour-architecture. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'caption',
 						label: __( 'Caption colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributes.captionColour,
-								onChange: ( val ) => setAttributes( { captionColour: val ?? '' } ),
-								linked: true,
-								gradientValue: attributes.captionColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { captionColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'captionColour',
+							hover: 'captionColourHover',
+							gradient: 'captionColourGradient',
+							hoverGradient: 'captionColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'boxShadow',
 						label: __( 'Shadow colour', 'sgs-blocks' ),

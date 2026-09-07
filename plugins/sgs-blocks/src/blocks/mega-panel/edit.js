@@ -189,6 +189,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		groupBorderColourGradientHover,
 		iconColour,
 		iconColourGradient,
+		iconColourHover,
+		iconColourHoverGradient,
 		accentBackgroundImage,
 		accentBackgroundImageGradient,
 		maxWidth,
@@ -490,6 +492,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: iconColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { iconColourGradient: val ?? '' } ),
+							},
+							{
+								// Hover pair (2026-09-07, colour-conformance bg-layer batch) —
+								// mirrors iconBackgroundHover immediately above: fires off the
+								// icon chip's ancestor `.sgs-mega-group:hover` on the `cards`
+								// style only. NOT migrated to the shared textRow() helper: that
+								// helper's onChange always falls back to '' on clear, but this
+								// row's NORMAL state deliberately falls back to the 'accent'
+								// default (matching iconColour's own block.json default) — a
+								// silent default-value regression this hand-rolled shape avoids.
+								// Default empty string on hover: no colour override until an
+								// operator sets one, matching iconBackgroundHover's own convention.
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: iconColourHover,
+								onChange: ( val ) =>
+									setAttributes( { iconColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: iconColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { iconColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
