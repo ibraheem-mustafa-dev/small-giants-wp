@@ -44,6 +44,32 @@ cheat-gate false alarm cleared, the pre-merge gate fixed after it had been faili
 commit for months, and all 8 draft PRs + 30 stale branches closed out (verified superseded,
 zero salvage). Full detail in "Shipped today" below and D983/D985-D988.
 
+**Colour conformance on text is now DONE — controls, rendering, and the live editor preview.**
+Every text colour in the framework can now take a gradient as well as a flat colour, on both its
+normal and hover state, and the client sees the effect immediately in the editor rather than
+having to save and check the real page. That closes the whole text side of the colour work.
+
+Three things worth knowing, because the automated checks did **not** catch them — I found them by
+reading the actual diffs:
+1. On the timeline block, the date colour was wired to the wrong helper *twice* — once to the
+   background/fill helper, then later to the link helper. Both were near-misses caused by copying
+   a neighbouring attribute that looked similar. Either would have silently painted nothing.
+2. The accordion was passing three new settings to its child block, but the child had never been
+   told to accept them — so the feature would have been dead on arrival with no error anywhere.
+3. A new colour type was missing from two registry files, which meant the entries referencing it
+   were being silently ignored.
+
+I also cleared a backlog that had been sitting as accepted debt: 31 previously "we'll live with
+it" items on the editor-preview checker are now genuinely fixed or correctly classified, and that
+list is empty for the first time. Two of those turned out to be real bugs worth fixing (the audio
+block's spectrum colour and the button's icon gradient never previewed at all).
+
+One correction to something I told you earlier in the session: I said motion effects "can't" show
+in the editor. That was wrong as stated — it's a deliberate design decision with its own on-screen
+notice to clients ("this animates on the live site only"), not a technical impossibility, and the
+real reasons are architectural (the motion code only loads on published pages) plus a genuine
+safety one (smooth-scroll would fight the editor's own scrolling). You were right to push back.
+
 ## Shipped today (2026-09-07)
 
 | What | Detail lives at |
@@ -53,6 +79,13 @@ zero salvage). Full detail in "Shipped today" below and D983/D985-D988.
 | **Typography: 8 harder blocks** — target-switcher conversions, 2 render-side rewiring bugs fixed (`media`/`before-after` had a dead editor control), new-coverage extension | D990 · `96bc9e734` |
 | **Critical fix: 513 missing attribute declarations** across 84 blocks, found + fixed with a new detector (`audit-typography-attr-declarations.js`); plus card-grid/collapsible-text/icon-list native-typography holdouts closed | D990 · `f7cb3ba36` |
 | **Typography track deployed to canary + live-verified** (Tasks 6-7 close the track); `build-deploy.py --dry-run` incident found + disclosed (not a dry run — ships for real, skips gates only) | D991 · `780be1a91`/`2568ce0f1` (doc fixes; the deploy itself is not a git commit) |
+| **Colour conformance TEXT surface CLOSED — 29 rows migrated** (gradient trio + hover, bg-layer splits, 3 documented exemptions); `sgs_link_colour_css()` gained gradient support on both states | Track A · `6d8073d2f` |
+| **Editor controls wired for all of the above** (SgsColourPanel `gradientCapable` + gradient value/onChange across 12 blocks) — previously backend-only, client could not set any of it | Track A · `6d8073d2f` |
+| **Editor-canvas gradient preview across 12 blocks** — CHECK A 13 net-new → 0; `linkColourPreviewCss()` extended for gradient (JS mirror of the PHP redesign) | Track A · `b33eaee1f` |
+| **`check-editor-render-parity.js` baseline emptied** — all 31 accepted-debt entries genuinely closed: 23 moved to a structural `EDITOR_INVISIBLE_BY_DESIGN` rule (DB-verified, not assumed), 2 fixed for real (`audio.spectrumColour` static swatch, `button.iconColourGradient` SVG stroke gradient) | Track A · `b33eaee1f` |
+| **3 real bugs the gates missed, caught by diff review** — timeline `dateColour` wrong-helper (×2), `accordion-item` missing `usesContext` keys (silently dead capability), `css:color-link-gradient` unregistered in both vocabulary files | Track A · `6d8073d2f`/`b33eaee1f` |
+| **Detector fixes** — `classify-end-shape.js` Pattern 1d (shared-helper call-through) + `check-dead-controls.js` taught the `LinkColourGradient`/`HoverGradient` suffixes | Track A · `6d8073d2f` |
+| **Parallel session's Task 1 hover batch merged** (tab/table-of-contents/trust-bar/trustpilot-reviews/whatsapp-cta) — found unmerged in a worktree branch, verified, integrated | Track A · merge `dc364e953` |
 | **`sgs/media`/`sgs/hero` border hover/gradient state** (matches button/container's pattern) | D985 · `11f1e2386` (merged direct to `main`, no PR — D983) |
 | **Cheat-gate Check #9 allowlist** for `section_passes.py`'s legitimate anchor-class write | D985 · `3e20518c7` |
 | **Two pre-existing converter test failures root-caused + fixed** (tier-of-boxes COLLISION false-positive; missing `xfail` marker) | D985 · `efeb0b8e7` |
@@ -82,35 +115,39 @@ prompt, never a remembered summary. The recurring finding across all of them: de
 censuses flag correct framework usage, so a headline count is an upper bound, not a workload.
 
 ### Track D — typography surface-taxonomy — CLOSED 2026-09-07, all 7 tasks done
-**No open work. No prompt file — it was deleted once consumed; do not resurrect it from git
-history looking for open items.** Full record: D990 (design + build, Tasks 1-5) and D991
-(deploy + live-verify + doc fixes, Tasks 6-7) in `decisions.md`.
-Settled architecture: every text surface gets the FULL `TypographyControls` set by default, no
-per-element curation. Two-state link colour shipped on 7 blocks. A 513-attribute
-undeclared-in-block.json regression this rollout exposed was found and fixed with a new
-detector (`audit-typography-attr-declarations.js`). Deployed to the sandybrown canary and
-live-verified (font-size/decoration/transform/letter-spacing/link-colour all confirmed on the
-real rendered page). One incident along the way: `build-deploy.py --dry-run` is not actually
-dry — it ships for real, only skipping the safety gates — and shipped a peer session's
-unrelated in-progress work bundled in; disclosed immediately, no rollback needed since that
-session had already finished and redeployed cleanly. **Not fixed, flagged for whoever next
-touches `build-deploy.py`:** the `--dry-run` flag's name doesn't match its behaviour.
-`counter`/`quote` remain native-typography holdouts by design (D972 ruled them false alarms —
-each governs a genuinely different element than the shared component would).
+**No open work. No prompt file — deleted once consumed; do not resurrect it from git history.**
+Full record: D990 (build) + D991 (deploy/live-verify) in `decisions.md`. Settled: every text
+surface gets the FULL `TypographyControls` set, no per-element curation; two-state link colour on
+7 blocks; a 513-attribute undeclared-in-block.json regression found + fixed
+(`audit-typography-attr-declarations.js`). Canary-deployed and live-verified.
+⚠ **Still unfixed, for whoever next touches `build-deploy.py`:** `--dry-run` is NOT dry — it
+ships for real and only skips the gates. It shipped a peer session's work bundled in (disclosed,
+no rollback needed). `counter`/`quote` stay native-typography holdouts by design (D972).
 
-### Track A — colour conformance, TEXT surface
-**Read first (full, not skim):** `.claude/prompts/2026-09-07-colour-conformance-text-next.md`.
-Supersedes the deleted `2026-09-06-colour-conformance-text-surface-next.md`.
-**TEXT is 68 rows, but only 29 are real work** (measured 2026-09-07): 39 are already correctly
-wired and flagged solely for a missing hover state.
-**Bean-ruled 2026-09-07:** every text row gets a base + hover pair — the uniform contract, not
-hover-restricted-to-interactive. 36 rows take the hover; 3 (`brand-strip.itemTextColourHover`,
-`post-grid.textColourHover`, `quote.textColourHover`) are hover-only by design with no base
-partner and need a `colourExemptions` entry, not a fix. Triage the 29 before migrating.
-⚠ FILL is NOT fully closed — 15 rows remain, and the old prompt's closure figures don't
-reconcile with commit `b30c6bfc4`'s own message.
-⚠ `.claude/plans/phase-colour-conformance.md` is stale — it points at a prompt file that no
-longer exists.
+### Track A — colour conformance, TEXT surface — CLOSED 2026-09-07
+**All 29 real rows migrated, all editor controls wired, all editor-canvas previews wired, all
+gates green.** Commits `6d8073d2f` (render/attrs/controls) + `b33eaee1f` (canvas preview) +
+merge `dc364e953` (the parallel session's Task 1 hover batch).
+`classify-end-shape.js`: TEXT-surface **29 → 0**. Whole census 53 → 10 (remainder is FILL).
+`check-editor-render-parity.js` CHECK A: **13 net-new → 0**, and its baseline is now **empty** —
+all 31 previously-accepted debt entries genuinely closed, not deferred.
+**Bean-ruled 2026-09-07:** every text row gets a base + hover pair (uniform contract). Bean also
+ruled `sgs_link_colour_css()` gains gradient support rather than exempting the 6 link rows.
+**Three real bugs caught in review that the gates alone missed** — all fixed, all worth knowing:
+`timeline.dateColour` used the FILL/background gradient helper (and later the link-scoped canvas
+helper) instead of the TEXT trio, twice, by surface proximity to an adjacent attribute;
+`accordion-item`'s `usesContext` was missing the 3 new context keys its own render.php reads, so
+the capability would have been silently dead; `css:color-link-gradient` was absent from
+`cluster-member-sets.json`/`setting-registry.json` entirely, so explicit attrMap entries naming
+it were being silently ignored.
+**Exemptions (documented, `rule: "gradient"`, keyed by rowKey not attr name):**
+`business-info.attributionHoverColourFallback` (hardcoded sweep animation),
+`multi-button.childBtnTextColour` (child-block `var()` chain architectural limit),
+`filter-search.textColour` (form-input UX — hover added, gradient exempt).
+⚠ FILL is NOT closed — 10 rows remain in the census (was 15). Separate track.
+⚠ Pre-existing, NOT from this track, disclosed not fixed: `sgs/breadcrumbs` (3 element-manifest
+orphans) and `sgs/product-faq.backgroundColourHover` (DB routing anomaly, `css_property=position`
+on a colour attr). Both fail their gate today; neither was touched by this work.
 
 ### Track B — tier-object migration, Phase 3 remainder
 **Read first:** `.claude/prompts/2026-09-07-tier-object-phase-3-next.md` (full read).
@@ -144,10 +181,9 @@ suppression rules and `::backdrop`. Fixed with 4 fixtures that each fail without
 ⚠ The old prompt's "23 of 45 files / ~555 entries" baseline-debt figure does not reproduce under
 any reading — dropped, not carried forward.
 
-### Track C — the 8 orphaned-branch draft PRs (#53-#60)
-**Superseded/verified salvage-free 2026-09-07 (D983's trigger event) — every one already
-superseded by work on `main`, zero salvage.** Several would have REGRESSED `main` if merged.
-Bean can close these PRs at leisure; no further investigation needed.
+### Track C — 8 draft PRs (#53-#60) — CLOSED 2026-09-07 (D983)
+All closed + 30 stale branches deleted; all verified superseded, zero salvage (several would
+have REGRESSED `main`). No further action.
 
 ## Open — carried from before (not touched this session, still real)
 
