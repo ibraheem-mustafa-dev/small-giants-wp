@@ -103,8 +103,8 @@
 	height: 28px;
 }
 
-/* Text */
-.sgs-icon-list__text {
+/* Default line-height (0 specificity via :where()) — textElLineHeight attribute now drives this; must always lose to the attribute-driven scoped rule. */
+:where(.sgs-icon-list__text) {
 	line-height: 1.5;
 }
 

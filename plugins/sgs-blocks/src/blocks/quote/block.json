@@ -314,6 +314,54 @@
 		"borderColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"attributionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"attributionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"attributionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"attributionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"attributionTextColumns": {
+			"type": "number"
+		},
+		"attributionTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"attributionWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

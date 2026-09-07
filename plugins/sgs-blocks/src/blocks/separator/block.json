@@ -221,6 +221,79 @@
 		"contentLineHeightUnit": {
 			"type": "string",
 			"default": ""
+		},
+		"contentFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"contentTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"contentTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"contentLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"contentLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"contentTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"contentTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"contentTextColumns": {
+			"type": "number"
+		},
+		"contentTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"contentWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

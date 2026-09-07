@@ -1132,17 +1132,17 @@ export default function Edit( { attributes, setAttributes } ) {
 								key: 'title',
 								label: __( 'Title', 'sgs-blocks' ),
 								prefix: 'title',
-								showWeight: false,
-								showStyle: false,
-								showLineHeight: false,
+								showWeight: true,
+								showStyle: true,
+								showLineHeight: true,
 							},
 							{
 								key: 'subtitle',
 								label: __( 'Subtitle', 'sgs-blocks' ),
 								prefix: 'subtitle',
-								showWeight: false,
-								showStyle: false,
-								showLineHeight: false,
+								showWeight: true,
+								showStyle: true,
+								showLineHeight: true,
 							},
 						] }
 					/>

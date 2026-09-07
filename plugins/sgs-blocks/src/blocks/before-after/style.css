@@ -195,6 +195,10 @@
 	color: var( --sgs-before-after-label-colour, #fff );
 	font-size: 13px;
 	line-height: var( --sgs-before-after-label-line-height, 1.4 );
+}
+
+/* Default letter-spacing (0 specificity via :where()) — labelLetterSpacing attribute now drives this; must always lose to the attribute-driven scoped rule. */
+:where(.wp-block-sgs-before-after__label) {
 	letter-spacing: 0.02em;
 }
 

@@ -128,6 +128,17 @@ const SUFFIX_MAP = [
 	{ suffix: 'aligncontent',   props: [ 'align-content' ],            note: 'flex/grid align-content' },
 	{ suffix: 'justifycontent', props: [ 'justify-content' ],          note: 'flex/grid justify-content' },
 	// Flex / layout
+	// ⛔ 'textwrap' MUST sit before the bare 'wrap' shorthand below (array
+	// order = most-specific-first, per attrToCssProps()'s own docstring) —
+	// same reason 'flexwrap' already does. Without it, the shared
+	// TypographyControls attribute `textWrap` (governing the CSS `text-wrap`
+	// property, per includes/helpers-typography.php) falls through to the
+	// bare 'wrap' entry and is misclassified as governing `flex-wrap` — a
+	// different, unrelated CSS property that just happens to share the
+	// substring "wrap". Found live 2026-09-07: 3 blocks' genuine flex-layout
+	// `flex-wrap: wrap` declarations were false-flagged as conflicting with
+	// their (unrelated) `textWrap` typography attribute.
+	{ suffix: 'textwrap',       props: [ 'text-wrap' ],                note: 'controls text-wrap (text reflow), NOT flex-wrap' },
 	{ suffix: 'flexwrap',       props: [ 'flex-wrap' ],                note: 'controls flex-wrap' },
 	{ suffix: 'wrap',           props: [ 'flex-wrap' ],                note: 'shorthand wrap attr → flex-wrap' },
 	{ suffix: 'flexdirection',  props: [ 'flex-direction' ],           note: 'controls flex-direction' },

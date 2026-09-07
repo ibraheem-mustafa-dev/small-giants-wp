@@ -50,11 +50,32 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -181,6 +202,14 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "labelFontStyle",
       "fields": {
         "css_property": "font-style",
@@ -192,6 +221,38 @@
       "attr": "labelFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "label"
       }
     },
@@ -478,6 +539,13 @@
     },
     {
       "slug": "sgs/breadcrumbs",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -498,6 +566,20 @@
       "fields": {
         "css_property": "color",
         "css_element": "separator"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -578,10 +660,31 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -966,6 +1069,30 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "subtitleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "subtitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "subtitle"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "textColourHover",
       "fields": {
         "css_property": "color",
@@ -995,6 +1122,30 @@
       "attr": "titleFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "titleLineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "title"
       }
     },
@@ -1108,9 +1259,25 @@
     },
     {
       "slug": "sgs/collapsible-text",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
         "css_element": "body"
       }
     },
@@ -1120,6 +1287,22 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/collapsible-text",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "body"
       }
     },
@@ -1161,6 +1344,13 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -1175,6 +1365,20 @@
         "css_property": "text-align",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -1228,6 +1432,13 @@
     },
     {
       "slug": "sgs/countdown-timer",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -1240,6 +1451,20 @@
       "fields": {
         "css_property": "color",
         "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/countdown-timer",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -1293,9 +1518,33 @@
     },
     {
       "slug": "sgs/counter",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
       "attr": "labelLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/counter",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "label"
       }
     },
@@ -1408,6 +1657,13 @@
         "css_property": "box-shadow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
       }
     },
     {
@@ -1615,6 +1871,13 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -1647,6 +1910,20 @@
       "fields": {
         "css_property": "color",
         "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -2498,6 +2775,13 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
@@ -2625,9 +2909,33 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "headingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "headingLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "headingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "heading"
       }
     },
@@ -2675,10 +2983,90 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "itemLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "itemLineHeight",
       "fields": {
         "css_property": "line-height",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "textElTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "text"
       }
     },
     {
@@ -2739,6 +3127,13 @@
     },
     {
       "slug": "sgs/info-box",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height"
@@ -2768,6 +3163,20 @@
         "css_property": "color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/info-box",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -2849,6 +3258,54 @@
       "attr": "captionFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "caption"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "captionTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "caption"
       }
     },
@@ -3474,6 +3931,14 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "itemLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "itemLineHeight",
       "fields": {
         "css_property": "line-height",
@@ -3495,6 +3960,22 @@
         "css_property": "border-radius",
         "css_element": "item",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "link"
       }
     },
     {
@@ -3658,11 +4139,32 @@
     },
     {
       "slug": "sgs/notice-banner",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/notice-banner",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -3707,9 +4209,41 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "labelMarginBottom",
       "fields": {
         "css_property": "margin-bottom",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "label"
       }
     },
@@ -3749,9 +4283,33 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillLineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "pill"
       }
     },
@@ -3810,6 +4368,22 @@
         "role": "color",
         "css_element": "pill",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "pill"
       }
     },
     {
@@ -3984,9 +4558,33 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -4030,6 +4628,62 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "ctaFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "ctaTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "featureColour",
       "fields": {
         "css_property": "color",
@@ -4045,6 +4699,62 @@
         "role": "color",
         "css_element": "feature",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "feature"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "featureTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "feature"
       }
     },
     {
@@ -4104,6 +4814,62 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "priceFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "priceTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "price"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -4147,9 +4913,33 @@
     },
     {
       "slug": "sgs/pricing-table",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/pricing-table",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "name"
       }
     },
@@ -4273,9 +5063,33 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -4451,9 +5265,49 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "descFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "descLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "descTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "description"
       }
     },
@@ -4531,6 +5385,54 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "tagFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "tag"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -4563,9 +5465,33 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -4610,6 +5536,13 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -4623,6 +5556,20 @@
         "css_property": "color",
         "role": "color",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -4705,6 +5652,14 @@
       "attr": "attributionFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "attribution"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "attributionLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
         "css_element": "attribution"
       }
     },
@@ -4915,9 +5870,33 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "contentLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "contentLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "content"
       }
     },
@@ -5081,10 +6060,31 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -5156,6 +6156,13 @@
     },
     {
       "slug": "sgs/table-of-contents",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -5169,6 +6176,20 @@
         "css_property": "color",
         "role": "color",
         "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/table-of-contents",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -5258,6 +6279,62 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "bioFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "bioTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "bio"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -5293,38 +6370,6 @@
     },
     {
       "slug": "sgs/team-member",
-      "attr": "fontSize",
-      "fields": {
-        "css_property": "font-size",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "fontStyle",
-      "fields": {
-        "css_property": "font-style",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "fontWeight",
-      "fields": {
-        "css_property": "font-weight",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "lineHeight",
-      "fields": {
-        "css_property": "line-height",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
       "attr": "nameColour",
       "fields": {
         "css_property": "color",
@@ -5339,6 +6384,62 @@
         "role": "color",
         "css_element": "name",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "nameTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "name"
       }
     },
     {
@@ -5375,6 +6476,62 @@
         "role": "color",
         "css_element": "role",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "role"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "roleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "role"
       }
     },
     {
@@ -5449,9 +6606,49 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "nameFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "nameFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "nameTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "name"
       }
     },
@@ -5480,6 +6677,62 @@
         "role": "color",
         "css_element": "quote-text",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "quote-text"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "quote-text"
       }
     },
     {
@@ -5607,6 +6860,13 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "letterSpacing",
+      "fields": {
+        "css_property": "letter-spacing"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "lineHeight",
       "fields": {
         "css_property": "line-height",
@@ -5631,6 +6891,20 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "textDecoration",
+      "fields": {
+        "css_property": "text-decoration"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "textTransform",
+      "fields": {
+        "css_property": "text-transform"
       }
     },
     {
@@ -5957,9 +7231,33 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -6120,6 +7418,38 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -6174,9 +7504,33 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "titleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "titleLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "titleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "title"
       }
     },
@@ -6285,6 +7639,38 @@
       "attr": "labelFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "wrapper"
       }
     },
@@ -14191,6 +15577,30 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "fontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "fontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "grayscaleHover",
       "fields": {
         "css_property": "filter",
@@ -14204,6 +15614,14 @@
       "fields": {
         "css_property": "tag",
         "css_element": "name"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
+      "attr": "lineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
       }
     },
     {
@@ -15625,11 +17043,6 @@
     {
       "slug": "sgs/hero",
       "attr": "splitMediaWidthUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/media",
-      "attr": "captionFontSizeUnit",
       "fields": {}
     },
     {

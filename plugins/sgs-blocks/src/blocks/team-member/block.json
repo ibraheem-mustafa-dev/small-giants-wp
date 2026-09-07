@@ -156,8 +156,11 @@
 				"bio": {
 					"label": "Bio",
 					"order": 5,
-					"clusters": [],
-					"_note": "No bio-specific style attribute exists at all (no bioColour, no bioFontSize) — honest zero-cluster element; bio text inherits the card root's colour/typography."
+					"clusters": [
+						"text"
+					],
+					"prefix": "bio",
+					"_note": "Typography now independently controlled (Task 4, 2026-09-07) via the shared TypographyControls targets switcher — bioFontSize/FontWeight/etc resolve via the default `bio` prefix convention. No bioColour exists; bio text still inherits the card root's colour."
 				},
 				"social": {
 					"label": "Social links",
@@ -438,6 +441,312 @@
 				"center",
 				"right",
 				"justify"
+			],
+			"default": ""
+		},
+		"nameFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"nameFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"roleFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"roleFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"roleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"roleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"roleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"roleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"roleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"roleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"roleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"roleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"roleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"roleTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"roleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"roleTextColumns": {
+			"type": "number"
+		},
+		"roleTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"roleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"bioFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"bioFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"bioFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"bioFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"bioFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"bioTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"bioTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"bioLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"bioLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bioLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"bioLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"bioTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"bioTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"bioTextColumns": {
+			"type": "number"
+		},
+		"bioTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"bioWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
 			],
 			"default": ""
 		}

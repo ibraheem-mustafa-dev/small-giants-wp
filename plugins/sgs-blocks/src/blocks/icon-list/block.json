@@ -112,15 +112,12 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "",
+					"prefix": "textEl",
 					"attrMap": {
 						"css:color": "textColour",
-						"css:font-size": "native:typography.fontSize",
-						"css:line-height": "native:typography.lineHeight",
-						"css:text-align": "native:typography.textAlign",
 						"css:color-gradient": "textColourGradient"
 					},
-					"_note": "Per-item text span (render.php:457, `.sgs-icon-list__text` — the block's declared `selectors.typography`). WP-native typography.fontSize/lineHeight/textAlign are skip-serialised and rendered SCOPED ONTO THIS SELECTOR specifically (render.php step 5, `$text_sel`), not the root — so the native: attrMap targets this per-item element correctly rather than the wrapper. `prefix` set to the explicit opt-out `\"\"` (2026-08-15, was unset/implicit `item`): every member this element resolves already has an explicit attrMap entry above, and the implicit `item` prefix was ALSO matching the item-ROW's own itemFontWeight/itemFontStyle by accident via the default convention — silently misattributing a control that actually paints `.sgs-icon-list__item` (the row) to `item-text` (the span), contradicting this note's own long-standing claim that font-weight/font-style are honest gaps here. No font-weight/letter-spacing/font-style/text-transform/text-decoration/font-family attribute or native path exists for item TEXT specifically — honest gaps, now genuinely honest.",
+					"_note": "Per-item text span (render.php, `.sgs-icon-list__text`). Typography (2026-09-07, Task 4/5 full-replacement) now routes entirely through the shared TypographyControls `textEl` target + sgs_typography_css_rule( $attributes, 'textEl', $text_sel ) — WP-native typography.fontSize/lineHeight/textAlign was removed from block.json's supports (D971-973 full-replacement) and the corresponding hand-built render.php code deleted, so `prefix` changed from the explicit opt-out `\"\"` to `\"textEl\"` and the three `native:typography.*` attrMap entries were removed — the default `{prefix}{suffix}` convention now resolves fontSize/lineHeight/textAlign/etc via textElFontSize/textElLineHeight/textElTextAlign directly, no explicit mapping needed. Colour stays its own explicit mapping (textColour, unprefixed — predates and is independent of the textEl typography prefix).",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -405,6 +402,254 @@
 		},
 		"iconColourHover": {
 			"type": "string",
+			"default": ""
+		},
+		"headingFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"headingTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"headingTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"headingLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"headingLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"headingTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"headingTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"headingTextColumns": {
+			"type": "number"
+		},
+		"headingTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"headingWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"itemFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"itemTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"itemLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"itemTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"itemTextColumns": {
+			"type": "number"
+		},
+		"itemTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"itemWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"textElFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"textElFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"textElFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"textElFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"textElFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"textElTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"textElTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"textElLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"textElLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textElLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"textElLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"textElTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"textElTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textElTextColumns": {
+			"type": "number"
+		},
+		"textElTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"textElWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
 			"default": ""
 		}
 	},

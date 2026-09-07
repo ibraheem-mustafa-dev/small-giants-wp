@@ -19,14 +19,30 @@
 	"supports": {
 		"sgs": {
 			"scalarStylingLift": true,
-		"_comment_mediaElements": "Wave 5b (2026-09-01). box-shape/video-behaviour/overlay are now wired, closing the Wave 5a gap list. `box-shape` REPLACES this block's old native `__experimentalBorder` (width/style/colour/radius) AND the old native `supports.dimensions.aspectRatio` — the atom's own borderRadius/borderRadiusTablet/borderRadiusMobile/borderWidth/borderStyle/borderColour/borderColourGradient/aspectRatio/height/width/maxWidth/maxHeight attrs are the sole mechanism now. `video-behaviour` renders its 6 boolean bases through the shared tiered BooleanResponsiveControl (promoted to src/components/), matching this block's existing Tablet/Mobile playback tiers. `overlay` paints via `.sgs-media-box::after`; render.php adds the `sgs-media-box` marker class to the figure wrapper whenever a box atom is declared and gates naked-mode off in that case, per `SGS_Media_Element::requires_box()`.",
-		"mediaElements": [
-			{
-				"prefix": "",
-				"context": "element",
-				"atoms": [ "media-type", "source", "meaning", "svg-presentation", "object-fit", "focal-point", "motion", "box-shape", "video-behaviour", "overlay", "opacity", "shadow", "media-padding", "caption", "link" ]
-			}
-		],
+			"_comment_mediaElements": "Wave 5b (2026-09-01). box-shape/video-behaviour/overlay are now wired, closing the Wave 5a gap list. `box-shape` REPLACES this block's old native `__experimentalBorder` (width/style/colour/radius) AND the old native `supports.dimensions.aspectRatio` — the atom's own borderRadius/borderRadiusTablet/borderRadiusMobile/borderWidth/borderStyle/borderColour/borderColourGradient/aspectRatio/height/width/maxWidth/maxHeight attrs are the sole mechanism now. `video-behaviour` renders its 6 boolean bases through the shared tiered BooleanResponsiveControl (promoted to src/components/), matching this block's existing Tablet/Mobile playback tiers. `overlay` paints via `.sgs-media-box::after`; render.php adds the `sgs-media-box` marker class to the figure wrapper whenever a box atom is declared and gates naked-mode off in that case, per `SGS_Media_Element::requires_box()`.",
+			"mediaElements": [
+				{
+					"prefix": "",
+					"context": "element",
+					"atoms": [
+						"media-type",
+						"source",
+						"meaning",
+						"svg-presentation",
+						"object-fit",
+						"focal-point",
+						"motion",
+						"box-shape",
+						"video-behaviour",
+						"overlay",
+						"opacity",
+						"shadow",
+						"media-padding",
+						"caption",
+						"link"
+					]
+				}
+			],
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadiusTablet",
@@ -190,7 +206,6 @@
 			"type": "boolean",
 			"default": false
 		},
-
 		"videoAutoplayTablet": {
 			"type": [
 				"boolean",
@@ -199,7 +214,6 @@
 			"default": null,
 			"_comment": "Per-device playback-behaviour tiers (D-pending). null = inherit the tier above (Tablet inherits Desktop, Mobile inherits Tablet) — the framework's null-means-inherit convention, same as maxWidthTablet etc. Desktop has no *Desktop sibling; the unsuffixed attr above IS the desktop value."
 		},
-
 		"videoAutoplayMobile": {
 			"type": [
 				"boolean",
@@ -211,7 +225,6 @@
 			"type": "boolean",
 			"default": false
 		},
-
 		"videoLoopTablet": {
 			"type": [
 				"boolean",
@@ -219,7 +232,6 @@
 			],
 			"default": null
 		},
-
 		"videoLoopMobile": {
 			"type": [
 				"boolean",
@@ -231,7 +243,6 @@
 			"type": "boolean",
 			"default": true
 		},
-
 		"videoMutedTablet": {
 			"type": [
 				"boolean",
@@ -239,7 +250,6 @@
 			],
 			"default": null
 		},
-
 		"videoMutedMobile": {
 			"type": [
 				"boolean",
@@ -251,7 +261,6 @@
 			"type": "boolean",
 			"default": true
 		},
-
 		"videoControlsTablet": {
 			"type": [
 				"boolean",
@@ -259,7 +268,6 @@
 			],
 			"default": null
 		},
-
 		"videoControlsMobile": {
 			"type": [
 				"boolean",
@@ -271,7 +279,6 @@
 			"type": "boolean",
 			"default": true
 		},
-
 		"videoPlaysInlineTablet": {
 			"type": [
 				"boolean",
@@ -279,7 +286,6 @@
 			],
 			"default": null
 		},
-
 		"videoPlaysInlineMobile": {
 			"type": [
 				"boolean",
@@ -291,7 +297,6 @@
 			"type": "boolean",
 			"default": true
 		},
-
 		"videoLazyLoadTablet": {
 			"type": [
 				"boolean",
@@ -299,7 +304,6 @@
 			],
 			"default": null
 		},
-
 		"videoLazyLoadMobile": {
 			"type": [
 				"boolean",
@@ -546,6 +550,100 @@
 		"videoCaptionsSrcLang": {
 			"type": "string",
 			"default": "en"
+		},
+		"captionFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"captionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"captionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"captionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"captionLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"captionLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"captionTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"captionTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"captionTextColumns": {
+			"type": "number"
+		},
+		"captionTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"captionWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

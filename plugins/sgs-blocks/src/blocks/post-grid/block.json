@@ -679,6 +679,79 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"titleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"titleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"titleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"titleTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"titleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"titleTextColumns": {
+			"type": "number"
+		},
+		"titleTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

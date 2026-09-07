@@ -29,16 +29,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true,
-			"letterSpacing": true,
-			"textTransform": true,
-			"fontWeight": true,
-			"fontStyle": true,
-			"__experimentalSkipSerialization": true
-		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
@@ -206,8 +196,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".wp-block-sgs-card-grid",
-		"typography": ".sgs-card-grid__title"
+		"root": ".wp-block-sgs-card-grid"
 	},
 	"attributes": {
 		"variant": {
@@ -706,6 +695,48 @@
 		"subtitleColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"titleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"titleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"titleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"subtitleFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"subtitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"subtitleLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"subtitleLineHeightUnit": {
+			"type": "string",
+			"default": "em"
 		}
 	},
 	"render": "file:./render.php",

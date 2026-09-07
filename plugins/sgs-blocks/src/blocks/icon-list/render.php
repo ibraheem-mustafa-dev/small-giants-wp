@@ -329,13 +329,6 @@ $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradi
 $style_font_size   = isset( $attributes['style']['typography']['fontSize'] ) ? (string) $attributes['style']['typography']['fontSize'] : '';
 $style_line_height = isset( $attributes['style']['typography']['lineHeight'] ) ? (string) $attributes['style']['typography']['lineHeight'] : '';
 
-// WP `typography.textAlign` support (skip-serialised, top-level attribute —
-// NOT nested under style.typography). block.json maps css:text-align to the
-// `item-text` element (`.sgs-icon-list__text`), so it is scoped there, never
-// the root `<ul>` (DB-first element manifest, R-31-1).
-$text_align_raw = $attributes['textAlign'] ?? '';
-$text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
-
 // ---------------------------------------------------------------------------
 // 5. Scoped CSS assembly. uid is a CLASS (this block has anchor support — the
 // element's `id` attribute stays free for the anchor/ToC target, matching
@@ -446,13 +439,6 @@ if ( ! empty( $typography_args ) ) {
 	if ( ! empty( $typography_scoped_styles['css'] ) ) {
 		$scoped_css[] = $typography_scoped_styles['css'];
 	}
-}
-
-// --- text-align (skip-serialised WP support; not a style-engine `typography`
-// key, so hand-built like sgs/countdown-timer) — scoped to the item-text
-// selector per the block.json element manifest. ---
-if ( '' !== $text_align ) {
-	$scoped_css[] = "{$text_sel}{text-align:{$text_align};}";
 }
 
 // --- Background fill (flat-or-gradient, resting + hover) — scoped onto the

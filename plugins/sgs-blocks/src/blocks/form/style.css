@@ -338,8 +338,12 @@ select.sgs-form-field__input {
 	cursor: pointer;
 	transition: border-color 0.2s, background-color 0.2s;
 	min-height: 44px;
-	text-align: center;
 	position: relative;
+}
+
+/* Default text-align (0 specificity via :where()) — textAlign attribute now drives this; must always lose to the attribute-driven scoped rule. */
+:where(.sgs-form-tile) {
+	text-align: center;
 }
 
 /* Hover border-colour is client-controllable (tileBorderColour/Hover) via

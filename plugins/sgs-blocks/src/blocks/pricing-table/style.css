@@ -119,9 +119,14 @@
 
 .sgs-pricing-table__price {
 	font-size: var(--wp--preset--font-size--xx-large, 3rem);
+	color: var(--wp--preset--color--primary, #333);
+}
+
+/* Default font-weight and line-height — :where() (specificity 0) so client-set
+   priceFontWeight and priceLineHeight rules (via sgs_typography_css_rule) always win. */
+:where(.sgs-pricing-table__price) {
 	font-weight: 800;
 	line-height: 1;
-	color: var(--wp--preset--color--primary, #333);
 }
 
 .sgs-pricing-table__period {
@@ -206,13 +211,18 @@
 	border: 2px solid transparent;
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	font-size: var(--wp--preset--font-size--medium, 1rem);
-	font-weight: 600;
 	/* KEEP: a CTA button centres its own label regardless of surrounding text
 	   alignment — same rationale as sgs/button's inline-flex centring. */
-	text-align: center;
 	text-decoration: none;
 	cursor: pointer;
 	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Default font-weight and text-align — :where() (specificity 0) so client-set
+   ctaFontWeight and ctaTextAlign rules (via sgs_typography_css_rule) always win. */
+:where(.sgs-pricing-table__cta) {
+	font-weight: 600;
+	text-align: center;
 }
 
 .sgs-pricing-table__cta:focus-visible {

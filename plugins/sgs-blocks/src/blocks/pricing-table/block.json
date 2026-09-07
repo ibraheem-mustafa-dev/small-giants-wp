@@ -138,6 +138,7 @@
 						"text",
 						"fill"
 					],
+					"prefix": "price",
 					"attrMap": {
 						"css:color": "priceColour",
 						"css:background-image": "priceColourGradient"
@@ -158,6 +159,7 @@
 						"text",
 						"fill"
 					],
+					"prefix": "feature",
 					"attrMap": {
 						"css:color": "featureColour",
 						"css:background-image": "featureColourGradient"
@@ -178,6 +180,7 @@
 						"text",
 						"fill"
 					],
+					"prefix": "cta",
 					"attrMap": {
 						"css:color": "ctaColour",
 						"css:color-gradient": "ctaColourGradient",
@@ -740,6 +743,385 @@
 		},
 		"popularBadgeBackgroundHover": {
 			"type": "string",
+			"default": ""
+		},
+		"titleFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"titleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"titleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"titleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"titleTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"titleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"titleTextColumns": {
+			"type": "number"
+		},
+		"titleTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"priceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"priceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"priceFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"priceFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"priceTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"priceTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"priceLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"priceLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"priceLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"priceTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"priceTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"priceTextColumns": {
+			"type": "number"
+		},
+		"priceTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"priceWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"ctaFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"ctaFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"ctaFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"ctaTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"ctaTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"ctaLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"ctaLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ctaLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"ctaLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"ctaTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"ctaTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"ctaTextColumns": {
+			"type": "number"
+		},
+		"ctaTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"featureFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"featureFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"featureFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"featureFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"featureFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"featureTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"featureTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"featureLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"featureLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"featureLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"featureLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"featureTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"featureTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"featureTextColumns": {
+			"type": "number"
+		},
+		"featureTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"featureWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
 			"default": ""
 		}
 	},

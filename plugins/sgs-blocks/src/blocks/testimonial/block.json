@@ -672,6 +672,181 @@
 		"ratingColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"quoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"quoteFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"quoteTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"quoteLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"quoteLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"quoteLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"quoteTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"quoteTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"quoteTextColumns": {
+			"type": "number"
+		},
+		"quoteTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"quoteWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"nameTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"nameTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"nameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"nameLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"nameTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

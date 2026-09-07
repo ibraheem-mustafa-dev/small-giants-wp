@@ -342,7 +342,7 @@
 		},
 		"scaleHover": {
 			"type": "number",
-			"default": 1.0
+			"default": 1
 		},
 		"transitionDuration": {
 			"type": "number",
@@ -406,6 +406,46 @@
 		},
 		"className": {
 			"type": "string",
+			"default": ""
+		},
+		"textAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
 			"default": ""
 		}
 	},

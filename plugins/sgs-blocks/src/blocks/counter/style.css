@@ -28,8 +28,12 @@
 /* --- End scroll-driven reveal --- */
 
 .sgs-counter {
-	text-align: center;
 	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+}
+
+/* Default label text-align (0 specificity via :where()) — labelTextAlign attribute now drives this; must always lose to the attribute-driven scoped rule. */
+:where(.sgs-counter) {
+	text-align: center;
 }
 
 /* Optional icon above number */

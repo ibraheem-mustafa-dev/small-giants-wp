@@ -528,6 +528,79 @@
 		"submenuColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"itemFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"itemTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"itemLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"itemTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"itemTextColumns": {
+			"type": "number"
+		},
+		"itemTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"itemWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"render": "file:./render.php",

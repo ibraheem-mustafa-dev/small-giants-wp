@@ -55,7 +55,6 @@
 	   matching the draft. */
 	border-radius: var(--sgs-mb-btn-radius-default, 10px);
 	min-height: 48px;
-	text-align: center;
 	text-decoration: none;
 	cursor: pointer;
 	white-space: normal;
@@ -72,6 +71,12 @@
 	background-color: var(--sgs-btn-bg, var(--sgs-mb-btn-bg-default, transparent));
 	background-image: var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-image-default, none));
 	border-color: var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent));
+}
+
+/* Default text-align (0 specificity via :where()) — textAlign attribute now drives this;
+   must always lose to the attribute-driven scoped rule. */
+:where(.sgs-button) {
+	text-align: center;
 }
 
 /*

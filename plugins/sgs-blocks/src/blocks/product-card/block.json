@@ -940,6 +940,251 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Bound/live-data mode only: when false, suppresses all option-picker renders (both variable-axis and non-variable pill paths) and falls through to the static From-price card appearance. Use on collection grids where picker UI is unwanted. Default true (existing behaviour unchanged)."
+		},
+		"titleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"titleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"titleLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"titleLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"titleTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"titleTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"titleTextColumns": {
+			"type": "number"
+		},
+		"titleTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"titleWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"descFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"descTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"descTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"descLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"descLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"descTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"descTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"descTextColumns": {
+			"type": "number"
+		},
+		"descTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"descWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"tagFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"tagFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"tagFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"tagTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"tagTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"tagLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"tagLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tagLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"tagLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"tagTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"tagTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"tagTextColumns": {
+			"type": "number"
+		},
+		"tagTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"tagWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"usesContext": [

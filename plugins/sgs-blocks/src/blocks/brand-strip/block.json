@@ -518,6 +518,39 @@
 		"nameColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"nameFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"nameTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"nameTextColumns": {
+			"type": "number"
+		},
+		"nameTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"nameWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

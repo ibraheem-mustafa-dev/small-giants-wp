@@ -46,7 +46,11 @@
 				"label": {
 					"label": "Label",
 					"order": 1,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
 					"isWrapper": true,
 					"attrMap": {
 						"css:font-size": "fontSize",
@@ -69,7 +73,9 @@
 				"background": {
 					"label": "Background",
 					"order": 2,
-					"clusters": [ "fill" ],
+					"clusters": [
+						"fill"
+					],
 					"isWrapper": false,
 					"attrMap": {
 						"css:background-color": "backgroundColour",
@@ -114,7 +120,9 @@
 		},
 		"fontSize": {
 			"type": "object",
-			"default": {"desktop": 12}
+			"default": {
+				"desktop": 12
+			}
 		},
 		"fontSizeUnit": {
 			"type": "string",
@@ -172,7 +180,9 @@
 		},
 		"padding": {
 			"type": "object",
-			"default": {"desktop": {}}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"marginTablet": {
 			"type": "object",
@@ -183,13 +193,45 @@
 			"default": {}
 		},
 		"borderRadius": {
-			"type": [ "string", "number" ],
+			"type": [
+				"string",
+				"number"
+			],
 			"default": "",
 			"description": "Border radius as a CSS length (e.g. '16px', '1.5rem'). A bare number is treated as px for pre-2026-08-13 instances."
 		},
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"textWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"textColumns": {
+			"type": "number"
+		},
+		"textIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"writingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
