@@ -195,6 +195,83 @@ const DEFAULT_FOLD_FREQ = REFERENCE_PRESET.twistFrequency;
 const DEFAULT_FOLD_POWER = REFERENCE_PRESET.twistPower;
 
 /*
+ * ── Static orientation/scale/framing overrides (layer 2 only) ──────────────
+ *
+ * `REFERENCE_PRESET` (`PRESETS.light`) is the ONLY preset this engine's model
+ * matrix ever reads — `PRESETS.dark`'s own position/rotation/scale are dead
+ * code today; ground-preset selection (light vs dark) only ever affects the
+ * fragment-shader grading/depth-fade constants further down, never layer 2.
+ * These eight options let a caller nudge layer 2 (`composeModelMatrix`'s
+ * position/rotation/scale) per instance WITHOUT touching
+ * `generative-background-transform.js` — that module's `PRESETS` constants
+ * are the thing `verify-transform.mjs` checks numerically against the
+ * reference rig, and this file's own module docblock and README both warn
+ * against re-tuning them by eye. Overriding here, additively/multiplicatively
+ * on top of the untouched preset, keeps that verification gate meaningful
+ * (it still checks the RAW preset) while giving the client a real per-
+ * instance orientation control.
+ *
+ * Rotation is DEGREES in the public option (`opts.rotationX/Y/Z`), added to
+ * the preset's own radians AFTER converting. Scale is a per-axis MULTIPLIER
+ * (`opts.scaleX/Y/Z`, default 1). Framing is a 2D pan (`opts.offsetX/Y`)
+ * added directly to the preset's own world-unit position X/Y — chosen over
+ * moving the camera/view target because the preset's position is ALREADY the
+ * single per-instance placement value this engine has (there is no separate
+ * camera-position option exposed anywhere, and CAMERA_POSITION/CAMERA_TARGET
+ * are explicitly out of scope per the brief — panning the object keeps the
+ * override in the SAME matrix (layer 2) rather than adding a second, competing
+ * framing mechanism the module docblock already warns against ("do not
+ * reintroduce a second framing mechanism").
+ *
+ * Every default (0 rotation, 1x scale, 0 offset) reproduces
+ * `REFERENCE_PRESET`'s own values EXACTLY — the whole point being that an
+ * instance with none of these attributes set renders byte-for-byte what
+ * ships today.
+ */
+const DEG2RAD = Math.PI / 180;
+
+/**
+ * Build a preset object with the eight static-transform overrides applied on
+ * top of `basePreset`, without mutating it.
+ *
+ * @param {Object} basePreset `PRESETS.light` (or any preset shape).
+ * @param {Object} opts       The engine's own `opts` — only the eight
+ *                            override keys are read.
+ * @return {Object} A new preset object; every other key is copied through
+ *                   from `basePreset` unchanged (twist/displacement fields
+ *                   are untouched by this function).
+ */
+function applyStaticTransformOverrides( basePreset, opts ) {
+	const rotationXDeg = typeof opts.rotationX === 'number' ? opts.rotationX : 0;
+	const rotationYDeg = typeof opts.rotationY === 'number' ? opts.rotationY : 0;
+	const rotationZDeg = typeof opts.rotationZ === 'number' ? opts.rotationZ : 0;
+	const scaleXMult = typeof opts.scaleX === 'number' ? opts.scaleX : 1;
+	const scaleYMult = typeof opts.scaleY === 'number' ? opts.scaleY : 1;
+	const scaleZMult = typeof opts.scaleZ === 'number' ? opts.scaleZ : 1;
+	const offsetX = typeof opts.offsetX === 'number' ? opts.offsetX : 0;
+	const offsetY = typeof opts.offsetY === 'number' ? opts.offsetY : 0;
+
+	return {
+		...basePreset,
+		position: [
+			basePreset.position[ 0 ] + offsetX,
+			basePreset.position[ 1 ] + offsetY,
+			basePreset.position[ 2 ],
+		],
+		rotation: [
+			basePreset.rotation[ 0 ] + rotationXDeg * DEG2RAD,
+			basePreset.rotation[ 1 ] + rotationYDeg * DEG2RAD,
+			basePreset.rotation[ 2 ] + rotationZDeg * DEG2RAD,
+		],
+		scale: [
+			basePreset.scale[ 0 ] * scaleXMult,
+			basePreset.scale[ 1 ] * scaleYMult,
+			basePreset.scale[ 2 ] * scaleZMult,
+		],
+	};
+}
+
+/*
  * ── Grading + glow-gate + fine-noise defaults — MEASURED FROM THE REFERENCE,
  *    not tuned by eye (corrected 2026-09-03, systematic-debugging root-cause
  *    fix, D926/D927). ─────────────────────────────────────────────────────
@@ -700,6 +777,18 @@ function compile( gl, type, source ) {
  * @param {number}               [opts.striationFreq]     Fine-texture high-frequency base.
  * @param {number}               [opts.colourAttenuation] Blue-channel attenuation of the fine texture.
  * @param {number}               [opts.parabolaPower]     Fine-texture UV-axis falloff shape power.
+ * @param {number}               [opts.rotationX]     Layer-2 static orientation override, DEGREES,
+ *   added to the preset's own X rotation (radians, converted internally). Default 0.
+ * @param {number}               [opts.rotationY]     As `rotationX`, Y axis. Default 0.
+ * @param {number}               [opts.rotationZ]     As `rotationX`, Z axis. Default 0.
+ * @param {number}               [opts.scaleX]        Layer-2 static scale override, a MULTIPLIER
+ *   applied to the preset's own non-uniform X scale. Default 1 (no change).
+ * @param {number}               [opts.scaleY]        As `scaleX`, Y axis. Default 1.
+ * @param {number}               [opts.scaleZ]        As `scaleX`, Z axis. Default 1.
+ * @param {number}               [opts.offsetX]       Layer-2 framing pan, world units, added to the
+ *   preset's own position X (a 2D pan of the object, not the camera — see the
+ *   "Static orientation/scale/framing overrides" comment above for why). Default 0.
+ * @param {number}               [opts.offsetY]       As `offsetX`, Y axis. Default 0.
  * @param {Function}             [opts.onLost]        Called when the GPU context is lost.
  * @return {Promise<{draw: Function, resize: Function, destroy: Function}|null>}
  */
@@ -956,7 +1045,9 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 	 * verifier against re-extracted ground truth — do not reintroduce a
 	 * second framing mechanism here.
 	 */
-	let projection = buildTransform( REFERENCE_PRESET, 1, 1 ).mvp;
+	const effectivePreset = applyStaticTransformOverrides( REFERENCE_PRESET, opts );
+
+	let projection = buildTransform( effectivePreset, 1, 1 ).mvp;
 
 	const resize = ( width, height, dpr ) => {
 		// DPR capped at 1.5 — same fillrate-bound precedent as
@@ -976,7 +1067,7 @@ export async function createGenerativeBackground( canvas, opts = {} ) {
 		// differently-framed picture from everyone else. The backing store
 		// still drives `gl.viewport` above; only the frustum uses CSS pixels.
 		projection = buildTransform(
-			REFERENCE_PRESET,
+			effectivePreset,
 			Math.max( 1, width ),
 			Math.max( 1, height )
 		).mvp;

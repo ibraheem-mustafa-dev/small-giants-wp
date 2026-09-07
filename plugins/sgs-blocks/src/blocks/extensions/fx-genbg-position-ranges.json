@@ -1,0 +1,32 @@
+{
+  "_comment": "Empirical bounds for the generative-background engine's 8 static orientation/scale/framing overrides (createGenerativeBackground() opts.rotationX/Y/Z, scaleX/Y/Z, offsetX/Y — src/shared/effects/webgl/generative-background.js). Measured, not guessed: silhouette-mode (u_silhouetteDebug) painted-coverage swept across each parameter in isolation, full-canvas, at effective phase 1.10 (u_time=27500), via scripts/generative-background/sweep-position-ranges.mjs. A value counts as 'still reads as an intentional folded form' when its coverage stays at or above ~30% of the baseline (all-default) coverage of 33.8% — below that the ribbon has rotated too edge-on, shrunk too far, or panned off-frame to read as anything but a thin sliver or nothing. Raw sweep data + full per-value table: scripts/generative-background/runs/sweep-1788779528746/. Step values are slider granularity choices, not measured.",
+  "rotationX": { "min": -180, "max": 180, "default": 0, "step": 1, "unit": "degrees" },
+  "rotationY": { "min": -180, "max": 180, "default": 0, "step": 1, "unit": "degrees" },
+  "rotationZ": {
+    "min": -150,
+    "max": 150,
+    "default": 0,
+    "step": 1,
+    "unit": "degrees",
+    "_comment": "Tightened from the raw measured OK range (-180..180) — coverage at both extremes measured only 32% of baseline (10.7% absolute, right at the acceptance floor), so +/-150 keeps a safety margin rather than shipping a slider whose very ends are borderline-degenerate."
+  },
+  "scaleX": { "min": 0.1, "max": 3, "default": 1, "step": 0.01, "unit": "multiplier" },
+  "scaleY": {
+    "min": 0.4,
+    "max": 3,
+    "default": 1,
+    "step": 0.01,
+    "unit": "multiplier",
+    "_comment": "0.1 and 0.25 both measured OUT (10% and 23% of baseline) — the ribbon flattens to a near-invisible line on this axis well before scaleX/scaleZ show the same effect, because scaleY compresses the fold's own stand-up axis."
+  },
+  "scaleZ": { "min": 0.1, "max": 3, "default": 1, "step": 0.01, "unit": "multiplier" },
+  "offsetX": {
+    "min": -800,
+    "max": 600,
+    "default": 0,
+    "step": 10,
+    "unit": "world units",
+    "_comment": "Asymmetric by measurement, not a mistake — the default framing already sits off-centre (layer 2's own preset composition), so the object reaches the frame edge sooner in +X than -X. +800 measured OUT (28% of baseline); +600 was the last OK value (52%)."
+  },
+  "offsetY": { "min": -800, "max": 800, "default": 0, "step": 10, "unit": "world units" }
+}

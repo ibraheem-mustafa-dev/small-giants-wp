@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Generative background — art-directed showcase (verification scratch page)</title>
+<style>
+  /*
+   * Real page chrome around the effect, deliberately — this is the
+   * "not looked at in isolation" verification page. Mounts the SHIPPING
+   * production boot module (src/shared/effects/fx-generative-background.js),
+   * the same code path a live WP page uses, fed via CSS custom properties +
+   * data-sgs-fx-gen-* attributes exactly as includes/fx-generative-background.php
+   * would emit them — this page just supplies those values directly instead
+   * of going through PHP/WordPress.
+   */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #0b0e11;
+    color: #101418;
+  }
+  header.site-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: #ffffff;
+    border-bottom: 1px solid #e7e9ec;
+  }
+  header.site-nav .brand { font-weight: 700; font-size: 18px; letter-spacing: 0.02em; }
+  header.site-nav nav a {
+    margin-left: 28px; text-decoration: none; color: #43494f; font-size: 14px;
+  }
+
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: 780px;
+    overflow: hidden;
+    background: #0a0d10; /* fallback beneath the effect while it boots */
+    display: flex;
+    align-items: center;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    /* The production CSS fallback + the runtime canvases all paint into
+       this element's own box — see fx-generative-background.css for the
+       real stylesheet; inlined the load-bearing bits here only. */
+  }
+  .hero__bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+    margin-left: 8%;
+    color: #ffffff;
+  }
+  .hero__eyebrow {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #ffd479; margin-bottom: 18px;
+  }
+  .hero__title {
+    font-size: 52px; line-height: 1.08; font-weight: 700; margin: 0 0 22px;
+    text-shadow: 0 2px 18px rgba(0,0,0,0.35);
+  }
+  .hero__body {
+    font-size: 18px; line-height: 1.6; color: rgba(255,255,255,0.86); margin: 0 0 32px;
+    max-width: 480px;
+  }
+  .hero__cta {
+    display: inline-block; padding: 14px 30px; border-radius: 999px;
+    background: #ffffff; color: #0a0d10; font-weight: 600; font-size: 15px;
+    text-decoration: none;
+  }
+
+  main.page-body { max-width: 760px; margin: 0 auto; padding: 72px 24px; background: #ffffff; }
+  main.page-body h2 { font-size: 28px; margin: 0 0 16px; }
+  main.page-body p { font-size: 16px; line-height: 1.7; color: #3a4048; }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="brand">Northline Studio</div>
+  <nav>
+    <a href="#">Work</a>
+    <a href="#">Services</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div
+    class="hero__bg"
+    data-sgs-fx="generative-background"
+    style="
+      --sgs-genbg-1: #0A3D62;
+      --sgs-genbg-2: #079992;
+      --sgs-genbg-3: #F6B93B;
+      --sgs-genbg-4: #E55039;
+      --sgs-genbg-ground: #05070a;
+    "
+    data-sgs-fx-gen-speed="35"
+    data-sgs-fx-gen-disp-amount="10"
+    data-sgs-fx-gen-fold-freq-1="0.55"
+    data-sgs-fx-gen-fold-freq-2="-0.85"
+    data-sgs-fx-gen-fold-freq-3="0.4"
+    data-sgs-fx-gen-fold-power-1="1.2"
+    data-sgs-fx-gen-fold-power-2="4.5"
+    data-sgs-fx-gen-fold-power-3="3.0"
+    data-sgs-fx-gen-disp-freq-x="0.012"
+    data-sgs-fx-gen-disp-freq-z="0.018"
+    data-sgs-fx-gen-glow-amount="55"
+    data-sgs-fx-gen-glow-power="1.4"
+    data-sgs-fx-gen-glow-ramp="0.7"
+    data-sgs-fx-gen-striation-strength="0.28"
+    data-sgs-fx-gen-striation-freq="45"
+    data-sgs-fx-gen-colour-attenuation="0.85"
+    data-sgs-fx-gen-parabola-power="2.2"
+    data-sgs-fx-gen-rotate-x="25"
+    data-sgs-fx-gen-rotate-y="-40"
+    data-sgs-fx-gen-rotate-z="8"
+    data-sgs-fx-gen-scale-x="1.15"
+    data-sgs-fx-gen-scale-y="1.3"
+    data-sgs-fx-gen-scale-z="0.9"
+    data-sgs-fx-gen-offset-x="-150"
+    data-sgs-fx-gen-offset-y="60"
+  >
+    <button type="button" class="sgs-generative-background__toggle" data-sgs-genbg-toggle aria-pressed="false" hidden>Pause background</button>
+  </div>
+
+  <div class="hero__content">
+    <div class="hero__eyebrow">Northline Studio — 2026</div>
+    <h1 class="hero__title">Build something that moves people.</h1>
+    <p class="hero__body">
+      We design and ship products for teams who care about craft. Every
+      engagement starts with the same question: what would make this
+      genuinely worth using?
+    </p>
+    <a href="#" class="hero__cta">Start a project</a>
+  </div>
+</section>
+
+<main class="page-body">
+  <h2>Real content beneath the fold</h2>
+  <p>
+    This paragraph exists purely so the hero above is judged the way a
+    visitor would actually see it — as the top of a real page, not a
+    shape floating in isolation. The effect above is running the shipping
+    production boot module with every one of its 24 client-facing
+    parameters set to a deliberate, non-default value: four custom
+    colours, a dark ground, and hand-picked speed, movement, fine-texture
+    and orientation/scale/position settings.
+  </p>
+</main>
+
+<script type="module" src="../../build/shared/effects/fx-generative-background.js"></script>
+</body>
+</html>

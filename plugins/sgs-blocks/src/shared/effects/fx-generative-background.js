@@ -487,6 +487,24 @@ function attachWebglLayer( el, staticCanvas ) {
 	const colourAttenuation = readNumberAttr( 'data-sgs-fx-gen-colour-attenuation' );
 	const parabolaPower = readNumberAttr( 'data-sgs-fx-gen-parabola-power' );
 
+	/*
+	 * Static orientation/scale/framing overrides (layer 2 only) — the
+	 * position/size axis. Attribute names are the FIXED contract other
+	 * in-flight work (PHP + editor) wires to; see
+	 * `createGenerativeBackground()`'s own JSDoc for what each does and its
+	 * default (rotation degrees default 0, scale multipliers default 1,
+	 * offsets default 0 — every default reproduces today's shipped preset
+	 * exactly).
+	 */
+	const rotationX = readNumberAttr( 'data-sgs-fx-gen-rotate-x' );
+	const rotationY = readNumberAttr( 'data-sgs-fx-gen-rotate-y' );
+	const rotationZ = readNumberAttr( 'data-sgs-fx-gen-rotate-z' );
+	const scaleX = readNumberAttr( 'data-sgs-fx-gen-scale-x' );
+	const scaleY = readNumberAttr( 'data-sgs-fx-gen-scale-y' );
+	const scaleZ = readNumberAttr( 'data-sgs-fx-gen-scale-z' );
+	const offsetX = readNumberAttr( 'data-sgs-fx-gen-offset-x' );
+	const offsetY = readNumberAttr( 'data-sgs-fx-gen-offset-y' );
+
 	// Depth fade mixes toward this — the SAME `--sgs-genbg-ground` custom
 	// property the CSS fallback and `sgs_apply_fx_generative_background()`
 	// already resolve (module docblock), read via the same colour-probe
@@ -603,6 +621,14 @@ function attachWebglLayer( el, staticCanvas ) {
 		striationFreq,
 		colourAttenuation,
 		parabolaPower,
+		rotationX,
+		rotationY,
+		rotationZ,
+		scaleX,
+		scaleY,
+		scaleZ,
+		offsetX,
+		offsetY,
 		// Context loss is the one stop() caller that must also drop the active
 		// flag — every other stop() is temporary and must not flash the static
 		// canvas back into view (it never left; the WebGL layer just sits on

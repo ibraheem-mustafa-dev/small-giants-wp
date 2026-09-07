@@ -50,6 +50,7 @@ import { isExtensionHidden } from './hide-extensions';
 import qualifyingBlocks from './generated-fx-qualifying-blocks.json';
 import fxEffectMeta from './generated-fx-effect-meta.json';
 import fxPresets from './fx-presets.json';
+import genbgPositionRanges from './fx-genbg-position-ranges.json';
 import fxPathRoutes from '../../../includes/fx-path-routes.json';
 import fxShapeRoutes from '../../../includes/fx-shape-routes.json';
 import { ToggleGroupControl, ToggleGroupControlOption, ToggleGroupControlOptionIcon, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -1152,6 +1153,24 @@ function addFxAttributes( settings, name ) {
 			fxGenStriationFreq: { type: 'number' },
 			fxGenColourAttenuation: { type: 'number' },
 			fxGenParabolaPower: { type: 'number' },
+			/*
+			 * Generative background — static orientation/scale/framing
+			 * overrides (position-controls build, following the v1.2 rewrite).
+			 * Same undefined-when-untouched shape as every other genGen
+			 * tunable above — `webgl/generative-background.js`'s own
+			 * calibrated defaults stand until a client changes them. Bounds
+			 * are the EMPIRICALLY SWEPT ranges in `fx-genbg-position-ranges.json`
+			 * (silhouette-coverage measured, not guessed) — read there before
+			 * changing any control's min/max. NO `default: null` (D755).
+			 */
+			fxGenRotateX: { type: 'number' },
+			fxGenRotateY: { type: 'number' },
+			fxGenRotateZ: { type: 'number' },
+			fxGenScaleX: { type: 'number' },
+			fxGenScaleY: { type: 'number' },
+			fxGenScaleZ: { type: 'number' },
+			fxGenOffsetX: { type: 'number' },
+			fxGenOffsetY: { type: 'number' },
 			fxMagnetAxis: { type: 'string', default: '' },
 			fxMagnetRadius: { type: 'number' },
 			fxMagnetStrength: { type: 'number' },
@@ -1506,6 +1525,15 @@ function addFxSaveProps( props, blockType, attributes ) {
 		'data-sgs-fx-gen-striation-freq': attributes.fxGenStriationFreq,
 		'data-sgs-fx-gen-colour-attenuation': attributes.fxGenColourAttenuation,
 		'data-sgs-fx-gen-parabola-power': attributes.fxGenParabolaPower,
+		// Generative background — static orientation/scale/framing overrides.
+		'data-sgs-fx-gen-rotate-x': attributes.fxGenRotateX,
+		'data-sgs-fx-gen-rotate-y': attributes.fxGenRotateY,
+		'data-sgs-fx-gen-rotate-z': attributes.fxGenRotateZ,
+		'data-sgs-fx-gen-scale-x': attributes.fxGenScaleX,
+		'data-sgs-fx-gen-scale-y': attributes.fxGenScaleY,
+		'data-sgs-fx-gen-scale-z': attributes.fxGenScaleZ,
+		'data-sgs-fx-gen-offset-x': attributes.fxGenOffsetX,
+		'data-sgs-fx-gen-offset-y': attributes.fxGenOffsetY,
 		'data-sgs-fx-magnet-axis': attributes.fxMagnetAxis,
 		'data-sgs-fx-magnet-radius': attributes.fxMagnetRadius,
 		'data-sgs-fx-magnet-strength': attributes.fxMagnetStrength,
@@ -3674,6 +3702,37 @@ const withFxControls = createHigherOrderComponent( ( BlockEdit ) => {
 											) }
 										/>
 									</ToolsPanelItem>
+
+								{ [
+									{ key: 'fxGenRotateX', label: __( 'Rotation — X axis', 'sgs-blocks' ), range: genbgPositionRanges.rotationX, help: __( 'Tilts the shape forward/back. Full range stays recognisable.', 'sgs-blocks' ) },
+									{ key: 'fxGenRotateY', label: __( 'Rotation — Y axis', 'sgs-blocks' ), range: genbgPositionRanges.rotationY, help: __( 'Turns the shape left/right. Full range stays recognisable.', 'sgs-blocks' ) },
+									{ key: 'fxGenRotateZ', label: __( 'Rotation — Z axis', 'sgs-blocks' ), range: genbgPositionRanges.rotationZ, help: __( 'Rolls the shape. Range is tightened slightly at the very ends to avoid an edge-on sliver.', 'sgs-blocks' ) },
+									{ key: 'fxGenScaleX', label: __( 'Size — width', 'sgs-blocks' ), range: genbgPositionRanges.scaleX, help: __( 'Stretches the shape horizontally.', 'sgs-blocks' ) },
+									{ key: 'fxGenScaleY', label: __( 'Size — height', 'sgs-blocks' ), range: genbgPositionRanges.scaleY, help: __( 'Stretches the shape vertically. Going too small flattens it to a line — the lower limit is set just above that point.', 'sgs-blocks' ) },
+									{ key: 'fxGenScaleZ', label: __( 'Size — depth', 'sgs-blocks' ), range: genbgPositionRanges.scaleZ, help: __( 'Stretches the shape front-to-back, changing how deep the folds read.', 'sgs-blocks' ) },
+									{ key: 'fxGenOffsetX', label: __( 'Position — horizontal', 'sgs-blocks' ), range: genbgPositionRanges.offsetX, help: __( 'Pans the shape left/right within the background.', 'sgs-blocks' ) },
+									{ key: 'fxGenOffsetY', label: __( 'Position — vertical', 'sgs-blocks' ), range: genbgPositionRanges.offsetY, help: __( 'Pans the shape up/down within the background.', 'sgs-blocks' ) },
+								].map( ( { key, label, range, help } ) => (
+									<ToolsPanelItem
+										key={ key }
+										hasValue={ () => undefined !== attributes[ key ] }
+										label={ label }
+										onDeselect={ () => setParam( { [ key ]: undefined } ) }
+										isShownByDefault={ false }
+									>
+										<RangeControl
+											__nextHasNoMarginBottom
+											__next40pxDefaultSize
+											label={ label }
+											value={ attributes[ key ] }
+											onChange={ ( value ) => setParam( { [ key ]: value } ) }
+											min={ range.min }
+											max={ range.max }
+											step={ range.step }
+											help={ help }
+										/>
+									</ToolsPanelItem>
+								) ) }
 
 								<Notice status="info" isDismissible={ false }>
 									{ __(

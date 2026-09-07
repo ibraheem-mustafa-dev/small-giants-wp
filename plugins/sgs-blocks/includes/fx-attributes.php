@@ -215,6 +215,22 @@ const FX_ATTR_MAP = array(
 	'fxGenStriationFreq'   => 'data-sgs-fx-gen-striation-freq',
 	'fxGenColourAttenuation' => 'data-sgs-fx-gen-colour-attenuation',
 	'fxGenParabolaPower'   => 'data-sgs-fx-gen-parabola-power',
+
+	/*
+	 * Generative background — rotation/scale/2D framing offset (sibling work
+	 * in flight). Same reasoning as the geometry/striation rows above — these
+	 * are currently hardcoded and are being made client-controllable; most
+	 * qualifying hosts are DYNAMIC blocks, so these MUST be injected here for
+	 * `sgs_fx_data_attr_string()`'s generic loop to pick them up.
+	 */
+	'fxGenRotateX'         => 'data-sgs-fx-gen-rotate-x',
+	'fxGenRotateY'         => 'data-sgs-fx-gen-rotate-y',
+	'fxGenRotateZ'         => 'data-sgs-fx-gen-rotate-z',
+	'fxGenScaleX'          => 'data-sgs-fx-gen-scale-x',
+	'fxGenScaleY'          => 'data-sgs-fx-gen-scale-y',
+	'fxGenScaleZ'          => 'data-sgs-fx-gen-scale-z',
+	'fxGenOffsetX'         => 'data-sgs-fx-gen-offset-x',
+	'fxGenOffsetY'         => 'data-sgs-fx-gen-offset-y',
 );
 
 /**
@@ -570,6 +586,14 @@ function sgs_fx_effect_param_scope(): array {
 			'fxGenStriationFreq',
 			'fxGenColourAttenuation',
 			'fxGenParabolaPower',
+			'fxGenRotateX',
+			'fxGenRotateY',
+			'fxGenRotateZ',
+			'fxGenScaleX',
+			'fxGenScaleY',
+			'fxGenScaleZ',
+			'fxGenOffsetX',
+			'fxGenOffsetY',
 		),
 	);
 }
