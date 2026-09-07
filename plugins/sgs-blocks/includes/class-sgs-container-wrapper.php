@@ -1117,6 +1117,41 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$base_outer_decls[] = 'min-height:' . esc_attr( $min_height );
 			}
 
+			// minHeight/content-band flex-fill (defect fix, 2026-09-07). When a
+			// section carries a minHeight AND its flex/grid layout routes onto the
+			// __inner content band ($grid_on_inner, resolved above), the band sizes
+			// to its own content by default — the outer's min-height has nothing to
+			// distribute vertically into, so a client's justify-content:'center'
+			// (already correctly routed onto the __inner) centres within a band that
+			// is only as tall as its content, not within the section. Measured live
+			// on page 3389: outer 720px, __inner 118px, content pinned to the top.
+			//
+			// Fix: make the OUTER a column flex container so the __inner participates
+			// as a flex ITEM; the __inner then gets 'flex:1' (below, alongside $gd)
+			// so it grows to fill the outer's min-height. The __inner's own
+			// justify-content/align-items (unchanged) then have real vertical space.
+			//
+			// ⛔ Rejected alternatives (do not reintroduce): `height:100%` on the
+			// inner resolves against the parent's HEIGHT, which is `auto` on a
+			// min-height-only parent — silently inert. Moving minHeight onto the
+			// inner would shrink the painted full-bleed section area to the
+			// constrained content column.
+			//
+			// Gated STRICTLY on minHeight being set (base OR a responsive tier) —
+			// a container with neither must stay display:block, byte-identical to
+			// before this fix. $grid_on_inner is itself gated on $has_band_props
+			// (a real content band existing), so a container with a min-height but
+			// no band never gets this treatment either — min-height and the
+			// grid/flex layout already share the outer element in that case, and
+			// the pre-existing 'sgs-container--has-min-height' shim (or an
+			// operator's own alignItems/justifyContent choice) already applies to
+			// the correct element with no fix needed.
+			$sgs_min_height_flex_fill = $is_section && $grid_on_inner && ( '' !== $min_height || $has_responsive_min_height );
+			if ( $sgs_min_height_flex_fill ) {
+				$base_outer_decls[] = 'display:flex';
+				$base_outer_decls[] = 'flex-direction:column';
+			}
+
 			if ( $shadow ) {
 				// T2.2b (Bean-approved 2026-07-28): route through sgs_shadow_value()
 				// so BOTH preset slugs (wrapped in the preset var, byte-identical to
@@ -1457,6 +1492,15 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// regardless of $grid_on_inner (which only decides the SELECTOR
 				// the scoped rule targets, via $grid_sel).
 				$base_grid_real_decls = array_merge( $base_grid_real_decls, $gd );
+
+				// minHeight/content-band flex-fill (defect fix, 2026-09-07) — sibling
+				// half of the $base_outer_decls flex-column above. $grid_sel targets
+				// the __inner in this branch ($grid_on_inner true, checked inside the
+				// flag itself), so 'flex:1' here makes the band GROW to fill the
+				// outer's min-height rather than sizing to its own content.
+				if ( $sgs_min_height_flex_fill ) {
+					$base_grid_real_decls[] = 'flex:1';
+				}
 			}
 
 			// SVG min-height custom property — section kind only.
