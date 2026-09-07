@@ -103,7 +103,14 @@
 					"clusters": [
 						"text"
 					],
-					"prefix": "separator"
+					"prefix": "separator",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-separator": "separatorColourHover"
+							}
+						}
+					}
 				},
 				"current": {
 					"label": "Current page",
@@ -112,6 +119,13 @@
 						"text"
 					],
 					"prefix": "current",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-current": "currentColourHover"
+							}
+						}
+					},
 					"_note": "NOT renamed (2026-08-15 audit) — its base class is ALSO `.sgs-breadcrumbs__item` (render.php:342, modified `--current`), so `currentColour`'s markup-fallback derivation ALSO resolves to css_element='item', identically to the 'item' element above. Two manifest elements cannot share one JSON key, and 'item' is already claimed by the link element (the more common case). Same single-valued-css_element schema limitation the task brief carves out for sgs/hero and sgs/trust-bar: a real DB orphan against 'current' will persist after reseed, but renaming here would either collide with 'item' or silently merge two distinct semantic controls (crumb link vs. terminal unlinked crumb) under one key. Left as-is deliberately — needs a schema decision (multi-valued css_element or a modifier axis), not a manifest edit."
 				}
 			}
@@ -154,6 +168,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the link text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over linkColour."
 		},
+		"linkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of linkColourHover. Non-empty wins over linkColourHover on :hover/:focus-visible."
+		},
 		"separatorColour": {
 			"type": "string",
 			"default": "text-muted"
@@ -163,6 +186,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the separator text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over separatorColour."
 		},
+		"separatorColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"separatorColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of separatorColourHover. Non-empty wins over separatorColourHover on :hover/:focus-visible."
+		},
 		"currentColour": {
 			"type": "string",
 			"default": "text"
@@ -171,6 +203,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the current-page crumb text with a background-clip:text mechanism instead of a flat colour. Non-empty wins over currentColour."
+		},
+		"currentColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"currentColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of currentColourHover. Non-empty wins over currentColourHover on :hover/:focus-visible."
 		},
 		"fontSize": {
 			"type": "object",

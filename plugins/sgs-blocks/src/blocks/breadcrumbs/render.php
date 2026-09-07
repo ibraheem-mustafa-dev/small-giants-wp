@@ -77,16 +77,22 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
-$separator             = $attributes['separator'] ?? '/';
-$show_home             = $attributes['showHome'] ?? true;
-$home_label            = $attributes['homeLabel'] ?? 'Home';
-$link_colour           = $attributes['linkColour'] ?? 'text-muted';
-$link_colour_gradient  = $attributes['linkColourGradient'] ?? '';
-$separator_colour      = $attributes['separatorColour'] ?? 'text-muted';
-$separator_colour_grad = $attributes['separatorColourGradient'] ?? '';
-$current_colour        = $attributes['currentColour'] ?? 'text';
-$current_colour_grad   = $attributes['currentColourGradient'] ?? '';
-$anchor                = $attributes['anchor'] ?? '';
+$separator                   = $attributes['separator'] ?? '/';
+$show_home                   = $attributes['showHome'] ?? true;
+$home_label                  = $attributes['homeLabel'] ?? 'Home';
+$link_colour                 = $attributes['linkColour'] ?? 'text-muted';
+$link_colour_gradient        = $attributes['linkColourGradient'] ?? '';
+$link_colour_hover           = $attributes['linkColourHover'] ?? '';
+$link_colour_hover_grad      = $attributes['linkColourHoverGradient'] ?? '';
+$separator_colour            = $attributes['separatorColour'] ?? 'text-muted';
+$separator_colour_grad       = $attributes['separatorColourGradient'] ?? '';
+$separator_colour_hover      = $attributes['separatorColourHover'] ?? '';
+$separator_colour_hover_grad = $attributes['separatorColourHoverGradient'] ?? '';
+$current_colour              = $attributes['currentColour'] ?? 'text';
+$current_colour_grad         = $attributes['currentColourGradient'] ?? '';
+$current_colour_hover        = $attributes['currentColourHover'] ?? '';
+$current_colour_hover_grad   = $attributes['currentColourHoverGradient'] ?? '';
+$anchor                      = $attributes['anchor'] ?? '';
 
 // Border (Block Customisation Standard — wrapper-level border control).
 // Box-object interface contract §1/§2: borderWidth is an SGS custom OBJECT
@@ -167,6 +173,17 @@ if ( '' !== $link_colour_effective ) {
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item a", $link_colour_effective );
 }
 
+// --- Link colour hover state — same trio, :hover/:focus-visible variant of
+// the same selector, via the shared touch-safe hover wrapper. ---
+$link_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $link_colour_hover, $link_colour_hover_grad );
+if ( '' !== $link_colour_hover_effective ) {
+	$link_colour_hover_decl = sgs_text_colour_decl( $link_colour_hover_effective );
+	if ( '' !== $link_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-breadcrumbs__item a", $link_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item a:hover", $link_colour_hover_effective );
+}
+
 // --- Separator colour gradient support (FR-?-?). Resolve flat/gradient
 // siblings, emit direct scoped rules alongside the custom properties above. ---
 $separator_colour_effective = sgs_resolve_text_colour_or_gradient( $separator_colour, $separator_colour_grad );
@@ -176,6 +193,17 @@ if ( '' !== $separator_colour_effective ) {
 		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__separator{" . $separator_colour_decl . ';}';
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__separator", $separator_colour_effective );
+}
+
+// --- Separator colour hover state — same trio, :hover/:focus-visible
+// variant of the same selector. ---
+$separator_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $separator_colour_hover, $separator_colour_hover_grad );
+if ( '' !== $separator_colour_hover_effective ) {
+	$separator_colour_hover_decl = sgs_text_colour_decl( $separator_colour_hover_effective );
+	if ( '' !== $separator_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-breadcrumbs__separator", $separator_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__separator:hover", $separator_colour_hover_effective );
 }
 
 // --- Current-page colour gradient support. Resolve flat/gradient siblings,
@@ -188,6 +216,17 @@ if ( '' !== $current_colour_effective ) {
 		$scoped_css[] = "{$root_sel} .sgs-breadcrumbs__item--current{" . $current_colour_decl . ';}';
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item--current", $current_colour_effective );
+}
+
+// --- Current-page colour hover state — same trio, :hover/:focus-visible
+// variant of the same selector. ---
+$current_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $current_colour_hover, $current_colour_hover_grad );
+if ( '' !== $current_colour_hover_effective ) {
+	$current_colour_hover_decl = sgs_text_colour_decl( $current_colour_hover_effective );
+	if ( '' !== $current_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-breadcrumbs__item--current", $current_colour_hover_decl );
+	}
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( "{$root_sel} .sgs-breadcrumbs__item--current:hover", $current_colour_hover_effective );
 }
 
 // --- Border — width/style on the wrapper, colour (flat or gradient, base +

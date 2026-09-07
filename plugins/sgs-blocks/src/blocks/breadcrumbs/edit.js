@@ -6,7 +6,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { SgsColourPanel, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { SgsColourPanel, textRow, ResponsiveBoxControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const SEPARATOR_OPTIONS = [
@@ -75,10 +75,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		separator,
 		showHome,
 		homeLabel,
-		linkColour,
-		linkColourGradient,
-		separatorColour,
-		separatorColourGradient,
 		currentColour,
 		currentColourGradient,
 		borderColour,
@@ -107,51 +103,42 @@ export default function Edit( { attributes, setAttributes } ) {
 			   panel. */ }
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'link',
 						label: __( 'Link colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: linkColour,
-								onChange: ( val ) => setAttributes( { linkColour: val ?? '' } ),
-								gradientValue: linkColourGradient,
-								onGradientChange: ( val ) => setAttributes( { linkColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'linkColour',
+							hover: 'linkColourHover',
+							gradient: 'linkColourGradient',
+							hoverGradient: 'linkColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'separator',
 						label: __( 'Separator colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: separatorColour,
-								onChange: ( val ) => setAttributes( { separatorColour: val ?? '' } ),
-								gradientValue: separatorColourGradient,
-								onGradientChange: ( val ) => setAttributes( { separatorColourGradient: val ?? '' } ),
-							},
-						],
-					},
-					{
+						attrs: {
+							base: 'separatorColour',
+							hover: 'separatorColourHover',
+							gradient: 'separatorColourGradient',
+							hoverGradient: 'separatorColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'current',
 						label: __( 'Current page colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: currentColour,
-								onChange: ( val ) => setAttributes( { currentColour: val ?? '' } ),
-								gradientValue: currentColourGradient,
-								onGradientChange: ( val ) => setAttributes( { currentColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'currentColour',
+							hover: 'currentColourHover',
+							gradient: 'currentColourGradient',
+							hoverGradient: 'currentColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>
