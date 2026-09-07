@@ -608,3 +608,27 @@ Task 1: dispatched
 Task 2: not started
 Task 1: complete (commits 9014aa9-fab4f92, review clean after 1 fix round — gate-breaking regression on 96 pre-existing findings closed via baseline ratchet)
   Minor open, not blocking: task-1-report.md misnames one pre-existing gate (check-colour-attr-css-property -> should read check-colour-preview-resolver) and undercounts fast-tier failures due to this worktree's missing node_modules (env gap, not a code defect) -- cosmetic, noted for final review triage.
+
+---
+
+# SDD progress — live editor verification of 4 typography panel fixes, 2026-09-07
+
+Branch: main. Verifier: sonnet (MCP/Playwright). Reviewer: inline/cross-tier per /delegate
+(router REFUSED a same-tier dispatch: qc_review with original_model=sonnet returns "inline").
+
+Task 1: complete (verify commits d399b7c45 + 558524dcd live on the canary; all 5 claims CONFIRMED,
+cross-tier review clean). Evidence: 10 screenshots + getBoundingClientRect measurement
+(75px vs 150px = exactly 1:2, matching flexGrow 1 vs 2). Report: .superpowers/sdd/verify-inspector-report.md
+
+Read-only compliance independently confirmed by the reviewer, not taken on trust:
+page 2742 modified_gmt still 2026-09-06T19:00:06 (~7h before the run), zero agent commits.
+
+Minor, non-blocking: verifier wrote its screenshots to the repo root instead of the specified
+.superpowers/sdd/ (moved by the reviewer); claims 3 and 4 both cite one screenshot named for
+claim 2 — weak attribution, but claim 3 carries an independent numeric measurement so the
+verdict does not rest on the screenshot.
+
+NOT verified, no positive control available on the canary (carried forward, still open):
+  - tier-object Group 0 padding fix — no block on page 2742 uses configured padding
+  - typography decimal font-size (float-cast) — not exercised on that page
+  Both need a purpose-built test page. Do not record either as verified.
