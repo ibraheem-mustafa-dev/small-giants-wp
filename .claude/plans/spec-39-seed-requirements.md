@@ -431,3 +431,85 @@ above; the 2026-08-12 council items are listed after them.
   no plain `backgroundColour` attr. D581 records the removal as fixing a conflict; it does not record
   what replaced it. Worth settling before Spec 39 designs colour routing for them. ⚠ Not a regression
   claim — an unanswered question.
+
+---
+
+# 2026-09-07 — Bean's quality bar for the rework, and what the seed is missing against it
+
+**Status of this section: INPUTS, like the rest of the file.** Nothing here is settled. But the
+measurements are live, re-runnable, and were taken this session.
+
+## Bean's bar, recorded verbatim so it cannot be softened
+
+The pipeline should match **modern AI-design standards and Awwwards-level output** — motion
+effects and the other high-craft touches that were never in it before — and it should use **at
+least the full potential of the theme's existing functionality**, which today it does not.
+Concretely: clone **motion/animation**, not just colour and typography; and lean on the block
+standards and the upgraded DB to produce a **cleaner, better routing setup**.
+
+## Verdict: R1-R7 do not reach that bar, and cannot be stretched to
+
+R1-R7 are entirely about **attribute SHAPE** — flat tier siblings becoming `{desktop, tablet,
+mobile}` objects, and the DB identity that follows. That is a correctness and uniformity
+programme. It is worth doing, and it is orthogonal to whether the output is any good.
+
+**Measured 2026-09-07:** the words `motion`, `animation`, `animate`, `GSAP` and `scroll` appear
+**zero times** across this file's original 433 lines. A pipeline built to this seed alone would
+clone a faithful, well-shaped, completely static page.
+
+## R8 — Motion is the largest unused capability in the framework
+
+The gap is NOT that the framework lacks motion. It is that the pipeline ignores what already
+exists.
+
+| Measured (2026-09-07) | Figure |
+|---|---|
+| Motion/FX attributes declared across the framework | **2,745** across **44 blocks** |
+| Of those, already carrying a `css_property` (i.e. DB-routable today) | **880** |
+| Converter files referencing any `fx*`/animation/parallax attribute | **0** |
+| `fx*` attribute writes anywhere in `scripts/converter/` | **0** |
+| Converter sites reading `animation` / `transition` / `transform` CSS | **0** |
+
+Re-run:
+```
+git grep -oE "'fx[A-Za-z]+'" -- plugins/sgs-blocks/scripts/converter/ | wc -l
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql \
+  "SELECT COUNT(*) FROM block_attributes WHERE attr_name LIKE 'fx%'"
+```
+
+**The consequence for Spec 39's shape.** Motion cloning is mostly a **routing-consumption**
+problem, not a modelling problem. The vocabulary already exists in `property_suffixes`, and
+`animation` / `transform` / `transition` / `transition-duration` / `transition-timing-function`
+are already live `css_property` values on 880 attributes. Spec 39 does not need to invent a motion
+data model — it needs to make the converter READ the one that is already seeded, and to finish
+seeding the remaining ~1,800.
+
+**Questions for Spec 39:**
+1. Does motion extraction read the draft's declared `animation`/`transition`/`transform` CSS, or
+   does it RECOGNISE intent (a reveal, a parallax, a stagger) and map to the framework's named FX
+   presets? The second produces better output and is the only one that can reach the bar, but it
+   needs a recognition layer this seed has no concept of.
+2. Motion is governed by Spec 38's four-tier doctrine (V vanilla / G GSAP / H helper / W WebGL).
+   Which tiers may a CLONE emit? A cloned page that silently pulls in the GSAP or WebGL bundle
+   changes the page's performance budget without anyone choosing it.
+3. `prefers-reduced-motion` is a hard accessibility requirement. It must be a property of the
+   emitter, not a per-block afterthought — a cloned page must honour it by construction.
+
+## R9 — "Full potential of the theme" is measurable, and motion is only the first axis
+
+Before Spec 39 is written, run the same converter-coverage measurement for **every** capability
+family the framework declares, not just motion. The R8 method generalises: count the attributes a
+family declares, then count the converter's writes to them. Any family with a high declaration
+count and zero converter writes is capability the pipeline is leaving on the floor. Motion is the
+one that has been measured; it is unlikely to be the only one.
+
+⛔ **Do not let this become a percentage.** Goal B's history is explicit that an aggregate score
+was measuring a deleted instrument, and R-31-4 forbids an aggregate as a closing gate. This is a
+per-family coverage inventory, not a number to engineer upward.
+
+## R10 — The routing precondition R8 inherits
+
+R8 depends on DB routing being trustworthy, and it is not yet fully so. Rule 31's own resolver
+reports **389 of 1,286 colour attributes UNRESOLVED** (~30%) when mapping attribute to paint
+mechanism. That same resolution layer is what motion routing would rely on. The unresolved split
+is currently unmeasured and unowned; it is a precondition for R8, not a parallel nicety.
