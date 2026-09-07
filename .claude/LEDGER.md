@@ -39,9 +39,24 @@ than needing a bypass every time.
 
 **None.**
 
-## THE FRONT — three live tracks, pick one
+## THE FRONT — four live tracks, pick one
 
-Untouched this session — still the live front from 2026-09-06.
+Track D is new (2026-09-07). Tracks A/B untouched this session; Track C is closed-out salvage.
+
+### Track D — typography: surface-type taxonomy + helper extension (NEWEST, has a design gate)
+**Read first (full, not skim):** `.claude/prompts/2026-09-07-typography-surface-taxonomy-next.md`.
+Supersedes the deleted `2026-09-06-typography-task3-close-plus-converter-bug.md`.
+**Ground truth established 2026-09-07 by running the commands:** `bf2c903ba` rebuilt the SHARED
+`TypographyControls` component (+1033 lines) on WP core's real widgets — it is not two block
+POCs. 39 blocks import it; only **6** still declare native `supports.typography`. Context-variance
+already has a mechanism (15 opt-in `show*` props); `heading` and `text` differ by exactly two
+(`showTextColumns`/`showTextIndent`).
+**Bean-settled:** ONE helper with block/context variance, not multiple variant helpers.
+**Task 1 is a DESIGN GATE (Rule 7)** — the surface-type → control-set taxonomy is Bean's call,
+because 37 of the 39 adopters have never had their control set deliberately chosen, so inferring
+it from current usage would launder an accident into a standard.
+**Carried, still open:** PRs #40/#41 (23 blocks) have **never been deployed to the canary** —
+D973's own next-session first item, never done.
 
 ### Track A — colour conformance, TEXT surface
 **Read first (full, not skim):** `.claude/prompts/2026-09-06-colour-conformance-text-surface-next.md`.
@@ -139,7 +154,8 @@ Bean can close these PRs at leisure; no further investigation needed.
 |---|---|
 | **Colour conformance TEXT surface (Track A)** | `.claude/prompts/2026-09-06-colour-conformance-text-surface-next.md` |
 | **Tier-object migration Phase 3 (Track B)** | `.claude/prompts/2026-09-06-tier-object-phase-3-remaining-work.md` |
-| **Typography Task 3 status (PARTIAL — re-verify before trusting)** | `.claude/prompts/2026-09-06-typography-task3-close-plus-converter-bug.md` |
+| **Typography — surface taxonomy + helper extension (Track D)** | `.claude/prompts/2026-09-07-typography-surface-taxonomy-next.md` |
+| **Stale doc, fix when Track D runs** | `plugins/sgs-blocks/CLAUDE.md:814` still mandates the hand-rolled controls `bf2c903ba` deleted; `decisions.md:435` is a dead link |
 | **This session's box-shape hover work** | D985 in `decisions.md`; `reports/visual-diff/{media,hero}-2026-09-07.md` |
 | **Known gap: media-atom `:hover` rules unguarded against touch-hover-stuck** | This file's "Open" section above; `scripts/hover-guard/check.js` (scope) |
 | Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
