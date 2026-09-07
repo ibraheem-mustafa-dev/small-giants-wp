@@ -1,3 +1,95 @@
+## D995 [ROUTINE] — rule 41's last two false-positive classes root-caused at the AST level; `sgs/product-card`'s CTA becomes "Button" and its panels merge
+
+**2026-09-07.** Detector fixes first, because every block-side change below only became
+trustworthy once they landed.
+
+**1 — `panelsMentioning()` counted a value READ as a control** (`61883b240`). It ran a whole-word
+regex over each panel's text slice, so `sgs/gallery`'s `imageSize` — passed as a live-preview
+argument (`resolveGalleryMedia(media, imageSize)`) inside the unrelated "Layout" panel *as well as*
+having its real control in "Hover Effects" — scored 2 panels and a false scattering finding.
+Replaced with `classifyAttrReferences()`: AST-level WRITE/READ classification (JSX `value=` binding,
+colour-row `{value: x}` shape, `setAttributes()`, curried `set('name')`). Only WRITEs locate a panel.
+
+**2 — `findPanelElements()` assumed file position == render position** (same commit). False whenever
+a panel's JSX comes from a separately-declared helper component, which JS conventionally declares
+*before* its caller. `sgs/product-card`'s `ContentOverridesPanel` is defined at `edit.js:359` but
+invoked at `:1791`; sorted first, it produced false 3-panel scattering plus false dom-order
+violations. Fixed by excluding any panel whose nearest enclosing function is not the block's
+resolved default-export `Edit` (via `ExportDefaultDeclaration` + binding resolution).
+
+Both are proven at the mechanism level, not by the count moving: hero's "Inner" finding and three
+more product-card/gallery findings survived BOTH fixes unchanged — genuine defects the false
+positives had been masking. Three self-test fixtures were rewritten from a bare `<div>{attr}</div>`
+display shape to a real `value={attr} onChange={…}` control shape, because "any mention" is no
+longer what this rule checks.
+
+**3 — the colour-row exemption extended from axis A to axis C** (`0464f60de`). Axis A already
+exempted the documented "one `SgsColourPanel` row + one other panel" shape (D970) from
+`co2-scattered-element`. Axis C (`dom-order-vs-declared-order`) reused the same `firstPanelIndex`
+*without* the exemption, so any element whose earliest matched panel is the shared, early-mounted
+`SgsColourPanel` had its "first panel position" pulled artificially early and flagged against a
+sibling whose real panel sits later in the file. Axis C now drops such elements from its comparison
+set entirely, reusing axis A's panel resolution rather than deriving a second one. Negative-control
+fixture `colour-row-dom-order-not-flagged` proves the suppression; the pre-existing
+`dom-order-mismatch` fixture is the positive control (a colour-uninvolved violation still flags).
+
+**4 — `sgs/product-card` panel structure + the CTA→Button rename** (`98a0156d1`, `8b2c6c0f6`,
+`4f04f495b`). "Card style" and "Price style" merged into ONE "Typography" panel using
+`TypographyControls`' own multi-target switcher rather than stacked mounts; the "Connected product"
+`ComboboxControl` became a plain `SelectControl` (fetch cap raised to 100); the "Buttons" content
+panel and the "Call to action" style panel merged into one "Button" panel. Every user-facing
+"CTA"/"Call to action" string is now "Button" — **attribute names (`ctaText`, `ctaUrl`,
+`ctaColourBackground`, `ctaBehaviour`…) are deliberately UNCHANGED**, they are stored data
+identifiers, and renaming them would be a migration, not a relabel.
+
+⚠ **Tab choice is load-bearing, not taste.** Rule 01's mixed-panel exemption would have permitted
+the merged Button panel in Settings, but `cta` is element order 11 — after `tag` (9) and `pill`
+(10), both of which resolve inside the Typography panel. Settings-tab placement pulled the panel's
+DOM position ahead of them and produced a real axis-C violation (observed live, then cleared by the
+move). Styles tab, positioned last, satisfies CO-2 grouping and declared order at once. Do not
+"tidy" it back to Settings.
+
+## D994 [ROUTINE] — colour placement returns to ONE shared panel: D622 and D665 are SUPERSEDED, and D890 was already the live rule nobody had marked them against
+
+**2026-09-07** (the session's own plan file is labelled `2026-09-08`; the commits are all the 7th).
+Bean-confirmed. **Every fill / text / link colour on a block lives in the shared `SgsColourPanel`.**
+The only exemptions are **border colour, media/section overlay colour, and shadow colour**, which
+stay in their own composite controls (`SgsBorderControl`, the overlay controls inside a
+background/media panel, `ShadowControl`) because each pairs a colour with a genuinely non-colour
+sibling (style/width, opacity/blend-mode, blur/spread) that `SgsColourPanel` has no slot for. A
+colour with no such pairing belongs in the shared panel, including one a caller is tempted to leave
+element-scoped "for tidiness".
+
+**This is a RETURN, not a fourth position.** D609's amendment clause 1 ("colours group into ONE
+panel at the top of Styles") was the original rule; D609's own *body* said the opposite ("an
+element's colours belong in that element's panel"), and D622 (2026-08-15) resolved that
+contradiction the wrong way — routing colour through the D533/D537 element resolver — with D665
+(2026-08-18) refining that wrong branch ("an element is anything with its own panel"). Both are now
+**SUPERSEDED**; D609's grouped-panel clause is live again and its element-panel body clause is the
+dead half.
+
+**Why D622 stopped being right:** it predates the gradient-colour helper set (`fillRow`/`textRow`,
+the `gradientCapable` row shape, `sgs_resolve_text_colour_or_gradient()` and friends) built
+afterwards *specifically* so every fill/text/link colour can live in one shared panel without losing
+gradient or hover capability per row. The tooling built to serve D622's placement model outgrew it.
+
+⚠ **The real documentation defect this closes: D890 (2026-08-30) already ruled exactly this**
+("`SgsColourPanel` is the default; an element panel only where a paired composite exists") and was
+already the standard 65 of 83 blocks followed — but it never marked D622 or D665 superseded, and
+`SgsColourPanel.js`'s own docblock still cited D622. That silent divergence is precisely what let
+D970's two mechanical batches extract 10 blocks' colours OUT of the shared panel a week later.
+D994 extends D890's exemption list from `SgsBorderControl` alone to the three above.
+
+⚠ **Known contradiction, resolved deliberately.** D609 quotes Bean directly — *"Shadow Colour should
+be set in the colour section"* — and shadow colour is now an exemption living in `ShadowControl`.
+The 2026-09-07 confirmation is the later ruling and governs; D609's shadow clause is dead.
+
+**Shipped:** `fb9f2cb5b` (card-grid, modal, pricing-table, team-member, testimonial, timeline),
+`bf125aa5d` (business-info, nav-drawer), `f8ee0c495` (post-grid, testimonial) — nine blocks, not the
+eight the session prompt listed. `SgsColourPanel.js`'s docblock rewritten to state the current rule
+and to forbid re-adding "element-scoped colour belongs in its own TIER 1 panel" language without a
+fresh superseding decision.
+
 ## D993 [INCIDENT] — Task B: worktree-isolated build+deploy is now the default in `build-deploy.py`, after a live incident it fixes
 
 **2026-09-07.** `plugins/sgs-blocks/build/` is gitignored and shared across every concurrent
@@ -4456,6 +4548,11 @@ on spec evidence** — Spec 37's content model for those blocks (logo/nav/cart/C
 route through `sgs/container`-typed grid cells, so they do not qualify under this rule either.
 
 ## D890 [ROUTINE] — the colour-control standard: SgsColourPanel is the default; an element panel only where a paired composite exists
+
+> ✅ **STILL LIVE, and formally confirmed 2026-09-07 by D994**, which marks D622/D665 superseded
+> against it (this entry ruled the same thing but never did so, and that silent divergence caused
+> D970). D994 also widens the exemption list below from `SgsBorderControl` alone to
+> border + media/section overlay + shadow colour.
 
 **2026-08-30.** Bean's ruling this session, applied first to `sgs/trust-bar` (commit
 `99d2204da`). The global `SgsColourPanel` is the standard colour surface — 65 of 83 blocks
@@ -9339,6 +9436,13 @@ other live sessions. Deferred pending that coordination, not decided against.
 
 ## D665 [ROUTINE] — colour placement: an element is anything with its OWN PANEL (2026-08-18)
 
+> ⛔ **SUPERSEDED 2026-09-07 by D994.** This entry refines D622's branch, which is itself dead —
+> "a piece that HAS its own panel keeps its colour in that panel" is no longer the rule. Colour is
+> not placed by the element resolver at all; it lives in the shared `SgsColourPanel` unless it is
+> border, media/section overlay or shadow colour. The instruction at the foot of this entry
+> ("Correct `SgsColourPanel.js:26-32`'s docblock") was carried out in the opposite direction on
+> 2026-09-07: the docblock now states the grouped-panel rule. Read D994.
+
 **Bean-locked.** D622 said element-scoped colour goes in its element's panel; `SgsColourPanel.js`'s
 docblock (a day earlier) said all colours group in one panel. Both are right for different blocks;
 the missing definition was "element". Bean's: *"block equivalents, real concrete pieces."* The rule:
@@ -11067,6 +11171,14 @@ current number; this project's docs have drifted on cached counts before.
 
 ## D622 — Colour placement follows the EXISTING D533/D537 resolver; conformance gate promoted [ROUTINE]
 
+> ⛔ **SUPERSEDED 2026-09-07 by D994 — the colour half of this entry is DEAD.** Colour does NOT
+> follow the element resolver. Every fill/text/link colour lives in the shared `SgsColourPanel`;
+> only border, media/section overlay and shadow colour stay element-scoped. D890 (2026-08-30) was
+> already the live rule and this entry was never marked against it — read D994.
+> **What survives:** items 1 (the 7 contested `alignItems` attributes → `grid`) and 2 (the
+> `check-element-manifest-conformance.js` gate promotion), plus the ⛔ `total_gap` warning. Those
+> are about the resolver and the gate generally, not about colour.
+
 **2026-08-15.** Two councils (4 seats on colour placement, 4 branches on ruleset determinism/work/UX/
 prior-art) converged: **do not invent a colour-placement rule. Colour joins the resolver that already
 places every other property family.** An element-scoped colour goes in its element's panel; a colour
@@ -11175,7 +11287,12 @@ Proven live (Playwright, sandybrown, page 2422): mounting into `group="color"` r
 > ⛔ **AMENDED 2026-08-13, same day.** First-written ruling was incomplete; the gap produced a build Bean rejected on sight. Two corrections:
 >
 > **1.** ~~Colours group into ONE panel that REPLACES native's, at the top of Styles.~~
-> ⛔ **SUPERSEDED 2026-08-15 by D622 — READ D622, NOT THIS CLAUSE.** This clause is the source of the
+> ⚠ **REINSTATED 2026-09-07 by D994 — this clause is LIVE again; D622 is the dead one.** The
+> supersession box immediately below is kept for the record of how the contradiction was resolved
+> in 2026-08, but its ruling was reversed: colour does NOT follow the D533/D537 resolver. Read D994.
+> (D609's shadow-colour clause is the one part D994 does NOT reinstate — see D994's contradiction note.)
+>
+> ⛔ ~~**SUPERSEDED 2026-08-15 by D622 — READ D622, NOT THIS CLAUSE.**~~ This clause is the source of the
 > contradiction that cost two sessions: it says one grouped panel, while **this same entry's own body
 > below** says *"an element's colours belong in that element's panel… grouping follows what the client
 > is editing, not property type"*, and D537/A4 say the same. Two opposite rules, one entry, same day,
@@ -12003,7 +12120,7 @@ D294 (KIND-based: content-KIND may go block-private, section/layout-KIND keep wr
 
 ## D537 — Inspector placement is TWO tiers: element, then property-family [ROUTINE]
 
-✅ **VINDICATED + NOW ENFORCED (D622, 2026-08-15).** This is THE placement mechanism, confirmed live: `placement-reach.py` resolves all 2,262 declared attributes (1,376 element / 886 property-family) with zero human judgement, and the last 7 contested (`alignItems`, grid-vs-wrapper) were cleared. **Colour now follows it too** — it was the only property family still placed by hand. `check-element-manifest-conformance.js` promoted WARN-ONLY → prebuild gate the same day; this rule being advisory is exactly how D609 came to contradict itself.
+✅ **VINDICATED + NOW ENFORCED (D622, 2026-08-15).** This is THE placement mechanism, confirmed live: `placement-reach.py` resolves all 2,262 declared attributes (1,376 element / 886 property-family) with zero human judgement, and the last 7 contested (`alignItems`, grid-vs-wrapper) were cleared. ~~**Colour now follows it too** — it was the only property family still placed by hand.~~ ⛔ **COLOUR CARVE-OUT, 2026-09-07 (D994): colour does NOT follow this resolver.** Fill/text/link colour lives in the shared `SgsColourPanel`; only border, media/section overlay and shadow colour sit element-scoped. This entry's two-tier rule remains live for every OTHER property family. `check-element-manifest-conformance.js` promoted WARN-ONLY → prebuild gate the same day; this rule being advisory is exactly how D609 came to contradict itself.
 
 **2026-08-09, Bean:** Tier 1 = per element, Tier 2 = per property-family panels. Controls that style nothing (`variant`, `templateMode`, `autoplay`, `showDots`, `required`) get one Settings panel, pinned first.
 
@@ -12047,7 +12164,7 @@ Hook was wrong both ways: over-broad (blocked any `str_replace`-containing comma
 
 ## D533 — Inspector placement is ELEMENT-SCOPED; the retired rule was the defect [ROUTINE]
 
-✅ **VINDICATED (D622, 2026-08-15).** Element-scoped placement is confirmed as canonical and is now gate-enforced. Independently corroborated by prior art: Kadence `infobox` and Spectra `testimonial` both bundle an element's colour + typography + spacing in one element panel. Core groups by property for a different reason — Gutenberg #67814 shows its `group="color"`/`"typography"` slots are an **extensibility contract** for third-party injection, not a UX preference, and SGS's own blocks have no such requirement.
+✅ **VINDICATED (D622, 2026-08-15)** — ⛔ **but NOT for colour: see D994 (2026-09-07), which supersedes D622 and moves every fill/text/link colour into the shared `SgsColourPanel`. The prior-art sentence below is the part that no longer applies here.** Element-scoped placement is confirmed as canonical for non-colour property families and is gate-enforced. Independently corroborated by prior art: Kadence `infobox` and Spectra `testimonial` both bundle an element's colour + typography + spacing in one element panel. Core groups by property for a different reason — Gutenberg #67814 shows its `group="color"`/`"typography"` slots are an **extensibility contract** for third-party injection, not a UX preference, and SGS's own blocks have no such requirement.
 
 **2026-08-08.** Spec 35's placement rule replaced with: one panel per element, holding that element's content/styling/hover together, titled/ordered by its `supports.sgs.elements` declaration. No behaviour-vs-appearance question anywhere.
 
@@ -13086,6 +13203,13 @@ Spec 38 FR-38-15 (Wave C, Bean signed off post qc-council). `vivus@0.4.6` had on
 
 ## D407 [ROUTINE] — ScrollSmoother × Spec 37 header sticky: header sits OUTSIDE the smoothed wrapper; findStickyBreakingAncestor becomes the tripwire that disables the SMOOTHER, never sticky (2026-07-29)
 
+> ⛔ **SUPERSEDED by D422 (site-level smooth scrolling moved from GSAP ScrollSmoother to Lenis;
+> Tier H admitted).** D422's own heading says so; this entry carried no marker until 2026-09-07.
+> Everything below is premised on ScrollSmoother being the site-level smoother, which it no longer
+> is — the `#smooth-content` wrapper, the header-as-sibling placement and the
+> `findStickyBreakingAncestor()` tripwire are all about a mechanism that has been replaced.
+> See also D723: the `scroll-smoother` `fx_effects` row survives only as a negative proof.
+
 Spec 38 §4.2 (Bean signed off, post qc-council, 2 corrections now in-spec: (1) edge rule is tri-state-aware — header sits outside the wrapper whenever sticky is truthy on ANY tier; (2) `findStickyBreakingAncestor()` is WARN-ONLY today, Wave B extends it to disable the smoother; FR-38-18(c) gained a `smooth-scroll.js` anchor-handler suppression clause).
 
 Ground truth: Spec 37's per-row sticky was rejected (FR-37-40 short-parent trap) — shipped model is header-level `position:sticky` + row collapse with a measured pinned-gate. `findStickyBreakingAncestor()` already detects the trap ScrollSmoother creates.
@@ -13131,6 +13255,11 @@ Track 2 (Spec 36 FR-36-6). Task 1 re-categorised all 8 reference drawers across 
 **Approved shape (both sign-offs given, scope = all 7 buildable variants):** `.claude/plans/2026-07-28-nav-drawer-variants-design-gate.md` — 7 `registerBlockVariation`s (resn = WebGL, reference-only) over per-device `anchor` (full-screen/header/trigger/centred — Bean's pause-menu addition, reusing `sgs/modal`'s geometry) + `panelSize` + `surface` (opaque and translucent, no scrim — 8/8 references have none) + `closeStyle` (3-way split) + `listColumns` on nav-menu (child-owned). `edge`+`width` retired (zero stored instances). Responsive-Visibility ext covers per-device content drops. 16 stored zero-attr drawers must render byte-identical.
 
 ## D402 [ROUTINE] — Spec 35 T0.4 + T0.5 design gates CLOSED (Bean-approved same session); T1.4 roster + row-migration decisions (2026-07-28)
+
+> ⚠ **PARTIALLY SUPERSEDED — the `contrastSafe` clause only.** D418 ("A1 re-decided against D402")
+> and then D681 ("contrastSafe stops silently overriding the operator; D402's carve-out is
+> superseded") both overrule it; neither was marked here until 2026-09-07. The T0.4 / T0.5 rulings
+> and the rest of T1.4 stand.
 
 **T0.4 native-supports-vs-Spec-32:** ADOPT (2, via Spec-32 skip-serialisation + scoped-emission pattern, T3.5 imageControls wave): `filter.duotone`, `dimensions.aspectRatio` (replaces 4 inconsistent per-block attrs). KEEP-SGS (4): `shadow` (ShadowControl exceeds native preset picker), `dimensions.minHeight` (per-breakpoint families beat single value), `position.sticky` (collides with D400 behaviour cascade), gallery `lightbox` (bespoke more featureful). Nothing adopts a support without the scoped-serialisation pattern.
 
