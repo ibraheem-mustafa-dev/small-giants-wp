@@ -9,7 +9,12 @@ note: "THE single living-status doc. REPLACED each session, never appended. Hist
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**The colour work is finished.** Every colour control in the framework now offers a normal and
+**The colour work is finished in the code — but NOT yet verified on the real site.** No
+change from this session has been deployed to the canary or seen on a rendered page, which by
+this project's own Rule 5 means it is not closed. Treat the rest of this summary as "built and
+checked statically", not "live".
+
+**The colour work is finished (in code).** Every colour control in the framework now offers a normal and
 a hover state, and a gradient as well as a flat colour, wherever that makes sense. The checker
 that tracks it reports zero outstanding rows for the first time, and it is now wired into the
 build so it cannot quietly slip backwards.
@@ -34,7 +39,7 @@ now carry a second, non-colour signal, so they work for anyone who cannot distin
 | What | Where |
 |---|---|
 | **Colour census CLOSED** — 9 rows migrated; `classify-end-shape.js --check` PASSES | `2786debad` |
-| **Census gate wired** — the tool driving the migration now protects it (`gates.json` fast tier) | `2786debad` |
+| **Census gate wired** (`gates.json` fast tier) — ⚠ **narrower than first claimed, see "the gate does NOT protect migrated rows" below** | `2786debad` |
 | **Spec 32 §5 security NFR CLOSED** — `check-style-blob-sanitisation` promoted advisory → blocking (68/68 passing; its one-cycle probation had expired) | `2786debad` |
 | **Rule 31 narrowed to the editor-side gap** (Bean-ruled) — 43 findings → 2; ratchet 167 → 2 | `2786debad` |
 | **Rule 43 (WCAG 1.4.1) → 0** — non-colour cue added to 5 colour-only state indicators | `2786debad` |
@@ -158,6 +163,33 @@ page 3389). Do not edit that file until it lands.
   `auto` pass while doing identical damage — that is how a `max-width: var(--x, none)` shipped
   and beat core's `img{max-width:100%}`. The honest widening is not "ban more keywords" but "flag
   a fallback on a property whose initial value is not that fallback".
+
+## ⛔ The census gate does NOT protect already-migrated rows — proven, not suspected
+
+**A negative control was run on 2026-09-07 and it FAILED**, which is exactly why it was run. The
+promise in this session's own plan ("`--check` exits non-zero on a deliberately reverted row
+before I trust it") had not been kept until an adversarial council demanded the evidence.
+
+The test: `sgs/mega-aside/render.php`'s `sgs_border_states_css()` base attribute was renamed to a
+bogus value, breaking the migration. `classify-end-shape.js --check` still reported **PASS**.
+
+The cause: the census only ADMITS a row that still `needsHover` or `needsGradient`
+(`classify-end-shape.js` row-inclusion gate). A migrated row therefore **leaves the population**
+— `sgs/mega-aside` is no longer among the 39 tracked rows at all — so no amount of breaking it can
+make the gate fail.
+
+**What the gate really does:** stops a row that is still non-conformant from being declared
+complete, and catches a NEW non-conformant row appearing. That is worth having.
+**What it does NOT do:** protect the ~130 rows already migrated. Any of them can silently regress
+and this gate stays green.
+
+**The fix, if it is wanted:** `--check` needs a recorded roster of completed rows (a manifest
+written at migration time) and must re-assert those still resolve, rather than deriving its
+population only from what is still broken. Until then, do not describe this gate as protecting
+the colour work — it guards the frontier, not the territory.
+
+*(This is the "a gate's scope is not the defect's scope" trap, already in MEMORY.md. It recurred
+here despite being indexed, which is itself worth knowing.)*
 
 ## Methodology guardrails (carried forward — all still true)
 
