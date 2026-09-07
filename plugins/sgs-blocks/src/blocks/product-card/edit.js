@@ -24,7 +24,6 @@ import {
 	SelectControl,
 	TextControl,
 	TextareaControl,
-	ComboboxControl,
 	ToggleControl,
 	CheckboxControl,
 	Notice,
@@ -81,38 +80,32 @@ const CTA_STYLE_OPTIONS = [
  */
 function ProductSourcePanel( { attributes, setAttributes } ) {
 	const { sourceMode, productId, taxDisplayMode } = attributes;
-	const [ search, setSearch ] = useState( '' );
 	const [ wcOptions, setWcOptions ] = useState( [] );
 	const [ wcLoading, setWcLoading ] = useState( false );
 
 	// SGS CPT products via the entity store (REST: wp/v2/sgs-products).
-	const { cptRecords, cptResolving } = useSelect(
-		( select ) => {
-			const query = { per_page: 20, search: search || undefined };
-			return {
-				cptRecords: select( coreStore ).getEntityRecords(
-					'postType',
-					'sgs_product',
-					query
-				),
-				cptResolving: select( coreStore ).isResolving(
-					'getEntityRecords',
-					[ 'postType', 'sgs_product', query ]
-				),
-			};
-		},
-		[ search ]
-	);
+	// A plain dropdown (3b, rule 41) lists the first page rather than
+	// searching-as-you-type, so this always fetches unfiltered.
+	const { cptRecords, cptResolving } = useSelect( ( select ) => {
+		const query = { per_page: 20 };
+		return {
+			cptRecords: select( coreStore ).getEntityRecords(
+				'postType',
+				'sgs_product',
+				query
+			),
+			cptResolving: select( coreStore ).isResolving(
+				'getEntityRecords',
+				[ 'postType', 'sgs_product', query ]
+			),
+		};
+	}, [] );
 
 	// WooCommerce products via the WC REST API (not a WP entity).
 	useEffect( () => {
 		let cancelled = false;
 		setWcLoading( true );
-		apiFetch( {
-			path: `/wc/v3/products?per_page=20&search=${ encodeURIComponent(
-				search
-			) }`,
-		} )
+		apiFetch( { path: '/wc/v3/products?per_page=20' } )
 			.then( ( items ) => {
 				if ( cancelled ) {
 					return;
@@ -138,7 +131,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 		return () => {
 			cancelled = true;
 		};
-	}, [ search ] );
+	}, [] );
 
 	const cptOptions = ( cptRecords || [] ).map( ( p ) => ( {
 		value: `cpt:${ p.id }`,
@@ -183,7 +176,7 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 			title={ __( 'Connected product', 'sgs-blocks' ) }
 			initialOpen={ true }
 		>
-			<ComboboxControl
+			<SelectControl
 				label={ __( 'Connected product', 'sgs-blocks' ) }
 				help={ __(
 					'Connect a WooCommerce product to fill this card with live data. Leave unconnected to author the card by hand.',
@@ -192,8 +185,8 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 				value={ currentValue }
 				options={ options }
 				onChange={ onSelect }
-				onFilterValueChange={ ( v ) => setSearch( v ) }
 				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			{ loading && <Spinner /> }
 			{ 'typed' !== sourceMode && productId > 0 && (
@@ -1260,7 +1253,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	colourRows.push(
 		{
 			key: 'ctaBackground',
-			label: __( 'CTA background colour', 'sgs-blocks' ),
+			label: __( 'Button background colour', 'sgs-blocks' ),
 			states: [
 				{
 					key: 'normal',
@@ -1286,7 +1279,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		},
 		{
 			key: 'ctaText',
-			label: __( 'CTA text colour', 'sgs-blocks' ),
+			label: __( 'Button text colour', 'sgs-blocks' ),
 			gradientCapable: true,
 			states: [
 				{
@@ -1311,7 +1304,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		},
 		{
 			key: 'ctaBorder',
-			label: __( 'CTA border colour', 'sgs-blocks' ),
+			label: __( 'Button border colour', 'sgs-blocks' ),
 			states: [
 				{
 					key: 'normal',
@@ -1584,91 +1577,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Buttons panel — content + behaviour; style presets live in the
-				     Styles tab's "Button style" panel ── */ }
-				<PanelBody
-					title={ __( 'Buttons', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					{ /* Primary CTA text + URL — typed mode only (B5, 2026-06-10).
-					     In bound mode the CTA text/url are set via the Content
-					     overrides panel ("Override button"), so duplicating them
-					     here is redundant. Behaviour stays below (both modes). */ }
-					{ ! isBound && (
-						<>
-							<TextControl
-								label={ __( 'Primary button text', 'sgs-blocks' ) }
-								value={ ctaText || '' }
-								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-							<LinkPopoverField
-								label={ __( 'Primary button URL', 'sgs-blocks' ) }
-								value={ ctaUrl || '' }
-								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
-								searchOnly
-							/>
-						</>
-					) }
-					{ isBound ? (
-						<SelectControl
-							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
-							help={ __(
-								'What happens when the button is clicked in the live product card.',
-								'sgs-blocks'
-							) }
-							value={ ctaBehaviour || "learn-more" }
-							options={ CTA_BEHAVIOUR_OPTIONS }
-							onChange={ ( v ) =>
-								setAttributes( { ctaBehaviour: v } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) : (
-						<Notice
-							status="info"
-							isDismissible={ false }
-							style={ { marginTop: 8 } }
-						>
-							{ __(
-								'Buttons render as plain links until a product is connected. Behaviour options apply to a connected product.',
-								'sgs-blocks'
-							) }
-						</Notice>
-					) }
-
-					{ /* Secondary CTA */ }
-					<hr style={ { margin: '12px 0' } } />
-					<TextControl
-						label={ __( 'Secondary button text', 'sgs-blocks' ) }
-						help={ __(
-							'Leave empty to hide the secondary button.',
-							'sgs-blocks'
-						) }
-						value={ cta2Text || '' }
-						onChange={ ( v ) =>
-							setAttributes( { cta2Text: v } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ ( cta2Text || '' ) !== '' && (
-						<LinkPopoverField
-							label={ __(
-								'Secondary button URL',
-								'sgs-blocks'
-							) }
-							value={ cta2Url || '' }
-							onChange={ ( url ) =>
-								setAttributes( { cta2Url: url } )
-							}
-							searchOnly
-						/>
-					) }
-					{ /* v1: the secondary button is always a plain learn-more link (one canonical cart form per card) — no behaviour dropdown until a real second behaviour exists (dead-control rule). */ }
-				</PanelBody>
+				{ /* ── Button panel — MOVED to the Styles tab (rule 41, 2026-09-08).
+				     See that panel's own comment for the merge + tab-placement
+				     rationale. ── */ }
 
 				{ /* ── Advanced SEO panel (WC bound only) ── */ }
 				{ 'wc-product' === sourceMode && (
@@ -1832,11 +1743,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Card style panel (appearance: typography + tag colours;
-				     variant + heading level + tag text live in the Settings
-				     tab's "Card" panel) ── */ }
+				{ /* ── Typography panel (rule 41 merge, 2026-09-08) — was two
+				     panels ("Card style" + "Price style"), both gated on
+				     `isBuiltIn` and both holding nothing but TypographyControls
+				     mounts. One switcher across all six typed-card text
+				     elements, in the card's own top-to-bottom reading order:
+				     title, description, tag, price, price note, pill. Variant
+				     + heading level + tag text live in the Settings tab's
+				     "Card" panel; price content lives in the Settings tab's
+				     "Price" panel (bound mode) — this panel is appearance only. ── */ }
 				{ isBuiltIn && (
-					<PanelBody title={ __( 'Card style', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 						<TypographyControls
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1892,6 +1809,31 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									showTextIndent: true,
 									showWritingMode: true,
 								},
+								{
+									key: 'price',
+									label: __( 'Price', 'sgs-blocks' ),
+									prefix: 'price',
+									showFontFamily: true,
+									showStyle: false,
+									showLineHeight: false,
+								},
+								{
+									key: 'priceNote',
+									label: __( 'Price note', 'sgs-blocks' ),
+									prefix: 'priceNote',
+									showFontFamily: true,
+									showWeight: false,
+									showStyle: false,
+									showLineHeight: false,
+								},
+								{
+									key: 'pill',
+									label: __( 'Pill', 'sgs-blocks' ),
+									prefix: 'pill',
+									showWeight: false,
+									showStyle: false,
+									showLineHeight: false,
+								},
 							] }
 						/>
 						{ isTrial && (
@@ -1937,41 +1879,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</PanelBody>
 				) }
-
-				{ /* ── Price style panel (typed built-in only) — content fields
-				     live in the Settings tab's "Price" panel ── */ }
-				{ isBuiltIn && (
-					<PanelBody
-						title={ __( 'Price style', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="price"
-							showFontFamily
-							showStyle={ false }
-							showLineHeight={ false }
-						/>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="priceNote"
-							showFontFamily
-							showWeight={ false }
-							showStyle={ false }
-							showLineHeight={ false }
-						/>
-						<TypographyControls
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							prefix="pill"
-							showWeight={ false }
-							showStyle={ false }
-							showLineHeight={ false }
-						/>
-					</PanelBody>
-				) }
 				{ isBound && (
 					<PanelBody
 						title={ __( 'Price', 'sgs-blocks' ) }
@@ -1994,17 +1901,83 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</PanelBody>
 				) }
 
-				{ /* ── Call to action panel — merged "Button style" (appearance:
-				     primary/secondary style presets; text/URL/behaviour live in
-				     the Settings tab's "Buttons" panel) + "CTA Button Style"
-				     (both modes — the primary button in typed mode uses
-				     .sgs-button--{style} + a stable .sgs-product-card__cta--primary
-				     marker; bound mode uses .product-card__view /
-				     .product-card__add-to-cart) into one panel (rule 41). ── */ }
+				{ /* ── Button panel (rule 41 merge, 2026-09-08) — was two panels,
+				     "Buttons" (content: text/URL/behaviour, Settings tab) + "Call
+				     to action" (style: primary/secondary preset, colour/border/
+				     radius/font/padding/width, this tab). CO-2 (THE PLACEMENT
+				     RULE, TIER 1) wants one element's content + style + hover in
+				     ONE panel. Placed in the STYLES tab, directly after
+				     "Typography" — the "Primary button behaviour" SelectControl
+				     is a genuinely structural/behavioural control with no CSS
+				     property behind it, so rule 01-tab-group.js's mixed-panel
+				     exemption would allow this panel to stay in Settings too,
+				     but "cta" is THE LAST element in this block's declared
+				     order (11, after "tag" 9 and "pill" 10 — both resolved in
+				     the Typography panel above) — keeping the merged panel in
+				     Settings pulled its DOM position earlier than "tag"/"pill",
+				     contradicting the block's own declared element order
+				     (rule 41 axis C). Styles-tab placement, positioned last,
+				     satisfies both rules at once. Order follows the card's own
+				     authoring flow: primary text/URL/behaviour, then primary
+				     style, then secondary text/URL/style. ── */ }
 				<PanelBody
-					title={ __( 'Call to action', 'sgs-blocks' ) }
+					title={ __( 'Button', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* Primary button text + URL — typed mode only (B5, 2026-06-10).
+					     In bound mode the button text/url are set via the Content
+					     overrides panel ("Override button"), so duplicating them
+					     here is redundant. Behaviour stays below (both modes). */ }
+					{ ! isBound && (
+						<>
+							<TextControl
+								label={ __( 'Primary button text', 'sgs-blocks' ) }
+								value={ ctaText || '' }
+								onChange={ ( v ) => setAttributes( { ctaText: v } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<LinkPopoverField
+								label={ __( 'Primary button URL', 'sgs-blocks' ) }
+								value={ ctaUrl || '' }
+								onChange={ ( url ) => setAttributes( { ctaUrl: url } ) }
+								searchOnly
+							/>
+						</>
+					) }
+					{ isBound ? (
+						<SelectControl
+							label={ __( 'Primary button behaviour', 'sgs-blocks' ) }
+							help={ __(
+								'What happens when the button is clicked in the live product card.',
+								'sgs-blocks'
+							) }
+							value={ ctaBehaviour || "learn-more" }
+							options={ CTA_BEHAVIOUR_OPTIONS }
+							onChange={ ( v ) =>
+								setAttributes( { ctaBehaviour: v } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) : (
+						<Notice
+							status="info"
+							isDismissible={ false }
+							style={ { marginTop: 8 } }
+						>
+							{ __(
+								'Buttons render as plain links until a product is connected. Behaviour options apply to a connected product.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
+
+					{ /* Primary button style — colour/border/radius/font/padding/
+					     width; the primary button in typed mode uses
+					     .sgs-button--{style} + a stable
+					     .sgs-product-card__cta--primary marker, bound mode uses
+					     .product-card__view / .product-card__add-to-cart. ── */ }
 					<SelectControl
 						label={ __( 'Primary button style', 'sgs-blocks' ) }
 						value={ ctaStyle || 'primary' }
@@ -2060,247 +2033,276 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ ( cta2Text || '' ) !== '' && (
-						<SelectControl
-							label={ __(
-								'Secondary button style',
-								'sgs-blocks'
-							) }
-							value={ cta2Style || 'secondary' }
-							options={ CTA_STYLE_OPTIONS }
-							onChange={ ( v ) =>
-								setAttributes( { cta2Style: v } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-
 					<p style={ { marginTop: 0 } }>
 						{ __(
 							'Colour, border, corner radius, and padding for the primary button.',
 							'sgs-blocks'
 						) }
 					</p>
-						{ /*
-						 * Style (primary/secondary/outline) is now set ONLY by the
-						 * unified "Primary button style" SelectControl above —
-						 * the separate style-preset attr was merged into ctaStyle (D-merge). A
-						 * SelectControl's onChange cannot re-fire when the picked
-						 * value is unchanged, so a user who has hand-tweaked a
-						 * colour needs an explicit button to snap the colours back
-						 * to the CURRENT style's preset values.
-						 */ }
-						<Button
-							variant="secondary"
-							onClick={ () => {
-								const preset =
-									BUTTON_PRESETS[ ctaStyle || 'primary' ];
-								if ( ! preset ) {
-									return;
-								}
-								setAttributes( {
-									ctaColourBackground:
-										preset.colourBackground,
-									ctaColourText: preset.colourText,
-									ctaColourBorder: preset.borderColour,
-									ctaColourBackgroundHover:
-										preset.colourBackgroundHover,
-									ctaColourTextHover:
-										preset.colourTextHover,
-									ctaColourBorderHover:
-										preset.borderColourHover,
-									ctaBorderStyle: preset.borderStyle,
-									ctaBorderWidth: {
-										top: `${ preset.borderWidthTop }px`,
-										right: `${ preset.borderWidthTop }px`,
-										bottom: `${ preset.borderWidthTop }px`,
-										left: `${ preset.borderWidthTop }px`,
-									},
-									ctaBorderRadius: {
-										topLeft: `${ preset.borderRadiusTL }px`,
-										topRight: `${ preset.borderRadiusTL }px`,
-										bottomLeft: `${ preset.borderRadiusTL }px`,
-										bottomRight: `${ preset.borderRadiusTL }px`,
-									},
-									ctaFontWeight: preset.fontWeight,
-								} );
-							} }
-							style={ { marginBottom: 16 } }
+					{ /*
+					 * Style (primary/secondary/outline) is now set ONLY by the
+					 * unified "Primary button style" SelectControl above —
+					 * the separate style-preset attr was merged into ctaStyle (D-merge). A
+					 * SelectControl's onChange cannot re-fire when the picked
+					 * value is unchanged, so a user who has hand-tweaked a
+					 * colour needs an explicit button to snap the colours back
+					 * to the CURRENT style's preset values.
+					 */ }
+					<Button
+						variant="secondary"
+						onClick={ () => {
+							const preset =
+								BUTTON_PRESETS[ ctaStyle || 'primary' ];
+							if ( ! preset ) {
+								return;
+							}
+							setAttributes( {
+								ctaColourBackground:
+									preset.colourBackground,
+								ctaColourText: preset.colourText,
+								ctaColourBorder: preset.borderColour,
+								ctaColourBackgroundHover:
+									preset.colourBackgroundHover,
+								ctaColourTextHover:
+									preset.colourTextHover,
+								ctaColourBorderHover:
+									preset.borderColourHover,
+								ctaBorderStyle: preset.borderStyle,
+								ctaBorderWidth: {
+									top: `${ preset.borderWidthTop }px`,
+									right: `${ preset.borderWidthTop }px`,
+									bottom: `${ preset.borderWidthTop }px`,
+									left: `${ preset.borderWidthTop }px`,
+								},
+								ctaBorderRadius: {
+									topLeft: `${ preset.borderRadiusTL }px`,
+									topRight: `${ preset.borderRadiusTL }px`,
+									bottomLeft: `${ preset.borderRadiusTL }px`,
+									bottomRight: `${ preset.borderRadiusTL }px`,
+								},
+								ctaFontWeight: preset.fontWeight,
+							} );
+						} }
+						style={ { marginBottom: 16 } }
+					>
+						{ __( 'Reset colours to preset', 'sgs-blocks' ) }
+					</Button>
+					<ToolsPanel
+						className="sgs-nested-tools-panel"
+						label={ __( 'Button style', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								ctaWidthType: 'fit',
+								ctaBorderWidth: {
+									top: '2px',
+									right: '2px',
+									bottom: '2px',
+									left: '2px',
+								},
+								ctaBorderRadius: {
+									topLeft: '10px',
+									topRight: '10px',
+									bottomLeft: '10px',
+									bottomRight: '10px',
+								},
+								ctaFontSize: undefined,
+								ctaPadding: {},
+								ctaColourBackground: '',
+								ctaColourText: '',
+								ctaColourBorder: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Width', 'sgs-blocks' ) }
+							hasValue={ () => ( ctaWidthType || 'fit' ) !== 'fit' }
+							onDeselect={ () =>
+								setAttributes( { ctaWidthType: 'fit' } )
+							}
+							isShownByDefault
 						>
-							{ __( 'Reset colours to preset', 'sgs-blocks' ) }
-						</Button>
-						<ToolsPanel
-							className="sgs-nested-tools-panel"
-							label={ __( 'CTA Button Style', 'sgs-blocks' ) }
-							resetAll={ () =>
+							<SelectControl
+								label={ __( 'Width', 'sgs-blocks' ) }
+								value={ ctaWidthType || 'fit' }
+								options={ [
+									{
+										value: 'fit',
+										label: __( 'Fit content', 'sgs-blocks' ),
+									},
+									{
+										value: 'full',
+										label: __( 'Full width', 'sgs-blocks' ),
+									},
+								] }
+								onChange={ ( v ) =>
+									setAttributes( { ctaWidthType: v } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
+						   (button/edit.js:596) exactly — ResponsiveBoxControl /
+						   ResponsiveBorderRadiusControl with showResponsive={false}
+						   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
+						   exist), writing the object straight to the attr. */ }
+						<ToolsPanelItem
+							label={ __( 'Border width', 'sgs-blocks' ) }
+							hasValue={ () =>
+								JSON.stringify( ctaBorderWidth ?? {} ) !==
+								JSON.stringify( {
+									top: '2px',
+									right: '2px',
+									bottom: '2px',
+									left: '2px',
+								} )
+							}
+							onDeselect={ () =>
 								setAttributes( {
-									ctaWidthType: 'fit',
 									ctaBorderWidth: {
 										top: '2px',
 										right: '2px',
 										bottom: '2px',
 										left: '2px',
 									},
+								} )
+							}
+							isShownByDefault
+						>
+							<ResponsiveBoxControl
+								label={ __( 'Border width', 'sgs-blocks' ) }
+								presets={ [ '10', '20', '30' ] }
+								values={ { base: ctaBorderWidth ?? {} } }
+								showResponsive={ false }
+								onChange={ ( _tier, next ) =>
+									setAttributes( { ctaBorderWidth: next } )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Corner radius', 'sgs-blocks' ) }
+							hasValue={ () =>
+								JSON.stringify( ctaBorderRadius ?? {} ) !==
+								JSON.stringify( {
+									topLeft: '10px',
+									topRight: '10px',
+									bottomLeft: '10px',
+									bottomRight: '10px',
+								} )
+							}
+							onDeselect={ () =>
+								setAttributes( {
 									ctaBorderRadius: {
 										topLeft: '10px',
 										topRight: '10px',
 										bottomLeft: '10px',
 										bottomRight: '10px',
 									},
-									ctaFontSize: undefined,
-									ctaPadding: {},
-									ctaColourBackground: '',
-									ctaColourText: '',
-									ctaColourBorder: '',
 								} )
 							}
 						>
-							<ToolsPanelItem
-								label={ __( 'Width', 'sgs-blocks' ) }
-								hasValue={ () => ( ctaWidthType || 'fit' ) !== 'fit' }
-								onDeselect={ () =>
-									setAttributes( { ctaWidthType: 'fit' } )
-								}
-								isShownByDefault
-							>
-								<SelectControl
-									label={ __( 'Width', 'sgs-blocks' ) }
-									value={ ctaWidthType || 'fit' }
-									options={ [
-										{
-											value: 'fit',
-											label: __( 'Fit content', 'sgs-blocks' ),
-										},
-										{
-											value: 'full',
-											label: __( 'Full width', 'sgs-blocks' ),
-										},
-									] }
-									onChange={ ( v ) =>
-										setAttributes( { ctaWidthType: v } )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
-							   (button/edit.js:596) exactly — ResponsiveBoxControl /
-							   ResponsiveBorderRadiusControl with showResponsive={false}
-							   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
-							   exist), writing the object straight to the attr. */ }
-							<ToolsPanelItem
-								label={ __( 'Border width', 'sgs-blocks' ) }
-								hasValue={ () =>
-									JSON.stringify( ctaBorderWidth ?? {} ) !==
-									JSON.stringify( {
-										top: '2px',
-										right: '2px',
-										bottom: '2px',
-										left: '2px',
-									} )
-								}
-								onDeselect={ () =>
-									setAttributes( {
-										ctaBorderWidth: {
-											top: '2px',
-											right: '2px',
-											bottom: '2px',
-											left: '2px',
-										},
-									} )
-								}
-								isShownByDefault
-							>
-								<ResponsiveBoxControl
-									label={ __( 'Border width', 'sgs-blocks' ) }
-									presets={ [ '10', '20', '30' ] }
-									values={ { base: ctaBorderWidth ?? {} } }
-									showResponsive={ false }
-									onChange={ ( _tier, next ) =>
-										setAttributes( { ctaBorderWidth: next } )
-									}
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
+							<ResponsiveBorderRadiusControl
 								label={ __( 'Corner radius', 'sgs-blocks' ) }
-								hasValue={ () =>
-									JSON.stringify( ctaBorderRadius ?? {} ) !==
-									JSON.stringify( {
-										topLeft: '10px',
-										topRight: '10px',
-										bottomLeft: '10px',
-										bottomRight: '10px',
-									} )
+								values={ { base: ctaBorderRadius ?? {} } }
+								showResponsive={ false }
+								onChange={ ( _tier, next ) =>
+									setAttributes( { ctaBorderRadius: next } )
 								}
-								onDeselect={ () =>
-									setAttributes( {
-										ctaBorderRadius: {
-											topLeft: '10px',
-											topRight: '10px',
-											bottomLeft: '10px',
-											bottomRight: '10px',
-										},
-									} )
-								}
-							>
-								<ResponsiveBorderRadiusControl
-									label={ __( 'Corner radius', 'sgs-blocks' ) }
-									values={ { base: ctaBorderRadius ?? {} } }
-									showResponsive={ false }
-									onChange={ ( _tier, next ) =>
-										setAttributes( { ctaBorderRadius: next } )
-									}
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Font size (px)', 'sgs-blocks' ) }
+							hasValue={ () =>
+								ctaFontSize !== null &&
+								ctaFontSize !== undefined
+							}
+							onDeselect={ () =>
+								setAttributes( { ctaFontSize: undefined } )
+							}
+						>
+							<NumberControl
 								label={ __( 'Font size (px)', 'sgs-blocks' ) }
-								hasValue={ () =>
-									ctaFontSize !== null &&
-									ctaFontSize !== undefined
+								value={ ctaFontSize ?? '' }
+								min={ 8 }
+								max={ 48 }
+								onChange={ ( v ) =>
+									setAttributes( {
+										ctaFontSize:
+											v === '' || v === undefined
+												? undefined
+												: Number.parseInt( v, 10 ),
+									} )
 								}
-								onDeselect={ () =>
-									setAttributes( { ctaFontSize: undefined } )
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Button padding', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! ctaPadding &&
+								Object.keys( ctaPadding ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { ctaPadding: {} } )
+							}
+						>
+							<BoxControl
+								label={ __( 'Button padding', 'sgs-blocks' ) }
+								values={ ctaPadding ?? {} }
+								onChange={ ( next ) =>
+									setAttributes( { ctaPadding: next } )
 								}
-							>
-								<NumberControl
-									label={ __( 'Font size (px)', 'sgs-blocks' ) }
-									value={ ctaFontSize ?? '' }
-									min={ 8 }
-									max={ 48 }
-									onChange={ ( v ) =>
-										setAttributes( {
-											ctaFontSize:
-												v === '' || v === undefined
-													? undefined
-													: Number.parseInt( v, 10 ),
-										} )
-									}
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-							<ToolsPanelItem
-								label={ __( 'CTA padding', 'sgs-blocks' ) }
-								hasValue={ () =>
-									!! ctaPadding &&
-									Object.keys( ctaPadding ).length > 0
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+
+					{ /* Secondary button */ }
+					<hr style={ { margin: '12px 0' } } />
+					<TextControl
+						label={ __( 'Secondary button text', 'sgs-blocks' ) }
+						help={ __(
+							'Leave empty to hide the secondary button.',
+							'sgs-blocks'
+						) }
+						value={ cta2Text || '' }
+						onChange={ ( v ) =>
+							setAttributes( { cta2Text: v } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ ( cta2Text || '' ) !== '' && (
+						<>
+							<LinkPopoverField
+								label={ __(
+									'Secondary button URL',
+									'sgs-blocks'
+								) }
+								value={ cta2Url || '' }
+								onChange={ ( url ) =>
+									setAttributes( { cta2Url: url } )
 								}
-								onDeselect={ () =>
-									setAttributes( { ctaPadding: {} } )
+								searchOnly
+							/>
+							<SelectControl
+								label={ __(
+									'Secondary button style',
+									'sgs-blocks'
+								) }
+								value={ cta2Style || 'secondary' }
+								options={ CTA_STYLE_OPTIONS }
+								onChange={ ( v ) =>
+									setAttributes( { cta2Style: v } )
 								}
-							>
-								<BoxControl
-									label={ __( 'CTA padding', 'sgs-blocks' ) }
-									values={ ctaPadding ?? {} }
-									onChange={ ( next ) =>
-										setAttributes( { ctaPadding: next } )
-									}
-									__next40pxDefaultSize
-								/>
-							</ToolsPanelItem>
-						</ToolsPanel>
-					</PanelBody>
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</>
+					) }
+					{ /* v1: the secondary button is always a plain learn-more link (one canonical cart form per card) — no behaviour dropdown until a real second behaviour exists (dead-control rule). */ }
+				</PanelBody>
 
 				{ /* ── Card layout panel ── */ }
 				<PanelBody
