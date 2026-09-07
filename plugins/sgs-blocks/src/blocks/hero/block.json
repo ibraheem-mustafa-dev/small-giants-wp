@@ -138,6 +138,8 @@
 						"css:line-height": "lineHeight",
 						"css:letter-spacing": "letterSpacing",
 						"css:text-transform": "textTransform",
+						"css:grid-template-columns": "gridTemplateColumns",
+						"css:columns": "columns",
 						"anim:parallax": "bgParallax",
 						"anim:duration": "bgAnimationDuration"
 					},
