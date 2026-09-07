@@ -281,11 +281,14 @@ $image_border_colour_gradient = sgs_css_gradient_value( $attributes['splitMediaB
 $image_border_colour_hover          = $attributes['splitMediaBorderColourHover'] ?? '';
 $image_border_colour_hover_gradient = sgs_css_gradient_value( $attributes['splitMediaBorderColourHoverGradient'] ?? '' );
 
-// splitMediaPadding — inner padding on the <img> element itself. Box-object
-// family: base + tablet + mobile, each { top, right, bottom, left }.
-$image_padding_obj        = is_array( $attributes['splitMediaPadding'] ?? null ) ? $attributes['splitMediaPadding'] : array();
-$image_padding_tablet_obj = is_array( $attributes['splitMediaPaddingTablet'] ?? null ) ? $attributes['splitMediaPaddingTablet'] : array();
-$image_padding_mobile_obj = is_array( $attributes['splitMediaPaddingMobile'] ?? null ) ? $attributes['splitMediaPaddingMobile'] : array();
+// splitMediaPadding — inner padding on the <img> element itself. Owned
+// tier-object attr {desktop,tablet,mobile}, each { top, right, bottom, left }
+// (folded from the pre-migration flat trio, matching accordion/button/
+// container's already-proven pattern).
+$sgs_split_media_padding_tiers = sgs_responsive_normalise_object( $attributes['splitMediaPadding'] ?? null, true );
+$image_padding_obj             = is_array( $sgs_split_media_padding_tiers['desktop'] ) ? $sgs_split_media_padding_tiers['desktop'] : array();
+$image_padding_tablet_obj      = is_array( $sgs_split_media_padding_tiers['tablet'] ) ? $sgs_split_media_padding_tiers['tablet'] : array();
+$image_padding_mobile_obj      = is_array( $sgs_split_media_padding_tiers['mobile'] ) ? $sgs_split_media_padding_tiers['mobile'] : array();
 
 // mediaPadding — outer padding + background on the .sgs-hero__media wrapper.
 $media_padding_obj        = is_array( $attributes['mediaPadding'] ?? null ) ? $attributes['mediaPadding'] : array();
