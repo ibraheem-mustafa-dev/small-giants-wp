@@ -120,6 +120,29 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
+					/* Label colour — was a standalone DesignTokenPicker inside the
+					   "Display Options" panel; moved into the shared panel to match
+					   the D609/D618 grouped-colour-panel model this block already
+					   uses for text/icon (no D622 element-panel override applies
+					   here — this block never split into per-element TIER 1 panels).
+					   Same ICON_TYPES gate as before, per D609 9c (omit, don't
+					   disable). */
+					ICON_TYPES.has( displayType ) && {
+						key: 'label',
+						label: __( 'Label colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: labelColour,
+								onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
+								gradientValue: labelColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { labelColourGradient: val ?? '' } ),
+							},
+						],
+					},
 				] }
 			/>
 			<InspectorControls>
@@ -167,20 +190,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
-						/>
-						<DesignTokenPicker
-							label={ __( 'Label colour', 'sgs-blocks' ) }
-							states={ [
-								{
-									key: 'normal',
-									label: __( 'Normal', 'sgs-blocks' ),
-									value: labelColour,
-									onChange: ( val ) => setAttributes( { labelColour: val ?? '' } ),
-									gradientValue: labelColourGradient,
-									onGradientChange: ( val ) =>
-										setAttributes( { labelColourGradient: val ?? '' } ),
-								},
-							] }
 						/>
 					</PanelBody>
 				) }

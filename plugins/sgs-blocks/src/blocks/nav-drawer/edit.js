@@ -72,7 +72,7 @@ const BG_ATTACHMENT_OPTIONS = [
 ];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl, GradientCapableColourControl,
+	SgsBorderControl,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle } from '../../utils';
@@ -259,6 +259,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						attrs: {
 							base: 'drawerBg',
 							gradient: 'drawerBgGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
+					/* Drawer text colour — was a standalone GradientCapableColourControl
+					   inside "Drawer container" below; consolidated in alongside its
+					   sibling drawerBg/toggleCloseColour rows (no D622 element-panel
+					   override applies — this block already groups all its colours in
+					   the top-level shared panel, per the D618/D609 comment above). */
+					textRow( {
+						key: 'drawerText',
+						label: __( 'Drawer text colour', 'sgs-blocks' ),
+						attrs: {
+							base: 'drawerTextColour',
+							gradient: 'drawerTextColourGradient',
 						},
 						attributes,
 						setAttributes,
@@ -509,20 +524,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			{ /* ── Styles tab ──────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Drawer container', 'sgs-blocks' ) }>
-					<GradientCapableColourControl
-						label={ __( 'Drawer text colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: drawerTextColour,
-								onChange: ( val ) => setAttributes( { drawerTextColour: val ?? '' } ),
-								gradientValue: drawerTextColourGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { drawerTextColourGradient: val ?? '' } ),
-							},
-						] }
-					/>
+					{ /* Drawer text colour moved to the top-level SgsColourPanel above,
+					   alongside Background/Close icon colour (D618/D621 pattern). */ }
 					{ /* Background moved to the top-level SgsColourPanel (D618/D621).
 					   NOTE: that shared control does not expose an alpha/clearable
 					   override per row (SgsColourPanel forwards no such props),
