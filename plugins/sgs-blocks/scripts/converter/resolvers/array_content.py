@@ -246,7 +246,7 @@ def _field_owns_token(field_key: str, bem_token: str) -> bool:
 # flat item root); text-content is EXCLUDED (it would concatenate a structured
 # item's children).
 _FLAT_SELF_ROLES = frozenset({"icon-slug", "identity", "icon", "url-href", "link-href",
-                              "image-object", "rating"})
+                              "image-object", "rating", "state-modifier-boolean"})
 
 
 @functools.lru_cache(maxsize=1)

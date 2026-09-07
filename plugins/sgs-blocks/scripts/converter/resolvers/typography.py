@@ -48,6 +48,7 @@ from converter.services.tier_object import tier_object_write
 from converter.services.tier_suffix import tier_suffix
 from converter.services.validate import attr_is_number, validate
 from converter.db.db_lookup import (
+    attr_for_typography_property,
     tier_object_base,
     typography_css_to_attrs,
 )
@@ -89,6 +90,20 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             f"typography resolver has no DB mapping for {prop}",
         )
     primary_attr, unit_attr = entry
+
+    # Per-block declarative override (2026-09-08 fix): `typo_map()` above is a
+    # GLOBAL, block-agnostic suffix pick (one canonical attr name per
+    # css_property for the WHOLE tree) — a block whose own colour/typography
+    # attr uses a different camelCase shape (e.g. sgs/button's `colourText`
+    # vs the global "color"->"textColour" pick) has a real destination this
+    # resolver could never see, and gapped every time. Mirrors attr_resolve.py's
+    # own D307 per-block fallback for the OUTER/CONTENT layer resolvers — see
+    # db_lookup.attr_for_typography_property's docstring for the full defect.
+    # Additive only: None (undeclared/ambiguous) keeps the global pick unchanged.
+    override = attr_for_typography_property(ctx.block_slug, prop)
+    if override is not None and override != primary_attr:
+        primary_attr = override
+        unit_attr = f"{override}Unit" if unit_attr is not None else None
 
     if not decl.is_device_tier:
         return gap_writer(

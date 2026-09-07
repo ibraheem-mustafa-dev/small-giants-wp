@@ -32,6 +32,7 @@ from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.border_side import border_side_write
+from converter.services.box_side import box_side_write
 from converter.services.fold_helpers import _resolve_co_declared_var
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import (
@@ -280,6 +281,17 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     border_side = border_side_write(decl, ctx)
     if border_side is not None:
         return border_side
+
+    # Per-side padding/margin longhand -> merged padding/margin box-object on
+    # the OWNING block itself (sibling of border_side_write above; box_side.py
+    # docstring has the full 2026-09-07 margin-bottom regression writeup).
+    # Distinct from _content_band_box_write above, which owns the CONTENT-BAND
+    # prefixed family (contentBandPadding/contentBandMargin); this one owns a
+    # block's own unprefixed box_family attr (sgs/text.margin, .padding, ...),
+    # exactly mirroring border_side_write's OUTER-unconditional resolution.
+    box_side = box_side_write(decl, ctx)
+    if box_side is not None:
+        return box_side
 
     # Explicit layer-priority chain (the re-expressed fold ladder): first
     # layer whose attr the OWNING block actually declares wins.

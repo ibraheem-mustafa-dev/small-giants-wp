@@ -20,6 +20,7 @@ from __future__ import annotations
 from bs4 import Tag
 
 from converter.services.field_extractors import extract_field_value
+from converter.services.recognise_helpers import bem_element_to_canonical_slot
 from converter.db import db_lookup
 
 
@@ -181,7 +182,18 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
         # Covers blocks like sgs/team-member where the photo is a scalar object attr
         # not an InnerBlock. R-31-1 (DB-driven via role column) / R-31-9 (universal
         # — fires for any G3 block with a scalar image attr). 2026-06-13.
-        is_media_object = role == "image-object" and attr_type == "object"
+        # BUG FIX (2026-09-08): a role='image-object' attr is NOT always
+        # object-typed. Many blocks (sgs/media.imageUrl, sgs/decorative-image.
+        # imageUrl, sgs/product-card.image, sgs/responsive-logo.logoUrl,
+        # sgs/before-after.{before,after}ImageUrl) store the FLAT id/url(/alt)
+        # trio as separate STRING/integer sibling attrs instead of one merged
+        # object — the gate below used to require attr_type=='object' alone,
+        # so every one of these was silently excluded and an atomic <img>
+        # recognised directly as one of these blocks (e.g. sgs/media matched
+        # via atomic_tag_map) never got its own src extracted at all. Widened
+        # to accept 'string' too; the branch below decides how to place the
+        # lifted {url,id,alt} dict depending on which shape this attr is.
+        is_media_object = role == "image-object" and attr_type in ("object", "string")
         # numeric-content: a genuinely numeric (decimal-capable) scalar read
         # from element text — e.g. sgs/testimonial.ratingScale, a continuous
         # 0-100 review score. Distinct from is_rating (hardcoded 0..5 star
@@ -220,10 +232,44 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
             class_name = part.strip().lstrip(".")
             if not class_name:
                 continue
+            # SELF-MATCH FIRST (2026-09-08 fix): an ATOMIC leaf block recognised
+            # directly on its own content element (e.g. an
+            # `<img class="sgs-media__image">` matched via atomic_tag_map to
+            # sgs/media — `node` IS that <img>, not a wrapper around it) is the
+            # node this attr's selector targets. bs4's `find()` only searches
+            # DESCENDANTS, so a selector matching the node's OWN class was
+            # silently unmatched and the attr never lifted. Universal: a
+            # composite whose root does not itself carry the target class is
+            # unaffected — this check simply fails and falls through to the
+            # existing descendant search below, unchanged.
+            node_classes = node.get("class", []) if hasattr(node, "get") else []
+            if isinstance(node, Tag) and class_name in (node_classes or []):
+                element = node
+                break
             element = node.find(class_=class_name)
             if element is not None and isinstance(element, Tag):
                 break
             element = None
+        if element is None and "," not in selector and isinstance(node, Tag):
+            # SELF-MATCH BY CANONICAL SLOT (2026-09-08 fix, single-selector
+            # attrs only): a node recognised as THIS block via a CROSS-block
+            # alias (e.g. a draft's `.sgs-brand__image` resolved to sgs/media
+            # via `block_for_slot_token('image')`) never carries sgs/media's
+            # OWN literal class name (`sgs-media__image`) — it keeps the
+            # PARENT block's BEM class verbatim, so the literal-class self-
+            # match above can never fire for it. The node's own canonical
+            # slot — derived the SAME way recognition itself derived it — is
+            # the only signal robust to that mismatch. Gated to single-class
+            # selectors only: a comma-separated selector targets specific
+            # named DESCENDANT sub-elements of a composite (e.g.
+            # '.sgs-x__text, .sgs-x__quote'), never "is this node itself the
+            # attr's own slot".
+            node_slot = bem_element_to_canonical_slot(node)
+            if node_slot and (
+                node_slot == info.get("canonical_slot")
+                or node_slot in (info.get("canonical_slot_aliases") or [])
+            ):
+                element = node
         if element is None:
             # BARE-TAG FALLBACK (§3.B.0 / §2.6): the class selector matched nothing, but
             # the draft may carry this content as a bare tag (no BEM class). Claim the
@@ -243,7 +289,35 @@ def lift_scalar_content(node: Tag, slug: str, media_map: dict) -> dict:
             # Delegate to shared field_extractors — same handler as array items.
             value = extract_field_value(element, "image-object", media_map)
             if value is not None:
-                lifted[attr_name] = value
+                if attr_type == "object":
+                    lifted[attr_name] = value
+                elif isinstance(value, dict):
+                    # FLAT id/url(/alt) trio shape (2026-09-08 fix): this attr
+                    # is a bare STRING holding the URL (e.g. sgs/media.
+                    # imageUrl, sgs/product-card.image) — writing the whole
+                    # {url,id,alt} dict here would fail WP schema validation
+                    # on a string-typed attr and silently discard (WP
+                    # substitutes the default, never errors). Explode instead:
+                    # the URL onto THIS attr; the numeric ID onto its 'Id'
+                    # sibling, derived by stripping a trailing 'Url' then
+                    # appending 'Id' (imageUrl->imageId, logoUrl->logoId,
+                    # image->imageId) and gated on that sibling actually
+                    # existing in the block's OWN catalogue, so a name that
+                    # doesn't match never invents an attr; the alt text via
+                    # the DB-declared alt_companion_attr back-reference
+                    # (never name-guessed — db_lookup.image_alt_companion_for's
+                    # own docstring: no consistent naming rule links an image
+                    # attr to its alt attr across blocks).
+                    lifted[attr_name] = value.get("url") or ""
+                    _stem = attr_name[:-3] if attr_name.endswith("Url") else attr_name
+                    _id_attr = f"{_stem}Id"
+                    if _id_attr in catalogue and value.get("id"):
+                        lifted[_id_attr] = value.get("id")
+                    _alt_attr = db_lookup.image_alt_companion_for(slug, attr_name)
+                    if _alt_attr and _alt_attr in catalogue and value.get("alt"):
+                        lifted[_alt_attr] = value.get("alt")
+                else:
+                    lifted[attr_name] = value
         elif is_numeric:
             # Delegate to shared field_extractors — "numeric-content" = a
             # genuinely numeric (decimal-capable) score, e.g. a continuous

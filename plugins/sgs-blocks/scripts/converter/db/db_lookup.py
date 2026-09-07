@@ -2100,6 +2100,65 @@ def _base_domain_attrs_for_css_property(
     return tuple(r[0] for r in rows)
 
 
+@functools.lru_cache(maxsize=4096)
+def attr_for_typography_property(block_slug: str, css_property: str) -> "str | None":
+    """Per-block declarative override for a css_property the ``typography``
+    pre-layer resolver owns (Spec 31 §3.B2 dispatch, ``dispatch_table``'s A13
+    typography sink).
+
+    BUG FIX (2026-09-08): ``resolvers/typography.py`` previously resolved its
+    destination attr from ``typography_css_to_attrs()`` alone — a GLOBAL,
+    block-AGNOSTIC pick of ONE canonical suffix per css_property (e.g.
+    ``'color' -> 'textColour'``), with no per-block override. That is the
+    exact naming-mismatch trap ``attr_for_property``'s own D307 fallback
+    (``attr_resolve.py``) already documents and fixes for the OUTER/CONTENT
+    layer resolvers — but the typography resolver never got the same
+    fallback. Proven live: ``sgs/button`` declares its text-colour attr as
+    ``colourText`` (not the suffix-derived ``textColour``), so the
+    "Find out more" link's ``color: var(--primary-dark)`` had a genuine
+    destination on the block that the typography resolver could never see,
+    and silently gapped every time.
+
+    Sibling of ``_base_domain_attrs_for_css_property`` (used by
+    ``attr_for_property``), but scoped with ``_OUTER_ROOT_ELEMENTS`` (via
+    ``_root_domain_element_clause``) rather than that function's narrower
+    ``_BASE_ELEMENTS`` — ``_BASE_ELEMENTS`` is missing ``'wrapper'``, the
+    single most common isWrapper element name in the tree (``sgs/button``
+    included), and is also shared with the state-lift base/child domain
+    split (``per_element_state_attrs`` / ``attr_for_state_property``), so
+    widening it here would silently reclassify per-CHILD hover/focus state
+    attrs too — a separate, higher-blast-radius surface this fix does not
+    touch. ``_OUTER_ROOT_ELEMENTS`` already correctly includes ``'wrapper'``
+    and is the established root-domain set used elsewhere (D-2026-08-27).
+
+    Returns ``None`` on ambiguity (>=2 candidates) or no match — additive
+    only: the caller (``typography.resolve``) falls back to its existing
+    global suffix pick unchanged, so an undeclared/ambiguous property never
+    regresses.
+    """
+    if not block_slug or not css_property:
+        return None
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        _element_clause, _element_params = _root_domain_element_clause(block_slug)
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            "WHERE block_slug = ? AND css_property = ? "
+            f"AND ({_element_clause}) "
+            "AND (css_tier IS NULL OR css_tier = 'desktop') "
+            "AND css_state IS NULL "
+            "ORDER BY rowid",
+            (block_slug, css_property, *_element_params),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    finally:
+        conn.close()
+    if len(rows) != 1:
+        return None
+    return rows[0][0]
+
+
 class AmbiguousStateAttrError(RuntimeError):
     """Spec 31 §3.A step 4a extension (2026-07-22, coupled UN-EXCLUDE + HOVER-LIFT):
     the direct (block, css_property, css_state) route matched ≥2 registered attrs.

@@ -59,6 +59,7 @@ from converter.services.lift_helpers import (
     scalar_media_from_img,
 )
 from converter.services.icon_resolver import resolve_icon
+from converter.db import db_lookup
 
 if TYPE_CHECKING:
     pass  # noqa: F401
@@ -406,6 +407,40 @@ def extract_field_value(
     # ------------------------------------------------------------------
     if role == "presence-boolean":
         return True
+
+    # ------------------------------------------------------------------
+    # state-modifier-boolean (2026-09-08) — True when the matched element
+    # itself is marked SELECTED/ACTIVE, False otherwise. Distinct from
+    # presence-boolean: that role's value is always True once matched
+    # (existence IS the signal); this role's element ALWAYS exists (e.g.
+    # every pack-size pill in a repeater) and the boolean depends on which
+    # ONE of the siblings carries the marker — e.g.
+    # `.sgs-product-card__pill.sgs-product-card__pill--active
+    # aria-pressed="true"` on exactly one option. Two independent signals,
+    # either sufficient:
+    #   (a) a standard ARIA state attribute (aria-pressed/aria-selected=
+    #       "true") — a WAI-ARIA spec fact, not per-block data, the same
+    #       permitted-constant class as _FONT_WEIGHT_KEYWORDS elsewhere in
+    #       this tree;
+    #   (b) a BEM --modifier suffix that is a member of the DB's own
+    #       state-modifier vocabulary (modifier_suffixes(kind='state'),
+    #       which already seeds 'Active') — gated on the DB set rather than
+    #       a hardcoded string so an ARBITRARY content modifier (--trial,
+    #       --outline) is never misread as "selected" (R-31-1).
+    # ------------------------------------------------------------------
+    if role == "state-modifier-boolean":
+        if (element.get("aria-pressed") or "").strip().lower() == "true":
+            return True
+        if (element.get("aria-selected") or "").strip().lower() == "true":
+            return True
+        state_suffixes = {s.lower() for s in db_lookup.modifier_suffixes("state")}
+        for cls in (element.get("class") or []):
+            if not isinstance(cls, str):
+                continue
+            bem = db_lookup.parse_sgs_bem(cls)
+            if bem and bem.modifier and bem.modifier.lower() in state_suffixes:
+                return True
+        return False
 
     # ------------------------------------------------------------------
     # icon-slug — priority chain (data-icon > data-lucide > inline <svg>

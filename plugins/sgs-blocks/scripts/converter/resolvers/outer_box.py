@@ -99,6 +99,7 @@ from converter.db import db_lookup
 from converter.models import GAP, GapOrigin, Write
 from converter.services.attr_resolve import attr_resolve
 from converter.services.border_side import border_side_write
+from converter.services.box_side import box_side_write
 from converter.services.gap_writer import gap_writer
 from converter.services.styling_helpers import (
     extract_token_or_hex,
@@ -278,6 +279,18 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     border_side = border_side_write(decl, ctx)
     if border_side is not None:
         return border_side
+
+    # Per-side padding/margin longhand -> merged padding/margin box-object
+    # (same accumulator seam, sibling of border_side_write above). Fixes the
+    # 2026-09-07 margin-bottom regression: a content leaf (sgs/text,
+    # sgs/heading, ...) that owns a custom box-family `margin`/`padding` attr
+    # (rather than native `supports.spacing`) had NO per-side merge path for
+    # these longhands — only a full `padding` SHORTHAND self-merged (the
+    # branch above); a bare `margin-bottom`/`padding-bottom` fell through to
+    # an honest NO_DESTINATION gap. Gated on box_family, never a name regex.
+    box_side = box_side_write(decl, ctx)
+    if box_side is not None:
+        return box_side
 
     # Step 2: name resolution (per-block, DB-driven — never prefix concat).
     base_attr = attr_resolve(ctx, "OUTER", prop)
