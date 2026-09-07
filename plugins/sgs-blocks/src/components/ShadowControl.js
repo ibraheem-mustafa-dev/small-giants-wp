@@ -347,6 +347,7 @@ export default function ShadowControl( {
 					{ ( tab ) =>
 						tab.name === 'hover' ? (
 							<ShadowStateBuilder
+								canEditShape={ typeof onValueHoverChange === 'function' }
 								value={ valueHover }
 								onChange={ safeOnValueHoverChange }
 								colour={ colourHover }
@@ -389,7 +390,7 @@ export default function ShadowControl( {
  * states, and resolving it per instance would duplicate the origin-precedence merge and
  * let the two states drift.
  */
-function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets } ) {
+function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets, canEditShape = true } ) {
 	const parts = parseShadow( value ) || DEFAULT_PARTS;
 
 	const updatePart = ( key, next ) => {
@@ -398,6 +399,15 @@ function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets 
 
 	return (
 		<>
+			{ /* STRUCTURAL GUARD (Wave A1, 2026-09-07). A state that cannot WRITE a
+			   shape must not render shape controls. Proven live on the canary before
+			   this: sgs/container's Hover tab showed the full preset row, and clicking
+			   "Raised" changed no attribute at all — it only logged a console warning,
+			   because the mount passed a hover COLOUR but no hover SHAPE. That is the
+			   D338 dead-control shape this control's own shadowAttrKeys() docblock
+			   exists to prevent, reproduced one level up. Colour still renders for such
+			   a state, because a hover colour genuinely IS writable there. */ }
+			{ canEditShape && (
 			<div className="sgs-shadow-control__presets">
 				{ /* Relabelled from an unlabelled ButtonGroup (Wave A1 ShadowControl
 				   redesign, 2026-09-07) — a bare row of buttons with no caption read as
@@ -426,6 +436,7 @@ function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets 
 					</ButtonGroup>
 				</BaseControl>
 			</div>
+			) }
 
 			{ /* Colour lives OUTSIDE the `!! value` gate (Wave A1 fix, 2026-09-07). Before
 			   this it was nested inside the offset/blur/spread block, so picking "None"
@@ -458,7 +469,7 @@ function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets 
 				statesProvidedByParent
 			/>
 
-			{ !! value && (
+			{ canEditShape && !! value && (
 				<div className="sgs-shadow-control__builder">
 					<div className="sgs-shadow-control__row">
 						<UnitControl
