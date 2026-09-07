@@ -21,9 +21,22 @@
  *      (used by the drawer, which does not know the ref itself).
  *   3. Back-compat: a core/navigation block in the header (its ref or inline
  *      innerBlocks) — so an un-migrated header still populates the drawer.
- *   4. Fallback, in FR-36-1's stated order: (a) a registered classic theme menu
- *      location, (b) the most-recent classic menu, (c) the most-recent published
- *      wp_navigation post.
+ *   4. Fallback, in order: (a) a registered classic theme menu location — this
+ *      is the one case FR-36-1's "classic is primary" ruling actually governs,
+ *      because a location assignment is a deliberate site-owner action; (b) the
+ *      most-recent PUBLISHED wp_navigation post — a block-based menu is always
+ *      intentional editorial content (it is created and populated by an
+ *      operator through the block editor, never left behind by tooling), so it
+ *      outranks (c); (c) the most-recent classic menu, as an absolute last
+ *      resort only. **(c) is deliberately the least-trusted branch in this
+ *      list.** A classic `nav_menu` term can be created by dev/QA tooling with
+ *      no assignment to anything and no operator intent behind it at all —
+ *      unlike a `wp_navigation` post, there is no "was this ever published as
+ *      the site's menu" signal to lean on, only "does it exist". Promoting an
+ *      unassigned classic menu above a real wp_navigation post let a leftover
+ *      QA fixture ("T1 Dropdown Test", the highest `term_id` on the install)
+ *      render live on every page in place of the real menu — see D-log entry
+ *      for this fix. Do not swap (b) and (c) back without addressing that.
  *   5. Empty array (caller then renders a page-list / get_pages fallback).
  *
  * All links resolved here are rendered SERVER-SIDE by the callers (crawlable +
@@ -139,22 +152,35 @@ class SGS_Nav_Menu_Source {
 			}
 		}
 
-		// 4a. FR-36-1 default: a registered classic theme menu location.
+		// 4a. FR-36-1 default: a registered classic theme menu location. This is
+		// the branch FR-36-1's "classic is primary" ruling actually governs — a
+		// location ASSIGNMENT is deliberate site-owner action, so an assigned
+		// classic menu still beats a block menu here.
 		$located = self::blocks_from_theme_location();
 		if ( ! empty( $located ) ) {
 			return $located;
 		}
 
-		// 4b. Then the site's most-recent CLASSIC menu (classic is primary, FR-36-1).
-		$latest_classic = self::latest_classic_menu_blocks();
-		if ( ! empty( $latest_classic ) ) {
-			return $latest_classic;
-		}
-
-		// 4c. Then the most-recent published wp_navigation post (block menus, Phase-3 extra).
+		// 4b. Then the most-recent published wp_navigation post. A block-based
+		// menu is always intentional editorial content — it exists only because
+		// an operator built it in the block editor — so it outranks an
+		// UNASSIGNED classic menu, which carries no such signal (see 4c).
 		$latest = self::latest_menu_blocks();
 		if ( ! empty( $latest ) ) {
 			return $latest;
+		}
+
+		// 4c. Absolute last resort: the site's most-recent classic menu. This
+		// branch is deliberately the least trusted in this method — an
+		// unassigned `nav_menu` term can be dev/QA tooling residue with zero
+		// operator intent behind it, and "most recent" (highest term_id) is an
+		// arbitrary tie-break with no relation to which menu is real content.
+		// It used to sit ahead of 4b and picked exactly such a leftover fixture
+		// site-wide; see the class docblock for the incident this guards
+		// against. Do not move it back above 4b.
+		$latest_classic = self::latest_classic_menu_blocks();
+		if ( ! empty( $latest_classic ) ) {
+			return $latest_classic;
 		}
 
 		// 5. Nothing configured — a synthetic page-list so the bar AND the drawer
