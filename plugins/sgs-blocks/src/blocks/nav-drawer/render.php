@@ -289,6 +289,17 @@ if ( '' !== $drawer_text_effective ) {
 	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel, $drawer_text_effective );
 }
 
+// drawerTextColour hover state — same trio, :hover/:focus-visible variant of
+// the same selector.
+$drawer_text_effective_hover = sgs_resolve_text_colour_or_gradient(
+	$attributes['drawerTextColourHover'] ?? '',
+	$attributes['drawerTextColourHoverGradient'] ?? ''
+);
+if ( '' !== $drawer_text_effective_hover ) {
+	$css .= sgs_hover_state_rules( $body_sel, sgs_text_colour_decl( $drawer_text_effective_hover ) );
+	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel . ':hover', $drawer_text_effective_hover );
+}
+
 /*
  * Content alignment on the drawer body, PLUS the same pick published as two
  * inheritable custom properties so descendant blocks can honour it.

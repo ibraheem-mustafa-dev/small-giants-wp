@@ -273,7 +273,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						label: __( 'Drawer text colour', 'sgs-blocks' ),
 						attrs: {
 							base: 'drawerTextColour',
+							hover: 'drawerTextColourHover',
 							gradient: 'drawerTextColourGradient',
+							hoverGradient: 'drawerTextColourHoverGradient',
 						},
 						attributes,
 						setAttributes,

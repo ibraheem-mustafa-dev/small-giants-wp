@@ -124,6 +124,14 @@
 						"css:padding": "drawerPadding",
 						"css:align-items": "drawerAlign"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "drawerTextColourHover",
+								"css:color-gradient": "drawerTextColourHoverGradient"
+							}
+						}
+					},
 					"_note": "The `.sgs-nav-drawer__body` flex column that hosts the editable InnerBlocks (menu/logo/CTA). Layer GRID because it is the arrangement layer for this composite (flex-direction:column is a fixed style.css invariant, not an attribute — honest gap on css:flex-direction). drawerAlign maps to css:align-items (left/center/right -> flex-start/center/flex-end); drawerGap/drawerPadding are the responsive object-model box members."
 				},
 				"close": {
@@ -267,6 +275,15 @@
 		"drawerTextColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"drawerTextColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerTextColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of drawerTextColourHover. Non-empty wins over drawerTextColourHover on :hover/:focus-visible."
 		},
 		"toggleCloseColourHover": {
 			"type": "string",
