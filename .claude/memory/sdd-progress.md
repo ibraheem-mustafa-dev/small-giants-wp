@@ -628,7 +628,21 @@ Minor, non-blocking: verifier wrote its screenshots to the repo root instead of 
 claim 2 — weak attribution, but claim 3 carries an independent numeric measurement so the
 verdict does not rest on the screenshot.
 
-NOT verified, no positive control available on the canary (carried forward, still open):
-  - tier-object Group 0 padding fix — no block on page 2742 uses configured padding
-  - typography decimal font-size (float-cast) — not exercised on that page
-  Both need a purpose-built test page. Do not record either as verified.
+Task 2: complete — both previously-unverifiable claims CLOSED with a purpose-built positive
+control. Created canary page 3355 ("SGS verification probe"), a container carrying ONLY padding
+(no gap, no maxWidth — the exact Group 0 trigger shape) wrapping a heading at a decimal size.
+
+  - tier-object Group 0 padding fix: VERIFIED live. Emitted CSS:
+      .sgs-container-0039b425{padding-top:37px;padding-right:23px;padding-bottom:37px;padding-left:23px;}
+    A padding-only container minted a uid and emitted padding. Pre-abf301700 this rendered ZERO.
+  - typography decimal font-size (float-cast): VERIFIED live. Emitted CSS:
+      .sgs-hdg-22f8805f.wp-block-sgs-heading{font-size:1.375rem;}
+    1.375 survived; a rounded 1rem would have been the bug.
+
+  Gotcha worth keeping: padding emits as LONGHAND (padding-top/right/bottom/left), so a grep for
+  `padding:37px` finds nothing and reads as a clean pass. Match the longhand, or the check is vacuous.
+  Second gotcha: sgs/text does not declare a `content` attribute, so `{"content":"..."}` is silently
+  discarded (D338) and the block does not render. That was a markup error on my part, not a bug.
+
+  Page 3355 is LEFT IN PLACE deliberately — it is the positive control this canary never had, and
+  its absence is what made these two claims unverifiable twice. Delete only with a replacement.
