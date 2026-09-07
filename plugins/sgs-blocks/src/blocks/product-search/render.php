@@ -213,7 +213,7 @@ if ( '' !== $sgs_ps_border_colour_css ) {
 	$sgs_scoped_css[] = $sgs_ps_border_colour_css;
 }
 
-$sgs_ps_border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$sgs_ps_border_radius_tiers      = sgs_border_radius_tiers( $attributes );
 $sgs_ps_border_radius_base       = $sgs_ps_border_radius_tiers['base'];
 $sgs_ps_border_radius_tablet_obj = $sgs_ps_border_radius_tiers['tablet'];
 $sgs_ps_border_radius_mobile_obj = $sgs_ps_border_radius_tiers['mobile'];

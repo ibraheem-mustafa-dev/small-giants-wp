@@ -272,7 +272,7 @@ $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sg
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers            = sgs_border_radius_tiers( $attributes );
 $base_border_radius       = $radius_tiers['base'];
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];

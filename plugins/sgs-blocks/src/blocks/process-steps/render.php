@@ -145,7 +145,7 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 
 // Base border-radius — WP-native style.border.radius (string = uniform, or an
 // object with topLeft/topRight/bottomLeft/bottomRight keys), base only.
-$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers            = sgs_border_radius_tiers( $attributes );
 $base_border_radius       = $radius_tiers['base'];
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];

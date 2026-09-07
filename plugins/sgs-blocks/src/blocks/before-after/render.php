@@ -229,14 +229,6 @@ if ( '' !== $mwm_safe ) {
 }
 
 // Border-radius tiers (box family).
-$radius_tab_val = sgs_corner_object_shorthand( $attributes['borderRadiusTablet'] ?? null );
-if ( null !== $radius_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{border-radius:{$radius_tab_val};}}";
-}
-$radius_mob_val = sgs_corner_object_shorthand( $attributes['borderRadiusMobile'] ?? null );
-if ( null !== $radius_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{border-radius:{$radius_mob_val};}}";
-}
 
 // --- Stage height (base + tiers). ---
 $stage_sel    = $root_sel . ' .wp-block-sgs-before-after__stage';
@@ -688,7 +680,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

@@ -185,7 +185,7 @@ if ( '' !== $border_colour_css ) {
 	$scoped_css[] = $border_colour_css;
 }
 
-$border_radius_tiers      = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_base       = $border_radius_tiers['base'];
 $border_radius_tablet_obj = $border_radius_tiers['tablet'];
 $border_radius_mobile_obj = $border_radius_tiers['mobile'];

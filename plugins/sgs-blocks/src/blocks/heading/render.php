@@ -206,7 +206,7 @@ $has_border_width    = ( '' !== $border_width_top || '' !== $border_width_right 
 // Border-radius — WP-native style.border.radius (string = uniform, or an object
 // with topLeft/topRight/bottomLeft/bottomRight keys), base only. Skip-serialised
 // in block.json → emit scoped via the style engine in step 5.
-$radius_tiers            = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers            = sgs_border_radius_tiers( $attributes );
 $base_border_radius       = $radius_tiers['base'];
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];

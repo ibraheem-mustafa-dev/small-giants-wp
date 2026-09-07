@@ -1385,12 +1385,15 @@ if ( 'none' !== $border_style ) {
 
 // ── Block-private border-radius (radius is no longer native -- Shape B now
 // covers all four legs). Same wp_style_engine_get_styles() route already
-// proven live by sgs/media + sgs/before-after's borderRadiusTablet/Mobile
-// tiers; base now goes through the identical call instead of WP's native
-// serialisation. The style-engine result is an intermediate PHP value ($out
+// proven live; base now goes through the identical call instead of WP's
+// native serialisation. Tiers come from the SHARED sgs_border_radius_tiers()
+// helper (2026-09-07) -- never from $attributes['borderRadiusTablet'|'Mobile'],
+// which no block declares any more, so WP discards them (D338) and the emitted
+// stanza was dead on arrival. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (\`.=\` for a string accumulator, \`[] =\` for an array one). ──
-$border_radius_obj = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
+$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_obj ) ),
@@ -1400,7 +1403,7 @@ if ( ! empty( $border_radius_obj ) ) {
 		${ append( `$border_radius_out['css']` ) }
 	}
 }
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
+$border_radius_tablet_obj = $radius_tiers['tablet'];
 if ( ! empty( $border_radius_tablet_obj ) ) {
 	$border_radius_tab_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
@@ -1410,7 +1413,7 @@ if ( ! empty( $border_radius_tablet_obj ) ) {
 		${ append( `'@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}'` ) }
 	}
 }
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$border_radius_mobile_obj = $radius_tiers['mobile'];
 if ( ! empty( $border_radius_mobile_obj ) ) {
 	$border_radius_mob_out = wp_style_engine_get_styles(
 		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
@@ -2789,12 +2792,28 @@ function runSelfTest() {
 	ok( /if \( \$has_border_width \)/.test( em ),
 		'emission must G5-gate: border-style only alongside a real width' );
 	// Radius emission — base + both tiers, same wp_style_engine_get_styles()
-	// route already proven live by sgs/media + sgs/before-after's tiers, and
-	// respecting the string vs array SINK (not appended raw — only ['css']).
-	ok( /\$attributes\['borderRadius'\]/.test( em ),
-		'emission must read the private borderRadius (base) attr' );
-	ok( /\$attributes\['borderRadiusTablet'\]/.test( em ) && /\$attributes\['borderRadiusMobile'\]/.test( em ),
-		'emission must read both private radius tier attrs' );
+	// route already proven live, respecting the string vs array SINK (not
+	// appended raw — only ['css']).
+	//
+	// 2026-09-07: base AND tiers now come from the SHARED sgs_border_radius_tiers()
+	// helper, which resolves the tier-object `borderRadius` shape. The old
+	// assertions here required the pre-migration reads — a flat
+	// $attributes['borderRadius'] plus the borderRadiusTablet/Mobile siblings —
+	// and so REQUIRED the codemod to emit a stanza that was dead on arrival: no
+	// block declares those siblings any more, and WP discards undeclared
+	// attributes (D338). Asserting the helper instead.
+	ok( /\$radius_tiers\s*=\s*sgs_border_radius_tiers\( \$attributes \)/.test( em ),
+		'emission must resolve radius through the shared sgs_border_radius_tiers() helper' );
+	ok( /\$radius_tiers\['base'\]/.test( em ),
+		'emission must read the base radius from the resolved tier object' );
+	ok( /\$radius_tiers\['tablet'\]/.test( em ) && /\$radius_tiers\['mobile'\]/.test( em ),
+		'emission must read both radius tiers from the resolved tier object' );
+	// NEGATIVE CONTROL — the dead read this codemod used to clone. No block
+	// declares these siblings, so emitting them produced a stanza that could
+	// never fire (96 gate findings of pure noise before 2026-09-07).
+	ok( ! /\$attributes\['borderRadiusTablet'\]/.test( emCode ) && ! /\$attributes\['borderRadiusMobile'\]/.test( emCode ),
+		'emission NEGATIVE CONTROL: must NOT read the undeclared borderRadiusTablet/Mobile ' +
+			'siblings — WP discards them (D338), so the stanza would be dead on arrival' );
 	ok( /wp_style_engine_get_styles\(/.test( em ),
 		'emission must route radius through wp_style_engine_get_styles() (the proven live mechanism)' );
 	ok( /@media\(max-width:1023px\)/.test( em ) && /@media\(max-width:767px\)/.test( em ),

@@ -102,10 +102,11 @@ def fix_render_php_b(block_dir: Path, apply: bool):
     src = rp.read_text(encoding='utf-8')
     mb, mt, mm = matches
     indent = mb.group('indent')
-    helper_line = (
-        f"{indent}$radius_tiers = sgs_border_radius_tiers( $attributes, "
-        "$attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );\n"
-    )
+    # 2026-09-07: emit the ONE-ARG call. The helper's $legacy_tablet/$legacy_mobile
+    # params were removed - every caller block is migrated, and no block declares the
+    # sibling attrs any more, so passing them was always a literal null (WP discards
+    # undeclared attributes, D338) and produced 96 dead-read gate findings.
+    helper_line = f"{indent}$radius_tiers = sgs_border_radius_tiers( $attributes );\n"
     obj_line = f"{indent}$border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();\n"
     tablet_line = f"{indent}$border_radius_tablet_obj = $radius_tiers['tablet'];\n"
     mobile_line = f"{indent}$border_radius_mobile_obj = $radius_tiers['mobile'];\n"
@@ -134,7 +135,7 @@ def fix_render_php(block_dir: Path, apply: bool):
     src = rp.read_text(encoding='utf-8')
     indent = match.group('indent')
     replacement = (
-        f"{indent}\\$radius_tiers            = sgs_border_radius_tiers( \\$attributes, \\$attributes['borderRadiusTablet'] ?? null, \\$attributes['borderRadiusMobile'] ?? null );\n"
+        f"{indent}\\$radius_tiers            = sgs_border_radius_tiers( \\$attributes );\n"
         f"{indent}\\$base_border_radius       = \\$radius_tiers['base'];\n"
         f"{indent}\\$border_radius_tablet_obj = \\$radius_tiers['tablet'];\n"
         f"{indent}\\$border_radius_mobile_obj = \\$radius_tiers['mobile'];\n"

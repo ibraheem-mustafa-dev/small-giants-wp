@@ -300,7 +300,7 @@ if ( $mobile_decls ) {
 // --- Responsive border-radius tiers — SGS custom 4-CORNER object attrs,
 // routed through the same stable core style-engine API (mirrors sgs/media's
 // proven borderRadiusTablet/borderRadiusMobile pattern). ---
-$radius_tiers = sgs_border_radius_tiers( $attributes, $attributes['borderRadiusTablet'] ?? null, $attributes['borderRadiusMobile'] ?? null );
+$radius_tiers = sgs_border_radius_tiers( $attributes );
 $border_radius_tablet_obj = $radius_tiers['tablet'];
 $border_radius_mobile_obj = $radius_tiers['mobile'];
 
@@ -449,26 +449,6 @@ if ( ! empty( $border_radius_obj ) ) {
 	);
 	if ( ! empty( $border_radius_out['css'] ) ) {
 		$scoped_css[] = $border_radius_out['css'];
-	}
-}
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-if ( ! empty( $border_radius_tablet_obj ) ) {
-	$border_radius_tab_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_tablet_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_tab_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:1023px){' . $border_radius_tab_out['css'] . '}';
-	}
-}
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
-if ( ! empty( $border_radius_mobile_obj ) ) {
-	$border_radius_mob_out = wp_style_engine_get_styles(
-		array( 'border' => array( 'radius' => $border_radius_mobile_obj ) ),
-		array( 'selector' => $root_sel )
-	);
-	if ( ! empty( $border_radius_mob_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:767px){' . $border_radius_mob_out['css'] . '}';
 	}
 }
 

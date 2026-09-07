@@ -228,23 +228,27 @@ if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 	 * corner objects, shape-agnostic (Phase 2 tier-object migration,
 	 * 2026-09-06): correctly handles BOTH the migrated shape (one tier-object
 	 * attribute `{desktop,tablet,mobile}`, each a corner object) and the
-	 * legacy flat shape (a bare corner object at `borderRadius`, with
-	 * `borderRadiusTablet`/`borderRadiusMobile` as separate sibling
-	 * attributes — passed in via `$legacy_tablet`/`$legacy_mobile` since a
-	 * block with the OLD shape still has them declared and readable).
+	 * legacy flat shape (a bare corner object at `borderRadius`), which still
+	 * resolves as the DESKTOP tier with empty tablet/mobile.
+	 *
+	 * ⚠ The `$legacy_tablet`/`$legacy_mobile` parameters were REMOVED 2026-09-07.
+	 * They existed to carry `$attributes['borderRadiusTablet'|'borderRadiusMobile']`
+	 * for a not-yet-migrated block. Census that date: all 50 caller blocks are
+	 * migrated (tier-object default), so `$has_tier_key` was always true and the
+	 * params were never read; and no caller block declares those sibling attrs any
+	 * more, so WordPress discarded them anyway (D338) and the callers were passing
+	 * a literal null. Dead twice over — and 96 gate findings of pure noise. Removing
+	 * them makes the dead path unreachable rather than merely unused.
 	 *
 	 * Extracted from the identical ~19-line block duplicated across every
 	 * block's render.php (the same duplication class `helpers-box.php`'s
 	 * other helpers were built to close, D722) — this is that same fix for
 	 * the border-radius family, one function instead of 46+ inline copies.
 	 *
-	 * @param array $attributes    The block's render attributes.
-	 * @param mixed $legacy_tablet Raw `$attributes['borderRadiusTablet'] ?? null`,
-	 *                             for a block that hasn't migrated yet.
-	 * @param mixed $legacy_mobile Raw `$attributes['borderRadiusMobile'] ?? null`.
+	 * @param array $attributes The block's render attributes.
 	 * @return array{base: array|string|null, tablet: array, mobile: array}
 	 */
-	function sgs_border_radius_tiers( array $attributes, $legacy_tablet = null, $legacy_mobile = null ): array {
+	function sgs_border_radius_tiers( array $attributes ): array {
 		$raw = $attributes['borderRadius'] ?? null;
 
 		$has_tier_key = is_array( $raw ) && (
@@ -256,9 +260,12 @@ if ( ! function_exists( 'sgs_border_radius_tiers' ) ) {
 			$tablet_obj  = is_array( $raw['tablet'] ?? null ) ? $raw['tablet'] : array();
 			$mobile_obj  = is_array( $raw['mobile'] ?? null ) ? $raw['mobile'] : array();
 		} else {
+			// Flat shape: the whole value IS the desktop tier. There is no
+			// tablet/mobile source in this shape (the old sibling attributes are
+			// gone everywhere — see the note above), so both are empty.
 			$desktop_raw = $raw;
-			$tablet_obj  = is_array( $legacy_tablet ) ? $legacy_tablet : array();
-			$mobile_obj  = is_array( $legacy_mobile ) ? $legacy_mobile : array();
+			$tablet_obj  = array();
+			$mobile_obj  = array();
 		}
 
 		$base = null;
