@@ -682,3 +682,48 @@ style rather than trusting the editor canvas or the render.php docblock.
 
 Page 3355 now also carries the accordion/button/table-of-contents probes; kept in place
 alongside the container probe for future re-checks.
+
+## SDD progress — Priority 2/3 status + two scope corrections, 2026-09-07
+
+**Priority 2 (mediaPadding shared atom) — partially complete, blocked by concurrent churn.**
+Fixed and verified the shared atom itself: `includes/media/atoms/media-padding.php` and its JS
+twin now read/write ONE tier-object attribute via `sgs_responsive_normalise_object()`/`patchTier()`
+instead of three flat attrs. Manually verified PHP and JS emit byte-identical CSS across all three
+tiers (the project's `test-media-atom-parity.mjs` fixture carries no real value for this atom, so it
+passed trivially both before and after — not a meaningful proof on its own). Committed
+(`cd814b305`), pushed.
+
+**Blocked:** folding `sgs/hero`'s `splitMediaPadding`/`Tablet`/`Mobile` into one tier-object attr,
+and adding `sgs/media`'s missing `padding` attribute, both require editing `hero/block.json` and
+`media/block.json` — both under active, unrelated concurrent edits (a broad typography-attribute
+rollout touching many blocks) for the entire session. Deferred to whenever those files clear.
+
+**New scope correction: hero has a SECOND, separate "media padding" concept.** The shared atom
+above only wires to hero's `splitMedia`-prefixed element (`splitMediaPadding`). Hero ALSO declares
+a completely different, hand-rolled `mediaPadding`/`Tablet`/`Mobile` family, read directly in
+hero's own `render.php:290-293` for the `.sgs-hero__media` wrapper — NOT routed through the shared
+atom at all. Same underlying flat-trio shape, same likely fix pattern, but a genuinely separate,
+unplanned defect. Not touched this session.
+
+**Priority 3 (border-radius) — REVISED: neither of the two originally-flagged blocks needs a fix.**
+
+- **`sgs/whatsapp-cta`: NOT a bug.** Live-verified on canary page 3355 (added a probe with
+  `style.border.radius=20px` desktop + `borderRadiusTablet`/`Mobile` set to 10px/4px) — all three
+  tiers render correctly (`20px` / `10px` / `4px` computed `border-top-left-radius` at 1445/1000/375px
+  widths). Desktop genuinely comes from WP-native `style.border.radius` (skip-serialised); tablet/
+  mobile are separate custom flat-box attrs read directly, which is a DIFFERENT but fully working
+  design — not the "stale flat attrs" pattern accordion/button/container had. The original handoff
+  prompt's classification of this block as "unmigrated" was wrong; no fix needed.
+- **`sgs/media`: border-radius is NOT the shared media-padding territory — it's `box-shape`, a
+  different atom, explicitly out of scope.** `render.php:42-49,261-296` confirms media's border-radius
+  (base+tablet+mobile) was fully retired from the old native/custom-attr paths at Wave 5b
+  (2026-09-01) and is now owned entirely by the `box-shape` atom
+  (`includes/media/atoms/box-shape.php` + `src/components/media/atoms/box-shape.{js,control.js}`).
+  Those files are explicitly flagged in this session's plan as owned by a different concurrent
+  session (commit `e76586a9e` landed there today) — not touched, per the plan's own exclusion and
+  `plugins/sgs-blocks/CLAUDE.md`'s standing instruction to ask that session before scheduling radius
+  work there.
+
+**Net effect:** Priority 3 required zero code changes. The `check-box-family-guard.py` scope
+question from the original plan is moot — there is no confirmed render.php-level border-radius
+defect left to gate against on either originally-named block.
