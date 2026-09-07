@@ -843,6 +843,17 @@ function slugify( s ) {
 const MECHANISM_BY_CSS_PROPERTY = {
 	color: 'text',
 	'color-gradient': 'text',
+	// 'color-link' is this framework's convention for a colour that paints
+	// nested <a> links inside a RichText/body-text element (sgs_link_colour_css()),
+	// not the element's own text colour — same TEXT paint mechanism as 'color',
+	// just scoped to a descendant selector. Confirmed live: sgs/breadcrumbs and
+	// sgs/text both declare it via `"css:color-link"` in their element attrMap,
+	// and DB stage-1 already resolves css_property='color-link' correctly —
+	// this map was the only place still missing the entry, which made rule 31's
+	// survey wrongly REFUSE:no-css_property on an attribute the DB had already
+	// classified. No 'color-link-gradient' sibling exists in the DB yet; add one
+	// here (mapped to 'text', matching 'color-gradient') the day a block needs it.
+	'color-link': 'text',
 	'background-color': 'fill',
 	'background-image': 'fill',
 	'background-color-gradient': 'fill',

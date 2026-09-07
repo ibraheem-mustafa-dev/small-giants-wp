@@ -52,7 +52,9 @@
       "slug": "sgs/accordion",
       "attr": "letterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -68,14 +70,18 @@
       "slug": "sgs/accordion",
       "attr": "textDecoration",
       "fields": {
-        "css_property": "text-decoration"
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/accordion",
       "attr": "textTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -312,7 +318,9 @@
       "slug": "sgs/brand-strip",
       "attr": "itemBackgroundColourHover",
       "fields": {
-        "css_property": "position"
+        "css_property": "background-color",
+        "css_element": "item",
+        "css_state": "hover"
       }
     },
     {
@@ -320,15 +328,6 @@
       "attr": "itemBorderColourHover",
       "fields": {
         "css_property": "border-color",
-        "css_element": "item",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/brand-strip",
-      "attr": "itemTextColourHover",
-      "fields": {
-        "css_property": "color",
         "css_element": "item",
         "css_state": "hover"
       }
@@ -663,7 +662,7 @@
       "attr": "letterSpacing",
       "fields": {
         "css_property": "letter-spacing",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -679,7 +678,7 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -687,7 +686,7 @@
       "attr": "textTransform",
       "fields": {
         "css_property": "text-transform",
-        "css_element": "text"
+        "css_element": "wrapper"
       }
     },
     {
@@ -2531,7 +2530,6 @@
       "attr": "mediaPadding",
       "fields": {
         "css_property": "padding",
-        "css_tier": "desktop",
         "css_layer": "GRID_AREA",
         "css_element": "media"
       }
@@ -6024,7 +6022,8 @@
       "slug": "sgs/social-icons",
       "attr": "letterSpacing",
       "fields": {
-        "css_property": "letter-spacing"
+        "css_property": "letter-spacing",
+        "css_element": "wrapper"
       }
     },
     {
@@ -6039,14 +6038,16 @@
       "slug": "sgs/social-icons",
       "attr": "textDecoration",
       "fields": {
-        "css_property": "text-decoration"
+        "css_property": "text-decoration",
+        "css_element": "wrapper"
       }
     },
     {
       "slug": "sgs/social-icons",
       "attr": "textTransform",
       "fields": {
-        "css_property": "text-transform"
+        "css_property": "text-transform",
+        "css_element": "wrapper"
       }
     },
     {
@@ -7701,6 +7702,15 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
@@ -7859,6 +7869,42 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textIndent",
+      "fields": {
+        "css_property": "text-indent",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -8475,6 +8521,14 @@
     },
     {
       "slug": "sgs/business-info",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -8507,6 +8561,30 @@
         "css_property": "background-image",
         "css_element": "text",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textIndent",
+      "fields": {
+        "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/business-info",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "wrapper"
       }
     },
     {
@@ -8616,6 +8694,38 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textIndent",
+      "fields": {
+        "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
         "css_element": "wrapper"
       }
     },
@@ -14804,6 +14914,14 @@
     },
     {
       "slug": "sgs/social-icons",
+      "attr": "fontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
       "attr": "iconBackground",
       "fields": {
         "css_property": "background-color",
@@ -14925,6 +15043,38 @@
       "attr": "padding",
       "fields": {
         "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textIndent",
+      "fields": {
+        "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/social-icons",
+      "attr": "textWrap",
+      "fields": {
+        "css_property": "text-wrap",
         "css_element": "wrapper"
       }
     },
@@ -16930,26 +17080,6 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaPaddingMobile",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "mobile",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaPaddingTablet",
-      "fields": {
-        "css_property": "padding",
-        "css_tier": "tablet",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
       }
     },
     {

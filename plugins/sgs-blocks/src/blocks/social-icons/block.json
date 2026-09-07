@@ -75,7 +75,15 @@
 						"css:border-style": "wrapperBorderStyle",
 						"css:border-color": "wrapperBorderColour",
 						"css:border-radius": "borderRadius",
-						"css:border-color-gradient": "wrapperBorderColourGradient"
+						"css:border-color-gradient": "wrapperBorderColourGradient",
+						"css:font-family": "fontFamily",
+						"css:text-transform": "textTransform",
+						"css:text-decoration": "textDecoration",
+						"css:letter-spacing": "letterSpacing",
+						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:text-indent": "textIndent",
+						"css:column-count": "textColumns"
 					},
 					"states": {
 						"hover": {

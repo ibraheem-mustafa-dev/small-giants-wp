@@ -68,7 +68,15 @@
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
-						"css:max-width": "maxWidth"
+						"css:max-width": "maxWidth",
+						"css:font-family": "fontFamily",
+						"css:text-transform": "textTransform",
+						"css:text-decoration": "textDecoration",
+						"css:letter-spacing": "letterSpacing",
+						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:text-indent": "textIndent",
+						"css:column-count": "textColumns"
 					},
 					"_note": "Mirrors sgs/container's wrapper/grid split — typography migrated off native WP support onto the shared TypographyControls/sgs_typography_css_rule() mechanism (D971/D972), root prefix '' (fontSize/fontWeight/fontStyle/lineHeight); no letterSpacing/textTransform/textAlign/fontFamily control is offered, and no width/height/box-shadow/aspect-ratio attrs exist, so those remain honest gaps. The 12 ARRANGEMENT members also apply here (layer OUTER) and are resolved by the sibling `inner` element, not this one — same double-check pattern container's wrapper uses."
 				},

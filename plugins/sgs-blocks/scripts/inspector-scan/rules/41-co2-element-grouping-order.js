@@ -218,13 +218,77 @@ function panelTagNames( ctx ) {
 	return names;
 }
 
+/**
+ * Resolve the block's main Edit component function NODE — the thing WordPress
+ * actually renders — via its `export default`. Handles both
+ * `export default function Edit(...)`/`export default (...) => {...}` (the
+ * declaration IS the function) and `function Edit(...){} ... export default
+ * Edit;` (the declaration is an Identifier that needs a binding lookup).
+ * Returns null if the file has no resolvable default export (never guessed);
+ * callers must treat null as "can't check this signal, don't exclude anything".
+ */
+function findMainEditFunctionNode( ctx, editFile ) {
+	let mainFn = null;
+	ctx.cache.traverse( editFile, {
+		ExportDefaultDeclaration( nodePath ) {
+			const decl = nodePath.node.declaration;
+			if (
+				decl.type === 'FunctionDeclaration' ||
+				decl.type === 'FunctionExpression' ||
+				decl.type === 'ArrowFunctionExpression'
+			) {
+				mainFn = decl;
+				return;
+			}
+			if ( decl.type === 'Identifier' ) {
+				const binding = nodePath.scope.getBinding( decl.name );
+				if ( ! binding || ! binding.path ) return;
+				if ( binding.path.isFunctionDeclaration() ) {
+					mainFn = binding.path.node;
+				} else if ( binding.path.isVariableDeclarator() && binding.path.node.init ) {
+					mainFn = binding.path.node.init;
+				}
+			}
+		},
+	} );
+	return mainFn;
+}
+
 function findPanelElements( ctx, editFile, tagNameSet ) {
+	// Resolved BEFORE the panel walk: knowing which function is the real Edit
+	// component lets the walk exclude a panel defined inside a DIFFERENT,
+	// earlier-declared function component (e.g. a `ProductOverridesPanel`
+	// helper) whose OWN JSX therefore sits early in the FILE regardless of
+	// where that helper is actually invoked/rendered from. See the
+	// "indirect sub-component panel" note below for the proven case.
+	const mainFn = findMainEditFunctionNode( ctx, editFile );
 	const panels = [];
 	const ok = ctx.cache.traverse( editFile, {
 		JSXElement( nodePath ) {
 			const opening = nodePath.node.openingElement;
 			const name = opening && opening.name && opening.name.type === 'JSXIdentifier' ? opening.name.name : null;
 			if ( ! name || ! tagNameSet.has( name ) ) return;
+			// ⛔ INDIRECT SUB-COMPONENT PANEL — file position ≠ DOM position here.
+			// "File position order == DOM order" (below) only holds when a panel's
+			// JSX is written directly inside the block's own Edit function. A panel
+			// returned by a SEPARATELY-DECLARED helper component (invoked later via
+			// `<ContentOverridesPanel .../>`) is textually positioned wherever that
+			// helper happens to be DEFINED in the file — often much earlier, since
+			// JS commonly declares such helpers before the component that uses
+			// them — which has nothing to do with where it actually renders.
+			// PROVEN case (2026-09-08): sgs/product-card's `ContentOverridesPanel`
+			// is DEFINED at edit.js:359 (its own <ToolsPanel> spanning ~398-655)
+			// but INVOKED at edit.js:1791, after every real Card/Price/CTA panel —
+			// sorting by node.start alone placed its imageId/ctaText mentions
+			// before "Card layout"/"Call to action", producing a false
+			// co2-scattered-element + dom-order-vs-declared-order finding on both.
+			// Skipping such a panel is the SAFE default (false absence, not a
+			// false flood) — this rule has no call-graph resolution to compute
+			// the helper's TRUE render position, so it must not guess one.
+			if ( mainFn ) {
+				const fnParent = nodePath.getFunctionParent();
+				if ( fnParent && fnParent.node !== mainFn ) return;
+			}
 			panels.push( nodePath.node );
 		},
 	} );
@@ -260,18 +324,128 @@ function escapeRegExp( s ) {
 }
 
 /**
- * Which panel(s), if any, contain a whole-word mention of `attrName`? Text-
- * slice matching, same detection level rules 01/34 already use for "this
- * panel writes that attribute" — not full JSX prop-binding resolution.
+ * Every AST reference to `attrName` in the file, classified WRITE (a real
+ * inspector control: bound to a JSX control prop, or written via
+ * `setAttributes`) or READ (the value merely consumed elsewhere — e.g. handed
+ * to a preview-resolver function as a plain argument). Memoised per (file,
+ * attrName) on ctx, same pattern as `getPlacementReach`.
+ *
+ * PROVEN case this exists for (2026-09-08): sgs/gallery's `imageSize` is
+ * mentioned twice — once as the REAL control (`onChange={ set('imageSize') }`
+ * inside the "Hover Effects" panel) and once as a bare read
+ * (`resolveGalleryMedia( media, imageSize )`, a live thumbnail preview inside
+ * the UNRELATED "Layout" panel). A whole-word regex over each panel's text
+ * slice cannot tell these apart — both "mention" the identifier — so it
+ * counted 2 panels and flagged false scattering. Only the WRITE occurrence is
+ * a control; the READ occurrence should never count toward "which panel holds
+ * this element's control".
+ *
+ * WRITE, narrowly (never guessed at — an occurrence not matching one of these
+ * shapes is READ, the safe default):
+ *   - `Identifier` bound as the value of a JSX attribute named `value`,
+ *     `checked`, `defaultValue`, or `gradientValue` (native control props,
+ *     e.g. `<TextControl value={ x } />`).
+ *   - `Identifier` as the VALUE of an ObjectProperty keyed `value`, `checked`,
+ *     `defaultValue`, or `gradientValue` — the SgsColourPanel/colour-row
+ *     `states: [ { key:'normal', value: x, onChange:... } ]` row-object shape
+ *     used throughout this codebase, wherever that object literal appears
+ *     (a `rows`/`states` array, a bare variable, a function call argument —
+ *     the property key is the signal, not its container).
+ *   - `Identifier` used as an ObjectExpression property VALUE inside a call to
+ *     `setAttributes( { attrName: ... } )` (the direct-write shape).
+ *   - `StringLiteral` whose value === attrName, passed as the sole argument to
+ *     a call named `set` (the curried `set('attrName')` helper convention
+ *     used throughout this codebase, e.g. post-grid/edit.js's `set('excerptLength')`).
  */
-function panelsMentioning( rawText, panels, attrName ) {
-	const re = new RegExp( `\\b${ escapeRegExp( attrName ) }\\b` );
-	const hits = [];
-	for ( let i = 0; i < panels.length; i++ ) {
-		const slice = rawText.slice( panels[ i ].start, panels[ i ].end );
-		if ( re.test( slice ) ) hits.push( i );
+function classifyAttrReferences( ctx, editFile, attrName ) {
+	const cacheKey = `__attrRefs_${ editFile }_${ attrName }`;
+	if ( ctx[ cacheKey ] ) return ctx[ cacheKey ];
+
+	const VALUE_PROP_NAMES = new Set( [ 'value', 'checked', 'defaultValue', 'gradientValue' ] );
+	const refs = []; // { start, end, isWrite }
+
+	function isInsideSetAttributesCall( nodePath ) {
+		let cur = nodePath.parentPath;
+		while ( cur ) {
+			if ( cur.isCallExpression() && cur.node.callee && cur.node.callee.type === 'Identifier' && cur.node.callee.name === 'setAttributes' ) {
+				return true;
+			}
+			// An ObjectExpression/ArrayExpression/spread chain can sit between the
+			// identifier and the call (e.g. `setAttributes( { x: attr ?? '' } )`
+			// has a LogicalExpression/ConditionalExpression in between) — keep
+			// climbing through expression wrappers, stop at the nearest
+			// statement/function boundary so this can't runaway up the whole file.
+			if ( cur.isFunction() || cur.isStatement() ) return false;
+			cur = cur.parentPath;
+		}
+		return false;
 	}
-	return hits;
+
+	ctx.cache.traverse( editFile, {
+		Identifier( nodePath ) {
+			if ( nodePath.node.name !== attrName ) return;
+			// Skip the declaration site itself (e.g. destructuring `const { attrName } = attributes`)
+			// and any JSXAttribute NAME (not value) — neither is a reference to check.
+			if ( nodePath.parentPath.isObjectProperty( { key: nodePath.node } ) && ! nodePath.parentPath.node.computed ) {
+				const grandParent = nodePath.parentPath.parentPath;
+				if ( grandParent && grandParent.isObjectPattern() ) return; // destructure target, not a use
+			}
+			let isWrite = false;
+			const jsxAttr = nodePath.findParent( ( p ) => p.isJSXAttribute() );
+			if ( jsxAttr && jsxAttr.node.name && jsxAttr.node.name.type === 'JSXIdentifier' && VALUE_PROP_NAMES.has( jsxAttr.node.name.name ) ) {
+				// Confirm the identifier is genuinely the VALUE side, not the name.
+				const container = nodePath.findParent( ( p ) => p.isJSXExpressionContainer() );
+				if ( container && container.parentPath === jsxAttr ) isWrite = true;
+			}
+			if ( ! isWrite && nodePath.parentPath.isObjectProperty() && nodePath.parentPath.node.value === nodePath.node ) {
+				const key = nodePath.parentPath.node.key;
+				const keyName = key && ( key.type === 'Identifier' ? key.name : key.type === 'StringLiteral' ? key.value : null );
+				if ( keyName && VALUE_PROP_NAMES.has( keyName ) ) isWrite = true;
+			}
+			if ( ! isWrite && isInsideSetAttributesCall( nodePath ) ) isWrite = true;
+			refs.push( { start: nodePath.node.start, end: nodePath.node.end, isWrite } );
+		},
+		StringLiteral( nodePath ) {
+			if ( nodePath.node.value !== attrName ) return;
+			const call = nodePath.parentPath;
+			if (
+				call &&
+				call.isCallExpression() &&
+				call.node.callee &&
+				call.node.callee.type === 'Identifier' &&
+				call.node.callee.name === 'set' &&
+				call.node.arguments.length === 1
+			) {
+				refs.push( { start: nodePath.node.start, end: nodePath.node.end, isWrite: true } );
+			}
+		},
+	} );
+
+	ctx[ cacheKey ] = refs;
+	return refs;
+}
+
+/**
+ * Which panel(s) contain a genuine CONTROL reference to `attrName` — a WRITE
+ * occurrence per `classifyAttrReferences`, not merely a text mention? Replaces
+ * the old whole-panel-text regex (which could not distinguish a real control
+ * from a bare value-read elsewhere in the same panel) with per-occurrence AST
+ * classification, then maps each WRITE occurrence to the panel whose
+ * [start,end] range contains it.
+ */
+function panelsMentioning( ctx, editFile, panels, attrName ) {
+	const refs = classifyAttrReferences( ctx, editFile, attrName );
+	const hitSet = new Set();
+	for ( const ref of refs ) {
+		if ( ! ref.isWrite ) continue;
+		for ( let i = 0; i < panels.length; i++ ) {
+			if ( ref.start >= panels[ i ].start && ref.end <= panels[ i ].end ) {
+				hitSet.add( i );
+				break; // panels are non-overlapping siblings in practice — first containing match is enough
+			}
+		}
+	}
+	return [ ...hitSet ].sort( ( a, b ) => a - b );
 }
 
 function panelLabel( node, index ) {
@@ -348,7 +522,7 @@ module.exports = {
 
 			const attrPanelIndices = new Map(); // attrName -> [panelIndex, ...]
 			for ( const attrName of attrNames ) {
-				const hits = panelsMentioning( rawText, panels, attrName );
+				const hits = panelsMentioning( ctx, editFile, panels, attrName );
 				if ( hits.length ) attrPanelIndices.set( attrName, hits );
 			}
 			if ( attrPanelIndices.size < 2 ) continue; // fewer than 2 attrs resolved to a real panel — nothing to compare

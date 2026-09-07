@@ -73,7 +73,11 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:box-shadow": "boxShadow",
-						"css:font-family": "fontFamily"
+						"css:font-family": "fontFamily",
+						"css:text-align": "textAlign",
+						"css:text-wrap": "textWrap",
+						"css:text-indent": "textIndent",
+						"css:column-count": "textColumns"
 					},
 					"states": {
 						"hover": {
