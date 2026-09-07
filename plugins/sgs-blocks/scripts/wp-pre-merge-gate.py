@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -87,7 +88,55 @@ def check_wp_blocks_health() -> tuple[bool, str]:
 #                   routes and cart fragments — e2d4f101)
 THIRD_PARTY_HOOK_PREFIXES = (
     "litespeed_",
+    # WooCommerce ships its own hook namespace; wp-devdocs carries WP CORE only,
+    # so every `woocommerce_*` / `wc_*` name is a guaranteed NOT_FOUND that says
+    # nothing about SGS correctness (added 2026-09-07).
+    "woocommerce_",
+    "wc_",
 )
+
+# Only these paths are SGS's OWN code. An ALLOWLIST, not a blocklist, so a newly
+# vendored directory cannot silently start polluting the gate.
+#
+# WHY (2026-09-07): the scan walked all of plugins/sgs-blocks/, which contains
+# `stackable/` -- a 278MB vendored copy of a competitor plugin plus the Freemius
+# SDK. It is untracked, gitignored AND in build-deploy.py's TAR_EXCLUDES, so it
+# never ships; it is reference material. It contributed 220 of the 228 "failures",
+# making this gate print a red [FAIL] on every single commit. A gate that always
+# fails is a gate nobody reads. `vendor/` (composer, incl. php-stubs whose
+# docblocks contain literal `example_filter`/`wpdocs_filter` samples) and `build/`
+# (generated from src/, so a duplicate) are excluded for the same reason.
+SGS_OWN_PATH_PREFIXES = ("includes/", "src/", "sgs-blocks.php")
+
+# WordPress DYNAMIC hooks: the concrete runtime name (`wp_ajax_sgs_test_google_api`)
+# never appears in the docs DB -- only its documented parent (`wp_ajax_{$action}`)
+# does. Each entry maps a concrete-name pattern to that parent. The parent is then
+# VALIDATED against the docs DB like any other hook, so this cannot become a blanket
+# amnesty: if a parent stops existing, the gate fails and says so.
+DYNAMIC_HOOK_FAMILIES = (
+    (re.compile(r"^wp_ajax_nopriv_.+$"),        "wp_ajax_nopriv_{$action}"),
+    (re.compile(r"^wp_ajax_.+$"),               "wp_ajax_{$action}"),
+    (re.compile(r"^admin_post_.*$"),            "admin_post_{$action}"),
+    (re.compile(r"^admin_head-.+$"),            "admin_head-{$hook_suffix}"),
+    (re.compile(r"^admin_footer-.*$"),          "admin_footer-{$hook_suffix}"),
+    (re.compile(r"^load-.+$"),                  "load-{$page_hook}"),
+    (re.compile(r"^render_block_.+$"),          "render_block"),
+    (re.compile(r"^save_post_.+$"),             "save_post_{$post->post_type}"),
+    (re.compile(r"^created_.+$"),               "created_{$taxonomy}"),
+    (re.compile(r"^edited_.+$"),                "edited_{$taxonomy}"),
+    (re.compile(r"^.+_add_form_fields$"),       "{$taxonomy}_add_form_fields"),
+    (re.compile(r"^.+_edit_form_fields$"),      "{$taxonomy}_edit_form_fields"),
+    (re.compile(r"^manage_\{?\$?\w*\}?_?posts_custom_column$"),
+                                                "manage_posts_custom_column"),
+)
+
+
+def _dynamic_parent(hook: str) -> str | None:
+    """Return the documented parent of a WP dynamic hook, or None."""
+    for pattern, parent in DYNAMIC_HOOK_FAMILIES:
+        if pattern.match(hook):
+            return parent
+    return None
 
 
 def check_wp_hooks_validate(hook_names: list[str]) -> tuple[bool, str]:
@@ -98,6 +147,12 @@ def check_wp_hooks_validate(hook_names: list[str]) -> tuple[bool, str]:
     docs database does not carry). We only FAIL if a hook the plugin CONSUMES
     (add_action/add_filter) is unrecognised and belongs to neither group — meaning it may
     be a WP core hook that's misspelled.
+
+    ⚠ The caller now honours that "CONSUMES" wording. Until 2026-09-07 it passed
+    `hooks_registered` (hooks this plugin CREATES) from an UNSCOPED scan of the whole
+    plugin directory -- including the vendored `stackable/` tree -- so this printed
+    "FAIL: 212 non-SGS hooks" on every commit and meant nothing. See
+    _collect_hooks_from_scan() and SGS_OWN_PATH_PREFIXES.
     """
     if not WP_DOCS_CLI.exists():
         return True, "SKIP: wp-docs.py not found"
@@ -112,47 +167,128 @@ def check_wp_hooks_validate(hook_names: list[str]) -> tuple[bool, str]:
         # Third-party vendor hooks the WP-core docs database does not carry.
         if hook.startswith(THIRD_PARTY_HOOK_PREFIXES):
             continue
-        code, out, _ = _run([sys.executable, str(WP_DOCS_CLI), "validate-hook", hook])
+        # WP DYNAMIC hooks: the concrete runtime name is never in the docs DB --
+        # only the documented parent is. Resolve to that parent and validate IT,
+        # so `wp_ajax_sgs_test_google_api` is checked as `wp_ajax_{$action}`.
+        # This is not an amnesty: if the parent does not validate, we still fail,
+        # and the message names both so the reader can see the substitution.
+        lookup = hook
+        parent = _dynamic_parent(hook)
+        if parent:
+            lookup = parent
+
+        code, out, _ = _run([sys.executable, str(WP_DOCS_CLI), "validate-hook", lookup])
         if code < 0:
             continue  # soft-fail on subprocess error
         data = _parse_json(out)
         if data.get("status") == "NOT_FOUND":
-            # Unexpected: a non-sgs_ hook not in WP core — possible typo.
-            failures.append(hook)
+            # Unexpected: a non-sgs_, non-vendor hook not in WP core — likely a typo.
+            failures.append(hook if lookup == hook else f"{hook} (via {lookup})")
 
     if failures:
-        return False, f"FAIL: {len(failures)} non-SGS hooks not in WP docs: {', '.join(failures[:5])}"
-    return True, f"CLEAN: {len(hook_names)} hooks checked (sgs_-prefixed skipped as expected)"
+        return False, f"FAIL: {len(failures)} consumed hooks not in WP docs: {', '.join(failures[:5])}"
+    return True, (f"CLEAN: {len(hook_names)} consumed hooks checked "
+                  f"(sgs_/vendor-prefixed skipped; WP dynamic hooks resolved to their documented parent)")
+
+
+def _hook_is_expected_not_found(hook: str) -> bool:
+    """True when a NOT_FOUND is the CORRECT answer for this hook name.
+
+    Three legitimate reasons a consumed hook is absent from the WP-core docs DB:
+      1. it is ours (`sgs_` prefix) -- custom by definition;
+      2. it belongs to a third-party namespace the DB does not carry (WooCommerce,
+         LiteSpeed);
+      3. it is a WP DYNAMIC hook whose concrete runtime name (`admin_post_`,
+         `load-nav-menus.php`) never appears in the DB -- only its parent does.
+    Anything else is a real signal and still warns.
+    """
+    if hook.startswith("sgs_"):
+        return True
+    if hook.startswith(THIRD_PARTY_HOOK_PREFIXES):
+        return True
+    return _dynamic_parent(hook) is not None
 
 
 def check_wp_hook_graph_validate() -> tuple[bool, str]:
-    """Run wp-hook-graph.py validate on the sgs-blocks plugin dir."""
+    """Run wp-hook-graph.py validate over SGS-OWNED subtrees only.
+
+    ⚠ SCOPED 2026-09-07. This ran against the whole plugin directory, so its
+    "Not found : 174" was dominated by the vendored `stackable/` tree (a
+    competitor plugin + the Freemius SDK -- untracked, gitignored, and excluded
+    from the deploy tarball). Scoping to includes/ + src/ takes it to 29, and
+    every one of those 29 is an EXPECTED not-found by the rules above -- so this
+    check now reports CLEAN when the code is clean, instead of printing a
+    permanent [WARN] that trained the reader to ignore it.
+
+    `validate` takes a positional path and offers no exclude flag, so scoping is
+    done by running it once per SGS-owned subtree and aggregating.
+    """
     if not WP_HOOK_GRAPH_CLI.exists():
         return True, "SKIP: wp-hook-graph.py not found"
     if not SGS_BLOCKS_DIR.exists():
         return True, "SKIP: sgs-blocks dir not found"
-    code, out, _ = _run([sys.executable, str(WP_HOOK_GRAPH_CLI), "validate", str(SGS_BLOCKS_DIR)])
-    if code < 0:
-        return True, f"SKIP: wp-hook-graph validate soft-failed"
-    # validate exits 0 even with unverified hooks — we parse stdout for the count.
-    lines = out.strip().splitlines()
-    not_found_line = next((l for l in lines if "Not found" in l), "")
-    if "Not found   : 0" in out or not not_found_line:
-        return True, f"CLEAN: hook graph validate passed"
-    # Non-zero unverified — advisory warning (not a hard failure).
-    # The pre-merge gate treats this as a warning (exits 0 in soft mode).
-    return False, f"WARN: {not_found_line.strip()} — see wp-hook-graph validate output"
+
+    subtrees = [SGS_BLOCKS_DIR / d for d in ("includes", "src")]
+    subtrees = [d for d in subtrees if d.exists()]
+    if not subtrees:
+        return True, "SKIP: no SGS-owned subtree found"
+
+    unexpected: list[str] = []
+    checked = 0
+    for tree in subtrees:
+        code, out, _ = _run([sys.executable, str(WP_HOOK_GRAPH_CLI), "validate", str(tree)], timeout=120)
+        if code < 0:
+            return True, "SKIP: wp-hook-graph validate soft-failed"
+        for line in out.splitlines():
+            stripped = line.strip()
+            if not stripped.startswith("- "):
+                continue
+            name = stripped[2:].strip()
+            if not name:
+                continue
+            checked += 1
+            if not _hook_is_expected_not_found(name):
+                unexpected.append(name)
+
+    if unexpected:
+        uniq = sorted(set(unexpected))
+        return False, (f"WARN: {len(uniq)} unexplained not-found hook(s) in SGS code: "
+                       f"{', '.join(uniq[:5])}")
+    return True, (f"CLEAN: hook graph validate passed over {len(subtrees)} SGS subtree(s) "
+                  f"({checked} not-found entries, all expected: sgs_/vendor/WP-dynamic)")
 
 
 def _collect_hooks_from_scan() -> list[str]:
-    """Run wp-hook-graph scan on sgs-blocks and return all hook names."""
+    """Hook names this plugin CONSUMES, from SGS-owned files only.
+
+    ⚠ FIXED 2026-09-07 -- this read `hooks_registered`, contradicting
+    check_wp_hooks_validate()'s own docstring ("a hook the plugin CONSUMES").
+    The two lists mean opposite things:
+
+      hooks_registered = hooks this plugin CREATES (do_action/apply_filters).
+                         Custom BY DEFINITION, so validating them against the
+                         WP-core docs DB asks "is my own invention a WP core
+                         hook?" -- the answer is always no. Never validate these.
+      hooks_consumed   = hooks this plugin HOOKS INTO (add_action/add_filter).
+                         These SHOULD exist in core, so a NOT_FOUND here is a
+                         real signal: most likely a typo in a core hook name.
+
+    Combined with the SGS_OWN_PATH_PREFIXES scoping, this is what takes the
+    check from 228 meaningless failures to a real answer.
+    """
     if not WP_HOOK_GRAPH_CLI.exists() or not SGS_BLOCKS_DIR.exists():
         return []
-    code, out, _ = _run([sys.executable, str(WP_HOOK_GRAPH_CLI), "scan", str(SGS_BLOCKS_DIR)])
+    code, out, _ = _run([sys.executable, str(WP_HOOK_GRAPH_CLI), "scan", str(SGS_BLOCKS_DIR)], timeout=120)
     if code < 0:
         return []
     data = _parse_json(out)
-    return [h.get("name", "") for h in data.get("hooks_registered", []) if h.get("name")]
+    names: list[str] = []
+    for h in data.get("hooks_consumed", []):
+        name = h.get("name", "")
+        path = str(h.get("file", "")).replace(chr(92), "/")
+        if name and path.startswith(SGS_OWN_PATH_PREFIXES):
+            names.append(name)
+    return sorted(set(names))
 
 
 def main(argv: list[str] | None = None) -> int:

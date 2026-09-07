@@ -115,7 +115,25 @@
 	pointer-events: none;
 }
 
-/* The lightbox modal is never shown in the editor */
-.block-editor .sgs-gallery__lightbox {
-	display: none !important; /* stylelint-disable-line declaration-no-important */
+/* The lightbox modal is never shown in the editor.
+ *
+ * Specificity, not `!important` (2026-09-07, cheat-gate `imp:` finding).
+ * `display` is a faithful D1 lift property, so an `!important` on it can
+ * override a faithfully transferred attribute value and make correct converter
+ * output invisible to the browser — the gate flags the pattern regardless of
+ * whether this particular rule is scoped safely.
+ *
+ * The `!important` was reached for because the old selector
+ * `.block-editor .sgs-gallery__lightbox` is (0,2,0) — an exact TIE with
+ * style.css's `.sgs-gallery__lightbox[ open ]` (0,2,0), so which one won came
+ * down to stylesheet source order. Targeting the two rules that actually show
+ * the dialog beats each of them outright, order-independently:
+ *   (0,3,0) > `.sgs-gallery__lightbox[ open ]`   (0,2,0)
+ *   (0,2,0) > `.sgs-gallery__lightbox--open`     (0,1,0)
+ * A closed <dialog> needs no rule at all — `dialog:not([open])` is display:none
+ * in the UA sheet (see style.css's note above `.sgs-gallery__lightbox`).
+ */
+.block-editor .sgs-gallery__lightbox[ open ],
+.block-editor .sgs-gallery__lightbox--open {
+	display: none;
 }
