@@ -37,13 +37,12 @@
 				"background",
 				"shapeDividers"
 			],
-			"_comment_mediaElements": "Wave 6 (2026-09-01). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. THREE prefixes, not one, because hero's own legacy naming used three different conventions for one physical element and none may be renamed (D338): 'split' reproduces splitImage*/splitVideo*/splitMediaType* exactly (source + media-type bases); 'splitMedia' reproduces splitMediaObjectFit/splitMediaObjectPosition* exactly (object-fit + focal-point bases); 'media' reproduces mediaOverlayColour/mediaOverlayGradient/mediaParallax/mediaKenBurns/mediaAnimationDuration exactly (overlay + motion bases). The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution). The legacy attributes stay declared (never renamed — D338), simply unread/unwritten going forward.",
+			"_comment_mediaElements": "Wave 6 (2026-09-01, uniform-prefix rename 2026-09-07). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. Every split-media attribute uses ONE uniform prefix, 'splitMedia' — the earlier three-prefix split ('split'/'splitMedia'/'media') was naming drift, not a real constraint. The one exception is the media-type atom (base literally 'MediaType'), which stays prefix 'split' to avoid a double-noun 'splitMediaMediaType'; it already produces the correct 'splitMediaType' name. The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution).",
 			"mediaElements": [
 				{
 					"prefix": "split",
 					"context": "element",
 					"atoms": [
-						"source",
 						"media-type"
 					]
 				},
@@ -51,16 +50,11 @@
 					"prefix": "splitMedia",
 					"context": "element",
 					"atoms": [
+						"source",
 						"object-fit",
 						"focal-point",
 						"box-shape",
-						"media-padding"
-					]
-				},
-				{
-					"prefix": "media",
-					"context": "element",
-					"atoms": [
+						"media-padding",
 						"overlay",
 						"motion"
 					]
@@ -72,8 +66,8 @@
 					"backgroundImage"
 				],
 				"split": [
-					"splitImageUrl",
-					"splitImageUrlMobile"
+					"splitMediaImageUrl",
+					"splitMediaImageUrlMobile"
 				]
 			},
 			"boxFamilies": {
@@ -215,10 +209,10 @@
 					"prefix": "image",
 					"attrMap": {
 						"css:background-color": "mediaBackground",
-						"anim:parallax": "mediaParallax",
-						"anim:duration": "mediaAnimationDuration"
+						"anim:parallax": "splitMediaParallax",
+						"anim:duration": "splitMediaAnimationDuration"
 					},
-					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via mediaParallax/mediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. mediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
+					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. `anim:parallax`/`anim:duration` (added 2026-08-13, mirrors the wrapper element's own bgParallax/bgAnimationDuration mapping) resolve via splitMediaParallax/splitMediaAnimationDuration — a SEPARATE motion control family from the section's own bgParallax/bgKenBurns, scoped to the foreground split-media element, not the section background. splitMediaKenBurns is a preset toggle with no animation-cluster member and stays unmapped, same treatment as bgKenBurns on the wrapper."
 				},
 				"headline": {
 					"label": "Headline",
@@ -262,8 +256,8 @@
 					"clusters": [],
 					"prefix": "",
 					"attrMap": {
-						"css:background-color": "mediaOverlayColour",
-						"css:background-image": "mediaOverlayGradient"
+						"css:background-color": "splitMediaOverlayColour",
+						"css:background-image": "splitMediaOverlayGradient"
 					},
 					"_note": "A second decorative overlay layered on top of the split-media column only (`.sgs-hero__media-overlay`, render.php ~line 1170) — separate from the section-level `overlay` element above; mirrors its shape 1:1 but scoped to the foreground media instead of the section background. REPOINTED 2026-08-16 (D643): this mapped `mediaOverlayGradientFrom`, deleted by the D636 storage collapse (837f7c97); same one-string shape and same removal of the stranded-sibling note as `overlay` above. `clusters: []`, same CONTESTED-avoidance rationale as `overlay` above. `prefix: \"\"` opt-out, same rationale. Found live 2026-08-15: DB tagged 4 attrs css_element='media-overlay', undeclared until now."
 				},
@@ -339,40 +333,40 @@
 		"backgroundImage": {
 			"type": "object"
 		},
-		"_comment_sourceAtomPair": "Wave 6 (2026-09-01) — the `source` atom's own canonical shape (prefix 'split'), written by HeroSplitMediaPanelLayout's new picker. Hand-declared here (rather than left to the mediaElements auto-injection filter alone) because render.php/edit.js destructure these as literal variables to resolve the split-media source (no legacy fallback — see the mediaElements comment above) — check-undeclared-attrs.py flags any literal destructure of an attribute block.json doesn't declare, regardless of whether a runtime filter would also inject it. The legacy `splitImageTablet`/`splitVideo`/`splitVideoTablet`/`splitVideoMobile`/`splitSvg`/`splitSvgTablet`/`splitSvgMobile` attributes these replace were REMOVED (not just retired) 2026-09-02 — Bean-locked (R-31-14 strict reading): with no read-time fallback, nothing on either the render or editor side consumed them any more, so they were genuinely dead declarations, not merely superseded ones. `variants.split` above was updated to `splitImageUrl`/`splitImageUrlMobile` (the new discriminating names) in the same commit. `splitImage`/`splitImageMobile` (the two composite object attrs previously declared here) were kept alive for one extra day purely because `scripts/dbschema/check_value_identity.py` anchored the cloning pipeline's scalar-media role assignment on their literal names — see `scripts/data/scalar-media-roles.json`'s `__RE_ANCHOR_2026_09_02` note. That anchor moved onto `splitMediaType` the following day (Wave 7b, same date), which IS genuinely read by render.php to select the media family, closing the last reason these two dead declarations needed to survive — they are deleted in the same commit as the re-anchor, and `check_value_identity.py`'s assertions were repointed at `splitMediaType` alongside them.",
-		"splitImageId": {
+		"_comment_sourceAtomPair": "Wave 6 (2026-09-01) — the `source` atom's own canonical shape (prefix 'splitMedia'), written by HeroSplitMediaPanelLayout's new picker. Hand-declared here (rather than left to the mediaElements auto-injection filter alone) because render.php/edit.js destructure these as literal variables to resolve the split-media source (no legacy fallback — see the mediaElements comment above) — check-undeclared-attrs.py flags any literal destructure of an attribute block.json doesn't declare, regardless of whether a runtime filter would also inject it. The legacy `splitImageTablet`/`splitVideo`/`splitVideoTablet`/`splitVideoMobile`/`splitSvg`/`splitSvgTablet`/`splitSvgMobile` attributes these replace were REMOVED (not just retired) 2026-09-02 — Bean-locked (R-31-14 strict reading): with no read-time fallback, nothing on either the render or editor side consumed them any more, so they were genuinely dead declarations, not merely superseded ones. `variants.split` above was updated to `splitMediaImageUrl`/`splitMediaImageUrlMobile` (the new discriminating names) in the same commit. `splitImage`/`splitImageMobile` (the two composite object attrs previously declared here) were kept alive for one extra day purely because `scripts/dbschema/check_value_identity.py` anchored the cloning pipeline's scalar-media role assignment on their literal names — see `scripts/data/scalar-media-roles.json`'s `__RE_ANCHOR_2026_09_02` note. That anchor moved onto `splitMediaType` the following day (Wave 7b, same date), which IS genuinely read by render.php to select the media family, closing the last reason these two dead declarations needed to survive — they are deleted in the same commit as the re-anchor, and `check_value_identity.py`'s assertions were repointed at `splitMediaType` alongside them.",
+		"splitMediaImageId": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitImageUrl": {
+		"splitMediaImageUrl": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageAlt": {
+		"splitMediaImageAlt": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageAltTablet": {
+		"splitMediaImageAltTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageAltMobile": {
+		"splitMediaImageAltMobile": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageIdTablet": {
+		"splitMediaImageIdTablet": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitImageUrlTablet": {
+		"splitMediaImageUrlTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"splitImageIdMobile": {
+		"splitMediaImageIdMobile": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitImageUrlMobile": {
+		"splitMediaImageUrlMobile": {
 			"type": "string",
 			"default": ""
 		},
@@ -405,39 +399,39 @@
 				"svg"
 			]
 		},
-		"splitVideoId": {
+		"splitMediaVideoId": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitVideoUrl": {
+		"splitMediaVideoUrl": {
 			"type": "string",
 			"default": ""
 		},
-		"splitVideoIdTablet": {
+		"splitMediaVideoIdTablet": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitVideoUrlTablet": {
+		"splitMediaVideoUrlTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"splitVideoIdMobile": {
+		"splitMediaVideoIdMobile": {
 			"type": "integer",
 			"default": 0
 		},
-		"splitVideoUrlMobile": {
+		"splitMediaVideoUrlMobile": {
 			"type": "string",
 			"default": ""
 		},
-		"splitSvgContent": {
+		"splitMediaSvgContent": {
 			"type": "string",
 			"default": ""
 		},
-		"splitSvgContentTablet": {
+		"splitMediaSvgContentTablet": {
 			"type": "string",
 			"default": ""
 		},
-		"splitSvgContentMobile": {
+		"splitMediaSvgContentMobile": {
 			"type": "string",
 			"default": ""
 		},
@@ -645,7 +639,7 @@
 			}
 		},
 		"_comment_boxShapeNewBases": "C19 item 3 (2026-09-04) — the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not left to auto-injection, because render.php/edit.js destructure them as literal variables (same precedent as the 'source atom pair' comment above). Mirrors sgs/media's own shapes exactly: MediaSizing carries no default (a 'default':null on a typed attr 400s SSR previews); Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight match box-shape.js's MEDIA_ATTR_TYPES map. `splitMediaMaxWidthPercent` (this comment used to also cover it) was DELETED 2026-09-07 — a percentage max-width is already expressible via `splitMediaMaxWidth` + `splitMediaMaxWidthUnit:'%'`.",
-		"splitMediaMediaSizing": {
+		"splitMediaSizing": {
 			"type": "string",
 			"enum": [
 				"auto",
@@ -695,22 +689,22 @@
 			"type": "string",
 			"default": ""
 		},
-		"mediaOverlayColour": {
+		"splitMediaOverlayColour": {
 			"type": "string"
 		},
-		"mediaOverlayGradient": {
+		"splitMediaOverlayGradient": {
 			"type": "string",
 			"default": ""
 		},
-		"mediaParallax": {
+		"splitMediaParallax": {
 			"type": "boolean",
 			"default": false
 		},
-		"mediaKenBurns": {
+		"splitMediaKenBurns": {
 			"type": "boolean",
 			"default": false
 		},
-		"mediaAnimationDuration": {
+		"splitMediaAnimationDuration": {
 			"type": "number",
 			"default": 20
 		},

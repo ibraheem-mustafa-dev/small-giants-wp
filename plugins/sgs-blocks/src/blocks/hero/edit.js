@@ -197,9 +197,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// Split-media motion (2026-08-13) — mirrors the section's own
 		// bgParallax/bgKenBurns/bgAnimationDuration pair, scoped to the
 		// FOREGROUND media column, never the section background.
-		mediaParallax,
-		mediaKenBurns,
-		mediaAnimationDuration = 20,
+		splitMediaParallax,
+		splitMediaKenBurns,
+		splitMediaAnimationDuration = 20,
 		alignment,
 		backgroundImage,
 		backgroundOverlayColour,
@@ -212,20 +212,20 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// comment below for the full reasoning.
 		//
 		// Wave 6 (2026-09-01) — the `source` atom's own canonical shape
-		// (prefix 'split'), written by the new picker in
+		// (prefix 'splitMedia'), written by the new picker in
 		// HeroSplitMediaSourceSection. Desktop tier only here, matching every
 		// other canvas-preview resolution in this file; render.php resolves
 		// all three tiers.
-		splitImageId,
-		splitImageUrl,
-		splitImageAlt,
+		splitMediaImageId,
+		splitMediaImageUrl,
+		splitMediaImageAlt,
 		// Decorative-image toggle (finding 18, 2026-09-02) — when true, render.php
 		// blanks the alt text and sets aria-hidden on the split-media wrapper
 		// regardless of media type (image/video/svg), so a screen reader skips it.
 		splitMediaDecorative,
-		splitVideoId,
-		splitVideoUrl,
-		splitSvgContent,
+		splitMediaVideoId,
+		splitMediaVideoUrl,
+		splitMediaSvgContent,
 		splitMediaType,
 		// minHeight is a TIER OBJECT {desktop,tablet,mobile} as of Spec 35 pass 3b
 		// (2026-08-11) — the minHeightTablet/minHeightMobile siblings no longer exist.
@@ -280,7 +280,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// C19 item 3 (2026-09-04) — box-shape atom's remaining bases, only used
 		// for this ToolsPanelItem's hasValue()/onDeselect() below; the control
 		// UI itself reads/writes via MediaElementPanel's own atom composition.
-		splitMediaMediaSizing,
+		splitMediaSizing,
 		splitMediaShape,
 		splitMediaAspectRatio,
 		splitMediaMinHeight,
@@ -358,11 +358,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// until re-uploaded through the new picker — a deliberate, accepted
 	// consequence of the strict reading, not an oversight. Desktop tier
 	// only — matches every other preview resolution in this file.
-	const resolvedSplitImage = splitImageUrl
-		? { id: splitImageId || 0, url: splitImageUrl, alt: splitImageAlt || '' }
+	const resolvedSplitImage = splitMediaImageUrl
+		? { id: splitMediaImageId || 0, url: splitMediaImageUrl, alt: splitMediaImageAlt || '' }
 		: null;
-	const resolvedSplitVideo = splitVideoUrl ? { id: splitVideoId || 0, url: splitVideoUrl } : null;
-	const resolvedSplitSvg = splitSvgContent || '';
+	const resolvedSplitVideo = splitMediaVideoUrl ? { id: splitMediaVideoId || 0, url: splitMediaVideoUrl } : null;
+	const resolvedSplitSvg = splitMediaSvgContent || '';
 
 	// Root background paint (backgroundColour / backgroundColourGradient).
 	// Spread FIRST so the background-image branch below still wins when a media
@@ -401,7 +401,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// CHECK A findings 2026-09-05. Narrower than container's own backgroundPreview()
 	// call on purpose: hero already renders its OWN hand-built overlay <span>
 	// further down (mirrors render.php's overlay markup exactly) and its OWN
-	// split-media ken-burns/parallax (mediaKenBurns/mediaParallax — a SEPARATE
+	// split-media ken-burns/parallax (splitMediaKenBurns/splitMediaParallax — a SEPARATE
 	// attribute family scoped to the foreground media column, see
 	// mediaWrapperStyle above). Passing backgroundOverlayColour/overlayGradient/
 	// bgKenBurns/bgParallax into backgroundPreview() here would mount a SECOND,
@@ -620,10 +620,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 
 	// Media-wrapper (`.sgs-hero__media`) class + style preview — mirrors
 	// render.php's `--ken-burns` modifier class + the ken-burns duration
-	// custom property. mediaKenBurns
-	// is mutually exclusive with mediaParallax, matching render.php:686's
-	// `$media_ken_burns = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;`
-	const mediaKenBurnsActive = !! mediaKenBurns && ! mediaParallax;
+	// custom property. splitMediaKenBurns
+	// is mutually exclusive with splitMediaParallax, matching render.php:686's
+	// `$media_ken_burns = ! empty( $attributes['splitMediaKenBurns'] ) && ! $media_parallax;`
+	const mediaKenBurnsActive = !! splitMediaKenBurns && ! splitMediaParallax;
 	// Wave 6 — the overlay atom (prefix 'media', attachesTo: 'box') paints via
 	// `.sgs-media-box::after`, so `.sgs-hero__media` (the wrapper this atom's
 	// "box" IS) carries the universal `sgs-media-box` marker + this element's
@@ -672,7 +672,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		mediaWrapperStyle.order = 1;
 	}
 	if ( mediaKenBurnsActive ) {
-		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ mediaAnimationDuration }s`;
+		mediaWrapperStyle[ '--sgs-hero-media-ken-burns-duration' ] = `${ splitMediaAnimationDuration }s`;
 	}
 	// Wave 6 — object-fit + focal-point (prefix 'splitMedia', attachesTo:
 	// 'element') target `.sgs-media-el` directly, so this element carries the
@@ -684,7 +684,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// this migration did not risk reproducing under the shared `.sgs-media-el`
 	// mechanism without a live canary to verify against. The motion atom's
 	// EDITOR CONTROL is still fully adopted (HeroSplitMediaSourceSection) and
-	// writes to the SAME mediaParallax/mediaKenBurns/mediaAnimationDuration
+	// writes to the SAME splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration
 	// attributes hero's own render.php already reads — only the CSS
 	// consumption mechanism stays hero-private.
 	const splitMediaScopeClass = elementScopeClass( clientId, 'splitMedia' );
@@ -883,10 +883,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				{ isSplit && (
 					<PanelBody title={ __( 'Split image', 'sgs-blocks' ) } initialOpen={ false }>
 						{ /* Wave 6 (2026-09-01) — media-type + source + overlay + motion now
-						     route through the shared media-atom system (media-type/source
-						     atoms, prefix 'split'; overlay/motion atoms, prefix 'media' —
-						     see HeroSplitMediaPanelLayout.js for why three different prefixes
-						     are correct here, not an inconsistency). This REPLACES the
+						     route through the shared media-atom system, all on ONE uniform
+						     prefix 'splitMedia' (2026-09-07 rename) except the media-type
+						     atom itself, which stays prefix 'split' — see
+						     HeroSplitMediaPanelLayout.js for why. This REPLACES the
 						     hand-rolled "Split image" MediaPicker, the splitImage?.url-gated
 						     media-type SelectControl (closing that gating bug — the type tabs
 						     are now always reachable), the per-type video/SVG MediaUpload/
@@ -1632,7 +1632,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaWidthUnit: '%',
 								splitMediaHeight: {},
 								splitMediaHeightUnit: 'px',
-								splitMediaMediaSizing: undefined,
+								splitMediaSizing: undefined,
 								splitMediaShape: 'none',
 								splitMediaAspectRatio: '',
 								splitMediaMinHeight: {},
@@ -1715,7 +1715,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						     Height/BorderRadius/BorderWidth/BorderStyle/BorderColour/
 						     Padding attrs (mediaStoredAttrName has no STORED_AS entry for
 						     sgs/hero, so the canonical splitMedia+Base naming already
-						     matches — zero renames) plus the NEW splitMediaMediaSizing/
+						     matches — zero renames) plus the NEW splitMediaSizing/
 						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight/
 						     MaxWidthPercent attrs hand-declared in block.json. The
 						     'custom' sizing-mode sentinel written by the "Custom sizing"
@@ -1725,7 +1725,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Split media box & border', 'sgs-blocks' ) }
 							hasValue={ () =>
-								!! splitMediaMediaSizing ||
+								!! splitMediaSizing ||
 								splitMediaShape !== 'none' ||
 								!! splitMediaAspectRatio ||
 								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
@@ -1750,7 +1750,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 							}
 							onDeselect={ () =>
 								setAttributes( {
-									splitMediaMediaSizing: undefined,
+									splitMediaSizing: undefined,
 									splitMediaShape: 'none',
 									splitMediaAspectRatio: '',
 									splitMediaWidth: {},

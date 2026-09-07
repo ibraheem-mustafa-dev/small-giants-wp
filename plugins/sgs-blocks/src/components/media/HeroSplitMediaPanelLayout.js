@@ -6,30 +6,18 @@
  * backgroundOverlay*) — that stays on `SGS_Container_Wrapper` and is out of
  * scope for this component.
  *
- * Sibling to `MediaPanelLayout.js` (sgs/media's own panel assembly) but NOT
- * a copy of it: hero already stored this element's attributes under THREE
- * different ad-hoc prefixes before this migration, and none may be renamed
- * (D338) —
- *
- *   'split'      — splitImage-family, splitVideo-family, splitMediaType-family
- *                  (source + media-type bases; mediaAttrName('split', base)
- *                  reproduces every one of these names EXACTLY).
- *   'splitMedia' — splitMediaObjectFit/splitMediaObjectPosition* (object-fit
- *                  + focal-point bases; mediaAttrName('splitMedia', base)
- *                  reproduces these EXACTLY too).
- *   'media'      — mediaOverlayColour/mediaOverlayGradient/mediaParallax/
- *                  mediaKenBurns/mediaAnimationDuration (overlay + motion
- *                  bases; mediaAttrName('media', base) reproduces these
- *                  EXACTLY).
- *
- * Three `MediaElementPanel` prefixes on the SAME physical element, not one —
- * this is a deliberate consequence of "never rename a stored attribute", not
- * an accident. `STORED_AS` (MediaElementControls.js) could bridge a
- * mismatched name to one canonical prefix, but hero has no entry there and
- * this component's file is outside the paths this migration is allowed to
- * touch — so three prefixes chosen to each reproduce a real slice of hero's
- * existing names exactly is the correct answer given that constraint, not a
- * workaround for a missing one.
+ * Sibling to `MediaPanelLayout.js` (sgs/media's own panel assembly). Every
+ * split-media attribute — source, media-type, object-fit, focal-point,
+ * overlay and motion — is normalised onto ONE uniform prefix, `'splitMedia'`
+ * (2026-09-07 rename; hero used to spread these across three different
+ * ad-hoc prefixes — 'split' / 'splitMedia' / 'media' — a leftover of naming
+ * drift, not a real constraint; the framework is pre-production so renaming
+ * cost nothing). The one exception is the media-type atom, whose own base
+ * string is literally `'MediaType'` — passing prefix `'splitMedia'` there
+ * would double up to `splitMediaMediaType`, so it (and `resolveMediaType()`,
+ * which reads the same attribute) keeps prefix `'split'`, which already
+ * produces the correct `splitMediaType` name via `mediaAttrName('split',
+ * 'MediaType')`.
  *
  * Renders in TWO sections rather than one contiguous list, matching where
  * the caller (`hero/edit.js`) mounts them — inside the block's EXISTING
@@ -47,10 +35,12 @@ import { resolveMediaType } from './atoms/source.js';
 const BLOCK_SLUG = 'sgs/hero';
 
 /**
- * The "Split image" panel's rows — media type + source pickers (prefix
- * 'split'), plus the media overlay + motion controls (prefix 'media'), which
- * lived in this same panel before the migration and stay here rather than
- * moving to "Split image styling" (no reason to relocate a working section).
+ * The "Split image" panel's rows — media type + source pickers, plus the
+ * media overlay + motion controls (all prefix 'splitMedia', except the
+ * media-type atom itself, which stays prefix 'split' — see the module-level
+ * note), which lived in this same panel before the migration and stay here
+ * rather than moving to "Split image styling" (no reason to relocate a
+ * working section).
  *
  * @param {Object}   props
  * @param {Object}   props.attributes
@@ -81,7 +71,7 @@ export function HeroSplitMediaSourceSection( { attributes, setAttributes } ) {
 			/>
 			<MediaElementPanel
 				{ ...commonProps }
-				prefix="split"
+				prefix="splitMedia"
 				atoms={ [ 'source' ] }
 				mediaType={ resolvedType }
 			/>
@@ -90,13 +80,13 @@ export function HeroSplitMediaSourceSection( { attributes, setAttributes } ) {
 			</p>
 			<MediaElementPanel
 				{ ...commonProps }
-				prefix="media"
+				prefix="splitMedia"
 				atoms={ [ 'overlay' ] }
 			/>
 			<hr style={ { margin: '16px 0' } } />
 			<MediaElementPanel
 				{ ...commonProps }
-				prefix="media"
+				prefix="splitMedia"
 				atoms={ [ 'motion' ] }
 			/>
 		</>

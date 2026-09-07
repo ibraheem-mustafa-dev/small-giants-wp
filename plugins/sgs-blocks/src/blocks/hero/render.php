@@ -126,7 +126,7 @@ $overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // pre-production, so there is nothing to migrate). They also contradicted this
 // file's own R-31-14 contract at the top — "NO legacy scalar fallback" — and
 // R-31-14, which bans exactly the `if ( empty($new) && !empty($legacy) )` shape.
-// Wave 6 (2026-09-01) — the `source` atom (prefix 'split') writes a NEW
+// Wave 6 (2026-09-01) — the `source` atom (prefix 'splitMedia') writes a NEW
 // {base}Id/{base}Url pair (its own canonical shape — `source.control.js`'s
 // `pairPickerRow()` always writes this, never the legacy composite object),
 // which is NOT the shape hero's `splitImage`/`splitVideo` attributes declare
@@ -142,28 +142,28 @@ $overlay_blend_mode     = $attributes['backgroundOverlayBlendMode'] ?? '';
 // in block.json (never renamed — D338), simply unread and unwritten going
 // forward.
 $sgs_hero_resolve_split_image = static function ( array $attributes, string $suffix ) {
-	$url = (string) ( $attributes[ 'splitImageUrl' . $suffix ] ?? '' );
+	$url = (string) ( $attributes[ 'splitMediaImageUrl' . $suffix ] ?? '' );
 	if ( '' === $url ) {
 		return null;
 	}
 	return array(
-		'id'  => absint( $attributes[ 'splitImageId' . $suffix ] ?? 0 ),
+		'id'  => absint( $attributes[ 'splitMediaImageId' . $suffix ] ?? 0 ),
 		'url' => $url,
-		'alt' => (string) ( $attributes[ 'splitImageAlt' . $suffix ] ?? '' ),
+		'alt' => (string) ( $attributes[ 'splitMediaImageAlt' . $suffix ] ?? '' ),
 	);
 };
 $sgs_hero_resolve_split_video = static function ( array $attributes, string $suffix ) {
-	$url = (string) ( $attributes[ 'splitVideoUrl' . $suffix ] ?? '' );
+	$url = (string) ( $attributes[ 'splitMediaVideoUrl' . $suffix ] ?? '' );
 	if ( '' === $url ) {
 		return null;
 	}
 	return array(
-		'id'  => absint( $attributes[ 'splitVideoId' . $suffix ] ?? 0 ),
+		'id'  => absint( $attributes[ 'splitMediaVideoId' . $suffix ] ?? 0 ),
 		'url' => $url,
 	);
 };
 $sgs_hero_resolve_split_svg   = static function ( array $attributes, string $suffix ) {
-	return (string) ( $attributes[ 'splitSvgContent' . $suffix ] ?? '' );
+	return (string) ( $attributes[ 'splitMediaSvgContent' . $suffix ] ?? '' );
 };
 $split_image                  = $sgs_hero_resolve_split_image( $attributes, '' );
 $split_image_tablet           = $sgs_hero_resolve_split_image( $attributes, 'Tablet' );
@@ -877,7 +877,7 @@ if ( null !== $image_height_mobile ) {
 // resolves to mode 'auto'). Mode instead governs the EDITOR disclosure only
 // (which control is greyed) plus these NEW, additive properties, which are
 // inert on every pre-existing hero (their attrs default empty/'none').
-$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaMediaSizing'] ?? null, $image_object_fit );
+$image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes['splitMediaSizing'] ?? null, $image_object_fit );
 $image_shape        = sgs_media_atom_box_shape_validate_shape( $attributes['splitMediaShape'] ?? null );
 $image_aspect_ratio = sgs_media_atom_box_shape_normalise_ratio( $attributes['splitMediaAspectRatio'] ?? null );
 
@@ -968,21 +968,21 @@ if ( $media_bg_gradient_value ) {
 // object-fit:cover image and is therefore invisible whenever media is
 // present). Wave 6 (2026-09-01): the hand-rolled colour/gradient resolution
 // that used to live here, plus the `$media_overlay_html` span it fed, are
-// GONE — `mediaOverlayColour`/`mediaOverlayGradient` (+ Hover/Opacity/
+// GONE — `splitMediaOverlayColour`/`splitMediaOverlayGradient` (+ Hover/Opacity/
 // BlendMode siblings) are now read entirely by the shared `overlay` atom's
 // PHP twin (`sgs_media_atom_overlay_css()`), which routes through the SAME
 // `sgs_background_paint_value()` primitive `sgs_overlay_decls()` itself uses
 // — see the `SGS_Media_Element::style()` call at the media-assembly site
 // further down this file, and block.json's `_comment_mediaElements`.
 
-// Media motion — mediaParallax/mediaKenBurns/mediaAnimationDuration (2026-08-13).
+// Media motion — splitMediaParallax/splitMediaKenBurns/splitMediaAnimationDuration (2026-08-13).
 // A SEPARATE control family from the section's own bgParallax/bgKenBurns
 // (read further below): those animate the SECTION BACKGROUND; these animate
 // the foreground split-media column (`.sgs-hero__media`) itself. Mutually
 // exclusive in the editor (edit.js); Ken-burns wins if somehow both are set.
-$media_parallax           = ! empty( $attributes['mediaParallax'] );
-$media_ken_burns          = ! empty( $attributes['mediaKenBurns'] ) && ! $media_parallax;
-$media_animation_duration = isset( $attributes['mediaAnimationDuration'] ) ? absint( $attributes['mediaAnimationDuration'] ) : 20;
+$media_parallax           = ! empty( $attributes['splitMediaParallax'] );
+$media_ken_burns          = ! empty( $attributes['splitMediaKenBurns'] ) && ! $media_parallax;
+$media_animation_duration = isset( $attributes['splitMediaAnimationDuration'] ) ? absint( $attributes['splitMediaAnimationDuration'] ) : 20;
 
 // ── contentPadding: box-object family — base + tablet + mobile (on .sgs-hero__content).
 $content_pad_base = sgs_box_object_shorthand( $content_padding_obj );
@@ -1574,7 +1574,7 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 		// is added UNCONDITIONALLY (matching every other adopting block) —
 		// `overlay.css`'s own `::after` paints fully transparent when no
 		// custom property is set, so an unused marker costs nothing.
-		$media_class = 'sgs-hero__media sgs-media-box ' . SGS_Media_Element::scope_class( $uid, 'media' );
+		$media_class = 'sgs-hero__media sgs-media-box ' . SGS_Media_Element::scope_class( $uid, 'splitMedia' );
 		// Media motion classes — scoped to `.sgs-hero__media` ONLY (never the
 		// root `<section>`), and gated inside this `'' !== …['html']` branch so
 		// they can only ever land on a media column that genuinely rendered
@@ -1599,7 +1599,7 @@ if ( $is_split && ! empty( $split_tiers ) ) {
 			// never collide on the same variable.
 			$responsive_css .= '.' . $uid . ' .sgs-hero__media{--sgs-hero-media-ken-burns-duration:' . $media_animation_duration . 's}';
 		}
-		$responsive_css .= SGS_Media_Element::style( $attributes, 'media', 'sgs/hero', $uid, array( 'overlay' ) );
+		$responsive_css .= SGS_Media_Element::style( $attributes, 'splitMedia', 'sgs/hero', $uid, array( 'overlay' ) );
 		// Decorative wrapper: covers video/svg tiers, which carry no alt attribute
 		// of their own; the image tier's alt was already blanked above.
 		$media_aria_hidden = $split_media_decorative ? ' aria-hidden="true"' : '';
