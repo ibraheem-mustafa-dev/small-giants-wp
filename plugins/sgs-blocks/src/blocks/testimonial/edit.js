@@ -470,6 +470,58 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								},
 						],
 					},
+					{
+						key: 'org-name',
+						label: __( 'Organisation colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: orgColour,
+								onChange: ( val ) =>
+									setAttributes( { orgColour: val ?? '' } ),
+								linked: true,
+								gradientValue: orgColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { orgColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: orgColourHover,
+								onChange: ( val ) =>
+									setAttributes( { orgColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'rating',
+						label: __( 'Rating colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: ratingColour,
+								onChange: ( val ) =>
+									setAttributes( { ratingColour: val ?? '' } ),
+								linked: true,
+								gradientValue: ratingColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { ratingColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: ratingColourHover,
+								onChange: ( val ) =>
+									setAttributes( { ratingColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 					shadowHover && {
 						key: 'shadowHover',
 						label: __( 'Hover shadow colour', 'sgs-blocks' ),
@@ -699,36 +751,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								__nextHasNoMarginBottom
 							/>
 						) }
-						{ /* Moved in from the shared SgsColourPanel (D622 — an
-						     element-scoped colour belongs in its own element's
-						     TIER 1 panel; "organisation name" is a declared
-						     element whose attrMap claims orgColour). */ }
-						{ showLogo && (
-							<DesignTokenPicker
-								label={ __( 'Organisation colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: orgColour,
-										onChange: ( val ) =>
-											setAttributes( { orgColour: val ?? '' } ),
-										linked: true,
-										gradientValue: orgColourGradient,
-										onGradientChange: ( val ) =>
-											setAttributes( { orgColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: orgColourHover,
-										onChange: ( val ) =>
-											setAttributes( { orgColourHover: val ?? '' } ),
-										linked: true,
-									},
-								] }
-							/>
-						) }
+						{ /* Organisation colour moved to the shared SgsColourPanel
+						     above (D622 is superseded). */ }
 						{ showWork && (
 							<MediaPanel
 								label={ __( 'Work image or video', 'sgs-blocks' ) }
@@ -1005,36 +1029,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 								/>
 							</ToolsPanelItem>
 						) }
-						{ /* Moved in from the shared SgsColourPanel (D622 — an
-						     element-scoped colour belongs in its own element's
-						     TIER 1 panel; "rating" is a declared element whose
-						     attrMap claims ratingColour). */ }
-						{ showRating && (
-							<DesignTokenPicker
-								label={ __( 'Rating colour', 'sgs-blocks' ) }
-								states={ [
-									{
-										key: 'normal',
-										label: __( 'Normal', 'sgs-blocks' ),
-										value: ratingColour,
-										onChange: ( val ) =>
-											setAttributes( { ratingColour: val ?? '' } ),
-										linked: true,
-										gradientValue: ratingColourGradient,
-										onGradientChange: ( val ) =>
-											setAttributes( { ratingColourGradient: val ?? '' } ),
-									},
-									{
-										key: 'hover',
-										label: __( 'Hover', 'sgs-blocks' ),
-										value: ratingColourHover,
-										onChange: ( val ) =>
-											setAttributes( { ratingColourHover: val ?? '' } ),
-										linked: true,
-									},
-								] }
-							/>
-						) }
+						{ /* Rating colour moved to the shared SgsColourPanel above
+						     (D622 is superseded). */ }
 					</ToolsPanel>
 				) }
 

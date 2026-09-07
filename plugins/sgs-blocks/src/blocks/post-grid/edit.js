@@ -642,6 +642,61 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 					},
+					{
+						key: 'excerpt',
+						label: __( 'Excerpt colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: excerptColour,
+								onChange: ( val ) => setAttributes( { excerptColour: val ?? '' } ),
+								linked: true,
+								gradientValue: excerptColourGradient,
+								onGradientChange: ( val ) => setAttributes( { excerptColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'read-more',
+						label: __( 'Read more colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: readMoreColour,
+								onChange: ( val ) => setAttributes( { readMoreColour: val ?? '' } ),
+								linked: true,
+								gradientValue: readMoreColourGradient,
+								onGradientChange: ( val ) => setAttributes( { readMoreColourGradient: val ?? '' } ),
+							},
+						],
+					},
+					{
+						key: 'card-bg',
+						label: __( 'Card background colour', 'sgs-blocks' ),
+						gradientCapable: true,
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: cardBgColour,
+								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
+								gradientValue: cardBgColourGradient,
+								onGradientChange: ( val ) => setAttributes( { cardBgColourGradient: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: backgroundColourHover,
+								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
 				] }
 			/>
 			{ /* ============================================================
@@ -906,27 +961,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
-									{ /* Moved in from the shared SgsColourPanel (D622 —
-									     an element-scoped colour belongs in its own
-									     element's TIER 1 panel; "post excerpt" is a
-									     declared element whose attrMap claims
-									     excerptColour). */ }
-									<DesignTokenPicker
-										label={ __( 'Excerpt colour', 'sgs-blocks' ) }
-										states={ [
-											{
-												key: 'normal',
-												label: __( 'Normal', 'sgs-blocks' ),
-												value: excerptColour,
-												onChange: ( val ) =>
-													setAttributes( { excerptColour: val ?? '' } ),
-												linked: true,
-												gradientValue: excerptColourGradient,
-												onGradientChange: ( val ) =>
-													setAttributes( { excerptColourGradient: val ?? '' } ),
-											},
-										] }
-									/>
+									{ /* Excerpt colour moved to the shared SgsColourPanel
+									     above (D622, which used to route it here, is
+									     superseded — see that component's own docblock). */ }
 								</>
 							) }
 						</SgsBooleanField>
@@ -994,23 +1031,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
 									/>
-									{ /* Moved in from the shared SgsColourPanel (D622). */ }
-									<DesignTokenPicker
-										label={ __( 'Read more colour', 'sgs-blocks' ) }
-										states={ [
-											{
-												key: 'normal',
-												label: __( 'Normal', 'sgs-blocks' ),
-												value: readMoreColour,
-												onChange: ( val ) =>
-													setAttributes( { readMoreColour: val ?? '' } ),
-												linked: true,
-												gradientValue: readMoreColourGradient,
-												onGradientChange: ( val ) =>
-													setAttributes( { readMoreColourGradient: val ?? '' } ),
-											},
-										] }
-									/>
+									{ /* Read more colour moved to the shared SgsColourPanel
+									     above (D622 is superseded). */ }
 								</>
 							) }
 						</SgsBooleanField>
@@ -1025,33 +1047,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						options={ CARD_STYLE_OPTIONS }
 						onChange={ set( 'cardStyle' ) }
 					/>
-					{ /* Moved in from the shared SgsColourPanel (D622 — an
-					     element-scoped colour belongs in its own element's
-					     TIER 1 panel; "post card" is a declared element whose
-					     attrMap claims cardBgColour/backgroundColourHover/
-					     borderColourHover). */ }
-					<DesignTokenPicker
-						label={ __( 'Card background colour', 'sgs-blocks' ) }
-						gradientCapable={ true }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: cardBgColour,
-								onChange: ( val ) => setAttributes( { cardBgColour: val ?? '' } ),
-								gradientValue: cardBgColourGradient,
-								onGradientChange: ( val ) => setAttributes( { cardBgColourGradient: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: backgroundColourHover,
-								onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
+					{ /* Card background colour moved to the shared SgsColourPanel
+					     above (D622 is superseded — fill/text/link colour lives
+					     in the global panel; border colour stays element-scoped,
+					     which is why "Card border hover colour" below is
+					     correctly untouched). */ }
 					<DesignTokenPicker
 						label={ __( 'Card border hover colour', 'sgs-blocks' ) }
 						states={ [
