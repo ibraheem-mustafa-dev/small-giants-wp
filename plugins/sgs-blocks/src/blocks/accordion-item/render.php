@@ -143,45 +143,70 @@ if ( '' !== $sgs_ai_icon_hover_grad['css'] ) {
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 
-// D636 — sibling gradient attribute wins when set+valid.
-$text_colour           = (string) ( $attributes['textColour'] ?? '' );
-$text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
-$text_colour_effective = sgs_resolve_text_colour_or_gradient( $text_colour, $text_colour_gradient );
-if ( '' !== $text_colour_effective ) {
-	$text_colour_decl = sgs_text_colour_decl( $text_colour_effective );
-	if ( '' !== $text_colour_decl ) {
-		$responsive_css .= "{$root_sel}{{$text_colour_decl};}";
+// D636 — sibling gradient attribute wins when set+valid, both states.
+//
+// Precondition (bg-layer subset, colour-conformance, 2026-09-07): textColour
+// and backgroundColour paint the SAME $root_sel (block.json wrapper attrMap:
+// css:color=textColour, css:background-color=backgroundColour) — confirmed
+// via block.json, not guessed. A flat textColourHover is harmless (a plain
+// `color:` declaration), but a GRADIENT hover paints `background-image` on
+// `$root_sel:hover` via background-clip:text, the exact property
+// backgroundColourHover's own fill rule also writes at the same selector +
+// state. Only when the resolved hover value is actually a gradient do we
+// move the background paint onto its own `::after` layer first — the common
+// flat-colour case (background emitted directly on $root_sel) is completely
+// unchanged.
+$text_colour_hover_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+if ( str_contains( $text_colour_hover_effective, 'gradient(' ) ) {
+	$sgs_ai_bg_resting_decl = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColour'] ?? '' ),
+		(string) ( $attributes['backgroundColourGradient'] ?? '' )
+	);
+	$sgs_ai_bg_hover_decl   = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColourHover'] ?? '' ),
+		(string) ( $attributes['backgroundColourHoverGradient'] ?? '' )
+	);
+	$responsive_css        .= sgs_block_background_layer_css( $root_sel, $sgs_ai_bg_resting_decl, $sgs_ai_bg_hover_decl );
+} else {
+	// Background (colour + gradient, resting + hover) is owned by the shared
+	// fill emitter, NOT by the style engine and NOT by supports.color.gradients.
+	//
+	// supports.color.gradients was `true` here, so CORE rendered its own gradient
+	// panel in the Styles tab, competing with the SGS colour panel — the client saw
+	// two and could not tell which won. Switching the flag off alone would have
+	// REMOVED the only gradient control this block had, because the sole gradient
+	// read was $attributes['style']['color']['gradient'] (core's own storage). The
+	// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+	// exposed through fillRow(), so capability is moved rather than lost.
+	$sgs_ai_fill_css = sgs_fill_states_css(
+		$root_sel,
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	if ( '' !== $sgs_ai_fill_css ) {
+		$responsive_css .= $sgs_ai_fill_css;
 	}
-	// MANDATORY companion, not optional: a gradient reaches the browser as
-	// background-clip:text, and without this @supports fallback a browser
-	// lacking that support gets a bare `color:` holding a gradient string,
-	// which it drops silently. No-op for a flat colour.
-	$responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
 }
 
-// Background (colour + gradient, resting + hover) is owned by the shared fill
-// emitter, NOT by the style engine and NOT by supports.color.gradients.
-//
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $attributes['style']['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
-$sgs_ai_fill_css = sgs_fill_states_css(
+$responsive_css .= sgs_text_states_css(
 	$root_sel,
 	$attributes,
 	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
 	)
 );
-if ( '' !== $sgs_ai_fill_css ) {
-	$responsive_css .= $sgs_ai_fill_css;
-}
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
 // are block-private attrs now, emitted below)

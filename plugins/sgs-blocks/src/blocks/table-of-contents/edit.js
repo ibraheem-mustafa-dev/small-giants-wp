@@ -9,7 +9,7 @@ import {
 	CheckboxControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, SgsBorderControl, TypographyControls, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -224,22 +224,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						],
 					},
-					{
+					textRow( {
 						key: 'titleColour',
 						label: __( 'Title colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: titleColour,
-								onChange: ( val ) => setAttributes( { titleColour: val ?? '' } ),
-								linked: true,
-								gradientValue: titleColourGradient,
-								onGradientChange: ( val ) => setAttributes( { titleColourGradient: val ?? '' } ),
-							},
-						],
-					},
+						attrs: {
+							base: 'titleColour',
+							hover: 'titleColourHover',
+							gradient: 'titleColourGradient',
+							hoverGradient: 'titleColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 				] }
 			/>
 			<InspectorControls>

@@ -94,49 +94,76 @@ if ( '' !== $tab_preset_bg_slug ) {
 $tab_responsive_css = '';
 
 
-// Text colour (flat or gradient) — gradient sibling attribute wins when set+valid
-// (D636 sibling-attribute shape). sgs_text_colour_decl()/sgs_colour_value() both
-// resolve a palette SLUG to var(--wp--preset--color--…) so a bare slug never
-// reaches the browser as invalid CSS. Mirrors sgs/counter's labelColour.
-$tab_text_colour           = (string) ( $attributes['textColour'] ?? '' );
-$tab_text_colour_gradient  = (string) ( $attributes['textColourGradient'] ?? '' );
-$tab_text_colour_effective = sgs_resolve_text_colour_or_gradient( $tab_text_colour, $tab_text_colour_gradient );
-if ( '' !== $tab_text_colour_effective ) {
-	$tab_text_colour_decl = sgs_text_colour_decl( $tab_text_colour_effective );
-	if ( '' !== $tab_text_colour_decl ) {
-		$tab_responsive_css .= "{$root_sel}{{$tab_text_colour_decl};}";
+// Text colour (flat or gradient), both states — gradient sibling attribute
+// wins when set+valid (D636 sibling-attribute shape). sgs_text_states_css()
+// resolves both states + emits both mandatory gradient fallback rules in one
+// call (mirrors sgs/counter's labelColour).
+//
+// Precondition (bg-layer subset, colour-conformance, 2026-09-07): textColour
+// and backgroundColour paint the SAME $root_sel (block.json wrapper attrMap:
+// css:color=textColour, css:background-color=backgroundColour) — confirmed
+// via block.json, not guessed. A flat textColourHover is harmless (a plain
+// `color:` declaration), but a GRADIENT hover paints `background-image` on
+// `$root_sel:hover` via background-clip:text, the exact property
+// backgroundColourHover's own fill rule also writes at the same selector +
+// state. Only when the resolved hover value is actually a gradient do we
+// move the background paint onto its own `::after` layer first — the common
+// flat-colour case (background emitted directly on $root_sel) is completely
+// unchanged.
+$tab_text_colour_hover_effective = sgs_resolve_text_colour_or_gradient(
+	(string) ( $attributes['textColourHover'] ?? '' ),
+	(string) ( $attributes['textColourHoverGradient'] ?? '' )
+);
+
+if ( str_contains( $tab_text_colour_hover_effective, 'gradient(' ) ) {
+	$tab_bg_resting_decl = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColour'] ?? '' ),
+		(string) ( $attributes['backgroundColourGradient'] ?? '' )
+	);
+	$tab_bg_hover_decl   = sgs_background_paint_decl(
+		(string) ( $attributes['backgroundColourHover'] ?? '' ),
+		(string) ( $attributes['backgroundColourHoverGradient'] ?? '' )
+	);
+	$tab_responsive_css .= sgs_block_background_layer_css( $root_sel, $tab_bg_resting_decl, $tab_bg_hover_decl );
+} else {
+	// Background (colour + gradient, resting + hover) is owned by the shared
+	// fill emitter, NOT by the style engine and NOT by supports.color.gradients.
+	//
+	// supports.color.gradients was `true` here, so CORE rendered its own gradient
+	// panel in the Styles tab, competing with the SGS colour panel — the client saw
+	// two and could not tell which won. Switching the flag off alone would have
+	// REMOVED the only gradient control this block had, because the sole gradient
+	// read was $attributes['style']['color']['gradient'] (core's own storage). The
+	// flag flip is therefore PAIRED with a block-private backgroundColourGradient
+	// exposed through fillRow(), so capability is moved rather than lost.
+	$tab_fill_css = sgs_fill_states_css(
+		$root_sel,
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	if ( '' !== $tab_fill_css ) {
+		$tab_responsive_css .= $tab_fill_css;
 	}
-	// MANDATORY companion, not optional — see sgs/counter render.php for the
-	// browser-support rationale. No-op for a flat colour.
-	$tab_responsive_css .= sgs_text_colour_gradient_fallback_rule( $root_sel, $tab_text_colour_effective );
 }
 
-// Background (colour + gradient, resting + hover) is owned by the shared fill
-// emitter, NOT by the style engine and NOT by supports.color.gradients.
-//
-// supports.color.gradients was `true` here, so CORE rendered its own gradient
-// panel in the Styles tab, competing with the SGS colour panel — the client saw
-// two and could not tell which won. Switching the flag off alone would have
-// REMOVED the only gradient control this block had, because the sole gradient
-// read was $attributes['style']['color']['gradient'] (core's own storage). The
-// flag flip is therefore PAIRED with a block-private backgroundColourGradient
-// exposed through fillRow(), so capability is moved rather than lost.
-$tab_fill_css = sgs_fill_states_css(
+$tab_responsive_css .= sgs_text_states_css(
 	$root_sel,
 	$attributes,
 	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
+		'base'           => 'textColour',
+		'hover'          => 'textColourHover',
+		'gradient'       => 'textColourGradient',
+		'hover_gradient' => 'textColourHoverGradient',
 	)
 );
-if ( '' !== $tab_fill_css ) {
-	$tab_responsive_css .= $tab_fill_css;
-}
 
 // (native border_args removed by the Shape-B migration -- width/style/colour
-//  are block-private attrs now, emitted below)
+// are block-private attrs now, emitted below)
 
 // The native style-engine colour path is GONE, deliberately. Text colour now
 // renders through sgs_resolve_text_colour_or_gradient() + sgs_text_colour_decl()
@@ -169,10 +196,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt                 = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr                 = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb                 = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl                 = '' !== $border_width_left ? $border_width_left : '0';
 		$tab_responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -206,7 +233,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

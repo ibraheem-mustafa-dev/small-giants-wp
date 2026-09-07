@@ -60,6 +60,14 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient"
+							}
+						}
+					},
 					"_note": "Root, rendered by SGS_Container_Wrapper (container_kind=layout, wraps sgs/container — WS-4). Empty-string prefix lets the default {suffix} convention resolve the bare universal-container attrs case-insensitively: maxWidth, gap(+Tablet/Mobile), gridTemplateColumns/Rows(+Tablet/Mobile), gridAutoRows, flexDirection, flexWrap, alignItems, alignContent, justifyContent, justifyItems all resolve this way — no attrMap needed for those (identical attr set to sgs/google-reviews). Honest gaps: no display/order/overflow/width/height/max-height/min-height/box-shadow/aspect-ratio attribute exists; no padding/margin attribute or native support declared (spacing support absent); opacity/overlay/background-attachment/-position/-repeat/object-fit/object-position have no control (no image element); anim:stagger/parallax/trigger have no matching attrs — honest gaps, not orphans. variant/dataSource/theme/cardStyle are variant/preset selectors, not style-cluster members — deliberately undeclared. `textColourGradient` (2026-09-03) is the text-colour gradient sibling to textColour, same background-clip:text mechanism as sgs/counter's numberColourGradient. `backgroundColourGradient`/`backgroundColourHoverGradient` (the card FILL gradient) are resolved via the shared fill emitter (`sgs_fill_states_css()`, render.php) rather than this attrMap, so there is no `css:background-image` key collision on this element."
 				},
 				"inner": {
@@ -177,6 +185,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"reviews": {
 			"type": "array",

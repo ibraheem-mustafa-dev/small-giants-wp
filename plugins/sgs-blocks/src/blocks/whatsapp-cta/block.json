@@ -69,7 +69,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "backgroundColourHover",
-								"css:background-image": "backgroundColourHoverGradient"
+								"css:background-image": "backgroundColourHoverGradient",
+								"css:color": "labelColourHover",
+								"css:color-gradient": "labelColourHoverGradient"
 							}
 						}
 					}
@@ -136,6 +138,15 @@
 		"labelColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"labelColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"labelColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of labelColourHover. Non-empty wins over labelColourHover on :hover/:focus-visible."
 		},
 		"labelFontSize": {
 			"type": "object",
