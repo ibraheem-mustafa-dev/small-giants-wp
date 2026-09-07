@@ -60,30 +60,27 @@ and heights doing nothing. All fixed; none confirmed live — see Blockers.
 
 | What | Where |
 |---|---|
-| **Cloned pages lost every tablet/mobile spacing value** — the L4 path built a tier-SUFFIXED destination but D295 pruned those siblings, so both tiers dropped silently | `d442ec6d4` (D996) |
-| **Every cloned `border-radius` rendered NOTHING** — SIDE keys written into a CORNER-keyed attr; the reader returns null when no corner is set. 44 emissions broken; TWO mirrored sites | `2d2bfb678` (D997) |
+| **Cloned pages lost every tablet/mobile spacing value** — the L4 path built a tier-SUFFIXED destination D295 had pruned; both tiers dropped silently | `d442ec6d4` (D996) |
+| **Every cloned `border-radius` rendered NOTHING** — SIDE keys into a CORNER-keyed attr; reader returns null. 44 emissions, TWO mirrored sites | `2d2bfb678` (D997) |
 | **Hero image escaped the viewport at every width** — a shared `max-width: var(--x, none)` cancelled core's `img{max-width:100%}`. Measured 1536×1536 in a 737px column | `92ac71dbd` (D998) |
-| **Media sizing mode DERIVED, not defaulted** — `"default":"auto"` rejected: auto IS the state that hides the Height control. Its parity gate was vacuous too | `f009f1b54` (D1001) |
-| **A THIRD same-selector collision** — two partials both declared `min-height` on `.sgs-media-el`; alphabetical concatenation let the later win, nullifying every authored min-height incl. tiers. Composed in `_base.css` via `max()` | `7c357db70` (D1002) |
-| Three width caps → one (`maxWidthPercent` was THREE unrelated mechanisms sharing a name) | `7c357db70` |
-| Media panels split by inspector tab; `Inherit` label; the un-collapsible panel was a bare `ToolsPanel` | `2e05db28b` |
-| Hero split-media: 24 attrs off three prefixes onto one | `41ac811e5` |
-| **New gate:** `check-converter-destination-shape.py` — destination NAME + SHAPE vs what the block declares. UNWIRED, 9 findings | `877cba6c4` |
+| **Media sizing mode DERIVED, not defaulted** — `"default":"auto"` rejected: auto IS the hiding state. Its parity gate was vacuous too | `f009f1b54` (D1001) |
+| **A THIRD same-selector collision** — two partials declared `min-height` on `.sgs-media-el`; alphabetical order let the later win, nullifying every authored value. Composed via `max()` | `7c357db70` (D1002) |
+| Width caps 3→1; media panels split by inspector tab; `Inherit` label; collapsible styling panel; hero's 24 split-media attrs onto one prefix | `7c357db70` `2e05db28b` `41ac811e5` |
+| **New gate:** `check-converter-destination-shape.py` — destination NAME + SHAPE vs declaration. UNWIRED, 9 findings | `877cba6c4` |
 | Two half-migrations an Opus review caught that my verification wrongly cleared | `621482e0e` |
 
 
 ## Blockers
 
-✅ **HOMEPAGE CONTENT FIXED (Bean-approved).** The hero rename (`41ac811e5`) stranded six
-pre-rename attrs on live post 2742; RE-CLONED with the current converter (D554-B: canary pages
-are re-cloned, not migrated). Now stores `splitMediaImage*`. Verified over SSH.
+✅ **HOMEPAGE CONTENT FIXED (Bean-approved).** The hero rename (`41ac811e5`) stranded six attrs
+on live post 2742; RE-CLONED (D554-B: canary pages are re-cloned, not migrated). Verified SSH.
 
-⛔ **DEPLOY STILL BLOCKED, NOT by our work.** `check-no-inline` reports `sgs/trust-bar style="--…"`
-on the canary. It does NOT reproduce: an authoritative BeautifulSoup parse of the raw HTML and a
-rendered-DOM check both find ZERO trust-bar nodes with an inline style (13 nodes, none). The only
-inline-styled `sgs-*` element is a CORE `wp-block-list` carrying `sgs-link-list`, authored in
-`theme/sgs-theme/patterns/framework-footer-default.php`, absent from 2742's content. Pre-existing
-theme debt on a core block, mis-attributed by the gate to an sgs block. Not safely bypassable:
+⛔ **DEPLOY STILL BLOCKED, NOT by our work.** `check-no-inline` reports `sgs/trust-bar
+style="--…"` on the canary and it does NOT reproduce — a BeautifulSoup parse of the raw HTML AND
+a rendered-DOM check both find ZERO trust-bar nodes with an inline style (13 nodes, none). The
+only inline-styled `sgs-*` element is a CORE `wp-block-list` carrying `sgs-link-list`, authored
+in `theme/sgs-theme/patterns/framework-footer-default.php` and absent from 2742's content —
+pre-existing theme debt, mis-attributed by the gate to an sgs block. Not safely bypassable:
 `--skip-build` is the only route past and it disables isolation, shipping three other sessions'
 uncommitted plugin work (D991). ⚠ Owed: fix the footer pattern; fix the gate's attribution.
 
@@ -148,7 +145,7 @@ on every cloned page.
 
 ### 1a. The duplicate-declaration gate — FOUR defects of one class in one day
 
-`.sgs-media-el` had ONE property declared TWICE on the SAME selector four times over (`max-width` twice, `min-height`, plus `opacity`/`animation-name` on 2026-09-01). Full record: D998, D1002. **No gate exists against it** — that gate, not a fifth patch, is the fix. Whole generated file as its population, never a diff (a peer's census gate failed exactly there). Natural home: `check-media-atom-purity.js`, which separately bans only `initial`/`unset`/`revert` while its stated rule is broader, so `none`/`auto` walk through.
+`.sgs-media-el` had ONE property declared TWICE on the SAME selector four times (`max-width` twice, `min-height`, plus `opacity`/`animation-name` on 2026-09-01). Record: D998, D1002. **No gate exists against it** — that, not a fifth patch, is the fix. Population = the whole generated file, never a diff (a peer's census gate failed exactly there). Home: `check-media-atom-purity.js`, which bans only `initial`/`unset`/`revert` while its stated rule is broader, so `none`/`auto` walk through.
 
 ### 1b. Cloning-pipeline rework (Spec 39) — after the header/footer
 
