@@ -86,18 +86,52 @@ $scoped_css = array();
 
 $base_style_engine_args = array();
 
-$sgs_pfi_fill_css = sgs_fill_states_css(
-	$root_sel,
-	$attributes,
-	array(
-		'base'           => 'backgroundColour',
-		'hover'          => 'backgroundColourHover',
-		'gradient'       => 'backgroundColourGradient',
-		'hover_gradient' => 'backgroundColourHoverGradient',
-	)
-);
-if ( '' !== $sgs_pfi_fill_css ) {
-	$scoped_css[] = $sgs_pfi_fill_css;
+// Precondition check (colour-conformance pass, 2026-09-07): the `item`
+// manifest element shares BOTH css:color (textColour) and
+// css:background-color (backgroundColour) on this SAME $root_sel, so a
+// hover text-GRADIENT here (background-clip:text) would clip/overwrite the
+// wrapper's background paint if both were left on the same selector. Only
+// swap the background onto its own ::after layer when the hover text value
+// actually resolves to a gradient — the flat-colour hover case is
+// unaffected by background-clip:text and needs no change to the existing
+// fill emission.
+$style_color_text_hover          = isset( $attributes['textColourHover'] ) ? (string) $attributes['textColourHover'] : '';
+$style_color_text_hover_gradient = isset( $attributes['textColourHoverGradient'] ) ? (string) $attributes['textColourHoverGradient'] : '';
+$text_colour_hover_effective     = sgs_resolve_text_colour_or_gradient( $style_color_text_hover, $style_color_text_hover_gradient );
+$sgs_pfi_hover_is_gradient       = str_contains( $text_colour_hover_effective, 'gradient(' );
+
+if ( $sgs_pfi_hover_is_gradient ) {
+	$sgs_pfi_fill_decls   = sgs_fill_decls(
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	$sgs_pfi_bg_layer_css = sgs_block_background_layer_css(
+		$root_sel,
+		implode( ';', $sgs_pfi_fill_decls['normal'] ),
+		implode( ';', $sgs_pfi_fill_decls['hover'] )
+	);
+	if ( '' !== $sgs_pfi_bg_layer_css ) {
+		$scoped_css[] = $sgs_pfi_bg_layer_css;
+	}
+} else {
+	$sgs_pfi_fill_css = sgs_fill_states_css(
+		$root_sel,
+		$attributes,
+		array(
+			'base'           => 'backgroundColour',
+			'hover'          => 'backgroundColourHover',
+			'gradient'       => 'backgroundColourGradient',
+			'hover_gradient' => 'backgroundColourHoverGradient',
+		)
+	);
+	if ( '' !== $sgs_pfi_fill_css ) {
+		$scoped_css[] = $sgs_pfi_fill_css;
+	}
 }
 
 if ( ! empty( $native_border ) ) {
@@ -129,6 +163,17 @@ if ( '' !== $text_colour_effective ) {
 		$scoped_css[] = "{$root_sel}{{$text_colour_decl};}";
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel, $text_colour_effective );
+}
+
+// Hover — $text_colour_hover_effective/$sgs_pfi_hover_is_gradient already
+// resolved above (needed before the fill emission to decide the
+// background-layer precondition).
+if ( '' !== $text_colour_hover_effective ) {
+	$text_colour_hover_decl = sgs_text_colour_decl( $text_colour_hover_effective );
+	if ( '' !== $text_colour_hover_decl ) {
+		$scoped_css[] = sgs_hover_state_rules( $root_sel, $text_colour_hover_decl . ';' );
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $root_sel . ':hover', $text_colour_hover_effective );
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -188,10 +233,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -225,7 +270,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

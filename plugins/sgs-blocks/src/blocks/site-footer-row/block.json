@@ -77,7 +77,15 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-image": "textColourGradient"
 					},
-					"_note": "A horizontal row inside sgs/site-footer. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "textColourHover",
+								"css:background-image": "textColourHoverGradient"
+							}
+						}
+					},
+					"_note": "A horizontal row inside sgs/site-footer. This element is BOTH the block root and the grid definition (containerKind=layout, rendered through SGS_Container_Wrapper), the same single-element shape sgs/trust-bar's wrapper uses. Padding and margin are the block's OWN box-object attributes, not native spacing — this block declares no `supports.spacing`. css:align-items maps to `alignItems` (class-sgs-container-wrapper.php:247). Typography members, display, order and overflow have no attribute here and remain honest GAPs. prefix: \"\" is an explicit opt-out of orphan scanning — every style attribute is mapped explicitly above, and the remaining row* attributes (rowSlot/rowTransparent/rowHideOnScroll/rowShrink/rowShrinkHideTarget) are slot identity and scroll BEHAVIOUR, not style properties. textColourHover/textColourHoverGradient (2026-09-07 colour-conformance): this element ALSO owns css:background-color (backgroundColour) on the same selector, so render.php conditionally moves the background onto its own ::after layer via sgs_block_background_layer_css() ONLY when the resolved hover value is a gradient — the flat-colour hover case is unaffected and keeps the existing sgs_fill_states_css() emission.",
 					"prefix": ""
 				},
 				"content-band": {
@@ -123,6 +131,15 @@
 		"textColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"textColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"textColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of textColourHover. Non-empty wins over textColourHover on :hover/:focus-visible."
 		},
 		"layout": {
 			"type": "string",

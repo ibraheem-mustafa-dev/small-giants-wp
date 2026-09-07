@@ -5798,6 +5798,16 @@
     },
     {
       "slug": "sgs/separator",
+      "attr": "contentColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "content",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/separator",
       "attr": "contentFontSize",
       "fields": {
         "css_property": "font-size",
@@ -5917,6 +5927,17 @@
       }
     },
     {
+      "slug": "sgs/site-footer-row",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/site-header",
       "attr": "backgroundColourScrolledGradient",
       "fields": {
@@ -5983,6 +6004,17 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header-row",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -13818,6 +13850,25 @@
       }
     },
     {
+      "slug": "sgs/product-faq-item",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-faq-item",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/product-search",
       "attr": "borderColour",
       "fields": {
@@ -14085,6 +14136,15 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/separator",
+      "attr": "contentColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "content",
+        "css_state": "hover"
       }
     },
     {
@@ -14549,6 +14609,16 @@
       }
     },
     {
+      "slug": "sgs/site-footer-row",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/site-header",
       "attr": "backgroundAttachment",
       "fields": {
@@ -14905,6 +14975,16 @@
       }
     },
     {
+      "slug": "sgs/site-header-row",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/social-icons",
       "attr": "borderRadius",
       "fields": {
@@ -15254,6 +15334,25 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "textColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/star-rating",
+      "attr": "textColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {

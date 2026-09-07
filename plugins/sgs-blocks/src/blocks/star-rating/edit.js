@@ -7,7 +7,7 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, textRow } from '../../components';
 import { parseSvgGradient, SvgGradientDefs, textPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // Box-object interface contract §1: a 4-side box is an object with named
@@ -145,8 +145,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		borderColourHoverGradient,
 		borderStyle,
 		borderWidth,
-		textColour,
-		textColourGradient,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -237,22 +235,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ ! isTpOfficial && (
 			<SgsColourPanel
 				rows={ [
-					{
+					textRow( {
 						key: 'wrapperText',
 						label: __( 'Text colour', 'sgs-blocks' ),
-						gradientCapable: true,
-						states: [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: textColour,
-								onChange: ( val ) => setAttributes( { textColour: val ?? '' } ),
-								gradientValue: textColourGradient,
-								onGradientChange: ( val ) => setAttributes( { textColourGradient: val ?? '' } ),
-								linked: true,
-							},
-						],
-					},
+						attrs: {
+							base: 'textColour',
+							hover: 'textColourHover',
+							gradient: 'textColourGradient',
+							hoverGradient: 'textColourHoverGradient',
+						},
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'wrapperBackground',
 						label: __( 'Background colour', 'sgs-blocks' ),

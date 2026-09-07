@@ -54,8 +54,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -368,6 +368,22 @@ if ( 'icon' === $content_mode ) {
 			$scoped_css[] = "{$content_colour_sel}{{$content_colour_decl};}";
 		}
 		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $content_colour_sel, $content_colour_effective );
+	}
+
+	// Hover — plain text trio, no background-layer precondition needed: the
+	// `content` element manifest declares no css:background-color member and
+	// style.css paints no background on `.sgs-separator__content` at all, so a
+	// hover text-gradient's background-clip:text here has nothing to clip or
+	// overwrite.
+	$content_colour_hover           = $attributes['contentColourHover'] ?? '';
+	$content_colour_hover_gradient  = $attributes['contentColourHoverGradient'] ?? '';
+	$content_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $content_colour_hover, $content_colour_hover_gradient );
+	if ( '' !== $content_colour_hover_effective ) {
+		$content_colour_hover_decl = sgs_text_colour_decl( $content_colour_hover_effective );
+		if ( '' !== $content_colour_hover_decl ) {
+			$scoped_css[] = sgs_hover_state_rules( $content_colour_sel, $content_colour_hover_decl . ';' );
+			$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $content_colour_sel . ':hover', $content_colour_hover_effective );
+		}
 	}
 
 	$content_html = '<span class="sgs-separator__content">' . esc_html( $content_text ) . '</span>';
