@@ -39,9 +39,13 @@ than needing a bypass every time.
 
 **None.**
 
-## THE FRONT — four live tracks, pick one
+## THE FRONT — five live tracks, pick one
 
-Track D is new (2026-09-07). Tracks A/B untouched this session; Track C is closed-out salvage.
+Tracks D and E are new (2026-09-07); B was rewritten the same day. All three replaced prompts
+that cited stale counts, orphaned commit SHAs, or work another session had already done — read
+the prompt, not a remembered summary. Track A is untouched and still carries its 2026-09-06
+numbers, which an audit found overstated (61 rows, not 58; 3 of 4 sampled rows were false
+positives needing a docs entry, not code). Track C is closed-out salvage.
 
 ### Track D — typography: surface-type taxonomy + helper extension (NEWEST, has a design gate)
 **Read first (full, not skim):** `.claude/prompts/2026-09-07-typography-surface-taxonomy-next.md`.
@@ -75,6 +79,19 @@ committed `e76586a9e` to them 2026-09-07. Ask before scheduling.
 ⚠ `migrate-border-radius-render.py --survey` returns UNCLEAR for 46 of 51 blocks including
 already-fixed ones — it does not discriminate. Read `block.json`, not the survey.
 Independent of Tracks A/C/D.
+
+### Track E — inspector gates, rule 41 grouping/order debt
+**Read first:** `.claude/prompts/2026-09-07-inspector-gates-rule41-43-next.md` (full read).
+Supersedes the deleted `2026-09-04-spec32-35-gates-next-session.md`. **This track had no LEDGER
+entry until 2026-09-07** — that prompt file was the only record it existed.
+Open: rule 41's 11 `co2-scattered-element` + 17 `dom-order-vs-declared-order`, and rule 43's 5
+real `colour-only-state-indicator` findings.
+**Closed 2026-09-07 (`eebb06187`):** rule 43's 8 `ambiguous-state-property` findings, all false
+positives — the detector was flagging `SgsBorderControl`'s own sanctioned 2-state border colour
+mechanism (base `border-left: 3px solid transparent` → coloured), plus `box-shadow:none`
+suppression rules and `::backdrop`. Fixed with 4 fixtures that each fail without their branch.
+⚠ The old prompt's "23 of 45 files / ~555 entries" baseline-debt figure does not reproduce under
+any reading — dropped, not carried forward.
 
 ### Track C — the 8 orphaned-branch draft PRs (#53-#60)
 **Superseded/verified salvage-free 2026-09-07 (D983's trigger event) — every one already
