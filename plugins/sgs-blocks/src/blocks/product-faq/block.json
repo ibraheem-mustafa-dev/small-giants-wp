@@ -71,7 +71,9 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "textColourHover",
-								"css:color-gradient": "textColourHoverGradient"
+								"css:color-gradient": "textColourHoverGradient",
+								"css:background-color": "backgroundColourHover",
+								"css:background-color-gradient": "backgroundColourHoverGradient"
 							}
 						}
 					},
