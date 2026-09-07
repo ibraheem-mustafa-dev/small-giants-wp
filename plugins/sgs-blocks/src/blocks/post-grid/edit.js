@@ -26,7 +26,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import SgsColourPanel from '../../components/SgsColourPanel';
-import ShadowControl from '../../components/ShadowControl';
+import ShadowControl, { shadowAttrKeys } from '../../components/ShadowControl';
 import SgsBooleanField from '../../components/SgsBooleanField';
 import SgsMultiSelectField from '../../components/SgsMultiSelectField';
 import ResponsiveOverride from '../../components/ResponsiveOverride';
@@ -340,7 +340,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		shadow,
 		shadowColour,
 		shadowHover,
-		shadowHoverColour,
+		shadowColourHover,
 		imageZoomHover,
 		transitionDuration,
 		transitionEasing,
@@ -547,7 +547,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     block.json note on the "card" element). Verified: NEITHER
 			     hover attr also touches `background-color`/`box-shadow` as the
 			     DB census suggested.
-			   - shadowColour/shadowHoverColour share ONE row (normal +
+			   - shadowColour/shadowColourHover share ONE row (normal +
 			     hover), same shape as sgs/card-grid's 'card-shadow' row —
 			     shadowColour added 2026-08-20 alongside the new resting
 			     `shadow` shape attribute to close a STATE_WITHOUT_BASE
@@ -1098,23 +1098,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ /* ONE tabbed Normal/Hover mount (Wave A1 ShadowControl redesign,
+					   2026-09-07) — replaces two separate mounts. */ }
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadow',
-							colour: 'shadowColour',
-						} }
-					/>
-					<ShadowControl
-						label={ __( 'Hover shadow', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadowHover',
-							colour: 'shadowHoverColour',
-						} }
+						attrNames={ shadowAttrKeys( 'shadow', { hover: true, hoverColour: true } ) }
 					/>
 				</PanelBody>
 

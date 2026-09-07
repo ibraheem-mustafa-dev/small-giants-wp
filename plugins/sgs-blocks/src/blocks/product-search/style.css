@@ -34,7 +34,11 @@
 	flex: 1;
 	min-height: 44px;
 	padding: 0.5rem 0.75rem;
-	border: 1px solid var( --sgs-ps-input-border, var( --wp--preset--color--border, #ccc ) );
+	/* inputBorderColour/Hover/Gradient (border-base-hover, colour-conformance
+	   2026-09-07) now paint border-color via a scoped rule from
+	   sgs_border_states_css() (render.php) — this fallback is the theme
+	   default for an unset attribute, no longer an attribute-driven var(). */
+	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 8px;
 	font: inherit;
 	background: var( --wp--preset--color--surface, #fff );
@@ -84,9 +88,19 @@
 	max-height: 60vh;
 	overflow-y: auto;
 	background: var( --sgs-ps-listbox-bg, var( --wp--preset--color--surface, #fff ) );
-	border: 1px solid var( --sgs-ps-input-border, var( --wp--preset--color--border, #ccc ) );
+	background-image: var( --sgs-ps-listbox-bg-gradient, none );
+	/* inputBorderColour/Hover/Gradient also paints this border (KNOWN
+	   MODELLING LIMIT, block.json "input" element _note) via the combined
+	   selector in render.php's sgs_border_states_css() call — this is the
+	   theme-default fallback for an unset attribute. */
+	border: 1px solid var( --wp--preset--color--border, #ccc );
 	border-radius: 8px;
 	box-shadow: 0 6px 24px rgba( 0, 0, 0, 0.12 );
+}
+
+.sgs-product-search__results:hover {
+	background: var( --sgs-ps-listbox-bg-hover, var( --sgs-ps-listbox-bg, var( --wp--preset--color--surface, #fff ) ) );
+	background-image: var( --sgs-ps-listbox-bg-hover-gradient, var( --sgs-ps-listbox-bg-gradient, none ) );
 }
 
 /* Each result option — the <li> itself is the clickable surface
@@ -111,9 +125,18 @@
  * verified by eye this was a flat background swap with no shape difference,
  * so a left accent bar (same convention as the buybox/product-card value
  * ladder rows) is the non-colour signal. */
-.sgs-product-search__results [role="option"]:hover,
-.sgs-product-search__results [role="option"].is-active {
+.sgs-product-search__results [role="option"]:hover {
 	background: var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) );
+	background-image: var( --sgs-ps-result-hover-bg-gradient, none );
+	border-left-color: var( --wp--preset--color--primary, #0F7E80 );
+}
+
+/* resultHoverBackgroundColourHover/HoverGradient — the row's SELECTED/active
+   state (previously sharing the resting :hover variable verbatim; split so
+   the client can distinguish "hovered" from "selected via keyboard/click"). */
+.sgs-product-search__results [role="option"].is-active {
+	background: var( --sgs-ps-result-hover-bg-hover, var( --sgs-ps-result-hover-bg, var( --wp--preset--color--surface-alt, #f5f7f7 ) ) );
+	background-image: var( --sgs-ps-result-hover-bg-hover-gradient, var( --sgs-ps-result-hover-bg-gradient, none ) );
 	border-left-color: var( --wp--preset--color--primary, #0F7E80 );
 }
 
@@ -158,8 +181,17 @@
 
 .sgs-product-search__result-title mark {
 	background: var( --sgs-ps-mark-bg, none );
+	background-image: var( --sgs-ps-mark-bg-gradient, none );
 	color: inherit;
 	font-weight: 700;
+}
+
+/* matchHighlightColourHover/HoverGradient — the highlight colour while the
+   containing result row is hovered or selected. */
+.sgs-product-search__results [role="option"]:hover .sgs-product-search__result-title mark,
+.sgs-product-search__results [role="option"].is-active .sgs-product-search__result-title mark {
+	background: var( --sgs-ps-mark-bg-hover, var( --sgs-ps-mark-bg, none ) );
+	background-image: var( --sgs-ps-mark-bg-hover-gradient, var( --sgs-ps-mark-bg-gradient, none ) );
 }
 
 .sgs-product-search__result-price {

@@ -1,7 +1,7 @@
 {
 	"apiVersion": 2,
 	"name": "sgs/sole-unknown-state-row",
-	"title": "Fixture: single-state row whose key is NOT in the admitted state vocabulary — must still flag (over-match control)",
+	"title": "RETIRED mustFlag 2026-09-07 (Bean's ruling): this was the over-match control for the floor-2 states check, now dropped as census-covered. Kept as a mustNotFlag fixture.",
 	"category": "sgs",
 	"attributes": {
 		"textColour": { "type": "string", "default": "" },

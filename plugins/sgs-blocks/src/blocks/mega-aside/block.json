@@ -40,7 +40,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "asideBgHover",
-								"css:background-image": "asideBgHoverGradient"
+								"css:background-image": "asideBgHoverGradient",
+								"css:border-color": "asideBorderColourHover",
+								"css:border-color-gradient": "asideBorderColourHoverGradient"
 							}
 						}
 					},
@@ -91,6 +93,15 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the aside border instead of a flat colour. Non-empty wins over asideBorderColour at render time (D636)."
+		},
+		"asideBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"asideBorderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the aside border on hover instead of a flat colour. Non-empty wins over asideBorderColourHover at render time."
 		},
 		"asideBorderWidth": {
 			"type": "object",

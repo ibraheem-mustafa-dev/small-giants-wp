@@ -41,7 +41,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveControl, ShadowControl, shadowAttrKeys, LinkPopoverField, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { colourVar, resolveShadowPreviewComposed, resolveTextColourPreviewStyle } from '../../utils';
@@ -300,8 +300,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayHover,
 		cardShadow,
 		cardShadowColour,
-		shadowHover,
-		shadowHoverColour,
+		cardShadowHover,
+		cardShadowColourHover,
 		scaleHover,
 		imageZoomHover,
 		grayscaleHover,
@@ -490,8 +490,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
+								value: cardShadowColourHover,
+								onChange: ( val ) => setAttributes( { cardShadowColourHover: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -518,8 +518,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							overlayHover: false,
 							cardShadow: '',
 							cardShadowColour: null,
-							shadowHover: '',
-							shadowHoverColour: null,
+							cardShadowHover: '',
+							cardShadowColourHover: null,
 							scaleHover: '',
 							imageZoomHover: false,
 							grayscaleHover: false,
@@ -611,42 +611,28 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 					) }
-					{ /* FR-35-5 Task 4c (2026-07-21) — resting-state shadow, pairs with
-					   the existing hover-only shadowHover. Empty = inherit the theme
-					   token exactly as before (Bean's Option A, same shape as
-					   card-grid's cardShadow). */ }
+					{ /* ONE tabbed Normal/Hover mount (Wave A1 ShadowControl redesign,
+					   2026-09-07) — replaces the two separate ToolsPanelItems above.
+					   Empty = inherit the theme token exactly as before. */ }
 					<ToolsPanelItem
 						label={ __( 'Shadow', 'sgs-blocks' ) }
-						hasValue={ () => !! cardShadow || !! cardShadowColour }
-						onDeselect={ () => setAttributes( { cardShadow: '', cardShadowColour: null } ) }
+						hasValue={ () =>
+							!! cardShadow || !! cardShadowColour || !! cardShadowHover || !! cardShadowColourHover
+						}
+						onDeselect={ () =>
+							setAttributes( {
+								cardShadow: '',
+								cardShadowColour: null,
+								cardShadowHover: '',
+								cardShadowColourHover: null,
+							} )
+						}
 					>
 						<ShadowControl
 							label={ __( 'Shadow', 'sgs-blocks' ) }
 							attributes={ attributes }
 							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'cardShadow',
-								colour: 'cardShadowColour',
-							} }
-						/>
-					</ToolsPanelItem>
-					{ /* shadowHover — declared + read by render.php but restricted to a
-					   fixed subtle/raised/floating/glow preset ALLOWLIST with no editor
-					   control at all (same bug class as card-grid's pre-fix shadowHover).
-					   Fixed straight onto the target shape (D621/D622). */ }
-					<ToolsPanelItem
-						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						hasValue={ () => !! shadowHover || !! shadowHoverColour }
-						onDeselect={ () => setAttributes( { shadowHover: '', shadowHoverColour: null } ) }
-					>
-						<ShadowControl
-							label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-							attributes={ attributes }
-							setAttributes={ setAttributes }
-							attrNames={ {
-								base: 'shadowHover',
-								colour: 'shadowHoverColour',
-							} }
+							attrNames={ shadowAttrKeys( 'cardShadow', { hover: true, hoverColour: true } ) }
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

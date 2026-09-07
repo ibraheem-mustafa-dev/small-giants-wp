@@ -122,26 +122,87 @@ $display                = in_array( $display_raw, array( 'inline-bar', 'icon-exp
 $sgs_ps_is_dialog_mode = in_array( $display, array( 'full-screen-overlay', 'command-palette' ), true );
 
 // -------------------------------------------------------------------------
-// Colour overrides (D638 §6 gap close) — 5 client-controllable custom
-// properties, each falling back to the existing token default already baked
-// into style.css (var(--sgs-ps-*, token)) when unset. Mirrors sgs/button's
-// --sgs-btn-* pattern (sgs_colour_value() resolves either a token slug or a
-// raw CSS colour, and is breakout-guarded — helpers-tokens.php).
 // -------------------------------------------------------------------------
-$sgs_ps_colour_attrs = array(
-	'--sgs-ps-input-border'    => $attributes['inputBorderColour'] ?? '',
-	'--sgs-ps-focus-ring'      => $attributes['focusRingColour'] ?? '',
-	'--sgs-ps-listbox-bg'      => $attributes['listboxBackgroundColour'] ?? '',
-	'--sgs-ps-result-hover-bg' => $attributes['resultHoverBackgroundColour'] ?? '',
-	'--sgs-ps-mark-bg'         => $attributes['matchHighlightColour'] ?? '',
+// NO-INLINE scoped-styling uid (separate from the ARIA uid above — a CLASS,
+// not an id, matching the sgs/label / sgs/heading / sgs/container pattern).
+// Deterministic per attribute-set so repeat renders reuse the same class.
+// -------------------------------------------------------------------------
+$sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
+
+// Colour overrides (D638 §6 gap close; colour-conformance migration
+// 2026-09-07, corrected same day) — 5 client-controllable colour rows,
+// each routed through the conformant shared helper for its DB mechanism
+// rather than a bare custom-property array literal
+// (block_attributes.css_property).
+// inputBorderColour (border-color, css_element=input) routes through
+// sgs_border_states_css() -- CLAUDE.md "Colour EMISSION helpers".
+// focusRingColour (outline-color, css_element=input) is a TERMINAL
+// "outline-not-gradientable" shape (classify-end-shape.js) -- CSS
+// `outline` cannot hold a gradient (no box side to clip a masked ring
+// against) and a focus ring has no hover concept, so it stays a flat
+// custom property, unchanged from its pre-migration shape.
+// listboxBackgroundColour / resultHoverBackgroundColour /
+// matchHighlightColour (background-color, css_element=results/
+// result-title) route through sgs_custom_property_gradient_decls() -- the
+// same background/border custom-property-gradient shape already proven on
+// brand-strip/post-grid/social-icons/form/gallery/before-after.
+// $sgs_ps_input_sel/$sgs_ps_results_sel are declared here (ahead of
+// $sgs_ps_border_sel below) because the border row keys off them.
+// -------------------------------------------------------------------------
+$sgs_ps_input_sel   = '.' . $sgs_style_uid . ' .sgs-product-search__input';
+$sgs_ps_results_sel = '.' . $sgs_style_uid . ' .sgs-product-search__results';
+
+// -- inputBorderColour: paints the search input's border AND (pre-existing
+// KNOWN MODELLING LIMIT, see block.json's "input" element _note) the
+// listbox's border, which has always shared the same variable/value. --
+$sgs_ps_input_border_css = sgs_border_states_css(
+	$sgs_ps_input_sel . ', ' . $sgs_ps_results_sel,
+	$attributes,
+	array(
+		'base'           => 'inputBorderColour',
+		'hover'          => 'inputBorderColourHover',
+		'gradient'       => 'inputBorderColourGradient',
+		'hover_gradient' => 'inputBorderColourHoverGradient',
+		'width'          => '1px',
+	)
 );
-$sgs_ps_colour_decls = array();
-foreach ( $sgs_ps_colour_attrs as $sgs_ps_custom_prop => $sgs_ps_colour_val ) {
-	if ( '' === $sgs_ps_colour_val || null === $sgs_ps_colour_val ) {
-		continue;
-	}
-	$sgs_ps_colour_decls[] = $sgs_ps_custom_prop . ':' . sgs_colour_value( $sgs_ps_colour_val );
-}
+
+// -- focusRingColour / listboxBackgroundColour / resultHoverBackgroundColour
+// / matchHighlightColour: bare custom-property VALUES; style.css's existing
+// var(--sgs-ps-*) rules consume each (the 3 background-color rows each gain
+// one sibling background-image line + a hover-state rule consuming the
+// *-hover(-gradient) pair; focusRingColour stays flat-only, no siblings). --
+$sgs_ps_fill_decls = array_merge(
+	sgs_custom_property_gradient_decls(
+		'sgs-ps-focus-ring',
+		(string) ( $attributes['focusRingColour'] ?? '' ),
+		'',
+		'',
+		''
+	),
+	sgs_custom_property_gradient_decls(
+		'sgs-ps-listbox-bg',
+		(string) ( $attributes['listboxBackgroundColour'] ?? '' ),
+		(string) ( $attributes['listboxBackgroundColourGradient'] ?? '' ),
+		(string) ( $attributes['listboxBackgroundColourHover'] ?? '' ),
+		(string) ( $attributes['listboxBackgroundColourHoverGradient'] ?? '' )
+	),
+	sgs_custom_property_gradient_decls(
+		'sgs-ps-result-hover-bg',
+		(string) ( $attributes['resultHoverBackgroundColour'] ?? '' ),
+		(string) ( $attributes['resultHoverBackgroundColourGradient'] ?? '' ),
+		(string) ( $attributes['resultHoverBackgroundColourHover'] ?? '' ),
+		(string) ( $attributes['resultHoverBackgroundColourHoverGradient'] ?? '' )
+	),
+	sgs_custom_property_gradient_decls(
+		'sgs-ps-mark-bg',
+		(string) ( $attributes['matchHighlightColour'] ?? '' ),
+		(string) ( $attributes['matchHighlightColourGradient'] ?? '' ),
+		(string) ( $attributes['matchHighlightColourHover'] ?? '' ),
+		(string) ( $attributes['matchHighlightColourHoverGradient'] ?? '' )
+	)
+);
 
 // -------------------------------------------------------------------------
 // Unique IDs for ARIA wiring (stable per request — not per page-load).
@@ -155,14 +216,6 @@ $label_id  = $uid . '-label';
 // full-screen-overlay only — the <dialog> id doubles as the shared sgs/nav
 // store's drawerRef (FR-36-20: reuse store('sgs/nav'), never a second utility).
 $dialog_id = $uid . '-dialog';
-
-// -------------------------------------------------------------------------
-// NO-INLINE scoped-styling uid (separate from the ARIA uid above — a CLASS,
-// not an id, matching the sgs/label / sgs/heading / sgs/container pattern).
-// Deterministic per attribute-set so repeat renders reuse the same class.
-// -------------------------------------------------------------------------
-$sgs_style_uid = 'sgs-ps-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$sgs_style_sel = '.' . $sgs_style_uid . '.wp-block-sgs-product-search';
 
 $sgs_scoped_css = array();
 
@@ -235,16 +288,22 @@ if ( null !== $sgs_ps_border_radius_mob_val ) {
 	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{border-radius:{$sgs_ps_border_radius_mob_val};}}";
 }
 
-// --- Colour overrides — scoped custom-property VALUES (no-inline contract:
-// this is a <style> rule, not an inline style="" attribute), only emitted
-// when at least one of the 5 rows has a client-set value. style.css consumes
-// each via var(--sgs-ps-*, existing-token-default). ---
-if ( $sgs_ps_colour_decls ) {
+// --- Colour overrides (input border / focus ring / listbox background /
+// result-hover background / match highlight) — finished CSS from the
+// border call above, plus scoped custom-property VALUES (no-inline
+// contract: this is a <style> rule, not an inline style="" attribute) for
+// the flat focus-ring row and the three fill rows, only emitted when at
+// least one has a client-set value. style.css consumes each var via
+// var(--sgs-ps-*, existing-token-default). ---
+if ( '' !== $sgs_ps_input_border_css ) {
+	$sgs_scoped_css[] = $sgs_ps_input_border_css;
+}
+if ( $sgs_ps_fill_decls ) {
 	// Keyed on the uid class ALONE (not $sgs_style_sel's wrapper-qualified
 	// form) so the rule also matches the <dialog> once view.js reparents it
 	// out of the wrapper — see the dialog markup below for why it carries
 	// this same class.
-	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_colour_decls ) . ';}';
+	$sgs_scoped_css[] = '.' . $sgs_style_uid . '{' . implode( ';', $sgs_ps_fill_decls ) . ';}';
 }
 
 // --- Result thumbnail object-fit (37-media-no-handroll remediation,

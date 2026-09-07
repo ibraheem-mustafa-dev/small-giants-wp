@@ -151,10 +151,17 @@ $background_colour_gradient = $attributes['backgroundColourGradient'] ?? '';
 $border_colour              = $attributes['borderColour'] ?? '';
 // D636 border-colour gradient — sibling attribute, wins over $border_colour when set.
 $border_colour_gradient  = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-$box_shadow              = $attributes['boxShadow'] ?? '';
-$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
-$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
-$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
+// sgs_shadow_decls() (Wave A1 ShadowControl redesign, 2026-09-07) composes
+// shape+colour for BOTH states into declaration arrays merged below.
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	)
+);
 
 $transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
 $transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
@@ -323,8 +330,8 @@ if ( ! $inherit_style ) {
 	if ( $border_colour ) {
 		$wrapper_decls[] = 'border-color:' . sgs_colour_value( $border_colour );
 	}
-	if ( $box_shadow ) {
-		$wrapper_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
+	if ( $box_shadow_decls['normal'] ) {
+		$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 	}
 	if ( '' !== $custom_width ) {
 		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
@@ -374,8 +381,8 @@ if ( '' !== $hover_colour_effective ) {
 // Hover background paint is NOT joined into $hover_rules (which targets the
 // root element) — it is emitted on the `::after` background layer instead,
 // alongside the resting-state background, in step 5b below.
-if ( $box_shadow_hover ) {
-	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
+if ( $box_shadow_decls['hover'] ) {
+	$hover_rules = array_merge( $hover_rules, $box_shadow_decls['hover'] );
 }
 $has_scale = null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001;
 if ( $has_scale ) {

@@ -538,6 +538,22 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'gridItemTextColourHoverGradient',
 	'groupBorderColourGradientHover',
 	'quoteColourHover',
+
+	// sgs/product-search, 2026-09-07 (colour-conformance migration). Same class
+	// as the hover VALUES above and added as EXACT NAMES, never a pattern -- the
+	// over-match self-test on `panelHoverLayout` still guards that. A static
+	// editor canvas has no pointer hover, so a :hover-only paint cannot be shown
+	// without faking the state; the resting halves of all five rows ARE previewed
+	// (inputPreviewStyle / listboxBgPreview / markBgPreview / resultHoverPreview),
+	// so only the hover halves are invisible. Frontend rendering is unaffected.
+	'inputBorderColourHover',
+	'inputBorderColourHoverGradient',
+	'listboxBackgroundColourHover',
+	'listboxBackgroundColourHoverGradient',
+	'matchHighlightColourHover',
+	'matchHighlightColourHoverGradient',
+	'resultHoverBackgroundColourHover',
+	'resultHoverBackgroundColourHoverGradient',
 	'resultHoverBackgroundColour',
 	'shadowHoverColour',
 	'textColourHover',

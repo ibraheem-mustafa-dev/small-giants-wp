@@ -1,7 +1,7 @@
 {
 	"apiVersion": 2,
 	"name": "sgs/no-gradient-row",
-	"title": "Fixture: SgsColourPanel row with normal+hover states but no gradient path anywhere (must flag row-missing-gradient, must NOT flag row-below-minimum-states)",
+	"title": "RETIRED mustFlag 2026-09-07 (Bean's ruling): row-missing-gradient dropped entirely, now census-covered by classify-end-shape.js --check. Kept as a mustNotFlag fixture — the narrowed rule correctly stays silent.",
 	"category": "sgs",
 	"attributes": {
 		"borderColour": { "type": "string", "default": "" },

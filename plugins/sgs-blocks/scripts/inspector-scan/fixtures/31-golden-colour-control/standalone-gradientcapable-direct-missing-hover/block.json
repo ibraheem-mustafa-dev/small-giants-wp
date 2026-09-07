@@ -1,7 +1,7 @@
 {
 	"apiVersion": 2,
 	"name": "sgs/standalone-gradientcapable-direct-missing-hover",
-	"title": "NEGATIVE CONTROL for standalone-gradientcapable-direct-conformant: byte-identical shape but only the normal state — must STILL flag row-below-minimum-states, proving the widened GradientCapableColourControl recognition does not blanket-exempt every direct mount",
+	"title": "RETIRED mustFlag 2026-09-07 (Bean's ruling): was the negative control for the widened GradientCapableColourControl recognition's floor-2 states check, now dropped as census-covered. Kept as a mustNotFlag fixture.",
 	"category": "sgs",
 	"attributes": {
 		"titleColour": { "type": "string", "default": "" },

@@ -8,9 +8,9 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, resolveColourToken, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsColourPanel, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 import MediaElementPanel from '../../components/MediaElementPanel';
-import { borderPaintPreview } from '../../utils';
+import { borderPaintPreview, backgroundPaintPreview } from '../../utils';
 
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
@@ -37,10 +37,22 @@ export default function Edit( { attributes, setAttributes } ) {
 		buttonLabel,
 		maxResults,
 		inputBorderColour,
+		inputBorderColourGradient,
+		inputBorderColourHover,
+		inputBorderColourHoverGradient,
 		focusRingColour,
 		listboxBackgroundColour,
+		listboxBackgroundColourGradient,
+		listboxBackgroundColourHover,
+		listboxBackgroundColourHoverGradient,
 		resultHoverBackgroundColour,
+		resultHoverBackgroundColourGradient,
+		resultHoverBackgroundColourHover,
+		resultHoverBackgroundColourHoverGradient,
 		matchHighlightColour,
+		matchHighlightColourGradient,
+		matchHighlightColourHover,
+		matchHighlightColourHoverGradient,
 		borderColour,
 		borderColourGradient,
 		borderColourHover,
@@ -74,26 +86,39 @@ export default function Edit( { attributes, setAttributes } ) {
 		style: borderPreviewStyle,
 	} );
 
-	// CHECK A: inputBorderColour paints `.sgs-product-search__input` directly
-	// (style.css:37 — border, var(--sgs-ps-input-border, fallback)). No
-	// gradient sibling attribute exists on this block, so only the flat-colour
-	// branch of the shared helper ever fires.
+	// CHECK A: inputBorderColour/Gradient paints `.sgs-product-search__input`
+	// directly (style.css:37 + render.php's sgs_border_states_css() scoped
+	// rule).
 	const [ colourPalette ] = useSettings( 'color.palette' );
-	const inputPreviewStyle = borderPaintPreview( inputBorderColour, '', colourPalette );
+	const inputPreviewStyle = borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette );
 
-	// CHECK A: listboxBackgroundColour paints `.sgs-product-search__results`
-	// (style.css:86 — var(--sgs-ps-listbox-bg, fallback)); matchHighlightColour
-	// paints `.sgs-product-search__result-title mark` (style.css:160). Neither
-	// element ever exists in render.php's static markup — view.js builds the
-	// listbox + result rows only after a live REST search fires — so the
-	// static editor mock below is the only way either colour can be seen on
-	// canvas without wiring real search logic into the editor.
-	const listboxBgPreview = resolveColourToken(
+	// CHECK A: listboxBackgroundColour/Gradient paints
+	// `.sgs-product-search__results` (style.css — var(--sgs-ps-listbox-bg*));
+	// matchHighlightColour/Gradient paints `.sgs-product-search__result-title
+	// mark` (style.css — var(--sgs-ps-mark-bg*)). Neither element ever exists
+	// in render.php's static markup — view.js builds the listbox + result
+	// rows only after a live REST search fires — so the static editor mock
+	// below is the only way either colour can be seen on canvas without
+	// wiring real search logic into the editor.
+	const listboxBgPreview = backgroundPaintPreview(
 		listboxBackgroundColour,
+		listboxBackgroundColourGradient,
 		colourPalette
 	);
-	const markBgPreview = resolveColourToken(
+	// CHECK A: resultHoverBackgroundColour/Gradient paints a result row's
+	// HOVERED background. Like the listbox above it, a result row never exists
+	// in render.php's static markup, so the second mock row below is painted
+	// with it -- that is the only way this colour is visible on canvas without
+	// wiring real search logic (and a real pointer hover) into the editor.
+	const resultHoverPreview = backgroundPaintPreview(
+		resultHoverBackgroundColour,
+		resultHoverBackgroundColourGradient,
+		colourPalette
+	);
+
+	const markBgPreview = backgroundPaintPreview(
 		matchHighlightColour,
+		matchHighlightColourGradient,
 		colourPalette
 	);
 
@@ -105,16 +130,18 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{ /* Colour gap close (D638 §6) — 5 client-controllable colour rows,
-			    each a single 'normal' state (no hover concept on any of these
-			    surfaces), matching the multi-button/D635 single-state pattern.
-			    Falls back to the existing theme-token defaults in style.css
-			    when unset (var(--sgs-ps-*, token) — see render.php). */ }
+			{ /* Colour gap close (D638 §6; colour-conformance migration
+			    2026-09-07) — 5 client-controllable colour rows, each a
+			    normal+hover state pair with gradient capability, matching
+			    the SgsBorderControl colourStates pattern below. Falls back
+			    to the existing theme-token defaults in style.css when unset
+			    (var(--sgs-ps-*, token) — see render.php). */ }
 			<SgsColourPanel
 				rows={ [
 					{
 						key: 'input-border',
 						label: __( 'Input border colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -123,6 +150,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										inputBorderColour: val ?? '',
+									} ),
+								gradientValue: inputBorderColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										inputBorderColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: inputBorderColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										inputBorderColourHover: val ?? '',
+									} ),
+								gradientValue: inputBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										inputBorderColourHoverGradient: val ?? '',
 									} ),
 							},
 						],
@@ -145,6 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{
 						key: 'listbox-background',
 						label: __( 'Listbox background colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -153,6 +200,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										listboxBackgroundColour: val ?? '',
+									} ),
+								gradientValue: listboxBackgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										listboxBackgroundColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: listboxBackgroundColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										listboxBackgroundColourHover: val ?? '',
+									} ),
+								gradientValue: listboxBackgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										listboxBackgroundColourHoverGradient: val ?? '',
 									} ),
 							},
 						],
@@ -163,6 +229,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Result hover background colour',
 							'sgs-blocks'
 						),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -172,12 +239,32 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										resultHoverBackgroundColour: val ?? '',
 									} ),
+								gradientValue: resultHoverBackgroundColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										resultHoverBackgroundColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Selected', 'sgs-blocks' ),
+								value: resultHoverBackgroundColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										resultHoverBackgroundColourHover: val ?? '',
+									} ),
+								gradientValue: resultHoverBackgroundColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										resultHoverBackgroundColourHoverGradient: val ?? '',
+									} ),
 							},
 						],
 					},
 					{
 						key: 'match-highlight',
 						label: __( 'Match highlight colour', 'sgs-blocks' ),
+						gradientCapable: true,
 						states: [
 							{
 								key: 'normal',
@@ -186,6 +273,25 @@ export default function Edit( { attributes, setAttributes } ) {
 								onChange: ( val ) =>
 									setAttributes( {
 										matchHighlightColour: val ?? '',
+									} ),
+								gradientValue: matchHighlightColourGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										matchHighlightColourGradient: val ?? '',
+									} ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: matchHighlightColourHover,
+								onChange: ( val ) =>
+									setAttributes( {
+										matchHighlightColourHover: val ?? '',
+									} ),
+								gradientValue: matchHighlightColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										matchHighlightColourHoverGradient: val ?? '',
 									} ),
 							},
 						],
@@ -533,32 +639,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							style={ {
 								position: 'static',
 								marginTop: '0.25rem',
-								...( listboxBgPreview
-									? { background: listboxBgPreview }
-									: {} ),
+								...listboxBgPreview,
 							} }
 						>
 							<li role="option">
 								<div className="sgs-product-search__result-info">
 									<span className="sgs-product-search__result-title">
-										<mark
-											style={
-												markBgPreview
-													? { background: markBgPreview }
-													: undefined
-											}
-										>
+										<mark style={ markBgPreview }>
 											Ex
 										</mark>
 										ample Product
 									</span>
 								</div>
 							</li>
-							<li role="option">
+							<li role="option" style={ resultHoverPreview }>
 								<div className="sgs-product-search__result-info">
 									<span className="sgs-product-search__result-title">
 										{ __(
-											'Another Result',
+											'Another Result (hovered)',
 											'sgs-blocks'
 										) }
 									</span>

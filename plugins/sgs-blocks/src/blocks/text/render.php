@@ -127,15 +127,19 @@ $border_colour = $attributes['borderColour'] ?? '';
 $border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
 
 // Box shadow — preset slug, or a raw shape built by ShadowControl (offset/
-// blur/spread), composed with its sibling colour attr via
-// sgs_shadow_value_composed() (helpers-tokens.php) — mirrors sgs/quote's
-// render.php exactly, so a client-built custom shadow shape renders correctly
-// instead of being mangled by sanitize_html_class() into a broken CSS
-// custom-property reference.
-$box_shadow              = $attributes['boxShadow'] ?? '';
-$box_shadow_hover        = $attributes['boxShadowHover'] ?? '';
-$box_shadow_colour       = $attributes['boxShadowColour'] ?? '';
-$box_shadow_hover_colour = $attributes['boxShadowHoverColour'] ?? '';
+// blur/spread). sgs_shadow_decls() (Wave A1 ShadowControl redesign,
+// 2026-09-07) composes shape+colour for BOTH states into declaration arrays,
+// so a client-built custom shadow shape renders correctly instead of being
+// mangled by sanitize_html_class() into a broken CSS custom-property reference.
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	)
+);
 
 // Hover state.
 $hover_scale  = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : null;
@@ -272,8 +276,8 @@ if ( $has_border_width && 'none' !== $border_style ) {
 // custom shape (e.g. "0px 4px 12px 0px") into a broken preset-var reference —
 // sgs_shadow_value_composed() (helpers-tokens.php) handles both cases
 // correctly, mirroring sgs/quote's render.php.
-if ( $box_shadow ) {
-	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
+if ( $box_shadow_decls['normal'] ) {
+	$base_decls = array_merge( $base_decls, $box_shadow_decls['normal'] );
 }
 
 // ---------------------------------------------------------------------------
@@ -491,7 +495,7 @@ $css_hover = '';
 $hover_colour_effective    = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
 $first_letter_colour_hover = (string) ( $attributes['firstLetterColourHover'] ?? '' );
 $border_colour_hover       = (string) ( $attributes['borderColourHover'] ?? '' );
-$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_hover || '' !== $first_letter_colour_hover || '' !== $border_colour_hover );
+$has_hover                 = ( '' !== $hover_colour_effective || $hover_background || $hover_background_gradient || null !== $hover_scale || $box_shadow_decls['hover'] || '' !== $first_letter_colour_hover || '' !== $border_colour_hover );
 if ( $has_hover ) {
 	$hover_decls = array();
 
@@ -506,8 +510,8 @@ if ( $has_hover ) {
 	if ( null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001 ) {
 		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
 	}
-	if ( $box_shadow_hover ) {
-		$hover_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
+	if ( $box_shadow_decls['hover'] ) {
+		$hover_decls = array_merge( $hover_decls, $box_shadow_decls['hover'] );
 	}
 	if ( '' !== $border_colour_hover ) {
 		$hover_decls[] = 'border-color:' . sgs_colour_value( $border_colour_hover );

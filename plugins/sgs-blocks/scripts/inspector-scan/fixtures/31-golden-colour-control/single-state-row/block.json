@@ -1,7 +1,7 @@
 {
 	"apiVersion": 2,
 	"name": "sgs/single-state-row",
-	"title": "Fixture: SgsColourPanel row with only a 'normal' state — below the 2-state floor (must flag row-below-minimum-states)",
+	"title": "RETIRED mustFlag 2026-09-07 (Bean's ruling): floor-2 states violation, now census-covered by classify-end-shape.js --check. Kept as a mustNotFlag fixture — the narrowed rule correctly stays silent on a plain floor-2 case.",
 	"category": "sgs",
 	"attributes": {
 		"textColour": { "type": "string", "default": "" },

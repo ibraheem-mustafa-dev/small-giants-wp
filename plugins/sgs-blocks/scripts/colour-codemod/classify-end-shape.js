@@ -120,6 +120,11 @@ const END_SHAPES = {
 			"emit into the block's own $scoped_css[] array at its own selector — no new mechanism, source-order beats the compiled stylesheet",
 		doc: 'CLAUDE.md "Known precedent-function registry" — own $root_sel-scoped override row',
 	},
+	OUTLINE_NOT_GRADIENTABLE: {
+		key: 'outline-not-gradientable',
+		helper: 'NONE — CSS outline cannot hold a gradient, and a focus ring has no hover state; a flat colour via a custom property IS the terminal shape',
+		doc: 'proven live 2026-09-07: sgs/filter-search.focusRingColour (css_property=outline-color)',
+	},
 	CANVAS_NOT_CSS: {
 		key: 'canvas-not-css',
 		helper: 'NONE — value is consumed as a JS canvas fillStyle/strokeStyle, not CSS; needs a new design, not a CSS helper',
@@ -490,12 +495,57 @@ function textSharesElementWithBackground( blockJson, attrName ) {
 	return false;
 }
 
-function isCanvasOnly( blockDir, attr ) {
+// Attribute -> the `--sgs-*` custom-property name it feeds in render.php, via
+// the same `$var = ...attributes['attr']...` binding traceBoundVars() already
+// follows for every other step in this file. Traces the attr name itself and
+// every bound local var forward to a `'--sgs-x-y:' . esc_attr( $var )`-shaped
+// concatenation (or the double-quoted-string sibling form
+// `"...{--sgs-x-y:" . esc_attr( $var )`) and returns the FIRST custom-property
+// name it lands on. An attribute feeding two distinct properties isn't a case
+// in the corpus today — if it recurs, this should return an array instead of
+// assuming one.
+function traceCustomPropertyName( php, attr ) {
+	const candidates = [ attr, ...traceBoundVars( php, attr, 2 ) ];
+	for ( const v of candidates ) {
+		const m = new RegExp( '(--sgs-[a-z0-9-]+)\\s*:[^;]*?\\$' + v + '\\b' ).exec( php );
+		if ( m ) return m[ 1 ];
+	}
+	return null;
+}
+
+// Pure decision function, no filesystem access — factored out so --self-test
+// can exercise both paths against synthetic fixtures without a temp block
+// directory (mirrors survey.js's own self-test discipline of never touching
+// the real tree).
+function canvasMatchesAttr( js, attr, php ) {
+	const hasCanvasSignal = /fillStyle|strokeStyle|getContext\(\s*['"]2d['"]/.test( js );
+	if ( ! hasCanvasSignal ) return false;
+
+	// Path A — the attribute name appears directly in view.js (a block that
+	// reads it without a custom-property indirection).
+	if ( new RegExp( '\\b' + attr + '\\b' ).test( js ) ) return true;
+
+	// Path B — the attribute feeds a --sgs-* custom property in render.php,
+	// and view.js reads THAT property (proven live 2026-09-05/07:
+	// sgs/audio.spectrumColour -> $spectrum_val -> --sgs-audio-spectrum ->
+	// resolveColour( root, '--sgs-audio-spectrum', ... ) -> canvas paint. The
+	// attribute name itself never appears in view.js, so Path A alone always
+	// missed it — the false positive this function exists to fix.)
+	if ( php ) {
+		const cssVar = traceCustomPropertyName( php, attr );
+		if ( cssVar ) {
+			const escaped = cssVar.replace( /[-/\\^$*+?.()|[\]{}]/g, '\\$&' );
+			if ( new RegExp( escaped ).test( js ) ) return true;
+		}
+	}
+	return false;
+}
+
+function isCanvasOnly( blockDir, attr, php ) {
 	const viewFile = path.join( BLOCKS_DIR, blockDir, 'view.js' );
 	if ( ! fs.existsSync( viewFile ) ) return false;
 	const js = fs.readFileSync( viewFile, 'utf8' );
-	if ( ! new RegExp( '\\b' + attr + '\\b' ).test( js ) ) return false;
-	return /fillStyle|strokeStyle|getContext\(\s*['"]2d['"]/.test( js );
+	return canvasMatchesAttr( js, attr, php );
 }
 
 function isMultiVariantBespoke( php, attr, cssPropCount ) {
@@ -523,8 +573,8 @@ function readStyleCss( blockDir ) {
 	return '';
 }
 
-function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current, styleCss, dbBlockRows } ) {
-	if ( isCanvasOnly( blockDir, attr ) ) {
+function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current, styleCss, dbBlockRows, php } ) {
+	if ( isCanvasOnly( blockDir, attr, php ) ) {
 		return { shape: END_SHAPES.CANVAS_NOT_CSS.key, reason: 'attribute consumed as a canvas fillStyle/strokeStyle in view.js — no CSS gradient path exists', evidence: blockDir + '/view.js' };
 	}
 
@@ -548,6 +598,22 @@ function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current
 		if ( gradDbRow && ( gradDbRow.css_property === 'stroke' || gradDbRow.css_property === 'svg-stroke' ) ) {
 			return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, reason: 'base attr maps to css:color (mechanism=text) but its own gradient sibling (' + gradAttr + ') maps to css:stroke — an icon/SVG gradient shape, not text', evidence: 'block_attributes.css_property for ' + gradAttr };
 		}
+	}
+
+	// `outline-color` is grouped under the DB's 'border' MECHANISM for gate-classification,
+	// but it is not a border and must not be routed to sgs_border_states_css() — that helper
+	// unconditionally emits border-color (plus a masked ::before ring for the gradient) on its
+	// base selector, so calling it for an outline would overwrite the element's real resting
+	// border colour. CSS `outline` also cannot hold a gradient, and a focus ring has no hover
+	// state. A flat colour via a custom property IS the terminal shape here.
+	// Proven live 2026-09-07 on sgs/filter-search.focusRingColour.
+	const ownDbRow = dbBlockRows && dbBlockRows[ attr ];
+	if ( ownDbRow && typeof ownDbRow.css_property === 'string' && ownDbRow.css_property.startsWith( 'outline' ) ) {
+		return {
+			shape: END_SHAPES.OUTLINE_NOT_GRADIENTABLE.key,
+			reason: 'css_property is ' + ownDbRow.css_property + ' — an outline, not a border; outline cannot take a gradient and a focus ring has no hover state',
+			evidence: 'block_attributes.css_property',
+		};
 	}
 
 	if ( mechanism === 'border' ) {
@@ -582,7 +648,12 @@ function recommendEndShape( { blockDir, blockJson, attr, row, mechanism, current
 // Main
 // ---------------------------------------------------------------------------
 
-function main() {
+// The full census, extracted from main() so --check and --self-test can call
+// it directly instead of shelling out to this file's own CLI (matching the
+// pattern documented in survey.js's module.exports docblock — a SIBLING
+// script shells out to the CLI; this file's OWN --check calls its own
+// function in-process).
+function classifyAll() {
 	const db = loadDbRows();
 	const cache = new SourceCache();
 	const results = [];
@@ -635,7 +706,7 @@ function main() {
 				}
 			}
 			const recommended = mechanism
-				? recommendEndShape( { blockDir: dir, blockJson, attr: row.attr, row, mechanism, current, styleCss, dbBlockRows: db[ slug ] } )
+				? recommendEndShape( { blockDir: dir, blockJson, attr: row.attr, row, mechanism, current, styleCss, dbBlockRows: db[ slug ], php } )
 				: { shape: 'unclassified', reason: 'no css_property resolved in DB for this attr — schema gap, not a shape question', evidence: null };
 
 			results.push( {
@@ -656,6 +727,12 @@ function main() {
 			} );
 		}
 	}
+
+	return results;
+}
+
+function main() {
+	const results = classifyAll();
 
 	fs.writeFileSync( OUT_PATH, JSON.stringify( { rows: results }, null, 1 ) );
 
@@ -701,8 +778,161 @@ function main() {
 	}
 }
 
-if ( require.main === module ) {
-	main();
+// ---------------------------------------------------------------------------
+// --check — the census GATE. Currently open: other agents are actively
+// migrating the last rows while this was built, so a non-zero exit here is
+// EXPECTED until that backlog closes — this is the diagnostic finally
+// getting a machine-checkable form, not a claim the census is clean today.
+// ---------------------------------------------------------------------------
+
+// An `outline-*` css_property must never be routed through sgs_border_states_css().
+// That helper emits `border-color` (plus a masked ::before ring for a gradient), so an
+// outline attribute sent through it silently stops painting the outline and starts painting
+// a border — the control keeps its name while doing something else, and any gradient/hover
+// siblings created to feed it are dead by construction (outline takes no gradient; a focus
+// ring has no hover state). Caught by hand on sgs/product-search.focusRingColour 2026-09-07
+// after a parallel agent correctly refused the same shape on sgs/filter-search; this makes
+// the guard structural so the next one is caught by the gate, not by a diff review.
+function findOutlineRoutedThroughBorder() {
+	const out = [];
+	const db = loadDbRows();
+	for ( const blockDir of blockDirs() ) {
+		const phpPath = path.join( BLOCKS_DIR, blockDir, 'render.php' );
+		if ( ! fs.existsSync( phpPath ) ) continue;
+		const php = stripComments( fs.readFileSync( phpPath, 'utf8' ) );
+		const slug = 'sgs/' + blockDir;
+		const rows = db[ slug ];
+		if ( ! rows ) continue;
+		for ( const argsText of extractCallArgLists( php, 'sgs_border_states_css' ) ) {
+			const m = argsText.match( /['"]base['"]\s*=>\s*['"]([A-Za-z0-9_]+)['"]/ );
+			if ( ! m ) continue;
+			const baseAttr = m[ 1 ];
+			const row = rows[ baseAttr ];
+			if ( row && typeof row.css_property === 'string' && row.css_property.startsWith( 'outline' ) ) {
+				out.push( { block: slug, attr: baseAttr, cssProperty: row.css_property } );
+			}
+		}
+	}
+	return out;
 }
 
-module.exports = { detectCurrentShape, recommendEndShape, END_SHAPES, stripComments };
+function runCheck() {
+	const results = classifyAll();
+
+	const misrouted = findOutlineRoutedThroughBorder();
+	if ( misrouted.length ) {
+		console.log(
+			'[check] FAIL — ' + misrouted.length +
+			' outline attribute(s) routed through sgs_border_states_css() (emits border-color, not outline-color):'
+		);
+		for ( const m of misrouted ) {
+			console.log( '  ' + m.block + '.' + m.attr + '  (css_property: ' + m.cssProperty + ')' );
+		}
+		console.log( '  FIX: emit a flat colour as the custom property that style.css own :focus-visible{outline:...} rule consumes. Outline takes no gradient and a focus ring has no hover state, so do not create gradient/hover siblings for it.' );
+		process.exitCode = 1;
+	}
+
+
+	// A canvas-not-css row has NO CSS end shape to reach — its value is consumed as a
+	// JS canvas fillStyle/strokeStyle, so no colour helper can ever be called for it and
+	// `currentComplete` can never become true. Counting it as a failure would make this
+	// gate permanently red, and a gate that always fails is a gate nobody reads. Its
+	// correct classification IS its terminal state, so it is reported and excluded.
+	const TERMINAL = [ END_SHAPES.CANVAS_NOT_CSS.key, END_SHAPES.OUTLINE_NOT_GRADIENTABLE.key ];
+	const terminal = results.filter( ( r ) => TERMINAL.includes( r.endShape ) );
+	const bad = results.filter(
+		( r ) => false === r.currentComplete && ! TERMINAL.includes( r.endShape )
+	);
+
+	if ( terminal.length ) {
+		console.log(
+			'[check] ' + terminal.length + ' row(s) TERMINAL' +
+			' (no reachable CSS end shape — excluded from the gate, not outstanding work):'
+		);
+		for ( const r of terminal ) {
+			console.log( '  ' + r.block + '.' + r.attr + '  [' + r.endShape + ']' );
+		}
+	}
+
+	if ( 0 === bad.length ) {
+		console.log( '[check] PASS — ' + results.length + ' non-conformant row(s) tracked, none left with currentComplete=false.' );
+		return;
+	}
+
+	console.log( '[check] FAIL — ' + bad.length + ' row(s) still currentComplete=false:' );
+	for ( const r of bad ) {
+		console.log(
+			'  ' + r.block + '.' + r.attr + '  (current: ' + r.currentShape +
+			( r.currentNote ? ' — ' + r.currentNote : '' ) +
+			')  end-shape: ' + r.endShape
+		);
+	}
+	process.exitCode = 1;
+}
+
+// ---------------------------------------------------------------------------
+// --self-test — synthetic fixtures only, mirrors survey.js's own discipline
+// of never touching the real block tree. Exercises the fix this file was
+// built for (Task 1, 2026-09-07): canvasMatchesAttr()'s two paths, plus a
+// negative control proving the fix can still fail — a genuinely
+// CSS-consuming custom property must NOT classify as canvas-only just
+// because the same view.js also happens to touch a canvas elsewhere.
+// ---------------------------------------------------------------------------
+
+function runSelfTest() {
+	let failures = 0;
+	function assert( cond, msg ) {
+		if ( ! cond ) { console.log( '  FAIL: ' + msg ); failures++; }
+	}
+
+	// Positive control A — the attribute name appears directly in view.js
+	// alongside a canvas signal (Path A, the pre-existing behaviour).
+	const directJs = "const accent = attributes.accentColour; ctx.fillStyle = accent;";
+	assert( canvasMatchesAttr( directJs, 'accentColour', '' ), 'Path A: direct attribute-name match still works' );
+
+	// Positive control B — the sgs/audio.spectrumColour shape: the attribute
+	// name NEVER appears in view.js, only the --sgs-* custom property it
+	// feeds does (Path B, the fix this file exists to add).
+	const indirectPhp =
+		"$spectrum_raw = \$attributes['spectrumColour'] ?? '';\n" +
+		"$spectrum_val = '' !== \$spectrum_raw ? sgs_colour_value( \$spectrum_raw ) : '#1c9a93';\n" +
+		"$scoped_css[] = '--sgs-audio-spectrum:' . esc_attr( \$spectrum_val ) . ';';\n";
+	const indirectJs = "const spectrum = resolveColour( root, '--sgs-audio-spectrum', '#1c9a93' ); c.fillStyle = spectrum;";
+	assert( canvasMatchesAttr( indirectJs, 'spectrumColour', indirectPhp ) === true, 'Path B: custom-property indirection now traced to a canvas match' );
+
+	// Negative control (REQUIRED — proves the fix can still fail). Same
+	// view.js file, same block, but a DIFFERENT attribute (accentColourGradient)
+	// that feeds a --sgs-audio-accent-gradient custom property consumed ONLY
+	// by CSS background-image — it never reaches this view.js at all. Must
+	// NOT be classified canvas-only just because the file contains fillStyle
+	// for an unrelated attribute.
+	const gradientPhp =
+		"$accent_gradient_raw = \$attributes['accentColourGradient'] ?? '';\n" +
+		"$accent_gradient_val = sgs_css_gradient_value( \$accent_gradient_raw );\n" +
+		"$accent_gradient_decl = '' !== \$accent_gradient_val ? '--sgs-audio-accent-gradient:' . esc_attr( \$accent_gradient_val ) . ';' : '';\n";
+	assert( canvasMatchesAttr( indirectJs, 'accentColourGradient', gradientPhp ) === false, 'negative control: a CSS-only custom property on the same view.js is NOT classified canvas-only' );
+
+	// Negative control — no canvas signal at all in view.js. Must never match
+	// regardless of what render.php does.
+	const noCanvasJs = "const spectrum = resolveColour( root, '--sgs-audio-spectrum', '#1c9a93' );";
+	assert( canvasMatchesAttr( noCanvasJs, 'spectrumColour', indirectPhp ) === false, 'no canvas signal in view.js -> never canvas-only' );
+
+	// traceCustomPropertyName() in isolation.
+	assert( traceCustomPropertyName( indirectPhp, 'spectrumColour' ) === '--sgs-audio-spectrum', 'traceCustomPropertyName resolves the 2-hop bound-var chain' );
+	assert( traceCustomPropertyName( 'no custom property here', 'spectrumColour' ) === null, 'traceCustomPropertyName refuses rather than guessing when no --sgs-* emission exists' );
+
+	console.log( '\n' + ( failures === 0 ? 'ALL SELF-TESTS PASSED' : failures + ' SELF-TEST(S) FAILED' ) + '\n' );
+	return failures === 0;
+}
+
+if ( require.main === module ) {
+	if ( process.argv.includes( '--self-test' ) ) {
+		process.exit( runSelfTest() ? 0 : 1 );
+	} else if ( process.argv.includes( '--check' ) ) {
+		runCheck();
+	} else {
+		main();
+	}
+}
+
+module.exports = { detectCurrentShape, recommendEndShape, END_SHAPES, stripComments, canvasMatchesAttr, traceCustomPropertyName, classifyAll };

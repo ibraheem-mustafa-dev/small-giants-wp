@@ -86,12 +86,9 @@ $hover_background_colour = $attributes['backgroundColourHover'] ?? '';
 // to the previous behaviour.
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 $hover_text_colour         = $attributes['textColourHover'] ?? '';
-$hover_border_colour       = $attributes['borderColourHover'] ?? '';
-// D636 border-colour gradient sibling — resolved here, emitted via
-// sgs_border_gradient_css() masked ::before further down; border-color can
-// never legally hold a gradient value, so this never feeds --sgs-hover-border
-// above. gridItemBorder (a separate raw CSS shorthand attribute) is untouched.
-$hover_border_gradient = sgs_css_gradient_value( $attributes['borderColourHoverGradient'] ?? '' );
+// borderColourHover/borderColourHoverGradient are read inside the shared
+// sgs_border_states_css() call further down (Wave A1 track, 2026-09-07) — no
+// local variable needed here.
 // transitionDuration/transitionEasing are read directly by sgs_transition_vars()
 // below — no local variable needed here (dead-assignment cleanup).
 
@@ -151,21 +148,6 @@ if ( 'none' !== $border_style ) {
 		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
 		$bwl = '' !== $border_width_left ? $border_width_left : '0';
 		$responsive_css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
-	}
-
-	// A FLAT colour emits `border-color` DIRECTLY; only a GRADIENT uses the
-	// masked ::before ring. NOT sgs_border_states_css(): that helper always
-	// routes through sgs_border_gradient_css(), which sets
-	// border-color:transparent -- measured live, both of its callers
-	// (sgs/product-card, sgs/container) report border-color = rgba(0,0,0,0).
-	$border_colour          = (string) ( $attributes['borderColour'] ?? '' );
-	$border_colour_gradient = sgs_css_gradient_value( $attributes['borderColourGradient'] ?? '' );
-	if ( '' !== $border_colour_gradient ) {
-		$responsive_css .= sgs_border_gradient_css( $root_sel, $border_colour_gradient, null, '' !== $border_width_top ? $border_width_top : '1px' );
-	} elseif ( '' !== $border_colour ) {
-		// sgs_colour_value() resolves a palette SLUG; a bare slug is invalid CSS
-		// the browser drops (D881 defect 3).
-		$responsive_css .= $root_sel . '{border-color:' . sgs_colour_value( $border_colour ) . ';}';
 	}
 } else {
 	// G5 corollary: "none" must be an explicit override too, not a
@@ -241,9 +223,13 @@ if ( '' !== $cta_hover_text_effective ) {
 		$hover_decls[] = $cta_hover_text_decl;
 	}
 }
-if ( $hover_border_colour ) {
-	$hover_decls[] = 'border-color:' . sgs_colour_value( $hover_border_colour );
-}
+// Border colour (flat or gradient, base + hover) migrated onto the shared
+// sgs_border_states_css() helper (Wave A1 track, 2026-09-07) — replaces the
+// hand-rolled flat/gradient split below AND the hover-only gradient special
+// case further down. Reference: sgs/audio's render.php. The old in-file
+// comment claiming "no resting borderColour attribute" was stale: block.json
+// declares a block-private resting `borderColour` (Shape B migration), and
+// this block already emitted it above via the (now-removed) hand-rolled path.
 
 // ── Responsive CSS builder ──────────────────────────────────────────────────
 // No-inline contract (§A): background-image/size/position (a real property
@@ -256,27 +242,26 @@ if ( $has_image_bg ) {
 	$responsive_css .= $root_sel . '{background-image:url(' . esc_url( $resolved_media['url'] ) . ');background-size:cover;background-position:center}';
 }
 
-// --- Border gradient (D636 border builder) — masked ::before, HOVER-ONLY:
-// there is no resting borderColour attribute on this block (the base border
-// is governed by the native __experimentalBorder colour support, or unset),
-// so the mask is scoped to a single :is(:hover, :focus-within) compound
-// selector rather than the usual normal+hover pair — a comma-separated
-// selector list here would attach the generated ::before to only the LAST
-// listed state (a known gotcha), so :is() keeps it one compound selector. ---
-if ( '' !== $hover_border_gradient ) {
-	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
-	// when $normal_paint is empty), so the hover state is baked in as this
-	// call's own "normal_paint" — this must therefore carry its own guard
-	// rather than relying on the helper's $hover_paint branch. Split into two
-	// single-pseudo-class calls (rather than the previous
-	// :is(:hover,:focus-within) compound) so layer-1/layer-2 guards can wrap
-	// the :hover call alone while :focus-within stays unguarded — each call
-	// still uses a single selector, so the ::before-attaches-to-only-the-last
-	// -listed-state gotcha noted above does not recur.
-	$responsive_css .= sgs_hover_media_wrap(
-		sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . $root_sel . ':hover', $hover_border_gradient )
-	);
-	$responsive_css .= sgs_border_gradient_css( $root_sel . ':focus-within', $hover_border_gradient );
+// Border colour (flat or gradient, base + hover) — ONE call, the shared
+// sgs_border_states_css() helper. It internally branches flat-vs-gradient
+// (flat emits border-color directly; a gradient uses the masked ::before
+// ring via sgs_border_gradient_css(), which itself pairs :hover with
+// :focus-within correctly and does not carry the comma-selector-list gotcha
+// the old split code was written around — each pseudo-class gets its own
+// call internally, not a joined selector list).
+$border_colour_css = sgs_border_states_css(
+	$root_sel,
+	$attributes,
+	array(
+		'base'           => 'borderColour',
+		'hover'          => 'borderColourHover',
+		'gradient'       => 'borderColourGradient',
+		'hover_gradient' => 'borderColourHoverGradient',
+		'width'          => $has_border_width && '' !== $border_width_top ? $border_width_top : '1px',
+	)
+);
+if ( '' !== $border_colour_css ) {
+	$responsive_css .= $border_colour_css;
 }
 
 // Hover colour shifts (background/text/border) — per-instance scoped rule,

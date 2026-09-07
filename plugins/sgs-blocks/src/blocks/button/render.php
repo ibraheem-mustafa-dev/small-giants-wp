@@ -267,13 +267,19 @@ $border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
-// redesign); colour lives in the sibling boxShadowColour/boxShadowHoverColour
-// attrs and is composed back in at render time via
-// sgs_shadow_value_composed() (includes/helpers-tokens.php).
-$box_shadow              = isset( $attributes['boxShadow'] ) ? (string) $attributes['boxShadow'] : '';
-$box_shadow_colour       = isset( $attributes['boxShadowColour'] ) ? (string) $attributes['boxShadowColour'] : '';
-$box_shadow_hover        = isset( $attributes['boxShadowHover'] ) ? (string) $attributes['boxShadowHover'] : '';
-$box_shadow_hover_colour = isset( $attributes['boxShadowHoverColour'] ) ? (string) $attributes['boxShadowHoverColour'] : '';
+// redesign); colour lives in the sibling boxShadowColour/boxShadowColourHover
+// attrs. sgs_shadow_decls() (Wave A1 ShadowControl redesign, 2026-09-07)
+// composes shape+colour for BOTH states into declaration arrays this file
+// merges into its own base/hover rule assembly below.
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	)
+);
 
 // Effects.
 $hover_scale         = isset( $attributes['scaleHover'] ) ? (float) $attributes['scaleHover'] : 1.0;
@@ -358,8 +364,8 @@ $border_style_has_width = $has_border_width || in_array( $inherit_style, array( 
 if ( $border_style && 'solid' !== $border_style && $border_style_has_width ) {
 	$base_decls[] = 'border-style:' . $border_style;
 }
-if ( '' !== $box_shadow ) {
-	$base_decls[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow, $box_shadow_colour );
+if ( $box_shadow_decls['normal'] ) {
+	$base_decls = array_merge( $base_decls, $box_shadow_decls['normal'] );
 }
 
 // ---------------------------------------------------------------------------
@@ -394,8 +400,8 @@ if ( 'underline' === $text_decoration_hover ) {
 }
 
 // Hover box shadow.
-if ( '' !== $box_shadow_hover ) {
-	$hover_rules[] = 'box-shadow:' . sgs_shadow_value_composed( $box_shadow_hover, $box_shadow_hover_colour );
+if ( $box_shadow_decls['hover'] ) {
+	$hover_rules = array_merge( $hover_rules, $box_shadow_decls['hover'] );
 }
 
 if ( $hover_rules ) {

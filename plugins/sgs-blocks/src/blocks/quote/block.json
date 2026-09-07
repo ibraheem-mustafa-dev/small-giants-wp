@@ -48,7 +48,7 @@
 								"css:background-color": "backgroundColourHover",
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:box-shadow": "boxShadowHover",
-								"css:box-shadow-color": "boxShadowHoverColour",
+								"css:box-shadow-color": "boxShadowColourHover",
 								"css:border-color": "borderColourHover",
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient"
@@ -308,7 +308,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"boxShadowHoverColour": {
+		"boxShadowColourHover": {
 			"type": "string",
 			"default": ""
 		},

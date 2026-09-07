@@ -12,7 +12,7 @@ import {
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
-import { resolveColourToken, DesignTokenPicker, SgsColourPanel } from '../../components';
+import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle } from '../../utils';
 
@@ -268,7 +268,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					     element-scoped colour belongs in its own element's
 					     TIER 1 panel; "trigger button" is a declared element
 					     whose attrMap claims triggerColour/triggerBackground). */ }
-					<DesignTokenPicker
+					<GradientCapableColourControl
 						label={ __( 'Button text colour', 'sgs-blocks' ) }
 						states={ [
 							{

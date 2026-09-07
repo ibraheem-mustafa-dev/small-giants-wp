@@ -44,7 +44,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -246,7 +246,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadow,
 		boxShadowHover,
 		boxShadowColour,
-		boxShadowHoverColour,
+		boxShadowColourHover,
 		scaleHover,
 		textColourHover,
 		textColourHoverGradient,
@@ -462,8 +462,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: boxShadowHoverColour,
-								onChange: ( val ) => setAttributes( { boxShadowHoverColour: val ?? '' } ),
+								value: boxShadowColourHover,
+								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
 								linked: true,
 							},
 						],
@@ -672,16 +672,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					{ /* Text colour on hover + Background on hover moved to the
 					   top-level SgsColourPanel (D618/D621) — "Text colour
-					   (hover)" and "Background colour" (hover state) rows. */ }
-					<ShadowControl
-						label={ __( 'Box shadow on hover', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'boxShadowHover',
-							colour: 'boxShadowHoverColour',
-						} }
-					/>
+					   (hover)" and "Background colour" (hover state) rows. Box
+					   shadow hover moved into the single tabbed mount on the Styles
+					   tab's Wrapper panel (Wave A1 ShadowControl redesign,
+					   2026-09-07) — shape AND colour now live per-state in one
+					   control rather than split across two InspectorControls
+					   groups. */ }
 					<RangeControl
 						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 						value={ parseInt( transitionDuration, 10 ) || 300 }
@@ -723,6 +719,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									backgroundColour: '',
 									boxShadow: '',
 									boxShadowColour: '',
+									boxShadowHover: '',
+									boxShadowColourHover: '',
 									padding: {},
 									margin: {},
 									maxWidth: {},
@@ -734,18 +732,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							   hover state). */ }
 
 							<ToolsPanelItem
-								label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
-								hasValue={ () => !! boxShadow }
-								onDeselect={ () => setAttributes( { boxShadow: '', boxShadowColour: '' } ) }
+								label={ __( 'Box shadow', 'sgs-blocks' ) }
+								hasValue={ () => !! boxShadow || !! attributes.boxShadowHover }
+								onDeselect={ () =>
+									setAttributes( {
+										boxShadow: '',
+										boxShadowColour: '',
+										boxShadowHover: '',
+										boxShadowColourHover: '',
+									} )
+								}
 							>
+								{ /* ONE tabbed Normal/Hover mount (Wave A1 ShadowControl
+								   redesign, 2026-09-07) — replaces the two independent
+								   mounts previously split across the Settings tab's
+								   Hover panel and this Styles-tab Wrapper panel. Shape
+								   AND colour are now per-state. */ }
 								<ShadowControl
-									label={ __( 'Box shadow (desktop)', 'sgs-blocks' ) }
+									label={ __( 'Box shadow', 'sgs-blocks' ) }
 									attributes={ attributes }
 									setAttributes={ setAttributes }
-									attrNames={ {
-										base: 'boxShadow',
-										colour: 'boxShadowColour',
-									} }
+									attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 								/>
 							</ToolsPanelItem>
 

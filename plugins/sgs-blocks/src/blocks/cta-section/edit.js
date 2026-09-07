@@ -411,10 +411,16 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						styleValue={ attributes.borderStyle }
 						onStyleChange={ ( val ) => setAttributes( { borderStyle: val } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes.borderColour }
-						onColourChange={ ( val ) => setAttributes( { borderColour: val ?? '' } ) }
-						colourGradientValue={ attributes.borderColourGradient }
-						onColourGradientChange={ ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) }
+						colourStates={ [
+							{ key: 'normal', label: __( 'Normal', 'sgs-blocks' ), value: attributes.borderColour,
+							  onChange: ( val ) => setAttributes( { borderColour: val ?? '' } ),
+							  gradientValue: attributes.borderColourGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourGradient: val ?? '' } ) },
+							{ key: 'hover', label: __( 'Hover', 'sgs-blocks' ), value: attributes.borderColourHover,
+							  onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
+							  gradientValue: attributes.borderColourHoverGradient,
+							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
+						] }
 						colourLinked={ true }
 						contrastAgainst={ ctaSectionContrastAgainst }
 						radiusValues={ {
@@ -522,22 +528,6 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								value: attributes.shadowColourHover,
 								onChange: ( val ) => setAttributes( { shadowColourHover: val ?? '' } ),
 								linked: true,
-							},
-						],
-					},
-					{
-						key: 'hover-border',
-						label: __( 'Hover border colour', 'sgs-blocks' ),
-						states: [
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.borderColourHover,
-								onChange: ( val ) => setAttributes( { borderColourHover: val ?? '' } ),
-								linked: true,
-								gradientValue: attributes.borderColourHoverGradient,
-								onGradientChange: ( val ) =>
-									setAttributes( { borderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

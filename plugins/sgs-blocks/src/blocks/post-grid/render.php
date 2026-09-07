@@ -144,7 +144,7 @@ $hover_scale         = sanitize_text_field( $attributes['scaleHover'] ?? '' );
 $shadow              = sanitize_text_field( $attributes['shadow'] ?? '' );
 $shadow_colour       = sanitize_text_field( $attributes['shadowColour'] ?? '' );
 $hover_shadow        = sanitize_text_field( $attributes['shadowHover'] ?? '' );
-$hover_shadow_colour = sanitize_text_field( $attributes['shadowHoverColour'] ?? '' );
+$hover_shadow_colour = sanitize_text_field( $attributes['shadowColourHover'] ?? '' );
 $hover_img_zoom      = (bool) ( $attributes['imageZoomHover'] ?? true );
 
 // Decorative-image toggle (item 18, WCAG 1.1.1). Block-level, not per-post —

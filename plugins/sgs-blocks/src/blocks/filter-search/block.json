@@ -76,6 +76,15 @@
 			"default": "",
 			"description": "CSS gradient string painting the search input's border instead of a flat colour. Non-empty wins over inputBorderColour at render time (D636)."
 		},
+		"inputBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"inputBorderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the search input's border on hover instead of a flat colour. Non-empty wins over inputBorderColourHover at render time."
+		},
 		"focusRingColour": {
 			"type": "string",
 			"default": ""

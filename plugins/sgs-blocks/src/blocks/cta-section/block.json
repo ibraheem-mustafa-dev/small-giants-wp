@@ -81,6 +81,7 @@
 								"css:background-color": "backgroundColourHover",
 								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:border-color": "borderColourHover",
+								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient"
 							}

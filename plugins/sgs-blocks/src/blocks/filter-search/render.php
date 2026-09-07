@@ -106,18 +106,29 @@ $root_sel  = '.' . $style_uid . '.wp-block-sgs-filter-search';
 
 $scoped_css = array();
 
-// Colour attributes — input border, focus ring, and text colour. These are
-// emitted as custom properties on the root selector so they can override the
-// defaults in style.css. If not set, they fall back to the defaults.
+// Colour attributes — focus ring and text colour. These are emitted as
+// custom properties on the root selector so they can override the defaults
+// in style.css. If not set, they fall back to the defaults. Input border
+// colour is handled separately below via sgs_border_states_css() — it paints
+// `border-color` directly on the input element rather than through a custom
+// property indirection (matches the shared border-emission contract).
+// focusRingColour deliberately does NOT route through sgs_border_states_css()
+// despite classifying under the "border" mechanism family in block_attributes
+// (css_property='outline-color', css_element='input') — that classification
+// groups outline under the border family for GATE purposes only, it is not a
+// claim that the two share a CSS property. sgs_border_states_css() emits
+// `border-color`/a masked ::before ring unconditionally on its base selector;
+// calling it here would overwrite the input's RESTING border-color with the
+// focus-only ring colour on every render, a real behavioural regression, not
+// a refactor. There is also no "hover" state for a focus ring in any
+// meaningful UX sense (a ring shows on :focus-visible, never on hover-without-
+// focus), and `outline` cannot legally hold a CSS gradient at all (the
+// masked-::before technique border-color uses to fake one needs a real box
+// side to clip against — outline is not part of the box model and has no
+// border-radius-aware inset to mask). This attribute stays a flat colour,
+// consumed as a custom property by style.css's own `:focus-visible{outline:
+// 2px solid var(--sgs-filter-search-focus,...)}` rule — see that file.
 $input_css = '';
-if ( ! empty( $attributes['inputBorderColour'] ?? '' ) ) {
-	$input_css .= '--sgs-filter-search-border:' . sanitize_text_field( $attributes['inputBorderColour'] ) . ';';
-}
-// D636 border-colour gradient sibling — resolved here, emitted via
-// sgs_border_gradient_css() masked ::before further down (border-color can
-// never legally hold a gradient value, so this never feeds the
-// --sgs-filter-search-border custom property above).
-$input_border_gradient = sgs_css_gradient_value( $attributes['inputBorderColourGradient'] ?? '' );
 if ( ! empty( $attributes['focusRingColour'] ?? '' ) ) {
 	$input_css .= '--sgs-filter-search-focus:' . sanitize_text_field( $attributes['focusRingColour'] ) . ';';
 }
@@ -137,16 +148,24 @@ if ( ! empty( $attributes['textColourHover'] ?? '' ) ) {
 	);
 }
 
-// --- Border gradient (D636 border builder) — masked ::before, replaces the
-// flat --sgs-filter-search-border custom property above when set. No hover
-// state exists on this attribute. ---
-if ( '' !== $input_border_gradient ) {
-	$scoped_css[] = sgs_border_gradient_css(
-		"{$root_sel} .sgs-filter-search__input",
-		$input_border_gradient,
-		null,
-		'1px'
-	);
+// --- Input border colour — base + hover, flat-or-gradient, one owned rule
+// (CLAUDE.md "Colour EMISSION helpers" decision table row 4). Targets the
+// input element directly (css_element='input' per block_attributes DB),
+// out-specifying style.css's `border: 1px solid var(...)` shorthand at
+// (0,2,0) vs (0,1,0). ---
+$input_border_colour_css = sgs_border_states_css(
+	"{$root_sel} .sgs-filter-search__input",
+	$attributes,
+	array(
+		'base'           => 'inputBorderColour',
+		'hover'          => 'inputBorderColourHover',
+		'gradient'       => 'inputBorderColourGradient',
+		'hover_gradient' => 'inputBorderColourHoverGradient',
+		'width'          => '1px',
+	)
+);
+if ( '' !== $input_border_colour_css ) {
+	$scoped_css[] = $input_border_colour_css;
 }
 
 // Base margin — WP-native style.spacing.margin object (skip-serialised in

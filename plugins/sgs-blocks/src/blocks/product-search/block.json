@@ -82,9 +82,52 @@
 					"prefix": "",
 					"attrMap": {
 						"css:border-color": "inputBorderColour",
+						"css:border-color-gradient": "inputBorderColourGradient",
 						"css:outline-color": "focusRingColour"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "inputBorderColourHover",
+								"css:border-color-gradient": "inputBorderColourHoverGradient"
+							}
+						}
+					},
 					"_note": "The search <input class=\"sgs-product-search__input\" role=\"combobox\"> (render.php:326-341). Declared because F6 check #8 (reseed-survival) correctly REFUSED a css_property with no css_element: inputBorderColour resolved to border-color but had css_element=NULL and derived_selector=NULL, so it fell to the ROOT routing domain and would misroute on a clone. A property resolved without an element is not a win — it is a mis-route waiting to happen. ⚠ KNOWN MODELLING LIMIT: --sgs-ps-input-border has TWO consumers — this input's border (style.css:37) AND the listbox border (style.css:87). One attribute paints two nodes; the manifest models attribute->element ownership one-to-one, so it is declared on the input (the primary, named node) and the listbox border rides the same variable. Splitting them would need a second attribute, which is a client-facing control decision, not a mapping one."
+				},
+				"results": {
+					"label": "Results listbox",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "listboxBackgroundColour",
+						"css:background-color-gradient": "listboxBackgroundColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "resultHoverBackgroundColour",
+								"css:background-color-gradient": "resultHoverBackgroundColourGradient"
+							}
+						}
+					},
+					"_note": "The results <ul class=\"sgs-product-search__results\" role=\"listbox\"> (render.php:478-484). resultHoverBackgroundColour is modelled here as the results element's hover state (the row-highlight colour a client sees when interacting with the listbox), matching the wrapper/input elements' base+hover attrMap convention above, even though the physical paint target is a [role=\"option\"] child rather than the <ul> itself — colour-conformance migration 2026-09-07."
+				},
+				"result-title": {
+					"label": "Result title",
+					"order": 4,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "matchHighlightColour",
+						"css:background-color-gradient": "matchHighlightColourGradient"
+					},
+					"_note": "The matched-portion <mark> inside .sgs-product-search__result-title (view.js-built, style.css:160). Colour-conformance migration 2026-09-07."
 				}
 			}
 		}
@@ -125,6 +168,18 @@
 			"type": "string",
 			"default": ""
 		},
+		"inputBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"inputBorderColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"inputBorderColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"focusRingColour": {
 			"type": "string",
 			"default": ""
@@ -133,11 +188,47 @@
 			"type": "string",
 			"default": ""
 		},
+		"listboxBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"listboxBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"listboxBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"resultHoverBackgroundColour": {
 			"type": "string",
 			"default": ""
 		},
+		"resultHoverBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"resultHoverBackgroundColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"resultHoverBackgroundColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"matchHighlightColour": {
+			"type": "string",
+			"default": ""
+		},
+		"matchHighlightColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"matchHighlightColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"matchHighlightColourHoverGradient": {
 			"type": "string",
 			"default": ""
 		},

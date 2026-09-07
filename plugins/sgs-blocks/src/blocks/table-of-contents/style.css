@@ -173,8 +173,11 @@
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
  * scoped `.{uid}` rule always wins. */
+/* Rule 43 (WCAG 1.4.1): the active link was distinguished by colour alone —
+ * bold weight is the standard TOC "you are here" non-colour signal. */
 :where(.sgs-toc__link--active) {
 	color: var(--wp--preset--color--primary, #0F7E80);
+	font-weight: 700;
 }
 
 /* ─── Empty state ─── */

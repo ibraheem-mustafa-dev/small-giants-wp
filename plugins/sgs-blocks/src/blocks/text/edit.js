@@ -889,13 +889,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				{ /* ---- Effects — `text`'s TIER-2 "motion" family panel ----
-				   Box shadow (base + hover, each its own independent
-				   ShadowControl mount — mirrors sgs/quote's two-mount pattern
-				   exactly, since ShadowControl's own internal Normal/Hover
-				   tabs would write a differently-shaped hover-colour attr
-				   name than the one already declared here), hover scale, and
-				   the hover-transition timing pair. All motion-cluster
-				   members of the `text` element's attrMap. */ }
+				   Box shadow (ONE tabbed Normal/Hover ShadowControl mount, Wave A1
+				   ShadowControl redesign 2026-09-07). Previously two separate mounts,
+				   deliberately kept apart because the hover-colour attr name
+				   (`boxShadowHoverColour`) didn't match what ShadowControl's internal
+				   tabs would derive (`boxShadowColourHover`) — that naming mismatch is
+				   now fixed at the attribute layer (renamed to `boxShadowColourHover`,
+				   matching `shadowAttrKeys()`'s convention), so the tabbed mount is safe.
+				   Hover scale + the hover-transition timing pair stay outside the panel,
+				   unchanged. All motion-cluster members of the `text` element's attrMap. */ }
 				<PanelBody
 					title={ __( 'Effects', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -904,13 +906,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Box shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadow', { colour: true } ) }
-					/>
-					<ShadowControl
-						label={ __( 'Box shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadowHover', { colour: true } ) }
+						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 					/>
 					<RangeControl
 						label={ __( 'Hover scale', 'sgs-blocks' ) }

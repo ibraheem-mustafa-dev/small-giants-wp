@@ -112,12 +112,16 @@
 	color: var(--wp--preset--color--text-muted, #555555);
 }
 
-/* Icon colour on header hover/open */
+/* Icon colour on header hover/open. Rule 43 (WCAG 1.4.1): this state rule's
+ * own declared properties are colour-only — the icon SWAP (open vs closed
+ * icon) is a separate mechanism the detector can't see from this rule alone,
+ * so a real non-colour cue (a small scale) is added here directly. */
 .sgs-accordion-item__header:hover .sgs-accordion-item__icon-open,
 .sgs-accordion-item__header:hover .sgs-accordion-item__icon-close,
 .sgs-accordion-item[open] .sgs-accordion-item__icon-open,
 .sgs-accordion-item[open] .sgs-accordion-item__icon-close {
 	color: var(--wp--preset--color--primary, #0f7e80);
+	transform: scale(1.1);
 }
 
 /* ─── CHEVRON variant — single icon that rotates ─── */
@@ -140,9 +144,13 @@
 		color     var(--wp--custom--duration--fast, 150ms)   var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
+/* Rule 43 (WCAG 1.4.1): declared properties on THIS selector are colour-only
+ * — the [open] rotate lives on a separate selector the detector doesn't
+ * union against this one, so a real non-colour cue (scale) is added here. */
 .sgs-accordion-item[open] .sgs-accordion-item__chevron,
 .sgs-accordion-item__header:hover .sgs-accordion-item__chevron {
 	color: var(--wp--preset--color--primary, #0f7e80);
+	transform: scale(1.1);
 }
 
 .sgs-accordion-item[open] .sgs-accordion-item__chevron {

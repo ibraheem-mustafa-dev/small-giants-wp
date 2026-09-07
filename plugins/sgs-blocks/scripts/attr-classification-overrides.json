@@ -2769,7 +2769,7 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "shadowHoverColour",
+      "attr": "cardShadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "item",
@@ -2790,7 +2790,7 @@
     },
     {
       "slug": "sgs/team-member",
-      "attr": "shadowHoverColour",
+      "attr": "cardShadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "wrapper",
@@ -2840,7 +2840,7 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "shadowHoverColour",
+      "attr": "shadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "card",
@@ -2880,7 +2880,7 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "boxShadowHoverColour",
+      "attr": "boxShadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "wrapper",
@@ -2901,7 +2901,7 @@
     },
     {
       "slug": "sgs/quote",
-      "attr": "boxShadowHoverColour",
+      "attr": "boxShadowColourHover",
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "wrapper",
@@ -3099,12 +3099,16 @@
     {
       "slug": "sgs/media",
       "attr": "svgContentTablet",
-      "fields": { "canonical_slot": "svg" }
+      "fields": {
+        "canonical_slot": "svg"
+      }
     },
     {
       "slug": "sgs/media",
       "attr": "svgContentMobile",
-      "fields": { "canonical_slot": "svg" }
+      "fields": {
+        "canonical_slot": "svg"
+      }
     },
     {
       "_why": "Check#12 roleguess: sgs/button.label has no canonical_slot at all, so any of button/button-outline/button-primary/buttonSecondary falls to insertion-order guessing among {iconTitle, label, linkTarget, url}. label is the button's visible text and the only plausible target of the four; url/linkTarget are link-href, iconTitle is icon-only text. canonical_slot='button' covers the base variant slot; canonical_slot_aliases (Check#12 Build 2 multi-value mechanism) additionally names the 3 sibling style-variant slots -- button-outline/button-primary/buttonSecondary -- so all 4 button slots resolve to this same attr via the exact-match/CONFIRMED path rather than any fallback guess. The attr-name fallback (pass 2 in attr_name_for_slot_or_alias) still catches a literal '__label' token regardless.",
@@ -3119,17 +3123,23 @@
       "_why": "bgVideoMobile/bgVideoTablet are art-direction tier siblings of bgVideo, which already correctly carries canonical_slot='background-video'. The siblings were left unset, so a tier-specific bg-video BEM token on this block falls to guessing instead of matching its own tier.",
       "slug": "sgs/multi-button",
       "attr": "bgVideoTablet",
-      "fields": { "canonical_slot": "background-video" }
+      "fields": {
+        "canonical_slot": "background-video"
+      }
     },
     {
       "slug": "sgs/multi-button",
       "attr": "bgVideoMobile",
-      "fields": { "canonical_slot": "background-video" }
+      "fields": {
+        "canonical_slot": "background-video"
+      }
     },
     {
       "slug": "sgs/multi-button",
       "attr": "bgSvgContent",
-      "fields": { "canonical_slot": "background-svg" }
+      "fields": {
+        "canonical_slot": "background-svg"
+      }
     },
     {
       "_why": "Check#12 Build 2 (canonical_slot multi-value widening, 2026-09-06). sgs/media.imageUrl's canonical_slot='image' already resolves the plain 'image' slot; the 'avatar' and 'background-image' slots are the same physical <img> element under a different draft naming convention and previously fell through to insertion-order guessing among imageUrl/videoUrl/svgContent/thumbnail (role='image-object' vs 'content' vs 'svg'). canonical_slot_aliases names both as extra slots this attr also answers to -- the exact-match/CONFIRMED path in both attr_name_for_slot_or_alias and _slot_extraction_role now resolves them directly rather than guessing.",

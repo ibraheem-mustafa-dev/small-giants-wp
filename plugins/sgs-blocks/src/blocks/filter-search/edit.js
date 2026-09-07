@@ -10,7 +10,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
-import { ResponsiveBoxControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, SgsColourPanel, resolveColourToken } from '../../components';
 import { borderPaintPreview, textPaintPreview } from '../../utils';
 
 // Guard the experimental NumberControl import — it may not exist on older WP
@@ -18,8 +18,8 @@ import { borderPaintPreview, textPaintPreview } from '../../utils';
 // This pattern mirrors the B3 crash lesson (dead-control crash on missing import).
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
-export default function Edit( { attributes, setAttributes } ) {
-	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, focusRingColour, textColour, textColourHover } = attributes;
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
 	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
@@ -32,8 +32,32 @@ export default function Edit( { attributes, setAttributes } ) {
 		...textPaintPreview( textColour, '', colourPalette ),
 	};
 
+	/*
+	 * inputBorderColourHover(Gradient) canvas mirror (CHECK A, Task 1,
+	 * colour-conformance). render.php now emits both via
+	 * sgs_border_states_css() on `.sgs-filter-search__input` — the editor
+	 * canvas never showed it because nothing outside the control read either
+	 * Hover attr. A clientId-scoped `<style>` tag with a real `:hover,
+	 * :focus-within` rule, same shape as sgs/mega-aside's own hover mirror.
+	 * `!important` is required because the resting preview above sets the
+	 * SAME border-color/border-image properties as an inline `style` prop on
+	 * this same input (inputPreviewStyle) — an inline declaration always
+	 * out-ranks an external stylesheet rule for the same property regardless
+	 * of `:hover` matching.
+	 */
+	const filterSearchPreviewScope = `sgs-filter-search-preview-${ clientId }`;
+	const inputBorderHoverDecl =
+		inputBorderColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( inputBorderColourHoverGradient )
+			? `border-image:${ inputBorderColourHoverGradient } 1 !important;`
+			: inputBorderColourHover
+				? `border-color:${ resolveColourToken( inputBorderColourHover, colourPalette ) } !important;`
+				: '';
+	const filterSearchHoverPreviewCss = inputBorderHoverDecl
+		? `.${ filterSearchPreviewScope } .sgs-filter-search__input:hover,.${ filterSearchPreviewScope } .sgs-filter-search__input:focus-within{${ inputBorderHoverDecl }}`
+		: '';
+
 	const blockProps = useBlockProps( {
-		className: 'sgs-filter-search sgs-filter-search--editor-preview',
+		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
 	} );
 
 	return (
@@ -53,6 +77,16 @@ export default function Edit( { attributes, setAttributes } ) {
 								gradientValue: inputBorderColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { inputBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: inputBorderColourHover,
+								onChange: ( val ) => setAttributes( { inputBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: inputBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { inputBorderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},
@@ -196,6 +230,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ filterSearchHoverPreviewCss && <style>{ filterSearchHoverPreviewCss }</style> }
 			<div { ...blockProps }>
 				{ /* Static editor preview — filtering is frontend-only. */ }
 				<input

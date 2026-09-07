@@ -382,6 +382,14 @@ select.sgs-form-field__input {
 .sgs-form-field--tiles-style-background .sgs-form-tile--selected,
 .sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) {
 	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+	/* Rule 43 (WCAG 1.4.1): this shared selector is what the detector actually
+	 * flags — the border-width bump above lives on a DIFFERENT (border-style)
+	 * selector, so it doesn't count toward THIS rule's own non-colour signal.
+	 * Same 2px -> 3px bump as the border/checkmark rule; a no-op for
+	 * 'checkmark' (already 3px there) and the real fix for 'background'
+	 * (which had only background-color + the label font-weight bump below,
+	 * on a child selector the detector also doesn't credit to this state). */
+	border-width: 3px;
 }
 
 /* Rule 43 (WCAG 1.4.1): the 'background' style's selected state has no

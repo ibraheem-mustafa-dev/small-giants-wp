@@ -1,7 +1,7 @@
 {
 	"apiVersion": 2,
 	"name": "sgs/legacy-single-value-row",
-	"title": "Fixture: standalone DesignTokenPicker in the legacy value=/onChange= shape, no states prop (must flag both row-below-minimum-states and row-missing-gradient)",
+	"title": "RETIRED mustFlag 2026-09-07 (Bean's ruling): both axes it used to test (floor-2 states, missing-gradient) are now census-covered by classify-end-shape.js --check. Kept as a mustNotFlag fixture.",
 	"category": "sgs",
 	"attributes": {
 		"dividerColour": { "type": "string", "default": "" }

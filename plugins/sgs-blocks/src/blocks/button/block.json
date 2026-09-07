@@ -340,7 +340,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"boxShadowHoverColour": {
+		"boxShadowColourHover": {
 			"type": "string",
 			"default": ""
 		},

@@ -399,26 +399,64 @@ function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets 
 	return (
 		<>
 			<div className="sgs-shadow-control__presets">
-				<ButtonGroup>
-					<Button
-						variant={ ! value ? 'primary' : 'secondary' }
-						aria-pressed={ ! value }
-						onClick={ () => onChange( '' ) }
-					>
-						{ __( 'None', 'sgs-blocks' ) }
-					</Button>
-					{ ( presets || [] ).map( ( preset ) => (
+				{ /* Relabelled from an unlabelled ButtonGroup (Wave A1 ShadowControl
+				   redesign, 2026-09-07) — a bare row of buttons with no caption read as
+				   an orphan control, especially once it sits inside a Normal/Hover
+				   TabPanel where "what is this a preset OF" is no longer obvious from
+				   context alone. */ }
+				<BaseControl label={ __( 'Shadow shape', 'sgs-blocks' ) } __nextHasNoMarginBottom>
+					<ButtonGroup>
 						<Button
-							key={ preset.slug }
-							variant={ value === preset.slug ? 'primary' : 'secondary' }
-							aria-pressed={ value === preset.slug }
-							onClick={ () => onChange( preset.slug ) }
+							variant={ ! value ? 'primary' : 'secondary' }
+							aria-pressed={ ! value }
+							onClick={ () => onChange( '' ) }
 						>
-							{ preset.name }
+							{ __( 'None', 'sgs-blocks' ) }
 						</Button>
-					) ) }
-				</ButtonGroup>
+						{ ( presets || [] ).map( ( preset ) => (
+							<Button
+								key={ preset.slug }
+								variant={ value === preset.slug ? 'primary' : 'secondary' }
+								aria-pressed={ value === preset.slug }
+								onClick={ () => onChange( preset.slug ) }
+							>
+								{ preset.name }
+							</Button>
+						) ) }
+					</ButtonGroup>
+				</BaseControl>
 			</div>
+
+			{ /* Colour lives OUTSIDE the `!! value` gate (Wave A1 fix, 2026-09-07). Before
+			   this it was nested inside the offset/blur/spread block, so picking "None"
+			   hid the colour picker entirely — contradicting this file's own docblock
+			   ("the colour field ... stays visible rather than being conditionally
+			   hidden, so switching back to custom shape doesn't lose the last colour"),
+			   and making a state's colour genuinely unreachable on a mount whose caller
+			   never sets a non-empty default shape. Offset/blur/spread/inset stay gated —
+			   they are meaningless for "None" or a bare theme preset slug. */ }
+			{ /* D740: `linked` was MISSING here, so this picker stored a raw CSS
+			   colour on EVERY pick and never a palette slug — the client's brand
+			   token was unlinked the moment they chose a shadow colour, across
+			   every block mounting this control. Same defect D717 fixed on the
+			   overlay row; this control was simply never audited for it.
+			   Safe because the consumer resolves slugs: sgs_shadow_value_composed()
+			   passes the colour through sgs_colour_value() (helpers-tokens.php:717).
+			   ⚠ enableAlpha DELIBERATELY STAYS ON, unlike the overlay. A shadow
+			   legitimately wants alpha (a 20%-black shadow is the normal case) and
+			   there is NO separate shadow-opacity attribute to carry it, so
+			   removing it would delete a real capability rather than relocate it.
+			   Consequence, stated not hidden: lowering alpha still stores a raw
+			   colour. A palette pick at full alpha now stores the slug, which is
+			   the common case and a strict improvement on storing a hex always. */ }
+			<DesignTokenPicker
+				label={ __( 'Shadow colour', 'sgs-blocks' ) }
+				value={ colour }
+				onChange={ ( v ) => onColourChange( v || DEFAULT_COLOUR ) }
+				linked
+				enableAlpha
+				statesProvidedByParent
+			/>
 
 			{ !! value && (
 				<div className="sgs-shadow-control__builder">
@@ -458,28 +496,6 @@ function ShadowStateBuilder( { value, onChange, colour, onColourChange, presets 
 							__next40pxDefaultSize
 						/>
 					</div>
-					{ /* D740: `linked` was MISSING here, so this picker stored a raw CSS
-					   colour on EVERY pick and never a palette slug — the client's brand
-					   token was unlinked the moment they chose a shadow colour, across
-					   every block mounting this control. Same defect D717 fixed on the
-					   overlay row; this control was simply never audited for it.
-					   Safe because the consumer resolves slugs: sgs_shadow_value_composed()
-					   passes the colour through sgs_colour_value() (helpers-tokens.php:717).
-					   ⚠ enableAlpha DELIBERATELY STAYS ON, unlike the overlay. A shadow
-					   legitimately wants alpha (a 20%-black shadow is the normal case) and
-					   there is NO separate shadow-opacity attribute to carry it, so
-					   removing it would delete a real capability rather than relocate it.
-					   Consequence, stated not hidden: lowering alpha still stores a raw
-					   colour. A palette pick at full alpha now stores the slug, which is
-					   the common case and a strict improvement on storing a hex always. */ }
-					<DesignTokenPicker
-						label={ __( 'Shadow colour', 'sgs-blocks' ) }
-						value={ colour }
-						onChange={ ( v ) => onColourChange( v || DEFAULT_COLOUR ) }
-						linked
-						enableAlpha
-						statesProvidedByParent
-					/>
 					<ToggleControl
 						label={ __( 'Inset (inner shadow)', 'sgs-blocks' ) }
 						checked={ parts.inset }

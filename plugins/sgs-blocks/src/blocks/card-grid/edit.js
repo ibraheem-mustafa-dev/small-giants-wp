@@ -20,7 +20,7 @@ import {
 	ProductTaxonomyChecklist,
 	ProductHandpickPanel,
 } from './components/product-panels';
-import { ShadowControl, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS,
+import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl, LinkPopoverField, SgsLengthControl, MEDIA_SIZING_RATIO_OPTIONS,
 	SgsBorderControl,
 	resolveColourToken,
 	DesignTokenPicker,
@@ -310,8 +310,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColourHoverGradient,
 		textColourHover,
 		textColourHoverGradient,
-		shadowHover,
-		shadowHoverColour,
 		transitionDuration,
 		transitionEasing,
 		scaleHover,
@@ -551,7 +549,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			   resting textColour attribute for the item, only
 			   textColourHover (render.php:68,414) — so that row carries a
 			   single Hover state, no Normal state. The shadow builder
-			   (cardShadow/shadowHover, shape + colour) lives here too — see
+			   (cardShadow/cardShadowHover, shape + colour) lives here too — see
 			   the "Card Styling (resting state)" panel below for the rest of
 			   the item's non-colour box styling (border width, radius). */ }
 			<InspectorControls group="styles">
@@ -606,7 +604,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						] }
 					/>
-					<DesignTokenPicker
+					{ /* Was a bare DesignTokenPicker with a gradientValue prop — inspector-scan
+					   rule 31 flagged it as a mechanism mismatch (text needs
+					   background-clip:text via GradientCapableColourControl; a raw gradient
+					   string on DesignTokenPicker has no clip-text treatment). Swapped to
+					   GradientCapableColourControl, matching the Subtitle colour row above. */ }
+					<GradientCapableColourControl
 						label={ __( 'Card text colour (hover)', 'sgs-blocks' ) }
 						states={ [
 							{
@@ -621,46 +624,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 						] }
 					/>
-					<DesignTokenPicker
-						label={ __( 'Card shadow colour', 'sgs-blocks' ) }
-						states={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: cardShadowColour,
-								onChange: ( val ) => setAttributes( { cardShadowColour: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: shadowHoverColour,
-								onChange: ( val ) => setAttributes( { shadowHoverColour: val ?? '' } ),
-								linked: true,
-							},
-						] }
-					/>
+					{ /* Card shadow colour previously duplicated: once here as a standalone
+					   2-state DesignTokenPicker, once again as ShadowControl's own
+					   `colour`/`colourHover` prop below — two controls writing the same
+					   attrs. Bean's ruling (Wave A1 ShadowControl redesign, 2026-09-07):
+					   colour lives INSIDE the shadow panel, not the global colour panel.
+					   Removed the standalone picker; ONE tabbed Normal/Hover
+					   ShadowControl mount now owns shape AND colour for both states. */ }
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'cardShadow',
-							colour: 'cardShadowColour',
-						} }
-					/>
-					{ /* shadowHover — declared + read by render.php (--sgs-hover-shadow)
-						but had NO editor control at all until this fix (Stage 0 orphan
-						attr, D621/D622). Landed straight on the target shape (shape +
-						colour), matching cardShadow above. */ }
-					<ShadowControl
-						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadowHover',
-							colour: 'shadowHoverColour',
-						} }
+						attrNames={ shadowAttrKeys( 'cardShadow', { hover: true, hoverColour: true } ) }
 					/>
 					{ /* Moved in from the Settings-tab "Card Styling (resting
 					     state)" panel (D622 — an element-scoped control
@@ -1192,7 +1167,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ /* Border width + corner radius moved to the "Card" (item
 					     element) colour panel above, Styles tab — D622. */ }
-					{ /* cardShadow/shadowHover moved to the "Card" (item element)
+					{ /* cardShadow/cardShadowHover moved to the "Card" (item element)
 					   colour panel above, Styles tab — Spec 35 THE PLACEMENT RULE
 					   groups the shadow builder (shape + colour) with the rest of
 					   the item's colour states rather than in this box-styling

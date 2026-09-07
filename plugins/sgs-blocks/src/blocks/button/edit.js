@@ -20,7 +20,7 @@ import {
 	ToolbarGroup,
 	ToolbarButton,
 } from '@wordpress/components';
-import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { IconPicker, TypographyControls, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, ShadowControl, shadowAttrKeys, resolveColourToken, SgsLengthControl, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LinkPopoverContent } from '../../components';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
@@ -190,7 +190,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		boxShadow,
 		boxShadowColour,
 		boxShadowHover,
-		boxShadowHoverColour,
+		boxShadowColourHover,
 	} = attributes;
 
 	const hasIcon = !! icon;
@@ -499,8 +499,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{
 								key: 'hover',
 								label: __( 'Hover', 'sgs-blocks' ),
-								value: boxShadowHoverColour,
-								onChange: ( val ) => setAttributes( { boxShadowHoverColour: val ?? '' } ),
+								value: boxShadowColourHover,
+								onChange: ( val ) => setAttributes( { boxShadowColourHover: val ?? '' } ),
 							},
 						],
 					},
@@ -1006,28 +1006,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* Box shadow — always editable (preset-as-seed). Shape only —
-				   colour is externally managed via the top-level SgsColourPanel
-				   'shadow' row (D621/D622 colour-architecture redesign),
-				   matching every other migrated block (e.g. card-grid). */ }
+				{ /* Box shadow — ONE tabbed Normal/Hover mount (Wave A1 ShadowControl
+				   redesign, 2026-09-07). Previously TWO independent mounts sharing no
+				   state axis — the hover half never wrote through the OR-gated dead
+				   Hover tab; both shape AND colour are now per-state via a single
+				   attrNames map, matching sgs/container's tabbed pattern. */ }
 				<PanelBody title={ __( 'Shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'boxShadow',
-							colour: 'boxShadowColour',
-						} }
-					/>
-					<ShadowControl
-						label={ __( 'Shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'boxShadowHover',
-							colour: 'boxShadowHoverColour',
-						} }
+						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 					/>
 				</PanelBody>
 

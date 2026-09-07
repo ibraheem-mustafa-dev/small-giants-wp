@@ -87,6 +87,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		asideRadius,
 		asideBorderColour,
 		asideBorderColourGradient,
+		asideBorderColourHover,
+		asideBorderColourHoverGradient,
 		asideBorderWidth,
 	} = attributes;
 
@@ -164,8 +166,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			: asideBgHover
 				? `background-color:${ resolveColourToken( asideBgHover, palette ) } !important;`
 				: '';
-	const megaAsideHoverPreviewCss = asideBgHoverDecl
-		? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }}`
+	/*
+	 * asideBorderColourHover(Gradient) canvas mirror (CHECK A, Task 2,
+	 * colour-conformance). render.php now emits both via sgs_border_states_css()
+	 * — the editor canvas never showed it because nothing outside the control
+	 * read either Hover attr. Only meaningful when a resting border is actually
+	 * painting (borderWidthPreview truthy, matching render.php's own
+	 * $aside_border_has_width gate above). Same `border-image` approximation
+	 * as the resting-state gradient preview above (not the real masked
+	 * ::before ring — a `<style>` tag can't reach ::before content).
+	 */
+	const asideBorderHoverDecl = borderWidthPreview
+		? asideBorderColourHoverGradient && /^(repeating-)?(linear|radial|conic)-gradient\(/i.test( asideBorderColourHoverGradient )
+			? `border-image:${ asideBorderColourHoverGradient } 1 !important;`
+			: asideBorderColourHover
+				? `border-color:${ resolveColourToken( asideBorderColourHover, palette ) } !important;`
+				: ''
+		: '';
+	const megaAsideHoverPreviewCss = ( asideBgHoverDecl || asideBorderHoverDecl )
+		? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }${ asideBorderHoverDecl }}`
 		: '';
 
 	const blockProps = useBlockProps( {
@@ -233,6 +252,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								gradientValue: asideBorderColourGradient,
 								onGradientChange: ( val ) =>
 									setAttributes( { asideBorderColourGradient: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: asideBorderColourHover,
+								onChange: ( val ) => setAttributes( { asideBorderColourHover: val ?? '' } ),
+								linked: true,
+								gradientValue: asideBorderColourHoverGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( { asideBorderColourHoverGradient: val ?? '' } ),
 							},
 						],
 					},

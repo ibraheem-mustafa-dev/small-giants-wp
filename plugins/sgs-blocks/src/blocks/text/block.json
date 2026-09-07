@@ -86,7 +86,7 @@
 							"attrMap": {
 								"css:color": "textColourHover",
 								"css:box-shadow": "boxShadowHover",
-								"css:box-shadow-color": "boxShadowHoverColour",
+								"css:box-shadow-color": "boxShadowColourHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:color-link": "linkColourHover",
@@ -370,7 +370,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"boxShadowHoverColour": {
+		"boxShadowColourHover": {
 			"type": "string",
 			"default": ""
 		},

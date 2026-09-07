@@ -583,21 +583,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
-				{ /* ── Effects panel ── Box shadow (2 states, mirroring sgs/quote's
-				   two SEPARATE ShadowControl mounts) + hover scale + transition
-				   duration/easing. */ }
+				{ /* ── Effects panel ── Box shadow (ONE tabbed Normal/Hover mount, Wave A1
+				   ShadowControl redesign 2026-09-07 — was two separate mounts sharing no
+				   state axis) + hover scale + transition duration/easing. */ }
 				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) } initialOpen={ false }>
 					<ShadowControl
 						label={ __( 'Box shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadow', { colour: true } ) }
-					/>
-					<ShadowControl
-						label={ __( 'Box shadow (hover)', 'sgs-blocks' ) }
-						attributes={ attributes }
-						setAttributes={ setAttributes }
-						attrNames={ shadowAttrKeys( 'boxShadowHover', { colour: true } ) }
+						attrNames={ shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } ) }
 					/>
 					<RangeControl
 						label={ __( 'Hover scale', 'sgs-blocks' ) }

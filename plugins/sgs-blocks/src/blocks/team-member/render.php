@@ -123,8 +123,8 @@ $role_colour_gradient   = $attributes['roleColourGradient'] ?? '';
 $card_style             = $attributes['cardStyle'] ?? 'elevated';
 $photo_shape            = $attributes['photoShape'] ?? 'circle';
 $hover_scale            = $attributes['scaleHover'] ?? '';
-$hover_shadow           = $attributes['shadowHover'] ?? '';
-$hover_shadow_colour    = $attributes['shadowHoverColour'] ?? '';
+$hover_shadow           = $attributes['cardShadowHover'] ?? '';
+$hover_shadow_colour    = $attributes['cardShadowColourHover'] ?? '';
 $card_shadow            = $attributes['cardShadow'] ?? '';
 $card_shadow_colour     = $attributes['cardShadowColour'] ?? '';
 $hover_img_zoom         = (bool) ( $attributes['imageZoomHover'] ?? false );
@@ -263,7 +263,7 @@ if ( '' !== $safe_hover_shadow ) {
 }
 
 // FR-35-5 — the card has a RESTING-state shadow attr alongside the hover-only
-// one, so shadowHover is STATE_OK not STATE_WITHOUT_BASE. An empty control
+// one, so cardShadowHover is STATE_OK not STATE_WITHOUT_BASE. An empty control
 // means the card inherits the theme token (custom-property FALLBACK at
 // style.css, never a baked default). Var-only inline declaration (same
 // exempt pattern as the hover vars above) mirrors card-grid's

@@ -88,7 +88,9 @@ small-giants-wp/
 ├── plugins/
 │   ├── sgs-blocks/           # Gutenberg blocks + forms (own CLAUDE.md)
 │   ├── sgs-booking/          # Appointment + event booking (own CLAUDE.md)
-│   └── sgs-client-notes/     # Visual annotation system (own CLAUDE.md)
+│   ├── sgs-client-notes/     # Visual annotation system (own CLAUDE.md)
+│   ├── sgs-accessibility/    # Accessibility layer (no CLAUDE.md yet)
+│   └── sgs-configurator-pro/ # Product configurator (own CLAUDE.md)
 ├── sites/<client>/           # Client mockups + content + theme-snapshot.json
 │                             #   (own CLAUDE.md — e.g. sites/indus-foods/CLAUDE.md for that client's design context)
 ├── .claude/                  # Working area — plans/, specs/, decisions.md, parking.md, reports/
@@ -117,7 +119,7 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 
 Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-conventions.md). CI linter: `python scripts/lint-naming-conventions.py`.
 
-- Theme `sgs-theme`; plugins `sgs-blocks` / `sgs-booking` / `sgs-client-notes`
+- Theme `sgs-theme`; plugins `sgs-blocks` / `sgs-booking` / `sgs-client-notes` / `sgs-accessibility` / `sgs-configurator-pro` (**the plugin roster is `ls plugins/`, never a list cached in prose — this line omitted the last two for ~5 months**)
 - PHP namespace `SGS\Theme` / `SGS\Blocks` / `SGS\Booking` / `SGS\ClientNotes`; text domains match plugin/theme slugs; hook prefix `sgs_`
 - CSS `.sgs-` prefix; BEM: `.sgs-<block>__<element>--<modifier>` (hyphens only)
 - Block namespace `sgs/block-name`; pattern slugs `sgs/<role>` (framework) or `sgs/<role>-<client-slug>` (client)

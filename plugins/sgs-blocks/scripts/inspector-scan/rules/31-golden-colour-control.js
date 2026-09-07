@@ -909,7 +909,26 @@ module.exports = {
 			// `normal` state, or an unkeyed one, or a key outside the vocabulary.
 			const soleStateKey = soleDeclaredStateKey( statesArray );
 
-			if ( statesCount < required && ! statesExempt && ! soleStateKey ) {
+			// ── NARROWED 2026-09-07 (Bean's ruling) — fires ONLY when the
+			// per-element DERIVED requirement exceeds the census's hardcoded
+			// floor of 2. `scripts/colour-codemod/classify-end-shape.js`
+			// (`--check`) computes its own `needsHover = statesCount < 2` from
+			// the SAME edit.js-sourced states array this rule reads, and its
+			// gate already reds the build for a plain 1-state row missing a
+			// hover — that is a genuine, measured duplicate (below-min-states
+			// was 30 of the 43 live findings on 2026-09-07, every single one a
+			// floor-2 violation the census equally catches). What the census
+			// CANNOT see is a row whose element declares MORE than one extra
+			// state (`requiredStatesFor()` reading `supports.sgs.elements` —
+			// e.g. sgs/tabs' normal+hover+selected = 3) where the row supplies
+			// 2 states (passing the census's floor-2 check) but is still short
+			// of its OWN derived requirement. That case is real, invisible to
+			// classify-end-shape.js's hardcoded floor, and is the only reason
+			// this check still exists. See `fixtures/31-golden-colour-control/
+			// three-state-required-below-minimum` for the proof it can still
+			// fail, and `three-state-required-by-element` for the conformant
+			// boundary it must NOT flag.
+			if ( statesCount < required && required > 2 && ! statesExempt && ! soleStateKey ) {
 				findings.push( {
 					...makeFinding( {
 						rule: ruleId,
@@ -941,6 +960,25 @@ module.exports = {
 				} );
 			}
 
+			// ── (4) mechanism-mismatch ONLY ── row-missing-gradient RETIRED
+			// 2026-09-07 (Bean's ruling). `scripts/colour-codemod/
+			// classify-end-shape.js` (`--check`) already computes
+			// `needsGradient`/`currentComplete` for every per-block row —
+			// mechanism-aware (excludes shadow), exemption-aware
+			// (colourExemptions + the shared-element-text exemption below),
+			// reading the SAME DB css_property this rule reads. Its gate
+			// already reds the build for a row with no gradient path and no
+			// exemption — that was the OTHER 13 of the 43 live findings on
+			// 2026-09-07, all pure duplicates. What classify-end-shape.js does
+			// NOT do is compare the EXISTING editor wiring SHAPE
+			// (gradientCapable vs a per-state gradientValue toggle) against
+			// the resolved mechanism — it only recommends what render.php's
+			// END shape should be, never diagnoses that the wrong CONTROL TYPE
+			// is mounted in edit.js today. That comparison — mechanism-
+			// mismatch — is genuinely editor-side and stays. See
+			// `fixtures/31-golden-colour-control/fillrow-helper-on-text-attr`
+			// for the proof it still fails.
+			//
 			// ── (4) row-missing-gradient / mechanism-mismatch ────────────────
 			// Step 3 (phase-colour-conformance.md): mechanism-aware, BOTH
 			// directions. A shadow-mechanism row is EXEMPT (box-shadow has no
@@ -970,7 +1008,9 @@ module.exports = {
 						statesHasGradient
 					);
 
-				if ( ! hasAnyGradient || mismatched ) {
+				// row-missing-gradient dropped 2026-09-07 — census-covered (see comment
+				// above). Only a genuine mechanism MISMATCH is still this rule's job.
+				if ( mismatched ) {
 					const exemption = colourExemptions ? colourExemptions[ rowKey ] : null;
 					// A TEXT row sharing its element with a background has no valid
 					// gradient form — exempt BY MECHANISM, stated once (see
@@ -1353,32 +1393,34 @@ module.exports = {
 			'native-colour-ui-block',
 			'colorpalette-raw',
 			'textcontrol-type-color',
-			'single-state-row',
-			'no-gradient-row',
-			'legacy-single-value-row',
 			// Shared-owner scan (C4 step 2, 2026-08-20) — matched by the owner
 			// FILE's basename (findingMatchesName), since a shared finding
 			// carries block: null. Proves a colour row reached only via a
 			// component mount, in a file outside any block's own edit.js, is
-			// found.
+			// found. KEPT 2026-09-07: classify-end-shape.js never walks a
+			// shared component file (it only iterates each BLOCK's own
+			// edit.js/render.php), so a shared-owner row is invisible to the
+			// census regardless of the narrowing below.
 			'FixtureSharedRowPanel',
 			// Negative control for the describeRow() gradientCapable fix: ONLY
 			// textRow emits gradientCapable, so a fillRow on a text-mechanism
 			// attribute must still be caught. Pairs with the mustNotFlag entry
 			// 'textrow-helper-gradient' below — identical fixtures, one helper
-			// name apart, proving the fix matches without over-matching.
+			// name apart, proving the fix matches without over-matching. KEPT
+			// 2026-09-07 as the mechanism-mismatch "still fails" proof — this
+			// is now the SURVIVING per-block gradient check (see the rule's
+			// own (4) comment).
 			'fillrow-helper-on-text-attr',
-			// OVER-MATCH CONTROL for the sole-declared-state exemption
-			// (2026-09-03). Identical to 'sole-declared-state-row' below apart
-			// from the state KEY, which is outside golden-controls.json's
-			// _meta.stateVocabulary.real. A typo must not buy silent exemption
-			// from the state floor, or the floor stops meaning anything.
-			'sole-unknown-state-row',
-			// NEGATIVE CONTROLS for the 2026-09-05 standalone-control fix (below)
-			// — each proves the fix resolves a REAL 2-state/gradient row without
-			// blanket-exempting every row shaped like it.
-			'standalone-descriptor-row-missing-hover',
-			'standalone-gradientcapable-direct-missing-hover',
+			// NEW 2026-09-07 (Bean's ruling) — the negative control proving the
+			// NARROWED below-min-states check can still fail. Mirrors
+			// 'three-state-required-by-element' (mustNotFlag, below) exactly —
+			// same block.json element manifest deriving a required count of 3
+			// — but this row supplies only 2 states, short of ITS OWN derived
+			// requirement while still passing classify-end-shape.js's
+			// hardcoded floor of 2. If this stops flagging, the rule has been
+			// narrowed too far and the tabs-shaped 3-state gap is silently
+			// uncovered again.
+			'three-state-required-below-minimum',
 		],
 		mustNotFlag: [
 			// A row whose SOLE state is a declared, admitted, non-normal state IS
@@ -1417,6 +1459,21 @@ module.exports = {
 			// the file's own `statesProvidedByParent` comment on why these
 			// are two separate walks over the same question.
 			'shared-descriptor-row-mount',
+			// ── RETIRED 2026-09-07 (Bean's ruling) — these six used to be
+			// mustFlag for the PER-BLOCK below-min-states floor-2 / missing-
+			// gradient checks, both now dropped as duplicates of
+			// `scripts/colour-codemod/classify-end-shape.js --check` (see the
+			// rule's own (3) and (4) comments). Kept here rather than deleted
+			// so a future change to the narrowing can see exactly what used to
+			// be covered and is now deliberately not — each is still a real
+			// non-conformant row on the CENSUS side; classify-end-shape.js is
+			// where its coverage now lives.
+			'single-state-row',
+			'no-gradient-row',
+			'legacy-single-value-row',
+			'sole-unknown-state-row',
+			'standalone-descriptor-row-missing-hover',
+			'standalone-gradientcapable-direct-missing-hover',
 		],
 	},
 };
