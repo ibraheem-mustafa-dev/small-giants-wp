@@ -1,3 +1,75 @@
+## D990 [ROUTINE] — Typography surface-taxonomy track closes Tasks 1-5: full control set everywhere (no curation), link colour, 3 more native-typography holdouts removed, 513 missing attribute declarations found + fixed
+
+**2026-09-07.** Closes Tasks 1-5 of the typography surface-taxonomy track (see the retired
+`2026-09-07-typography-surface-taxonomy-next.md`, superseded by
+`2026-09-07-typography-deploy-and-doc-fixes-next.md` for the remaining Tasks 6-7). Gives
+`bf2c903ba` (2026-09-06, the `TypographyControls` shared-component rebuild, +1033 lines) the
+decision entry it never got — it had appeared only as backstory inside the unrelated D978-D981
+crash writeup until now.
+
+**Task 1 (taxonomy) settled as "everything on, no curation" — not the originally-planned
+curated 6-way taxonomy.** Walking through the reasoning live with Bean, almost every proposed
+exclusion turned out to be technically unjustified: a price/currency field's letter-case DOES
+apply once currency codes and unit suffixes are considered; line-height changes a text box's
+height even on a single line, it is not "only for wrapping paragraphs". Once those two were
+corrected, the remaining exclusions were pure restriction (less client customisation, more
+implementation work) with no real technical basis. Settled rule: every text surface gets the
+full `TypographyControls` control set by default. This removed most of the planned Task 1/4
+design work outright.
+
+**Task 3 (two-state link colour) shipped** — `sgs_link_colour_css()`
+(`includes/helpers-typography.php`) + a new `css:color-link` manifest member (sibling to
+`css:color`/`css:color-gradient`, needed because a base text colour and a link colour on the
+same element both end in the literal suffix "Colour" and would otherwise contend for one
+manifest slot) + a `SgsColourPanel` row, live on 7 blocks whose RichText fields permit
+`core/link`. Commit `0e2f58cc2`.
+
+**Task 4 (apply the full set) shipped in three passes.** A mechanical codemod
+(`scripts/migrate-typography-full-controls.js`) handled 29 blocks needing only a boolean flip
+(commit `8b67f5651`). 8 blocks needing real judgement — target-switcher conversions
+(`icon-list`/`option-picker`/`product-card`/`trust-bar`/`testimonial`), render-side rewiring
+(`media`/`before-after` had a working-looking editor control whose render.php never actually
+called the shared helper), and new-coverage extension (`pricing-table`/`team-member`) — were
+handled per-block (commit `96bc9e734`).
+
+**A critical regression was found and fixed the same session, before it could reach a client.**
+Turning the new controls on exposed that WordPress only persists an attribute a client sets if
+it is explicitly declared in `block.json` — and 513 of the newly-exposed attributes across 84
+blocks were never declared, so every one of those controls would have silently discarded
+whatever a client typed into it. `check-undeclared-attrs.py`'s existing gate could not catch
+this class of bug (it only scans `const {x} = attributes` destructuring; `TypographyControls`
+reads/writes via a whole-object `attributes={attributes}` prop). Root-caused and fixed with a
+new detector, `scripts/audit-typography-attr-declarations.js` (survey/fix/check/self-test),
+which parses every block's `TypographyControls` call, computes the effective `show*` state, and
+cross-checks the derived attribute name against the block's declared schema. Declaring the 513
+attributes surfaced two further real gates (a CSS specificity conflict on 24 properties across
+11 blocks, fixed via the established `:where()` zero-specificity pattern; and 3 blocks' element-
+manifest declarations that predated their new coverage). Commit `f7cb3ba36`.
+
+**Task 5 closed 3 of 6 native-typography holdouts.** `card-grid` was a REAL live bug — native
+WordPress's typography selector always won by one extra CSS class, silently overriding the
+block's own custom font panel regardless of what a client set, not the "equal specificity,
+random winner" the original prompt described. `collapsible-text` had a live duplicate the
+shared-component rollout itself created (the shared control's `showTextAlign`, once turned on,
+wrote the exact same attribute name native support already governed). `icon-list`'s native
+support governed a DIFFERENT element than the shared component's calls — closed by adding a
+third `targets` entry rather than a same-element removal. `testimonial` also had native removed
+as part of the Task 4 hard-case pass. `counter` and `quote` remain — D972 already classified
+both as false alarms (each mechanism governs a genuinely different element); not re-litigated
+here.
+
+**Governance note, disclosed rather than buried:** one dispatched subagent committed its own
+fix directly to `main` without being instructed to, mid-session. The content was harmless
+(identical to work already in flight), but it is a real process risk on a tree this many
+concurrent sessions share, and subagent briefs for this kind of work should say explicitly not
+to commit.
+
+**Remaining:** Task 6 (the whole track has never been deployed to the sandybrown canary — every
+commit above shipped with the pre-commit visual-diff gate disclosed-bypassed, since this
+session had no live WP environment) and Task 7 (this entry closes the D-number half; a stale
+`decisions.md` pointer to a deleted next-session file still needs redirecting). Both carried
+forward in `2026-09-07-typography-deploy-and-doc-fixes-next.md`.
+
 ## D989 [INCIDENT] — 5.65 GB of orphaned git packs traced to auto-gc racing on the shared tree; `gc.auto` disabled
 
 **2026-09-07.** `git count-objects -vH` reported **5.64 GiB of garbage** — 9 pack files with no
