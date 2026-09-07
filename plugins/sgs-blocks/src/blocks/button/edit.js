@@ -773,7 +773,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						 *           lineHeight/lineHeightUnit
 						 *           fontWeight / fontStyle
 						 */ }
-						<TypographyControls
+						<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix=""
@@ -781,7 +781,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							showWeight={ true }
 							showStyle={ true }
 							showFontFamily={ true }
-							showLineHeight={ false }
 							showResponsive={ true }
 						/>
 						{ /* Line height — lineHeight is now a TIER OBJECT (Spec 35

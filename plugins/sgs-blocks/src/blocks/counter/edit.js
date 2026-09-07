@@ -174,7 +174,7 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Text Styling", "sgs-blocks")} initialOpen={false}>
-          <TypographyControls
+          <TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
             attributes={attributes}
             setAttributes={setAttributes}
             prefix="label"

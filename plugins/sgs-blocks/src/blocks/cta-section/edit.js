@@ -564,7 +564,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					typography sub-flag, including textAlign) — mirrors sgs/heading's plain
 					SelectControl pattern rather than a toolbar button. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

@@ -586,7 +586,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   sensible typography target, matching the previous native
 				   fontSize/lineHeight scope. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

@@ -991,7 +991,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					{ showNames && (
 						<>
-							<TypographyControls
+							<TypographyControls fontSizePresets showFontFamily showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="name"

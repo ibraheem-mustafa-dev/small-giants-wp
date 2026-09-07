@@ -485,7 +485,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					 * 2026-09-06 to close the parity gap with sgs/text, which
 					 * already exposes this control.
 					 */ }
-					<TypographyControls
+					<TypographyControls showTextColumns showTextIndent
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

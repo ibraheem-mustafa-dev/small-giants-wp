@@ -272,7 +272,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				    (D971/D972 full-replacement track). Root prefix "" since this
 				    block has a single styled root element. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

@@ -1197,7 +1197,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				    and the selector this paints — `.sgs-timeline__title` — mirroring
 				    the pre-migration `selectors.typography` declaration exactly. */}
 				<PanelBody title={ __( 'Entry title typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"

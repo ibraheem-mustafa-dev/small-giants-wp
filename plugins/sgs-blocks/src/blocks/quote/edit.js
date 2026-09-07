@@ -580,7 +580,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								isShownByDefault
 							>
-								<TypographyControls
+								<TypographyControls fontSizePresets showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 									attributes={ attributes }
 									setAttributes={ setAttributes }
 									prefix="attribution"

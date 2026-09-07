@@ -527,7 +527,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   block's typography support targeted the block root
 				   (.wp-block-sgs-info-box), same as sgs/accordion. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

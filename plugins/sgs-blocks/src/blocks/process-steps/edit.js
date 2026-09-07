@@ -398,7 +398,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					   "title" matches this element's own attrMap prefix — native
 					   typography previously painted the step title via
 					   `selectors.typography: ".sgs-process-steps__title"`, now removed. */ }
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"

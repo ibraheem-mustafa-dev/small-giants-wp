@@ -579,7 +579,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   panel replaces always rendered onto `.sgs-pricing-table__name`
 				   (block.json `selectors.typography`), the "title" element, not the wrapper. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix="title"

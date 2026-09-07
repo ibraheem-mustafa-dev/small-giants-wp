@@ -307,7 +307,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				   showFontFamily preserves the pre-migration native
 				   fontFamily:true capability. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TypographyControls
+					<TypographyControls fontSizePresets showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 						prefix=""

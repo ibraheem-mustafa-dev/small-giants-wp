@@ -517,7 +517,7 @@ export default function Edit({ attributes, setAttributes, name, clientId }) {
             (D971/D972 full-replacement track, mirrors sgs/accordion). Root
             prefix "" since this control targets the wrapper element. */}
         <PanelBody title={ __( "Typography", "sgs-blocks" ) } initialOpen={ false }>
-          <TypographyControls
+          <TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
             attributes={ attributes }
             setAttributes={ setAttributes }
             prefix=""

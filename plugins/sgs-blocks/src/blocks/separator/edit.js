@@ -404,7 +404,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							{ /* Text colour moved to the top-level SgsColourPanel
 							   (D618/D621) — "Content colour" row. */ }
-							<TypographyControls
+							<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix="content"

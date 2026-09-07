@@ -336,14 +336,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							}
 							isShownByDefault
 						>
-							<TypographyControls
+							<TypographyControls fontSizePresets showFontFamily showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								prefix=""
 								showSize={ true }
-								showWeight={ false }
-								showStyle={ false }
-								showLineHeight={ false }
 								showDecoration={ true }
 								showResponsive={ true }
 							/>
