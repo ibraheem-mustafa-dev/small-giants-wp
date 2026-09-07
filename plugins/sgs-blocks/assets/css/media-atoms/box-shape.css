@@ -9,7 +9,8 @@
  * `--sgs-media-max-height`, `--sgs-media-max-width-percent`,
  * `--sgs-media-clip-path`, `--sgs-media-border-radius[-tablet|-mobile]`,
  * `--sgs-media-border-width`, `--sgs-media-border-style`,
- * `--sgs-media-border-color`, `--sgs-media-border-image`.
+ * `--sgs-media-border-color`, `--sgs-media-border-image`,
+ * `--sgs-media-border-color-hover`, `--sgs-media-border-image-hover`.
  *
  * SHAPE IS `clip-path` for the CLIP itself, NEVER the block WRAPPER's
  * `border-radius` — that property still belongs to `SgsBorderControl`
@@ -51,6 +52,29 @@
 	border-color: var( --sgs-media-border-color, currentcolor );
 	border-image-source: var( --sgs-media-border-image, none );
 	border-image-slice: 1;
+}
+
+/* Hover colour pair (2026-09-07) — colour-only, no hover variant for
+ * width/style/radius, matching sgs/button's/sgs/container's own
+ * states.hover.attrMap convention. Same fallback-chain shape as
+ * `overlay.css`'s `:hover`/`:focus-within` rule: an unset hover custom
+ * property leaves the resting value in place. `:focus-visible` (not
+ * `:focus-within`) because this rule targets the media element itself,
+ * which can itself be the focusable node (e.g. when wrapped by the `link`
+ * atom), not a container with a focusable descendant.
+ *
+ * ⚠ Deliberately UNGUARDED against touch-hover-stuck, matching this atom
+ * family's only existing precedent (`overlay.css`'s hover rule, shipped
+ * 2026-09-01) — `scripts/hover-guard/` does not scan assets/css/media-atoms/
+ * at all (it only covers build/blocks/*.css and PHP render surfaces), so
+ * neither this rule nor its sibling can be validated by that tooling today.
+ * This is a known, named gap shared by the whole atom family, not something
+ * introduced here — flagged for a future follow-up, not fixed in this pass.
+ */
+.sgs-media-el:hover,
+.sgs-media-el:focus-visible {
+	border-color: var( --sgs-media-border-color-hover, var( --sgs-media-border-color, currentcolor ) );
+	border-image-source: var( --sgs-media-border-image-hover, var( --sgs-media-border-image, none ) );
 }
 
 /* max-width-percent is a SEPARATE cap from max-width (a percentage floor
