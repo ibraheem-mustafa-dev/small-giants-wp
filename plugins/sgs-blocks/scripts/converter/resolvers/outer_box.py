@@ -393,8 +393,8 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
     # tier/config objects (contentWidth, gap, columns, gridTemplateColumns)
     # that must NOT be routed through the box-shorthand parser. Mirrors
     # content_band.py's identical widening EXACTLY (ONE mechanism, R-31-9).
-    _box_family = db_lookup.box_family_for(ctx.block_slug, attr)
-    _is_box_family_base = _box_family == attr or ctx.conn.execute(
+    box_family = db_lookup.box_family_for(ctx.block_slug, attr)
+    _is_box_family_base = box_family == attr or ctx.conn.execute(
         "SELECT 1 FROM block_attributes WHERE block_slug=? AND box_family=?",
         (ctx.block_slug, attr),
     ).fetchone() is not None
@@ -440,7 +440,7 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         #
         # A closed, fixed CSS-spec vocabulary — NOT a per-block attr lookup —
         # inlined at this ONE call site so the corner tokens stay in the SAME
-        # enclosing scope as `_box_family` above (§3 box-object interface
+        # enclosing scope as `box_family` above (§3 box-object interface
         # contract / check-box-family-guard.py), exactly as grid.py:59 records
         # for its own radius-longhand set.
         # Horizontal auto-centring idiom (`margin: 0 auto`) is EXCLUDED, not

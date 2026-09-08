@@ -53,9 +53,18 @@ $panel_id = ! empty( $block_id ) ? $block_id : '';
 $tab_uid  = 'sgs-tab-uid-' . substr( md5( wp_json_encode( $attributes ) . ( $attributes['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $tab_uid . '.wp-block-sgs-tab';
 
-// The tab content is wrapped in a .sgs-tab__content div (unchanged from original).
+// The tab content is wrapped in a .sgs-tab__inner div — renamed from
+// .sgs-tab__content (2026-09-08) to match the composite-mirror convention
+// every other CONTENT-kind wrapper block uses for its content-width band
+// (sgs-container__inner, sgs-form__inner, sgs-modal__inner, sgs-post-grid__inner).
+// This is the same architectural layer as those — a single band wrapping
+// 100% of the block's content, routed through SGS_Container_Wrapper's
+// 'content' kind — so it should carry the same element token, not a
+// one-off name. (Distinct from sgs/hero's __content, which is a genuine
+// grid COLUMN in a 2-column layout, not a content-width band — that one
+// correctly keeps its own name.)
 $inner_html = sprintf(
-	'<div class="sgs-tab__content">%s</div>',
+	'<div class="sgs-tab__inner">%s</div>',
 	$content // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are already escaped.
 );
 

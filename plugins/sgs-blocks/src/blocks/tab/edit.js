@@ -105,7 +105,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'sgs-tab__content' },
+		{ className: 'sgs-tab__inner' },
 		{
 			templateLock: false,
 			template: [

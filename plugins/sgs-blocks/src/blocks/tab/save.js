@@ -9,7 +9,7 @@ import { InnerBlocks } from '@wordpress/block-editor';
  *
  * sgs/tab is a dynamic block (render.php drives 100% of frontend output);
  * save returns the BARE InnerBlocks marker only — NO wrapper div. render.php
- * already wraps $content in `.sgs-tab__content`, so a save-side wrapper would
+ * already wraps $content in `.sgs-tab__inner`, so a save-side wrapper would
  * leak an extra div into $content (the static-div-in-$content problem, D136).
  *
  * @return {JSX.Element} InnerBlocks content placeholder.
