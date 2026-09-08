@@ -492,7 +492,24 @@ if it is broken**. Deploy to the canary first; only then the client site.
 | `--allow-dirty` | The gate that would have stopped the 2026-07-14 outage. Only use when you have READ the listed paths and know each one is safe. |
 | `--skip-verify` | The only check that catches a deploy which breaks the site. |
 
-**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--dry-run` previews without deploying; `--verify-url`, `--audit-scoped-page`, `--skip-oldshape-audit`, `--self-test` exist for narrower workflows — read the script's `--help` for current usage.
+**Other flags (safe, not loss-of-safety):** `--payload <path>` (repeatable) deploys named uncommitted files without the blanket `--allow-dirty`; `--verify-url`, `--audit-scoped-page`, `--skip-oldshape-audit`, `--self-test` exist for narrower workflows — read the script's `--help` for current usage.
+
+⚠ **`--dry-run`: do NOT treat it as a safe preview until someone resolves this.** Two sources
+disagree and neither has been reconciled against a live test:
+
+- **The code (read 2026-09-08) says it is safe.** Every deploy step takes `args.dry_run` and
+  passes it to `run()`, which returns without executing — `step_build`, `step_tar`, `step_scp`,
+  `step_remote_extract`, `step_local_cleanup`. Nothing in the deploy path bypasses it.
+- **D991 (2026-09-07) records an INCIDENT** in which `--dry-run` "built, packaged, SCP'd, and
+  installed the plugin live", shipping a peer session's staged-but-uncommitted work. `build-deploy.py`
+  has had **no commits since**, so the code above is the same code that was running.
+
+One of the two is wrong and it has not been established which. **Verified either way:**
+`--dry-run` DOES skip the dirty-tree gate (`if not args.allow_dirty and not args.dry_run and dirty`),
+so a dry run cannot warn you about uncommitted files the next real deploy would carry.
+
+Until this is settled with a deliberate test against a throwaway target, treat `--dry-run` as
+unproven rather than safe. D991 also flags the flag's name as misleading and leaves it open.
 
 **Ownership check (load-bearing, not optional):** the canary is a shared checkout. `build-deploy.py` checks whether the deploy would overwrite live work not in your HEAD's ancestry and **refuses if so** — this is correct behaviour, not a bug. `--takeover` overrides it; only use when you've confirmed with whoever else is working on the canary that it's safe to overwrite their state.
 

@@ -196,7 +196,7 @@ definition-of-done (Part L → fold into `block-migration-DONE-checklist.md` + a
 | Selection | `ToggleGroupControl` (2–5 short); `ComboboxControl` (>~10, searchable); `FormTokenField` (multi-value) | comma-text; giant Select |
 | Media/gallery | `multiple="add"` + `gallery` + array attr + `MediaUploadCheck` + drag-drop | scalar attr + single MediaUpload |
 | Link/CTA | **`LinkPopoverField` / `LinkPopoverContent`** (canonical). **8 blocks still mount the superseded `SgsLinkControl`** — migration outstanding. | raw URL `TextControl` |
-| Typography | full set: `FontSizePicker` (presets+fluid) + `FontAppearanceControl` + line-height via `ResponsiveControl`+`UnitControl` (contract §4.1) + letter-spacing/transform/decoration | fontSize only |
+| Typography | full set: `FontSizePicker` (presets; NOT fluid — retired D1007) + `FontAppearanceControl` + line-height via `ResponsiveControl`+`UnitControl` (contract §4.1) + letter-spacing/transform/decoration | fontSize only |
 | Image | size dropdown (attachment `sizes`) + aspectRatio + object-fit/`FocalPointPicker` | hardcoded full-size `src`, centre-crop only |
 | Spacing | token-based `__experimentalSpacingSizesControl` (S/M/L, theme.json) OR UnitControl | raw px RangeControl (breaks token system) |
 
@@ -648,7 +648,7 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 | `LinkControl` | raw URL text fields | **HIGH** — internal search + rel + new-tab free |
 | Native duotone / aspect-ratio / lightbox / sticky | hand-rolled filter/box/JS/position | **HIGH** — check before building any of these |
 | Block style variations w/ inner-element styles ("Section Styles", 6.6) | bespoke variant switching where it's "same structure, different look" | Med — maps onto `variant_slots` |
-| Fluid typography + spacing presets (theme.json) | hand-written type breakpoints | Med (complements device-tier, doesn't replace) |
+| ~~Fluid typography~~ + spacing presets (theme.json) | hand-written type breakpoints | ⛔ **FLUID TYPOGRAPHY IS RETIRED (D1007, 2026-09-08)** — do not adopt it. SGS uses EXPLICIT per-device values via the tier system + `assets/css/type-scale.css`. Rejected on evidence: GOV.UK never adopted `clamp()`, Designsystemet Norway shipped and reversed it, and `clamp()` on `vw` can fail WCAG 1.4.4 because viewport units ignore browser zoom. Spacing presets are unaffected. |
 | `register_block_pattern` + categories/blockTypes | uncategorised patterns | Med — audit existing `patterns/*.php` |
 | Interactivity API (`@wordpress/interactivity`) | hand-rolled view.js DOM code | Med — real rewrite cost |
 | Copy/paste styles (WP 6.2, free) | — | works IF styling is in native `supports` attrs (Spec 32 direction) |

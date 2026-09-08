@@ -437,7 +437,11 @@ KEY COVERAGE ANCHORS:
 
 ## Appendix B — Target theme.json slots (SGS theme baseline, verified) + WP fluid facts
 `theme/sgs-theme/theme.json` provides: `settings.color.palette` (16 named slugs, raw hex OK);
-`settings.typography.fontFamilies` (body/heading/display/dm-sans + fontFace) + `fontSizes` (7-step,
+`settings.typography.fontFamilies` (body/heading/display/dm-sans + fontFace) + `fontSizes` (6-step,
+NON-fluid since D1007 — `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
+`hero` 50, every one `"fluid": false`; `x-small`/`medium`/`display` retired) + `fluid` (declared but
+inert — no preset opts in). ⚠ This line said "7-step, fluid" until 2026-09-08; a reader building on
+it would have assumed a fluid ladder the framework no longer has. Read `theme/sgs-theme/theme.json`,
 fluid) + `fluid`; `settings.spacing.spacingSizes` (8-step `10`–`80`); `settings.shadow.presets`
 (sm/md/lg/glow); `settings.custom.{buttonPresets(primary/secondary/outline — each: background/text/
 border/border-width/border-radius/padding/font-size/font-weight/min-height/hover-*), borderRadius

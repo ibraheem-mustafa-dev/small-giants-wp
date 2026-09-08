@@ -350,7 +350,15 @@ HIGH-impact missing `property_suffixes` rows the container/grid system needs: `o
 
 Bean's core requirement: a cheat must be **structurally obvious**, not score-inflating. Two complementary defences.
 
-### 7a. Cheat-detection gate — `check-converter-cheats.py` (NEW; Python not JS, council MF-6)
+### 7a. Cheat-detection gate — `scripts/cheat-gate/` (Python not JS, council MF-6)
+
+⚠ **Naming corrected 2026-09-08.** This section, §12.6 step 5 and the §12.7 F5 row all name a
+single file `check-converter-cheats.py`. **No such file exists, and none ever did.** What shipped
+is the `plugins/sgs-blocks/scripts/cheat-gate/` PACKAGE — `run.py` plus eight `check_*.py`
+modules — wired into `plugins/sgs-blocks/scripts/gates.json` as `cheat-gate-run`. The gate is
+real and running; only the filename in this spec was wrong. The section body below already cites
+the correct path, so a reader who kept going found it; a reader who trusted the heading went
+looking for a file that is not there.
 The red-team proved the naive grep signatures have HIGH-severity bypasses. The gate is a **Python script that queries the DB**, scans the WHOLE `orchestrator/` tree (not one function), and **scans the PHP/CSS render surface, not just converter output**. It fails the build on any of:
 
 1. **Per-block literal — WHOLE-tree + indirect forms.** Not just `if slug == 'sgs/`. Scan every `.py` under `orchestrator/` for: `slug ==`/`slug in`/`slug.startswith('sgs/`/`.get(slug)` against slug strings; dict/`frozenset`/`set`/`list` literals whose keys/members match `"sgs/[a-z-]+"`. Allowlist carries **function scope** (e.g. `iconCircleBackground` legitimate only in `_atomic_attrs_for`). *(Existing guard `check-atomic-slug-literals.py` covers only `_atomic_attrs_for` — HOLE 1; this supersedes it.)*

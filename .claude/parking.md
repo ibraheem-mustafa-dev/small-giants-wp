@@ -252,7 +252,7 @@ discipline; (3) check team-member's Stage 11.6 content-keyed parity and strike t
 matches. (The variant-discriminator item that used to be here — both nav-drawer's and trust-bar's
 live-clone legs — is fully closed; see D974/D975 and `memory/parking-archive.md`.)
 
-## framework
+## Framework: blocks, theme, specs
 
 ### P-COLOUR-NAV-MENU-BURGER-GRADIENT — nav-menu's burger icon needs the SVG-gradient mechanism, not the text-gradient one
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
@@ -364,8 +364,6 @@ Two overlapping Bean-reported visual-QC defect registers against the live page-8
 **Remaining defects (deduplicated across both registers):** black borders (partially fixed — safecss/border-colour transfer), card equal-height (partially fixed), button preset/width/hover divergences (ghost-button underline-on-hover, ghost-button colour resolution — tracked separately at `P-DRAFT-CSSVAR-COLOUR-RESOLUTION`), component-injected defaults (option-picker tick mark and pill width, label-highlight width, info-box margins, disclaimer box styling, emoji size, trustpilot bar height), brand-section spacing/line-height (verify it isn't a separate injected margin before attributing to the theme base), and the inline-styles-architecture question (distinguish legitimate scoped `<style>` from genuine inline `style=""` before changing anything). Precondition: page 8 needs re-cloning first, since its current baseline pre-dates several fixes already landed.
 
 **Trigger:** needs the LIVE-BROWSER-GATED treatment (a live QC session, not a static re-audit) — re-clone page 8 first, then re-triage what's actually still visible against the current engine.
-
-## Framework: blocks, theme, specs
 
 ### P-MEDIA-ALIGNMENT-SHARED-CONTROL — `alignment` duplicated ad hoc across unrelated blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-01
@@ -688,7 +686,7 @@ load-bearing and must not be removed by a future "WP 7.0 cleanup" refactor.
 **Trigger:** Watch WP 7.1+ release notes for a native `register_block_variation()` function; retire
 the polyfill only then.
 
-## tooling
+## Tooling, scripts, skills + docs
 
 ### P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES — the 7 drawer POC fixtures are not exact clones and their reference captures are unreliable
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
@@ -774,8 +772,6 @@ AFTER clone-fidelity closes.
 
 **Trigger:** a post-fidelity design pass.
 
-## Tooling, scripts, skills + docs
-
 *22 open entries (re-derived 2026-07-31 from a `**Bucket:** tooling` count across the whole file — entries with this bucket value are not all physically grouped under this heading).*
 
 ### P-BATCH-GA-14-SKILLS — Batch gap-analysis on 14 WP/SGS skills
@@ -790,7 +786,7 @@ name either.
 
 **Trigger:** Bean decision on re-anchoring the gate, then run.
 
-## content
+## Client content + copy
 
 ### P-SGS-ENGINE-ENFORCE-GATE — sgs-wp-engine skill's ground-truth enforcement is advisory, not a real gate
 **Status:** DEFERRED · **Bucket:** tooling · **Parked:** 2026-07-15
@@ -813,8 +809,6 @@ nowhere near the scale that would justify this.
 **⚠ Its own count is WRONG (re-measured 2026-07-29): 16 block.json files carry a `states` key, not one.** Whether those 16 are the same mechanism this entry means (vs FR-35-5's suffix-shaped attrs) needs disambiguating — but on the entry's own stated terms the at-scale trigger has likely fired.
 **Trigger:** After FR-35-5 ships and the roster starts declaring `states` at scale.
 
-## Client content + copy
-
 *5 open entries.*
 
 ### P-COLLAPSIBLE-TEXT-DEFAULT-COPY — shop-archive SEO copy slots ship intentionally empty; confirm onboarding covers this
@@ -824,7 +818,7 @@ The framework's `archive-product.html` ships its two collapsible-text SEO slots 
 
 **Trigger:** next onboarding-documentation pass.
 
-## ops
+## Deploy + infrastructure
 
 ### P-DRAWER-VARIANT-CONTENT-GENERICISE — nav-drawer POC fixture copy must be genericised before production use
 **Status:** DEFERRED (blocks production, not POC) · **Bucket:** content · **Parked:** 2026-07-28
@@ -836,8 +830,6 @@ The nav-drawer variant POC fixtures and seeded variation copy are exact clones o
 
 
 ---
-
-## Deploy + infrastructure
 
 *2 open entries.*
 
@@ -854,11 +846,6 @@ The deploy exclude list correctly skips per-client `.json` theme-style files but
 A standing housekeeping intent from an earlier phase plan: periodically re-count and actively work down the open parking backlog. Largely superseded in practice by the `/handoff` archive-on-resolve discipline (and this very normalisation pass), but kept so the original intent isn't lost entirely.
 
 **Trigger:** ongoing — no specific trigger, a background process-hygiene reminder.
-
-## Uncategorised / needs main-session merge decision
-
-
----
 
 ## Research + speculative
 
@@ -892,3 +879,4 @@ P-CP-1's dead-gate caveat. The `animations` table's row count/mapping coverage c
 verified from this repo (it lives in a separate uimax DB) — reported as unverified, not refuted.
 
 **Trigger:** P-CP-1 + P-CP-2 in flight and an animation-rich app port is requested.
+

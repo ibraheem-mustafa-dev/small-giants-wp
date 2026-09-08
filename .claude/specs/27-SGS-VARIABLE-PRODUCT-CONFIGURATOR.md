@@ -372,7 +372,14 @@ Source toggle (Typed/Bound) appears in both the block toolbar AND the inspector 
 Mechanism:
 
 1. A `slots` DB row aliases `pill-group`, `pills`, `option-group`, `picker` to `sgs/option-picker` with `has_inner_blocks=0` (populated via `seed-slot-synonyms.py`).
-2. `convert.py` G3 path: when `composition_role='content-block'` and `has_inner_blocks=0`, the walker calls `_atomic_attrs_for(node, slug, allow_text_fallback=False)`.
+2. ⚠ **HISTORICAL — this path no longer exists.** It described `convert.py`'s G3 path: when
+   `composition_role='content-block'` and `has_inner_blocks=0`, the walker called
+   `_atomic_attrs_for(node, slug, allow_text_fallback=False)`. **`orchestrator/converter_v2/convert.py`
+   was DELETED at D276 (2026-07-05)** — the modular `plugins/sgs-blocks/scripts/converter/` engine is
+   the only converter. Neither the file nor `_atomic_attrs_for` exists anywhere in the tree (the one
+   remaining `convert.py` is an unrelated scratch prototype under `.claude/scratch/`). Kept as a record
+   of the ORIGINAL mechanism; do not go looking for this function. For the current behaviour read the
+   `converter/resolvers/` package.
 3. The `sgs/option-picker` handler inside `_atomic_attrs_for` extracts `optionItems` (array of `{key, label}`), `defaultSelected`, and `typeKey` from child `<li>`/`<label>`/pill elements.
 4. Emits: `<!-- wp:sgs/option-picker {"optionItems":[...],"defaultSelected":"...","typeKey":"..."} /-->`.
 

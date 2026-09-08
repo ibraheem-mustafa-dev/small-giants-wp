@@ -24,6 +24,23 @@ answer. Nothing here is settled.
 
 ## R1 — Object-shape tier emission (the load-bearing item)
 
+> ⚠ **LARGELY SHIPPED ALREADY — verify before building (checked 2026-09-08).** The converter
+> emits tier OBJECTS today: a live clone run produced
+> `sgs/heading.fontSize = {"desktop":52,"mobile":34}`, and calling `typography.resolve()` directly
+> returns the object shape, never the flat one. D996 (2026-09-07) explicitly retires the D554
+> "stays flat" ruling. Several converter test markers still say the converter "deliberately STAYS
+> FLAT until the Spec 39 rework" — **those markers are stale**, and a sibling test carrying the
+> identical marker was de-xfailed at D996 as superseded.
+>
+> ⛔ **Do not re-derive or re-design R1 without first measuring what the converter actually
+> emits.** The genuinely open scope in this document is **R8–R10 (motion cloning from raw CSS)**,
+> which is real and unaddressed.
+>
+> **Spec 39 itself does not exist and was never written** — `specs/README.md` records the number as
+> RESERVED. The 37 quarantined conformance goldens that name it are real
+> (`scripts/tests/fixtures/conformance/quarantine.json`, `quarantined_golden_ids`: 37 — counted, not
+> quoted). ⚠ An audit on 2026-09-08 claimed that count was "10"; it was wrong. Count the file.
+
 The converter must eventually emit `{desktop, tablet, mobile}` instead of flat suffixed siblings.
 
 **What it does today, and it is not "nothing":** the converter **does** lift per-device values and

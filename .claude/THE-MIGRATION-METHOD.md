@@ -173,7 +173,8 @@ usually a stale row or an unseeded block, and it means one of your two sources i
 you:** (a) `UNCLEAR` render/edit states must be read BY HAND — the script says so itself;
 (b) `--fix --apply` writes `block.json` and `edit.js` **only, never `render.php`**; (c)
 `--check` does **not** gate on `render_state: RAW`, so a green gate does not mean the render
-side is done. That gap is recorded at `migrate-tier-object.py:1484`; the includes-scope incident it belongs to is **D575**.
+side is done. That gap is recorded in `migrate-tier-object.py`'s module docstring — grep `are NOT
+auto-applied by this script`; the includes-scope incident it belongs to is **D575**.
 
 ## Step 3 — Settle the SHAPE first, on ONE instance, with Bean
 
@@ -291,7 +292,7 @@ transform cannot see it. That is not academic — two live shapes, both verified
 
 | Shape | Where | Why the name is load-bearing |
 |---|---|---|
-| dispatch string | `class-sgs-container-wrapper.php:3188`, `:3195` — `'transform' => 'sgs_colour_value'` | fired via `call_user_func()` at `helpers-responsive.php:105` / `:415` |
+| dispatch string | `class-sgs-container-wrapper.php` — grep `'transform' => 'sgs_colour_value'` (2 sites) | fired via `call_user_func()` in `helpers-responsive.php` — grep `call_user_func` |
 | `function_exists()` guard | e.g. `helpers-box.php:30` (for `sgs_css_length_sanitise`) | the string IS the identity; rename the function without it and the polyfill always defines, or never does |
 
 ⚠ **Those two rows are DIFFERENT FUNCTIONS.** An earlier draft of this table listed all

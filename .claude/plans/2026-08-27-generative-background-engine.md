@@ -156,7 +156,13 @@ Only after Phase 1. Absorb D794's must-fix register into
 **Gate:** the completed spec goes through `/adversarial-council` again. D794 said NO-GO on the thin
 version; the rewrite must earn a GO before any build.
 
-## Phase 3 — Build: ENGINE SHIPPED 2026-08-29. Fidelity gap CLOSED (D925-D927). Speed fixed (D930/D932). Colour vibrancy OPEN.
+## Phase 3 — Build: COMPLETE. Engine shipped 2026-08-29; fidelity CLOSED (D925-D927); speed fixed (D930/D932); colour vibrancy FIXED (D939, corrected D941, 2026-09-03).
+
+⚠ **This heading said "Colour vibrancy OPEN" until 2026-09-08 while its own body 30 lines below
+recorded the fix.** A reader skimming headings — which is what headings are for — would have
+concluded there was outstanding work here. Phase 3 has no open scope. **Candidate for
+`plans/archive/`** on the next sweep; left in place only because moving it is Bean's call, not an
+audit's.
 
 **Read D886, D887 and D888 before touching this track.** They supersede the technique spec's
 Animation section and record two claims that were asserted and withdrawn.
