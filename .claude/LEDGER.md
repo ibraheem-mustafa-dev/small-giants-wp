@@ -91,26 +91,32 @@ sessions. **They both edit `theme.json` and the same pattern files, so a session
 | **A — Type scale** | theme.json presets, fluid, footer size | D1007 + `specs/01-SGS-THEME.md` "Type scale" |
 | **B — Clone fidelity** | parity tool, the 14 defects, the 524-diff ledger | the programme prompt (its §2.1 is now an out-of-scope stub) |
 
-### 1. TRACK A — type scale: DECIDED (D1007), partially built
+### 1. TRACK A — type scale: DONE (D1007), shipped + verified live
 
 **No fluid typography.** Explicit per-device values via the SGS tier system. Grounded in GOV.UK
 (never adopted `clamp()`) and Designsystemet Norway (shipped it, then reversed it in production);
 `clamp()` on `vw` can also fail WCAG 1.4.4. Research:
 `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
 
-**Ladder shrinks 9 → 6:** `small` 14 / (16px body) / `large` 20 / `x-large` 24 / `xx-large` 36 /
-`hero` 50. `x-small` and `display` have zero pattern uses; `medium` 18 is too close to 16 to be a
-distinguishable choice. Reading sizes never shrink; only 24/36/50 compress.
+**Ladder 9 → 7:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
+`hero` 50 / `display` 120. Retired `x-small` and `medium`. Reading sizes never shrink; only the
+top three compress. Measured live at 375 / 900 / 1440 — `x-large` 21/22/24, `xx-large` 27/30/36,
+`hero` 33/40/50, body 16px, zero `clamp()` on any SGS preset.
 
-**SHIPPED:** base body font fixed (`efb7ec5de`) — was rendering 14px on phones because WP
-rewrote the extractor's px literal into `clamp(14px,…,16px)`. Verified live at 16px at 375px.
+**Both reported defects closed:** the base body font (`efb7ec5de`) and `small`, which rendered
+**13.0082px** on a phone and now renders 14px. Footer body text now 16px.
 
-**NOT yet built:** the 6-preset ladder itself; rehoming `medium`'s 27 declarations; footer → body
-size (16 `small` declarations in the three footer patterns, measured at **13.0082px** live).
+⚠ **`display` was nearly deleted as dead and is not** — the "zero uses" survey read
+`patterns/*.php` only; `templates/404.html` uses it deliberately.
 
-**OPEN — Bean:** the 16px slug's name. Shipped as `base`; `regular` proposed because
-`medium`/`small`/`large`/`x-large` are all real CSS keywords that can resolve to the browser
-keyword if a slug leaks the sanitiser (near-miss on record, `helpers-typography.php:150`).
+⚠ **Accepted, not fixed:** three phantom presets leak from WordPress (`normal`, `huge`, fluid
+`medium`) despite `defaultFontSizes: false` in every layer on a v3 theme.json under WP 7.1.
+Four causes disproven, none proven, so nothing was shipped for a guessed cause. Three extra
+entries in the editor picker; nothing references them, nothing renders wrong.
+
+**Still open, low priority:** the Spec 33 extractor does not emit per-client display-tier values,
+so a client with a materially different ladder inherits the framework curve. Affects
+hand-authored patterns only — the cloner writes measured raw numbers and never touches presets.
 
 ### 2. Fix the parity tool before fixing the clone
 

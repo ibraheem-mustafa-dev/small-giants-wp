@@ -451,6 +451,14 @@ def discover_global_styles_post_id(target: str, port: int, wp_root: str) -> int 
 _USER_LAYER_PRESET_STRIP = (
     ("spacing", "spacingSizes"),
     ("shadow", "presets"),
+    # typography.fontSizes joins them 2026-09-08 (D1007), same mechanism, measured live:
+    # posting the ladder here files it under the `custom` origin ALONGSIDE the theme origin,
+    # and the merged result re-admitted WordPress's core-default `medium` (20px, fluid) even
+    # though `defaultFontSizes: false` is set in every layer. It rendered 14.0015px at 375px
+    # on the canary — a phantom entry in the client's picker, fluid, for a slug D1007 retired.
+    # Every other core slug was masked because our ladder happens to define one of the same
+    # name; `medium` was the only one left uncovered, which is what made it visible.
+    ("typography", "fontSizes"),
 )
 
 

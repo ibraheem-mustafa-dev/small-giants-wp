@@ -1,4 +1,4 @@
-## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 6.
+## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 7. SHIPPED.
 
 **2026-09-08. Bean-directed**, after `/research-buddies` (The Nerd + The Practical One) and
 live measurement. Research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
@@ -15,10 +15,16 @@ WCAG 1.4.4 (resize to 200%) because viewport units ignore browser zoom -- flagge
 own author, not a critic. SGS already has the per-tier `@media` machinery both systems
 converged back to, so fluid buys nothing here and costs correctness.
 
-**The ladder shrinks 9 -> 6:** `small` 14 / (16px body) / `large` 20 / `x-large` 24 /
-`xx-large` 36 / `hero` 50. `x-small` (12) and `display` (120) had **zero** uses across all 46
-patterns. `medium` (18) is dropped as indistinguishable from 16 -- Bean's own framing was that
-the range is "ridiculously wide and makes it harder to make a clear choice".
+**The ladder shrinks 9 -> 7:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 /
+`xx-large` 36 / `hero` 50 / `display` 120. Retired: `x-small` (12, zero uses anywhere) and
+`medium` (18, indistinguishable from 16 -- Bean's framing was that the range is "ridiculously
+wide and makes it harder to make a clear choice"). The 16px slug is `regular`, Bean's pick over
+`medium`, because `medium`/`small`/`large`/`x-large` are all real CSS font-size keywords.
+
+⚠ **`display` was very nearly deleted and is NOT dead.** The survey that returned "zero uses"
+read `patterns/*.php` only; templates were outside its scope. `templates/404.html` uses it, and
+that template's own comment explains the 96-200px award-tier 404 numeral it exists for. A "0
+uses" figure from the wrong scope is how a considered design token gets deleted.
 
 Reading sizes never shrink across devices; only 24/36/50 compress, ratio widening with size
 (GOV.UK's curve 1.14x -> 1.33x -> 1.51x). Mobile values reuse each preset's existing fluid
@@ -43,6 +49,36 @@ the draft does not govern it. Footer moves to body size.
 `sites/<client>/theme-snapshot.json`. Adding a slug is safe; removing one is a migration across
 every pattern declaration and every shipped client's `post_content`. The framework being
 PRE-PRODUCTION is the only reason removal is cheap -- it will never be cheaper than now.
+
+**SHIPPED + verified live 2026-09-08** (`ea877e35a`), measured at 375 / 900 / 1440:
+reading sizes flat at 14/16/20 across every tier; `x-large` 21/22/24, `xx-large` 27/30/36,
+`hero` 33/40/50; body 16px; zero `clamp()` on any SGS preset. The footer defect is closed --
+footer body text now renders 16px where it measured 13.0082px.
+
+Mechanism: `theme/sgs-theme/assets/css/type-scale.css` redefines the three display presets'
+generated custom properties inside `@media`, at `:root:root` (0,2,0) so it wins on SPECIFICITY
+rather than enqueue order. This is the alternative to authoring a tier object on all 147 pattern
+declarations, each of which would bake a per-client pixel value into framework patterns.
+
+The 43 rehomed declarations went through `scripts/migrate-font-size-ladder.py` (survey / fix /
+check / self-test; 20 assertions including negative controls proving `hero`, `display` and
+`regular` are never touched and `lineHeight` is not collateral). `--check` is a standing gate
+for the next ladder change.
+
+⚠ **Three phantom presets leak from WordPress and are accepted, not fixed:** `normal` 16px,
+`huge` 42px, fluid `medium` 14->20px. `defaultFontSizes: false` is set in the framework
+theme.json, the client snapshot AND the live user layer; theme.json is v3, WP is 7.1; it is
+ignored anyway. FOUR causes were disproven (user-layer `custom` origin, schema version, the
+theme's `wp_theme_json_data_user` filter, a classic `editor-font-sizes` registration) and NONE
+proven -- so no fix was shipped for a guessed cause. Effect is three extra entries in the
+editor's font-size picker; nothing references them and nothing renders wrong. Bean accepted it
+rather than spend further on WordPress archaeology. Our own slugs mask the same-named core
+defaults, which is why only three surface.
+
+⚠ **A scoping error worth remembering:** the first probe for phantoms searched only the slug
+names I expected and found ONE. Enumerating every emitted `--wp--preset--font-size--*` property
+found THREE. Same shape as the `display` miscount an hour earlier -- twice in one session, a
+check whose scope was narrower than the defect's.
 
 **OPEN, not decided:** the 16px slug's name (shipped as `base`; `regular` proposed because
 `medium`/`small`/`large`/`x-large` are all real CSS keywords that can resolve to the browser

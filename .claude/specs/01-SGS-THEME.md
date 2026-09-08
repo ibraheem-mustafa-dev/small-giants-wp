@@ -324,17 +324,46 @@ Evidence (full research: `~/.claude/memory/research/2026-09-08-sgs-responsive-ty
 - **`clamp()` on `vw` units can fail WCAG 1.4.4** (resize text to 200 %), because viewport
   units do not respond to browser zoom — flagged by Utopia's own author.
 
-**Target ladder — 6 presets** (down from 9; `x-small` 12 and `display` 120 had **zero** uses
-across all 46 patterns, and `medium` 18 is too close to 16 to be a distinguishable choice):
+**The ladder — 7 presets** (down from 9). Retired: `x-small` 12 (zero uses anywhere) and
+`medium` 18 (too close to 16 to be a distinguishable choice — the client-facing complaint that
+started this). **SHIPPED + verified live at 375 / 900 / 1440 on 2026-09-08:**
 
 | slug | desktop | tablet | mobile | role |
 |---|---|---|---|---|
 | `small` | 14 | 14 | 14 | captions, badges, uppercase micro-labels ONLY |
-| *(16px body — slug NOT YET NAMED, see below)* | 16 | 16 | 16 | all body text, the default |
+| `regular` | 16 | 16 | 16 | all body text, the default |
 | `large` | 20 | 20 | 20 | lead paragraphs, small headings |
 | `x-large` | 24 | 22 | 21 | card + sub headings |
 | `xx-large` | 36 | 30 | 27 | section headings |
 | `hero` | 50 | 40 | 33 | page headline |
+| `display` | 120 | 120 | 120 | the 404 numeral — see below |
+
+⚠ **`display` was very nearly deleted as dead, and was not.** A survey of `patterns/*.php`
+returned zero uses, but templates and parts were outside that survey's scope:
+`templates/404.html` uses it, and the template's own comment explains the 96-200px award-tier
+404 numeral it was added for. A "0 uses" figure from the wrong scope is how a considered design
+token gets deleted.
+
+**Mechanism — `assets/css/type-scale.css`.** A theme.json preset holds ONE value; there is no
+per-breakpoint preset in WordPress. Rather than author a tier object on all 147 pattern
+declarations (each baking a pixel value that should be per-client), the three display presets'
+generated custom properties are redefined inside `@media`. Selector is `:root:root` (0,2,0) so
+it wins on SPECIFICITY, not enqueue order — a rule that loses is indistinguishable from one
+that is absent. Loaded via `add_editor_style()` too, or the canvas would show desktop sizes at
+every width while the published page shrank them.
+
+⚠ **Three phantom presets leak in from WordPress and are NOT ours:** `normal` 16px, `huge` 42px,
+and a fluid `medium` (14→20px). `settings.typography.defaultFontSizes: false` is set in the
+framework theme.json, the client snapshot AND the live user layer; theme.json is v3 and WP is
+7.1; and it is still ignored. Four causes were disproven (user-layer `custom` origin, schema
+version, the theme's `wp_theme_json_data_user` filter, a classic `editor-font-sizes`
+registration) and none proven. Effect is confined to three extra entries in the editor's
+font-size picker — nothing in the framework references them and nothing renders wrong. Bean
+accepted this 2026-09-08 rather than spend more on WordPress archaeology.
+
+⚠ Our own slugs MASK the same-named core defaults, which is why only three show. That is also
+why naming the 16px rung `regular` rather than `medium` leaves one more phantom visible than
+`medium` would have — a deliberate trade against the CSS-keyword risk (see below).
 
 Reading sizes never shrink across devices; only the top three compress, and the ratio widens
 with size (GOV.UK's published curve: 1.14× → 1.33× → 1.51×). Mobile values reuse each
@@ -350,16 +379,27 @@ WordPress rewrote the extractor's literal into `clamp(14px, …, 16px)` — an F
 ("never recomputed via WP's fluid formula"). The framework `theme.json` already used the
 correct preset-reference shape; the Spec 33 extractor had diverged from it.
 
-**OPEN — do not treat as decided:**
-1. **The 16px slug's name.** Shipped as `base`; `regular` proposed (not a CSS keyword, unlike
-   `medium`/`small`/`large`/`x-large`, which can silently resolve to the browser keyword if a
-   slug leaks through the length sanitiser — a live near-miss is on record at
-   `helpers-typography.php:150`, 2026-09-06). Awaiting Bean.
-2. **Removing `medium`** requires rehoming its 27 pattern declarations (body → the 16px slug,
-   sub-headings → `large`). Not a blind find/replace.
-3. **The footer moves to body size** (Bean, 2026-09-08). The three footer patterns carry 16
-   `small` declarations rendering **13.0082px** on a phone, measured live — `small` is the one
-   preset whose `fluid: false` opt-out was never applied.
+**CLOSED 2026-09-08 — all three, verified live:**
+1. **The 16px slug is `regular`** (Bean's pick). Chosen over `medium` because `medium`/`small`/
+   `large`/`x-large` are all real CSS font-size keywords that resolve to a browser keyword if a
+   slug leaks the length sanitiser — a live near-miss is on record at
+   `helpers-typography.php:150`, 2026-09-06.
+2. **`medium` retired**, its 43 declarations rehomed by `scripts/migrate-font-size-ladder.py`
+   (survey / fix / check / self-test, 20 assertions with negative controls). Not a find/replace:
+   `sgs/heading` + `medium` → `large` (a sub-heading stays above body size); `sgs/text` and
+   `sgs/business-info` → `regular`. theme.json's own `styles.elements` referenced it twice more
+   (h5, button) — a dangling preset reference resolves to an undefined custom property and the
+   declaration is dropped SILENTLY.
+3. **Footer moved to body size.** It had rendered **13.0082px** on a phone — `small` was the one
+   preset whose `fluid: false` opt-out was never applied. `copyright` and `attribution` KEEP
+   `small`: fine print at 14px is convention, and Bean's objection was to readable footer
+   CONTENT being shrunk, not the legal line.
+
+**Still open (named, not assumed away):** the Spec 33 extractor does not yet emit per-client
+values for the three display tiers, so a client whose ladder differs materially inherits the
+framework curve. Low priority — the cloning pipeline writes measured raw numbers for cloned
+content and never touches presets (`converter/resolvers/typography.py:249-255`), so this affects
+hand-authored patterns only.
 
 ⚠ **Slugs are the permanent interface; the pixel values are per-client and already swappable**
 via `sites/<client>/theme-snapshot.json`. Adding a slug is safe; renaming or removing one is a
