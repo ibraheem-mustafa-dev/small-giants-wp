@@ -653,13 +653,30 @@ const CAPTURE_SRC = `() => {
   // starting point — nothing containing it shares this exact text, or it wouldn't be in this
   // anchor's candidate set at all), then collecting EVERY candidate that shares the outermost's
   // BEM block family, however deep — never just the first pair found.
+  //
+  // v1.3.2 fix (same session, caught by Bean asking whether the draft's own CSS was actually
+  // checked): matching on the BLOCK token alone is too loose. norm()'s anchor key is truncated
+  // to 80 chars (pre-existing), so a grid wrapper (e.g. sgs-gift-section__cards, both cards'
+  // combined text) and its OWN FIRST REPEATED CHILD (sgs-gift-section__card, singular — a
+  // completely different, unrelated box, not a layer) can share the same BLOCK token
+  // ('gift-section') purely by English pluralisation, with neither literally being a wrapper's
+  // "inner" content-band. Matching on block alone merged their properties into a synthetic
+  // hybrid that no single draft element actually declares — proven live: reported "draft"
+  // background/border/padding values that don't exist anywhere in the draft's own CSS for the
+  // wrapper element, traced to exactly this false collision. The verified real pattern (grepped
+  // across class-sgs-container-wrapper.php + every block's render.php) is always the SPECIFIC
+  // element token inner — sgs-container__inner, sgs-form__inner, sgs-modal__inner,
+  // sgs-post-grid__inner — never a same-block sibling/repeater relationship. Restricted to that.
   const familyClusterFor = (candidates) => {
     const outerCand = candidates.find(c => !candidates.some(o => o !== c && o.el !== c.el && o.el.contains(c.el)));
     if (!outerCand) return null;
     const outerBlocks = blockTokensOf(outerCand);
     if (!outerBlocks.size) return null;
-    const members = candidates.filter(c => c === outerCand
-      || [...blockTokensOf(c)].some(b => outerBlocks.has(b)));
+    const isVerifiedInnerLayer = (cand) => (cand.rec.cls || []).some((cls) => {
+      const bem = parseSgsBem(cls);
+      return bem && bem.element === 'inner' && outerBlocks.has(bem.block);
+    });
+    const members = candidates.filter(c => c === outerCand || isVerifiedInnerLayer(c));
     if (members.length < 2) return null;
     // Outermost-first order (fewest OTHER members containing it), so the per-property merge
     // below checks the architecturally "most real" box first.
