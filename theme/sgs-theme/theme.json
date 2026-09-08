@@ -213,12 +213,6 @@
           "size": "50px",
           "name": "Hero",
           "fluid": false
-        },
-        {
-          "slug": "display",
-          "size": "120px",
-          "name": "Display",
-          "fluid": false
         }
       ],
       "defaultFontSizes": false

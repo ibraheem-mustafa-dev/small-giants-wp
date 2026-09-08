@@ -26,10 +26,21 @@ by its `displayType`):
   x-small                     -> small — `x-small` had zero uses anywhere; the mapping exists
       so a stray authoring cannot dangle.
 
-`display` is NOT retired. It has one deliberate use (`templates/404.html`, whose own comment
-explains the 96-200px award-tier 404 numeral it exists for). An earlier count called it dead
-because it only looked at `patterns/*.php` — templates and parts were outside the survey's
-scope, which is exactly how a "0 uses" figure becomes wrong.
+`display` IS retired, and there is no automatic mapping for it — `--check` fails on any
+authoring so a human writes explicit values instead.
+
+It had exactly one use, `templates/404.html`'s giant numeral. That was first read as a reason
+to KEEP the preset; Bean's correction is that one use is a reason to write an explicit value,
+not to carry a permanent row in every client's font-size picker forever. He was right, and the
+argument for keeping it was weaker than it looked: the Spec 33 extractor does not emit
+per-client values for `display` anyway, so holding it as a token bought no per-client scaling.
+
+Removing it also fixed a regression D1007 had introduced. `display` previously carried
+`fluid: {min: 56px, max: 120px}`, so it rendered 56px on a phone. Setting every preset
+`fluid: false` without adding `display` to the media-query overrides left it at a flat 120px at
+EVERY width — measured live at 375px. The 404 now carries
+`{"desktop":120,"tablet":80,"mobile":56}` on the block itself, which restores the old mobile
+size exactly and adds the tablet step it never had.
 
 Usage:
     python scripts/migrate-font-size-ladder.py --survey
@@ -46,7 +57,7 @@ import pathlib
 import re
 import sys
 
-RETIRED = ("medium", "x-small")
+RETIRED = ("medium", "x-small", "display")
 
 # `sgs/business-info` displayTypes that render READABLE CONTENT, as opposed to fine print.
 DISPLAY_TYPES_BODY = ("description", "address", "phone", "email", "hours")
@@ -184,7 +195,10 @@ def self_test() -> int:
 
     # NEGATIVE CONTROLS — a slug that is not retired must never move.
     eq(target_slug("sgs/heading", "{}", "hero"), None, "hero untouched")
-    eq(target_slug("sgs/heading", "{}", "display"), None, "display untouched (404 uses it)")
+    # `display` is RETIRED but has no automatic mapping — there is no equivalent preset, so
+    # --check must FAIL on it and a human writes explicit tier values (as templates/404.html
+    # now does). Returning None here is the correct behaviour, not an oversight.
+    eq(target_slug("sgs/heading", "{}", "display"), None, "display has no auto-mapping")
     eq(target_slug("sgs/text", "{}", "regular"), None, "regular untouched")
     eq(target_slug("sgs/text", "{}", "large"), None, "large untouched")
 
