@@ -234,6 +234,16 @@ if ( '' !== $text_colour_effective ) {
 
 if ( null !== $max_width && '' !== $max_width ) {
 	$base_decls[] = 'max-width:' . floatval( $max_width ) . esc_attr( $max_width_unit );
+	// Pair with auto-centring (2026-09-08 fix) — mirrors sgs/quote's identical
+	// maxWidth pattern (render.php ~line 414-415) and every other block that
+	// emits a bare max-width in this codebase (before-after, option-picker,
+	// testimonial all pair it the same way; a repo-wide grep confirmed
+	// sgs/text was the one outlier). text-align alone centres the TEXT inside
+	// the box; it does not move the box itself within its parent — without
+	// this, a maxWidth-constrained text block sits flush left in any wider
+	// parent, exactly the "text is centred, the block isn't" defect this fix
+	// closes.
+	$base_decls[] = 'margin-inline:auto';
 }
 
 // Custom width (overrides max-width when both are set — only one emitted).
