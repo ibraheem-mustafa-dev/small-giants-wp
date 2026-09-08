@@ -14,25 +14,26 @@
 	transition-property: background-color, color, border-color;
 }
 
-/* ── Full-bleed (root-padding-aware — matches WP core .alignfull) ──
- * Hero breaks out of a constrained parent to the visible edge using the
- * SAME primitive WordPress uses for alignfull: negate the root side-padding.
- *
- * Why this and not 100vw: `--wp--style--root--padding-left/right` is derived
- * from the layout's actual padding (clientWidth-based), so negating it reaches
- * the visible edge WITHOUT the scrollbar-width overflow that `100vw` causes.
- *   • Root padding set (e.g. 24px)  → margin -24px → hero spans to the padded
- *     edge = clientWidth. Scrollbar-safe.
- *   • Root padding absent/0 (front-page, custom template) → the var is empty →
- *     `calc(empty * -1)` collapses to 0 → hero simply fills the parent, which
- *     is already clientWidth. No overshoot.
- * No hardcoded px fallback (the old `,24px` fallback overshot by 24px whenever
- * a page had no root padding) and no JS dependency (the referenced
- * viewport-width.js never existed, so the old `100vw` fallback always fired). */
+/* ── Full-bleed — REMOVED the WP-core-style negative-margin negation (2026-09-08).
+ * The rule this replaces assumed `--wp--style--root--padding-left/right` collapses
+ * to 0 (and so the calc() is harmless) whenever the hero isn't inside a padded
+ * container. That assumption is false: CSS custom properties INHERIT unconditionally
+ * down the whole tree regardless of whether any ancestor actually turns the value
+ * into real applied padding — the var resolves to a real 24px wherever WP's global
+ * styles define it (this theme's root), even on a hero whose actual ancestors
+ * (`sgs/container[contentWidth=full]` -> WP's own `.entry-content` post-content
+ * wrapper) apply ZERO real padding between it and the page edge (measured live,
+ * 2026-09-08 qc-council: both ancestors' own computed padding-left/right are 0px).
+ * Negating a padding value nothing around the hero ever applied shifted the whole
+ * section 24px off-screen on every device — proven live (`document.documentElement.
+ * scrollWidth > clientWidth`) and matches this framework's own documented width
+ * model (D725): top-level sections are bare, unpadded children of `<main>`,
+ * painting edge-to-edge by NOT being capped, not by escaping a padding that was
+ * never there. The draft's own `.sgs-hero` CSS confirms this — it declares no
+ * margin at all. `width:auto`/`max-width:none` stay: harmless, and they prevent
+ * any accidental width cap from a future WP-core default. */
 section.sgs-hero {
 	width: auto;
-	margin-left: calc(var(--wp--style--root--padding-left, 0px) * -1);
-	margin-right: calc(var(--wp--style--root--padding-right, 0px) * -1);
 	max-width: none;
 }
 
