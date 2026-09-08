@@ -176,8 +176,8 @@ def _load_quarantine() -> dict:
     """Load the strict-xfail quarantine manifest (2026-08-24).
 
     The 37 ids listed there are STALE, not regressed - see the manifest's own
-    _meta.why. Re-seeding them needs a LANDED deploy proof that D554-C makes
-    unavailable until Spec 39's converter rework lands.
+    _meta.why. Re-seeding them needs a LANDED deploy proof that the flat-tier
+    clone gate withholds until Spec 31's tier-migration upgrade lands.
 
     FAILS CLOSED. A missing or unreadable manifest raises rather than silently
     quarantining nothing - a quarantine that quietly empties itself would turn
@@ -225,8 +225,8 @@ def _golden_params() -> list:
         "STALE golden, not a regression (quarantined 2026-08-24). Goldens seeded "
         "2026-07-25; FR-31-16 changed the emit contract 2026-08-04 while Gate A's "
         "trigger pointed at a directory deleted at D276. Re-seed needs a LANDED "
-        "proof, which D554-C makes unavailable until Spec 39's converter rework "
-        "lands. See tests/fixtures/conformance/quarantine.json."
+        "proof, which the flat-tier clone gate withholds until Spec 31's "
+        "tier-migration upgrade lands. See tests/fixtures/conformance/quarantine.json."
     )
     params = []
     for gid in _collect_golden_ids():

@@ -7,14 +7,24 @@ BACKGROUND
 The SGS framework is migrating per-device block settings from THREE flat
 attributes (`gap`, `gapTablet`, `gapMobile`) to ONE object-shaped attribute
 (`gap: {"desktop":..., "tablet":..., "mobile":...}`), property by property
-(decisions.md D554-A). The cloning converter still emits the OLD flat shape
-and is NOT being shimmed to bridge the gap (D554-C, Bean-ruled 2026-08-10):
+(decisions.md D554-A). The converter emits object-shaped tiers for the
+box-family tier-shaped properties (padding / margin / borderRadius and their
+prefixed variants) via `box_family_is_tier_shaped()` + `tier_suffix()`, on both
+the resolver spine and the step-3d `route_area_css_to_block_attrs` write site
+(D996). For every property NOT yet covered, the converter still emits the OLD
+flat shape and is NOT shimmed to bridge the gap (D554-A/D554-C):
 
     "A check FAILS a clone run that emits a flat tier for a property already
     migrated on the target block. Divergence becomes loud instead of silent."
     "Rejected: a temporary converter shim. It would make the pipeline pace
     the standard ... and a shim written under time pressure becomes the
     permanent implementation."
+
+⚠ Do not read a green run here as "the tier migration is finished". This gate
+answers one question — did THIS clone emit a flat tier for an already-migrated
+property — and says nothing about how much of the tree is still flat. The
+remaining scope is measured by running a clone and counting, never inferred
+from this gate's exit code.
 
 This script is that check. It is a HARD, always-enforced gate — unlike the
 R-31-15 anti-mirror gate (check_no_mirror.py), there is NO baseline and NO
