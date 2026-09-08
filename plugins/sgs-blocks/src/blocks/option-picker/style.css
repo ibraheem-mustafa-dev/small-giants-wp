@@ -222,7 +222,16 @@
 	 */
 	border-color: var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	font-weight:  700;
+	/*
+	 * 3.21 (2026-09-08): was a hardcoded 700 (CLAUDE.md CSS Override Rule
+	 * violation) that bolded the SELECTED pill regardless of what the resting
+	 * pill's weight was set to — a real drift vs a draft where the selected
+	 * state changes only colour/border, never weight. Now shares the same
+	 * variable the resting pill reads, so a selected pill's weight always
+	 * matches its own resting weight unless a caller sets a DIFFERENT
+	 * --sgs-op-sel-font-weight explicitly.
+	 */
+	font-weight: var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — outlined (white tick on coloured bg).
@@ -257,7 +266,7 @@
 	/* R2: decoupled selected border, falls back to transparent (previous default). */
 	border-color:  var(--sgs-op-sel-border, transparent);
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	font-weight:   700;
+	font-weight:   var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — filled (white tick on coloured bg) */
@@ -287,7 +296,7 @@
 	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 	border-color:     var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius:    var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	font-weight:      700;
+	font-weight:      var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → primary-coloured tick) */
