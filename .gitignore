@@ -24,6 +24,15 @@ desktop.ini
 .claude/scratch/
 .claude/secrets/
 
+# Third-party material studied while building the generative background engine.
+# ANALYSIS ONLY — their shader source and palette artwork. Already covered by
+# .claude/scratch/ above; named explicitly so it stays excluded even if scratch/
+# is ever un-ignored. Rules + reasoning: that directory's NOTICE.md, and
+# .claude/reports/2026-08-25-generative-background-engine-technique-spec.md
+# ("Licence position, stated once"). Never commit any of it; never ship any of it.
+.claude/scratch/stripe-hero-poc-ANALYSIS-ONLY/
+**/stripe-hero-poc-ANALYSIS-ONLY/
+
 # Environment
 .env
 .env.local
