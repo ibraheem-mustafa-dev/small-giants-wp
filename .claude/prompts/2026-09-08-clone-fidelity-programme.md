@@ -5,7 +5,50 @@
 **Latest parity run:** `pipeline-state/mamas-munches-homepage-2026-09-08-105524/`
 **Current score:** CSS 79 / 79 / 84 % at 375 / 768 / 1440. Content 99 %.
 
+## Before you start — reading gate and build facts
+
+⛔ **Read `.claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md` END TO END first.** Project CLAUDE.md
+makes this mandatory for every cloning-pipeline session — not just the sections for the day's
+task, not a grep-and-skim. Issues surface mid-work in sections you were not planning to touch.
+Also read `.claude/LEDGER.md` for live status, and `specs/20-CLONE-FIDELITY-MEASUREMENT.md`
+(the parity tool's own spec) before Phase 1.
+
+⚠ **`npm run build` currently FAILS on `main`** — three pre-existing gates, none of them this
+work: `check-element-manifest-conformance`, `check-editor-render-parity`,
+`check-hover-state-classification`, across five blocks (heading / quote / timeline / text /
+product-faq). Three gates, five blocks. **Build with
+`npx wp-scripts build --experimental-modules --webpack-copy-php` instead.** Do not fix them and
+do not raise their baselines — they are committed debt owned elsewhere.
+
+⚠ **Two operational rules that will otherwise cost an hour each:**
+- The pre-commit visual-diff gate needs a `source_sha` matching the STAGED content. It prints
+  the expected hash when it fails — put that in the report and re-commit. Never fabricate a PASS.
+- Deploying needs a clean tree, but the gate needs live proof, which needs a deploy. Break that
+  deadlock honestly with `build-deploy.py --payload <prefix>`: deploy the declared payload
+  uncommitted, measure, THEN commit. Do not reach for `--allow-dirty` or `--no-verify`.
+
 ---
+
+## How to classify every item — read before Phase 1
+
+Each item below carries a **CLASS**. Bean's framing, and it is the organising idea of this
+whole document:
+
+| Class | Meaning |
+|---|---|
+| **BOTH** | A real clone defect AND proof of a tool blind spot — the page renders wrong *and* the tool scored it clean. **Every one of Bean's 14 eyeball findings is BOTH, by definition: he found them, the tool did not.** |
+| **TOOL** | The tool reports a defect that is not visible on the page. The tool is the bug. Every item Bean looked at and could not see falls here until proven otherwise. |
+| **CLONE** | A real render defect the tool DID correctly catch. Rare in this batch. |
+| **BUILD GAP** | Framework chrome that was never finished — not cloned, so not a clone defect, but shipped broken to every client (the footer's dead links and missing socials). |
+| **NEITHER** | Not a defect and not a tool failure (only the skip-link, 3.24). |
+
+**A BOTH item produces two deliverables, not one:** the render fix, AND the answer to "what
+blind spot let the tool miss this?" — fed into Phase 1. Closing only the render half leaves
+the tool just as blind for the next clone, which is how fourteen defects accumulated unseen.
+
+**Do not assume a TOOL item is closed just because Bean cannot see it.** Prove it renders
+correctly, then fix the tool so it stops reporting it. An unexplained false positive is a
+defect in the instrument we are about to trust.
 
 ## Why this exists
 
@@ -68,12 +111,25 @@ The tool reports `border-top-width` 1px → 0px on the announcement bar and the 
 bar. Confirm against the live DOM, including any `::before`/`::after` ring
 (`sgs_border_gradient_css()` paints borders on a pseudo-element for gradient borders).
 
-**Hero mobile image: reported dropped, all three viewports — the whole "missing 1 %".**
-Bean says both the desktop and mobile hero images are present. The tool reports the
-element `img:freshly baked mamas munches lactation cookies…` as having no counterpart.
-Art-directed tiers render as sibling elements toggled by `@media`, so the hidden-at-this-
-width sibling may simply not match. **Does the tool handle per-device sibling media at
-all?** If not, it will misreport every art-directed image on every clone.
+**Four elements are reported as having no counterpart — not one.** CLASS: TOOL (suspected).
+
+```
+img:freshly baked mamas munches lactation co   lost 2 / 3 / 3 props
+" i was sceptical but honestly these have mad" lost 0
+" bought these for my best friend who was rea" lost 0
+" zainab is so responsive and lovely the cook" lost 0
+```
+
+- **The image.** Bean confirms both the desktop and mobile hero images ARE present, so this
+  is a matching failure, not a missing image. Art-directed tiers render as sibling elements
+  toggled by `@media`, so the hidden-at-this-width sibling never matches. **Does the tool
+  handle per-device sibling media at all?** If not it misreports every art-directed image on
+  every clone. ⚠ It is ONE of four unmatched elements — do not treat it as "the whole missing
+  1 %", which is how this was first written and is wrong.
+- **The three review cards.** These are the `<article>` elements of the testimonial slider,
+  and they sit directly against **3.13 (review cards lost their outlines)**. They lose 0
+  scored props, so they cost nothing in the score — which is exactly why a real defect on
+  those elements could go unseen. Triage them together with 3.13, not separately.
 
 ### 1.2 False negatives — fourteen real defects it never flagged
 
@@ -130,8 +186,11 @@ Counts are per-viewport (375 / 768 / 1440).
 | margin-left / margin-right | 8 | 0 | 4 | 4 | **Unmentioned until now.** Absent at 375 — a tablet/desktop-only centring or gutter difference |
 | order / object-position / flex-direction | 3 | 3 | 0 | 0 | **Unmentioned until now.** Mobile-only — art-direction ordering? |
 
-**Rows above sum to 524 — the full population.** If a triage pass finds a cluster it cannot place
-in one of the three buckets, that is a finding about the tool, not a rounding error.
+**Rows above sum to exactly 524 — the full MISMATCH population.** ⚠ That is not the whole story:
+**unmatched-element losses are a separate bucket** (`meaningful_props_lost_to_unmatched`, 2/3/3
+across the four elements in §1.1), and so are `fluid_declined` (35/35/7) and `sub_visible` (54).
+A cluster that cannot be placed in one of the three buckets is a finding about the tool, not a
+rounding error — and work must not be scoped out on the grounds that "524 is everything".
 
 ⚠ Twelve of these clusters (78 diffs, ~15 %) had never been looked at before this
 document. Four of the largest — margin-bottom, padding, font-weight, justify-content —
@@ -253,6 +312,10 @@ Investigation with fact-checking. No fixes until each is written up and reviewed
 
 ### Bean's findings — none of these were caught by the tool
 
+**All fourteen are CLASS: BOTH** — a real render defect AND proof of a tool blind spot, because
+Bean found every one of them by eye and the tool scored them clean. Each therefore owes two
+answers: the render fix, and what let the tool miss it (feed that to Phase 1).
+
 | # | Defect | Notes |
 |---|---|---|
 | 3.1 | **The hero block extends outside the right side of the page, on every device** | Bean's own observation, and he calls it "a huge issue" — treat his eye as the finding, not the number. The tool separately shows a constant overrun at rest (1440→1449, 768→777, 375→384), but that instrument is the one under suspicion, so use it as corroboration only. Likely the same cause as 3.2. |
@@ -270,20 +333,30 @@ Investigation with fact-checking. No fixes until each is written up and reviewed
 | 3.13 | **Trustpilot bar has too much white space at the bottom** | Top and bottom spacing should match, as they do in the draft. |
 | 3.14 | **Review cards have lost their outlines** | We legitimately diverge by using a slider; that does not excuse dropping the card borders. |
 
+### Content defects found by audit, not by the parity tool
+
+| # | Defect | Notes |
+|---|---|---|
+| # | Defect | Class | Notes |
+|---|---|---|---|
+| 3.15 | **Every footer link points nowhere — `href="#"`** | BUILD GAP | Home / Shop / About / Contact / Privacy Policy are all placeholders in the shipped `sgs/framework-footer-default` pattern's list block. Not a clone bug — the footer is framework chrome and is never cloned — but it ships broken navigation on every client site using the default footer. The draft's own footer carries 12 real links in two columns (Shop / Information); ours has one generic column of 5. ⚠ **BLOCKED ON BEAN: ask him for the real page URLs at the START of the session, not at the end.** Do not invent them, and do not let this stall silently. |
+| 3.16 | **The mobile hero image has the wrong alt text** | BOTH | It carries the DESKTOP image's alt ("Close-up of Mama's Munches Zookies — real ingredients, baked fresh") instead of its own draft alt ("Freshly baked Mama's Munches lactation cookies on a warm background"). Invisible to a text-matcher because alt is a non-visible attribute on an element hidden at that viewport — a genuine tool blind spot. Distinct from the art-direction matching question in §1.1: the image IS present (Bean confirmed); its alt is simply copied from the wrong source. |
+| 3.17 | **Footer social links missing** | BUILD GAP | The draft's footer declares Instagram and WhatsApp links; neither renders. Same class as 3.15. |
+
 ### Items previously reported as open — re-check before spending time
 
-| # | Claim | Status |
-|---|---|---|
-| 3.15 | Borders not transferring | **Bean says already working.** Likely a Phase 1 false positive. Confirm, then close. |
-| 3.16 | `max-width: 1280px` applied to 3 elements the draft never capped | Bean: "Where does this exist? It's not visible anywhere." **First establish whether the defect is real and visible at all** — do not start from a cause. If it IS real, one candidate worth testing (not assumed) is `sgs/container`'s `contentWidth` default `"normal"`, the sibling of the `layout` default already fixed. If it is not visible, close it and fix the tool instead. |
-| 3.17 | `flex-grow: 1` on two buttons and the hero content | Bean has seen no button expand. `flex-grow: 1` means "take a share of the leftover space on this row" — it changes width, not hover. Confirm whether it has any visible effect; close if not. |
-| 3.18 | Pill styling drift (weight 600→500/700, text-align, 1px padding) | Bean cannot see it. Some are likely equivalent-by-different-mechanism (draft centres with `text-align`, clone with `justify-content`). Confirm visually before treating as defects. |
-| 3.19 | Image-background cluster: `background-size` auto→cover, plus `background-repeat` and `background-position` (12 diffs each, 36 total) and probably `border-image-slice` (12) | Treat as ONE cluster — the same handful of image elements almost certainly drives all four properties. Bean asked three things: **which images**, **does it change anything visible** versus the draft's `auto`, and — his instruction — **our defaults should align with the draft's**. Answer all three. |
-| 3.20 | Product-card gaps wrong | Bean: they look fine. Probably another false positive. |
+| # | Claim | Class | Status |
+|---|---|---|---|
+| 3.18 | Borders not transferring | TOOL | **Bean says already working.** Likely a Phase 1 false positive. Confirm, then close. |
+| 3.19 | `max-width: 1280px` applied to 3 elements the draft never capped | TOOL | Bean: "Where does this exist? It's not visible anywhere." **First establish whether the defect is real and visible at all** — do not start from a cause. If it IS real, one candidate worth testing (not assumed) is `sgs/container`'s `contentWidth` default `"normal"`, the sibling of the `layout` default already fixed. If it is not visible, close it and fix the tool instead. |
+| 3.20 | `flex-grow: 1` on two buttons and the hero content | TOOL | Bean has seen no button expand. `flex-grow: 1` means "take a share of the leftover space on this row" — it changes width, not hover. Confirm whether it has any visible effect; close if not. |
+| 3.21 | Pill styling drift (weight 600→500/700, text-align, 1px padding) | TOOL | Bean cannot see it. Some are likely equivalent-by-different-mechanism (draft centres with `text-align`, clone with `justify-content`). Confirm visually before treating as defects. |
+| 3.22 | Image-background cluster: `background-size` auto→cover, plus `background-repeat` and `background-position` (12 diffs each, 36 total) and probably `border-image-slice` (12) | BOTH | Treat as ONE cluster — the same handful of image elements almost certainly drives all four properties. Bean asked three things: **which images**, **does it change anything visible** versus the draft's `auto`, and — his instruction — **our defaults should align with the draft's**. Answer all three. |
+| 3.23 | Product-card gaps wrong | TOOL | Bean: they look fine. Probably another false positive. |
 
 ### Not a defect — answer and close
 
-**3.21 — CLOSED, verified.** `<a class="skip-link screen-reader-text" id="wp-skip-link"
+**3.24 — CLOSED, verified. CLASS: NEITHER.** `<a class="skip-link screen-reader-text" id="wp-skip-link"
 href="#main">Skip to content</a>` is a standard WordPress accessibility feature, not clone
 bleed. It lets keyboard and screen-reader users jump past the navigation, and it is
 required for WCAG 2.4.1 (Bypass Blocks). It is visually hidden until focused, which is why
@@ -309,6 +382,16 @@ Re-run the clone and re-measure after each group. Expect the score to *drop* whe
 tool is fixed: that is the bent ruler being straightened, not a regression.
 
 ---
+
+## Adjacent open work — not this programme, but do not lose it
+
+**The colour-census gate does not protect already-migrated rows.** A negative control was run on
+2026-09-07 and FAILED: breaking a migrated row's base attribute still reported PASS, because the
+census only admits rows that are still non-conformant — a migrated row leaves the population
+entirely. The gate guards the frontier, not the territory. Fix, if wanted: `--check` needs a
+recorded roster of completed rows written at migration time, and must re-assert those still
+resolve. Until then, do not describe that gate as protecting the colour work. Full detail in
+`.claude/LEDGER.md`.
 
 ## Recently fixed — do not re-investigate
 
