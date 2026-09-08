@@ -127,7 +127,11 @@ Counts are per-viewport (375 / 768 / 1440).
 | display | 4 | 2 | 1 | 1 | **Unmentioned until now.** flex vs block on a tag element |
 | max-height | 3 | 1 | 1 | 1 | **Unmentioned until now.** May relate to 3.7 (brand image sizing) |
 | flex-basis | 3 | 1 | 1 | 1 | **Unmentioned until now.** |
+| margin-left / margin-right | 8 | 0 | 4 | 4 | **Unmentioned until now.** Absent at 375 — a tablet/desktop-only centring or gutter difference |
 | order / object-position / flex-direction | 3 | 3 | 0 | 0 | **Unmentioned until now.** Mobile-only — art-direction ordering? |
+
+**Rows above sum to 524 — the full population.** If a triage pass finds a cluster it cannot place
+in one of the three buckets, that is a finding about the tool, not a rounding error.
 
 ⚠ Twelve of these clusters (78 diffs, ~15 %) had never been looked at before this
 document. Four of the largest — margin-bottom, padding, font-weight, justify-content —
