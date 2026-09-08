@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>FR-38-31 perf harness</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  canvas{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+/*
+ * Perf harness for the SHIPPED FR-38-31 effect.
+ *
+ * Deliberately a SEPARATE page from fr3831-banding.html: that file is the fixture behind a
+ * recorded banding measurement, and editing it would put that result in question. This one
+ * exists only to be driven repeatedly by perf/measure-frame-cost.mjs.
+ *
+ * Sized to 1393x761 by default -- the Stripe rig's exact canvas box -- so the two effects are
+ * compared at the same pixel count. A fillrate-bound effect measured at a different size is
+ * not a comparison.
+ *
+ * NOTE: wave-gradient.js's own resize() clamps dpr to 1.5 (the shipped DPR cap). So a request
+ * for dpr=2 renders at 1.5x here and at 2x in the Stripe rig. That is a real difference in the
+ * shipped effects, not a harness bug -- which is why the harness reports the ACTUAL
+ * canvas.width/height backing store rather than the requested dpr.
+ */
+import { createWaveGradient } from '../fr3831/wave-gradient.js';
+
+const q    = new URLSearchParams( location.search );
+const W    = parseInt( q.get( 'w' )   || '1393', 10 );
+const H    = parseInt( q.get( 'h' )   || '761',  10 );
+const DPR  = parseFloat( q.get( 'dpr' ) || '1' );
+
+const hex = ( h ) => [
+	parseInt( h.slice( 1, 3 ), 16 ) / 255,
+	parseInt( h.slice( 3, 5 ), 16 ) / 255,
+	parseInt( h.slice( 5, 7 ), 16 ) / 255,
+];
+
+const canvas = document.getElementById( 'c' );
+canvas.style.width  = W + 'px';
+canvas.style.height = H + 'px';
+
+// The shipped default colours, so the cost measured is the cost of the real thing.
+const gradient = createWaveGradient( canvas, {
+	colours: [ hex( '#1b2a4a' ), hex( '#3f7fd1' ), hex( '#7b4bd8' ), hex( '#d95f8a' ) ],
+} );
+
+if ( ! gradient ) {
+	window.__err   = 'createWaveGradient returned null';
+	window.__ready = true;
+} else {
+	gradient.resize( W, H, DPR );
+	gradient.draw( 3.0 );
+
+	// Same contract as the Stripe rig: a deterministic single-frame draw entry point, no rAF.
+	window.__drawAt = ( t ) => gradient.draw( t );
+	window.__gradient = gradient;
+	window.__ready  = true;
+}
+</script>
+</body>
+</html>

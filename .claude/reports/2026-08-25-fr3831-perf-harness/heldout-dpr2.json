@@ -1,0 +1,31 @@
+{
+  "label": "HELD-OUT FRAME, DPR 2 (u_time 44491.7)",
+  "reference": "heldout-live-dpr2.png",
+  "candidate": "heldout-rig-dpr2.png",
+  "crop": [
+    2300,
+    200,
+    2840,
+    1200
+  ],
+  "pixels": 540000,
+  "mean_abs_255": 1.7719172839506172,
+  "mean_abs_pct": 0.6948695231178891,
+  "signed_mean": {
+    "R": -0.0007388888888888889,
+    "G": -0.24621666666666667,
+    "B": -0.37822962962962964
+  },
+  "bias_over_abs": 0.11760992661224189,
+  "within_pct": {
+    "4": 82.14333333333333,
+    "8": 95.9574074074074,
+    "16": 98.61518518518518,
+    "32": 99.58296296296297
+  },
+  "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+  "worst_single_channel_255": 117,
+  "ceiling_pct": 5.0,
+  "under_ceiling": true,
+  "crop_scale": 2.0
+}

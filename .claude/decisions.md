@@ -5771,7 +5771,7 @@ then we can use that as a foundation and make it our own."** Explicit, considere
 confirmation after the first flag — not proceeding on an ambiguous or heat-of-the-moment reading.
 
 **What this changes:** the "ship none of their files, keep no copies in this repo" rule
-(`.claude/plans/2026-08-27-generative-background-engine.md` KJC-4, and the technique spec's
+(`.claude/plans/archive/2026-08-27-generative-background-engine.md` KJC-4, and the technique spec's
 licence position section) no longer binds the geometry/vertex-shader mechanism specifically.
 Stripe's actual reference vertex shader (`.claude/scratch/stripe-hero-poc/shaders/68467.glsl`,
 previously study-only) may now be ported directly into the shipped product as the starting point
@@ -6071,7 +6071,7 @@ investigations fed into).
 
 ## D874 [ROUTINE] — the generative-background-engine technique spec closed the D794 NO-GO, and two more council rounds caught what the fix itself got wrong
 
-**2026-08-28.** Closes Phase 2 of `.claude/plans/2026-08-27-generative-background-engine.md`.
+**2026-08-28.** Closes Phase 2 of `.claude/plans/archive/2026-08-27-generative-background-engine.md`.
 `.claude/reports/2026-08-25-generative-background-engine-technique-spec.md` absorbed all 13
 must-fix items from D794's register (animation section, camera/projection, acceptance criteria,
 target file, OKLab/licence/evidence-pointer corrections, configurability axes) in one pass, then
@@ -6726,7 +6726,7 @@ technique spec's own frontmatter (*"reference spec for the FR-38-31 rework"*).
   recorded as **wrong** (*"the rejected look turns out to be four CSS values, not a shader
   problem"* — it was not; a palette change, a full technique change and a regression fix later,
   the verdict was still negative).
-- `plans/2026-08-27-generative-background-engine.md` — the rebuild, old Phases 2+3 renumbered from 1.
+- `plans/archive/2026-08-27-generative-background-engine.md` — the rebuild, old Phases 2+3 renumbered from 1.
 - The technique spec `git mv`d to `reports/2026-08-25-generative-background-engine-technique-spec.md`
   with a re-head block. ⛔ **No pointer left at the old path** — `handoff-preflight.py`'s
   `check_no_tombstones` fails on exactly that; the five inbound references were updated instead.

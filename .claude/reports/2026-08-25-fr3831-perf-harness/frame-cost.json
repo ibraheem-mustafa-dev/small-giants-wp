@@ -1,0 +1,489 @@
+{
+  "meta": {
+    "generated": "2026-08-25T20:12:19.432Z",
+    "browserVersion": "147.0.7727.15",
+    "launchArgs": [
+      "--use-angle=default",
+      "--enable-gpu",
+      "--enable-webgl"
+    ],
+    "ignoreGpuBlocklist": false,
+    "framesPerLeg": 480,
+    "warmupDiscarded": 30,
+    "canvasCssBox": "1393x761 (the Stripe rig's own box; FR-38-31 harness matched to it)"
+  },
+  "controls": {
+    "positive": {
+      "test": "DPR 2 must cost measurably more than DPR 1 on a fillrate-bound effect",
+      "dpr1Ms": 0.37328,
+      "dpr2Ms": 1.134624,
+      "ratio": 3.039605657951136,
+      "pass": true
+    },
+    "negative": {
+      "test": "a glClear-only page must cost far less than the real effect; if it does not, the harness is measuring itself",
+      "clearOnlyMs": 0.004224,
+      "realEffectMs": 0.37328,
+      "ratio": 88.37121212121211,
+      "pass": true
+    }
+  },
+  "derived": {
+    "methodAgreement": {
+      "stripe-dpr1": {
+        "gpuTimerMs": 0.37328,
+        "batchedWallMs": 0.3966666666169961,
+        "ratio": 1.0626518072679922
+      },
+      "stripe-dpr2": {
+        "gpuTimerMs": 1.134624,
+        "batchedWallMs": 0.8549999999503295,
+        "ratio": 0.7535536000915981
+      },
+      "stripe-nopost-dpr1": {
+        "gpuTimerMs": 0.112672,
+        "batchedWallMs": 0.1383333332836628,
+        "ratio": 1.2277525319836586
+      },
+      "stripe-nopost-dpr2": {
+        "gpuTimerMs": 0.367456,
+        "batchedWallMs": 0.43166666651765506,
+        "ratio": 1.1747438237983734
+      },
+      "fr3831-dpr1": {
+        "gpuTimerMs": 0.039744,
+        "batchedWallMs": 0.038333333532015484,
+        "ratio": 0.9645061778385539
+      },
+      "fr3831-dpr2": {
+        "gpuTimerMs": 0.070272,
+        "batchedWallMs": 0.07166666661699612,
+        "ratio": 1.0198466902464156
+      },
+      "negative-control": {
+        "gpuTimerMs": 0.004224,
+        "batchedWallMs": 0.010000000149011612,
+        "ratio": 2.3674242777016126
+      }
+    },
+    "postPassCostMs_dpr1": 0.260608,
+    "postPassShare_dpr1": 0.698156879554222,
+    "postPassCostMs_dpr2": 0.7671680000000001,
+    "postPassShare_dpr2": 0.676142933694334,
+    "stripeVsFr3831_dpr1": 9.392109500805153
+  },
+  "results": {
+    "stripe-dpr1": {
+      "errors": [],
+      "backingStore": {
+        "width": 1393,
+        "height": 761
+      },
+      "megapixels": 1.060073,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 1.0000000149011612,
+      "capability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      },
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": {
+        "observedMs": 6000,
+        "rafTicks": 600,
+        "drawCallsDuringWindow": 600,
+        "drawCallsPerRafTick": 1,
+        "meanIntervalMs": 10.017195325537596,
+        "medianIntervalMs": 9.900000005960464,
+        "p95IntervalMs": 10.599999994039536,
+        "longFramesOver20ms": 1,
+        "effectiveFps": 99.8283419162871
+      },
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.37328,
+        "meanMs": 0.37228,
+        "p95Ms": 0.379904,
+        "minMs": 0.360608,
+        "maxMs": 0.384512
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.5366666664679846,
+        "meanMs": 0.4440476190476191,
+        "medianMs": 0.3966666666169961,
+        "p95Ms": 0.5799999999503295,
+        "minMs": 0.325,
+        "maxMs": 0.5799999999503295
+      },
+      "drawCallsPerDraw": 2,
+      "label": "Stripe rig — both passes",
+      "requestedDpr": 1,
+      "url": "index.html",
+      "pageProblems": [
+        "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "msPerMegapixel": 0.35212669316169737
+    },
+    "stripe-dpr2": {
+      "errors": [],
+      "backingStore": {
+        "width": 2786,
+        "height": 1522
+      },
+      "megapixels": 4.240292,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 2.0000000298023224,
+      "capability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      },
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": {
+        "observedMs": 6000,
+        "rafTicks": 601,
+        "drawCallsDuringWindow": 602,
+        "drawCallsPerRafTick": 1.0016638935108153,
+        "meanIntervalMs": 10.000500000019867,
+        "medianIntervalMs": 9.900000005960464,
+        "p95IntervalMs": 10.799999997019768,
+        "longFramesOver20ms": 0,
+        "effectiveFps": 99.99500024978884
+      },
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 1.134624,
+        "meanMs": 1.3912672,
+        "p95Ms": 2.500384,
+        "minMs": 1.105408,
+        "maxMs": 2.539904
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 1.2633333332836627,
+        "meanMs": 0.891428571478242,
+        "medianMs": 0.8549999999503295,
+        "p95Ms": 1.1233333334326745,
+        "minMs": 0.8466666668653489,
+        "maxMs": 1.1233333334326745
+      },
+      "drawCallsPerDraw": 2,
+      "label": "Stripe rig — both passes",
+      "requestedDpr": 2,
+      "url": "index.html",
+      "pageProblems": [],
+      "msPerMegapixel": 0.2675815722124797
+    },
+    "stripe-nopost-dpr1": {
+      "errors": [],
+      "backingStore": {
+        "width": 1393,
+        "height": 761
+      },
+      "megapixels": 1.060073,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 1.0000000149011612,
+      "capability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      },
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": {
+        "observedMs": 6000,
+        "rafTicks": 602,
+        "drawCallsDuringWindow": 301,
+        "drawCallsPerRafTick": 0.5,
+        "meanIntervalMs": 9.99484193012639,
+        "medianIntervalMs": 10,
+        "p95IntervalMs": 10.400000005960464,
+        "longFramesOver20ms": 0,
+        "effectiveFps": 100.05160731815141
+      },
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.112672,
+        "meanMs": 0.11266666666666665,
+        "p95Ms": 0.116736,
+        "minMs": 0.108576,
+        "maxMs": 0.119296
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.14500000004967054,
+        "meanMs": 0.1411904761833804,
+        "medianMs": 0.1383333332836628,
+        "p95Ms": 0.17166666661699612,
+        "minMs": 0.12333333318432173,
+        "maxMs": 0.17166666661699612
+      },
+      "drawCallsPerDraw": 1,
+      "label": "Stripe rig — wave pass only",
+      "requestedDpr": 1,
+      "url": "index.html?nopost",
+      "pageProblems": [],
+      "msPerMegapixel": 0.1062870198561797
+    },
+    "stripe-nopost-dpr2": {
+      "errors": [],
+      "backingStore": {
+        "width": 2786,
+        "height": 1522
+      },
+      "megapixels": 4.240292,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 2.0000000298023224,
+      "capability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      },
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": {
+        "observedMs": 6000,
+        "rafTicks": 599,
+        "drawCallsDuringWindow": 299,
+        "drawCallsPerRafTick": 0.4991652754590985,
+        "meanIntervalMs": 10.034615384620368,
+        "medianIntervalMs": 10,
+        "p95IntervalMs": 10.599999994039536,
+        "longFramesOver20ms": 1,
+        "effectiveFps": 99.65504024525522
+      },
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.367456,
+        "meanMs": 0.36336960000000007,
+        "p95Ms": 0.379456,
+        "minMs": 0.342336,
+        "maxMs": 0.386976
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.4633333332836628,
+        "meanMs": 0.39999999999999997,
+        "medianMs": 0.43166666651765506,
+        "p95Ms": 0.46833333323399223,
+        "minMs": 0.3,
+        "maxMs": 0.46833333323399223
+      },
+      "drawCallsPerDraw": 1,
+      "label": "Stripe rig — wave pass only",
+      "requestedDpr": 2,
+      "url": "index.html?nopost",
+      "pageProblems": [],
+      "msPerMegapixel": 0.0866581829741914
+    },
+    "fr3831-dpr1": {
+      "errors": [],
+      "backingStore": {
+        "width": 1393,
+        "height": 761
+      },
+      "megapixels": 1.060073,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 1.0000000149011612,
+      "capability": null,
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": null,
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.039744,
+        "meanMs": 0.03859626666666668,
+        "p95Ms": 0.04352,
+        "minMs": 0.031232,
+        "maxMs": 0.0512
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.06000000014901161,
+        "meanMs": 0.04142857144276301,
+        "medianMs": 0.038333333532015484,
+        "p95Ms": 0.058333333333333334,
+        "minMs": 0.036666666716337205,
+        "maxMs": 0.058333333333333334
+      },
+      "drawCallsPerDraw": 1,
+      "label": "FR-38-31 as shipped",
+      "requestedDpr": 1,
+      "url": "perf/fr3831-perf.html?w=1393&h=761&dpr=1",
+      "pageProblems": [],
+      "msPerMegapixel": 0.03749175764310571
+    },
+    "fr3831-dpr2": {
+      "errors": [],
+      "backingStore": {
+        "width": 2090,
+        "height": 1142
+      },
+      "megapixels": 2.38678,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 2.0000000298023224,
+      "capability": null,
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": null,
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.070272,
+        "meanMs": 0.06972266666666668,
+        "p95Ms": 0.074496,
+        "minMs": 0.06144,
+        "maxMs": 0.077824
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.07333333343267441,
+        "meanMs": 0.07309523813781284,
+        "medianMs": 0.07166666661699612,
+        "p95Ms": 0.08333333333333333,
+        "minMs": 0.06500000009934108,
+        "maxMs": 0.08333333333333333
+      },
+      "drawCallsPerDraw": 1,
+      "label": "FR-38-31 as shipped (DPR capped at 1.5)",
+      "requestedDpr": 2,
+      "url": "perf/fr3831-perf.html?w=1393&h=761&dpr=2",
+      "pageProblems": [],
+      "msPerMegapixel": 0.02944217732677499
+    },
+    "negative-control": {
+      "errors": [],
+      "backingStore": {
+        "width": 1393,
+        "height": 761
+      },
+      "megapixels": 1.060073,
+      "cssSize": {
+        "width": 1393,
+        "height": 761
+      },
+      "devicePixelRatio": 1.0000000149011612,
+      "capability": null,
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "liveLoop": null,
+      "gpuTimer": {
+        "available": true,
+        "samples": 60,
+        "medianMs": 0.004224,
+        "meanMs": 0.005215466666666666,
+        "p95Ms": 0.012384,
+        "minMs": 0,
+        "maxMs": 0.014016
+      },
+      "throughput": {
+        "method": "batched: 60 draws per timed block, one gl.finish() either side",
+        "batches": 8,
+        "batchSize": 60,
+        "warmupBatchesDiscarded": 1,
+        "firstBatchMsPerFrame": 0.016666666666666666,
+        "meanMs": 0.00952380955928848,
+        "medianMs": 0.010000000149011612,
+        "p95Ms": 0.011666666716337204,
+        "minMs": 0.0049999999503294625,
+        "maxMs": 0.011666666716337204
+      },
+      "drawCallsPerDraw": 0,
+      "label": "NEGATIVE CONTROL — glClear only",
+      "requestedDpr": 1,
+      "url": "perf/negative-control.html?w=1393&h=761&dpr=1",
+      "pageProblems": [],
+      "msPerMegapixel": 0.00398463124709336
+    }
+  }
+}

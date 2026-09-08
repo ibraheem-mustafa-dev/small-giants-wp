@@ -82,9 +82,32 @@ Single file: `plugins/sgs-blocks/scripts/parity/computed-parity.js`.
 - Update the box-comparison consumer (`runTier`'s box branch) to try multiple candidates per
   key and keep the best match, per the same experiment.
 
+## Relationship to the 37 conformance goldens — a different system, easily confused
+
+Both are "snapshots", and conflating them wastes a session. They share nothing.
+
+| | This tool (`computed-parity.js`) | The conformance goldens |
+|---|---|---|
+| Measures | RENDERED fidelity: the live clone's computed styles vs the draft's | The CONVERTER's emitted block markup vs a frozen expected output |
+| Ground truth | The draft, measured fresh every run | A file on disk, saved once |
+| State | Live, runs on every clone at Stage 11.6 | 37 of 39 quarantined as `xfail(strict=True)` since 2026-08-24 |
+| Unblocked by | Nothing — it runs today | Spec 31's tier-migration upgrade, then a landed deploy, then a re-seed |
+
+Fixing this tool unquarantines no golden, and re-seeding the goldens validates nothing here.
+
 ## Verification
 
-Re-run `computed-parity.js` against page 2742 pre/post:
+⚠ **The pre/post comparison below can no longer be run as written.** The change is already
+in `computed-parity.js`, so the "pre" measurement no longer exists and cannot be recovered
+after the fact. **Capture a baseline BEFORE editing a measurement tool, never after** — once
+the instrument has changed, there is nothing left to compare it against.
+
+What is still runnable, and is the better test anyway: check the tool's output against the
+DRAFT's real computed styles — the ground truth it exists to match — rather than against an
+older run of itself. A tool agreeing with its own previous output proves consistency, not
+correctness.
+
+Re-run `computed-parity.js` against page 2742:
 - Announcement-bar + Trustpilot-bar `border-top-width`: must report the true 1px (currently
   false 0px).
 - Footer-row `display`/`justify-content`: must stay correctly matched (no regression) AND the

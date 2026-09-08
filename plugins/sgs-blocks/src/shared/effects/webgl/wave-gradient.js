@@ -60,7 +60,7 @@
  * label and its honest description. It was modelled on stripe.com's hero, and
  * D781 found even THAT reference was the wrong thing. Bean's aurora ask
  * belongs to the separate, unbuilt GENERATIVE BACKGROUND ENGINE:
- *   plan  .claude/plans/2026-08-27-generative-background-engine.md
+ *   plan  .claude/plans/archive/2026-08-27-generative-background-engine.md
  *   spec  .claude/reports/2026-08-25-generative-background-engine-technique-spec.md
  * An aurora also needs a NEAR-BLACK ground, which is the opposite of this
  * effect's deliberately light one. Do not do engine work in this file.

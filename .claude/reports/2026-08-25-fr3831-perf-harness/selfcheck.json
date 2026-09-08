@@ -1,0 +1,31 @@
+{
+  "label": "SELF-CHECK vs recorded 0.66% cell",
+  "reference": "gateb-live.png",
+  "candidate": "qc-2b.png",
+  "crop": [
+    1150,
+    100,
+    1420,
+    600
+  ],
+  "pixels": 135000,
+  "mean_abs_255": 1.6899802469135803,
+  "mean_abs_pct": 0.6627373517308158,
+  "signed_mean": {
+    "R": 0.019733333333333332,
+    "G": -0.2992444444444444,
+    "B": -0.45155555555555554
+  },
+  "bias_over_abs": 0.15198073759354333,
+  "within_pct": {
+    "4": 84.14,
+    "8": 95.23185185185186,
+    "16": 98.09925925925926,
+    "32": 99.29925925925926
+  },
+  "reference_note": "VERIFY WHICH FILE IS THE LIVE CAPTURE BY CONTENT, NOT BY NAME. gateb-live.png is the live stripe.com capture; blend-live-full.png is NOT (it is byte-identical to blend-fixed.png, a rig render).",
+  "worst_single_channel_255": 124,
+  "ceiling_pct": 5.0,
+  "under_ceiling": true,
+  "crop_scale": 1.0
+}

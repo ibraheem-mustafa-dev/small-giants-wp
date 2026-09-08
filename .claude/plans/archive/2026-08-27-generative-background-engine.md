@@ -133,10 +133,28 @@ violet — beyond four it muddies to brown); slow cycle (~18s in the CSS form). 
 the engine must still answer: body text over the raw gradient can drop below 4.5:1 as colours move;
 it fails behind tables, forms and long-form reading; it needs a reduced-motion fallback.
 
-## Phase 2 — Complete the technique spec so it is buildable
+## Phase 2 — Complete the technique spec so it is buildable: ✅ SATISFIED
 
-Only after Phase 1. Absorb D794's must-fix register into
-`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`:
+The register below was absorbed into
+`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`, and the gate was
+met: a six-seat `/adversarial-council` pass returned NO-GO (avg grade C), every must-fix was
+applied, a 3-seat targeted re-check found one further defect which was fixed, and the round-3
+spec-lawyer sweep returned **GO (grade A-)** with the legal and render-math re-checks also at
+A-. That GO is what unblocked Phase 3. The spec's own status line carries the full record.
+
+Item 7 (the legal framing) is verifiable in the spec's "Licence position, stated once"
+section: s.50BA is scoped to computer programs and stated as not reaching the palette image;
+s.29 research fair dealing is stated as non-commercial-only and therefore unavailable; the
+citation names the High Court as the court that applied the CJEU ruling, with the Court of
+Appeal's role given as the ordinary appellate one; and the *Infopaq* "author's own
+intellectual creation" caveat is stated alongside the idea/expression split rather than the
+helpful half of *SAS* alone.
+
+Item 8 closed 2026-09-08: the perf tooling is promoted to
+`.claude/reports/2026-08-25-fr3831-perf-harness/`. Its README records which files were
+deliberately left behind and why.
+
+The register, for reference:
 
 1. The **animation** section — "Twist"/"Displacement" are currently orphaned table rows.
 2. **Camera, projection and coordinate space** — absent entirely.
@@ -152,8 +170,8 @@ Only after Phase 1. Absorb D794's must-fix register into
 12. Resolve **§6's ground** as a CONTROL carrying both presets, not a fixed choice.
 13. Add the **configurability axes** Bean asked for: colours, shapes, sizes, positions, speed.
 
-**Gate:** the completed spec goes through `/adversarial-council` again. D794 said NO-GO on the thin
-version; the rewrite must earn a GO before any build.
+**Gate (met):** the completed spec went through `/adversarial-council` again and earned its GO
+before the build, as recorded above.
 
 ## Phase 3 — Build: COMPLETE, no open scope. Engine shipped 2026-08-29; fidelity CLOSED (D925-D927); speed fixed (D930/D932); colour vibrancy FIXED (D939/D941, 2026-09-03).
 
@@ -250,30 +268,6 @@ A shader we write ourselves does not inherit it.
    it, write our own, keep nothing.
 
 Write the aurora from scratch. That was already the conclusion; this settles the paperwork.
-
-*(Superseded detail below, kept for the reasoning only — do NOT re-open it as an action. The three
-overstatements it names should be corrected in the technique spec during Phase 2 as a
-doc-accuracy fix, not treated as a blocker or escalated for advice.)*
-
-## Carried decision (SUPERSEDED — reasoning only) — KJC-4: legal framing in the technique spec
-
-**Decision:** correct three overstatements before that document is relied on. Carried from the
-archived plan because it belongs to this spec, not to FR-38-31.
-
-**Why:** s.50BA permits *studying*, not making and keeping copies; it covers **computer programs**,
-not the palette PNG (an artistic work — and s.29 research fair dealing is non-commercial only, so
-unavailable to a commercial business); and the citation currently reads as though the CJEU decision
-went to the Court of Appeal. The spec also cites only the half of *SAS* that helps — it also holds
-that reproducing described elements can infringe where they are the author's own intellectual
-creation.
-
-**Cost of wrong choice:** a tracked document that overstates a legal position is worse than one that
-states a reasoned position honestly, because future sessions will rely on it.
-
-**Who decides:** Bean. ⚠ **Not legal advice.** The council seat's recommendation — an hour of a UK IP
-solicitor's time on (a) whether a site visitor is a "lawful user" for s.50BA and (b) SGS's standard
-client IP warranty/indemnity — is worth taking. The indemnity is where the real money risk sits:
-**the client publishes the site**, and small-agency IP indemnities are often uncapped.
 
 ## References
 

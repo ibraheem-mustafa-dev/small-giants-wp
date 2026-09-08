@@ -1,0 +1,66 @@
+{
+  "generated": "2026-08-25T20:20:46.906Z",
+  "priorGateBTime": 44345.4,
+  "captures": [
+    {
+      "dpr": 1,
+      "uTime": 44101.7,
+      "differsFromGateB": true,
+      "live": "heldout-live-dpr1.png",
+      "rig": "heldout-rig-dpr1.png",
+      "liveCanvas": {
+        "w": 1392,
+        "h": 760,
+        "cssW": 1393,
+        "cssH": 761
+      },
+      "rigCanvas": {
+        "w": 1393,
+        "h": 761
+      },
+      "rigCapability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      }
+    },
+    {
+      "dpr": 2,
+      "uTime": 44491.7,
+      "differsFromGateB": true,
+      "live": "heldout-live-dpr2.png",
+      "rig": "heldout-rig-dpr2.png",
+      "liveCanvas": {
+        "w": 2785,
+        "h": 1521,
+        "cssW": 1393,
+        "cssH": 761
+      },
+      "rigCanvas": {
+        "w": 2786,
+        "h": 1522
+      },
+      "rigCapability": {
+        "supported": true,
+        "confidence": "high",
+        "reason": "GPU not blocklisted: angle (nvidia, nvidia geforce rtx 2060 (0x00001e89) direct3d11 vs_5_0 ps_5_0, d3d11)",
+        "gpu": {
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 2060 (0x00001E89) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "vendor": "Google Inc. (NVIDIA)"
+        },
+        "device": {
+          "isMobile": false,
+          "isIpad": false
+        }
+      }
+    }
+  ]
+}

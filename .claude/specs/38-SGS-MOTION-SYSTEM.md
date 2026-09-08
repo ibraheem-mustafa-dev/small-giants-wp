@@ -1111,7 +1111,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   ⛔ **SCOPE (D838, 2026-08-27): FR-38-31 is a FINISHED, SELF-CONTAINED effect.** The
   configurable **generative background engine** — one engine remappable for colours, shapes,
   sizes and positions — is SEPARATE, unbuilt work with its own plan
-  (`.claude/plans/2026-08-27-generative-background-engine.md`) and its own build spec
+  (`.claude/plans/archive/2026-08-27-generative-background-engine.md`) and its own build spec
   (`.claude/reports/2026-08-25-generative-background-engine-technique-spec.md`). It will carry its
   own FR when it is built. **Do not read the rejected-look history below as an open build item on
   FR-38-31, and do not do engine work under this FR.**

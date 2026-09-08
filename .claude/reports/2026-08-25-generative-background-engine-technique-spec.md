@@ -12,7 +12,7 @@ last_updated: 2026-08-28
 >
 > **What it IS.** The **build spec for our own configurable generative-background engine**,
 > derived from the Stripe hero anatomy study using **none of Stripe's assets**. Its owning plan is
-> [`.claude/plans/2026-08-27-generative-background-engine.md`](../plans/2026-08-27-generative-background-engine.md),
+> [`.claude/plans/archive/2026-08-27-generative-background-engine.md`](../plans/archive/2026-08-27-generative-background-engine.md),
 > whose Phase 2 this document satisfies.
 >
 > **What it is NOT.** It is **not** a tuning guide for `FR-38-31`, the shipped `flowing-gradient`
