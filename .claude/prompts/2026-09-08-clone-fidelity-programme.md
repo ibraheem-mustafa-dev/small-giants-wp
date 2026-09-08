@@ -127,9 +127,9 @@ img:freshly baked mamas munches lactation co   lost 2 / 3 / 3 props
   every clone. ⚠ It is ONE of four unmatched elements — do not treat it as "the whole missing
   1 %", which is how this was first written and is wrong.
 - **The three review cards.** These are the `<article>` elements of the testimonial slider,
-  and they sit directly against **3.13 (review cards lost their outlines)**. They lose 0
+  and they sit directly against **3.14 (review cards lost their outlines)**. They lose 0
   scored props, so they cost nothing in the score — which is exactly why a real defect on
-  those elements could go unseen. Triage them together with 3.13, not separately.
+  those elements could go unseen. Triage them together with 3.14, not separately.
 
 ### 1.2 False negatives — fourteen real defects it never flagged
 
@@ -171,14 +171,14 @@ Counts are per-viewport (375 / 768 / 1440).
 | justify-content | 16 | 6 | 5 | 5 | **Untriaged.** May be equivalent-by-mechanism; prove it |
 | text-align | 15 | 5 | 5 | 5 | **Untriaged.** Related to 3.8 (blocks left vs text centred) |
 | padding (4 sides) | 48 | 16 | 16 | 16 | **Untriaged.** Includes 3.3 (hero content padding) |
-| border-* family (12 props) | 72 | 24 | 24 | 24 | Bean says borders work — likely artefact, confirm (3.15) |
-| background-size / repeat / position | 36 | 12 | 12 | 12 | Treat as ONE image-background cluster (3.19) |
+| border-* family (12 props) | 72 | 24 | 24 | 24 | Bean says borders work — likely artefact, confirm (3.18) |
+| background-size / repeat / position | 36 | 12 | 12 | 12 | Treat as ONE image-background cluster (3.22) |
 | border-image-slice | 12 | 4 | 4 | 4 | **Unmentioned until now.** Probably rides with the background cluster |
 | appearance | 12 | 4 | 4 | 4 | **Unmentioned until now.** Likely form/button UA-style difference |
-| max-width | 10 | 4 | 3 | 3 | 3.16 — Bean cannot see it; decide if real |
-| row-gap / column-gap | 18 | 6 | 6 | 6 | Bean says product-card gaps look fine (3.20) |
+| max-width | 10 | 4 | 3 | 3 | 3.19 — Bean cannot see it; decide if real |
+| row-gap / column-gap | 18 | 6 | 6 | 6 | Bean says product-card gaps look fine (3.23) |
 | font-style | 9 | 3 | 3 | 3 | **Unmentioned until now.** Italic vs normal somewhere |
-| flex-grow | 9 | 3 | 3 | 3 | 3.17 — Bean sees no effect |
+| flex-grow | 9 | 3 | 3 | 3 | 3.20 — Bean sees no effect |
 | align-items | 8 | 2 | 3 | 3 | **Unmentioned until now.** Alignment — may relate to 3.8 |
 | display | 4 | 2 | 1 | 1 | **Unmentioned until now.** flex vs block on a tag element |
 | max-height | 3 | 1 | 1 | 1 | **Unmentioned until now.** May relate to 3.7 (brand image sizing) |
@@ -192,8 +192,11 @@ across the four elements in §1.1), and so are `fluid_declined` (35/35/7) and `s
 A cluster that cannot be placed in one of the three buckets is a finding about the tool, not a
 rounding error — and work must not be scoped out on the grounds that "524 is everything".
 
-⚠ Twelve of these clusters (78 diffs, ~15 %) had never been looked at before this
-document. Four of the largest — margin-bottom, padding, font-weight, justify-content —
+⚠ Nine of these rows (**62 diffs, ~12 %**) had never been looked at before this document — the
+rows marked "Unmentioned until now" above, summed. (The LEDGER quotes 78 for the same idea
+because it counts `background-repeat` and `background-position` separately; this table folds
+those into the image-background cluster instead. Same properties, different grouping — 62 is the
+figure that reconciles with the table you are reading.) Four of the largest — margin-bottom, padding, font-weight, justify-content —
 were previously dismissed inside a single anecdote about pill styling that Bean says he
 cannot see. **Do not inherit that dismissal.** Triage each cluster on its own evidence.
 
@@ -335,8 +338,6 @@ answers: the render fix, and what let the tool miss it (feed that to Phase 1).
 
 ### Content defects found by audit, not by the parity tool
 
-| # | Defect | Notes |
-|---|---|---|
 | # | Defect | Class | Notes |
 |---|---|---|---|
 | 3.15 | **Every footer link points nowhere — `href="#"`** | BUILD GAP | Home / Shop / About / Contact / Privacy Policy are all placeholders in the shipped `sgs/framework-footer-default` pattern's list block. Not a clone bug — the footer is framework chrome and is never cloned — but it ships broken navigation on every client site using the default footer. The draft's own footer carries 12 real links in two columns (Shop / Information); ours has one generic column of 5. ⚠ **BLOCKED ON BEAN: ask him for the real page URLs at the START of the session, not at the end.** Do not invent them, and do not let this stall silently. |
