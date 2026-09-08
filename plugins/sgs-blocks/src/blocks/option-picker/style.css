@@ -223,15 +223,38 @@
 	border-color: var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
 	/*
-	 * 3.21 (2026-09-08): was a hardcoded 700 (CLAUDE.md CSS Override Rule
-	 * violation) that bolded the SELECTED pill regardless of what the resting
-	 * pill's weight was set to — a real drift vs a draft where the selected
-	 * state changes only colour/border, never weight. Now shares the same
-	 * variable the resting pill reads, so a selected pill's weight always
-	 * matches its own resting weight unless a caller sets a DIFFERENT
-	 * --sgs-op-sel-font-weight explicitly.
+	 * 3.21 (2026-09-08, RE-FIXED — the earlier same-day fix here was a false
+	 * start). This rule used to also declare its own `font-weight` (first a
+	 * hardcoded 700, then a `--sgs-op-sel-font-weight`/`--sgs-op-pill-font-
+	 * weight` var chain) — but ANY declaration here, var-based or not,
+	 * out-specifies (0,5,0) whatever set the RESTING pill's weight, because
+	 * this selector is a compound with MORE classes/pseudo-classes than the
+	 * base `.sgs-option-picker__pill` rule (0,1,0) *and* MORE than a caller's
+	 * scoped override rule reaching in from outside (e.g.
+	 * `sgs/product-card`'s own `pillFontWeight` typography injection at
+	 * `.{uid} .sgs-option-picker__pill`, specificity (0,2,0) — see
+	 * product-card/render.php's `sgs_typography_css_rule( …, 'pill', … )`
+	 * call). That is exactly how the earlier var-chain fix still measured
+	 * resting=600/selected=500 live: the var chain never fires because
+	 * neither `--sgs-op-*-font-weight` custom property is ever emitted by
+	 * ANY caller — font-weight is set as a literal declaration by whoever
+	 * targets `.sgs-option-picker__pill` directly, and this rule's OWN
+	 * declaration (even a var one) always wins the specificity fight
+	 * regardless of what that literal value is.
+	 *
+	 * The draft never changes weight on selection (`.sgs-product-card__pill--
+	 * active` in the mockup declares no font-weight of its own — see
+	 * sites/mamas-munches/mockups/homepage/index.html:423-427) — so the
+	 * correct behaviour is for the SELECTED pill's weight to be WHATEVER won
+	 * the resting-pill cascade, unconditionally. Declaring nothing here is
+	 * what achieves that: this element is the SAME DOM node as the resting
+	 * pill, so with no competing `font-weight` declaration at :checked, the
+	 * resting rule's value simply persists — for the shared default, a
+	 * standalone `sgs/option-picker` instance's own `pillFontWeight`, AND a
+	 * host block's own typography injection alike. No `--sgs-op-sel-font-
+	 * weight` var exists anywhere in the codebase to lose by removing this;
+	 * grep confirms zero other readers.
 	 */
-	font-weight: var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — outlined (white tick on coloured bg).
@@ -266,7 +289,10 @@
 	/* R2: decoupled selected border, falls back to transparent (previous default). */
 	border-color:  var(--sgs-op-sel-border, transparent);
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	font-weight:   var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
+	/* 3.21 (re-fixed): no font-weight declared here — see the outlined
+	 * :checked rule above for why. Whatever won the resting pill's weight
+	 * (default, standalone attr, or a host block's typography injection)
+	 * simply persists on selection, matching the draft. */
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — filled (white tick on coloured bg) */
@@ -296,7 +322,10 @@
 	color:            var(--sgs-op-sel-text, var(--wp--preset--color--primary, #1F7A7A));
 	border-color:     var(--sgs-op-sel-border, var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 	border-radius:    var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
-	font-weight:      var(--sgs-op-sel-font-weight, var(--sgs-op-pill-font-weight, 500));
+	/* 3.21 (re-fixed): no font-weight declared here — see the outlined
+	 * :checked rule above for why. Whatever won the resting pill's weight
+	 * (default, standalone attr, or a host block's typography injection)
+	 * simply persists on selection, matching the draft. */
 }
 
 /* Fix 1 (WCAG): reveal tick on checked — ghost (transparent bg → primary-coloured tick) */
