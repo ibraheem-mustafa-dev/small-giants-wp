@@ -104,7 +104,7 @@ same menu, no drift, faithful clone); a **different mobile menu is the explicit 
 |---|---|---|
 | `sgs/nav-menu` | block (dynamic) | The menu. On a header row: a horizontal **bar** with dropdown/mega triggers (desktop); **below its collapse point it renders the operator's chosen collapse mode** — burger→drawer, "More" overflow, or bottom-tab-bar (FR-36-8) — NOT an inline list. Inside a drawer: a vertical **accordion/drill-down list**. May ship pre-set flavours via `registerBlockVariation`. |
 | `sgs_mega_menu` | **CPT** (block-based, container-like) | A rich mega panel = a per-client editable, block-based post (any SGS blocks + container settings), edited in its own findable admin screen. **Attached to a menu item the normal WP way** (add it to the menu in Appearance → Menus like a page — FR-36-5). Rendered at the item's real position; also inside the drawer on mobile. KIND = section/layout (keeps `SGS_Container_Wrapper`). |
-| `sgs/nav-drawer` | block (dynamic) | The mobile off-canvas **container** the burger opens — InnerBlocks (default: logo/close row, menu, CTA). A full-screen **modal** `<dialog showModal>` (top-layer → survives a transformed header ancestor). Optional "Show header" toggle (FR-36-6). |
+| `sgs/nav-drawer` | block (dynamic) | The off-canvas **container** the burger opens. A chrome top row (× close, optional logo, optional heading/label/text/button slot) above ONE InnerBlocks body seeded with `sgs/nav-menu`. A full-screen **modal** `<dialog showModal>` (top-layer → survives a transformed header ancestor). No child blocks; no header-row import (FR-36-6, D1009). |
 | Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | One open/close/focus/`inert`/intent-timing utility for the disclosure (dropdown + mega) + dialog (drawer) surfaces. Framework-reusable. |
 | `sgs/cart` (extend) | block (dynamic) | Header cart — count badge (Phase-1 fix) + mini-cart preview/flyout/drawer (Phase-2 build). FR-36-19. |
 | `sgs/product-search` / `filter-search` (extend) | block (dynamic) | Predictive search combobox — the ARIA combobox is ALREADY shipped (a genuine extend). FR-36-20. Phase 2. |
@@ -183,23 +183,64 @@ A featured style a draft can author MUST have somewhere in the data model to lan
   content crawlable server-rendered, **no lazy-load** (FR-36-17).
 
 ### FR-36-6 — The drawer (`sgs/nav-drawer`) — full-screen modal container
-One InnerBlocks container for the drawer's editable CONTENT (absorbs Spec 34 FR-34-3), default template
-`[ nav-menu, (optional) logo, (optional) cta ]`, `templateLock:false` (client patterns may use `contentOnly`).
-**The × close is NOT an InnerBlock** — it is fixed dialog CHROME the block always renders (render.php, outside
-the editable InnerBlocks), exactly like the burger toggle, so it is undeletable by construction (see below). **Full-screen `<dialog showModal>` modal** (Bean default): top-layer → survives a transformed
+**ONE block, ONE InnerBlocks region, NO child blocks — design-gate closed 2026-09-08 (D1009).** The drawer is
+`sgs/nav-drawer` and nothing else: the gate rejected both a "row system" of child blocks and a CPT-native
+no-wrapper model. Rationale + the 5-seat council that produced it: D1009.
+
+**Structure = a CHROME TOP ROW + one editable body.**
+
+**1. The chrome top row** — rendered by render.php OUTSIDE the editable InnerBlocks. It is the *close button's*
+band; everything else in it is optional. Three elements, all attribute-driven (NOT blocks, NOT InnerBlocks):
+- **The × close** — always rendered. Position top-**right** default, switchable top-left. Icon selectable from
+  ALL FOUR IconPicker sources (`lucide` / `wp-icon` / `dashicon` / `emoji`), the picker seeded to close-related
+  names; gradient routed per-source by `sgs_icon_gradient_css()` (never restrict the source enum — see D1009).
+  Own size control. Colour/hover/gradient via the existing `toggleCloseColour*` set. `closeStyle` is a
+  **per-device tier object** `{desktop,tablet,mobile}` — studionamma swaps text→icon at 400px and a flat string
+  cannot express it.
+- **An optional logo** — show/hide, responsive via the existing media atoms (`src/components/media/atoms`).
+- **An optional free slot** — ONE of heading / label / text / button. Button styling via the shared
+  `sgs_button_element_style_css()` with its own prefix (precedent: `sgs/modal`, `sgs/product-card`); heading
+  level switchable per `product-card`'s `headingLevel` (`css_property: tag`). This exists because two
+  references put a non-logo item in the close row — lamalama's "YOU MADE IT" label and studionamma's
+  "LET'S TALK!" CTA. Verified against the extraction data: 4 of the 7 close-bearing references are logo+close
+  only, so the slot is genuinely optional, not a layout system.
+- The row itself carries background / padding / height controls.
+
+**2. The body** — the single InnerBlocks region, `templateLock:false` (client patterns may use `contentOnly`).
+Ships `sgs/nav-menu` with the primary menu preselected on every new drawer. Everything beyond that is ordinary
+blocks — `sgs/container` rows exactly as on a normal page (Bean's standing position (A)). There is NO
+`allowedBlocks` restriction and none is to be added.
+
+**Full-screen `<dialog showModal>` modal** (Bean default): top-layer → survives a transformed
 header ancestor; focus contained; background `inert`; mandatory Escape; `::backdrop` scrim; rely on native
-`<dialog>` semantics (no `role="dialog"`/`aria-modal`). **Close is CHROME, not content — undeletable by
-construction (Bean 2026-07-19, resolving the mechanism the earlier "deletable × + hard-guarantee" wording left
-open):** the × is rendered by render.php as fixed dialog chrome OUTSIDE the editable InnerBlocks, so an operator
-editing the drawer's content can NEVER delete the last close affordance. This matters because on a full-screen
-modal on TOUCH there is no ESC key and no tap-outside-the-panel (the panel fills the screen), so the × is the
-only reliable close — it must always render. (The burger↔× in the header is the same close at runtime; both
-persist by construction, not by a per-block lock.) **"Show header"
-toggle:** PER-ROW (a checkbox per header row, not a single all-or-nothing toggle — finer, closer to FR-S9-8's (Spec 37 §3.8)
-per-element intent); inserts the chosen header rows as blocks at the top, burger becomes the × (the
-header-at-top look, no non-modal complexity). **Menu source:** its own picker (FR-36-1; defaults to
-inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **Geometry:** `edge`
-(`full-screen` default | `left`/`right`/`top` partial, still modal) + `width`. **Submenu — BUILT** (this
+`<dialog>` semantics (no `role="dialog"`/`aria-modal`).
+
+⛔ **Close is CHROME, not content — and the guarantee is stated HONESTLY here (amended 2026-09-08, D1009).**
+The × is rendered by render.php as fixed dialog chrome OUTSIDE the editable InnerBlocks, so an operator editing
+the drawer's content can never delete the last close affordance through the block editor. This matters because
+on a full-screen modal on TOUCH there is no ESC key and no tap-outside-the-panel (the panel fills the screen),
+so the × is the only reliable close — it must always render. **What "by construction" does and does not mean:**
+because the × is a raw PHP string that never enters the parsed block tree, there is nothing in `post_content`
+to delete — this is strictly stronger than a `templateLock`/`lock:{remove}` flag, which WordPress enforces in
+the editor JS ONLY and which a Code-Editor or REST write bypasses entirely. **Any future design that moves the ×
+inside a block — including a child block of the drawer — downgrades this to "cannot be removed via the toolbar
+or List View" and MUST amend this clause rather than inherit its wording.** Structure beyond the × (the body's
+required `sgs/nav-menu` seed) is enforced at the CPT layer server-side (`save_post`/`wp_insert_post_data`
+re-injection), not by a block lock, for the same reason.
+
+**Menu source:** its own picker (FR-36-1; defaults to
+inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **Geometry:** per-device `anchor`
+(`full-screen` | `header` | `trigger` | `centred`) + `panelSize` — ⚠ these SUPERSEDED the retired `edge`/`width`
+scalars in the 2026-07-28 desktop-variant migration; the old names are gone from block.json and must not be
+cited. **Modality:** a non-modal mode (background stays live and clickable — lusion's shape) is a named
+follow-on, not built; the `.show()` code path already exists at `src/shared/nav-interactivity/store.js:616-619`
+as a browser-support fallback and needs exposing as an operator control.
+
+⛔ **The "Show header" toggle described in earlier revisions of this FR was NEVER BUILT and is now WITHDRAWN**
+(2026-09-08). No `showHeader`/`headerRows` attribute or markup has ever existed in block.json, edit.js or
+render.php. It was the likely source of the long-standing "the drawer has no top row" confusion — the spec
+described a feature that would have produced that look, and nobody had checked it was absent. The chrome top
+row above replaces it. Header rows are NOT imported into the drawer in any form. **Submenu — BUILT** (this
 session, superseding the "wired but Phase-1-inert" note that stood here previously): `sgs/nav-drawer`
 publishes its `submenuModel` attribute to descendants via block.json `providesContext`
 (`sgs/navDrawerSubmenuModel`), which `sgs/nav-menu` declares via `usesContext` and reads in render.php to
@@ -992,7 +1033,7 @@ in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks �
 | **mega-panel presets** (parent-paints-child) | `FIXED + LIVE-VERIFIED 2026-07-25 (D382, `b5f2ee02`)` | render.php emits distinct Columns/Cards/Minimal layouts per `data-mega-style`. Two real causes broke BOTH the frontend and the editor canvas: **(1) self-nested selectors** — render.php prepended `$root_sel` to `$content_sel`/`$group_sel`, which already began with `$root_sel`, producing an impossible selector that matched nothing; **(2) broken style-handle filename** — block.json named the source files (`file:./style.css`/`file:./editor.css`) while the build emits `style-index.css`/`index.css`, so WP silently enqueued nothing on either surface. The same block.json bug was swept from 4 other blocks in the same commit. An earlier "WP 7.0's iframed editor canvas ignores this block's editor.css" diagnosis for this bug is FALSE — do not cite it; full retraction in CC memory `feedback_wp_iframe_canvas_ignores_editorstyle_use_style_css.md`. |
 | **mega starter patterns** | `LIVE-VERIFIED 2026-07-25` | Inserting a starter was initially broken ("Block contains unexpected or invalid content" — mega-group/aside were STATIC with a save/pattern mismatch); FIXED by making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real editable columns + aside. Aside media capped (170px) so an empty/large image doesn't dominate |
 | 36-8, 36-17, 36-9a (mega) | **`LIVE-VERIFIED 2026-07-28 (D401)`** | **GATE 3 CLOSED.** Fixture: canary panel **1745** populated, menu **100** (mega at position 2), page **1842** `/gate3-mega-nav/`. Every owed item discharged: **axe 0 on the OPEN mega AND the OPEN drawer** · crawl assertion (all 7 panel links + 3 headings + aside copy in the pre-JS HTML) · **live recursion test** (a panel embedding a nav on its own menu → plain link, HTTP 200, no nested panel; fixture restored) · drawer no-regression · keyboard no-trap + ESC/focus-return · reduced-motion full end state at 120ms · **Bean's R-31-13 eye sign-off GIVEN** on the geometry pass. 36-8's collapse control is now the **Burger Menu** preset (see FR-36-8) |
-| **36-6** drawer desktop variants | `BUILT + probe-verified 2026-07-28 (D403/D404)` | Per-device `anchor`/`panelSize`/surface/`closeStyle`/`variantPreset` + 7 variations + nav-menu `listColumns` + backdrop-click-to-close (`store('sgs/nav')`), commits `faa14924`/`69dfbaf9`. Council-fixed (9 findings pre-commit); defaults render property-identical (page 1648); centred/full-screen anchors + backdrop-close verified live; variation insert + `isActive` verified in the real editor. DB seeded (`variant_attr='variantPreset'`; `variant_slots` weak by construction — value-differentiated variants, see FR-36-6 note). **⛔ Task 5 RAN 2026-07-29 AND WAS REJECTED (D411).** Mechanical half PASSED (21/21 cells + D374 multi-instance + both hand-set anchors + `listColumns` canvas visibility CONFIRMED). Fidelity half FAILED on Bean's eye — *"night and day"*; the variants reproduce structure + copy, not design. Two defects OPEN: `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (1:1 contrast, 6 elements, 2 variants) · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. **Next = block-vs-CPT design gate (Bean, separate session); no block-path rework before it.** Deliberate simplifications recorded: burger-morph static icon; trigger anchor CSS approximation |
+| **36-6** drawer desktop variants | `BUILT + probe-verified 2026-07-28 (D403/D404)` | Per-device `anchor`/`panelSize`/surface/`closeStyle`/`variantPreset` + 7 variations + nav-menu `listColumns` + backdrop-click-to-close (`store('sgs/nav')`), commits `faa14924`/`69dfbaf9`. Council-fixed (9 findings pre-commit); defaults render property-identical (page 1648); centred/full-screen anchors + backdrop-close verified live; variation insert + `isActive` verified in the real editor. DB seeded (`variant_attr='variantPreset'`; `variant_slots` weak by construction — value-differentiated variants, see FR-36-6 note). **⛔ Task 5 RAN 2026-07-29 AND WAS REJECTED (D411).** Mechanical half PASSED (21/21 cells + D374 multi-instance + both hand-set anchors + `listColumns` canvas visibility CONFIRMED). Fidelity half FAILED on Bean's eye — *"night and day"*; the variants reproduce structure + copy, not design. Two defects OPEN: `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (1:1 contrast, 6 elements, 2 variants) · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. **✅ Block-vs-CPT design gate CLOSED 2026-09-08 (D1009)** — one block, chrome top row (× + optional logo + optional heading/label/text/button slot), one InnerBlocks body; child-block and CPT-native models both rejected. Block-path rework is now UNBLOCKED; FR-36-6 amended in the same commit. Deliberate simplifications recorded: burger-morph static icon; trigger anchor CSS approximation |
 | **36-10, 36-11** landmark | `LIVE-VERIFIED 2026-07-23` | One `<nav>` per instance, one label, on `/t1-nav/` (canary, classic menu 98). Distinct names derived per menu — "Primary" / "T1 Verify" — verified with BOTH exposed (drawer open), which is the case FR-36-11 governs. The 2026-07-23 "zero `<nav>`" finding was FALSE and its fix was reverted; the real bug was the unreachable menu-name fallback (`navLabel` default `'Primary'` → `''`). See the retraction note in §4. `sgs/nav-menu` contributes **zero** axe violations — negative control: the nav-free homepage reports the identical 5 |
 | 36-11, 36-16 | **`GATE — drawer axe CLOSED 2026-07-28`** | The 2026-07-23 INCONCLUSIVE is resolved: **axe 0 on the OPEN drawer** (guard: height 0→780, 14 focusables). ⚠ **METHOD CORRECTION, binding on every future run:** a scoped axe run on a CLOSED surface passes VACUOUSLY — `nav-qa/axe-run.mjs --scope .sgs-nav-drawer` returns "0 violations" with or without `--open`, because axe's `excludeHidden` defaults true. **Any earlier drawer-axe claim made with that harness proves nothing.** Every axe run on a disclosure/dialog surface MUST first assert the surface is open (open/`aria-expanded`, height > 0, focusable count > 0) and report VACUOUS, never PASS, when the guard fails. `axe-run.mjs` still needs that guard wired in — until then, use a guarded harness |
 

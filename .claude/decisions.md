@@ -1,3 +1,51 @@
+## D1009 [ROUTINE] — nav-drawer design gate CLOSED: one block, a chrome top row, one body. No child blocks, no CPT-native rewrite
+
+**2026-09-08. Bean-decided, after a 5-seat qc-council.** Closes the gate deferred on 2026-07-30
+(`.claude/plans/2026-07-30-drawer-architecture-design-gate-BRIEF.md`) and unblocks the D411 rejection.
+
+**The decision.** `sgs/nav-drawer` stays ONE block. It renders a **chrome top row** — the × close (always),
+an optional logo, and one optional heading/label/text/button slot — above **one InnerBlocks body** seeded with
+`sgs/nav-menu`. All top-row items are attribute-driven elements, not blocks. Rows beyond the top row are
+ordinary `sgs/container` blocks, as on a normal page. Spec: FR-36-6, amended in this commit (Spec 37 §1.2).
+
+**Three architectures were on the table. Two were rejected.**
+- **Child-block row system** (a top-row block + a nav-body block) — rejected. It moves the × inside an
+  addressable block, so undeletability degrades to a `templateLock` flag, which WordPress enforces in editor JS
+  only and a Code-Editor write bypasses. That is the mechanism FR-36-6's wording excludes. The council also
+  found the top-row child would be layout-KIND, so the composite-mirror rule would force it to mirror
+  `sgs/container` — reintroducing the exact feature-richness that motivated building it instead.
+- **CPT-native, no wrapper block** — rejected. Cost was understated: `Sgs_Drawer_Render` is a bare
+  `do_blocks()` echo today, so ~250 lines of dialog assembly would relocate; settings would move to post meta
+  with no DB-first routing table (an R-31-1 risk); it collides with D270 (no deprecations) for the 8 pattern
+  embeddings; and the editor canvas would show no drawer chrome while authoring.
+
+**Council was genuinely split (3–2 raw, effectively 2–3).** The code-path tracer voted for the child-block
+option while naming the condition that flips its own verdict — that FR-36-6 undeletability is non-negotiable.
+Recorded rather than smoothed: certainty was LOW, and the decision rests on Bean's ruling, not on a majority.
+
+**Bean's ruling on the threat model.** The Code-Editor deletion path is "truly absurd" as a design driver —
+protection is not against determined operators, only against accidental removal. Structure beyond the × is
+therefore enforced at the **CPT layer, server-side** (`save_post`/`wp_insert_post_data` re-injection), which no
+block lock can match.
+
+**Facts that reshaped the gate, all verified in code this session:**
+1. **Rows already worked.** No `allowedBlocks`, `templateLock:false` — an `sgs/container` was always insertable.
+   Bean's position (A) was already the architecture; nobody had checked.
+2. **The "Show header" toggle was never built.** Spec described it as shipped; zero implementation exists. It is
+   WITHDRAWN, and it was the likely source of the "drawer has no top row" confusion.
+3. **`edge`/`width` geometry was retired** in the 2026-07-28 migration to `anchor`/`panelSize`; the spec prose
+   had not caught up.
+4. **The converter has never emitted a drawer** — zero hits across `converter/`. "Works via the pipeline" was
+   never a differentiator between the options.
+5. **4 of 7 close-bearing references are logo+close only.** lamalama adds a text label, studionamma a CTA —
+   hence one optional slot, not a layout system. Verified against `2026-07-28-drawer-code-extraction/`.
+
+**Out of scope, named so it cannot be silently absorbed:** studionamma's dark-mode toggle (a site-wide theming
+feature, not a drawer element) · lusion's non-modal mode (the `.show()` path exists at
+`nav-interactivity/store.js:616-619`; needs exposing as a control) · studionamma's live clock and per-link hover
+thumbnails (belong to a clock block and `sgs/nav-menu`) · wearecollins' mobile content drop (already covered —
+`device-visibility.php:99` generates real `@media` rules, and `display:none` also hides from screen readers).
+
 ## D1008 [ROUTINE] — Spec 39 is retired as a concept; the cloning pipeline is Spec 31, and living docs carry no correction narration
 
 **2026-09-08. Bean-directed.** Two standards, settled together.
