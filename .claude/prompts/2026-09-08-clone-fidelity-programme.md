@@ -1,9 +1,27 @@
-# Clone-fidelity programme — measure honestly, then fix the pipeline
+# Clone-fidelity programme — root-cause and fix every real clone/website defect
 
 **Target:** Mama's Munches homepage, WordPress page 2742 on the sandybrown canary.
 **Draft (source of truth):** `sites/mamas-munches/mockups/homepage/index.html`
-**Latest parity run:** `pipeline-state/mamas-munches-homepage-2026-09-08-105524/`
-**Current score:** CSS 79 / 79 / 84 % at 375 / 768 / 1440. Content 99 %.
+
+## Tool-fixing half is DONE — this document now governs Phase 3/4 only
+
+The original brief split into four phases: fix the measuring instrument (parity tool), then
+root-cause and fix the real defects it should now catch. **Phase 1 and Phase 2.2 (the parity
+tool itself) are closed** — `plugins/sgs-blocks/scripts/parity/computed-parity.js` shipped a
+run of fixes this session: `::after`/`::before` paint-fallback comparison, a wider bare-tag
+defaults census, BEM same-family collision merge (deterministic) + statistical best-pairing
+fallback (both collision paths, box AND text), art-direction-aware... — check
+`git log --oneline -- plugins/sgs-blocks/scripts/parity/computed-parity.js` for the exhaustive
+commit list rather than trusting a summary here, since it will drift. The tool's own commit
+messages carry the full root-cause + fix-shape + verification detail per change.
+
+**What this means for every classification below:** every `TOOL` / `BOTH` label in this
+document was assigned against the OLD, now-fixed instrument. **Re-verify, don't inherit.**
+An item marked `TOOL` (false positive) may now correctly score as a real defect once the fix
+lands, or may still be a false positive for a genuinely different reason — check against a
+fresh run, not the old label. **Re-baseline before trusting any percentage in this document** —
+the "Current score" the original brief opened with is stale by construction; straightening the
+ruler is expected to LOWER the score (false wins removed), not raise it.
 
 ## Before you start — reading gate and build facts
 
@@ -11,54 +29,28 @@
 makes this mandatory for every cloning-pipeline session — not just the sections for the day's
 task, not a grep-and-skim. Issues surface mid-work in sections you were not planning to touch.
 Also read `.claude/LEDGER.md` for live status, and `specs/20-CLONE-FIDELITY-MEASUREMENT.md`
-(the parity tool's own spec) before Phase 1.
+(the parity tool's own spec) so you know what the (now-fixed) instrument actually measures.
 
-⚠ **`npm run build` currently FAILS on `main`** — three pre-existing gates, none of them this
-work: `check-element-manifest-conformance`, `check-editor-render-parity`,
-`check-hover-state-classification`, across five blocks (heading / quote / timeline / text /
-product-faq). Three gates, five blocks. **Build with
-`npx wp-scripts build --experimental-modules --webpack-copy-php` instead.** Do not fix them and
-do not raise their baselines — they are committed debt owned elsewhere.
+⚠ **`npm run build` may still fail on pre-existing, unrelated gates** — check current state
+rather than trusting a cached list here; it drifts. Build with
+`npx wp-scripts build --experimental-modules --webpack-copy-php` directly if the full gate
+chain blocks on debt that isn't yours, per the project's git-hygiene disclosed-bypass rule.
 
 ⚠ **Two operational rules that will otherwise cost an hour each:**
 - The pre-commit visual-diff gate needs a `source_sha` matching the STAGED content. It prints
   the expected hash when it fails — put that in the report and re-commit. Never fabricate a PASS.
+  A genuinely no-visual-effect change (structural/markup-only) can use the scoped
+  `SGS_VISUAL_GATE_SKIP=<block> SGS_VISUAL_GATE_REASON="..."` bypass instead — disclosed, never
+  `--no-verify`.
 - Deploying needs a clean tree, but the gate needs live proof, which needs a deploy. Break that
   deadlock honestly with `build-deploy.py --payload <prefix>`: deploy the declared payload
   uncommitted, measure, THEN commit. Do not reach for `--allow-dirty` or `--no-verify`.
-
----
-
-## How to classify every item — read before Phase 1
-
-Each item below carries a **CLASS**. Bean's framing, and it is the organising idea of this
-whole document:
-
-| Class | Meaning |
-|---|---|
-| **BOTH** | A real clone defect AND proof of a tool blind spot — the page renders wrong *and* the tool scored it clean. **Every one of Bean's 14 eyeball findings is BOTH, by definition: he found them, the tool did not.** |
-| **TOOL** | The tool reports a defect that is not visible on the page. The tool is the bug. Every item Bean looked at and could not see falls here until proven otherwise. |
-| **CLONE** | A real render defect the tool DID correctly catch. Rare in this batch. |
-| **BUILD GAP** | Framework chrome that was never finished — not cloned, so not a clone defect, but shipped broken to every client (the footer's dead links and missing socials). |
-| **NEITHER** | Not a defect and not a tool failure (only the skip-link, 3.24). |
-
-**A BOTH item produces two deliverables, not one:** the render fix, AND the answer to "what
-blind spot let the tool miss this?" — fed into Phase 1. Closing only the render half leaves
-the tool just as blind for the next clone, which is how fourteen defects accumulated unseen.
-
-**Do not assume a TOOL item is closed just because Bean cannot see it.** Prove it renders
-correctly, then fix the tool so it stops reporting it. An unexplained false positive is a
-defect in the instrument we are about to trust.
-
-## Why this exists
-
-Bean inspected the live clone by eye and found **fourteen defects the parity tool never
-reported**. Separately, several defects the tool *did* report turned out to be false —
-it flagged elements that render correctly.
-
-So the measurement is wrong in both directions. Fixing the clone while the ruler is
-bent wastes the work: we cannot tell a real regression from a scoring artefact, and a
-green number means nothing. **Fix the ruler first.**
+- The pre-deploy `oldshape-audit` gate scans the ENTIRE live site's stored content against the
+  schemas being deployed, not just the page you're touching — a HIGH finding anywhere on the
+  canary blocks every deploy until fixed or genuinely baselined. Check it isn't pre-existing,
+  unrelated debt before spending time on it; if it is yours (or you're already in that code),
+  fix it via `wp_update_post(wp_slash(...))`, never a raw WP-CLI content flag (backslash-strip
+  risk).
 
 ---
 
@@ -67,195 +59,28 @@ green number means nothing. **Fix the ruler first.**
 1. **Investigation and fixing are separate jobs, run as separate dispatches.** An agent
    that investigates does not fix. An agent that fixes works from a written,
    already-reviewed root cause.
-2. **Run investigations through a council — `/qc-council` for fix-shape validation,
-   `/adversarial-council` for a design before it is built.** At minimum, a second agent
-   must try to FALSIFY each finding before it is accepted; a lone agent's claim is not a
-   finding. State PROVEN (cited to file:line or a measured value) or UNPROVEN. Three
-   claims were disproven this week by exactly this check — a "missing" background that
-   renders correctly on `::after`, a draft line-number citation pointing past the end of
-   the file, and a font-size "drift" where clone and draft already matched.
+2. **Run every fix-shape through `/qc-council` before implementing, and again to confirm the
+   fix actually closed it before moving to the next item.** Two council passes per fix, not
+   one: validate the proposed fix-shape BEFORE building (catches a wrong diagnosis before it
+   costs a build cycle), then verify the shipped result actually closed the defect (catches a
+   fix that looked right but didn't land) before starting the next item. Do not batch several
+   fixes and council them together — one item closed and confirmed before the next begins.
+   `/adversarial-council` for a design decision before it is built, where the fix-shape isn't
+   obvious. At minimum, a second agent must try to FALSIFY each finding before it is accepted;
+   a lone agent's claim is not a finding. State PROVEN (cited to file:line or a measured value)
+   or UNPROVEN.
 3. **Explain the fix before building it.** Say which mechanism is wrong and what the
    change is, then wait. This exists to catch the failure mode below.
 4. ⛔ **Never hardcode a value to make this draft pass.** The deliverable is a pipeline
    that clones *any* draft. A fix that special-cases `sgs-gift-section`, or writes a
    literal from this mockup into framework code, is a defect even when the page then
    looks right. If a fix cannot be made general, say so and stop.
-5. **Read the draft before claiming anything about it.** Several findings this week were
-   wrong because an agent cited draft line numbers that do not exist. The file is 1,088
-   lines.
+5. **Read the draft before claiming anything about it.** The file is 1,088 lines — read the
+   relevant section directly, don't cite a line number from memory.
 6. **Block CSS is lifted to `wp-content/uploads/sgs-css/*.css`, never inline.** Grepping
    page HTML for a rule proves nothing. Measure computed styles, or read that stylesheet.
-7. **Verify a "no counterpart" claim against the live DOM.** The tool's own matching is
-   suspect — see Phase 1.
-
----
-
-# Phase 1 — Why is the parity tool wrong?
-
-Investigation only. No fixes. The tool is
-`plugins/sgs-blocks/scripts/parity/computed-parity.js` (Spec 20, Stage 11.6).
-
-## 1.1 False positives — it reports defects that are not real
-
-**Background colour: 36 diffs, all three viewports. Proven false.**
-The tool reads an element's own `background-color`. SGS deliberately paints backgrounds
-on an `::after` layer (`sgs_block_background_layer_css()`), so the element itself is
-transparent by design. Measured live: `sgs/info-box` own background `rgba(0,0,0,0)`,
-its `::after` `rgb(255,255,255)` — exactly the white the draft asks for.
-Affected elements reported: ingredients disclaimer, gift card, gift card tag, info-box,
-hero content, announcement bar, Trustpilot bar.
-**Question:** which of those seven are genuinely wrong, and which are this artefact?
-
-**Borders: 6 diffs. Bean says these already work — the clone carries borders over.**
-The tool reports `border-top-width` 1px → 0px on the announcement bar and the Trustpilot
-bar. Confirm against the live DOM, including any `::before`/`::after` ring
-(`sgs_border_gradient_css()` paints borders on a pseudo-element for gradient borders).
-
-**Four elements are reported as having no counterpart — not one.** CLASS: TOOL (suspected).
-
-```
-img:freshly baked mamas munches lactation co   lost 2 / 3 / 3 props
-" i was sceptical but honestly these have mad" lost 0
-" bought these for my best friend who was rea" lost 0
-" zainab is so responsive and lovely the cook" lost 0
-```
-
-- **The image.** Bean confirms both the desktop and mobile hero images ARE present, so this
-  is a matching failure, not a missing image. Art-directed tiers render as sibling elements
-  toggled by `@media`, so the hidden-at-this-width sibling never matches. **Does the tool
-  handle per-device sibling media at all?** If not it misreports every art-directed image on
-  every clone. ⚠ It is ONE of four unmatched elements — do not treat it as "the whole missing
-  1 %", which is how this was first written and is wrong.
-- **The three review cards.** These are the `<article>` elements of the testimonial slider,
-  and they sit directly against **3.14 (review cards lost their outlines)**. They lose 0
-  scored props, so they cost nothing in the score — which is exactly why a real defect on
-  those elements could go unseen. Triage them together with 3.14, not separately.
-
-### 1.2 False negatives — fourteen real defects it never flagged
-
-This is the more serious half. Bean found all of these by eye; the tool scored them clean.
-Full list in Phase 3. For each, answer one question: **why was this invisible to the tool?**
-
-Look for structural blind spots rather than explaining each miss separately. Candidates
-worth testing:
-- Does it compare **layout geometry** (width, position, alignment) at all, or only
-  computed CSS properties? Several misses are position/width defects.
-- Does it match a draft element to the **wrong** clone element, scoring a real diff as a
-  match? Its matching is by normalised text content.
-- Does the **meaningful-props blocklist** exclude properties that carry real defects?
-- Does an element with **no text** (spacers, image wrappers, containers) get compared?
-- The run reports `fluid_declined: 35 / 35 / 7` and `sub_visible: 54`. What is being
-  declined and bucketed, and is a real defect being dropped into those buckets?
-
-### 1.3 The one cluster that is real but misattributed
-
-**font-size 77 + line-height 74 = 151 diffs, 29 % of the total, concentrated at 375/768.**
-Root cause PROVEN and researched — see Phase 2.1. Do not re-investigate; verify only that
-no *other* cause hides inside this cluster.
-
-### 1.4 The complete parity ledger — every cluster must be triaged
-
-**524 diffs total.** Every one belongs in exactly one bucket by the end of Phase 1:
-REAL DEFECT, TOOL ARTEFACT, or EQUIVALENT-BY-DIFFERENT-MECHANISM (clone reaches the same
-visible result another way — legitimate, and the tool should stop scoring it).
-
-Counts are per-viewport (375 / 768 / 1440).
-
-| Cluster | Diffs | 375 | 768 | 1440 | Status entering Phase 1 |
-|---|---|---|---|---|---|
-| font-size | 77 | 35 | 35 | 7 | Root cause proven → §2.1 |
-| line-height | 74 | 34 | 35 | 5 | Same cause as above |
-| background-color | 36 | 12 | 12 | 12 | Proven artefact (`::after`) — confirm all 7 elements |
-| margin-bottom | 30 | 10 | 10 | 10 | **Untriaged cluster.** 3.9/3.11 are two instances; what are the rest? |
-| font-weight | 21 | 7 | 7 | 7 | **Untriaged.** Includes 3.6 (product name weight). Not only a pill issue |
-| justify-content | 16 | 6 | 5 | 5 | **Untriaged.** May be equivalent-by-mechanism; prove it |
-| text-align | 15 | 5 | 5 | 5 | **Untriaged.** Related to 3.8 (blocks left vs text centred) |
-| padding (4 sides) | 48 | 16 | 16 | 16 | **Untriaged.** Includes 3.3 (hero content padding) |
-| border-* family (12 props) | 72 | 24 | 24 | 24 | Bean says borders work — likely artefact, confirm (3.18) |
-| background-size / repeat / position | 36 | 12 | 12 | 12 | Treat as ONE image-background cluster (3.22) |
-| border-image-slice | 12 | 4 | 4 | 4 | **Unmentioned until now.** Probably rides with the background cluster |
-| appearance | 12 | 4 | 4 | 4 | **Unmentioned until now.** Likely form/button UA-style difference |
-| max-width | 10 | 4 | 3 | 3 | 3.19 — Bean cannot see it; decide if real |
-| row-gap / column-gap | 18 | 6 | 6 | 6 | Bean says product-card gaps look fine (3.23) |
-| font-style | 9 | 3 | 3 | 3 | **Unmentioned until now.** Italic vs normal somewhere |
-| flex-grow | 9 | 3 | 3 | 3 | 3.20 — Bean sees no effect |
-| align-items | 8 | 2 | 3 | 3 | **Unmentioned until now.** Alignment — may relate to 3.8 |
-| display | 4 | 2 | 1 | 1 | **Unmentioned until now.** flex vs block on a tag element |
-| max-height | 3 | 1 | 1 | 1 | **Unmentioned until now.** May relate to 3.7 (brand image sizing) |
-| flex-basis | 3 | 1 | 1 | 1 | **Unmentioned until now.** |
-| margin-left / margin-right | 8 | 0 | 4 | 4 | **Unmentioned until now.** Absent at 375 — a tablet/desktop-only centring or gutter difference |
-| order / object-position / flex-direction | 3 | 3 | 0 | 0 | **Unmentioned until now.** Mobile-only — art-direction ordering? |
-
-**Rows above sum to exactly 524 — the full MISMATCH population.** ⚠ That is not the whole story:
-**unmatched-element losses are a separate bucket** (`meaningful_props_lost_to_unmatched`, 2/3/3
-across the four elements in §1.1), and so are `fluid_declined` (35/35/7) and `sub_visible` (54).
-A cluster that cannot be placed in one of the three buckets is a finding about the tool, not a
-rounding error — and work must not be scoped out on the grounds that "524 is everything".
-
-⚠ Nine of these rows (**62 diffs, ~12 %**) had never been looked at before this document — the
-rows marked "Unmentioned until now" above, summed. (The LEDGER quotes 78 for the same idea
-because it counts `background-repeat` and `background-position` separately; this table folds
-those into the image-background cluster instead. Same properties, different grouping — 62 is the
-figure that reconciles with the table you are reading.) Four of the largest — margin-bottom, padding, font-weight, justify-content —
-were previously dismissed inside a single anecdote about pill styling that Bean says he
-cannot see. **Do not inherit that dismissal.** Triage each cluster on its own evidence.
-
-**Deliverable:** a written finding per item, each fact-checked, naming what the tool
-measures, what it fails to measure, and why.
-
----
-
-# Phase 2 — Fix the ruler
-
-## 2.1 Typography — OUT OF SCOPE, owned by a parallel session
-
-⛔ **Do not do any typography work in this programme.** The whole type-scale question —
-base font size, fluid typography, the preset ladder, footer text size — was split out on
-2026-09-08 at Bean's direction and is being decided and built in a **separate parallel
-session**. Touching it here means two sessions editing `theme.json` and the same pattern
-files at once.
-
-This section is deliberately kept at §2.1 rather than renumbered, so the pointers in §1.3
-and the §1.4 ledger still resolve.
-
-**Decisions already made in that session — treat as settled, do not re-litigate:**
-
-- **No fluid typography.** Explicit per-device values via the SGS tier system instead.
-  Grounded in GOV.UK (never adopted `clamp()`) and Designsystemet Norway (shipped it, then
-  reversed it in production). Research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`
-- **The preset ladder shrinks from 9 to 6:** 14 / 16 / 20 / 24 / 36 / 50. `x-small` (12) and
-  `display` (120) had zero uses across all 46 patterns; `medium` (18) is dropped as too close
-  to 16 to be a distinguishable choice.
-- **Reading sizes never shrink across devices.** Only 24 / 36 / 50 compress, and the larger
-  the size the more it compresses (GOV.UK's published curve).
-- **The footer moves to body size.** ⚠ This REVERSES the previous conclusion in this
-  document, which argued the smaller footer was correct because the draft designs it that
-  way. Bean overruled it on 2026-09-08: the footer is framework chrome, not cloned content,
-  and it was rendering **13.0082px** on a phone (measured live on real footer nav links).
-
-**Already shipped, do not redo:** the base body font is fixed and deployed —
-commit `efb7ec5de`, verified live at 16px at 375px viewport. It had been rendering 14px
-because WordPress's fluid engine rewrote the extractor's literal into
-`clamp(14px, …, 16px)`.
-
-⚠ **Consequence for Phase 1 that you must account for:** the `font-size` (77) and
-`line-height` (74) clusters in the §1.4 ledger — 151 diffs, 29 % of the total — have their
-root cause fixed by that parallel work. **Re-measure before investigating them.** Chasing
-them now measures a defect that is being removed underneath you.
-
-### 2.2 Fix the parity tool
-
-Driven by Phase 1. At minimum it must stop reporting `::after`-painted backgrounds and
-borders as missing, and must handle art-directed sibling media. Whatever else Phase 1
-finds, the tool needs to measure **layout geometry**, not only computed properties —
-that is where most of the fourteen misses live.
-
-**Every tool fix needs a negative control**: prove the check still FAILS on a genuine
-defect. A tool that reports 100 % because it stopped looking is worse than the bent ruler
-we have.
-
-**Re-baseline after fixing.** The current 81 % is measured with a broken instrument. We
-need a true starting number before judging any later work.
+7. **Verify a "no counterpart" claim against the live DOM**, using the now-fixed tool's own
+   report plus a direct Playwright check — don't take either alone as final.
 
 ---
 
@@ -263,15 +88,27 @@ need a true starting number before judging any later work.
 
 Investigation with fact-checking. No fixes until each is written up and reviewed.
 
-## Bean's findings — none of these were caught by the tool
+## How to classify every item
 
-**All fourteen are CLASS: BOTH** — a real render defect AND proof of a tool blind spot, because
-Bean found every one of them by eye and the tool scored them clean. Each therefore owes two
-answers: the render fix, and what let the tool miss it (feed that to Phase 1).
+Each item below carries a **CLASS**. This is the organising idea of this whole document —
+re-verify every label against the FIXED tool before acting on it (see the note at the top):
+
+| Class | Meaning |
+|---|---|
+| **BOTH** | A real clone defect AND (against the OLD tool) proof of a blind spot — the page rendered wrong *and* the old tool scored it clean. Re-check whether the fixed tool now catches it. |
+| **TOOL** | Against the OLD tool, it reported a defect that wasn't real. Re-run against the fixed tool before trusting this label — it may now report correctly, or may still be a false positive for a different, still-open reason. |
+| **CLONE** | A real render defect the tool correctly caught, then and now. |
+| **BUILD GAP** | Framework chrome that was never finished — not cloned, so not a clone defect, but shipped broken to every client (the footer's dead links and missing socials). |
+| **NEITHER** | Not a defect and not a tool failure (only the skip-link, 3.24). |
+
+**A BOTH item produces one deliverable now, not two** — the tool half is closed programme-wide;
+only the render fix remains.
+
+## Bean's findings — none of these were caught by the OLD tool
 
 | # | Defect | Notes |
 |---|---|---|
-| 3.1 | **The hero block extends outside the right side of the page, on every device** | Bean's own observation, and he calls it "a huge issue" — treat his eye as the finding, not the number. The tool separately shows a constant overrun at rest (1440→1449, 768→777, 375→384), but that instrument is the one under suspicion, so use it as corroboration only. Likely the same cause as 3.2. |
+| 3.1 | **The hero block extends outside the right side of the page, on every device** | Bean's own observation, and he calls it "a huge issue" — treat his eye as the finding, not the number. Likely the same cause as 3.2. |
 | 3.2 | **Hero has -24px margins on both sides, and looks too tall** | A negative margin would explain 3.1. Find what emits it — a breakout hack, or a faithfully-transferred draft value? |
 | 3.3 | **Hero content column has no padding** | Check whether the draft's padding is extracted at all, and whether it reaches the right element. |
 | 3.4 | **Trust bar's 4th icon (star) renders black**; the other three match the draft | One icon differing points at the icon-identity resolver or a per-item colour attribute. |
@@ -279,31 +116,36 @@ answers: the render fix, and what let the tool miss it (feed that to Phase 1).
 | 3.6 | **Product-card typography wrong in several places** | Product name missing its weight; price font-family wrong. Compare every element against the draft, not just these two. |
 | 3.7 | **Brand image fits to width and is zoomed in** | Should match the draft's height instead. Relates to `objectFit`/sizing-mode. |
 | 3.8 | **Ingredients: intro and disclaimer blocks sit left** | Their *text* is centred; the blocks themselves are not. A block-alignment defect, distinct from text-align. |
-| 3.9 | **`section-heading__intro` has no bottom margin — but only in the ingredients instance** | It works in the featured-product instance. ⚠ An earlier note called this an "internal element of a composite". Bean corrected that: it is not. Two instances of the same thing behaving differently is the strongest clue here. |
+| 3.9 | **`section-heading__intro` has no bottom margin — but only in the ingredients instance** | It works in the featured-product instance. Two instances of the same thing behaving differently is the strongest clue here. |
 | 3.10 | **Gift card titles (h3) and prices use the wrong font family** | |
 | 3.11 | **The container holding both gift cards has no bottom margin** | |
 | 3.12 | **"Find out more" link is missing its underline-on-hover** | Draft: `.sgs-announcement-bar--send-to-ward a:hover { text-decoration: underline }`. |
 | 3.13 | **Trustpilot bar has too much white space at the bottom** | Top and bottom spacing should match, as they do in the draft. |
-| 3.14 | **Review cards have lost their outlines** | We legitimately diverge by using a slider; that does not excuse dropping the card borders. |
+| 3.14 | **Review cards have lost their outlines** | We legitimately diverge by using a slider; that does not excuse dropping the card borders. **Caveat from this session's investigation:** the earlier fix for this landed on `sgs/testimonial`'s `classic-card` variant border — the live page actually uses `sgs/testimonial-slider`, which has NO border rule anywhere for its card items. **Still genuinely open for the block that's actually live.** |
+| 3.19 | `max-width: 1280px` applied to 3 elements the draft never capped | Re-verify against the fixed tool first — establish whether the defect is real and visible at all before starting from a cause. One candidate worth testing (not assumed): `sgs/container`'s `contentWidth` default. |
+| 3.20 | `flex-grow: 1` on two buttons and the hero content | Re-verify visible effect against the fixed tool. |
+| 3.21 | Pill styling drift (weight 600→500/700, text-align, 1px padding) | Some may be equivalent-by-different-mechanism (draft centres with `text-align`, clone with `justify-content`) — re-verify against the fixed tool before treating as defects. |
+| 3.22 | Image-background cluster: `background-size`/`background-repeat`/`background-position`/`border-image-slice` | **This session's investigation found the likely real mechanism**: these properties are semantically inert on `<img>` elements (they paint via `src`, not a CSS background layer) — the fixed tool may still report diffs here that are TOOL noise, not real defects, on `<img>` targets specifically. Re-verify per-element before treating any of these as a real defect; `object-fit`/`object-position` (which DO apply to `<img>`) are the ones that matter. |
+| 3.23 | Product-card gaps wrong | Re-verify against the fixed tool. |
+
+## Real defects surfaced incidentally by the tool-fixing session (new, not yet actioned)
+
+Found while triaging previously-unattributed CSS-diff clusters (padding, flex-basis/max-height)
+during the tool-fix work — genuine clone defects, not tool artefacts, never fixed:
+
+| # | Defect | Notes |
+|---|---|---|
+| 3.25 | **Product-card pack-size pills carry the wrong padding** | Draft: `.sgs-product-card__pill { padding: 7px 13px }` on all 4 pack-size buttons. Clone renders `padding: 8px 16px` — `sgs/option-picker`'s hardcoded medium-tier default, not the draft's measured value. The block DOES support a custom `pillPadding` override; the converter isn't emitting it, it's just picking the nearest size tier. |
+| 3.26 | **Brand image has no `max-height` cap** | Draft: `.sgs-brand__image` caps at 380px/440px, a real visual constraint (index.html lines 474-498). Clone renders uncapped (`none`) — `sgs/media` supports `maxHeight` in its schema; the converter isn't emitting it for this instance. **Likely the SAME underlying defect as 3.7** — triage together, one fix may close both. |
 
 ### Content defects found by audit, not by the parity tool
 
 | # | Defect | Class | Notes |
 |---|---|---|---|
-| 3.15 | **Every footer link points nowhere — `href="#"`** | BUILD GAP | Home / Shop / About / Contact / Privacy Policy are all placeholders in the shipped `sgs/framework-footer-default` pattern's list block. Not a clone bug — the footer is framework chrome and is never cloned — but it ships broken navigation on every client site using the default footer. The draft's own footer carries 12 real links in two columns (Shop / Information); ours has one generic column of 5. ⚠ **BLOCKED ON BEAN: ask him for the real page URLs at the START of the session, not at the end.** Do not invent them, and do not let this stall silently. |
-| 3.16 | **The mobile hero image has the wrong alt text** | BOTH | It carries the DESKTOP image's alt ("Close-up of Mama's Munches Zookies — real ingredients, baked fresh") instead of its own draft alt ("Freshly baked Mama's Munches lactation cookies on a warm background"). Invisible to a text-matcher because alt is a non-visible attribute on an element hidden at that viewport — a genuine tool blind spot. Distinct from the art-direction matching question in §1.1: the image IS present (Bean confirmed); its alt is simply copied from the wrong source. |
+| 3.15 | **Every footer link points nowhere — `href="#"`** | BUILD GAP | Home / Shop / About / Contact / Privacy Policy are all placeholders in the shipped `sgs/framework-footer-default` pattern's list block. Not a clone bug — the footer is framework chrome and is never cloned — but it ships broken navigation on every client site using the default footer. ⚠ **BLOCKED ON BEAN: ask him for the real page URLs at the START of the session, not at the end.** Do not invent them, and do not let this stall silently. |
+| 3.16 | **The mobile hero image has the wrong alt text** | BOTH | It carries the DESKTOP image's alt ("Close-up of Mama's Munches Zookies — real ingredients, baked fresh") instead of its own draft alt ("Freshly baked Mama's Munches lactation cookies on a warm background"). Was invisible to the OLD tool because alt is a non-visible attribute on an element hidden at that viewport, and it had no concept of a responsive image PAIR at all. **The fixed tool has no art-direction pairing mechanism either — this is still open on the tool side too**, tracked separately below. |
 | 3.17 | **Footer social links missing** | BUILD GAP | The draft's footer declares Instagram and WhatsApp links; neither renders. Same class as 3.15. |
-
-### Items previously reported as open — re-check before spending time
-
-| # | Claim | Class | Status |
-|---|---|---|---|
-| 3.18 | Borders not transferring | TOOL | **Bean says already working.** Likely a Phase 1 false positive. Confirm, then close. |
-| 3.19 | `max-width: 1280px` applied to 3 elements the draft never capped | TOOL | Bean: "Where does this exist? It's not visible anywhere." **First establish whether the defect is real and visible at all** — do not start from a cause. If it IS real, one candidate worth testing (not assumed) is `sgs/container`'s `contentWidth` default `"normal"`, the sibling of the `layout` default already fixed. If it is not visible, close it and fix the tool instead. |
-| 3.20 | `flex-grow: 1` on two buttons and the hero content | TOOL | Bean has seen no button expand. `flex-grow: 1` means "take a share of the leftover space on this row" — it changes width, not hover. Confirm whether it has any visible effect; close if not. |
-| 3.21 | Pill styling drift (weight 600→500/700, text-align, 1px padding) | TOOL | Bean cannot see it. Some are likely equivalent-by-different-mechanism (draft centres with `text-align`, clone with `justify-content`). Confirm visually before treating as defects. |
-| 3.22 | Image-background cluster: `background-size` auto→cover, plus `background-repeat` and `background-position` (12 diffs each, 36 total) and probably `border-image-slice` (12) | BOTH | Treat as ONE cluster — the same handful of image elements almost certainly drives all four properties. Bean asked three things: **which images**, **does it change anything visible** versus the draft's `auto`, and — his instruction — **our defaults should align with the draft's**. Answer all three. |
-| 3.23 | Product-card gaps wrong | TOOL | Bean: they look fine. Probably another false positive. |
+| 3.18 | Borders not transferring | TOOL | **Bean says already working.** Was likely an OLD-tool false positive from the `::after`/pseudo-element paint blindness, which is now fixed. Confirm, then close. |
 
 ### Not a defect — answer and close
 
@@ -311,26 +153,50 @@ answers: the render fix, and what let the tool miss it (feed that to Phase 1).
 href="#main">Skip to content</a>` is a standard WordPress accessibility feature, not clone
 bleed. It lets keyboard and screen-reader users jump past the navigation, and it is
 required for WCAG 2.4.1 (Bypass Blocks). It is visually hidden until focused, which is why
-it only shows up when reading the markup.
-
-Its target was checked live on 2026-09-08: `#main` resolves to a real `<main id="main">`
-element on the page. The link works. **No action.**
+it only shows up when reading the markup. Its target resolves to a real `<main id="main">`
+element. **No action.**
 
 ---
 
 # Phase 4 — Fix the defects
 
-Only after Phase 3 finishes. Each fix cites its written root cause, changes the general
-mechanism, and lands with a live measurement showing the before and after values.
+Only after each Phase 3 item finishes its own root-cause + `/qc-council` validation. Each fix
+cites its written root cause, changes the general mechanism, and lands with a live measurement
+showing the before and after values — then a SECOND `/qc-council` pass confirms it actually
+closed, before starting the next item.
 
 **Order:**
 1. Anything shared by several defects (typography routing, alignment, sizing) — one fix,
-   many symptoms.
+   many symptoms. 3.7/3.26 (brand image sizing) are a likely pair — check first.
 2. The hero overrun (3.1/3.2) — most visible, on every device.
 3. The rest, worst-looking first.
 
-Re-run the clone and re-measure after each group. Expect the score to *drop* when the
-tool is fixed: that is the bent ruler being straightened, not a regression.
+Re-run the (now-fixed) parity tool and re-measure after each group. Expect the score to
+fluctuate as real defects get fixed and any remaining tool artefacts get identified — that is
+the instrument doing its job, not noise to ignore.
+
+---
+
+## Still-open tool gaps (found during Phase 1/2.2, not yet fixed — separate from Phase 3/4 defect work)
+
+Two genuine gaps in the parity tool remain, found during this session's investigation but not
+yet built. Not blocking Phase 3/4 — track separately, pick up when there's a natural pause:
+
+- **No art-direction handling for responsive sibling images.** Two images shown at different
+  breakpoints via CSS (like the hero's desktop/mobile pair, and 3.16 above) are captured
+  independently per viewport with no awareness they're meant to be treated as one deliberate
+  pair — a correct art-directed swap and a genuinely broken one still look identical to the
+  tool. A fix design exists (group sibling `<img>`/`<picture>` elements sharing a
+  device-tier-modifier class into one logical slot, reusing the `familyClusterFor` merge
+  pattern already built for box collisions) but is not implemented.
+- **Inert-property comparison on non-applicable elements.** Confirmed for `background-size`/
+  `background-repeat`/`background-position`/`border-image-slice` on `<img>` tags (see 3.22) and
+  `flex-basis` under a grid (not flex) parent — the tool compares a CSS property's computed
+  value without checking whether the element/layout actually uses that property, producing
+  diffs with zero visual effect on either side. Not yet fixed; likely needs a small
+  element/layout-aware exclusion rather than a blanket property blocklist entry (a blocklist
+  entry would also suppress the property where it DOES apply, e.g. `background-size` on a real
+  background-painting `<div>`).
 
 ---
 
@@ -352,7 +218,10 @@ Trustpilot slider 0px collapse · hero hover-zoom scrolling the page · button f
 radius · gift badge square corners (bare-number-as-preset-slug) · footer columns rendering
 sideways · footer credit placement, size and hover · wrong site-wide nav menu · hero
 paragraph spacing · brand image never extracted · wrong pack size preselected · "Find out
-more" link colour · `sgs/container` layout default (flex → flow).
+more" link colour · `sgs/container` layout default (flex → flow) · base body font-size
+(clamp() rewrite of the literal 16px) · `sgs-tab__content` renamed to `sgs-tab__inner`
+(collision-safety consistency, not a visible defect) · the parity tool itself (Phase 1/2.2,
+this session).
 
 Two claims corrected on the record: the hero's `max-width: 420px` and the trust-bar font
 sizes are **faithful** — the draft specifies both. They were wrongly reported as defects.
