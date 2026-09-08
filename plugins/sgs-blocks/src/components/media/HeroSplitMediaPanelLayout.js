@@ -28,11 +28,58 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { ToggleControl } from '@wordpress/components';
+import { TextControl, ToggleControl } from '@wordpress/components';
 import MediaElementPanel from '../MediaElementPanel.js';
+import ResponsiveControl from '../ResponsiveControl.js';
 import { resolveMediaType } from './atoms/source.js';
 
 const BLOCK_SLUG = 'sgs/hero';
+
+/** Tier key -> attribute-name suffix, matching source.control.js's own map. */
+const TIER_SUFFIX = { desktop: '', tablet: 'Tablet', mobile: 'Mobile' };
+
+/**
+ * Per-tier alt-text row for the split-media IMAGE (2026-09-08, WCAG 1.1.1).
+ *
+ * Hero already declares `splitMediaImageAlt`/`Tablet`/`Mobile` in block.json
+ * and already reads all three per-tier (`$sgs_hero_resolve_split_image()` in
+ * render.php) — this was a genuine editor-control gap, not a schema gap: the
+ * shared `meaning` atom (`components/media/atoms/meaning.control.js`) is NOT
+ * tier-aware (it always writes the base/desktop attribute only, matching its
+ * sole other adopter `sgs/media`, which never declared tiered alt attrs), so
+ * it cannot be reused here without widening it for every adopter. This row is
+ * hero-private and mirrors the SAME tier pattern `source.control.js`'s
+ * `pairPickerRow()` already uses for the picker above it, writing into the
+ * pre-existing tiered attributes rather than inventing a new shape.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes
+ * @param {Function} props.setAttributes
+ * @return {JSX.Element} A bare `<ResponsiveControl>` row.
+ */
+function splitMediaAltRow( { attributes, setAttributes } ) {
+	return (
+		<ResponsiveControl key="split-media-alt" label={ __( 'Alt text', 'sgs-blocks' ) }>
+			{ ( tier ) => {
+				const suffix = TIER_SUFFIX[ tier ] ?? '';
+				const key = `splitMediaImageAlt${ suffix }`;
+				return (
+					<TextControl
+						label={ __( 'Alt text', 'sgs-blocks' ) }
+						help={ __(
+							"Describes this tier's image for screen readers. Leave blank to fall back to a wider tier's alt text — set one only when this device shows a genuinely different image, not just a crop.",
+							'sgs-blocks'
+						) }
+						value={ attributes[ key ] || '' }
+						onChange={ ( value ) => setAttributes( { [ key ]: value } ) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				);
+			} }
+		</ResponsiveControl>
+	);
+}
 
 /**
  * The "Split image" panel's rows — media type + source pickers, plus the
@@ -75,6 +122,12 @@ export function HeroSplitMediaSourceSection( { attributes, setAttributes } ) {
 				atoms={ [ 'source' ] }
 				mediaType={ resolvedType }
 			/>
+			{ /* Alt text only applies to the IMAGE tiers — a <video> carries no
+			     alt attribute (captions/transcript are its accessible-text
+			     mechanism) and an inline SVG tier already renders
+			     aria-hidden="true" unconditionally (helpers-tier-media.php). */ }
+			{ 'image' === resolvedType &&
+				splitMediaAltRow( { attributes, setAttributes } ) }
 			<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
 				{ __( 'Overlay', 'sgs-blocks' ) }
 			</p>

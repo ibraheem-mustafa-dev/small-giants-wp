@@ -90,45 +90,66 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 	 * which is the pre-existing single-source behaviour — this helper adds tiers
 	 * without changing what a non-tiered block does.
 	 *
-	 * @param array  $tiers      Map of 'desktop'|'tablet'|'mobile' => array{
-	 *                           type: string, media?: array, svg?: string }.
-	 *                           'desktop' is the BASE tier.
-	 * @param string $base_class BEM base for the emitted elements, e.g.
-	 *                           'sgs-hero__split-media'.
-	 * @param string $uid        Per-instance scope class (no leading dot).
-	 * @param string $alt        Alt text. NOT tiered by design — a different crop
-	 *                           of the same subject describes the same thing.
-	 * @param array  $extra      Optional per-type extra classes, e.g.
-	 *                           array( 'image' => 'sgs-hero__split-image' ).
-	 * @param array  $options    Optional per-caller overrides. ADDITIVE — every
-	 *                           key defaults to the behaviour this helper had
-	 *                           before the parameter existed, so `sgs/hero`'s
-	 *                           output is byte-identical without passing it.
-	 *                           img_loading       'eager' -> 'lazy'
-	 *                           img_fetchpriority 'high'  -> 'auto'|'low'
-	 *                           video_autoplay    true    -> false (renders
-	 *                           `controls` instead, so the media stays operable).
+	 * @param array        $tiers      Map of 'desktop'|'tablet'|'mobile' => array{
+	 *                                 type: string, media?: array, svg?: string }.
+	 *                                 'desktop' is the BASE tier.
+	 * @param string       $base_class BEM base for the emitted elements, e.g.
+	 *                                 'sgs-hero__split-media'.
+	 * @param string       $uid        Per-instance scope class (no leading dot).
+	 * @param string|array $alt  Alt text. Either a single string (applied to
+	 *                           every tier — the original, still-default
+	 *                           behaviour, byte-identical for every existing
+	 *                           caller that passes a string), OR a per-tier
+	 *                           array `['desktop'=>..,'tablet'=>..,'mobile'=>..]`
+	 *                           for a caller whose tiers are genuinely
+	 *                           different photos, not crops of one subject.
+	 *                           An array tier left empty/unset falls back UP
+	 *                           to the next wider tier's alt (mobile -> tablet
+	 *                           -> desktop), the SAME fall-back-UP rule already
+	 *                           used for the media source itself (Spec 35
+	 *                           D3/D5) — so a caller that sets only the
+	 *                           desktop alt still gets that text on every
+	 *                           tier, matching the pre-2026-09-08 behaviour
+	 *                           exactly. Reversed from Spec 35 D5's original
+	 *                           "alt is NOT tiered" rule (2026-09-08 — a
+	 *                           block's mobile/desktop split-media images can
+	 *                           be two genuinely different photos, not one
+	 *                           subject at two crops; WCAG 1.1.1 needs a
+	 *                           description per tier in that case) —
+	 *                           additive, so every OTHER caller of this shared
+	 *                           helper (`sgs/timeline`'s milestone media) is
+	 *                           unaffected unless it opts in with an array.
+	 * @param array        $extra      Optional per-type extra classes, e.g.
+	 *                                 array( 'image' => 'sgs-hero__split-image' ).
+	 * @param array        $options    Optional per-caller overrides. ADDITIVE — every
+	 *                                 key defaults to the behaviour this helper had
+	 *                                 before the parameter existed, so `sgs/hero`'s
+	 *                                 output is byte-identical without passing it.
+	 *                                 img_loading       'eager' -> 'lazy'
+	 *                                 img_fetchpriority 'high'  -> 'auto'|'low'
+	 *                                 video_autoplay    true    -> false (renders
+	 *                                 `controls` instead, so the media stays operable).
 	 *
-	 *                           ⛔ WHY OVERRIDABLE AT ALL. The defaults are right
-	 *                           for the ONE caller this was written for: a single
-	 *                           hero above the fold, fetched eagerly at high
-	 *                           priority, autoplaying if it is video. They are
-	 *                           wrong for a caller rendering N of these DOWN a
-	 *                           page — `sgs/timeline` puts one per milestone, and
-	 *                           eight eager high-priority images (or eight
-	 *                           autoplaying looped videos) is a real regression
-	 *                           against the green-CWV budget. The timeline's own
-	 *                           pre-existing `<img>` used loading="lazy", so
-	 *                           adopting this helper WITHOUT the override would
-	 *                           have made that block slower, not faster.
+	 *                                 ⛔ WHY OVERRIDABLE AT ALL. The defaults are right
+	 *                                 for the ONE caller this was written for: a single
+	 *                                 hero above the fold, fetched eagerly at high
+	 *                                 priority, autoplaying if it is video. They are
+	 *                                 wrong for a caller rendering N of these DOWN a
+	 *                                 page — `sgs/timeline` puts one per milestone, and
+	 *                                 eight eager high-priority images (or eight
+	 *                                 autoplaying looped videos) is a real regression
+	 *                                 against the green-CWV budget. The timeline's own
+	 *                                 pre-existing `<img>` used loading="lazy", so
+	 *                                 adopting this helper WITHOUT the override would
+	 *                                 have made that block slower, not faster.
 	 * @return array{html:string,css:string} Markup and the tier-toggle CSS.
 	 */
-	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, string $alt = '', array $extra = array(), array $options = array() ): array {
+	function sgs_tier_media_render( array $tiers, string $base_class, string $uid, $alt = '', array $extra = array(), array $options = array() ): array {
 		$img_loading       = isset( $options['img_loading'] ) ? (string) $options['img_loading'] : 'eager';
 		$img_fetchpriority = isset( $options['img_fetchpriority'] ) ? (string) $options['img_fetchpriority'] : 'high';
 		$video_autoplay    = array_key_exists( 'video_autoplay', $options ) ? (bool) $options['video_autoplay'] : true;
-		$html = '';
-		$css  = '';
+		$html              = '';
+		$css               = '';
 
 		// Which narrower tiers actually resolved to something renderable?
 		$present = array();
@@ -146,6 +167,31 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 		}
 
 		$has_narrower = in_array( 'tablet', $present, true ) || in_array( 'mobile', $present, true );
+
+		// Resolve the per-tier alt text UP FRONT, once, using the SAME
+		// fall-back-UP cascade as the media source itself (Spec 35 D3/D5): a
+		// tier with no alt of its own inherits the next WIDEST tier that has
+		// one. A plain string $alt (every pre-2026-09-08 caller) is applied to
+		// every tier unchanged — this branch only activates for a caller that
+		// deliberately opts into per-tier alt by passing an array.
+		if ( is_array( $alt ) ) {
+			$resolved_alt = array();
+			$fallback     = (string) ( $alt['desktop'] ?? '' );
+			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+				$tier_alt = (string) ( $alt[ $tier ] ?? '' );
+				if ( '' !== $tier_alt ) {
+					$fallback = $tier_alt;
+				}
+				$resolved_alt[ $tier ] = $fallback;
+			}
+		} else {
+			$alt_string   = (string) $alt;
+			$resolved_alt = array(
+				'desktop' => $alt_string,
+				'tablet'  => $alt_string,
+				'mobile'  => $alt_string,
+			);
+		}
 
 		foreach ( $present as $tier ) {
 			$spec = $tiers[ $tier ];
@@ -201,7 +247,7 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 				$html .= sgs_responsive_image(
 					! empty( $media['id'] ) ? absint( $media['id'] ) : 0,
 					(string) ( $media['url'] ?? '' ),
-					$alt,
+					$resolved_alt[ $tier ],
 					'large',
 					$attrs
 				);

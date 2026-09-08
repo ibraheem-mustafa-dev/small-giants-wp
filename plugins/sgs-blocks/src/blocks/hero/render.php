@@ -1458,22 +1458,36 @@ $sgs_hero_resolve_split_type = static function ( string $declared_type, $image, 
 	return '';
 };
 
-// Alt comes from the base image only. The former `$split_media['alt']` fallback
-// referenced a variable deleted with the legacy bridge above; alt is deliberately
-// NOT tiered (Spec 35 D5 — a different crop of the same subject describes the
-// same thing, and a per-tier alt is a second place for it to drift).
-$sgs_hero_split_alt = (string) ( $split_image['alt'] ?? '' );
+// Per-tier alt (reversed from Spec 35 D5, 2026-09-08 — see
+// helpers-tier-media.php's updated $alt docblock for the full reasoning).
+// `$split_image`/`$split_image_tablet`/`$split_image_mobile` already resolve
+// each tier's OWN `splitMediaImageAlt{Tablet,Mobile}` attribute (declared in
+// block.json, `$sgs_hero_resolve_split_image()` above) — this was previously
+// discarded, collapsing every tier onto the desktop alt alone. Passing the
+// array opts into `sgs_tier_media_render()`'s fallback-UP cascade, so a hero
+// that only ever set the desktop alt (every pre-2026-09-08 instance) keeps
+// rendering byte-identically; only an instance with a genuinely different
+// per-tier alt (art-directed mobile image, not a crop) now renders it.
+$sgs_hero_split_alt = array(
+	'desktop' => (string) ( $split_image['alt'] ?? '' ),
+	'tablet'  => (string) ( $split_image_tablet['alt'] ?? '' ),
+	'mobile'  => (string) ( $split_image_mobile['alt'] ?? '' ),
+);
 
 // Decorative-image toggle (finding 18, 2026-09-02, WCAG 2.1 AA 1.1.1). Only the
 // split-media element — the sole real <img>/<video>/svg this block renders —
 // gets this; backgroundImage paints via CSS background-image and is never
-// exposed to assistive tech, so it carries no such toggle. When on, the alt is
-// blanked (covers the image tier) and the media wrapper is marked aria-hidden
-// (covers video/svg tiers, which have no alt attribute of their own), mirroring
-// sgs/timeline's milestoneMediaDecorative treatment.
+// exposed to assistive tech, so it carries no such toggle. When on, every
+// tier's alt is blanked (covers the image tier) and the media wrapper is
+// marked aria-hidden (covers video/svg tiers, which have no alt attribute of
+// their own), mirroring sgs/timeline's milestoneMediaDecorative treatment.
 $split_media_decorative = ! empty( $attributes['splitMediaDecorative'] );
 if ( $split_media_decorative ) {
-	$sgs_hero_split_alt = '';
+	$sgs_hero_split_alt = array(
+		'desktop' => '',
+		'tablet'  => '',
+		'mobile'  => '',
+	);
 }
 
 $split_tiers = array();
