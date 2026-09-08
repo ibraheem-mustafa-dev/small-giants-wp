@@ -19,8 +19,9 @@ it prints does not mean much yet. **The next session fixes the ruler before the 
 Two things I got wrong and corrected on the record: the hero's `max-width:420px` and the
 trust-bar font sizes are faithful — your draft specifies both. I had reported them as bugs.
 
-One decision is waiting on you: how to stop WordPress shrinking the base body text to 14px
-on phones (§THE FRONT, item 1). The research is done; the choice is a design call.
+The type scale is now settled and shipped (D1007): no fluid typography, six presets instead
+of nine, and the two font bugs you spotted are fixed and measured live — body text was 14px on
+phones and is now 16px; footer text was 13px and is now 16px.
 
 ## Shipped this session (2026-09-07/08)
 
@@ -74,7 +75,7 @@ D742's reasoning still holds where it was aimed; it just did not anticipate the 
 
 ## Blockers
 
-**None blocking.** One decision is pending Bean (base font size, below).
+**None blocking.** No decisions pending.
 
 ## THE FRONT — what to pick up next
 
@@ -98,16 +99,22 @@ sessions. **They both edit `theme.json` and the same pattern files, so a session
 `clamp()` on `vw` can also fail WCAG 1.4.4. Research:
 `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
 
-**Ladder 9 → 7:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
-`hero` 50 / `display` 120. Retired `x-small` and `medium`. Reading sizes never shrink; only the
+**Ladder 9 → 6:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 / `xx-large` 36 /
+`hero` 50. Retired `x-small`, `medium` and `display`. Reading sizes never shrink; only the
 top three compress. Measured live at 375 / 900 / 1440 — `x-large` 21/22/24, `xx-large` 27/30/36,
 `hero` 33/40/50, body 16px, zero `clamp()` on any SGS preset.
 
 **Both reported defects closed:** the base body font (`efb7ec5de`) and `small`, which rendered
 **13.0082px** on a phone and now renders 14px. Footer body text now 16px.
 
-⚠ **`display` was nearly deleted as dead and is not** — the "zero uses" survey read
-`patterns/*.php` only; `templates/404.html` uses it deliberately.
+⚠ **`display` took two passes.** First it was nearly deleted as dead — wrong; the "zero uses"
+survey read `patterns/*.php` only and `templates/404.html` uses it. Then it was kept on that
+basis — also wrong, per Bean: one use is a reason to write an explicit value, not to carry a
+permanent picker row. It is now retired, and `404.html` carries
+`{"desktop":120,"tablet":80,"mobile":56}` on the block. That ALSO closed a regression this
+programme shipped: `display` had been fluid 56→120px, and moving it to `fluid: false` without a
+media-query override left it flat at 120px on phones. **A preset moved off fluid needs its
+override in the same change.**
 
 ⚠ **Accepted, not fixed:** three phantom presets leak from WordPress (`normal`, `huge`, fluid
 `medium`) despite `defaultFontSizes: false` in every layer on a v3 theme.json under WP 7.1.

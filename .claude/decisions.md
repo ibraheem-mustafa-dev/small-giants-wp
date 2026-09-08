@@ -1,4 +1,4 @@
-## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 7. SHIPPED.
+## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 6. SHIPPED.
 
 **2026-09-08. Bean-directed**, after `/research-buddies` (The Nerd + The Practical One) and
 live measurement. Research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
@@ -15,16 +15,25 @@ WCAG 1.4.4 (resize to 200%) because viewport units ignore browser zoom -- flagge
 own author, not a critic. SGS already has the per-tier `@media` machinery both systems
 converged back to, so fluid buys nothing here and costs correctness.
 
-**The ladder shrinks 9 -> 7:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 /
-`xx-large` 36 / `hero` 50 / `display` 120. Retired: `x-small` (12, zero uses anywhere) and
-`medium` (18, indistinguishable from 16 -- Bean's framing was that the range is "ridiculously
-wide and makes it harder to make a clear choice"). The 16px slug is `regular`, Bean's pick over
-`medium`, because `medium`/`small`/`large`/`x-large` are all real CSS font-size keywords.
+**The ladder shrinks 9 -> 6:** `small` 14 / `regular` 16 / `large` 20 / `x-large` 24 /
+`xx-large` 36 / `hero` 50. Retired: `x-small` (12, zero uses), `medium` (18, indistinguishable
+from 16 -- Bean's framing was that the range is "ridiculously wide and makes it harder to make a
+clear choice") and `display` (120). The 16px slug is `regular`, Bean's pick over `medium`,
+because `medium`/`small`/`large`/`x-large` are all real CSS font-size keywords.
 
-⚠ **`display` was very nearly deleted and is NOT dead.** The survey that returned "zero uses"
-read `patterns/*.php` only; templates were outside its scope. `templates/404.html` uses it, and
-that template's own comment explains the 96-200px award-tier 404 numeral it exists for. A "0
-uses" figure from the wrong scope is how a considered design token gets deleted.
+⚠ **`display` took two passes, and BOTH readings were instructive.** First it was going to be
+deleted as dead -- wrong, because the survey read `patterns/*.php` only and `templates/404.html`
+uses it. Then it was KEPT on that basis -- also wrong, per Bean: one use is a reason to write an
+explicit value, not to carry a permanent row in every client's picker. The keep-it case was
+weaker than it looked, because the Spec 33 extractor emits no per-client `display` value anyway.
+`templates/404.html` now carries `{"desktop":120,"tablet":80,"mobile":56}` on the block.
+
+⚠ **Retiring it closed a regression THIS decision had introduced.** `display` carried
+`fluid: {min:56px, max:120px}`, so the 404 numeral rendered 56px on a phone. Setting every preset
+`fluid: false` without adding `display` to the media-query overrides left it flat at 120px at
+EVERY width -- shipped, and measured live at 375px before it was noticed. Bean's question "why
+keep it for one use?" is what surfaced it. **Rule: a preset moved off fluid needs its
+media-query override in the SAME change, or it silently stops being responsive.**
 
 Reading sizes never shrink across devices; only 24/36/50 compress, ratio widening with size
 (GOV.UK's curve 1.14x -> 1.33x -> 1.51x). Mobile values reuse each preset's existing fluid

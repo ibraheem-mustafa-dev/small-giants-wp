@@ -324,9 +324,9 @@ Evidence (full research: `~/.claude/memory/research/2026-09-08-sgs-responsive-ty
 - **`clamp()` on `vw` units can fail WCAG 1.4.4** (resize text to 200 %), because viewport
   units do not respond to browser zoom — flagged by Utopia's own author.
 
-**The ladder — 7 presets** (down from 9). Retired: `x-small` 12 (zero uses anywhere) and
-`medium` 18 (too close to 16 to be a distinguishable choice — the client-facing complaint that
-started this). **SHIPPED + verified live at 375 / 900 / 1440 on 2026-09-08:**
+**The ladder — 6 presets** (down from 9). Retired: `x-small` 12 (zero uses anywhere), `medium`
+18 (too close to 16 to be a distinguishable choice — the client-facing complaint that started
+this), and `display` 120. **SHIPPED + verified live at 375 / 900 / 1440 on 2026-09-08:**
 
 | slug | desktop | tablet | mobile | role |
 |---|---|---|---|---|
@@ -336,13 +336,20 @@ started this). **SHIPPED + verified live at 375 / 900 / 1440 on 2026-09-08:**
 | `x-large` | 24 | 22 | 21 | card + sub headings |
 | `xx-large` | 36 | 30 | 27 | section headings |
 | `hero` | 50 | 40 | 33 | page headline |
-| `display` | 120 | 120 | 120 | the 404 numeral — see below |
 
-⚠ **`display` was very nearly deleted as dead, and was not.** A survey of `patterns/*.php`
-returned zero uses, but templates and parts were outside that survey's scope:
-`templates/404.html` uses it, and the template's own comment explains the 96-200px award-tier
-404 numeral it was added for. A "0 uses" figure from the wrong scope is how a considered design
-token gets deleted.
+⚠ **`display` was first KEPT on the grounds that `templates/404.html` used it, then retired
+anyway (Bean).** One use is a reason to write an explicit value, not to carry a permanent row in
+every client's font-size picker. The keep-it argument was also weaker than it looked: the Spec 33
+extractor emits no per-client value for `display`, so holding it as a token bought no per-client
+scaling. `templates/404.html` now carries `{"desktop":120,"tablet":80,"mobile":56}` on the block
+itself — the mechanism for one-off responsive values.
+
+⚠ **Retiring it also closed a regression this same programme introduced.** `display` had carried
+`fluid: {min: 56px, max: 120px}`, so the 404 numeral rendered 56px on a phone. Setting every
+preset `fluid: false` without adding `display` to the media-query overrides left it flat at 120px
+at EVERY width — shipped and measured live before anyone noticed. The block-level tier object
+restores 56px exactly and adds the tablet step it never had. **A preset moved off fluid needs a
+media-query override in the same change, or it silently stops being responsive.**
 
 **Mechanism — `assets/css/type-scale.css`.** A theme.json preset holds ONE value; there is no
 per-breakpoint preset in WordPress. Rather than author a tier object on all 147 pattern
