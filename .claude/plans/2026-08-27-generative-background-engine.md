@@ -21,10 +21,10 @@ we reproduce with our own assets?"*
 finished, modest effect with its own record. Its plan is closed at
 [`archive/2026-08-26-fr3831-look-gate.md`](archive/2026-08-26-fr3831-look-gate.md).
 
-⛔ **Never merge these two tracks again, and never share a phase number between them.** One file
-holding both is exactly what cost a full session on 2026-08-27: a single numbered sequence spanning
-two products, where "Phase 3" read as *"more FR-38-31 work"* to one reader and *"the spec for our own
-tool"* to another. Both readings were defensible from the text.
+⛔ **Never merge these two tracks, and never share a phase number between them.** A single numbered
+sequence spanning two products makes a phase number ambiguous — "Phase 3" reads as *"more FR-38-31
+work"* to one reader and *"the spec for our own tool"* to another, with both readings defensible from
+the text.
 
 ## The product goal (Bean, 2026-08-27)
 
@@ -61,9 +61,8 @@ the spec rather than picking a side.
 
 ## Licence position (researched 2026-08-27 — do not redo)
 
-Verified by reading actual LICENSE files via `gh api repos/OWNER/REPO/license`. GitHub's
-`licenseInfo` API field reported "NONE" for the first two and was **wrong both times** — never trust
-that field.
+Verified by reading actual LICENSE files via `gh api repos/OWNER/REPO/license`. ⛔ **Never trust
+GitHub's `licenseInfo` API field** — it reports "NONE" for repositories that carry a licence.
 
 | Source | Licence | Verdict |
 |---|---|---|
@@ -156,13 +155,7 @@ Only after Phase 1. Absorb D794's must-fix register into
 **Gate:** the completed spec goes through `/adversarial-council` again. D794 said NO-GO on the thin
 version; the rewrite must earn a GO before any build.
 
-## Phase 3 — Build: COMPLETE. Engine shipped 2026-08-29; fidelity CLOSED (D925-D927); speed fixed (D930/D932); colour vibrancy FIXED (D939, corrected D941, 2026-09-03).
-
-⚠ **This heading said "Colour vibrancy OPEN" until 2026-09-08 while its own body 30 lines below
-recorded the fix.** A reader skimming headings — which is what headings are for — would have
-concluded there was outstanding work here. Phase 3 has no open scope. **Candidate for
-`plans/archive/`** on the next sweep; left in place only because moving it is Bean's call, not an
-audit's.
+## Phase 3 — Build: COMPLETE, no open scope. Engine shipped 2026-08-29; fidelity CLOSED (D925-D927); speed fixed (D930/D932); colour vibrancy FIXED (D939/D941, 2026-09-03).
 
 **Read D886, D887 and D888 before touching this track.** They supersede the technique spec's
 Animation section and record two claims that were asserted and withdrawn.
@@ -191,21 +184,19 @@ engine had no equivalent scaling at all, running ~25x too fast. Fixed with a ref
 constant. The static-phase fidelity numbers above are unaffected (that instrument samples fixed
 moments, not real playback speed).
 
-✅ **Colour vibrancy FIXED (D939, corrected D941, 2026-09-03).** Root cause was hue range, not
+✅ **Colour vibrancy FIXED (D939/D941, 2026-09-03).** Root cause was hue range, not
 saturation/lightness — three of the four demo colours sat in a 15° pink band plus one orange
-outlier, a near-monochrome gradient with no internal colour contrast. **D939's first fix was
-itself wrong** — it picked stops whose OKLCH interpolation path passed through green/yellow/cyan,
-producing a literal rainbow the reference does not have (Bean caught it: "check the colours of
-the actual original, it is not a rainbow"). **D941 corrected it**: sampled the reference's real
-screenshot pixels directly (not a cached texture file) and found its hues cluster in exactly
+outlier, a near-monochrome gradient with no internal colour contrast. ⚑ **Endpoint hues are not the
+whole palette: the OKLCH interpolation PATH between adjacent stops is what paints, and a path
+through green/yellow/cyan produces a rainbow the reference does not have.** Sampling the
+reference's real screenshot pixels (not a cached texture file) shows its hues cluster in exactly
 three families — blue-violet (~244-270°), pink-magenta (~289-325°), orange (~18-36°), never
-green/yellow/cyan. New palette (`#533AFD`/`#FE86E9`/`#FE8D2C`/`#9E5FE5`) chosen so every
+green/yellow/cyan. Shipped palette (`#533AFD`/`#FE86E9`/`#FE8D2C`/`#9E5FE5`) chosen so every
 adjacent-pair interpolation path stays on the warm/cool side and never crosses green — verified by
 simulating the actual interpolation code in Python BEFORE shipping, not just eyeballing the four
-endpoint hues. Applied to the demo page — no shader or engine code change either time.
-Screenshot-verified against the fresh reference; `npm run fidelity:compare` re-run twice,
-unaffected both times (3/3, unchanged numbers — that instrument measures shape, not colour).
-Full account: D939 + D941 (read together).
+endpoint hues. Applied to the demo page — no shader or engine code change. Screenshot-verified
+against the fresh reference; `npm run fidelity:compare` unaffected (3/3, unchanged numbers — that
+instrument measures shape, not colour). Full account: D939 + D941 (read together).
 
 ✅ **1D gradient texture replaced with an alpha-composited organic field (D944, 2026-09-03).**
 Bean pushed past the colour fix to a real architectural gap he spotted by eye: their palette

@@ -69,8 +69,8 @@ companions: Spec 32 (component styling/token contract — governs RENDERED outpu
 > `aria-describedby={helpId}` — the same ARIA-group pattern `CircularOptionPicker`/`IconPicker`
 > already use elsewhere in this codebase). Re-run `run.js --json`: **0 live findings.**
 >
-> **Rule 41 detector fixes, 2026-09-05/07/08 — the 42-finding figure above is stale, do not cite
-> it as current.** Two real false-positive classes were found and fixed in
+> **Rule 41 detector fixes, 2026-09-05/07/08 — ⛔ never cite a rule-41 finding count from this
+> document; re-derive it.** Two real false-positive classes were found and fixed in
 > `41-co2-element-grouping-order.js` itself: (a) the rule could not tell a genuine bound WRITE
 > control apart from an attribute merely being READ elsewhere (e.g. handed to another component
 > as a prop) — fixed via per-occurrence AST write/read classification, only WRITE occurrences now
@@ -659,7 +659,7 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 
 > ⛔ **THIS LIST IS THE CORE-COMPONENT REFERENCE, NOT THE CANONICAL CONTROL SET. Where it names a raw
 > core component that SGS has since wrapped, the wrapper wins — and two of them are enforced by live
-> build gates.** Corrected 2026-08-09 after the conflict was measured.
+> build gates.**
 >
 > | Job | Part H named | **Canonical (governing)** | What the gate ACTUALLY catches |
 > |---|---|---|---|
@@ -681,9 +681,9 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > *inside* the canonical wrappers. (Repo-wide they also appear in `scripts/inspector-scan/fixtures/**`
 > and in `rules/04-colour-alpha.js`'s own matcher list, which is expected.)
 >
-> ⚠ **Part H sweep DONE, 2026-08-12** — narrower than the line list this box used to carry (those
-> cached line numbers had already drifted; re-derived by reading every bare `LinkControl` mention in
-> this file). Two genuine instruction-to-a-developer sites fixed: Part B's completeness-parity table
+> ⚠ **Part H sweep DONE, 2026-08-12** — scope re-derived by reading every bare `LinkControl`
+> mention in this file rather than from a cached line list (line numbers in a doc drift). Two
+> genuine instruction-to-a-developer sites fixed: Part B's completeness-parity table
 > (was "Link/CTA | `LinkControl`", now "**`SgsLinkControl`** (wraps `LinkControl`)") and Part F's
 > anti-pattern list (was "raw URL field instead of `LinkControl`", now "instead of `SgsLinkControl`").
 > The REMAINING bare `LinkControl` mentions in this file (Part C's "N: LinkControl" feature-parity
@@ -705,9 +705,9 @@ without the Spec-32 skip-serialisation + scoped-emission pattern.**
 > `DateTimePicker`, `FontSizePicker`, `FontAppearanceControl`, `HStack`/`VStack`/`Flex`/`Spacer`/
 > `Divider`, `ColorIndicator`, `Tip`/`Notice`, `Disabled`, `Dropdown`/`DropdownMenu`, `Modal`,
 > `registerFormatType`, `__experimentalSpacingSizesControl`) are unconflicting native mechanisms, not
-> lookalikes — left as-is. **Border and line-height WERE swept, 2026-08-13** — this box used to say
-> core's grouped border-box component "agrees with contract §14", which D566 (2026-08-11) had already
-> made false. Canonical is now stated inline below for both. **Do not reinstate either core component
+> lookalikes — left as-is. **Border and line-height WERE swept, 2026-08-13.** ⛔ Core's grouped
+> border-box component does NOT agree with contract §14 (D566, 2026-08-11). Canonical is stated
+> inline below for both. **Do not reinstate either core component
 > name in this file** — a `grep -c` for each is the commit gate, and the rejection rationale lives at
 > contract §14.1 where it belongs.
 
@@ -857,7 +857,7 @@ triad mechanism and the same enforcement stack.
       only `*/edit.js`; `colour-picker/color-palette/index.js` defaults `enableAlpha = false` and its
       callers were never audited. Close that, then tick
 
-**NOT DONE — verified (4, stale — see corrections):**
+**CLOSED or PARTIAL (4):**
 
 - [x] **CLOSED 2026-09-04 (C6).** control-dense panels use ToolsPanel — rule
       `03-dense-panel-candidate` re-run live: **0 flagged.** All 10 named blocks converted
@@ -972,7 +972,7 @@ not neglect — do not re-investigate without new information.
       never framework patterns**, and Part M already re-labels it "not a framework rollout — deliberate,
       not a gap". 0/46 framework patterns is therefore correct-by-design. **Reword or drop**
 
-**PARTIAL, aggregate (1) — corrected 2026-09-04, this line was stale:**
+**PARTIAL, aggregate (1):**
 
 - [~] **no Part-F anti-patterns** — 15 rules now gate (up from 7; D4, 2026-09-04 promoted 8
       more that cleared the project's own advisory-before-fail-closed bar), 0 gating findings.
@@ -1734,8 +1734,7 @@ against this same allowlist — see those sections' own corrections.
 AND `componentsDir` on `ctx`, alongside `blocksDir`/`patternsDir`/`themeDir`. `core/components.js`
 exports `resolveComponentFiles()`, indexing `src/components/`, every `src/blocks/*/components/`, AND
 `src/blocks/extensions/`. Rule 26 already reads that corpus. LINK / STATE / SHADOW / COLOUR are no
-longer undetectable by construction — each contract's own Scope/Detection fields should be read
-against their 2026-08-19 corrections, not against this stale blocker.
+longer undetectable by construction — read each contract's own Scope/Detection fields.
 
 The contract originally made this argument for LINK alone and failed to generalise it. It binds on
 **four** contracts, all reachable through `src/blocks/extensions/`: **LINK** (raw URL field), **STATE**
@@ -1894,9 +1893,9 @@ Regenerate before building any gate on them.
    `src/components/SgsColourPanel.js` is the grouped panel that mounts `DesignTokenPicker`
    rows (`rows={[{ key, label, states, gradientCapable }]}`) under D621/D622's Styles-tab placement —
    the vehicle for the rule this whole section states, and the adoption route (D665's
-   Track A). It was never named here despite carrying the rule; named now. **Adoption
-   RE-VERIFIED 2026-08-30 — the "60-of-83" figure above was stale; re-measured with
-   `grep -l "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` → 65 of 83.** See
+   Track A). **Adoption: 65 of 83, measured 2026-08-30 with
+   `grep -l "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` — re-run it rather
+   than citing this number.** See
    `plugins/sgs-blocks/scripts/consistency/golden-controls.json` for its machine-readable shape, and
    field 9e/9f below for the placement + omission rule this component enforces.
 2. **Required props** — `label`, `value`, `onChange`. `enableAlpha` and `clearable` already
@@ -2159,9 +2158,7 @@ EXTENSION SURFACE axis correction above.
 1. **Canonical** — no shared component. `SelectControl` over a **declared `block.json` enum** is the
    de facto standard; `ToggleGroupControl` for short option sets.
 
-   ⭐ **THE THRESHOLD, WRITTEN DOWN AT LAST (2026-08-26, D810).** This line previously read *"the
-   threshold is nowhere written down, so it cannot yet be gated"*. It is now written, and it was
-   **derived from the corpus, not chosen**:
+   ⭐ **THE THRESHOLD (2026-08-26, D810)** — **derived from the corpus, not chosen**:
 
    | options | longest label | shape | why |
    |---|---|---|---|
@@ -2172,8 +2169,8 @@ EXTENSION SURFACE axis correction above.
    | > 10 | any | `ComboboxControl` | searchable; scanning a 12-item menu is the anti-pattern |
    | multi-value | any | `FormTokenField` | unchanged from §125 |
 
-   ⚠ **AMENDED 2026-09-07 (Bean) — the enforced band is 2–4, and FIVE is neutral.** It previously
-   read 2–5. Five short options is the one genuine judgement call in this table: it is the width at
+   ⚠ **The enforced band is 2–4, and FIVE is neutral (Bean, 2026-09-07).** Five short options is
+   the one genuine judgement call in this table: it is the width at
    which a segmented row starts to crowd a narrow inspector sidebar, and where a dropdown stops
    feeling heavy-handed. Both shapes are defensible there, so enforcing either produced churn
    without improving the client's experience. The rule now declines to have an opinion rather than
@@ -2209,9 +2206,8 @@ EXTENSION SURFACE axis correction above.
      that is n=1. ⛔ **The gate that enforces this table MUST measure the rendered label, not the
      slug.** The census may use the proxy; an enforcing gate may not.
 
-   ⭐ **THE GATE NOW EXISTS (2026-08-27, `scripts/check-enum-control-shape.py`).** This line
-   previously said the threshold was written "deliberately no gate". It is a SEPARATE instrument
-   from the census, not a wrapper around it, precisely because the census's slug proxy is
+   ⭐ **THE GATE EXISTS (2026-08-27, `scripts/check-enum-control-shape.py`).** It is a SEPARATE
+   instrument from the census, not a wrapper around it, precisely because the census's slug proxy is
    forbidden here: it reads the actual rendered JSX text (`ToggleGroupControlOption label={ __(
    '...' ) }`, and `SelectControl`'s `options={[...]}` inline array or `options={IDENTIFIER}`
    resolved to its module-level `const` definition) for every 2–5-option enum, and classifies the
@@ -2600,7 +2596,7 @@ them here is what stops the next enforcement pass repeating the 27's blind spot.
 | `AnimationControl` | 1 site | — | **Needs a contract**, and it is where carried obligation 17 (reduced-motion) binds |
 | `ComboboxControl` | 2 sites | ENUM (§3) | Absorbed by §3 as a permitted large-option-set variant |
 | `FormTokenField` | live | ENUM (§3) | Multi-select enum — **needs an explicit clause in §3** |
-| `FocalPointPicker` | 7 sites (2026-08-11, D585 — was 1 when this row was written; `imageControls` census + fix shipped: before-after + 6 newly-converted blocks) | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
+| `FocalPointPicker` | 7 sites (2026-08-11, D585 — `imageControls` census + fix shipped: before-after + 6 newly-converted blocks) | MEDIA (§7) | **Absorbed by §7** — and it is carried obligation 9's evidence |
 | repeater item editors | `plans`, `icons`, `tiles` | — | **Needs a contract.** ⚠ D523 proved a per-item control must never be recorded as the array's control. ⛔ **The D523 guard is FRAGILE — see below.** |
 
 ⛔ **Known fragility in the D523 repeater guard (QC council, 2026-08-08).** `_repeater_item_spans()`
@@ -2625,13 +2621,12 @@ cross-check — do not treat this guard as complete.
 > box before acting on anything in §14.**
 >
 > The border UI shipped as a shared composite, `SgsBorderControl`
-> (`plugins/sgs-blocks/src/components/SgsBorderControl.js`). **CORRECTED 2026-08-30 — "10
-> blocks" drifted 4.4x; re-verified by grep, not cache: 44 blocks now mount it**, the Shape-B
-> rollout's full extent. Two blocks (`sgs/media`, `sgs/whatsapp-cta`) are radius-private-only and
+> (`plugins/sgs-blocks/src/components/SgsBorderControl.js`). **44 blocks mount it**, the Shape-B
+> rollout's full extent — verify the count by grep before citing it, never from this cache. Two blocks (`sgs/media`, `sgs/whatsapp-cta`) are radius-private-only and
 > correctly don't mount it. Four (`card-grid`, `media`, `multi-button`, `trust-bar`) still carry an
 > active native `__experimentalBorder` (width/colour/style) — codemod `--survey` refuses them
 > `ambiguous-anchor`, open not regressed. `plugins/sgs-blocks/CLAUDE.md`'s "Border controls"
-> section carries the same correction — don't let the two drift apart again.
+> section states the same figure — keep the two in sync.
 > Census + ratcheted gate: `plugins/sgs-blocks/scripts/survey-border-control-migration.py`
 > (`PRIVATE_NEEDS_SWAP` must stay 0). Three of §14's statements are now false:
 >
@@ -3005,38 +3000,33 @@ Irrelevant universal-extension panels are hidden per block via `supports.sgs.hid
 (declarative). ⚠ The draft kept the mechanism and dropped the **per-block obligation** — which is
 the part that makes it anyone's job. **Enforced by** UNENFORCED.
 
-#### CO-15. No duplicated native-supports panel *(was condition 15 — RESTORED 2026-08-08)*
+#### CO-15. No duplicated native-supports panel *(was condition 15)*
 No bespoke panel re-implements a control a native `supports` panel already provides. This is the
 inspector-UX form of **R-31-9**.
 
-⛔ **CORRECTED 2026-09-04 (item C5 reconciliation) — the "Enforced by `check-duplicate-controls.js`"
-claim two paragraphs below is WRONG, and this box previously said otherwise.** `check-duplicate-
-controls.js` is wired into `prebuild` (that part is true), but it targets a completely different
-bug class: (1) universal `sgsHover*` panel vs a block's own private `*Hover` attrs, (2) two JSX
-controls in one `edit.js` writing the same attr, (3) a composite's own control duplicating a child
-InnerBlocks control. Read its own docblock — nowhere does it compare an SGS bespoke panel against
-a native WordPress `supports` panel (colour/typography/spacing/border/etc). **Part L's own verified
-audit (2026-08-17, below in this same file) already found this: "no gate exists… `check-duplicate-
-controls.js`… target[s] a different bug class."** This box and Part L directly contradicted each
-other from 2026-08-19 to 2026-09-04; Part L was right. **Enforced by: nothing, for the general
-rule.** See Part L's own entry for what to do about it (the general rule is not gateable — Part G's
+⛔ **Enforced by: nothing, for the general rule.** `check-duplicate-controls.js` is wired into
+`prebuild`, but it does NOT enforce this condition — it targets a different bug class: (1) universal
+`sgsHover*` panel vs a block's own private `*Hover` attrs, (2) two JSX controls in one `edit.js`
+writing the same attr, (3) a composite's own control duplicating a child InnerBlocks control. Read
+its own docblock — nowhere does it compare an SGS bespoke panel against a native WordPress
+`supports` panel (colour/typography/spacing/border/etc). Do not cite it as this condition's gate.
+See Part L's own entry for what to do about it (the general rule is not gateable — Part G's
 D402 verdict table shows most "duplicates" are the deliberate, correct choice; only the two named
 ADOPT cases — `aspectRatio`, `duotone` — are a well-specified subset, and even that is a
 migration-completion problem for 7 already-enumerated blocks, not a lint-gate problem — see
 `.claude/reports/2026-09-04-c5-native-supports-duplicate-panel-scoping.md`).
 
-Restored 2026-08-08 (QC-council audit): this document's ABSORPTION MAP had wrongly claimed
-this rule was absorbed into Cross-cutting B (a different question — universal-extension opt-out fit).
-The rule appeared nowhere in this file until restored here.
+This rule is NOT absorbed into Cross-cutting B — that governs a different question (universal-extension
+opt-out fit). CO-15 stands on its own.
 
-#### CO-18. Decorative-image toggle + ARIA-label *(was condition 18 — RESTORED 2026-08-08)*
+#### CO-18. Decorative-image toggle + ARIA-label *(was condition 18)*
 A decorative-image toggle (**empty alt + `aria-hidden`**) and a general **ARIA-label** control are
 present wherever the block's rendered markup needs them. *(Spec 35 C, E6.)* **Enforced by** `inspector-scan/rules/18-decorative-image-aria.js`, ADVISORY,
 `openBacklog: 13` (verified 2026-08-19 against
 `plugins/sgs-blocks/scripts/inspector-scan/rules.json`). Live since 2026-08-03.
-⛔ **Restored after the same audit.** The map claimed §7 MEDIA field 2 + CO-19. Neither holds: §7
-field 2 says only "alt text", and CO-19 governs the accessibility of the **editor control UI itself**
-(keyboard, contrast, `aria-describedby`) — a different target from the **rendered output's**
+⛔ **This is NOT covered by §7 MEDIA field 2 or CO-19.** §7 field 2 says only "alt text", and CO-19
+governs the accessibility of the **editor control UI itself** (keyboard, contrast,
+`aria-describedby`) — a different target from the **rendered output's**
 accessibility, which is what this condition is about. ⚠ Do not re-merge these two: an accessible
 control that writes an inaccessible output satisfies CO-19 and fails CO-18.
 
@@ -3044,8 +3034,8 @@ control that writes an inaccessible output satisfies CO-19 and fails CO-18.
 Native `supports` are used over hand-rolled equivalents for aspect-ratio / duotone / sticky /
 lightbox — **check native BEFORE building any of these.** Points at a Bean-approved D402 verdict
 table. **Enforced by** feature-parity + Wave-3 native-migration audit. ⚠ This is the condition that
-**prompts §G's open question** (retire `sgsCustomCss` for WP 7.0 native per-block CSS) — dropping it
-would have removed the standing instruction that raises that question at all.
+**prompts §G's open question** (retire `sgsCustomCss` for WP 7.0 native per-block CSS) — keep this
+condition; it is the standing instruction that raises that question at all.
 
 #### CO-19. Accessibility pass, E1–E4 *(was condition 19)*
 Keyboard-operable · 4.5:1 contrast on the block's own control UI · `help` linked via

@@ -186,7 +186,7 @@ block-name/
 - `minHeight` — CSS value
 - `verticalAlign` — start | centre | end | stretch
 - `htmlTag` — section | div | article | aside | main
-- `contentWidth` — **tier OBJECT** `{desktop,tablet,mobile}` (Spec 35 pass 2), **default `{"desktop":"normal"}`** since 2026-08-21 (D706 / `2d291992`; it was a string defaulting to full-bleed when this section was written). When it resolves to a cap, the shared wrapper emits an inner `<div class="sgs-container__inner">` with `max-width: {contentWidth}; margin-inline: auto` — allowing the outer box to remain full-bleed (background, padding) while capping the readable content width. ⛔ **The guard described here was REVERSED and is corrected 2026-08-21.** It is NOT `layout === '' || layout === 'stack'`. The real gate is `$has_band_props` (`class-sgs-container-wrapper.php` ~:894) — ANY band-level CSS, i.e. a resolved `contentWidth` **or** any `contentBandPadding` side — regardless of layout. A grid/flex layout does not suppress the band: `$grid_on_inner` deliberately moves the GRID **onto** `__inner` when a band exists, which is why commit `a28a1121` had to delete the `.sgs-cols-*` classes (they addressed the wrapper after the grid had moved to the inner). Nothing in this block's own `render.php` emits layer markup — it delegates entirely to `SGS_Container_Wrapper::render()`. "Content width" inspector control exposed in edit.js. **The EDITOR renders the band too, as of 2026-08-21** — `edit.js` previously emitted no `.sgs-container__inner` while `editor.css:13` styled it, so band controls wrote to an element the canvas did not contain and the client saw nothing move until they published. **WS-1 A1 / D159.** **Cloning routing (D194):** `__inner` is a fake wrapper — when cloning a draft, the converter FOLDS it structurally (slug-None direct descendant, Spec 31 §13 FR-31-4.1) and maps its `max-width`+`margin:auto` to this `contentWidth` attr **by CSS signature, never by the `__inner` class name** (D85 removed inner/content aliases for causing wrong collapse). `canonical_slot` is content-routing metadata (child-block-vs-scalar fork, gated by `role`; Spec 31 §13 FR-31-2.1) and is **inert for structural-CSS layout routing** — the layer is detected name-free via `{layer-prefix}+property_suffixes` (Spec 31 §13 FR-31-21).
+- `contentWidth` — **tier OBJECT** `{desktop,tablet,mobile}` (Spec 35 pass 2), **default `{"desktop":"normal"}`** since 2026-08-21 (D706 / `2d291992`). When it resolves to a cap, the shared wrapper emits an inner `<div class="sgs-container__inner">` with `max-width: {contentWidth}; margin-inline: auto` — allowing the outer box to remain full-bleed (background, padding) while capping the readable content width. ⛔ **The band gate is NOT `layout === '' || layout === 'stack'`.** It is `$has_band_props` (`class-sgs-container-wrapper.php` ~:894) — ANY band-level CSS, i.e. a resolved `contentWidth` **or** any `contentBandPadding` side — regardless of layout. A grid/flex layout does not suppress the band: `$grid_on_inner` deliberately moves the GRID **onto** `__inner` when a band exists, which is why commit `a28a1121` had to delete the `.sgs-cols-*` classes (they addressed the wrapper after the grid had moved to the inner). Nothing in this block's own `render.php` emits layer markup — it delegates entirely to `SGS_Container_Wrapper::render()`. "Content width" inspector control exposed in edit.js. **The EDITOR renders the band too** — `edit.js` emits `.sgs-container__inner` (styled at `editor.css:13`), so band controls move the canvas without publishing. **WS-1 A1 / D159.** **Cloning routing (D194):** `__inner` is a fake wrapper — when cloning a draft, the converter FOLDS it structurally (slug-None direct descendant, Spec 31 §13 FR-31-4.1) and maps its `max-width`+`margin:auto` to this `contentWidth` attr **by CSS signature, never by the `__inner` class name** (D85 removed inner/content aliases for causing wrong collapse). `canonical_slot` is content-routing metadata (child-block-vs-scalar fork, gated by `role`; Spec 31 §13 FR-31-2.1) and is **inert for structural-CSS layout routing** — the layer is detected name-free via `{layer-prefix}+property_suffixes` (Spec 31 §13 FR-31-21).
 
 **Supports:** align (wide, full), anchor, className, colour (background, text), spacing (margin, padding)
 
@@ -257,7 +257,8 @@ and image padding, which defaults to 0."*
 **compete**: CSS applies `aspect-ratio` only when an axis is `auto`, so a definite height silently
 wins. The controls are a CHAIN — box shape → `object-fit` → `object-position` — where each only
 matters if the previous one made it relevant. ⚠ `imageHeight` is already inside the set
-`orchestrator/check_flat_tier_regression.py` (D554-C) blocks from cloning until Spec 39 lands.
+`orchestrator/check_flat_tier_regression.py` (D554-C) blocks from cloning until Spec 31's
+tier-migration upgrade lands.
 
 **Rich-text content (XS-9.1, D104):** Inner content rich-text uses `sgs/heading` with `wp_kses_post()` sanitisation — supports inline emphasis/strong/anchor while blocking script/style tags.
 
@@ -317,8 +318,8 @@ matters if the previous one made it relevant. ⚠ `imageHeight` is already insid
 - Animation attrs: `sgsAnimation`/`sgsAnimationDuration`/`sgsAnimationEasing`, `staggerDelay`
 
 > NOTE: There is no `iconColour`/`iconBackgroundColour`/`iconSize`/`link` attribute on
-> `sgs/info-box`. **Corrected 2026-08-30 — the previous claim that icon colour/size "come from
-> native `color` + `__experimentalBorder` supports" was false, verified against block.json**:
+> `sgs/info-box`, and icon colour/size do NOT come from native `color` + `__experimentalBorder`
+> supports either — verified against block.json:
 > `supports.__experimentalBorder` is not declared at all, and `supports.color`'s sub-flags
 > (background/text/link/gradients) are all `false` with `__experimentalSkipSerialization: true`
 > — neither can be driving the icon's colour. `render.php`/`style.css` confirm there is genuinely
@@ -1048,12 +1049,8 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 @media (prefers-reduced-motion: reduce) { transition: none; }  /* keep both end states */
 ```
 
-⚠ **SUPERSEDED 2026-09-08 — do not reinstate the previous version.** This slot specified a
-`background-clip: text` gradient WIPE to `#e7d768`, which recoloured the glyphs left-to-right
-and drew no underline. It also forced `color: transparent` on the resting link, so it required
-an `@supports not (background-clip: text)` fallback purely to stop the credit rendering
-INVISIBLE on unsupporting browsers. The underline form rests on an ordinary `color`, so that
-failure mode does not exist and the fallback is deleted rather than ported.
+The resting link carries an ordinary `color`, so no `@supports` fallback is needed: an
+unsupported `::after` costs the underline, never the legibility of the credit itself.
 
 Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#d4a73c` must meet it against the footer background at hover — verify per client palette, not once (STOP-VERIFY-EVERY-CLIENT). `:focus-visible` must receive the identical treatment; the effect may not be mouse-only (WCAG 2.1.1).
 

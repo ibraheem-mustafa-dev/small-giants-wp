@@ -1,6 +1,8 @@
 # computed-parity.js — BEM layer-aware collision resolution (design)
 
-**Status:** Approved by Bean 2026-09-08, ready for build.
+**Status:** Approved by Bean 2026-09-08. **Implemented** — the BEM same-family merge, the statistical
+fallback and the multi-candidate box comparison are all present in `computed-parity.js`. The
+Verification section below has not been recorded as run; run it before closing.
 **Owning file:** `plugins/sgs-blocks/scripts/parity/computed-parity.js`
 **Context:** Clone-fidelity programme, Phase 1 (fix the parity tool). Follows the qc-council
 run that validated a purely statistical "keep all candidates, best match wins" fix for the

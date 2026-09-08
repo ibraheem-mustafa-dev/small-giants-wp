@@ -215,7 +215,7 @@ enhancement (`src/shared/effects/nav-drilldown.js`, wired from `nav-menu/view.js
 sub-panel over the top-level list (CSS `transform`, `nav-menu/style.css`), injects a Back button (its label
 read from a `data-sgs-nav-back-label` attribute render.php already translated server-side — the JS module
 carries no hardcoded English), and returns focus to the `<summary>` on Back. With NO JS, `drill-down`'s
-fallback IS the accordion, exactly as this line originally specified — now proven, not just declared.
+fallback IS the accordion — proven, not just declared.
 **Residual gap, declared not silently dropped:** a mega-menu item inside the drawer degrades to a plain link
 (its own URL, else `#`) rather than rendering the mega CPT panel inline — FR-36-5's "the same panel renders
 inside the drawer" mega-in-drawer capability is NOT built by this session; the desktop hover-disclosure

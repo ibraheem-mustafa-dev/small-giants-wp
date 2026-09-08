@@ -9,7 +9,7 @@ authors: Claude + Bean
 session_date: 2026-07-07
 last_verified: 2026-09-07
 status_history:
-  - 2026-09-07: v1.9 — **§5 Security NFR CLOSED.** (⚠ §5 only — the spec is NOT wholly complete; see the "Open, genuinely" block below for the two items still owed. An earlier draft of this line claimed completeness and contradicted that block.) The two binding
+  - 2026-09-07: v1.9 — **§5 Security NFR CLOSED.** (⚠ §5 only — the spec is NOT wholly complete; see the "Open, genuinely" block below for the two items still owed.) The two binding
     rules already had verified coverage since 2026-09-04; the only thing genuinely owed was the
     PROMOTION of `check-style-blob-sanitisation.py` from advisory to a blocking gate. Its
     "one build cycle" probation (set 2026-09-04) had elapsed. It is now registered in
@@ -76,8 +76,7 @@ but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step
 > `.claude/reports/2026-08-18-spec32-points-roster.json`.
 > Live fixture that closed the repeater + box-object points: canary page `/s1-probe-spec32/` (id 2502).
 > Superseded input: `.claude/reports/2026-08-17-track1b-spec35-32-completion-audit.md` (unverified).
-> ⛔ **Re-derive before quoting.** This table is itself a cache; the section it replaced sat stale for
-> weeks while claiming the opposite of the root `CLAUDE.md`.
+> ⛔ **Re-derive before quoting.** This table is itself a cache.
 
 | Requirement | Status | Evidence |
 |---|---|---|
@@ -98,18 +97,13 @@ but whether the TARGET SHAPE was settled first. See THE-MIGRATION-METHOD.md Step
 product-card CTA / option-picker pills), Phase 3 (framework-wide sweep + build gate, wired into
 `prebuild` and passing).
 
-**§8 Acceptance criteria — ALL FIVE now measured live (2026-08-18).** Previously only 1 of 5 was
-provable statically. Every row was exercised on the canary this session; see §8 for the per-row
-evidence. Nothing in §8 is inferred.
+**§8 Acceptance criteria — ALL FIVE measured live (2026-08-18).** Every row was exercised on the
+canary; see §8 for the per-row evidence. Nothing in §8 is inferred.
 
 **Open, genuinely — updated 2026-09-07.** The **§5 Security NFR is CLOSED**:
-`check-style-blob-sanitisation.py` was promoted to a blocking gate (v1.9 above); the mechanism
-itself had been verified since 2026-09-04, only the promotion was outstanding.
+`check-style-blob-sanitisation.py` is a blocking gate (v1.9 above).
 
-⛔ **That does NOT make the whole spec complete, and an earlier draft of this very line said
-"NOTHING IS OWED" — which is the same overclaim §5 already suffered once (it was "briefly,
-incorrectly marked closed" on 2026-09-04 and had to be corrected).** Two items remain owed,
-both outside §5:
+⛔ **That does NOT make the whole spec complete.** Two items remain owed, both outside §5:
 
 1. **§6.1 box upgrades (deploy-gated)** — the shared `GridItemDefaultsPanel` → `BoxControl`
    (8 attrs across container/cta-section/hero/trust-bar in one change), and `sgs/product-card`'s
@@ -118,21 +112,10 @@ both outside §5:
    `surface-alt` distinctness question. Both are per-client `theme-snapshot.json` VALUE changes
    awaiting Bean, not code.
 
-**Now stale and struck:** §6.1's "Only remaining follow-up: a structural anti-regression
-prebuild gate (deferred to a new session)". Three such gates exist and run in the `fast` tier
-today — `audit-inline-styling` (#35), `no-inline-check-no-inline` (#44) and
-`no-inline-check-stranded-guards` (#45). Verified 2026-09-07 by running `run-gates.py --list`,
-not by reading this doc.
-
-Historical text follows.
-
-*(2026-09-04 `/qc-council` audit:)* `mega-panel.borderRadius` is
-CLOSED (2026-09-04, root border migrated to `SgsBorderControl`; radius deliberately kept
-scalar — a stored-shape migration risk against live content, not a gap). **The §5 Security NFR
-(CSS-injection sanitisation gate) is the one item still genuinely owed** — see the box above;
-it was briefly, incorrectly marked closed the same day and has been corrected. FR-32-5, FR-32-9
-and the 74-block roster all closed 2026-08-18; `text-secondary` was resolved by deletion
-(§12.2).
+`mega-panel.borderRadius` is CLOSED (2026-09-04, root border migrated to `SgsBorderControl`;
+radius deliberately kept scalar — a stored-shape migration risk against live content, not a gap).
+FR-32-5, FR-32-9 and the 74-block roster all closed 2026-08-18; `text-secondary` was resolved by
+deletion (§12.2).
 
 ## 0. Problem statement
 
@@ -332,7 +315,7 @@ Key decisions:
 > into the control's corner-object radius param, since that would be a stored-shape migration
 > against live content, not a control-shape swap. Commits `20bcb52b8`, `b0670ac4a`.
 
-**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE. Evidence base: only sandybrown (`palestine-lives.org` no longer exists, removed from `TARGETS` 2026-08-10 — do not re-quote it as evidence). Re-verified live this session: `audit-inline-styling.js --check` → **0 violations across 83 blocks**, and a live DOM sweep of `/s1-probe-spec32/` found **0 inline `style` attributes across 150 `sgs-` elements** (page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Only remaining follow-up: a structural anti-regression prebuild gate (deferred to a new session). `P-NOINLINE-ROSTER-RECOUNT` resolved.
+**Rollout status (D293–D296, 2026-07-09):** the mechanism is LANDED on `sgs/container` + `sgs/button` (D292/D293), `sgs/heading` + `sgs/text` (D293), `sgs/quote` + `sgs/media` (D294), and `sgs/hero` (D295 — its 5 per-area families `contentPadding`/`mediaPadding`/`imagePadding`/`imageBorderWidth`/`imageBorderRadius` + `contentBandPadding` are now migrated objects). The shared `SGS_Container_Wrapper` is itself fully no-inline (base spacing D292, max-width/contentWidth/band D294, grid/flex D296 all scoped). **Pattern selector (D294):** content-KIND composites that use only box+width go BLOCK-PRIVATE (like quote); section/layout composites keep the wrapper (like hero) — see Spec 31 FR-31-21.1. **ROLLOUT COMPLETE (D346, 2026-07-18).** The framework-wide inline-zero drive is DONE. Evidence base: only sandybrown (`palestine-lives.org` no longer exists, removed from `TARGETS` 2026-08-10 — do not re-quote it as evidence). Re-verified live this session: `audit-inline-styling.js --check` → **0 violations across 83 blocks**, and a live DOM sweep of `/s1-probe-spec32/` found **0 inline `style` attributes across 150 `sgs-` elements** (page-wide `style="--"`=0, empty `style=""`=0). The remaining surface was cleared by (a) the two-facet shared-`SGS_Container_Wrapper` change (Facet A: emit the `style` key only when non-empty → kills empty `style=""` on every content-KIND composite + header/footer; Facet B: route `$styles` `--var` VALUES to a scoped `.$uid{…}` rule) and (b) block-private conversions of the residual blocks (info-box/icon/testimonial/button/cart/option-picker/audio/collapsible-text/responsive-logo/mega-menu). Every affected `[style*="--sgs-*"]` presence-selector was rewritten to `var(--x,<resting>)` inert fallbacks (GOTCHA F). See D346 + `reports/visual-diff/*-2026-07-18.md`. Three structural anti-regression prebuild gates run in the `fast` tier — `audit-inline-styling` (#35), `no-inline-check-no-inline` (#44) and `no-inline-check-stranded-guards` (#45); confirm with `run-gates.py --list`. `P-NOINLINE-ROSTER-RECOUNT` resolved.
 
 **Box-family completeness (2026-07-23, `77703100`):** `sgs/product-card` was the last block still expressing padding as an ad-hoc AXIS PAIR (`ctaPaddingX`/`ctaPaddingY`, two scalars) rather than the `{top,right,bottom,left}` object standard — migrated to a single `ctaPadding` object attr in `supports.sgs.boxFamilies` (mirrors `sgs/button`). Non-visual (empty-object default falls through to the `.sgs-button` base 14px 24px). Every SGS block now uses the box-object standard for multi-side box props. This also fed the cloning-pipeline seeding work (`css_layer` L1-L4 declarative seeding + `css_element`→`wrapper` normalisation + the P3a/P4 declarative resolvers — see Spec 31 §4) which depends on box-family consistency to route padding without collision.
 
@@ -343,7 +326,7 @@ Key decisions:
 > audit. **Spec 32 keeps the box-object SHAPE contract; Spec 35 owns building the control that edits
 > it.** Recorded here rather than silently deleted so the work is not lost in the move.
 
-**Remaining genuine box upgrades (deploy-gated — ⇢ SPEC 35, see above):** the shared `GridItemDefaultsPanel` (⚠ **citation corrected 2026-08-18** — it is now its own 359-line file, `container/components/GridItemDefaultsPanel.js`; `ContainerWrapperControls.js` was split into per-panel modules on 2026-08-17 and is now 268 lines. The panel still exists and the work is still owed; only the path was stale) → BoxControl covers 8 attrs across container/cta-section/hero/trust-bar in ONE change; `sgs/product-card` `ctaBorderWidth`(=2)/`ctaBorderRadius`(=10) — **seed the object defaults to the uniform value** so they stay visually identical (`object-typed-attr-coerces-flat-to-default` trap). Then one batch `/sgs-update` to seed `box_family`. **Colour-alpha:** proven a NON-ISSUE — SGS colour controls get alpha from the shared `DesignTokenPicker` (`enableAlpha=true` default, no block opts out); 58/60 audit "candidates" were false positives (report fixed to detect the shared component); only `sgs/info-box` hover colours (via `StateToggleControl`, native-supports path) are a single-block edge.
+**Remaining genuine box upgrades (deploy-gated — ⇢ SPEC 35, see above):** the shared `GridItemDefaultsPanel` (`blocks/container/components/GridItemDefaultsPanel.js`, its own 359-line file — `ContainerWrapperControls.js` was split into per-panel modules on 2026-08-17 and is now 268 lines) → BoxControl covers 8 attrs across container/cta-section/hero/trust-bar in ONE change; `sgs/product-card` `ctaBorderWidth`(=2)/`ctaBorderRadius`(=10) — **seed the object defaults to the uniform value** so they stay visually identical (`object-typed-attr-coerces-flat-to-default` trap). Then one batch `/sgs-update` to seed `box_family`. **Colour-alpha:** proven a NON-ISSUE — SGS colour controls get alpha from the shared `DesignTokenPicker` (`enableAlpha=true` default, no block opts out); 58/60 audit "candidates" were false positives (report fixed to detect the shared component); only `sgs/info-box` hover colours (via `StateToggleControl`, native-supports path) are a single-block edge.
 
 Section 6 covers colour/typography preset tokens (`{component}Presets`). This section covers the SIBLING geometry mechanism — spacing/border shape — that the same no-inline drive proved out. It reconciles two things Bean flagged mid-design: (1) the base layer of every block declaring a WP styling `support` inlines by default via `get_block_wrapper_attributes()` — the fix is to **keep the support** and change WHERE it serialises, never to drop it; (2) 8 four-side + 2 four-corner attr families were flat per-side/per-corner attrs, which is neither the standard WP editor shape nor mergeable/re-skinnable cleanly.
 
@@ -391,11 +374,9 @@ Two sanitisers exist and they are NOT equivalent:
 | `var:preset\|spacing\|40` | `varpresetspacing40` — **corrupted** | passed through unchanged ⚠ |
 | bare `16` | `16` — invalid CSS, renders nothing | `var(--wp--preset--spacing--16)` |
 
-⚠ **Corrected 2026-08-22 (measured, not assumed):** the `var:preset|spacing|40` cell previously
-claimed the hardened function "resolves" this value. It does not — it passes the raw string
-through UNCHANGED, which is still invalid CSS (the improvement is that it is no longer
-corrupted into `varpresetspacing40`, not that it now renders). No open work follows from this;
-recorded so a future reader doesn't build a fix for a "resolves" claim that was never true.
+⚠ **The hardened function does NOT resolve `var:preset|spacing|40`** (measured, not assumed) — it
+passes the raw string through UNCHANGED, which is still invalid CSS. The improvement is that it is
+no longer corrupted into `varpresetspacing40`, not that it now renders. No open work follows.
 
 The crude one is `preg_replace( '/[^A-Za-z0-9.%]/', '', … )` — it strips hyphens, spaces and
 parens unconditionally. `var:preset|spacing|40` is exactly what WP's `BoxControl` emits for a preset
@@ -747,14 +728,12 @@ it then, against a real case.**
 
 Every `--wp--preset--color--surface` / `--surface-alt` background/colour call site in `plugins/sgs-blocks/src/blocks/*/style.css` was read in context and bucketed. `src/blocks/testimonial-slider/**` is explicitly OUT OF SCOPE (owned by another workstream) and was left untouched.
 
-> ⚠ **LINE NUMBERS IN THIS TABLE HAVE DRIFTED — the tokens are correct, the line references are not
-> (verified 2026-08-18).** Spot-checked: `business-info` is cited at `258/267/271`; the three
-> `text-inverse` declarations now sit at **263/272/276**. The sweep's *decisions* all hold — every
-> spot-checked token is present and correct at its element — but **do not navigate by these line
-> numbers**; grep the token instead. A line number in a doc is a cache with no invalidation.
-> One row was DELETED from this table on 2026-08-18: the `hero/style.css:350` badge row, because the
-> hero badge ELEMENT was removed at `908ec5a0` ("remove the vestigial hero badges"). Successor check
-> performed before deleting: `sgs/hero` has no badge attribute, render path, editor control or CSS.
+> ⛔ **Do NOT navigate by the line numbers in this table — grep the token instead.** A line number
+> in a doc is a cache with no invalidation, and these have drifted (e.g. `business-info` is cited
+> at `258/267/271` while the three `text-inverse` declarations sit at **263/272/276**). The
+> sweep's *decisions* all hold: every spot-checked token is present and correct at its element.
+> `sgs/hero` has no badge attribute, render path, editor control or CSS — the hero badge element
+> was removed at `908ec5a0`, so no badge row belongs here.
 
 | File:line | Was | Bucket | Fixed to |
 |---|---|---|---|

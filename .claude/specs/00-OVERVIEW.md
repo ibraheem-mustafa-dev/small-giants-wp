@@ -133,12 +133,12 @@ No "it works on desktop but breaks on mobile" — mobile is the starting point.
 ## Deployment Model
 
 - **Source code:** Git repository (GitHub monorepo)
-- **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336). *(Corrected 2026-07-16: this section said "SFTP to Hostinger" ×2.)*
+- **Deployment:** **`python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown`** — the ONE path for every target (ceremony/gates via `/wp-sgs-deploy`). It builds, gates on a dirty working tree, verifies fail-closed, and rotates a `.bak` for rollback. ⛔ **Not SFTP, and never a hand-rolled tar/`scp -r`/`ssh rm -rf`** — that recipe took two client sites down for ~2.5h on 2026-07-14 (D336).
 - **Per-client tokens:** `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` (Spec 33), never a framework deploy.
 - **Local testing:** WordPress Playground or Local by Flywheel
 - **Dev site:** sandybrown-nightingale-600381.hostingersite.com — the ONLY target (palestine-lives.org removed from TARGETS 2026-08-10)
-- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary (page 144)
-- **WP version:** both sites on **7.0.2** (verified 2026-07-20 via `wp core version` over SSH on both; WP 7.1 lands 19 Aug 2026 — re-check, don't trust this line)
+- **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com — Mama's Munches canary. The native-block homepage is **page 2742** (`/`), posts page **2741** (`/blog/`). ⛔ Page 144 was hard-deleted; keep the number only as the provenance that locates the clone, and verify any post ID exists before pointing anything at it.
+- **WP version:** **7.1** (verified 2026-08-20 via `wp core version` over SSH — re-check, don't trust this line)
 - **Automation:** N8N workflows on VPS (72.62.212.169) for notifications, webhooks, scheduled tasks
 - **Updates:** theme/plugin updates are code changes deployed via `build-deploy.py`, not WordPress auto-updates.
 

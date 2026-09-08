@@ -1,3 +1,47 @@
+## D1008 [ROUTINE] — Spec 39 is retired as a concept; the cloning pipeline is Spec 31, and living docs carry no correction narration
+
+**2026-09-08. Bean-directed.** Two standards, settled together.
+
+**1. Spec 39 never existed and takes no number.** It was a RESERVED slot for a future "final
+cloning pipeline" rework, cited from five live spec sites and named in `quarantine.json`'s
+`unquarantine_when`. Reserving a number for an unwritten spec gave four documents a pointer to
+a ghost and made 37 xfail goldens read as blocked on a document rather than on a task.
+**Spec 31 is THE cloning-pipeline spec**; the work formerly labelled "Spec 39" is a planned
+tier-migration UPGRADE to Spec 31. The number 39 is plain and unused — no reservation, no
+DEAD-list tombstone (nothing ever cited it, so nothing needs to resolve), and no explanatory
+aside anywhere. Bean: *"Spec 39 wasn't ever made, it doesn't need to take a number."*
+
+**2. Living docs carry no doc-correction or superseded narration.** Bean: *"We're just supposed
+to delete whatever is stale or incorrect and if there is a true claim regarding the same topic
+we replace it with that and don't even mention the past."* The operative distinction:
+
+| Shape | Action |
+|---|---|
+| `⚠ Corrected 2026-08-30 — the old item 4 contradicted…`, `this line drifted three times`, `CLAIMED X until it was found false` | DELETE. State the present-tense truth as if it had always been true. |
+| `Never cache a count here — query /sgs-db`, ``the roster is `ls plugins/`, never prose`` | KEEP the rule; STRIP the attached war story. |
+| A spec citing `plans/archive/<file>` for implementation detail | KEEP. That is what the archive folder is for. Flag only a citation whose target is absent. |
+| `D220 closed this`, `FR-31-16 shipped 2026-08-04` | KEEP — a fact about the system, not about the document. |
+
+Applied across `.claude/specs/`, `.claude/plans/`, root `CLAUDE.md`, `.claude/CLAUDE.md`,
+`goals.md`, `mistakes.md`, `parking.md` by three parallel audit agents on disjoint file sets.
+
+**Genuine defects found under cover of the narration** (the reason this is not cosmetic):
+Spec 33 carried a sentence corrupted mid-clause by a prior correction; `00-OVERVIEW` named the
+hard-deleted page 144 as the canary and "both sites on 7.0.2" (one site, on 7.1); Spec 31 cited
+hero `variant_slots` as `splitImageUrl*` where the live DB says `splitMediaImageUrl*`; `README`
+had two blank lines splitting the index into three tables, an unescaped row injecting four
+cells, and a missing Status cell; `common-wp-styling-errors` had a genuinely dangling link;
+Spec 32 §6.1 contradicted its own later text on whether three prebuild gates exist; Spec 35
+CO-15 warned about a claim that no longer existed. Specs 16/24/25/29 were archived but missing
+from the DEAD list, and its "Spec 29 is mid-move" caveat was itself stale.
+
+**Verification note.** Roughly one confident assertion in eight from these agents did not
+survive checking — a "37 xfails is really 10" claim (the file says 37), an "at least four
+R-31-1 constant exceptions" claim (there is exactly one, `_BREAKPOINT_RULES`, whose
+justification is that `@media` breakpoint thresholds are W3C values with no DB table), and
+seven findings the agents discarded themselves on verification. Every applied fix was checked
+against the filesystem, the read-only DB, or the file's own contents before landing.
+
 ## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 6. SHIPPED.
 
 **2026-09-08. Bean-directed**, after `/research-buddies` (The Nerd + The Practical One) and

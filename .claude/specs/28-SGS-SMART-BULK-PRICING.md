@@ -162,4 +162,4 @@ Two rationales that live ONLY here and are not restated in any FR, so they survi
 | 24 | 16.36 | £16.36 | **£16.99** | 71p | 29% |
 | 48 | 30.16 | £30.16 | **£30.99** | 65p | 35% |
 
-(v1 asserted £29.99/38% for the 48-pack; that was unreproducible from any stated band. £30.99/35% is what `<£100 → floor(£)+.99` actually yields, is idempotent on re-run, and keeps the top pack under the 40% scepticism ceiling.) **This table is the canonical P2 unit-test fixture.**
+(The 48-pack is £30.99/35% — what `<£100 → floor(£)+.99` yields; it is idempotent on re-run and keeps the top pack under the 40% scepticism ceiling.) **This table is the canonical P2 unit-test fixture.**

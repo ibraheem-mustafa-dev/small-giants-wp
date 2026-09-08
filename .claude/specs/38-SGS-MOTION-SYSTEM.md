@@ -187,7 +187,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 | Effect | Tier — why not lower | Level | Exposure surface | Conditions + conflicts | Default | Recommended → permitted |
 |---|---|---|---|---|---|---|
 | Pin + scrub section timeline | **G** — CSS cannot pin; a sticky-based pin substitute is exactly the short-parent trap Spec 37 FR-37-40 rejected; multi-tween sequencing needs a timeline | container/section | Inspector panel on `sgs/container` + section-KIND composites | Excludes Tier V entrance on same block (§4.3); needs ScrollTrigger; editor = static end-state (§9) | off | Section-level containers → any container-equivalent (documented choice) |
-| Scroll-scrubbed element timeline (multi-keyframe/staggered) | **G** — cross-browser scrub consistency; **FIREFOX** stable lacks CSS scroll-driven animations entirely (corrected 2026-08-28 — this cell previously named Safari; see §3.1) | block/element | Inspector panel (fx ToolsPanel) | §4.3 exclusivity; single-property scrub stays Tier V (parallax/`--sgs-scroll-progress` pattern) | off | Any block → any element with the fx panel exposed |
+| Scroll-scrubbed element timeline (multi-keyframe/staggered) | **G** — cross-browser scrub consistency; **FIREFOX** stable lacks CSS scroll-driven animations entirely (see §3.1) | block/element | Inspector panel (fx ToolsPanel) | §4.3 exclusivity; single-property scrub stays Tier V (parallax/`--sgs-scroll-progress` pattern) | off | Any block → any element with the fx panel exposed |
 | Horizontal scroll panel | **G** — needs pinning + vertical→horizontal progress mapping; no CSS mechanism | section | Block variation of `sgs/container` (+ inspector tuning) | Pins (ScrollTrigger); keyboard/a11y scroll fallback mandatory; mobile falls back to native horizontal scroll-snap | off | Top-level section → nested container (permitted, documented) |
 | Scroll-scrubbed image sequence | **G** — canvas frame scrubbing; CSS cannot drive canvas | block (dedicated, NET-NEW) | New block `sgs/image-sequence` inspector | Asset-pipeline sub-scope (frame export/compression tooling — §3.1); heavy-asset warning in UI; editor = poster frame | n/a (new block) | Hero/feature sections → anywhere the block is inserted |
 | SplitText reveal (char/word/line, masked) | **G** — DOM splitting with the 2025 a11y rewrite (aria-preserving); hand-rolled splitting breaks screen readers/kerning | block (text-bearing) | Inspector panel on heading/text/quote (+ hero headline) | a11y baked in (plugin rewrite); §4.3 exclusivity vs entrance; reduced-motion = plain fade or nothing (§10) | off | Headings first → any text-bearing block |
@@ -222,16 +222,13 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   scrub remains Tier V (the existing CSS scroll-driven parallax pattern + `--sgs-scroll-progress`);
   Tier G owns multi-keyframe, staggered, or sequenced scrubs.
 
- ⛔ **THE SUPPORT CLAIM HERE WAS WRONG IN BOTH DIRECTIONS AND IS CORRECTED (2026-08-28,
-  measured — not recalled).** This paragraph read: *"Stated assumption (verify at Wave A build):
-  Safari stable still lacks CSS Scroll-Driven Animations (Chromium 115+ and Firefox have them)."*
-  Both halves were false, and they were false in OPPOSITE directions — so anyone building a
-  fallback from this sentence would have built it for the wrong browser.
+ ⛔ **Browser support, measured (2026-08-28) — never recalled from memory.** Build any
+  scroll-driven fallback from this table, not from a remembered engine name.
 
   | Engine | `animation-timeline` | Status |
   |---|---|---|
   | Chrome / Edge | 115+ | ✅ since 2023 |
-  | **Safari** | **26.0+** | ✅ since **Sept 2025** — had it for eleven months while this line denied it |
+  | **Safari** | **26.0+** | ✅ since **Sept 2025** |
   | **Firefox** | **157** | ❌ stable is **153.0.4** (11 Aug 2026) |
 
   Global support **85.43%**. MDN: *"This feature is not Baseline because it does not work in some
@@ -271,9 +268,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
 > focus is inside; `fx-split-reveal.js` uses a one-shot. The horizontal panel is the only one where
 > native reachability suffices, and only by accident (see D458).
 >
-> ✅ **CLOSED BY OBSERVATION 2026-08-27 (D853).** This previously read *"the canary fixtures
-> contain no focusable element INSIDE a pin, so the case the accessibility audit actually worried
-> about is proven by mechanism rather than by observation."* That is no longer true.
+> ✅ **CLOSED BY OBSERVATION 2026-08-27 (D853).**
 >
 > A fresh fixture was authored (canary page **2893**, `[GATE - DO NOT DELETE] Pin keyboard focus
 > FR-38-6`) carrying a link, a text field and buttons inside a genuine `data-sgs-fx="pin-scrub"`
@@ -541,13 +536,12 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   | `hue-shift` (Aurora) | a multi-hue band travelling at HALF pointer speed beneath a pointer-centred mask, so the hue arriving at a given point changes as the pointer moves | **SHIPPED 2026-08-24 (FR-38-28 look 2); REBUILT 2026-08-24/25.** Original build mixed toward two opposite hues via `color-mix(in oklch, …)`, base at 65% — **rejected and rebuilt** because mixing cyan into yellow produces muddy green at any ratio, which is why *"the teal was very faint"*. Hues are now ROTATED in OKLCH (`oklch(from … calc(h ± spread))`) instead of mixed. See §3.3 body below for the full correction, including a trap that cost a render. |
   | `parallax-pattern` | a repeating dot pattern travelling at 8% of pointer distance, deliberately UNMASKED | **SHIPPED 2026-08-24 (FR-38-28 look 3).** The difference from `spotlight-mask` is load-bearing: there a static pattern sits under a moving hole and only the REVEAL moves; here the pattern itself moves. Masking it would collapse it back into a slightly different torch |
   | `brick-reveal` | a running-bond brick tile as an SVG **mask**, intersected with the pointer pool; the colour is painted underneath as a flat layer | **SHIPPED 2026-08-24.** Torch's sibling — same reveal, brickwork instead of a dot screen. Built twice: gradients produced a stacked GRID, because a 90deg gradient has no vertical variation, so an SVG tile owns the offset instead. The SVG carries NO colour deliberately — a data-URI cannot read a custom property, so colouring it would freeze the palette token |
-  | ~~`floating-objects`~~ | — | ⛔ **NOT A FIELD TYPE. Reclassified 2026-08-27 — see FR-38-33.** The text that stood here described the wrong effect (per-object drift on marked children). The owner's actual ask is a canvas grid-dot field, which cannot be a field type at all. Kept as a struck row so the name resolves rather than vanishing |
+  | ~~`floating-objects`~~ | — | ⛔ **NOT A FIELD TYPE — see FR-38-33.** The owner's ask is a canvas grid-dot field, which cannot be a field type at all. Kept as a struck row so the name resolves rather than vanishing |
 
- **`floating-objects` — THE ENTRY HERE DESCRIBED THE WRONG EFFECT. Corrected 2026-08-27.**
-  Everything previously written under this name — per-object `transform: translate()` on marked
-  decorative children, a per-object `--sgs-float-factor` set via `:nth-of-type()`, and the open
-  design-gate question *"which children become floating objects?"* — was **not what the owner
-  specified**. Recorded verbatim from his correction:
+ **`floating-objects` is NOT per-object drift on marked children.** It is not a
+  `transform: translate()` on decorative children, not a per-object `--sgs-float-factor` set via
+  `:nth-of-type()`, and there is no open design-gate question *"which children become floating
+  objects?"*. The owner's specification, verbatim:
 
   > *"a bg which was like a grid with a visual item like a dot in each cell of the grid and all
   > grids within the set range would have their dot follow the cursor but they were locked into
@@ -577,10 +571,10 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   `[data-sgs-cursor-field="…"]` paint rules in `assets/css/fx-cursor-field.css`). It was never
   registered, so invariant I6 has nothing to lose and no gate changes.
 
-  ⛔ **Lesson, recorded because it cost seven weeks of block:** this entry was internally
-  consistent, richly argued, and wrong at the root. Every downstream sentence reasoned correctly
-  from a premise nobody had checked against what was actually asked for. Same shape as D781 —
-  *verify the reference, not just the implementation*.
+  ⛔ **Standing rule (same shape as D781): verify the reference, not just the implementation.** A
+  spec entry can be internally consistent and richly argued while wrong at the root, every
+  downstream sentence reasoning correctly from a premise nobody checked against what was asked
+  for. Check the premise against the owner's actual ask before building on it.
 
  **Eligibility is DERIVED FROM CAPABILITY, never hand-listed** (R-31-1/R-31-9). Two roles:
   - **EMITTER** — publishes the pointer coordinates and paints the base field. Eligible: any
@@ -673,20 +667,17 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
      gate cross-checks all of them, `--self-test`-proven by deleting
      `cursor-field` from each list in turn and confirming the build fails.
 
-     ⛔ **CORRECTED 2026-08-24/25 — the gate now has NINE invariants, and the count is DERIVED,
-     never spelled out again in this doc.** I8 (the masked-type attachment check, D767) EXISTED
-     and was producing real violations since D767 landed, but was never added to `_INVARIANTS` —
-     the list the gate's own `--check` output enumerates from. Because `--check` iterates that
-     list to build its own summary line, it printed I0-I7 and confidently reported "all eight" as
-     complete, while I8 ran and could fail silently outside anything the summary counted. **A gate
-     that reports a wrong total confidently is worse than no gate** — the same failure shape this
-     project's own `decisions.md` D-ceiling grep hit (see `.claude/CLAUDE.md`'s D5557 story). Fixed
-     by wiring I8 into `_INVARIANTS`; do not cache "eight", "nine", or any other number in prose
-     here again — read `_INVARIANTS`'s length at the time of asking. **Two hand-maintained
+     ⛔ **The invariant count is DERIVED — never spell it out in this doc.** Read
+     `_INVARIANTS`'s length at the time of asking. Every invariant the gate runs must be wired
+     into `_INVARIANTS`, because `--check` iterates that list to build its own summary line: an
+     invariant that runs but is absent from the list can fail silently outside anything the
+     summary counts, and **a gate that reports a wrong total confidently is worse than no gate**
+     (the same failure shape as this project's `decisions.md` D-ceiling grep — see
+     `.claude/CLAUDE.md`'s D5557 story). **Two hand-maintained
      lists diverging silently is a failure this codebase has met before (`TRANSITION_STYLES`,
      `class-sgs-motion-registry.php`) — this is now four,** which is why the gate reads no
      database and cross-checks committed source only.
-  2. **`floating-objects` RECLASSIFIED OUT of this FR, 2026-08-27** — it was never the effect the owner asked for and is not a field type at all. It is now FR-38-33 (a canvas grid-dot field). This residual is CLOSED as a cursor-field item; nothing is owed here.
+  2. **`floating-objects` is NOT part of this FR** — it is not a field type at all. It is FR-38-33 (a canvas grid-dot field). This residual is CLOSED as a cursor-field item; nothing is owed here.
   3. **A participant carrying its own `background-image` is deliberately not marked**, because our
      layer would replace it; that child keeps a visible seam. Clobbering a client's chosen image is
      plainly worse. A `::before` fallback for that narrow case is possible if the seam is reported.
@@ -843,9 +834,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     of 0.155 — inside the 0.1-0.2 band that recurs across implementations of this pattern.
     Reduced motion needs no branch: `init` returns before any listener is attached, so the loop
     can never start. **Note the REAL fading trail this control's old name implied is not this
-    effect at all** — it is the particle engine's `sparks` preset (FR-38-32, BUILT 2026-08-25 —
-    ⚠ **stale-corrected 2026-08-27: this line called it "the unbuilt particle engine" after the
-    build had already shipped**; see `particles.js` `PRESETS.sparks`); do not conflate the two
+    effect at all** — it is the particle engine's `sparks` preset (FR-38-32, BUILT 2026-08-25;
+    see `particles.js` `PRESETS.sparks`); do not conflate the two
     when a client asks for "a trail".
   - **SHAPE (`fxFieldShape`)** — circle / wide ellipse / tall ellipse, via a single
     `--sgs-cursor-field-geometry` property that replaced four hardcoded circles. Empty is the
@@ -1128,8 +1118,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   ⚠ **The aurora look was never this effect's target** — it was modelled on stripe.com's hero, and
   D781 found that reference was itself the wrong thing. Aurora belongs to the engine track.
 
-  ⚠ **TECHNIQUE CHANGED 2026-08-27 (D827/D828) — the description that stood here was stale.** It
-  is no longer a vertex-displaced mesh. It is a **fullscreen triangle generated from
+  ⚠ **TECHNIQUE (D827/D828).** This is NOT a vertex-displaced mesh. It is a **fullscreen triangle generated from
   `gl_VertexID`** (no vertex or index buffers) with colour computed **PER PIXEL** from three
   independent drifting noise fields, composited with standard alpha-OVER `mix()`.
   ⛔ Additive/screen blending was tried and REVERTED at D828: it needs headroom below white, and
@@ -1138,9 +1127,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   *Historical, for context only —* the ORIGINAL build was a subdivided plane whose vertices were
   displaced by simplex noise, with colour computed per vertex and interpolated by the rasteriser.
   Bean's verdict on it was "B-movie 3D VFX", which is what prompted the D827 change.
-  ⚠ **This is NOT stripe.com's current technique** — an earlier version of this line called it
-  "stripe.com's mesh-gradient technique", which contradicted clause (a) below 60 lines later. It
-  is their **~2020-21** hero, the one every public tutorial documents. Their current hero was
+  ⚠ **This is NOT stripe.com's current technique.** It is their **~2020-21** hero, the one every
+  public tutorial documents. Their current hero was
   recovered from their shipped bundle and is materially different: one vertex shader over a
   CPU-folded 33,153-vertex plane, colour SAMPLED FROM A TEXTURE rather than interpolated, a fine
   striation field, and a second full-screen pass applying angular blur plus grain.
@@ -1231,17 +1219,13 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     `0xf0` — peach/coral/pink/cream/lilac, ADJACENT warm hues. This build used a near-black navy
     base with widely-spaced saturated hues.
 
-    ⛔ **AN EARLIER VERSION OF THIS CLAUSE WAS WRONG AND IS RETRACTED.** It read: *"Four colour
-    stops cannot structurally reproduce the variation of an artist-painted reference image — this
-    is a ceiling of the approach, not a parameter to retune."* **Measured false** by the
-    replication POC (2026-08-25): rendering four HUE-ADJACENT stops through Stripe's own machinery
-    produced a premium result from a palette carrying **307** unique colours, against Stripe's
-    **82,831**. What actually fails is *complementary* stops — interpolating blue→orange in RGB
-    passes through grey and produces the muddy band, the same failure as the rejected Aurora teal
-    band. **The constraint is hue ADJACENCY, not colour count, and no artist-painted palette is
-    required.** This matters because the retracted sentence was the stated justification for
-    building a palette-texture capability. Evidence:
-    `.claude/reports/2026-08-25-stripe-hero-anatomy.md` §Q7.
+    ⛔ **Four colour stops are NOT the ceiling.** Measured by the replication POC (2026-08-25):
+    rendering four HUE-ADJACENT stops through Stripe's own machinery produced a premium result
+    from a palette carrying **307** unique colours, against Stripe's **82,831**. What fails is
+    *complementary* stops — interpolating blue→orange in RGB passes through grey and produces the
+    muddy band, the same failure as the rejected Aurora teal band. **The constraint is hue
+    ADJACENCY, not colour count: no artist-painted palette and no palette-texture capability is
+    required.** Evidence: `.claude/reports/2026-08-25-stripe-hero-anatomy.md` §Q7.
   - (c) ✅ **The scratch/POC exact replication is DONE (2026-08-25).** The rig reproduces the live
     hero at **0.66%** mean pixel difference against a live capture frozen at the same `u_time`,
     with all 26 recovered mechanisms implemented. What actually makes theirs look expensive, in
@@ -1301,10 +1285,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
     (`particles.js`) and `tick()` re-schedules only on `true`, so the loop exits the frame the pool
     empties and `push()` restarts it on the next movement. Plus `IntersectionObserver` (off-screen
     runs nothing) and `visibilitychange`.
-    ⚠ **Corrected 2026-08-26:** this bullet read `(pool.live > 0 || movedThisFrame)`. There is no
-    `movedThisFrame` in `particles.js` and there never was — 0 occurrences repo-wide. The behaviour
-    described was right; the guard named was invented. Prose that names a variable nobody wrote reads
-    as a code citation and cannot be grepped back to an owner.
+    ⚠ There is no `movedThisFrame` guard in `particles.js` — 0 occurrences repo-wide. Cite the
+    real symbols above; a named variable nobody wrote reads as a code citation and cannot be
+    grepped back to an owner.
   - **Flash ceiling (SC 2.3.1)** — answered STRUCTURALLY, not by a rate limit: alpha is `1 - age/maxAge`
     and nothing can make it rise, so there is no flash to cap. Particle radius is clamped to a
     coverage-derived ceiling `r <= sqrt( 0.10 * A / ( pi * CAP ) )`, bounding painted coverage to ~10%
@@ -1370,8 +1353,7 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   negative-control container, 4249 lit pixels peak during a pointer sweep, 0 console errors, deployed
   CSS md5-identical to local.
 
- ✅ **CHILD-LIFT FIX DEPLOYED AND VERIFIED 2026-08-25** (this line previously read "NOT yet
-  verified... committed but NOT deployable"). Of 141 matched container children across four
+ ✅ **CHILD-LIFT FIX DEPLOYED AND VERIFIED 2026-08-25.** Of 141 matched container children across four
   pages, exactly ONE changed — this canvas, `relative` -> `absolute`. It now overlays its
   parent exactly (630px = 630px) where it had been 1443px and inflating the section.
 
@@ -1447,9 +1429,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   canvas/JS) — see the §9 row. **Colour default is `primary`, NOT `accent`** — `accent` measured
   1.35:1 on the client's cream background and was barely visible.
 
- **Registration is now ELEVEN points, not ten (FR-38-32's ⛔ note previously said ten).**
+ **Registration is ELEVEN points.**
   `includes/extension-attributes.generated.php`, gated by its own pre-commit gate, is an eleventh
-  point beyond the ten FR-38-32 enumerated. Verify the current count against
+  point beyond the ten FR-38-32 enumerates. Verify the current count against
   `class-sgs-motion-registry.php` and the generators before registering a further effect — do not
   carry either number forward without re-checking.
 
@@ -1604,9 +1586,9 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   > **Two implementation decisions recorded so they are not re-litigated (D424):**
   >
   > · **The transition targets the `root` snapshot pair, not per-element
-  > `view-transition-name`s.** This clause previously read "via `view-transition-name`
-  > conventions", which describes a *different capability* — element continuity across a
-  > navigation (a thumbnail growing into a hero). FR-38-19's actual scope is whole-page
+  > `view-transition-name`s.** Per-element `view-transition-name` conventions are a *different
+  > capability* — element continuity across a
+  > navigation (a thumbnail growing into a hero). FR-38-19's scope is whole-page
   > navigation styling, and `root` is the correct minimal mechanism for it. Per-element
   > continuity is not built and is not claimed; it would be a new FR, not a bug in this one.
   >
@@ -1865,14 +1847,13 @@ on `seed-composition-roles.py` — [ok]/[skip]/[set] passes, docstring changelog
    > `cursor-field`, `carousel-loop`) — `scroll-smoother` appears in none of them, so deleting
    > the row cannot break a live consumer.
    >
-   > ⛔ **DO NOT DELETE THIS ROW — RULED 2026-08-21 (D723).** This box previously printed
-   > `DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`. That instruction was WRONG and is
-   > retracted. The row's `scope='site'` is a load-bearing NEGATIVE PROOF: it demonstrates by
+   > ⛔ **DO NOT DELETE THIS ROW — RULED 2026-08-21 (D723).** Never run
+   > `DELETE FROM fx_effects WHERE effect = 'scroll-smoother';`. The row's `scope='site'` is a load-bearing NEGATIVE PROOF: it demonstrates by
    > construction that a site-scoped effect is structurally excluded from every block panel, which
    > is the row's own acceptance test. A row whose job is to be excluded looks exactly like a dead
    > row to anything that only counts consumers.
    >
-   > ✅ **Its two stale columns are already corrected** (verified in the live DB 2026-08-24):
+   > ✅ **Its two columns are correct** (verified in the live DB 2026-08-24):
    > `tier='H'` and `plugin_set=[]`, matching D422's move to Lenis. Nothing is owed here.
 2. **`block_attributes`** — fx param attrs seeded with `css_property` under a new **`fx:*`**
    pseudo-namespace (sibling of `anim:*`; aligns with the approved-unbuilt FR-35-6 `anim:*`
@@ -2033,7 +2014,7 @@ Grouping is by SHARED INFRASTRUCTURE, not size. B and C both depend only on A; B
 
 | Progress connector (FR-38-35) | **The connector at rest — drawn, but not filling.** The canvas shows the SVG in place with progress at its `initial-value: 0`; neither driver runs in-canvas (the native one needs a real scroll timeline the editor iframe does not provide, and `view.js` is frontend-only — the magnet/trail precedent). The `ToggleControl`'s own help text names the limit: *“Previews on the live site only.”* ⚠ *Reasoned by mechanism; at the time of writing the editor has been observed for CONTROL PRESENCE only — the resting-state appearance in-canvas has not yet had Bean's eye (R-31-13).* |
 | Cursor grid-dot field (FR-38-33) | **A static resting lattice** — the CSS radial-gradient preview shows the dots at rest in their grid, not a live effect. **NOT a live preview:** the render filter that produces the live tracking canvas never runs in the editor (the magnet/trail precedent), so the pointer-lean/ease-back behaviour is invisible in-canvas; only the resting grid is honest to show. |
-| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **EDITOR CONTROLS OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. ⛔ **Scope correction, 2026-08-27 (Bean flagged, verified true): the label above is narrower than it reads.** "OBSERVED" covered the EDITOR SURFACE only — the picker, presets, and Notice existing and rendering without error. Nobody has watched the actual frontend trail animate, and Bean has never seen it — confirmed live: a screenshot of page 2744 mid-hover shows the sparks preset firing (a faint dark cluster of specks on a near-black debug panel), but it is only visible on a debug/test canary page, not any client build, and the visual quality/legibility has never had Bean's eye per R-31-13. This is still an OPEN verification item, not a closed one. |
+| Particle trail (FR-38-32) | **Nothing — an empty canvas.** The trail only exists while a pointer moves, and the editor canvas is an iframe the document-level listener does not drive (the magnet precedent). A panel Notice names it: *"The trail previews on the live site only — the editor canvas cannot follow a pointer. Use View Page to feel it."* ✅ **EDITOR CONTROLS OBSERVED 2026-08-25**, not reasoned. Editor opened on page 2744: the effect picker lists **Particle trail**; **Style** shows all three presets in plain English ("Sparks — a fading trail", "Gravity dots — drift down and settle", "Ripple — expanding rings"); **Density** and **Size** are reachable behind the ToolsPanel menu alongside Reset all; the Notice ships; a bundle notice reads "about 8 KB of scroll-effect code (budget: 50 KB)"; 0 schema-invalid blocks, 0 console errors. ⚠ Finding the panel took three attempts — it is a ToolsPanel in the **Styles** tab, so a `PanelBody`-only selector reports it ABSENT. An absence verdict is only as wide as its search. ⛔ **Read "OBSERVED" narrowly: it covers the EDITOR SURFACE only** — the picker, presets, and Notice existing and rendering without error. Nobody has watched the actual frontend trail animate, and Bean has never seen it — confirmed live: a screenshot of page 2744 mid-hover shows the sparks preset firing (a faint dark cluster of specks on a near-black debug panel), but it is only visible on a debug/test canary page, not any client build, and the visual quality/legibility has never had Bean's eye per R-31-13. This is still an OPEN verification item, not a closed one. |
 
 ## 10. Reduced-motion contract (per effect)
 
@@ -2065,8 +2046,8 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 | Flowing gradient (FR-38-31, Tier W) | **SIMPLIFY — draw exactly one frame and stop, never suppress to a blank or to the CSS fallback.** Under `reduce` the renderer initialises, draws a single frame at the current uniform values, and creates no rAF loop — so the section is never blanked and the gradient still reads as a finished, deliberate visual. This is distinct from the SC 2.2.2 Pause control (FR-38-31 body): `prefers-reduced-motion` and the Pause control are two independent answers to two independent requirements, and neither discharges the other. |
 
 | Progress connector (FR-38-35) | **SIMPLIFY — the line renders FULLY FILLED, never empty.** Under `reduce` the block's stylesheet forces `--sgs-timeline-fill-progress: 1` plus `animation: none` (required — an animation outranks a plain declaration in the cascade), and `view.js` returns before attaching a listener. Stated ONCE in the stylesheet rather than in either driver, so it holds identically on both and there is no second code path to drift. ⛔ **Note the direction:** an EMPTY line would misrepresent a journey as not yet begun, and the block's own existing convention is “show the end state, skip the animation” (`view.js` reveals all entries under reduce). This is `degrade-to-more-content-never-less` applied to a progress indicator. Deliberately unlike FR-38-32/33's SUPPRESS: a connector has a legitimate finished state to rest AS, whereas a pointer trail does not. |
-| Cursor grid-dot field (FR-38-33) | **SUPPRESS — no instance, no canvas, no listener.** No JS is created under `reduce`; dots resting at cell centres is the same no-JS/reduce state, one code path (the FR-38-32 pattern this row's predecessor only predicted — now measured). |
-| Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:136` (⚠ line corrected 2026-08-27, was cited as `:114`; the `if ( prefersReducedMotion() ) { return; }` gate inside `boot()`) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
+| Cursor grid-dot field (FR-38-33) | **SUPPRESS — no instance, no canvas, no listener.** No JS is created under `reduce`; dots resting at cell centres is the same no-JS/reduce state, one code path (the FR-38-32 pattern, measured). |
+| Particle trail (FR-38-32) | **SUPPRESS — no listener, no canvas, no pool.** `fx-particles.js:136` (the `if ( prefersReducedMotion() ) { return; }` gate inside `boot()`) returns before anything is created, so the reduced-motion state and the no-JS state are the SAME state and there is one code path, not two that can drift. Deliberately unlike cursor-field's SIMPLIFY: a resting cursor-field is a legitimate finished PAINT, whereas a trail with no pointer has nothing to rest AS. `fx-particles.css` carries a belt-and-braces `display:none` under `reduce` that never fires in normal operation. ⛔ **SC 2.2.2 does NOT engage** — the motion is pointer-initiated and every particle dies within its preset life (0.55s / 1.3s / 0.85s, all far under the five-second threshold), so no Pause control is owed, unlike FR-38-31 which genuinely owed one. |
 
 ## 11. Cloning contract — the `data-sgs-fx-*` draft grammar (first home)
 
@@ -2335,7 +2316,6 @@ reliably inferred from scraped JS — an inferred effect is a guess, and guesses
 - **Runtime dependency:** `src/shared/effects/` house contracts (motion-utils LIVE
   reduced-motion check, shared rAF budget, init→cleanup, fail-open). The mega-menu effects are
   live-proven. ✅ **P-ROW-COLLAPSE-RESIDUALS is CLOSED (2026-08-27, D863) — measured, both arms.**
-  It previously read *"the one open motion residual… unproven, honesty-flagged"*.
 
   Repeatable probe: `scripts/motion-qa/probe-row-collapse-reduced-motion.mjs`. Measured live:
 

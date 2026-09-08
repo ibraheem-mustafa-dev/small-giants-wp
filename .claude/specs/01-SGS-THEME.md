@@ -251,7 +251,7 @@ sgs-theme/
           ]
         }
       ],
-      "fontSizes": [ /* SEE THE TYPE-SCALE SECTION BELOW — this listing was stale */ ],
+      "fontSizes": [ /* SEE THE TYPE-SCALE SECTION BELOW — the authoritative ladder lives there */ ],
       "defaultFontSizes": false,
       "fluid": { "minViewportWidth": "375px", "maxViewportWidth": "1200px" }
     },

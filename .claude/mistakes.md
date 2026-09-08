@@ -1,8 +1,7 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-09-07 (gates-honesty handoff) (2 new entries added — a gate's Fix text
-rotting independently of its rule; and a baseline being wrong in ways a count cannot show.)
+**Last updated:** 2026-09-07
 
-<!-- ACTIVE — recent entries carry their rule directly, not just a keyword + external link (the "pure stub, look it up in blub.db" convention was retired 2026-08-12: this project no longer relies on blub.db for lookup, so routing detail off to an external DB just adds a hop). Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
+<!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
 ### [2026-09-07] Relayed a gate's own Fix text as the requirement; it described the PRE-migration shape
@@ -57,9 +56,7 @@ rotting independently of its rule; and a baseline being wrong in ways a count ca
   anyway, ~6 days later — not because the doc was hard to find or newly written, but because
   nobody checked it before treating "colour needs fixing somewhere" as license to invent how. A
   full read-only audit (not a review, a proactive one) caught it the same night; reverted (D970).
-  (An earlier draft of this entry wrongly claimed the gap was "6 minutes" in the same session —
-  corrected to the true ~6 days after an independent QC check caught the fabricated precision;
-  the lesson holds either way, but state figures you've actually measured, not guessed.)
+  State figures you have actually measured, never guessed precision.
 - **Rule:** before building any general mechanism (not a one-off block fix) that touches a shared
   component's placement/architecture, read the relevant CLAUDE.md/spec section in full — don't
   rely on general familiarity or an earlier read — and check its git blame if timing might

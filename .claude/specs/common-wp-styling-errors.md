@@ -6,8 +6,8 @@
 
 **Linked references:**
 - Mistakes index: [`../mistakes.md`](../mistakes.md)
-- Behavioural rule on verifying rendered output before claiming done: [`../../.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md`](file:///C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
-- Audit table for per-block colour + animation defaults: [`../plans/strategy/block-colour-animation-defaults.md`](../plans/strategy/block-colour-animation-defaults.md)
+- Behavioural rule on verifying rendered output before claiming done: [`~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md`](file:///C:/Users/Bean/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
+- Audit table for per-block colour + animation defaults: [`../plans/archive/block-colour-animation-defaults.md`](../plans/archive/block-colour-animation-defaults.md)
 
 ---
 
@@ -50,7 +50,7 @@
 
 | # | Error | Why it happens | Optimal fix |
 |---|---|---|---|
-| E1 | Theme CSS change didn't reach the site | Scoping the deploy to the plugin only. **The hand-rolled `tar`/`scp` recipes this row used to prescribe are RETIRED (D336 — they took two client sites down ~2.5h).** | `python plugins/sgs-blocks/scripts/build-deploy.py --target <site> --theme-only` (omit the flag to ship theme + plugin). It ships `theme/`, verifies fail-closed, and rotates a `.bak`. Ceremony/gates: `/wp-sgs-deploy`. Never hand-roll a deploy. |
+| E1 | Theme CSS change didn't reach the site | Scoping the deploy to the plugin only. **⛔ Never hand-roll a `tar`/`scp` deploy (D336 — that recipe took two client sites down ~2.5h).** | `python plugins/sgs-blocks/scripts/build-deploy.py --target <site> --theme-only` (omit the flag to ship theme + plugin). It ships `theme/`, verifies fail-closed, and rotates a `.bak`. Ceremony/gates: `/wp-sgs-deploy`. Never hand-roll a deploy. |
 | E2 | `wp opcache reset` doesn't clear the opcode cache web requests use | PHP-FPM and PHP-CLI use separate opcache pools. `wp` runs through CLI; the website runs through FPM. CLI reset is a no-op for the web pool. | HTTP-trigger reset: `ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm public_html/op-reset-tmp.php"`. |
 | E3 | Palette change in theme.json doesn't reflect in rendered CSS even after page reload | LiteSpeed's CSS optimiser caches the generated palette inline `<style>` block. Even after `wp litespeed-purge all` (page cache), the optimiser cache survives in `wp-content/litespeed/css/`. | Run BOTH purges: `wp litespeed-purge all` AND `rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css`. Two separate caches, two separate clears. |
 | E4 | Tar excludes too much: `--exclude='src'` strips `vendor/*/src` causing fatal PHP errors | `--exclude='src'` matches any directory named `src` anywhere in the path, including Composer vendor packages with `src/` subdirectories. | Historical — `build-deploy.py` already carries the correctly-scoped excludes. Do not hand-roll a tar to "fix" this. |
@@ -236,9 +236,9 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
 
 ## S. Clone-fidelity investigation methodology
 
-> **⚠️ Instrument updated 2026-07-16.** This section was written around `pixel-diff.py`, which was **PURGED 2026-07-04 (`220cb28a`)** — it scored an EMPTY section as a false WIN (matches the background) and a correctly-reflowed one as a false LOSS. **The current instrument is Spec 20 computed-parity (`scripts/parity/computed-parity.js`, auto-runs as Stage 11.6)**, which compares computed styles on rendered elements matched by TEXT CONTENT at 375/768/1440. Closure = the live per-section visual check + **Bean's eye** (R-31-11 / R-31-13) via `/visual-qa`; an aggregate % is never a closing gate (R-31-4).
+> **The instrument is Spec 20 computed-parity (`scripts/parity/computed-parity.js`, auto-runs as Stage 11.6)**, which compares computed styles on rendered elements matched by TEXT CONTENT at 375/768/1440. ⛔ Never score fidelity by pixel-diff: an EMPTY section scores a false WIN (it matches the background) and a correctly-reflowed one a false LOSS. Closure = the live per-section visual check + **Bean's eye** (R-31-11 / R-31-13) via `/visual-qa`; an aggregate % is never a closing gate (R-31-4).
 >
-> **The durable lesson below is unchanged and is why this section still exists:** read the evidence that already classifies the problem BEFORE conjecturing about causes.
+> **The durable lesson below:** read the evidence that already classifies the problem BEFORE conjecturing about causes.
 
 **Symptom:** The fidelity measure plateaus even after multiple architectural converter improvements. Tempting conclusion: "the closure gate is unachievable, the comparison is structurally noisy".
 
@@ -260,7 +260,7 @@ Spent ~6 hours of one session running 12 passes of full-page pixel diff and conj
 
 **Lessons captured:** `~/.openclaw/workspace/memory/learning/2026-05-15-read-leftover-buckets-*.md` + `~/.openclaw/workspace/memory/learning/2026-05-15-per-section-cropped-pixel-diff-*.md`. blub.db rows 254, 256.
 
-**Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification). *(The third file this row used to cite, `orchestrator/converter_v2/__init__.py`, was DELETED with the frozen tree at D276 — the engine is now `plugins/sgs-blocks/scripts/converter/`.)*
+**Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification) — and the engine, `plugins/sgs-blocks/scripts/converter/`.
 
 ## T. CSS-selector classifier regex traps (2026-05-18 widthMode dispatch)
 

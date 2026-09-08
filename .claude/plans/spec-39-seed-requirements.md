@@ -24,36 +24,32 @@ answer. Nothing here is settled.
 
 ## R1 — Object-shape tier emission (the load-bearing item)
 
-> ⚠ **LARGELY SHIPPED ALREADY — verify before building (checked 2026-09-08).** The converter
-> emits tier OBJECTS today: a live clone run produced
-> `sgs/heading.fontSize = {"desktop":52,"mobile":34}`, and calling `typography.resolve()` directly
-> returns the object shape, never the flat one. D996 (2026-09-07) explicitly retires the D554
-> "stays flat" ruling. Several converter test markers still say the converter "deliberately STAYS
-> FLAT until the Spec 39 rework" — **those markers are stale**, and a sibling test carrying the
-> identical marker was de-xfailed at D996 as superseded.
+> ⚠ **LARGELY SHIPPED — measure before building.** The converter emits tier OBJECTS today: a live
+> clone run produced `sgs/heading.fontSize = {"desktop":52,"mobile":34}`, and calling
+> `typography.resolve()` directly returns the object shape, never the flat one (D996, 2026-09-07,
+> which governs over D554's "stays flat" ruling). A converter test marker citing D554 does not
+> describe the converter — check emitted output, never the marker.
 >
 > ⛔ **Do not re-derive or re-design R1 without first measuring what the converter actually
 > emits.** The genuinely open scope in this document is **R8–R10 (motion cloning from raw CSS)**,
 > which is real and unaddressed.
 >
-> **Spec 39 itself does not exist and was never written** — `specs/README.md` records the number as
-> RESERVED. The 37 quarantined conformance goldens that name it are real
-> (`scripts/tests/fixtures/conformance/quarantine.json`, `quarantined_golden_ids`: 37 — counted, not
-> quoted). ⚠ An audit on 2026-09-08 claimed that count was "10"; it was wrong. Count the file.
+> **Spec 39 does not exist** — `specs/README.md` records the number as RESERVED. The quarantined
+> conformance goldens that name it are real; **count them in the file**
+> (`scripts/tests/fixtures/conformance/quarantine.json`, `quarantined_golden_ids`) rather than
+> quoting any figure from prose.
 
 The converter must eventually emit `{desktop, tablet, mobile}` instead of flat suffixed siblings.
 
-**What it does today, and it is not "nothing":** the converter **does** lift per-device values and
-always has — in the **flat** shape. (An earlier claim of "no object emitter anywhere" conflated two
-things; the precise statement is that it lacks an *object* emitter.) Every site below builds
-`attr + 'Tablet'` / `attr + 'Mobile'`:
+**What it does today:** the converter lifts per-device values in the **flat** shape; what it lacks
+is an *object* emitter. Every site below builds `attr + 'Tablet'` / `attr + 'Mobile'`. ⚠ **Line
+numbers below drift — grep the construction, do not trust the citation.**
 
 | File | Evidence |
 |---|---|
-| `scripts/converter/services/fold_helpers.py` | `:262` — `bp_decls['Tablet'] -> attr + 'Tablet'`; also `:291`, `:326`, `:352`. ⚠ **LIVE — see the refutation below; its own docstring used to claim otherwise** |
+| `scripts/converter/services/fold_helpers.py` | `:416` — `dest = f"{attr_base}{tier_suffix}"`, inside the loop over `tier_values`. LIVE: `assembly.py` imports and calls `route_area_css_to_block_attrs` (assembly step 3d), and `tests/test_l4_area_wiring.py` asserts that path. This file is also R1's real grid-per-area work surface. |
 | `scripts/converter/services/extraction.py` | `:652` — `target_attr = f"{base_attr}Mobile" if is_mobile else base_attr` |
 | `scripts/converter/resolvers/grid.py` | `:19` — "unsuffixed, Tablet → `*Tablet`, Mobile → `*Mobile`" |
-| ~~`scripts/converter/resolvers/grid_area.py`~~ | ~~`:16`~~ — **DELETED 2026-08-16 (D642).** Dead code (`ctx.area_name` never set by any production Ctx-builder); its own `attr + 'Tablet'` string-building was proven byte-identical-output-neutral to remove, so it drops out of this inventory entirely. R1's real live grid-per-area work surface is `fold_helpers.route_area_css_to_block_attrs`. |
 | `scripts/converter/resolvers/styling_content.py` | `:9-10`, `:84` |
 | `scripts/converter/resolvers/typography.py` | `:101` — "Tier-suffixed primary destination" |
 | `scripts/converter/resolvers/outer_box.py` | `:386`, and `maxWidth`/`maxWidthTablet`/`maxWidthMobile` handling |
@@ -65,21 +61,9 @@ things; the precise statement is that it lacks an *object* emitter.) Every site 
 **Question for Spec 39:** does emission become object-only, or dual-shape during a transition window
 keyed on whether the target block has migrated that property?
 
-### ⛔ A REFUTED "correction" — do not re-make it
-
-A council rater (2026-08-10) read `fold_helpers.py`'s docstring, which said *"currently UNWIRED in the
-new engine"*, and recommended **removing `fold_helpers.py` from this inventory as dead code**. Following
-that would have left a **live** flat-tier emitter unmigrated.
-
-**The docstring was stale.** The call graph refutes it: `assembly.py:260` imports
-`route_area_css_to_block_attrs` and `:276` calls it (assembly step 3d), and
-`tests/test_l4_area_wiring.py` exists to assert that live path — its own header says the L4 extraction
-*"was UNWIRED (MF-5)"*, **past tense**. The stale docstring was corrected 2026-08-10 and now carries this
-refutation inline; 7 converter tests pass.
-
-⚑ **The transferable rule:** *"unwired" in a comment is a dated claim, not a fact.* Grep the callers
-before believing it — including when the comment is in the file you are about to skip. This is the same
-class as the project's existing `unwired-is-not-dead-separate-by-mechanism-not-count` and
+⚑ **Rule for reading this inventory:** *"unwired" or "deferred" in a comment is a dated claim, not a
+fact.* Grep the callers before believing it — including when the comment is in the file you are about
+to skip. Same class as the project's `unwired-is-not-dead-separate-by-mechanism-not-count` and
 `a-comment-that-justifies-a-breach-is-a-dated-opinion` rules.
 
 ## R2 — The breakpoint vocabulary is already DB-owned, and that is a strength
@@ -213,52 +197,35 @@ through a single shared function. Verified by reading the file and counting call
   `tier_suffix()`. This is the ONE place the flat `{attr}{Tier}` string is built.
 - **`scripts/converter/services/tier_suffix.py:65`** — `tier_state_suffix()` (which then appends an
   interaction-state suffix) calls `tier_suffix()` internally, so it also funnels through the same line.
-- **Re-derived 2026-08-16 (D642 follow-up) after `resolvers/grid_area.py`'s deletion** —
-  `grep -rn "tier_suffix(\|tier_state_suffix(" --include=*.py . | grep -v "/tests/" | grep -v "def tier_suffix\|def tier_state_suffix" | grep -v "services/tier_suffix.py"`
-  now returns **13 call sites across 5 resolver/service files** (was 15 across 6 — `grid_area.py`'s 2
-  call sites are gone with the file, no other change) —
-  `resolvers/grid.py` (7: lines 140, 156, 174, 203, 237, 270, 295), `resolvers/content_band.py` (2:
-  lines 106, 188), `resolvers/outer_box.py` (2: lines 215, 285), `services/border_side.py` (1: line 76),
-  `resolvers/typography.py` (1: line 105, calls `tier_suffix()` directly rather than
-  `tier_state_suffix()`).
+- **Enumerate the call sites live, never from a cached list here (R7.2):**
+  `grep -rn "tier_suffix(\|tier_state_suffix(" --include=*.py scripts/converter | grep -v "/tests/" | grep -v "def tier_suffix\|def tier_state_suffix" | grep -v "services/tier_suffix.py"`
+  then discard import lines and docstring mentions. Files carrying real calls span
+  `resolvers/grid.py`, `resolvers/content_band.py`, `resolvers/outer_box.py`,
+  `resolvers/typography.py` (calls `tier_suffix()` directly rather than `tier_state_suffix()`),
+  `services/border_side.py` and `services/box_side.py`.
 
 **Why this matters for Spec 39, without deciding anything:** an object-shape rework that changes what
-`tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches all 13 call sites at once —
+`tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches every call site at once —
 this is the leverage point R1's scattered per-resolver table doesn't surface. Whether the fix belongs
 at that one function or has to unwind at each call site is a Spec 39 design question, not answered here.
 
-### G3 — Three R1 items re-verified, two confirmed correct, one had drifted line numbers (now fixed)
+### G3 — Two emission facts R1's table doesn't surface
 
-Re-checked each of the three items flagged as worth re-verifying:
+⚠ Line numbers here drift with every refactor — grep the quoted code, don't trust the number.
 
-1. **A second path R1's table omits — confirmed present, unchanged.** `scripts/converter/services/
-   root_supports.py:596` — `flat_probe = f"{camel_base}{bp_suffix}"` (the per-property native `style.*`
-   lift). `root_supports.py:637` — `flat_probe = f"{shorthand}{side.capitalize()}{bp_suffix}"` (the
-   padding/margin shorthand native lift). Both build the flat suffixed name independently of
-   `tier_suffix()` (G2) — this is a genuinely separate emission path R1 doesn't list, confirmed still
-   live at these exact lines.
+1. **A second flat-suffix path, independent of `tier_suffix()` (G2).**
+   `scripts/converter/services/root_supports.py:606` — `flat_probe = f"{camel_base}{bp_suffix}"` (the
+   per-property native `style.*` lift); `:647` —
+   `flat_probe = f"{shorthand}{side.capitalize()}{bp_suffix}"` (the padding/margin shorthand native
+   lift). A rework that only changes `tier_suffix()` will miss both.
 
-2. **The shallow-merge risk in `css_pass.py` — confirmed present, line number corrected.** The merge
-   chain is `scripts/converter/services/css_pass.py:211` (`merged: dict = dict(native_attrs)`), then
-   `:214` (`merged.update(result.attrs())`), `:229` (`merged.update(overlay_attrs)`), `:255`
-   (`merged.update(preset_attrs)`). Each `.update()` call replaces a whole dict key's value — so if two
-   of these four sources each produced a tier OBJECT for the same attr name, the later `.update()` would
+2. **The shallow-merge risk in `css_pass.py`.** The merge chain is
+   `scripts/converter/services/css_pass.py:211` (`merged: dict = dict(native_attrs)`), then `:214`
+   (`merged.update(result.attrs())`), `:230` (`merged.update(overlay_attrs)`), `:256`
+   (`merged.update(preset_attrs)`). Each `.update()` replaces a whole dict key's value — so if two of
+   these four sources each produced a tier OBJECT for the same attr name, the later `.update()` would
    overwrite the entire object (losing whichever tiers only the earlier source set), not merge tiers
-   together. This matches what R6a already names at `css_pass.py:211-255`; recorded here as re-verified,
-   not as new information.
-
-3. **`fold_helpers.py` line numbers — CONFIRMED DRIFTED, corrected:**
-   - R1 cites `:262` for `bp_decls['Tablet'] -> attr + 'Tablet'`. The comment is now at **`:265`**
-     (`bp_decls['Tablet']      -> attr + 'Tablet'`, with `:266` for the Mobile line) — a 3-line drift.
-   - R1 cites `:291`, `:326`, `:352` as further evidence sites. Re-read: **all three now point at
-     unrelated code.** `:291` is `for prop in ("padding", "margin"):` (box-shorthand expansion, no tier
-     string-building). `:326` is inside a `trace("cross_node_gap_candidate", ...)` call (a diagnostic
-     log call, not construction). `:352` is a comment about a legacy name-convention fallback for
-     per-area padding routing — not tier-suffix construction either.
-   - **The real flat-tier construction site in this file is `fold_helpers.py:416`** —
-     `dest = f"{attr_base}{tier_suffix}" if tier_suffix else attr_base` — inside the loop over
-     `tier_values` (built at `:405-409` from `draft_mob`/`draft_tab`/`draft_base`). This is the line R1
-     should have pointed to; `:262`/`:291`/`:326`/`:352` no longer serve as evidence for it.
+   together. Same site R6a names.
 
 ### G4 — Box axis vs tier axis: carry the orthogonality rule forward
 
@@ -288,14 +255,11 @@ these apart from the data:
 | 2 | migrated tier-object | `contentBandPadding`, `gap`, `maxWidth`, `columns`, `fontSize`, `sgs/media.order`, `decorative-image.positionX/Y` | no | `sgs_responsive_normalise_object(...)` → `.desktop/.tablet/.mobile` | **object — R1's actual target** |
 | 3 | base-only box, **NO tier support** | `sgs/text.borderWidth` | no | its `render.php:141` reads `is_array($attributes['borderWidth'] ?? null) ? … : array()`, then decomposes it into `['top']`/`['right']`/`['bottom']`/`['left']` — a **BOX, never tiers**. ⚠ Be precise when re-checking: that file DOES contain 4 tier calls (`:58` `fontSize`, `:62` `lineHeight`, `:67` `letterSpacing`, `:329` the emit) — **none carries `borderWidth`**. A bare `grep sgs_responsive_normalise_object` on this file returns 4 hits and would wrongly look like a refutation | **flat — folding it renders NOTHING** |
 
-⛔ **CORRECTION 2026-08-12 (same day): `sgs/container.gridItemPadding` was cited here as the canonical
-Shape 3 example and that is WRONG — it is Shape 2.** `class-sgs-container-wrapper.php:2279-2296` feeds
-it into `$obj_inner_props[]`, i.e. the tier-OBJECT emission path. The block ALSO has a flat
-`sgs_serialise_box_sides(...)` read elsewhere in the same file, and citing only that one produced the
-misclassification. ⚑ **Transferable:** a property can have TWO reads in one file — finding a flat read
-does not establish there is no tier read. The `//` comment just above `:2279` calling this plumbing
-"deferred" is itself stale and is contradicted by the code beneath it. The three-shape CONSTRAINT
-stands unchanged; only the example was wrong.
+⚑ **A property can have TWO reads in one file — finding a flat read does not establish there is no
+tier read.** `sgs/container.gridItemPadding` is Shape 2, not Shape 3:
+`class-sgs-container-wrapper.php:2279-2296` feeds it into `$obj_inner_props[]` (the tier-OBJECT
+emission path), while the same file ALSO carries a flat `sgs_serialise_box_sides(...)` read of it
+elsewhere. Classify by the full set of reads, never the first one found.
 
 - Testing `attr_type == 'object'` conflates all three.
 - Testing "does `{base}{Tier}` exist as its own row" separates 1 from {2,3} — **but NOT 2 from 3.**
@@ -318,20 +282,17 @@ For a migrated property the suffixed name (`gapMobile`) is undeclared, so `valid
 resolver returns a GAP — **no `Write` is ever produced**. Any design that normalises *collected writes*
 therefore has nothing to normalise. R1 must act at or before the attr-resolution/validate seam.
 
-⚠ **And the 13 call sites are not uniform: 5 of them never call `validate()` at all** (was 6 of 15 —
-`grid_area.py`'s 1 non-validate site is gone with the file; the other 5 are unchanged, re-verified by
-reading each call site's function body, not by subtracting on paper) — they gate solely on
-`box_family_for()`: `resolvers/grid.py` lines 203, 237, 270 (the padding/border-radius/longhand-radius
-box forks — `outer_box.py`'s two `tier_suffix` sites at 215/285 also gate on `box_family_for()` but
-still call `validate()` afterwards, so they don't belong in this count), `resolvers/content_band.py`
-line 106 (the band-mirror path), `services/border_side.py` line 76. So "make `tier_suffix()` return the
-base name so `validate()` passes" does not even apply to those five — and they are precisely the path
-that produces the shape-3 regression in G5. G2's re-derived count of 13 is right; its implied
-uniformity is not.
+⚠ **The call sites are NOT uniform: a subset never calls `validate()` at all** — they gate solely on
+`box_family_for()`. That subset is `resolvers/grid.py`'s padding / border-radius / longhand-radius box
+forks, `resolvers/content_band.py`'s band-mirror path, and `services/border_side.py`.
+(`resolvers/outer_box.py`'s two sites also gate on `box_family_for()` but still call `validate()`
+afterwards, so they are not in this subset.) So "make `tier_suffix()` return the base name so
+`validate()` passes" does not even apply there — and that is precisely the path that produces the
+shape-3 regression in G5. Re-derive the split by reading each call site's function body; never by
+subtracting on paper.
 
-*(Also: G2 lists `services/state_value_lift.py` among the callers. It only MENTIONS `tier_state_suffix`
-in a docstring — it resolves via `db_lookup.attr_for_state_property` instead. 15 real call sites stands,
-but that file is not one of them.)*
+*(`services/state_value_lift.py` only MENTIONS `tier_state_suffix` in its docstring — it resolves via
+`db_lookup.attr_for_state_property` instead. Do not count it as a call site.)*
 
 ### G7 — Two positive findings R1 can rely on
 
@@ -352,30 +313,22 @@ a rich-descriptor object). **An object-collapse rule that doesn't condition on t
 existing bug from Base-only to Tablet/Mobile+Hover.** Zero `%TabletHover`/`%MobileHover` rows exist
 anywhere, so the correct behaviour is to keep gapping.
 
-### G9a — ⛔ R6's gate was ALREADY BUILT; it was BROKEN, and is now fixed (2026-08-12)
+### G9a — R6's gate EXISTS and is live
 
-**Correcting this file's own R6 and a 2026-08-12 claim of mine that it was "never built".** The D554
-clone-output gate has existed since **2026-08-11** (`fa638cea`) as
-`scripts/orchestrator/check_flat_tier_regression.py`, wired into BOTH
+The D554 clone-output gate is `scripts/orchestrator/check_flat_tier_regression.py`, wired into BOTH
 `scripts/orchestrator/pipeline-stage-gate.py` and `sgs-clone-orchestrator.py`, with a fixture suite.
+⛔ **Confirm it by opening those paths** — a search for `"flat tier"` (space) will not find a file
+named `flat_tier` (underscore), and a search under `.claude/hooks/` will not find a script that lives
+under `scripts/orchestrator/`. Project rule `a-greps-blind-spot-is-the-shape-of-the-grep`.
 
-⚑ **Why it was reported missing — a method warning worth more than the fact:** the search used
-`grep "flat tier"` (space) against a file named `flat_tier` (underscore), and looked in
-`.claude/hooks/pipeline-stage-gate.py` when the live file is at
-`scripts/orchestrator/pipeline-stage-gate.py`. **Two independent wrong-shape errors in one check**,
-each sufficient to produce a confident false "does not exist". Project rule
-`a-greps-blind-spot-is-the-shape-of-the-grep`.
-
-**But it was genuinely broken in two ways, both now fixed (`4ec6ed83`):**
-1. **Shape-2-vs-3 confusion** — it used the naive "object-typed with no Tablet/Mobile siblings" signal
-   that G5 above proves cannot separate them.
-2. **⚠ Worse, and not anticipated: per-tier SIBLING attrs were self-promoting into "migrated" status.**
-   `marginTablet`/`paddingMobile` are real attrs with no base `margin`/`padding`, and each has no
-   sibling *of its own*, so the naive rule classified them as migrated on nearly every block —
-   **259 false positives.** Fixed by excluding any candidate whose own name ends in a DB-derived
+Two signals the gate must NOT use, because neither separates G5's shapes:
+1. "object-typed with no Tablet/Mobile siblings" — cannot separate Shape 2 from Shape 3.
+2. A rule that doesn't exclude per-tier SIBLING attrs — `marginTablet`/`paddingMobile` are real attrs
+   with no base `margin`/`padding` and no sibling of their own, so a naive rule self-promotes them to
+   "migrated" on nearly every block. Exclude any candidate whose own name ends in a DB-derived
    breakpoint suffix (`modifier_suffixes('breakpoint')`, R-31-1).
 
-**The discriminator it now uses — this is G5's answer, and Spec 39 should reuse it rather than
+**The discriminator the gate uses — this is G5's answer, and Spec 39 should reuse it rather than
 re-derive:** a property counts as migrated only when its value **demonstrably reaches** one of
 `sgs_responsive_normalise_object()`, `sgs_emit_responsive_css()`, `sgs_typography_css_rule()` or
 `sgs_resolve_on_tiers()`, scanned across the block's own `render.php` **and** the shared
@@ -383,26 +336,20 @@ re-derive:** a property counts as migrated only when its value **demonstrably re
 dynamic-key dispatch loops, intermediate-variable assignment). i.e. **PHP-consumer evidence, not
 `attr_type` and not `box_family`** — both of which were confirmed identical for Shape 2 and Shape 3.
 
-Net effect: 260 properties re-classified across 83 blocks, **0 additions** — the fix only narrows.
+### G9 — ⭐ R6's POSITIVE CONTROL: the D554 `xfail(strict=True)` tests
 
-### G9 — ⭐ R6's missing POSITIVE CONTROL now EXISTS: 11 `xfail(strict=True)` tests
+R6 correctly warns that *"when the gate stops firing, R1 is done"* is vacuously satisfiable. The
+strict-xfail converter tests are a concrete, non-vacuous acceptance signal that does not depend on any
+clone run happening.
 
-R6 correctly warns that *"when the gate stops firing, R1 is done"* is vacuously satisfiable. As of
-2026-08-12 there is a concrete, non-vacuous acceptance signal that does not depend on any clone run
-happening:
+**Enumerate them live — do not read a count from this file:**
+`grep -rn "D554 ruling C" --include=*.py plugins/sgs-blocks/scripts/converter/tests`. They assert the
+pre-migration flat shape for properties that are now tier objects; because `strict=True` they **FAIL
+THE BUILD the moment the converter emits tier objects for those properties** — they cannot silently
+pass. They live in `test_css_resolvers.py`, `test_outer_box_step12_properties.py` and
+`test_css_pass_partition.py`.
 
-**11 converter tests are marked `@pytest.mark.xfail(strict=True)` citing D554** (was 12 —
-`test_grid_area_tier_suffix` in `test_css_resolvers.py` was retired 2026-08-16, D642, *together with
-its subject*: it drove the dead `resolvers/grid_area.py` resolver directly, so once that resolver was
-proven dead and deleted, the test had nothing left to assert and could never have been flipped per
-this section's own completion ritual below. The count fell by design, not by the "clean-up" this
-section's ⛔ forbids). They assert the pre-migration flat shape for properties that are now tier
-objects. Because `strict=True`, they **FAIL THE BUILD the moment the converter starts emitting tier
-objects** — they cannot silently pass.
-
-- **They are R1's work-list, enumerated and executable**: `test_css_resolvers.py` (5),
-  `test_outer_box_step12_properties.py` (3), `test_css_pass_partition.py` (1), `test_l4_area_wiring.py`
-  (1), `test_state_value_lift.py` (1).
+- **They are R1's work-list, enumerated and executable.**
 - **The R1 completion ritual:** flip each from `xfail` to a normal test asserting the OBJECT shape, in
   the same commit as the resolver change that makes it pass. A test that goes from xfail to xpass
   without being rewritten means the emission changed **without** anyone updating the contract — the
@@ -470,20 +417,17 @@ R1-R7 are entirely about **attribute SHAPE** — flat tier siblings becoming `{d
 mobile}` objects, and the DB identity that follows. That is a correctness and uniformity
 programme. It is worth doing, and it is orthogonal to whether the output is any good.
 
-**Measured 2026-09-07:** the words `motion`, `animation`, `animate`, `GSAP` and `scroll` appear
-**zero times** across this file's original 433 lines. A pipeline built to this seed alone would
-clone a faithful, well-shaped, completely static page.
+R1–R7 say nothing about motion at all. A pipeline built to those items alone would clone a faithful,
+well-shaped, completely static page. R8–R10 below are the part of this seed that addresses Bean's bar.
 
-## R8 — Motion cloning EXISTS but only for SGS-authored drafts (corrected 2026-09-07)
+## R8 — Motion cloning EXISTS, but only for SGS-authored drafts
 
-⛔ **An earlier draft of this section claimed the converter had "zero references" to motion and
-"does not read animation/transition/transform CSS at all". That was WRONG, and a Spec 39 built
-on it would have re-implemented something that already exists.** The error came from a malformed
-`git grep -licE` (combining the mutually exclusive `-l` and `-c`), which returned nothing and
-looked exactly like a clean result. Corrected by an adversarial fact-check pass; the lesson is in
-the LEDGER guardrails.
+⚑ **Measure the converter's motion coverage with a grep you have verified returns non-empty on a
+known hit.** A malformed `git grep -licE` (combining the mutually exclusive `-l` and `-c`) returns
+nothing and looks exactly like a clean result — enough to conclude "no motion support anywhere" and
+re-implement what already exists.
 
-**What actually exists.** FR-38-22 (D949/D951/D952, 2026-09-04) built an fx-attribute lift:
+**What exists.** FR-38-22 (D949/D951/D952, 2026-09-04) built an fx-attribute lift:
 `converter/services/assembly.py` step 3a1 calls `db_lookup.lift_behavioural_attrs()`, which lifts
 a draft's explicit `data-sgs-fx-*` markers into the emitted block's attributes. It carries a
 roster of ~78 fx attrs, coerces booleans/numbers to real JSON types (D952), and handles
@@ -500,7 +444,7 @@ data-attributes — i.e. a draft authored for SGS. The converter does not infer 
 | `attr_name LIKE 'fx%'` | **2,880** attrs across **32** blocks; **832** carry a `css_property` |
 | Broader motion set (fx + animation + transition + parallax + scroll) | **3,033** across **44** blocks; **925** carry a `css_property` |
 | `keyframes` references anywhere in `scripts/converter/` | **0** |
-| Raw-CSS motion inference (draft `animation:`/`transition:` → an fx attr) | **none** — `preset_absence.py:72` reads `transform` ONLY as a preset-absence signal, never to route motion |
+| Raw-CSS motion inference (draft `animation:`/`transition:` → an fx attr) | **none** — `converter/resolvers/preset_absence.py:72` reads `transform` ONLY as a preset-absence signal, never to route motion |
 
 ```
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT COUNT(*), COUNT(DISTINCT block_slug) FROM block_attributes WHERE attr_name LIKE 'fx%'"

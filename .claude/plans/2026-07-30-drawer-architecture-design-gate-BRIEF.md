@@ -99,22 +99,19 @@ spec change to make WITH the gate's decision, per Spec 37 §1.2's same-commit ru
 
 ### 3a. Seven of Bean's eight named controls ALREADY EXIST
 
-Read from `src/blocks/nav-drawer/block.json` on 2026-07-30:
+Read the live attribute list from `src/blocks/nav-drawer/block.json` before the gate — do not
+work from a list quoted here:
 
 | Bean's ask (E/F) | Existing attribute | Status |
 |---|---|---|
-| base background colour | `drawerBg` | EXISTS |
-| outline thickness (0 = none) + colour | `__experimentalBorder` (width/color/style/radius, skip-serialised → scoped CSS) | EXISTS — verify the inspector LABELS it as an outline and that 0 means none |
+| base background colour | `drawerBg` (+ `drawerBgGradient`) | EXISTS |
+| outline thickness (0 = none) + colour | `borderWidth` / `borderColour` / `borderStyle` / `borderRadius` (+ `borderColourGradient`) | EXISTS — verify the inspector LABELS it as an outline and that 0 means none |
 | close-button look variations | `closeStyle` = `separate-x` / `text-swap` / `burger-morph` | EXISTS |
-| close-button colour | `toggleCloseColour` | EXISTS |
+| close-button colour | `toggleCloseColour` (+ `toggleCloseColourHover`, gradients) | EXISTS |
 | padding | `drawerPadding` | EXISTS |
 | gaps between rows | `drawerGap` | EXISTS (gap between direct children) |
-| menu present by default in a new drawer | both CPT starter patterns ship `sgs/nav-menu {"ref":0}` | EXISTS (W2-a) |
-| **top row: logo LEFT + close RIGHT, own full-width background** | — | **MISSING — the actual new work** |
-
-Full attr list: `anchor, animateFrom, closeStyle, drawerAlign, drawerBg, drawerGap,
-drawerPadding, drawerRef, panelSize, sgsCustomCss, submenuModel, surfaceBlur,
-surfaceOpacity, toggleCloseColour, variantPreset`.
+| menu present by default in a new drawer | both CPT starter patterns ship `sgs/nav-menu {"ref":0}` | EXISTS |
+| **top row: logo LEFT + close RIGHT, own full-width background** | — | **MISSING — the actual new work** (no `__top`/top-row chrome in `render.php`) |
 
 **Consequence for the gate: do not re-litigate the control set.** The open design
 question is narrow — the top row, per-row backgrounds, and logo placement. If rows are

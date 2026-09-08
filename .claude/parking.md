@@ -2,7 +2,7 @@
 doc_type: parking
 project: small-giants-wp
 last_updated: 2026-09-03
-note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose. Normalised 2026-07-29: 296KB -> this, one layout, one Status syntax, shipped history stripped to residual scope. Pre-normalise copy: memory/archived-2026-07-28-parking-pre-normalise.md."
+note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. One layout, one Status syntax, residual scope only - no shipped history. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose."
 ---
 
 # parking.md - parked work
@@ -46,7 +46,7 @@ page can clone to `sgs/option-picker` blocks.
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
 
-*Entry count is deliberately NOT cached here — it drifted to three different figures (58 here, 61 below, 62 raw) before this line was cut on 2026-08-22. Measure it: `grep -c "^### P-" .claude/parking.md` minus the fenced template example, or read `handoff-preflight.py --check`.*
+*Never cache an entry count here — measure it: `grep -c "^### P-" .claude/parking.md` minus the fenced template example, or read `handoff-preflight.py --check`.*
 
 ### P-MEDIA-ATOM-CALLER-SUPPLIED-SELECTOR — overlay atom can't paint onto a caller's own marker
 
@@ -74,10 +74,8 @@ urgent — the wrapper works fine as-is, this is purely a dedup opportunity.
 An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky header
 and by the footer. Measured on canary 2091, five sample points, every one returning a rival element.
 
-**⚠ CAUSE CORRECTED 2026-08-01 — the entry previously blamed "the theme's
-`.entry-content{position:relative;z-index:1}`". THAT SELECTOR DOES NOT EXIST** anywhere in
-`theme/sgs-theme/` (grepped the whole tree, zero hits). The same wrong cause is repeated in
-`decisions.md` and in a `nav-menu/render.php` comment — do not act on it.
+⚠ **`.entry-content{position:relative;z-index:1}` does not exist anywhere in `theme/sgs-theme/`.**
+`decisions.md` and a `nav-menu/render.php` comment both name it as the cause — do not act on that.
 
 **The real mechanism is in the PLUGIN, not the theme.** `plugins/sgs-blocks/src/blocks/container/
 style.css:47-50` applies, unconditionally, to every `sgs/container`:
@@ -249,8 +247,7 @@ slug should read as more important than the others — this is an index, not a r
 (1) run the keyed css_property resolver against a real draft and confirm it improves fidelity;
 (2) after a canary deploy, re-seed the 4 self-nesting goldens per `P-CONFORMANCE-GOLDEN-DRIFT`'s
 discipline; (3) check team-member's Stage 11.6 content-keyed parity and strike that residual if it
-matches. (The variant-discriminator item that used to be here — both nav-drawer's and trust-bar's
-live-clone legs — is fully closed; see D974/D975 and `memory/parking-archive.md`.)
+matches.
 
 ## Framework: blocks, theme, specs
 
@@ -580,7 +577,7 @@ The 3 real clients use one naming vocabulary (`text`, `text-muted`, `text-invers
 ### P-PATTERNS-USE-CORE-BLOCKS — SGS theme patterns/parts use core WP blocks instead of SGS blocks
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-10
 
-The no-inline block contract is fully met at the block level, but **4 pattern files** still use core `wp:heading`/`wp:paragraph`/`wp:list` blocks (MEASURED 2026-08-07: `footer-columns.php`, `footer-informational.php`, `framework-footer-default.php`, `pricing-columns.php` — this entry previously said "the footer and ~40+ other pattern/part files", which was ~10x the real remaining scope). WordPress core inlines its own styling supports onto those blocks — leaking inline styling into SGS pages even though no SGS block is at fault. Bean's directive: SGS patterns must be built from SGS blocks. Each core heading/paragraph must be mapped onto the equivalent SGS block's attribute schema (not a find-replace), then each pattern re-verified live at three breakpoints.
+The no-inline block contract is fully met at the block level, but **4 pattern files** still use core `wp:heading`/`wp:paragraph`/`wp:list` blocks (MEASURED 2026-08-07: `footer-columns.php`, `footer-informational.php`, `framework-footer-default.php`, `pricing-columns.php`). WordPress core inlines its own styling supports onto those blocks — leaking inline styling into SGS pages even though no SGS block is at fault. Bean's directive: SGS patterns must be built from SGS blocks. Each core heading/paragraph must be mapped onto the equivalent SGS block's attribute schema (not a find-replace), then each pattern re-verified live at three breakpoints.
 
 **Trigger:** a dedicated SGS-pattern-modernisation session — deliberately kept separate from other no-inline work to avoid scope-creeping that session.
 

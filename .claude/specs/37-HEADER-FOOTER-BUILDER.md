@@ -366,12 +366,10 @@ mechanisms:
 relocating a header element into the drawer at small widths — is **dropped as too complex**
 for the value it returns.
 
-**`labelCollapse` is RETAINED — amended 2026-07-23, superseding this section's earlier
-"not carried forward as-is" wording.** That wording put this spec in direct conflict with
-Spec 36, which instructs twice (FR-36-8, FR-36-23) to *"reuse the BUILT `labelCollapse`"*.
-Two governing specs giving opposite instructions about one shipped mechanism is the D358
-failure — a stale spec misdirects the build with full authority — so it is resolved here
-rather than left for a future session to discover mid-dispatch.
+**`labelCollapse` is RETAINED (amended 2026-07-23).** This matches Spec 36, which instructs twice
+(FR-36-8, FR-36-23) to *"reuse the BUILT `labelCollapse`"*. ⛔ Keep the two specs aligned: two
+governing specs giving opposite instructions about one shipped mechanism is the D358 failure —
+a stale spec misdirects the build with full authority.
 
 **Bean's rule (2026-07-23):** *keep it if it is a setting the operator can toggle on and off
 in the block settings; bin it if it is automatic.* **Verified from code: it is a toggle.**
@@ -940,7 +938,7 @@ not observable on fixture 1655 (no drawer block).
 hide-on-scroll is wired end to end: an Advanced ToolsPanel control in `site-header/edit.js` +
 `class-sgs-header-behaviours.php:205,264` emits the `sgs-header-behaviour-hide-on-scroll-down`
 body class. `headerHideOnScroll` is an OBJECT tri-state (`{desktop,tablet,mobile}`) per
-FR-37-14 — do not cite `site-header/block.json:76` as a boolean shape, that citation is stale.
+FR-37-14 — do not cite `site-header/block.json:76` as a boolean shape.
 sticky/transparent/shrink are likewise wired.
 
 **Guard rail:** the header must render a real `<header>` element; without it there are zero
@@ -997,12 +995,10 @@ The body-class mechanism is retired or reduced to a JS-state signal only.
 `#uid`-scoped per-tier `@media` CSS via `sgs_emit_tier_rules()` — the body-class mechanism for
 these four is retired (`class-sgs-header-behaviours.php` docblock, line 3: "Sticky / transparent /
 shrink / hide-on-scroll are RESOLVED AND EMITTED ELSEWHERE… per-instance scoped CSS"; scroll-state
-classes in `view.js` stay tier-agnostic JS-state signals only, per the FR-37-15 intent). `contrastSafe`
-was **explicitly untouched by T1.4** (kept as an enum shape, D402 gate) and drove real styling via
-body classes. **⚠ AMENDED 2026-08-19 — D402's carve-out is SUPERSEDED and this paragraph's former
-claim is no longer true.** `contrastSafe` has joined the other four: it is a per-device object
-attribute emitted as `#uid`-scoped per-tier CSS by `sgs/site-header/render.php`, and the three
-`body.sgs-header-behaviour-contrast-*` rules are deleted from `header-behaviours.css`.
+classes in `view.js` stay tier-agnostic JS-state signals only, per the FR-37-15 intent). `contrastSafe` is one of the
+five: a per-device object attribute emitted as `#uid`-scoped per-tier CSS by
+`sgs/site-header/render.php` (D402's enum-shape carve-out no longer applies). There are no
+`body.sgs-header-behaviour-contrast-*` rules in `header-behaviours.css`.
 
 Two things forced it, and both are worth keeping on the record because D402 assumed neither:
 1. **Structural.** FR-37-44 requires it be per-device. A class on `<body>` is site-wide and cannot

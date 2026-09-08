@@ -42,9 +42,6 @@ an editor-canvas story. A cached static image has none of those. It rode along i
 track only because it surfaced in the same conversation as the wave-gradient work. Owner's call,
 2026-08-27, and correct: *"Feels like this doesn't really fit well in spec 38 tbh."*
 
-Spec 39 is reserved by the tier-migration pacing item (37 `xfail(strict=True)` conformance
-goldens name it), so this took 40.
-
 ## 2. Placements — all four owner-selected (2026-08-27)
 
 - **FR-40-1 Blog / article headers.** Artwork behind a post title when no featured image is set.
@@ -72,10 +69,9 @@ generated cover appearing over a client's own photograph is a defect, not a feat
 
 ## 4. The look — scoped from form, ground and hue adjacency
 
-⛔ **D781 rescope, load-bearing.** This item originally justified itself as needing "an
-artist-authored palette texture rather than four interpolated stops". **The POC measured that
-premise FALSE.** A palette-texture pipeline is an expensive answer to a question that turned out
-not to be the question. Scope the look from **form, ground and hue adjacency** instead.
+⛔ **D781, load-bearing.** An artist-authored palette texture is NOT required: the POC measured
+that four interpolated stops are sufficient, so a palette-texture pipeline is an expensive answer
+to a question that is not the question. Scope the look from **form, ground and hue adjacency**.
 
 The one durable finding worth carrying from D781: Stripe's palette samples are almost all above
 `0xf0` — **adjacent warm hues at very high lightness**, not widely-spaced saturated hues over a
