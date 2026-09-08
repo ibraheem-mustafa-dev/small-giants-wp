@@ -205,93 +205,43 @@ measures, what it fails to measure, and why.
 
 ---
 
-# Phase 2 — Fix the ruler and the base type
+# Phase 2 — Fix the ruler
 
-## 2.1 Base font size — decided, needs building
+## 2.1 Typography — OUT OF SCOPE, owned by a parallel session
 
-**Researched 2026-09-08, high confidence.** Full findings:
-`~/.claude/memory/research/2026-09-08-mobile-base-font-size-16px-vs-14px.md`
+⛔ **Do not do any typography work in this programme.** The whole type-scale question —
+base font size, fluid typography, the preset ladder, footer text size — was split out on
+2026-09-08 at Bean's direction and is being decided and built in a **separate parallel
+session**. Touching it here means two sessions editing `theme.json` and the same pattern
+files at once.
 
-**Verdict: 16px, expressed as `1rem`. Never fluid-shrink the base below 16px.**
-- No major design system shrinks base body below 16px on mobile (Bootstrap, Tailwind,
-  GOV.UK all 16px; Apple HIG 17pt).
-- iOS Safari zooms the viewport when a form input's font-size is under 16px. SGS ships
-  form blocks, so a 14px base is a live bug, not a theoretical one.
-- WCAG mandates no absolute px minimum — do not cite 16px as a WCAG requirement.
-- `1rem` rather than a literal `16px`, so a user who raised their browser default keeps it.
-- Fluid scaling stays useful for headings; the base is where it does damage.
+This section is deliberately kept at §2.1 rather than renumbered, so the pointers in §1.3
+and the §1.4 ledger still resolve.
 
-**Mechanism, proven:** `theme-extractor/typography.py:71` emits the base as a bare px
-literal (`f"{int(fs_px)}px"`). WordPress fluidises any literal when
-`settings.typography.fluid` is on, producing
-`clamp(14px, -0.9075px + 0.875rem + 0.242vw, 16px)` — 14px at 375, 16px at 1440. The
-framework's own `theme.json` escapes this by referencing a preset with `"fluid": false`;
-the client snapshot does not, because the extractor writes a literal.
+**Decisions already made in that session — treat as settled, do not re-litigate:**
 
-⛔ **Do not hand-edit `sites/mamas-munches/theme-snapshot.json`.** It is generated
-(Spec 33, FR-33-3). An edit there is overwritten by the next extraction and is exactly
-the hardcode-to-match-this-draft failure this document forbids.
+- **No fluid typography.** Explicit per-device values via the SGS tier system instead.
+  Grounded in GOV.UK (never adopted `clamp()`) and Designsystemet Norway (shipped it, then
+  reversed it in production). Research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`
+- **The preset ladder shrinks from 9 to 6:** 14 / 16 / 20 / 24 / 36 / 50. `x-small` (12) and
+  `display` (120) had zero uses across all 46 patterns; `medium` (18) is dropped as too close
+  to 16 to be a distinguishable choice.
+- **Reading sizes never shrink across devices.** Only 24 / 36 / 50 compress, and the larger
+  the size the more it compresses (GOV.UK's published curve).
+- **The footer moves to body size.** ⚠ This REVERSES the previous conclusion in this
+  document, which argued the smaller footer was correct because the draft designs it that
+  way. Bean overruled it on 2026-09-08: the footer is framework chrome, not cloned content,
+  and it was rendering **13.0082px** on a phone (measured live on real footer nav links).
 
-**Design choice for Bean before building — do not pick one unilaterally:**
-- **(a)** Extractor emits the base as a preset reference with `"fluid": false` (adding a
-  base preset). Keeps fluid available for headings. More moving parts.
-- **(b)** Extractor sets `settings.typography.fluid: false` when the draft itself uses no
-  fluid type. More faithful to "transfer what the draft has"; loses heading fluidity.
+**Already shipped, do not redo:** the base body font is fixed and deployed —
+commit `efb7ec5de`, verified live at 16px at 375px viewport. It had been rendering 14px
+because WordPress's fluid engine rewrote the extractor's literal into
+`clamp(14px, …, 16px)`.
 
-### 2.1a Fluid typography — measured, decided, needs building
-
-Bean asked: *are fluid sizes even helpful, and do the current sizes cause a problem on
-small devices? If not, switch it off.* Measured answer: **do not switch it off globally.**
-
-Two facts, both checked:
-
-**Fluid is redundant for CLONED content.** The draft carries its own responsive
-typography — 13 media queries, 11 font-size declarations inside them — and the converter
-already transfers those as explicit per-device values (84 tiered `fontSize` objects in the
-last run, e.g. `{"desktop":52,"mobile":34}`). Fluid is a second, competing mechanism
-shrinking text the draft never asked to shrink.
-
-**But fluid IS load-bearing for HAND-AUTHORED content.** Theme patterns use the big presets
-with no mobile tier at all — 24 × `xx-large`, 8 × `hero`, authored as
-`{"desktop":"xx-large"}`. Switch fluid off wholesale and those render at full desktop size
-on a phone:
-
-| Preset | Desktop | With fluid @375 | Without fluid @375 |
-|---|---|---|---|
-| `hero` | 50px | 32px | **50px** |
-| `xx-large` | 36px | 26px | **36px** |
-
-**Recommendation — switch it off selectively:**
-- **Remove fluid from the base body** — this is the actual bug (§2.1).
-- **Remove it from `small`** (14→13px): it drops below a sensible floor and buys nothing.
-- **Keep it on `large` / `x-large` / `xx-large` / `hero`**, where it prevents a 50px
-  heading on a 375px screen.
-
-This also matches the research verdict: fluid earns its keep on display text; the base is
-where it does damage.
-
-### 2.1b Footer text size — answered, no action unless Bean wants it
-
-Bean asked why footer text is smaller than the rest of the site and said it should match
-"unless there's a good reason".
-
-**There is a good reason: the draft designs it that way.**
-
-```
-.sgs-footer__tagline      font-size: 14px
-.sgs-footer__meta         font-size: 13px
-.sgs-footer__col ul li a  font-size: 14px
-                          font-size: 13px / 11px
-```
-
-The draft's footer runs 11–14px against its 16px body. The framework footer pattern uses
-14px for links and body text, which **matches the draft's 14px exactly**. Raising it would
-move away from the design, not toward it.
-
-⚠ One caveat worth stating: the footer is framework chrome and is NOT cloned from the
-draft, so this match is convention rather than derivation. If Bean wants the footer at body
-size anyway, that is a design preference and a one-line pattern change — not a bug fix, and
-it affects every client using the default footer.
+⚠ **Consequence for Phase 1 that you must account for:** the `font-size` (77) and
+`line-height` (74) clusters in the §1.4 ledger — 151 diffs, 29 % of the total — have their
+root cause fixed by that parallel work. **Re-measure before investigating them.** Chasing
+them now measures a defect that is being removed underneath you.
 
 ### 2.2 Fix the parity tool
 

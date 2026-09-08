@@ -251,15 +251,7 @@ sgs-theme/
           ]
         }
       ],
-      "fontSizes": [
-        { "slug": "x-small", "size": "0.75rem",    "name": "XSmall" },
-        { "slug": "small",   "size": "0.875rem",   "name": "Small" },
-        { "slug": "medium",  "size": "1rem",       "name": "Medium" },
-        { "slug": "large",   "size": "1.25rem",    "name": "Large" },
-        { "slug": "x-large", "size": "1.5rem",     "name": "XL" },
-        { "slug": "xx-large","size": "2.25rem",     "name": "XXL" },
-        { "slug": "hero",    "size": "3.125rem",    "name": "Hero" }
-      ],
+      "fontSizes": [ /* SEE THE TYPE-SCALE SECTION BELOW — this listing was stale */ ],
       "defaultFontSizes": false,
       "fluid": { "minViewportWidth": "375px", "maxViewportWidth": "1200px" }
     },
@@ -313,6 +305,66 @@ sgs-theme/
   }
 }
 ```
+
+### Type scale (DECIDED 2026-09-08, partially built)
+
+⚠ **The `fontSizes` array above was CUT because it had drifted from the live file** — it
+listed `medium` as `1rem` when `theme.json` has had it at 18px, omitted `display` (120px)
+entirely, and showed none of the per-preset `fluid` settings. Do not restore a hardcoded
+listing here; a copy of a generated ladder rots. Read `theme/sgs-theme/theme.json`.
+
+**Binding decision — no fluid typography.** Font sizes are explicit per device via the SGS
+tier system (`helpers-responsive.php`: base rule + `@media (max-width:1023px)` tablet +
+`@media (max-width:767px)` mobile), never WordPress's `clamp()` interpolation.
+
+Evidence (full research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`):
+- **GOV.UK never adopted `clamp()`** — every scale point ships explicit desktop and mobile px.
+- **Designsystemet (Norway) shipped fluid typography and reversed it in production**, citing
+  browser-vs-Figma half-pixel rounding and broken component reuse.
+- **`clamp()` on `vw` units can fail WCAG 1.4.4** (resize text to 200 %), because viewport
+  units do not respond to browser zoom — flagged by Utopia's own author.
+
+**Target ladder — 6 presets** (down from 9; `x-small` 12 and `display` 120 had **zero** uses
+across all 46 patterns, and `medium` 18 is too close to 16 to be a distinguishable choice):
+
+| slug | desktop | tablet | mobile | role |
+|---|---|---|---|---|
+| `small` | 14 | 14 | 14 | captions, badges, uppercase micro-labels ONLY |
+| *(16px body — slug NOT YET NAMED, see below)* | 16 | 16 | 16 | all body text, the default |
+| `large` | 20 | 20 | 20 | lead paragraphs, small headings |
+| `x-large` | 24 | 22 | 21 | card + sub headings |
+| `xx-large` | 36 | 30 | 27 | section headings |
+| `hero` | 50 | 40 | 33 | page headline |
+
+Reading sizes never shrink across devices; only the top three compress, and the ratio widens
+with size (GOV.UK's published curve: 1.14× → 1.33× → 1.51×). Mobile values reuse each
+preset's existing fluid `min`, so rendered output barely moves.
+
+**Rationale for the reading floor:** 16px is both the WCAG-comfortable body size and the
+iOS Safari form-input auto-zoom threshold, and the framework ships form blocks. GOV.UK cites
+British Dyslexia Association guidance (never below 12pt) for the same floor.
+
+**SHIPPED so far:** the base body size is routed through a **non-fluid preset** rather than a
+px literal (`efb7ec5de`, verified live at 16px at 375px). It previously rendered 14px because
+WordPress rewrote the extractor's literal into `clamp(14px, …, 16px)` — an FR-33-4 violation
+("never recomputed via WP's fluid formula"). The framework `theme.json` already used the
+correct preset-reference shape; the Spec 33 extractor had diverged from it.
+
+**OPEN — do not treat as decided:**
+1. **The 16px slug's name.** Shipped as `base`; `regular` proposed (not a CSS keyword, unlike
+   `medium`/`small`/`large`/`x-large`, which can silently resolve to the browser keyword if a
+   slug leaks through the length sanitiser — a live near-miss is on record at
+   `helpers-typography.php:150`, 2026-09-06). Awaiting Bean.
+2. **Removing `medium`** requires rehoming its 27 pattern declarations (body → the 16px slug,
+   sub-headings → `large`). Not a blind find/replace.
+3. **The footer moves to body size** (Bean, 2026-09-08). The three footer patterns carry 16
+   `small` declarations rendering **13.0082px** on a phone, measured live — `small` is the one
+   preset whose `fluid: false` opt-out was never applied.
+
+⚠ **Slugs are the permanent interface; the pixel values are per-client and already swappable**
+via `sites/<client>/theme-snapshot.json`. Adding a slug is safe; renaming or removing one is a
+migration across every pattern declaration AND every shipped client's `post_content`. The
+framework is pre-production, which is the only reason removal is cheap right now.
 
 ### Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.2)
 

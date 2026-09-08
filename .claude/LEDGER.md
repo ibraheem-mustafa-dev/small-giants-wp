@@ -81,25 +81,36 @@ D742's reasoning still holds where it was aimed; it just did not anticipate the 
 **Read `.claude/prompts/2026-09-08-clone-fidelity-programme.md` in full.** It is the
 four-phase plan, with a complete 524-diff parity ledger and every one of Bean's points.
 
-### 1. DECISION PENDING — base body font size (blocks nothing, gates §2.1)
+### ⚠ TWO PARALLEL TRACKS as of 2026-09-08 — do not cross them
 
-Researched, high confidence:
-`~/.claude/memory/research/2026-09-08-mobile-base-font-size-16px-vs-14px.md`. Verdict **16px as
-`1rem`, never fluid-shrunk**. Decisive: iOS Safari zooms the viewport when a form input computes
-under 16px, and SGS ships form blocks.
+Bean split typography out of the clone-fidelity programme so the two can run in separate
+sessions. **They both edit `theme.json` and the same pattern files, so a session must pick one.**
 
-Mechanism proven: `theme-extractor/typography.py:71` emits a bare px literal; WP fluidises any
-literal into `clamp(14px,…,16px)`. A preset with `"fluid": false` is immune.
+| Track | Owns | Doc |
+|---|---|---|
+| **A — Type scale** | theme.json presets, fluid, footer size | D1007 + `specs/01-SGS-THEME.md` "Type scale" |
+| **B — Clone fidelity** | parity tool, the 14 defects, the 524-diff ledger | the programme prompt (its §2.1 is now an out-of-scope stub) |
 
-⛔ **Do not hand-edit `sites/mamas-munches/theme-snapshot.json`** — it is generated (Spec 33), so
-an edit is wiped next extraction. Fix the generator.
+### 1. TRACK A — type scale: DECIDED (D1007), partially built
 
-**Bean picks:** (a) extractor emits a non-fluid base preset — keeps heading fluidity, more parts;
-or (b) extractor disables fluid when the draft has none — more faithful, loses heading fluidity.
+**No fluid typography.** Explicit per-device values via the SGS tier system. Grounded in GOV.UK
+(never adopted `clamp()`) and Designsystemet Norway (shipped it, then reversed it in production);
+`clamp()` on `vw` can also fail WCAG 1.4.4. Research:
+`~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
 
-Measured constraint either way: keep fluid on `large`/`x-large`/`xx-large`/`hero`. Patterns author
-24 × `xx-large` and 8 × `hero` with **no mobile tier**, so a blanket switch-off puts a 50px heading
-on a 375px screen.
+**Ladder shrinks 9 → 6:** `small` 14 / (16px body) / `large` 20 / `x-large` 24 / `xx-large` 36 /
+`hero` 50. `x-small` and `display` have zero pattern uses; `medium` 18 is too close to 16 to be a
+distinguishable choice. Reading sizes never shrink; only 24/36/50 compress.
+
+**SHIPPED:** base body font fixed (`efb7ec5de`) — was rendering 14px on phones because WP
+rewrote the extractor's px literal into `clamp(14px,…,16px)`. Verified live at 16px at 375px.
+
+**NOT yet built:** the 6-preset ladder itself; rehoming `medium`'s 27 declarations; footer → body
+size (16 `small` declarations in the three footer patterns, measured at **13.0082px** live).
+
+**OPEN — Bean:** the 16px slug's name. Shipped as `base`; `regular` proposed because
+`medium`/`small`/`large`/`x-large` are all real CSS keywords that can resolve to the browser
+keyword if a slug leaks the sanitiser (near-miss on record, `helpers-typography.php:150`).
 
 ### 2. Fix the parity tool before fixing the clone
 

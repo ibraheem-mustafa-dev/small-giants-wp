@@ -1,3 +1,55 @@
+## D1007 [ROUTINE] — No fluid typography. The type scale becomes explicit per-device, 9 presets -> 6.
+
+**2026-09-08. Bean-directed**, after `/research-buddies` (The Nerd + The Practical One) and
+live measurement. Research: `~/.claude/memory/research/2026-09-08-sgs-responsive-type-scale.md`.
+Spec: `specs/01-SGS-THEME.md` "Type scale".
+
+**The ruling.** SGS does NOT use WordPress fluid typography. Font sizes are explicit per device
+through the existing SGS tier system (`helpers-responsive.php`), never `clamp()` interpolation.
+
+**Why, on evidence rather than taste.** Two national design systems independently reject it:
+GOV.UK never adopted `clamp()` (every scale point ships explicit desktop AND mobile px), and
+Designsystemet Norway shipped it then REVERSED it in production, citing browser-vs-Figma
+half-pixel rounding and broken component reuse. Separately, `clamp()` built on `vw` can fail
+WCAG 1.4.4 (resize to 200%) because viewport units ignore browser zoom -- flagged by Utopia's
+own author, not a critic. SGS already has the per-tier `@media` machinery both systems
+converged back to, so fluid buys nothing here and costs correctness.
+
+**The ladder shrinks 9 -> 6:** `small` 14 / (16px body) / `large` 20 / `x-large` 24 /
+`xx-large` 36 / `hero` 50. `x-small` (12) and `display` (120) had **zero** uses across all 46
+patterns. `medium` (18) is dropped as indistinguishable from 16 -- Bean's own framing was that
+the range is "ridiculously wide and makes it harder to make a clear choice".
+
+Reading sizes never shrink across devices; only 24/36/50 compress, ratio widening with size
+(GOV.UK's curve 1.14x -> 1.33x -> 1.51x). Mobile values reuse each preset's existing fluid
+`min`, so rendered output barely moves -- this makes current behaviour explicit, it is not a
+redesign.
+
+**Two live defects this surfaced, both measured not inferred:**
+1. The base body font rendered **14px** on phones because WordPress rewrote the Spec 33
+   extractor's px literal into `clamp(14px, ..., 16px)` -- an FR-33-4 violation. FIXED and
+   deployed (`efb7ec5de`), verified live at 16px at 375px. The framework `theme.json` already
+   used the correct non-fluid-preset shape; the extractor had diverged from it.
+2. `small` renders **13.0082px** on a phone (measured on real footer nav links) -- it is the one
+   preset whose `fluid: false` opt-out was never applied, and it carries 58 of the 147 pattern
+   declarations, 42% of all type. Root cause: there was no 16px rung, so authors reached for 14
+   when they wanted body text.
+
+**Bean also overruled a previous conclusion:** the footer's smaller text was earlier defended as
+correct "because the draft designs it that way". It is framework chrome, NOT cloned content, so
+the draft does not govern it. Footer moves to body size.
+
+**Slugs are the permanent interface; pixel values are per-client and already swappable** via
+`sites/<client>/theme-snapshot.json`. Adding a slug is safe; removing one is a migration across
+every pattern declaration and every shipped client's `post_content`. The framework being
+PRE-PRODUCTION is the only reason removal is cheap -- it will never be cheaper than now.
+
+**OPEN, not decided:** the 16px slug's name (shipped as `base`; `regular` proposed because
+`medium`/`small`/`large`/`x-large` are all real CSS keywords that can resolve to the browser
+keyword if a slug leaks through the length sanitiser -- live near-miss on record at
+`helpers-typography.php:150`). Rehoming `medium`'s 27 declarations is a per-use judgement, not
+a find/replace.
+
 ## D1003 — WooCommerce is KEPT, not replaced. Any SGS commerce-layer ambition is superseded.
 
 **2026-09-07. Bean, directly:** *"I actually don't want to replace woocommerce. That plan is
