@@ -95,7 +95,7 @@ green number means nothing. **Fix the ruler first.**
 Investigation only. No fixes. The tool is
 `plugins/sgs-blocks/scripts/parity/computed-parity.js` (Spec 20, Stage 11.6).
 
-### 1.1 False positives — it reports defects that are not real
+## 1.1 False positives — it reports defects that are not real
 
 **Background colour: 36 diffs, all three viewports. Proven false.**
 The tool reads an element's own `background-color`. SGS deliberately paints backgrounds
@@ -207,7 +207,7 @@ measures, what it fails to measure, and why.
 
 # Phase 2 — Fix the ruler and the base type
 
-### 2.1 Base font size — decided, needs building
+## 2.1 Base font size — decided, needs building
 
 **Researched 2026-09-08, high confidence.** Full findings:
 `~/.claude/memory/research/2026-09-08-mobile-base-font-size-16px-vs-14px.md`
@@ -313,7 +313,7 @@ need a true starting number before judging any later work.
 
 Investigation with fact-checking. No fixes until each is written up and reviewed.
 
-### Bean's findings — none of these were caught by the tool
+## Bean's findings — none of these were caught by the tool
 
 **All fourteen are CLASS: BOTH** — a real render defect AND proof of a tool blind spot, because
 Bean found every one of them by eye and the tool scored them clean. Each therefore owes two

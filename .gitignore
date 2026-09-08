@@ -147,6 +147,11 @@ theme/sgs-theme/styles/typography/
 sites/*/theme-snapshot-backups/
 sites/*/theme-snapshot.pre-*.json
 
+# Pre-change page-content backups (same class as the snapshot backups above: a rollback
+# artefact tied to one deploy moment, not source). Left untracked they accumulate as
+# permanent `git status` noise, which is how real changes get missed in the list.
+plugins/*/.claude/backups/
+
 # Claude Design mega-menu draft ZIPs — extracted folders are committed; the zips stay local (Bean 2026-07-24)
 sites/*.zip
 
