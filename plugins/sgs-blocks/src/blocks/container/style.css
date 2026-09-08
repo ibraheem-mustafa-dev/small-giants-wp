@@ -4,8 +4,22 @@
    Parent grid container sets --sgs-gi-* custom properties via inline style (render.php).
    Direct child .sgs-container elements consume them as visual defaults.
    Per-child inline overrides always win over these via CSS specificity.
-   The .sgs-container--has-grid-item-defaults class triggers the consumption rules. */
-.sgs-container--grid > .sgs-container {
+   The .sgs-container--has-grid-item-defaults class triggers the consumption rules.
+
+   BOTH direct-child paths chained (2026-09-08 qc-council fix): SGS_Container_Wrapper's
+   `.sgs-container__inner` band wrapper is CONDITIONAL — it renders only when the grid
+   container has its own band props (contentWidth/band-padding/band-background) set, not
+   universally (class-sgs-container-wrapper.php:3525, `$do_wrap = ... : $has_band_props`).
+   A bare `>` rule silently stopped matching a grid item the moment an operator gave the
+   grid container ANY band prop, because the item became a GRANDCHILD instead of a direct
+   child. A bare descendant selector (no `>` at all) was considered and rejected: it would
+   also match a .sgs-container nested several levels down inside an unrelated NON-grid
+   sub-container that merely happens to sit inside a grid ancestor somewhere up the tree —
+   a real, DB-permitted nesting shape (sgs/container nests arbitrarily), not a hypothetical
+   one. Chaining both KNOWN direct-child depths covers both wrapper states without reaching
+   past them. */
+.sgs-container--grid > .sgs-container,
+.sgs-container--grid > .sgs-container__inner > .sgs-container {
 	padding: var( --sgs-gi-padding );
 	background: var( --sgs-gi-bg );
 	border-radius: var( --sgs-gi-radius );

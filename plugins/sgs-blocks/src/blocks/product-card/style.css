@@ -576,6 +576,8 @@
  *   (B)  .product-card.product-card--live { max-width: … }             (0,2,0) ← above
  *   (B2) .product-card.sgs-product-card { max-width: … }               (0,2,0) ← above (F1, typed built-in)
  *   (C)  .sgs-container--grid > .product-card { max-width: none }       (0,2,0) ← this rule
+ *        .sgs-container--grid > .sgs-container__inner > .product-card
+ *          { max-width: none }                                          (0,3,0) ← this rule (2026-09-08)
  *        .sgs-card-grid > .product-card { max-width: none }             (0,2,0) ← this rule (F1, card-grid parent)
  *        :where(.is-layout-grid) > .product-card { max-width: none }    (0,1,0) ← supplemental
  *
@@ -591,10 +593,26 @@
  * margin-inline: 0 overrides the auto-centering so the card aligns to the grid
  * cell edge. Auto-centering is only meaningful in the standalone (flow) case.
  *
+ * ── 2026-09-08 fix (qc-council-validated): the bare `.sgs-container--grid >
+ * .product-card` half of (C) silently stopped matching the moment the grid
+ * container ALSO had a band prop set (contentWidth/band-padding/band-
+ * background) — SGS_Container_Wrapper only renders its `.sgs-container__inner`
+ * band wrapper CONDITIONALLY on those props (class-sgs-container-wrapper.php
+ * ~line 3525), so the card became a GRANDCHILD instead of a direct child and
+ * the rule went dark, leaving both cards clamped to the 380px standalone cap
+ * regardless of their real grid-track width. A bare descendant selector (no
+ * `>`) was considered and rejected: sgs/container nests arbitrarily, so it
+ * would also strip the cap off a .product-card sitting several levels down
+ * inside an unrelated NON-grid sub-container that merely happens to have a
+ * grid ancestor — a real, DB-permitted shape, not hypothetical. Chaining both
+ * KNOWN direct-child depths (with and without the band-triggered wrapper)
+ * covers both states without reaching past them.
+ *
  * R-22-9 compliant: universal selector — applies to ALL .product-card instances
  * inside a grid container, not scoped to any client or variant.
  */
 .sgs-container--grid > .product-card,
+.sgs-container--grid > .sgs-container__inner > .product-card,
 .sgs-card-grid > .product-card,
 :where(.is-layout-grid) > .product-card {
 	max-width: none;
