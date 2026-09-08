@@ -777,7 +777,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( { source, name } ) =>
 							setAttributes( { handleIconSource: source, handleIconName: name } )
 						}
-						sources={ [ 'lucide', 'wp-icon' ] }
 					/>
 				</PanelBody>
 

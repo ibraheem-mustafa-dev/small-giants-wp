@@ -305,6 +305,37 @@
 	stroke: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
 }
 
+/* Text-glyph handle-icon sources (dashicon/emoji, 2026-09-08 revert — see
+ * block.json's handleIconSource description). Same fallback-chain shape as
+ * the svg `stroke:` rule above: the FLAT colour is routed through the SAME
+ * --sgs-before-after-handle-icon-colour custom property (render.php only
+ * writes the var's value, never a competing declaration); a GRADIENT value
+ * paints via a genuine per-instance scoped-CSS rule emitted by render.php
+ * instead (background-clip:text needs multiple declarations, which a single
+ * custom-property value can't carry), so this rule's `color:` is correctly
+ * beaten by that rule's source order when a gradient is set. Explicit
+ * font-size/width/height match the svg rule's 16px so a dashicon/emoji
+ * handle icon renders at the same visual size as lucide/wp-icon. */
+.wp-block-sgs-before-after__handle-dashicon,
+.wp-block-sgs-before-after__handle-emoji {
+	color: var( --sgs-before-after-handle-icon-colour, #1e1e1e );
+	font-size: 16px;
+	line-height: 1;
+}
+
+.wp-block-sgs-before-after__handle-dashicon {
+	width: 16px;
+	height: 16px;
+}
+
+.wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon,
+.wp-block-sgs-before-after__handle:focus-visible .wp-block-sgs-before-after__handle-dashicon,
+.wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-emoji,
+.wp-block-sgs-before-after__handle:focus-visible .wp-block-sgs-before-after__handle-emoji {
+	/* Same fallback chain as the svg hover rule above. */
+	color: var( --sgs-before-after-handle-icon-colour-hover, var( --sgs-before-after-handle-icon-colour, #1e1e1e ) );
+}
+
 .wp-block-sgs-before-after__handle:hover,
 .wp-block-sgs-before-after__handle:focus-visible {
 	/* Handle background hover/focus (colour-conformance FILL closeout,

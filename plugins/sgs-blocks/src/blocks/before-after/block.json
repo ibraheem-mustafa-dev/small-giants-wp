@@ -502,16 +502,12 @@
 		"handleIconSource": {
 			"type": "string",
 			"default": "lucide",
-			"enum": [
-				"lucide",
-				"wp-icon"
-			],
-			"description": "IconPicker source for the draggable handle's icon glyph (2026-09-05 migration off the hand-rolled two-polyline SVG onto the shared Lucide+IconPicker mechanism, matching sgs/icon's iconSource/iconName pair). Restricted to the two inline-SVG sources (lucide/wp-icon) — dashicon (font glyph) and emoji (text glyph) have no SVG stroke for a gradient to paint, unlike sgs/icon which supports all four sources for its FLAT colour. Defaults to 'lucide' + handleIconName='chevrons-left-right' so every existing instance renders visually unchanged."
+			"description": "IconPicker source for the draggable handle's icon glyph (2026-09-05 migration off the hand-rolled two-polyline SVG onto the shared Lucide+IconPicker mechanism, matching sgs/icon's iconSource/iconName pair). All four IconPicker sources (lucide, wp-icon, dashicon, emoji) are supported — sgs_icon_gradient_css() (helpers-svg-gradient.php) routes the gradient per source: a real SVG stroke gradient for lucide/wp-icon, background-clip:text (+ an @supports fallback rule) for the dashicon/emoji text glyphs, exactly like sgs/icon's own iconSource/iconColourGradient pair. (2026-09-05 note this attribute previously carried an enum restricting it to lucide/wp-icon only, on the reasoning that dashicon/emoji have no SVG stroke for a gradient to paint — that restriction was agreed-obsolete and reverted 2026-09-08 once the shared composer's text-glyph branch existed.) Defaults to 'lucide' + handleIconName='chevrons-left-right' so every existing instance renders visually unchanged."
 		},
 		"handleIconName": {
 			"type": "string",
 			"default": "chevrons-left-right",
-			"description": "Lucide/wp-icon/dashicon slug for the handle icon. Default 'chevrons-left-right' matches the previously hand-rolled two-polyline chevron SVG exactly — no visual regression on un-migrated instances."
+			"description": "Lucide/wp-icon/dashicon slug, OR the literal emoji character when handleIconSource='emoji' — IconPicker stores a single { source, name } pair for all four sources (name is the emoji glyph itself for the emoji source, same convention as sgs/icon). Default 'chevrons-left-right' matches the previously hand-rolled two-polyline chevron SVG exactly — no visual regression on un-migrated instances."
 		},
 		"height": {
 			"type": "object",

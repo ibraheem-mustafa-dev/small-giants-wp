@@ -151,12 +151,31 @@ $handle_colour   = $attributes['handleColour'] ?? '';
 $handle_icon_col = $attributes['handleIconColour'] ?? '';
 
 // Handle icon — resolved via the shared Lucide/wp-icon + IconPicker mechanism
-// (2026-09-05 migration off the hand-rolled two-polyline SVG). Source is
-// restricted to the two inline-SVG sources at the schema level (block.json
-// enum) since a stroke gradient needs a real <svg> to inject <defs> into.
-$handle_icon_source         = $attributes['handleIconSource'] ?? 'lucide';
-$handle_icon_source         = in_array( $handle_icon_source, array( 'lucide', 'wp-icon' ), true ) ? $handle_icon_source : 'lucide';
-$handle_icon_name           = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['handleIconName'] ?? 'chevrons-left-right' ) );
+// (2026-09-05 migration off the hand-rolled two-polyline SVG). All four
+// IconPicker sources are supported (2026-09-08 revert — see block.json's
+// handleIconSource description); sgs_icon_gradient_css() (helpers-svg-
+// gradient.php) already routes the gradient per source, so the old
+// "only the two inline-SVG sources" restriction was obsolete.
+$allowed_handle_icon_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' );
+$handle_icon_source          = $attributes['handleIconSource'] ?? 'lucide';
+$handle_icon_source          = in_array( $handle_icon_source, $allowed_handle_icon_sources, true ) ? $handle_icon_source : 'lucide';
+$handle_icon_is_text_source  = in_array( $handle_icon_source, array( 'dashicon', 'emoji' ), true );
+// IconPicker stores ONE { source, name } pair for every source — the emoji
+// "name" IS the emoji glyph itself (icon-data.js), matching sgs/icon's
+// iconSource/iconName + emojiChar precedent — so the emoji source must NOT be
+// run through the lucide/wp-icon/dashicon slug sanitiser below, which would
+// strip a genuine emoji character down to an empty string.
+$handle_icon_name_raw = (string) ( $attributes['handleIconName'] ?? 'chevrons-left-right' );
+if ( 'emoji' === $handle_icon_source ) {
+	$handle_icon_name = wp_strip_all_tags( trim( $handle_icon_name_raw ) );
+} else {
+	$handle_icon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( $handle_icon_name_raw ) );
+}
+// Enqueue Dashicons on the frontend when this source is used (same gate as
+// sgs/icon's render.php).
+if ( 'dashicon' === $handle_icon_source ) {
+	wp_enqueue_style( 'dashicons' );
+}
 $handle_icon_gradient       = (string) ( $attributes['handleIconColourGradient'] ?? '' );
 $handle_icon_col_hover      = (string) ( $attributes['handleIconColourHover'] ?? '' );
 $handle_icon_gradient_hover = (string) ( $attributes['handleIconColourHoverGradient'] ?? '' );
@@ -310,32 +329,70 @@ $root_var_decls = array_merge(
 		(string) ( $attributes['handleColourHoverGradient'] ?? '' )
 	)
 );
-// Handle icon stroke gradient (2026-09-05, svg-paint-gradient end-shape — the
-// ONLY row of this shape in the framework). Unlike the background-image
-// custom-property-gradient pattern used elsewhere on this block,
-// --sgs-before-after-handle-icon-colour feeds a `stroke:` declaration
-// directly (style.css:266), and `stroke:url(#id)` — same as `stroke` taking
-// any other paint value — is valid, so a gradient sets the SAME custom
-// property to a `url(#id)` reference rather than needing a second sibling
-// var. sgs_svg_stroke_gradient() fails soft (empty defs/css) on an
-// empty/invalid gradient, so this is always safe to compute.
+// Handle icon gradient (2026-09-05, svg-paint-gradient end-shape; extended
+// 2026-09-08 to the two text-glyph sources — see block.json's
+// handleIconSource description). SVG sources (lucide/wp-icon) keep the
+// original custom-property mechanism: --sgs-before-after-handle-icon-colour
+// feeds a `stroke:` declaration directly (style.css), and `stroke:url(#id)`
+// is a valid paint value, so a gradient sets the SAME custom property to a
+// `url(#id)` reference — the $selector arg sgs_icon_gradient_css() takes is
+// unused by this source family, so passing '' there stays correct.
+// TEXT-glyph sources (dashicon/emoji) paint via `background-clip:text`
+// (sgs_text_colour_decl()), which is a multi-declaration recipe — it cannot
+// be expressed as a single custom-property value, so it needs a genuine
+// scoped-CSS rule on the glyph's own selector, exactly like sgs/icon's own
+// dashicon/emoji handling (icon/render.php ~247-268). This is also why the
+// $selector arg matters here: sgs_icon_gradient_css()'s fallback_rule is a
+// COMPLETE, already-scoped `@supports not (...)` rule built from whatever
+// selector is passed in — passing '' (as before this revert) would have
+// emitted a broken/unscoped rule for the two sources being newly enabled.
+$handle_icon_svg_selector  = "{$root_sel} .wp-block-sgs-before-after__handle svg";
+$handle_icon_text_selector = 'dashicon' === $handle_icon_source
+	? "{$root_sel} .wp-block-sgs-before-after__handle-dashicon"
+	: "{$root_sel} .wp-block-sgs-before-after__handle-emoji";
+$handle_icon_text_suffix   = 'dashicon' === $handle_icon_source
+	? ' .wp-block-sgs-before-after__handle-dashicon'
+	: ' .wp-block-sgs-before-after__handle-emoji';
+$handle_icon_selector      = $handle_icon_is_text_source ? $handle_icon_text_selector : $handle_icon_svg_selector;
+
 $handle_icon_grad_id  = $uid . '-handle-icon-grad';
-$sgs_handle_icon_grad = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient, $handle_icon_grad_id, '' );
-if ( '' !== $sgs_handle_icon_grad['defs'] ) {
+$sgs_handle_icon_grad = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient, $handle_icon_grad_id, $handle_icon_selector );
+if ( $handle_icon_is_text_source ) {
+	if ( '' !== $sgs_handle_icon_grad['css'] ) {
+		$scoped_css[] = "{$handle_icon_selector}{" . $sgs_handle_icon_grad['css'] . ';}';
+		if ( '' !== $sgs_handle_icon_grad['fallback_rule'] ) {
+			$scoped_css[] = $sgs_handle_icon_grad['fallback_rule'];
+		}
+	} elseif ( $handle_icon_col ) {
+		$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
+	}
+} elseif ( '' !== $sgs_handle_icon_grad['defs'] ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:url(#' . $handle_icon_grad_id . ')';
 } elseif ( $handle_icon_col ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour:' . sgs_colour_value( $handle_icon_col );
 }
 
-// Handle icon hover — same custom-property mechanism, via the shared
-// sgs_icon_gradient_css() composer (2026-09-06). style.css's static
-// :hover/:focus-visible rule (build-time touch-guarded, per this project's
-// hover-guard convention for compiled stylesheets — not sgs_hover_state_rules(),
-// which is for PER-INSTANCE scoped <style> output) reads this var with a
-// fallback to the resting colour above.
+// Handle icon hover — same split. Text-source gradient hover needs the
+// hover-scoped selector (matches sgs/icon's icon/render.php hover-gradient
+// selector shape) so the @supports fallback rule attaches to the right
+// state; the CSS declaration itself is emitted via sgs_hover_state_rules()
+// (a genuine PER-INSTANCE rule — style.css has no static hover selector for
+// the text-glyph elements the way it does for the SVG `stroke:` var below).
+$handle_icon_hover_selector = $handle_icon_is_text_source
+	? "{$root_sel} .wp-block-sgs-before-after__handle:hover{$handle_icon_text_suffix}"
+	: $handle_icon_selector;
 $handle_icon_grad_hover_id  = $uid . '-handle-icon-grad-hover';
-$sgs_handle_icon_grad_hover = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient_hover, $handle_icon_grad_hover_id, '' );
-if ( '' !== $sgs_handle_icon_grad_hover['css'] ) {
+$sgs_handle_icon_grad_hover = sgs_icon_gradient_css( $handle_icon_source, $handle_icon_gradient_hover, $handle_icon_grad_hover_id, $handle_icon_hover_selector );
+if ( $handle_icon_is_text_source ) {
+	if ( '' !== $sgs_handle_icon_grad_hover['css'] ) {
+		$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .wp-block-sgs-before-after__handle", $sgs_handle_icon_grad_hover['css'], ':focus-visible', $handle_icon_text_suffix );
+		if ( '' !== $sgs_handle_icon_grad_hover['fallback_rule'] ) {
+			$scoped_css[] = $sgs_handle_icon_grad_hover['fallback_rule'];
+		}
+	} elseif ( '' !== $handle_icon_col_hover ) {
+		$root_var_decls[] = '--sgs-before-after-handle-icon-colour-hover:' . sgs_colour_value( $handle_icon_col_hover );
+	}
+} elseif ( '' !== $sgs_handle_icon_grad_hover['css'] ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour-hover:url(#' . $handle_icon_grad_hover_id . ')';
 } elseif ( '' !== $handle_icon_col_hover ) {
 	$root_var_decls[] = '--sgs-before-after-handle-icon-colour-hover:' . sgs_colour_value( $handle_icon_col_hover );
@@ -587,19 +644,40 @@ if ( $fx_draggable && ! is_admin() ) {
 
 $range_id = $uid . '-range';
 
-// Handle icon SVG — resolved via the shared Lucide/wp-icon lookup, with the
-// gradient <defs> (if any) injected as the first child. Falls back to the
-// original hand-rolled two-polyline chevron markup if resolution fails
-// (empty slug lookup, e.g. a stale/typo'd icon name) so the divider is never
-// left with no icon at all.
-$handle_icon_svg = 'wp-icon' === $handle_icon_source
-	? sgs_get_wp_icon( $handle_icon_name )
-	: sgs_get_lucide_icon( $handle_icon_name );
-if ( '' === $handle_icon_svg ) {
-	$handle_icon_svg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"></polyline><polyline points="15 6 21 12 15 18"></polyline></svg>';
+// Handle icon markup — resolved per source, mirroring sgs/icon's own
+// source switch (icon/render.php ~401-446). lucide/wp-icon still resolve via
+// the shared Lucide/wp-icon lookup with the gradient <defs> (if any) injected
+// as the first child, falling back to the original hand-rolled two-polyline
+// chevron markup if resolution fails (empty slug lookup, e.g. a stale/typo'd
+// icon name) so the divider is never left with no icon at all. dashicon/
+// emoji (2026-09-08 revert) render as a plain <span>, same as sgs/icon — no
+// <defs> to inject (sgs_icon_gradient_css()'s text-glyph branch paints via
+// the scoped-CSS rule pushed onto $scoped_css above instead).
+if ( $handle_icon_is_text_source ) {
+	if ( 'dashicon' === $handle_icon_source ) {
+		$safe_handle_dashicon = '' !== $handle_icon_name ? $handle_icon_name : 'star-filled';
+		$handle_icon_output   = sprintf(
+			'<span class="wp-block-sgs-before-after__handle-dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
+			esc_attr( $safe_handle_dashicon )
+		);
+	} else {
+		$safe_handle_emoji  = '' !== $handle_icon_name ? $handle_icon_name : '↔';
+		$handle_icon_output = sprintf(
+			'<span class="wp-block-sgs-before-after__handle-emoji" aria-hidden="true">%s</span>',
+			esc_html( $safe_handle_emoji )
+		);
+	}
+} else {
+	$handle_icon_svg = 'wp-icon' === $handle_icon_source
+		? sgs_get_wp_icon( $handle_icon_name )
+		: sgs_get_lucide_icon( $handle_icon_name );
+	if ( '' === $handle_icon_svg ) {
+		$handle_icon_svg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"></polyline><polyline points="15 6 21 12 15 18"></polyline></svg>';
+	}
+	$handle_icon_svg    = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad['defs'] );
+	$handle_icon_svg    = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad_hover['defs'] );
+	$handle_icon_output = $handle_icon_svg;
 }
-$handle_icon_svg = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad['defs'] );
-$handle_icon_svg = sgs_svg_inject_defs( $handle_icon_svg, $sgs_handle_icon_grad_hover['defs'] );
 
 ?>
 <?php
@@ -741,12 +819,15 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 			<div class="wp-block-sgs-before-after__divider-line"></div>
 			<div class="wp-block-sgs-before-after__handle">
 				<?php
-				// $handle_icon_svg resolved above (§8 top) via
-				// sgs_get_lucide_icon()/sgs_get_wp_icon(), pre-sanitised
+				// $handle_icon_output resolved above (§8 top) — lucide/wp-icon
+				// via sgs_get_lucide_icon()/sgs_get_wp_icon(), pre-sanitised
 				// static lookup-table markup with the gradient <defs> (if
-				// any) already injected — same trust boundary as sgs/icon's
-				// identical emission.
-				echo $handle_icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				// any) already injected, same trust boundary as sgs/icon's
+				// identical emission; dashicon/emoji via sprintf() with
+				// esc_attr()/esc_html() already applied inline, mirroring
+				// sgs/icon's own dashicon/emoji output (icon/render.php
+				// ~413-434).
+				echo $handle_icon_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
 			</div>
 		</div>
