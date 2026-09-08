@@ -607,6 +607,86 @@ const CAPTURE_SRC = `() => {
   const mk = (el) => ({ tag: el.tagName.toLowerCase(), cls: clsList(el), css: readAll(el),
     declared: { fontSize: declaredValue(el, 'font-size'), lineHeight: declaredValue(el, 'line-height') },
     ...ctx(el) });
+  // v1.3.0 collision resolution (Bean-directed design, 2026-09-08): a text collision (several
+  // nested elements sharing identical normalised text — e.g. a wrapper <section> whose sole
+  // child holds 100% of its text) used to always keep the DEEPEST element, silently discarding
+  // whatever the OTHER candidate(s) actually painted. Proven live: a real border-top:1px on an
+  // outer <section> vanished because the tool kept the borderless inner div instead.
+  //
+  // Fix, two tiers:
+  // (1) BEM SAME-FAMILY MERGE — deterministic, no guessing. Every composite mirroring
+  //     sgs/container (hero, trust-bar, cta-section, container itself, plus block-private
+  //     composites like form/modal/post-grid) renders its content-band child as
+  //     sgs-<own-block-name>__inner — e.g. sgs-container__inner, sgs-form__inner,
+  //     sgs-modal__inner (Spec 00 §3.1's sgs-<block>__<element>--<modifier> convention). When a
+  //     collision's candidates share the SAME BEM block token between an ancestor and a
+  //     descendant, they are proven-by-construction to be the SAME component's own layers, not
+  //     a genuine nested block (a deliberately nested block carries a DIFFERENT block token and
+  //     is correctly left alone). Merge them PER-PROPERTY: each CSS property comes from
+  //     whichever of the two elements' OWN value differs from THAT element's bare-tag default —
+  //     so a border correctly comes from the ancestor and a flex layout correctly comes from the
+  //     descendant, in one merged record. (Per-property, not a whole-element "which one is more
+  //     styled" vote — a whole-element vote was tested and falsified: it's biased by how many
+  //     CSS longhands a property FAMILY happens to expand into, not by visual importance.)
+  // (2) STATISTICAL FALLBACK — when no BEM relationship is found, keep every candidate and let
+  //     the comparison step (runTier, below) try the draft element against each one, keeping
+  //     whichever pairing has the fewest mismatches, rather than committing to one blind
+  //     structural rule for a collision shape nobody has proven a cause for.
+  const SGS_BEM_RE = /^sgs-([a-z](?:[a-z0-9]|-(?!-))*)(?:__([a-z](?:[a-z0-9]|-(?!-))*))?(?:--([a-z][a-z0-9-]*))?$/;
+  const parseSgsBem = (cls) => {
+    if (typeof cls !== 'string' || !cls.startsWith('sgs-')) return null;
+    const m = SGS_BEM_RE.exec(cls);
+    return m ? { block: m[1], element: m[2] || null, modifier: m[3] || null } : null;
+  };
+  const blockTokensOf = (cand) => {
+    const s = new Set();
+    for (const c of (cand.rec.cls || [])) { const bem = parseSgsBem(c); if (bem) s.add(bem.block); }
+    return s;
+  };
+  // v1.3.1 fix (same session): the first cut of this mechanism found only ONE pair via a
+  // pairwise (i,j) scan and discarded every OTHER candidate in a 3+-element collision chain
+  // outright — silently dropping the true outer box whenever the scan happened to match two
+  // INNER candidates to each other first. Proven live: the featured product-card's real border
+  // (on the outermost sgs-container+sgs-product-card wrapper) was lost this way because the
+  // scan paired two of its DEEPER same-family descendants before ever reaching the outer one.
+  // Fixed by finding the TRUE outermost candidate for this anchor first (the only reliable
+  // starting point — nothing containing it shares this exact text, or it wouldn't be in this
+  // anchor's candidate set at all), then collecting EVERY candidate that shares the outermost's
+  // BEM block family, however deep — never just the first pair found.
+  const familyClusterFor = (candidates) => {
+    const outerCand = candidates.find(c => !candidates.some(o => o !== c && o.el !== c.el && o.el.contains(c.el)));
+    if (!outerCand) return null;
+    const outerBlocks = blockTokensOf(outerCand);
+    if (!outerBlocks.size) return null;
+    const members = candidates.filter(c => c === outerCand
+      || [...blockTokensOf(c)].some(b => outerBlocks.has(b)));
+    if (members.length < 2) return null;
+    // Outermost-first order (fewest OTHER members containing it), so the per-property merge
+    // below checks the architecturally "most real" box first.
+    return members.slice().sort((a, b) =>
+      members.filter(m => m !== a && m.el !== a.el && m.el.contains(a.el)).length
+      - members.filter(m => m !== b && m.el !== b.el && m.el.contains(b.el)).length);
+  };
+  const mergeFamilyBoxRecords = (membersOuterFirst) => {
+    const base = membersOuterFirst[0].rec;
+    const mergedCss = {};
+    const allKeys = new Set();
+    for (const m of membersOuterFirst) for (const k of Object.keys(m.rec.css)) allKeys.add(k);
+    for (const k of allKeys) {
+      let chosen;
+      for (const m of membersOuterFirst) {
+        const tagDef = defaults[m.rec.tag] || defaults.div || {};
+        const v = m.rec.css[k];
+        if (v !== undefined && tagDef[k] !== undefined && v !== tagDef[k]) { chosen = v; break; }  // first (outermost-first) member that meaningfully differs from ITS OWN default wins this property
+      }
+      if (chosen === undefined) {
+        const fallback = membersOuterFirst.find(m => m.rec.css[k] !== undefined);
+        chosen = fallback ? fallback.rec.css[k] : undefined;  // nobody differs from default — value is immaterial, keep any
+      }
+      mergedCss[k] = chosen;
+    }
+    return { ...base, css: mergedCss };
+  };
   document.querySelectorAll('*').forEach((el) => {
     if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
     const isHtmlOrBody = el.tagName === 'HTML' || el.tagName === 'BODY';
@@ -632,16 +712,19 @@ const CAPTURE_SRC = `() => {
     if (!isHtmlOrBody && (el.childElementCount > 0 || el.tagName === 'IMG')) {
       const anchor = el.tagName === 'IMG' ? ('img:' + imgIdentity(el)) : norm(el.innerText);
       if (anchor.length >= 5) {
-        const existing = boxElsRaw[anchor];
-        // keep the DEEPEST/most-specific element on a same-key collision (ancestor gets overwritten).
-        if (!existing || (existing.el && existing.el !== el && existing.el.contains(el))) {
-          boxElsRaw[anchor] = { rec: mk(el), el };
-        }
+        (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
       }
     }
   });
   const boxEls = {};
-  for (const k of Object.keys(boxElsRaw)) { boxEls[k] = boxElsRaw[k].rec; }
+  for (const k of Object.keys(boxElsRaw)) {
+    const candidates = boxElsRaw[k];
+    if (candidates.length === 1) { boxEls[k] = candidates[0].rec; continue; }
+    const cluster = familyClusterFor(candidates);
+    boxEls[k] = cluster
+      ? mergeFamilyBoxRecords(cluster)
+      : candidates.map(c => c.rec);  // no known relationship — try-all-candidates downstream
+  }
   const fullText = normFull(document.body ? document.body.innerText : '').slice(0, 200000);
   return { texts: [...new Set(texts)], images: [...new Set(images)], links: [...new Set(links)], textEls, boxEls, defaults, fullText };
 }`;
@@ -961,27 +1044,49 @@ if (SELF_TEST) {
     // `unmT` tracks how much of T came from MISSING elements, so the honest all-in score and the
     // legacy matched-only score can both be reported without one hiding the other.
     let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0; const mis = [], unm = [], subv = [], tagMis = [], fluidv = [];
+    // v1.3.0: a `boxEls` value may now be a SINGLE record (the common case, and always true for
+    // textEls) or an ARRAY of candidates (an unresolved text collision with no known BEM-family
+    // relationship — see the CAPTURE_SRC collision-resolution comment). Try every draft
+    // candidate against every clone candidate and keep whichever pairing has the fewest CSS
+    // mismatches — for the 1-vs-1 common case this is exactly the old single comparePair() call,
+    // byte-identical behaviour.
+    const bestPairing = (draftCands, cloneCands) => {
+      let best = null, bestDiffCount = Infinity;
+      for (const dc of draftCands) {
+        for (const cc of cloneCands) {
+          const r = comparePair(dc, cc, d.defaults, vw);
+          if (r.diffs.length < bestDiffCount) { bestDiffCount = r.diffs.length; best = { drec: dc, crec: cc, r }; }
+        }
+      }
+      return best;
+    };
     const runTier = (map, cloneMap, exact) => {
-      for (const [key, drec] of Object.entries(map)) {
+      for (const [key, drecRaw] of Object.entries(map)) {
         if (excluded(key)) continue;
-        const crec = findByAnchor(key, cloneMap, exact);
-        if (!crec) {
+        const draftCands = Array.isArray(drecRaw) ? drecRaw : [drecRaw];
+        const crecRaw = findByAnchor(key, cloneMap, exact);
+        if (!crecRaw) {
           // FR-20-4 (FIXED 2026-08-04): the draft element has NO clone counterpart — it is
           // MISSING from the clone. Previously this `continue`d before touching total/match, so
           // the worst possible outcome scored as nothing at all. Now every meaningful prop it
           // carried counts as a MISS (total += n, match += 0), and its tag counts as a miss too.
-          const lost = meaningfulCountUnmatched(drec, d.defaults);
-          unm.push({ text: key.slice(0, 44), tag: drec.tag, meaningful_props_lost: lost });
+          // A draft-side collision (rare — draft mockups seldom nest a wrapper around identical
+          // text) is represented by its FIRST candidate here; the array shape exists to serve
+          // the clone-side statistical fallback, not to double-count an unmatched draft element.
+          const drec0 = draftCands[0];
+          const lost = meaningfulCountUnmatched(drec0, d.defaults);
+          unm.push({ text: key.slice(0, 44), tag: drec0.tag, meaningful_props_lost: lost });
           T += lost; unmT += lost;
           tagT++;
           continue;
         }
+        const cloneCands = Array.isArray(crecRaw) ? crecRaw : [crecRaw];
+        const { drec, crec, r } = bestPairing(draftCands, cloneCands);
         // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
         tagT++;
         if (drec.tag === crec.tag) tagM++;
         else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
         // CSS dimension.
-        const r = comparePair(drec, crec, d.defaults, vw);
         T += r.total; M += r.match; fluidDeclined += r.declined;
         if (r.diffs.length) mis.push({
           text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
