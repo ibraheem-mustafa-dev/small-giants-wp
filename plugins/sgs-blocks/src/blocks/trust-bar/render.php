@@ -577,7 +577,24 @@ foreach ( $items as $tb_item_index => $item ) {
 			// Resolver returned a raw SVG fallback (no confident slug match).
 			// Sanitise with the existing sgs_svg_kses_allowed_tags() allowlist so
 			// only safe SVG drawing elements and attributes are emitted.
-			$svg = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
+			//
+			// Strip inline `style="…"` FIRST (2026-09-08 qc-council-scoped fix):
+			// a draft's raw SVG can carry its OWN inline colour declaration (e.g.
+			// `style="fill: var(--primary-dark)"`), which — being inline — beats
+			// this block's own CSS colour rule
+			// (`.sgs-trust-bar__circle--filled svg{fill:var(--sgs-trust-badge-icon-fill,
+			// currentColor)}`) purely on specificity, regardless of whether the
+			// draft's own custom-property name even resolves on this page. Proven
+			// live: an unresolved `--primary-dark` collapsed to the CSS initial
+			// value (solid black) instead of the operator's chosen icon colour.
+			// Scoped to THIS fallback only — `style` stays in the shared
+			// `sgs_svg_kses_allowed_tags()` allowlist because responsive-logo's
+			// own raw-SVG path (an uploaded brand logo, not an icon-resolver
+			// fallback) genuinely needs to keep its own colouring. Strips the
+			// ATTRIBUTE only, never `fill`/`stroke` themselves — those stay
+			// intact so a deliberately `fill="none"` outline icon keeps its shape.
+			$raw_svg = (string) preg_replace( '/\sstyle\s*=\s*(["\']).*?\1/is', '', $raw_svg );
+			$svg     = wp_kses( $raw_svg, sgs_svg_kses_allowed_tags() );
 		} else {
 			// No icon set — show the generic check tick so the badge is never blank.
 			$svg = sgs_get_lucide_icon( 'check' );
