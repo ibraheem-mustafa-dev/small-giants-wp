@@ -2,11 +2,24 @@
 
 verdict: PASS (live-verified, fix deployed 2026-09-08)
 first_paint_capture_passed: true
-source_sha: e4b520673997a2a6
+source_sha: c33f1b29b4dc6440
 
 Covers the clone-fidelity programme's Phase 4 fix for 3.5 (products section layout — both
 product cards clamped to the same 380px width instead of filling their assigned 5fr/3fr
 grid-column split).
+
+## Update — 3.6 (product-card typography), same day
+
+A second, unrelated fix landed on this block the same day: the pack-size pill had no
+`pillFontWeight`/`pillFontStyle` attributes declared at all (only `pillFontSize` existed),
+so it could never take a weight/style override and always fell back to a generic default
+(14px/500 instead of the draft's 13px/600). Added both attributes (mirroring the existing
+title/desc pattern), enabled the editor's typography-control row for them (`showWeight`/
+`showStyle` were explicitly disabled), and set this instance to the draft's values.
+Live-verified post-deploy: `.sgs-option-picker__pill` computed `font-size:13px`,
+`font-weight:600` (was 14px/500) — exact match, pills render cleanly, no overflow. The two
+ORIGINALLY-reported 3.6 issues (title weight, price font-family) were found to already be
+correct live before this fix — no code change was needed for those two.
 
 ## What changed
 

@@ -1845,8 +1845,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									key: 'pill',
 									label: __( 'Pill', 'sgs-blocks' ),
 									prefix: 'pill',
-									showWeight: false,
-									showStyle: false,
+									// Weight/style controls enabled 2026-09-08: pillFontWeight/
+									// pillFontStyle now exist on block.json (were previously
+									// declared nowhere at all, not just hidden here) -- render.php
+									// already forwarded them to sgs_typography_css_rule()'s 'pill'
+									// call, so this was the only missing piece.
 									showLineHeight: false,
 								},
 							] }

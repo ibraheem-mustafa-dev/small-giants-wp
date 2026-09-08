@@ -881,6 +881,15 @@
 			"type": "string",
 			"default": "px"
 		},
+		"pillFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight for the pack-size pill label. render.php already forwards this to sgs_typography_css_rule()'s 'pill' call (2026-09-08) -- the attribute was simply never declared, so the pill could never take a weight override and always fell through to sgs/option-picker's own generic default."
+		},
+		"pillFontStyle": {
+			"type": "string",
+			"default": ""
+		},
 		"priceNoteFontSize": {
 			"type": "object",
 			"default": {}
