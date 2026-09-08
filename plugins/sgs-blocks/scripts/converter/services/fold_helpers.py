@@ -206,8 +206,8 @@ def _expand_box_shorthand(decls: dict[str, str], prop: str) -> dict[str, str]:
 # 3d, not on this. NOTE: the deleted resolver also carried the only
 # production call site of `db_lookup.unit_companion_attr()` — the live path
 # below does NOT do unit-companion handling. Not deleted (it is DB-driven and
-# unit-tested); recorded as a genuine Spec 39 input in
-# `.claude/plans/spec-39-seed-requirements.md`, not debt.
+# unit-tested); recorded as a genuine input to Spec 31's tier-migration upgrade
+# in `.claude/plans/cloning-pipeline-tier-migration-requirements.md`, not debt.
 
 # ---------------------------------------------------------------------------
 # lift_content_band_max_width (convert.py:5821 — ported verbatim, renamed)
@@ -275,7 +275,8 @@ def route_area_css_to_block_attrs(
 
     Left uncorrected, this docstring is actively dangerous: a QC-council rater read it,
     concluded in good faith that this was dead code, and recommended REMOVING it from the
-    Spec 39 converter-rework inventory. Following that would have left a live flat-tier
+    converter-rework inventory for Spec 31's tier-migration upgrade. Following that would
+    have left a live flat-tier
     emitter unmigrated. Refuted by the call graph, not by opinion — grep the callers
     before believing any "unwired" claim, including this one.
 

@@ -1,24 +1,26 @@
 ---
 doc_type: seed-requirements
-title: "Spec 39 (final cloning pipeline) — seed requirements captured from the Spec 35 migration"
-spec_ref: will become .claude/specs/39-*.md — NOT YET WRITTEN
+title: "Cloning-pipeline tier-migration upgrade — captured requirements from the Spec 35 migration"
+spec_ref: .claude/specs/31-UNIVERSAL-CLONING-PIPELINE.md — the upgrade lands there
 date: 2026-08-10
-status: SEED — inputs captured while the evidence was fresh. Do NOT treat as a spec.
+status: INPUTS — evidence captured while it was fresh. Do NOT treat as a spec or as decisions.
 ---
 
-# Spec 39 seed requirements
+# Cloning-pipeline tier-migration upgrade — captured requirements
 
-**What this is.** Spec 39 (the final cloning pipeline) **does not exist yet** — 38 is the highest live
-spec (`.claude/specs/` verified 2026-08-10). Bean directed that the pipeline reworks implied by the
-Spec 35 flat→object migration be **captured as prioritised points for Spec 39**, not built now.
+**What this is.** Captured inputs for a planned **tier-migration upgrade to Spec 31**, the cloning
+pipeline's one and only spec. The upgrade is a task, not a future document (D1008): Spec 31 is and
+always was THE cloning-pipeline spec, and there is no separate spec number for this work. Bean
+directed that the pipeline reworks implied by the Spec 35 flat→object migration be **captured as
+prioritised points for that upgrade**, not built now.
 
 **The governing ordering rule (Bean, 2026-08-10 — D552):** the **block standard leads, the cloning
 pipeline is reworked afterwards** to the universalised norm. The converter's inability to emit the new
 shape is **scheduled work, never a precondition**. Recorded here so a future session cannot re-invert it
 and block a standard change on converter cost.
 
-⛔ **This file is inputs, not decisions.** Every item below is evidence + a question for Spec 39 to
-answer. Nothing here is settled.
+⛔ **This file is inputs, not decisions.** Every item below is evidence + a question for the upgrade
+to answer. Nothing here is settled.
 
 ---
 
@@ -34,8 +36,7 @@ answer. Nothing here is settled.
 > emits.** The genuinely open scope in this document is **R8–R10 (motion cloning from raw CSS)**,
 > which is real and unaddressed.
 >
-> **Spec 39 does not exist** — `specs/README.md` records the number as RESERVED. The quarantined
-> conformance goldens that name it are real; **count them in the file**
+> The quarantined conformance goldens gated on this work are real; **count them in the file**
 > (`scripts/tests/fixtures/conformance/quarantine.json`, `quarantined_golden_ids`) rather than
 > quoting any figure from prose.
 
@@ -58,7 +59,7 @@ numbers below drift — grep the construction, do not trust the citation.**
 | `scripts/converter/services/css_pass.py` | `:149` |
 | `scripts/converter/db/db_lookup.py` | the `css_tier` SQL sites (`AND (css_tier IS NULL OR css_tier = 'desktop')`) |
 
-**Question for Spec 39:** does emission become object-only, or dual-shape during a transition window
+**Question for the upgrade:** does emission become object-only, or dual-shape during a transition window
 keyed on whether the target block has migrated that property?
 
 ⚑ **Rule for reading this inventory:** *"unwired" or "deferred" in a comment is a dated claim, not a
@@ -83,9 +84,9 @@ converter, every gate and all six surveys read that identity.
 ⚠ **A half-answered sub-question, carried from D552 §5:** object attrs mostly carry
 `css_property = NULL`, **but the object shape is not the cause** — gallery's *object* `maxWidth` retains
 `css_property = max-width` while the row blocks' object `maxWidth` is NULL. Likely a fossil, not a rule.
-**Spec 39 must not design around the wrong explanation** — the seeding extraction settles it.
+**The upgrade must not design around the wrong explanation** — the seeding extraction settles it.
 
-**Question:** does Spec 39 keep a **derived per-tier view** so existing DB-first consumers keep working,
+**Question:** does the upgrade keep a **derived per-tier view** so existing DB-first consumers keep working,
 or does every consumer migrate to reading the object? The derived view is cheaper and defers the
 converter change; it is also a second representation of one truth, which this project generally
 distrusts.
@@ -93,7 +94,7 @@ distrusts.
 ## R4 — Seeding is part of the pipeline contract, not an afterthought
 
 `/sgs-update` populates the identity the converter reads. Whatever the Spec 35 migration's **P2**
-decides about representation is a **Spec 39 input**, not a local fix.
+decides about representation is an **input to the upgrade**, not a local fix.
 
 **Measured 2026-08-10 (do not re-derive):** `/sgs-update --stage 1` seeds `attr_type` correctly for
 object attrs. The stale-gallery case was simply nobody re-running it after a schema change, and a reseed
@@ -102,15 +103,15 @@ fixed it with no movement in the `inspector-scan` backlog.
 ## R5 — The BOX axis stays orthogonal to the TIER axis (D549)
 
 `{top,right,bottom,left}` (BOX) and `{desktop,tablet,mobile}` (TIER) are **independent axes**. A
-property can have one, both, or neither. Spec 39 must not re-conflate them.
+property can have one, both, or neither. The upgrade must not re-conflate them.
 
 ⛔ **A known landmine, still armed:** `ResponsiveBoxControl` uses `base` internally where the PHP
 normaliser expects `desktop` — `sgs_responsive_normalise_object()` (`helpers-responsive.php:277-291`)
 tests only `desktop`/`tablet`/`mobile`, so a `{base,tablet,mobile}` object emits **nothing**. Contract
-§12 field 6 calls this "unarmed, not disarmed" because no live call site crosses the two. Any Spec 39
+§12 field 6 calls this "unarmed, not disarmed" because no live call site crosses the two. Any upgrade
 work that makes a call site cross them arms it.
 
-## R6 — The interim clone gate becomes Spec 39's entry condition
+## R6 — The interim clone gate becomes the upgrade's entry condition
 
 Per Bean's ruling C, during the migration a check FAILS a clone run that emits a flat tier for an
 already-migrated property. **That gate's findings are the precise work-list for R1.**
@@ -123,7 +124,7 @@ the same artefact.
 ⛔ **"When the gate stops firing, R1 is done" is VACUOUSLY SATISFIABLE and must not be the acceptance
 test as written.** If no clone run ever exercises a migrated property, the gate never fires, and zero
 findings is indistinguishable from complete. Same shape as this project's
-`empty-section-false-pixel-diff-win` rule. **Spec 39 needs a POSITIVE CONTROL:** a fixture clone against
+`empty-section-false-pixel-diff-win` rule. **The upgrade needs a POSITIVE CONTROL:** a fixture clone against
 a mockup section mapping to at least one migrated property, proven to trigger the gate before the rework
 and go silent after.
 
@@ -138,34 +139,34 @@ and go silent after.
 
 ## R7 — Two measurement traps that cost real time this session
 
-Recorded because Spec 39 will be measured, and both traps produce confident wrong numbers:
+Recorded because the upgrade will be measured, and both traps produce confident wrong numbers:
 
 1. **A stray `/*` inside a `//` comment corrupted two gates' corpora at once** — inventing 73 findings
    in one and *hiding* 35 real ones in another, in **opposite directions**. Fixed at `f11b122a`
-   (`stripComments` now strips line comments first, with Test G proven able to fail). Any new Spec 39
-   scanner that strips comments must order the rules the same way and ship the same control.
+   (`stripComments` now strips line comments first, with Test G proven able to fail). Any new scanner
+   built for the upgrade that strips comments must order the rules the same way and ship the same control.
 2. **A count from a cached column is not a measurement.** `rules.json`'s `openBacklog` has produced a
    wrong figure before (a "363" that was a column sum, not a scan). Live-scan, always.
 
 ---
 
-## What Spec 39 must NOT inherit
+## What the upgrade must NOT inherit
 
 - **The 43 correct-as-is families** — 36 `asset_like` (a per-tier ASSET is a different resource per
   device; `sgs/media`'s tiers are a deliberate runtime swap, D521) and 7 `flag_like` (conjunctive
   per-device flags). These are not migration targets and must not become converter targets either.
 - **Any cached count.** The block count, family count and stage counts in this project have each
-  drifted. Spec 39 states methods and file:line sources, never figures in prose.
+  drifted. The upgrade states methods and file:line sources, never figures in prose.
 
 ---
 
 ## 2026-08-11 groundwork notes — recording the current setup, not deciding anything
 
 **What this section is.** Spec 35 (the flat→object storage-shape migration) is still open. This
-section records what the survey + the converter code actually show TODAY, so that whenever Spec 39
+section records what the survey + the converter code actually show TODAY, so that whenever the upgrade
 starts it can begin from a checked picture instead of re-deriving one. **Nothing below is a design
 decision** — no call is made here on object-only vs dual-shape, on fixing the tier vocabulary, or on
-whether a derived per-tier view should exist. Those remain Spec 39's calls.
+whether a derived per-tier view should exist. Those remain the upgrade's calls.
 
 ### G1 — What has and hasn't migrated (live survey, 2026-08-11)
 
@@ -185,7 +186,7 @@ and gives the concrete state of what is explicitly named as NOT yet done:
   `tagFontSize`), `sgs/text` (`fontSize`), `sgs/heading` (`fontSize`), `sgs/label` (`fontSize`),
   `sgs/icon-list` (`headingFontSize`, `itemFontSize`).
 
-This list is a **live-scan snapshot dated 2026-08-11** — re-run the survey command at Spec 39 start
+This list is a **live-scan snapshot dated 2026-08-11** — re-run the survey command when the upgrade starts
 rather than copying these names forward, per R7.2's rule about cached counts.
 
 ### G2 — The uniform choke point R1's table doesn't name
@@ -204,10 +205,10 @@ through a single shared function. Verified by reading the file and counting call
   `resolvers/typography.py` (calls `tier_suffix()` directly rather than `tier_state_suffix()`),
   `services/border_side.py` and `services/box_side.py`.
 
-**Why this matters for Spec 39, without deciding anything:** an object-shape rework that changes what
+**Why this matters for the upgrade, without deciding anything:** an object-shape rework that changes what
 `tier_suffix()` (or its call inside `tier_state_suffix()`) returns touches every call site at once —
 this is the leverage point R1's scattered per-resolver table doesn't surface. Whether the fix belongs
-at that one function or has to unwind at each call site is a Spec 39 design question, not answered here.
+at that one function or has to unwind at each call site is an upgrade design question, not answered here.
 
 ### G3 — Two emission facts R1's table doesn't surface
 
@@ -230,7 +231,7 @@ at that one function or has to unwind at each call site is a Spec 39 design ques
 ### G4 — Box axis vs tier axis: carry the orthogonality rule forward
 
 R5 already states this and documents the one armed-but-inert landmine. Restating only the operational
-takeaway so Spec 39 doesn't have to re-read R5 to get it: **BOX `{top,right,bottom,left}` and TIER
+takeaway so the upgrade doesn't have to re-read R5 to get it: **BOX `{top,right,bottom,left}` and TIER
 `{desktop,tablet,mobile}` are two independent axes that combine (a property can have neither, one, or
 both) — never collapse them into one axis or key one off the other's vocabulary.** The two prior
 storage-shape gate rule-attempts that got this wrong are the reason it's called out again here; no new
@@ -265,7 +266,7 @@ elsewhere. Classify by the full set of reads, never the first one found.
 - Testing "does `{base}{Tier}` exist as its own row" separates 1 from {2,3} — **but NOT 2 from 3.**
 - `box_family_for()` also conflates them.
 
-**A rule that folds shape 3 is a REGRESSION on a currently-working path**, not a fix. Spec 39 must
+**A rule that folds shape 3 is a REGRESSION on a currently-working path**, not a fix. The upgrade must
 find a genuine signal for 2-vs-3 (leads, each UNVERIFIED: the `default_value` carrying a `"desktop"`
 key; whether the PHP consumer calls `sgs_responsive_normalise_object` for that attr) — or scope R1 to
 an explicit DB-derived allow-list of known-migrated properties. **An honest narrow rule beats a wrong
@@ -328,7 +329,7 @@ Two signals the gate must NOT use, because neither separates G5's shapes:
    "migrated" on nearly every block. Exclude any candidate whose own name ends in a DB-derived
    breakpoint suffix (`modifier_suffixes('breakpoint')`, R-31-1).
 
-**The discriminator the gate uses — this is G5's answer, and Spec 39 should reuse it rather than
+**The discriminator the gate uses — this is G5's answer, and the upgrade should reuse it rather than
 re-derive:** a property counts as migrated only when its value **demonstrably reaches** one of
 `sgs_responsive_normalise_object()`, `sgs_emit_responsive_css()`, `sgs_typography_css_rule()` or
 `sgs_resolve_on_tiers()`, scanned across the block's own `render.php` **and** the shared
@@ -366,17 +367,16 @@ Both alter what the converter can natively consume, so R1's baseline is not what
   `root_supports`' `background-color → style.color.background` route no longer applies to those four
   blocks, and a `background-color` on them now gaps. ⛔ Do NOT restore the support to make a test pass.
 - **`backgroundOverlayOpacity` RETIRED** (D581) and the converter's write of it removed 2026-08-12. The
-  alpha now rides inside the `rgba()` colour. Any Spec 39 overlay work reads the colour's alpha, never a
+  alpha now rides inside the `rgba()` colour. Any overlay work in the upgrade reads the colour's alpha, never a
   separate opacity attr.
 
 ### UNVERIFIED — carried from the 2026-08-11 groundwork (G1–G4), plus 2026-08-12 additions
 
-⚠ Heading scope: the two bullets immediately below belong to the **2026-08-11** groundwork section
-above; the 2026-08-12 council items are listed after them.
+**From the 2026-08-11 groundwork (G1–G4):**
 
 - **Whether `columns` and `gridTemplateRows` behave identically to `gridTemplateColumns` once
   migrated** (i.e. whether Spec 35 pass 3a's approach transfers directly) — not checked here; this is
-  Spec 39 design work, out of scope for a groundwork note.
+  upgrade design work, out of scope for a groundwork note.
 - **Total count of `.update()`-style shallow-merge sites elsewhere in the converter** beyond
   `css_pass.py`'s four — only the one file named in the task was checked; a full sweep wasn't run
   (would risk exactly the "cached count" trap R7.2 warns against).
@@ -393,7 +393,7 @@ above; the 2026-08-12 council items are listed after them.
 - **What SHOULD paint a plain background colour on the 4 blocks that lost `supports.color.background`
   (G10)** — `BackgroundPanel` provides image/video/SVG but **no colour picker**, and those blocks declare
   no plain `backgroundColour` attr. D581 records the removal as fixing a conflict; it does not record
-  what replaced it. Worth settling before Spec 39 designs colour routing for them. ⚠ Not a regression
+  what replaced it. Worth settling before the upgrade designs colour routing for them. ⚠ Not a regression
   claim — an unanswered question.
 
 ---
@@ -451,14 +451,14 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql   "SELECT COUNT(*), 
 git grep -c keyframes -- plugins/sgs-blocks/scripts/converter/
 ```
 
-**So the question for Spec 39 is not "build motion cloning" — it is "extend it beyond
+**So the question for the upgrade is not "build motion cloning" — it is "extend it beyond
 SGS-authored drafts".** Cloning an arbitrary reference site to an Awwwards standard means reading
 `@keyframes`, `animation` and `transition` shorthand out of real CSS and RECOGNISING intent (a
 reveal, a parallax, a stagger) well enough to map onto the framework's named fx presets. That
 recognition layer does not exist in any form today, and it is a genuinely harder problem than the
 attribute-shape work in R1–R7.
 
-**Questions for Spec 39:**
+**Questions for the upgrade:**
 1. Does motion extraction map raw CSS to the existing ~78-attr fx roster, or does it need a new
    intermediate vocabulary? The roster is the emit target either way.
 2. Spec 38's four-tier doctrine (V vanilla / G GSAP / H helper / W WebGL) governs motion. Which
@@ -469,7 +469,7 @@ attribute-shape work in R1–R7.
 
 ## R9 — "Full potential of the theme" is measurable, and motion is only the first axis
 
-Before Spec 39 is written, run the same converter-coverage measurement for **every** capability
+Before the upgrade is designed, run the same converter-coverage measurement for **every** capability
 family the framework declares, not just motion. The R8 method generalises: count the attributes a
 family declares, then count the converter's writes to them. Any family with a high declaration
 count and zero converter writes is capability the pipeline is leaving on the floor. Motion is the

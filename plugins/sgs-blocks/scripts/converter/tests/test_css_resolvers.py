@@ -48,7 +48,7 @@ def test_content_band_max_width_to_contentWidth(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_content_band_tier_suffix(conn):
     out = content_band.resolve(Decl("max-width", "720px", "Tablet"), _ctx(conn))
@@ -223,7 +223,7 @@ def test_grid_explicit_tracks_no_count(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_grid_tier_suffix_on_both(conn):
     out = grid.resolve(Decl("grid-template-columns", "repeat(2, 1fr)", "Tablet"), _ctx(conn))
@@ -252,7 +252,7 @@ def test_grid_metamorphic_count_scales_with_repeat_n(conn):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_typography_font_size_number_plus_unit(conn):
     out = typography.resolve(Decl("font-size", "58px", "Base"), _ctx(conn, slug="sgs/heading"))
@@ -278,7 +278,7 @@ def test_typography_colour_bare_slug_bug1(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT (sgs/heading.lineHeight, same as its fontSize sibling above), so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md. (Marker added 2026-09-07 - this test was overlooked when its font-size sibling got the same marker at D554/79d13366d, 2026-08-12.)"
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT (sgs/heading.lineHeight, same as its fontSize sibling above), so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_typography_line_height_unitless_sentinel_bug2(conn):
     out = typography.resolve(Decl("line-height", "1.15", "Base"), _ctx(conn, slug="sgs/heading"))
@@ -288,7 +288,7 @@ def test_typography_line_height_unitless_sentinel_bug2(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_typography_unit_companion_only_on_base_tier(conn):
     # The unit companion is written only alongside the BASE attr, never a variant.
@@ -299,7 +299,7 @@ def test_typography_unit_companion_only_on_base_tier(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT until the Spec 39 rework; a temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 39 lands. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects - i.e. this is a live Spec 39 checklist, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
 ))
 def test_typography_metamorphic_size_scale(conn):
     a = typography.resolve(Decl("font-size", "20px", "Base"), _ctx(conn, slug="sgs/heading"))

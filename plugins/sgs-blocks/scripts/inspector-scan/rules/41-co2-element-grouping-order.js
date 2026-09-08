@@ -2,7 +2,7 @@
 
 // GROUND-TRUTH: spec=.claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md PART O
 // §"THE PLACEMENT RULE" (D537, 2026-08-09) + CO-2 ("element-first grouping")
-// + .claude/plans/2026-08-25-road-to-uniform-then-spec-39.md C14 ("Bean
+// + .claude/plans/archive/2026-08-25-road-to-uniform-then-spec-39.md C14 ("Bean
 // answered ... 2026-08-27") + C4 ("CO-2 element grouping has no enforcing
 // gate ... needs an AST walk of every edit.js, its own build"). source=file
 // evidence=live-read plugins/sgs-blocks/scripts/placement-reach.py (the

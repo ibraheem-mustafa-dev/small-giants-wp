@@ -74,11 +74,19 @@ produce a dry-run inventory and make no network calls.
 
 ## Why a clone currently hard-halts
 
-If you run the pipeline today against a page using an object-migrated property, it will stop
-before deploy with a `check_flat_tier_regression.py` FAIL. **That is D554-C working, not a
-fault.** Bean ruled that the converter stays flat while its output gets gated, and explicitly
-rejected a temporary shim, so cloning is blocked for migrated properties until Spec 39's
-converter rework lands. Measured 2026-08-24: the Mama's homepage produced 97 such violations.
+If you run the pipeline against a page using an object-migrated property the converter does
+not yet emit as an object, it stops before deploy with a `check_flat_tier_regression.py` FAIL.
+**That is the gate working, not a fault.** Bean ruled that the converter stays flat while its
+output gets gated, and explicitly rejected a temporary shim (D554-C), so cloning stays blocked
+for those properties until Spec 31's tier-migration upgrade reaches them.
+
+The box family is already through: padding, margin and borderRadius (and their prefixed
+variants) emit tier objects on both the resolver spine and the L4 per-area path, and D554-C is
+superseded for them (D996, 2026-09-07).
+
+⚠ **The Mama's homepage measured 97 violations on 2026-08-24, which is BEFORE that landed.**
+Nobody has re-run it since, so treat 97 as a stale upper bound, not the current figure — run a
+clone and count before planning against it.
 
 The orchestrator exits **1** in that case and does not deploy. Check the exit code properly —
 `cmd ; echo $?` reports the `echo`'s status, not the command's.

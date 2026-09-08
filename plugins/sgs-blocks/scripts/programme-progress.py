@@ -39,7 +39,7 @@ the denominator would be scoring the wrong axis entirely.
 
 STEP 2 — the next-most-obvious approach (`attr_type = 'object'` = "done") is
 ALSO documented as wrong, independently, by this repo's own architecture work.
-`.claude/plans/spec-39-seed-requirements.md` "G5" (read in full this session,
+`.claude/plans/cloning-pipeline-tier-migration-requirements.md` "G5" (read in full this session,
 lines 262-291) states the exact constraint this script has to respect:
 
     "THREE shapes hide under `attr_type='object'`, and NOTHING in the schema
@@ -102,7 +102,7 @@ which is necessarily 0 by construction (a fixed family stops being visible).
 True whole-programme completion is >= the number below; decisions.md already
 records several properties fixed that are invisible to this query by design
 (`gap`, `columns` on at least one block, `contentBandPadding`, `fontSize`,
-`sgs/media.order`, `decorative-image.positionX/Y` — spec-39-seed-requirements.md
+`sgs/media.order`, `decorative-image.positionX/Y` — cloning-pipeline-tier-migration-requirements.md
 line 271). The two numbers that ARE fully reliable, and are the actual
 burn-down signal to watch run over run, are "properties remaining" and
 "non-conforming pairs": both are counts of things PROVEN to still exist by a
@@ -292,7 +292,7 @@ def build_report(data: dict) -> dict:
                 "sibling rows deleted as part of the fix, which makes a "
                 "finished family structurally indistinguishable from an "
                 "attribute that never needed migration -- documented as gap "
-                "G5 in .claude/plans/spec-39-seed-requirements.md (lines "
+                "G5 in .claude/plans/cloning-pipeline-tier-migration-requirements.md (lines "
                 "262-291): 'three shapes hide under attr_type=object, "
                 "nothing in the schema separates them'. True whole-programme "
                 "completion is >= this figure. See the module docstring for "

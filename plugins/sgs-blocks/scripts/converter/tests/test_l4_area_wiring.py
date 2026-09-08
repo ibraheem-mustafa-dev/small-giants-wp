@@ -53,13 +53,10 @@ def test_area_resolver_routes_per_area_padding_to_object_for_hero():
     live-path assertion). A NON-box per-area attr (background, tested below) still
     resolves flat.
 
-    ⚑ De-xfailed 2026-09-07 (D996). It carried ``xfail(strict=True)`` citing D554
-    ruling C ("the converter STAYS FLAT until the Spec 39 rework"), written to
-    fail loud the moment the converter began emitting tier objects. That moment
-    is now: ``fold_helpers.route_area_css_to_block_attrs`` emits the TIER-of-BOXES
-    envelope, completing for the L4 per-area path what ``c829647c8`` had already
-    shipped for the resolver spine. D554-C is superseded for
-    padding/margin/borderRadius.
+    ``fold_helpers.route_area_css_to_block_attrs`` emits the TIER-of-BOXES
+    envelope on the L4 per-area path, matching what the resolver spine already
+    does. D554 ruling C is superseded for padding/margin/borderRadius (D996);
+    it still holds for every property outside the box family.
 
     Its final assertion was also factually wrong and is corrected here: it
     required ``box_family_for('sgs/hero', 'contentPaddingTablet')`` to be
