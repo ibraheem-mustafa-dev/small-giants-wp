@@ -109,6 +109,9 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
 
     # BASE TYPOGRAPHY (FR-33-3 — the drift-killer)
     styles["typography"] = typo_mod.base_typography(facts, trace)
+    # ...then route the measured size through a NON-FLUID preset, or WP's fluid engine
+    # recomputes it behind our back (FR-33-4). See register_base_font_size_preset().
+    typo_mod.register_base_font_size_preset(settings, styles["typography"], trace)
 
     # styles.color: computed content-background + body text → slugs (FR-33-6)
     body = facts.get("body", {})

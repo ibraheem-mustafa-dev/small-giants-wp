@@ -78,6 +78,58 @@ def base_typography(facts: dict, trace: list) -> dict:
     return out
 
 
+BASE_FONT_SIZE_SLUG = "base"
+
+
+def register_base_font_size_preset(settings: dict, base_styles: dict, trace: list) -> None:
+    """Route the measured base body size through a NON-FLUID preset (FR-33-4).
+
+    A literal ``styles.typography.fontSize`` is rewritten by WordPress's fluid-typography
+    engine into a ``clamp()`` carrying WP's own 14px minimum-font-size floor — so a
+    faithfully-measured 16px base renders **14px at 375px**. That is the draft's authored
+    value silently recomputed, which FR-33-4 forbids ("never recomputed via WP's fluid
+    formula — that changes the curve").
+
+    A per-preset ``"fluid": false`` is WordPress's own opt-out, and the framework baseline
+    ALREADY uses exactly this shape: its ``styles.typography.fontSize`` is
+    ``var:preset|font-size|medium``, and ``medium`` carries ``"fluid": false``. The extractor
+    diverged from that working pattern by emitting a raw px literal; this puts it back on it.
+
+    Deliberately a NEW slug rather than retargeting ``medium``: patterns author ``medium``
+    for their own reasons, and silently resizing it per client would change every one of
+    them. Additive, so nothing existing shifts meaning.
+    """
+    size = base_styles.get("fontSize")
+    if not isinstance(size, str) or not size or size.startswith("var:"):
+        return  # nothing measured, or already a preset reference — leave it alone
+
+    typo = settings.setdefault("typography", {})
+    presets = typo.setdefault("fontSizes", [])
+
+    for entry in presets:
+        if entry.get("slug") == BASE_FONT_SIZE_SLUG:
+            entry["size"] = size
+            entry["fluid"] = False
+            break
+    else:
+        # Insert in ascending size order so the editor's font-size picker stays sensible —
+        # a "Base" 16px sitting after "Hero" 50px reads as a bug to the client.
+        new = {"slug": BASE_FONT_SIZE_SLUG, "name": "Base", "size": size, "fluid": False}
+        mine = _px(size, 16.0) or 0.0
+        for i, entry in enumerate(presets):
+            if (_px(str(entry.get("size", "")), 16.0) or 0.0) > mine:
+                presets.insert(i, new)
+                break
+        else:
+            presets.append(new)
+
+    base_styles["fontSize"] = f"var:preset|font-size|{BASE_FONT_SIZE_SLUG}"
+    trace.append({"kind": "base", "what": "settings.typography.fontSizes[base]", "_source": "declared",
+                  "reason": "base body size routed through a non-fluid preset so WP's fluid engine "
+                            "cannot recompute the draft's authored value (FR-33-4)",
+                  "size": size, "fluid": False})
+
+
 def heading_base(facts: dict, trace: list) -> dict:
     """Return the base heading line-height (MODE ratio, hero outlier excluded) + letter-spacing.
 

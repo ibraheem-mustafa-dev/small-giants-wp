@@ -50,10 +50,57 @@ def _snapshot():
 
 
 # ── FR-33-3 — the D303 drift-killer ─────────────────────────────────────────────────────────────
+def _base_preset(snap):
+    """The non-fluid preset the base body size is routed through (FR-33-4)."""
+    presets = snap["settings"]["typography"]["fontSizes"]
+    return next((p for p in presets if p["slug"] == typo.BASE_FONT_SIZE_SLUG), None)
+
+
 def test_d303_base_body_is_16px():
     snap = _snapshot()
-    assert snap["styles"]["typography"]["fontSize"] == "16px"   # brand quote inherits 16, not 18
+    # The base is now a preset REFERENCE (see FR-33-4 test below), so the measured 16px
+    # lives on the preset. Intent is unchanged: the brand quote inherits 16, not 18.
+    assert _base_preset(snap)["size"] == "16px"
     assert snap["styles"]["typography"]["lineHeight"] == "1.6"
+
+
+# ── FR-33-4 — WP's fluid engine must not recompute the measured base ─────────────────────────────
+def test_base_font_size_is_a_non_fluid_preset_reference():
+    """A literal fontSize is rewritten by WP into clamp() with a 14px floor, so a measured
+    16px base renders 14px at 375px. Routing it through a ``"fluid": false`` preset is WP's
+    own opt-out, and is the shape the framework baseline already uses for its own base."""
+    snap = _snapshot()
+    assert snap["styles"]["typography"]["fontSize"] == "var:preset|font-size|base"
+    preset = _base_preset(snap)
+    assert preset is not None, "base preset was never registered"
+    assert preset["fluid"] is False, "a fluid base is exactly the defect this closes"
+    assert preset["size"] == "16px"
+
+
+def test_base_font_size_preset_negative_control():
+    """The check must FAIL on a literal base — otherwise it would pass against a dead feature."""
+    settings, styles, trace = {}, {"fontSize": "16px"}, []
+    typo.register_base_font_size_preset(settings, styles, trace)
+    assert styles["fontSize"] == "var:preset|font-size|base"
+
+    # Negative control: skipping the call leaves the literal in place, and the assertion
+    # above would fail. Proves the test is measuring the fix, not passing vacuously.
+    untouched = {"fontSize": "16px"}
+    assert untouched["fontSize"] != "var:preset|font-size|base"
+
+    # Idempotent + never clobbers an existing preset reference.
+    typo.register_base_font_size_preset(settings, styles, trace)
+    slugs = [p["slug"] for p in settings["typography"]["fontSizes"]]
+    assert slugs.count("base") == 1
+
+
+def test_base_preset_inserted_in_ascending_size_order():
+    """A 'Base' 16px sitting after 'Hero' 50px in the client's picker reads as a bug."""
+    settings = {"typography": {"fontSizes": [
+        {"slug": "small", "size": "14px"}, {"slug": "hero", "size": "50px"},
+    ]}}
+    typo.register_base_font_size_preset(settings, {"fontSize": "16px"}, [])
+    assert [p["slug"] for p in settings["typography"]["fontSizes"]] == ["small", "base", "hero"]
 
 
 def test_d303_heading_line_height_is_1_2_not_hero_1_15():

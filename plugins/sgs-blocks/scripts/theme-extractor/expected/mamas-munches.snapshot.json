@@ -159,6 +159,12 @@
           }
         },
         {
+          "slug": "base",
+          "name": "Base",
+          "size": "16px",
+          "fluid": false
+        },
+        {
           "slug": "medium",
           "size": "18px",
           "name": "Medium",
@@ -199,6 +205,15 @@
             "min": "32px",
             "max": "50px"
           }
+        },
+        {
+          "slug": "display",
+          "size": "120px",
+          "name": "Display",
+          "fluid": {
+            "min": "56px",
+            "max": "120px"
+          }
         }
       ],
       "defaultFontSizes": false
@@ -216,6 +231,7 @@
       "margin": true,
       "padding": true,
       "customSpacingSize": true,
+      "defaultSpacingSizes": false,
       "spacingSizes": [
         {
           "slug": "10",
@@ -291,22 +307,22 @@
       "defaultPresets": false,
       "presets": [
         {
-          "name": "Small",
-          "slug": "sm",
+          "name": "Subtle",
+          "slug": "subtle",
           "shadow": "0 1px 3px rgba(0,0,0,0.08)"
         },
         {
-          "name": "Medium",
-          "slug": "md",
+          "name": "Raised",
+          "slug": "raised",
           "shadow": "0 4px 12px rgba(0,0,0,0.1)"
         },
         {
-          "name": "Large",
-          "slug": "lg",
+          "name": "Floating",
+          "slug": "floating",
           "shadow": "0 8px 30px rgba(0,0,0,0.12)"
         },
         {
-          "name": "Glow",
+          "name": "Brand glow",
           "slug": "glow",
           "shadow": "0 0 20px rgba(248,122,31,0.3)"
         }
@@ -320,6 +336,7 @@
           "border": "#e68a95",
           "border-width": "2px",
           "border-radius": "10px",
+          "padding": "14px 24px 14px 24px",
           "font-size": "15px",
           "font-weight": "600",
           "min-height": "48px",
@@ -333,6 +350,7 @@
           "border": "#e68a95",
           "border-width": "2px",
           "border-radius": "10px",
+          "padding": "14px 24px 14px 24px",
           "font-size": "15px",
           "font-weight": "600",
           "min-height": "48px",
@@ -346,10 +364,12 @@
           "border": "#e8d5c0",
           "border-width": "2px",
           "border-radius": "10px",
+          "padding": "10px 18px 10px 18px",
           "font-size": "14px",
           "font-weight": "600",
           "min-height": "44px",
           "hover-background": "rgba(245, 194, 200, 0.914)",
+          "hover-text": "var(--wp--preset--color--text)",
           "hover-border": "#e69099"
         }
       },
@@ -381,14 +401,16 @@
       "focus-ring": {
         "width": "3px",
         "offset": "2px",
-        "color-primary": "rgba(31, 122, 122, 0.4)",
-        "color-accent": "rgba(245, 158, 11, 0.4)"
+        "color-primary": "var(--wp--preset--color--accent, #d8ca50)",
+        "color-accent": "color-mix(in srgb, var(--wp--preset--color--accent, #d8ca50) 40%, transparent)"
       },
       "fontLinks": [
         "https://fonts.googleapis.com",
         "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600&display=swap",
         "https://fonts.gstatic.com"
-      ]
+      ],
+      "header": {},
+      "footer": {}
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,
@@ -404,7 +426,7 @@
     },
     "typography": {
       "fontFamily": "var:preset|font-family|body",
-      "fontSize": "16px",
+      "fontSize": "var:preset|font-size|base",
       "lineHeight": "1.6",
       "fontWeight": "400"
     },
@@ -436,26 +458,52 @@
       },
       "heading": {
         "typography": {
-          "lineHeight": "1.2",
-          "fontFamily": "var:preset|font-family|heading"
+          "fontFamily": "var:preset|font-family|heading",
+          "fontWeight": "700",
+          "lineHeight": "1.2"
+        },
+        "color": {
+          "text": "var:preset|color|text"
         }
       },
       "h1": {
         "typography": {
+          "fontSize": "58px",
           "fontFamily": "var:preset|font-family|heading",
           "lineHeight": "1.2"
         }
       },
       "h2": {
         "typography": {
+          "fontSize": "36px",
           "fontFamily": "var:preset|font-family|heading",
           "lineHeight": "1.2"
         }
       },
       "h3": {
         "typography": {
+          "fontSize": "20px",
           "fontFamily": "var:preset|font-family|heading",
           "lineHeight": "1.2"
+        }
+      },
+      "h4": {
+        "typography": {
+          "fontSize": "var:preset|font-size|large"
+        }
+      },
+      "h5": {
+        "typography": {
+          "fontSize": "var:preset|font-size|medium",
+          "fontWeight": "700"
+        }
+      },
+      "h6": {
+        "typography": {
+          "fontSize": "var:preset|font-size|small",
+          "fontWeight": "700",
+          "textTransform": "uppercase",
+          "letterSpacing": "0.08em"
         }
       },
       "button": {
@@ -559,74 +607,9 @@
       "title": "Header"
     },
     {
-      "area": "header",
-      "name": "header-minimal",
-      "title": "Header (Minimal)"
-    },
-    {
-      "area": "header",
-      "name": "header-sticky",
-      "title": "Header (Sticky)"
-    },
-    {
-      "area": "header",
-      "name": "header-transparent",
-      "title": "Header (Transparent Overlay)"
-    },
-    {
-      "area": "header",
-      "name": "header-shrink",
-      "title": "Header (Shrink on Scroll)"
-    },
-    {
       "area": "footer",
       "name": "footer",
       "title": "Footer"
-    },
-    {
-      "area": "footer",
-      "name": "footer-minimal",
-      "title": "Footer (Minimal)"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-brands",
-      "title": "Mega Menu: Brands"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-services",
-      "title": "Mega Menu: Services"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-products",
-      "title": "Mega Menu: Products"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-about",
-      "title": "Mega Menu: About"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-resources",
-      "title": "Mega Menu: Resources"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-contact",
-      "title": "Mega Menu: Contact"
-    },
-    {
-      "area": "mega-menu",
-      "name": "mega-menu-sectors",
-      "title": "Mega Menu: Sectors"
-    },
-    {
-      "area": "uncategorized",
-      "name": "sgs-pdp-gallery",
-      "title": "PDP: Product Gallery"
     },
     {
       "area": "uncategorized",
@@ -668,5 +651,9 @@
     }
   ],
   "title": "mamas-munches (generated by Spec 33 extractor)",
-  "description": "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py."
+  "description": "Draft-generated global styles — DO NOT hand-edit; regenerate via extract.py.",
+  "_sgsExtractor": {
+    "draft_css_sha256": "bdd22c098fa7e58d1618d973891244045e9253a25ab4de3e7d8f5f577a6a3c80",
+    "extractor_version": "1.0"
+  }
 }

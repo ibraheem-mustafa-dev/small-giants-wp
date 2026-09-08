@@ -242,6 +242,12 @@
           }
         },
         {
+          "slug": "base",
+          "name": "Base",
+          "size": "16px",
+          "fluid": false
+        },
+        {
           "slug": "medium",
           "size": "18px",
           "name": "Medium",
@@ -491,7 +497,7 @@
     },
     "typography": {
       "fontFamily": "var:preset|font-family|body",
-      "fontSize": "16px",
+      "fontSize": "var:preset|font-size|base",
       "lineHeight": "1.6",
       "fontWeight": "400"
     },
