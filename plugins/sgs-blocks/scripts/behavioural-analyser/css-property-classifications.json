@@ -147,24 +147,6 @@
     },
     {
       "slug": "sgs/before-after",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/before-after",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/before-after",
       "attr": "dividerWidth",
       "fields": {
         "css_property": "width",
@@ -526,7 +508,8 @@
       "slug": "sgs/breadcrumbs",
       "attr": "currentColourHover",
       "fields": {
-        "css_property": "color-current",
+        "css_property": "color",
+        "role": "color",
         "css_element": "current",
         "css_state": "hover"
       }
@@ -599,7 +582,8 @@
       "slug": "sgs/breadcrumbs",
       "attr": "separatorColourHover",
       "fields": {
-        "css_property": "color-separator",
+        "css_property": "color",
+        "role": "color",
         "css_element": "separator",
         "css_state": "hover"
       }
@@ -761,41 +745,6 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "boxShadowHoverColour",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER"
       }
     },
     {
@@ -1041,6 +990,23 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "cardShadowColourHover",
+      "fields": {
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "cardShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "columns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -1062,23 +1028,6 @@
       "attr": "scaleHover",
       "fields": {
         "css_property": "transform"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "shadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_element": "item",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "shadowHoverColour",
-      "fields": {
-        "css_element": "item",
-        "css_state": "hover"
       }
     },
     {
@@ -1681,27 +1630,6 @@
     },
     {
       "slug": "sgs/cta-section",
-      "attr": "borderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "borderColourHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -1747,15 +1675,6 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "headline"
-      }
-    },
-    {
-      "slug": "sgs/cta-section",
-      "attr": "shadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -1881,14 +1800,6 @@
       "attr": "focusRingColour",
       "fields": {
         "css_property": "outline-color",
-        "css_element": "input"
-      }
-    },
-    {
-      "slug": "sgs/filter-search",
-      "attr": "inputBorderColour",
-      "fields": {
-        "css_property": "border-color",
         "css_element": "input"
       }
     },
@@ -2280,44 +2191,6 @@
     },
     {
       "slug": "sgs/heading",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "boxShadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/heading",
-      "attr": "boxShadowHoverColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/heading",
       "attr": "customWidth",
       "fields": {
         "css_property": "width",
@@ -2617,15 +2490,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaAnimationDuration",
-      "fields": {
-        "css_property": "anim:duration",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "mediaBackground",
       "fields": {
         "css_property": "background-color",
@@ -2659,6 +2523,15 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaAnimationDuration",
+      "fields": {
+        "css_property": "anim:duration",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
       }
     },
     {
@@ -2763,13 +2636,6 @@
       "fields": {
         "css_property": "max-width",
         "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxWidthPercent",
-      "fields": {
         "css_element": "split-media"
       }
     },
@@ -3391,16 +3257,6 @@
       "attr": "order",
       "fields": {
         "css_property": "order"
-      }
-    },
-    {
-      "slug": "sgs/mega-aside",
-      "attr": "asideBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_layer": "CONTENT",
-        "css_element": "wrapper"
       }
     },
     {
@@ -4625,17 +4481,17 @@
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "shadowHover",
+      "attr": "shadowColourHover",
       "fields": {
-        "css_property": "box-shadow",
         "css_element": "card",
         "css_state": "hover"
       }
     },
     {
       "slug": "sgs/post-grid",
-      "attr": "shadowHoverColour",
+      "attr": "shadowHover",
       "fields": {
+        "css_property": "box-shadow",
         "css_element": "card",
         "css_state": "hover"
       }
@@ -5617,7 +5473,10 @@
       "slug": "sgs/product-faq",
       "attr": "backgroundColourHover",
       "fields": {
-        "css_property": "position"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -5713,48 +5572,6 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "focusRingColour",
-      "fields": {
-        "css_property": "outline-color",
-        "css_element": "input"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "inputBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "input"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "listboxBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "results"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "matchHighlightColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "result-title"
-      }
-    },
-    {
-      "slug": "sgs/product-search",
-      "attr": "resultHoverBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "css_element": "results",
-        "css_state": "hover"
       }
     },
     {
@@ -5857,44 +5674,6 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "boxShadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/quote",
-      "attr": "boxShadowHoverColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
       }
     },
     {
@@ -6541,6 +6320,16 @@
     },
     {
       "slug": "sgs/team-member",
+      "attr": "cardShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/team-member",
       "attr": "nameColour",
       "fields": {
         "css_property": "color",
@@ -6710,16 +6499,6 @@
       "attr": "scaleHover",
       "fields": {
         "css_property": "transform"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "shadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
       }
     },
     {
@@ -7103,44 +6882,6 @@
       "fields": {
         "css_property": "border-style",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "boxShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "boxShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "boxShadowHover",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "boxShadowHoverColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper",
-        "css_state": "hover"
       }
     },
     {
@@ -8343,6 +8084,42 @@
     },
     {
       "slug": "sgs/before-after",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "boxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/before-after",
       "attr": "dividerColour",
       "fields": {
         "css_property": "background-color",
@@ -8613,6 +8390,15 @@
       }
     },
     {
+      "slug": "sgs/brand-strip",
+      "attr": "tileShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "tile",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/breadcrumbs",
       "attr": "borderColour",
       "fields": {
@@ -8666,6 +8452,32 @@
     },
     {
       "slug": "sgs/breadcrumbs",
+      "attr": "currentColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "current",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "linkColourGradient",
+      "fields": {
+        "css_property": "color-link-gradient",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "linkColourHoverGradient",
+      "fields": {
+        "css_property": "color-link-gradient",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -8678,6 +8490,15 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "separatorColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "separator",
+        "css_state": "hover"
       }
     },
     {
@@ -8891,6 +8712,25 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -10026,11 +9866,42 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "borderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -10170,11 +10041,30 @@
     },
     {
       "slug": "sgs/cta-section",
+      "attr": "shadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
       "attr": "shadowColour",
       "fields": {
         "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -10397,7 +10287,7 @@
       "slug": "sgs/feature-grid",
       "attr": "textColourGradient",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "background-image,color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -10832,7 +10722,7 @@
       "slug": "sgs/form-field-tiles",
       "attr": "textColourGradient",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "background-image,color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -10954,7 +10844,7 @@
       "slug": "sgs/form-step",
       "attr": "textColourGradient",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "background-image,color-gradient",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
       }
@@ -11534,6 +11424,42 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "boxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
@@ -11729,34 +11655,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "mediaOverlayColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaOverlayGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "GRID_AREA",
-        "css_element": "media-overlay"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "mediaParallax",
-      "fields": {
-        "css_property": "anim:parallax",
-        "css_layer": "GRID_AREA",
-        "css_element": "media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "overlayGradient",
       "fields": {
         "css_property": "background-image",
@@ -11817,6 +11715,32 @@
         "css_property": "object-position",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "GRID_AREA",
+        "css_element": "media-overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaParallax",
+      "fields": {
+        "css_element": "media"
       }
     },
     {
@@ -12382,11 +12306,42 @@
     },
     {
       "slug": "sgs/mega-aside",
+      "attr": "asideBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
       "attr": "asideBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
         "css_layer": "CONTENT",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -14205,6 +14160,15 @@
     },
     {
       "slug": "sgs/product-faq",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-faq",
       "attr": "borderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -14256,7 +14220,7 @@
       "slug": "sgs/product-faq",
       "attr": "textColourGradient",
       "fields": {
-        "css_property": "background-image",
+        "css_property": "background-image,color-gradient",
         "css_element": "wrapper"
       }
     },
@@ -14409,6 +14373,67 @@
     },
     {
       "slug": "sgs/product-search",
+      "attr": "focusRingColour",
+      "fields": {
+        "css_property": "outline-color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "inputBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "inputBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "inputBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "input",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "inputBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "input",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "listboxBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "results"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "listboxBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "results"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -14417,10 +14442,46 @@
     },
     {
       "slug": "sgs/product-search",
+      "attr": "matchHighlightColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "result-title"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "matchHighlightColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "result-title"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "resultHoverBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "results",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "resultHoverBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-color-gradient",
+        "css_element": "results",
+        "css_state": "hover"
       }
     },
     {
@@ -14540,6 +14601,42 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/quote",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -17056,6 +17153,42 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "boxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {

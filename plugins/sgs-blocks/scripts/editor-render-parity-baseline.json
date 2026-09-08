@@ -4,5 +4,13 @@
 		"dispositionVocabulary": ["by-design", "accepted-debt", "detector-limitation", "blocked"],
 		"dispositionVocabularyNote": "Closed vocabulary: by-design (correct, will never need fixing) / accepted-debt (real gap, consciously deferred) / detector-limitation (the checker itself is wrong — flags a rule violation per THE-MIGRATION-METHOD.md:455, not a normal outcome) / blocked (waiting on something external). See .claude/parking.md P-BASELINE-DISPOSITION-VOCABULARY / .claude/LEDGER.md."
 	},
-	"accepted": []
+	"accepted": [
+		{
+			"check": "editor-canvas-desync",
+			"block": "sgs/button",
+			"attr": "boxShadowColourHover",
+			"disposition": "accepted-debt",
+			"reason": "Wave A1 ShadowControl redesign (2026-09-07): the resting boxShadow/boxShadowColour pair already has a canvas preview (resolveShadowPreviewComposed(), edit.js ~L339), but no SGS block canvas-previews a HOVER colour anywhere in the framework today — the editor canvas cannot simulate :hover without JS, and no shared mechanism for that exists yet. This attr existed under a different name (boxShadowHoverColour, a separate two-mount ShadowControl) before this session's rename+consolidation into one tabbed Normal/Hover mount; the underlying desync is pre-existing framework-wide debt (see sgs/product-search's 12 identical hover-colour-family findings, untouched by this session), surfaced under a new name by the rename rather than newly introduced."
+		}
+	]
 }

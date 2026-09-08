@@ -12,12 +12,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -40,40 +38,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing"
+        "color"
       ],
       "skip_serialization": {
-        "color": false,
-        "spacing": true
-      },
-      "all_present_skipped": false,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "3",
-    "class": "judgment"
-  },
-  {
-    "block": "buybox",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": false,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing"
-      ],
-      "skip_serialization": {
-        "color": false,
-        "spacing": true
+        "color": false
       },
       "all_present_skipped": false,
       "parse_error": null
@@ -98,15 +66,11 @@
       "supports_present": [
         "color",
         "spacing",
-        "__experimentalBorder",
-        "typography",
         "shadow"
       ],
       "skip_serialization": {
         "color": true,
         "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
         "shadow": true
       },
       "all_present_skipped": true,
@@ -158,16 +122,38 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "container",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color"
+      ],
+      "skip_serialization": {
+        "color": false
+      },
+      "all_present_skipped": false,
       "parse_error": null
     },
     "live": null,
@@ -188,12 +174,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -208,7 +192,7 @@
     "static": {
       "render_php": true,
       "passes_style_key": false,
-      "emits_literal_style_attr": true,
+      "emits_literal_style_attr": false,
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
       "var_emit_shapes": [],
@@ -216,14 +200,12 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true
+        "color": false
       },
-      "all_present_skipped": true,
+      "all_present_skipped": false,
       "parse_error": null
     },
     "live": null,
@@ -239,17 +221,17 @@
       "emits_literal_style_attr": false,
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
+      "var_emit_shapes": [
+        "css"
+      ],
       "presence_selectors": []
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": false,
-        "__experimentalBorder": true
+        "color": false
       },
       "all_present_skipped": false,
       "parse_error": null
@@ -310,26 +292,50 @@
     "class": "judgment"
   },
   {
-    "block": "multi-button",
+    "block": "notice-banner",
     "static": {
       "render_php": true,
       "passes_style_key": false,
       "emits_literal_style_attr": true,
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
-      "var_emit_shapes": [
-        "css"
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [
+        "color"
       ],
+      "skip_serialization": {
+        "color": true
+      },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "3",
+    "class": "judgment"
+  },
+  {
+    "block": "process-steps",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": true,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
       "presence_selectors": []
     },
     "block_json": {
       "supports_present": [
         "color",
-        "__experimentalBorder"
+        "shadow"
       ],
       "skip_serialization": {
         "color": true,
-        "__experimentalBorder": true
+        "shadow": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -352,12 +358,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing"
+        "color"
       ],
       "skip_serialization": {
-        "color": false,
-        "spacing": true
+        "color": false
       },
       "all_present_skipped": false,
       "parse_error": null
@@ -383,16 +387,10 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
         "shadow"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
         "shadow": true
       },
       "all_present_skipped": true,
@@ -416,14 +414,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": false,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": false
       },
       "all_present_skipped": false,
       "parse_error": null
@@ -432,32 +426,6 @@
     "live_seen": false,
     "case": "3",
     "class": "judgment"
-  },
-  {
-    "block": "responsive-logo",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": true,
-      "uses_container_wrapper": false,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "spacing"
-      ],
-      "skip_serialization": {
-        "spacing": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "3",
-    "class": "skip-header-footer"
   },
   {
     "block": "accordion",
@@ -472,16 +440,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -504,12 +466,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -537,14 +497,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -567,14 +523,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -597,14 +549,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -629,14 +577,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -647,12 +591,12 @@
     "class": "done"
   },
   {
-    "block": "container",
+    "block": "buybox",
     "static": {
       "render_php": true,
       "passes_style_key": false,
       "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
+      "uses_container_wrapper": false,
       "has_scoped_style_tag": true,
       "var_emit_shapes": [],
       "presence_selectors": []
@@ -660,45 +604,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "done",
-    "class": "done"
-  },
-  {
-    "block": "content-collection",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
-      ],
-      "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -721,16 +631,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -754,14 +658,10 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
         "typography"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
         "typography": true
       },
       "all_present_skipped": true,
@@ -783,24 +683,14 @@
       "var_emit_shapes": [
         "wrapper_styles"
       ],
-      "presence_selectors": [
-        "--sgs-hover-\u2026"
-      ]
+      "presence_selectors": []
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
-        "shadow"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
-        "shadow": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -870,13 +760,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -925,16 +813,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1266,13 +1148,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1297,14 +1177,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1327,12 +1203,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1355,14 +1229,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1383,22 +1253,14 @@
       "var_emit_shapes": [
         "styles"
       ],
-      "presence_selectors": [
-        "--sgs-hover-\u2026"
-      ]
+      "presence_selectors": []
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1421,16 +1283,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1480,16 +1336,10 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
         "shadow"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
         "shadow": true
       },
       "all_present_skipped": true,
@@ -1575,7 +1425,7 @@
     "class": "done"
   },
   {
-    "block": "nav-drawer",
+    "block": "multi-button",
     "static": {
       "render_php": true,
       "passes_style_key": false,
@@ -1589,11 +1439,35 @@
     },
     "block_json": {
       "supports_present": [
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "__experimentalBorder": true
+        "color": true
       },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "nav-drawer",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": true,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [
+        "css"
+      ],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
       "all_present_skipped": true,
       "parse_error": null
     },
@@ -1617,42 +1491,10 @@
     },
     "block_json": {
       "supports_present": [
-        "spacing"
+        "color"
       ],
       "skip_serialization": {
-        "spacing": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "done",
-    "class": "done"
-  },
-  {
-    "block": "notice-banner",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
-      ],
-      "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1675,14 +1517,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1705,14 +1543,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1731,22 +1565,16 @@
       "uses_container_wrapper": true,
       "has_scoped_style_tag": true,
       "var_emit_shapes": [],
-      "presence_selectors": [
-        "--sgs-hover-\u2026"
-      ]
+      "presence_selectors": []
     },
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1770,49 +1598,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
-      },
-      "all_present_skipped": true,
-      "parse_error": null
-    },
-    "live": null,
-    "live_seen": false,
-    "case": "done",
-    "class": "done"
-  },
-  {
-    "block": "process-steps",
-    "static": {
-      "render_php": true,
-      "passes_style_key": false,
-      "emits_literal_style_attr": false,
-      "uses_container_wrapper": true,
-      "has_scoped_style_tag": true,
-      "var_emit_shapes": [],
-      "presence_selectors": []
-    },
-    "block_json": {
-      "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
-        "shadow"
-      ],
-      "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
-        "shadow": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1838,13 +1628,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1867,16 +1655,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1899,12 +1681,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -1926,12 +1706,8 @@
       "presence_selectors": []
     },
     "block_json": {
-      "supports_present": [
-        "spacing"
-      ],
-      "skip_serialization": {
-        "spacing": true
-      },
+      "supports_present": [],
+      "skip_serialization": {},
       "all_present_skipped": true,
       "parse_error": null
     },
@@ -1954,16 +1730,34 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
         "typography"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
         "typography": true
       },
+      "all_present_skipped": true,
+      "parse_error": null
+    },
+    "live": null,
+    "live_seen": false,
+    "case": "done",
+    "class": "done"
+  },
+  {
+    "block": "responsive-logo",
+    "static": {
+      "render_php": true,
+      "passes_style_key": false,
+      "emits_literal_style_attr": false,
+      "uses_container_wrapper": false,
+      "has_scoped_style_tag": true,
+      "var_emit_shapes": [],
+      "presence_selectors": []
+    },
+    "block_json": {
+      "supports_present": [],
+      "skip_serialization": {},
       "all_present_skipped": true,
       "parse_error": null
     },
@@ -1987,14 +1781,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2019,12 +1809,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2049,14 +1837,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2081,12 +1865,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2109,14 +1891,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2139,12 +1917,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2167,12 +1943,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2195,16 +1969,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2235,13 +2003,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2266,16 +2032,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2303,15 +2063,11 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography"
+        "spacing"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true
+        "spacing": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2335,16 +2091,10 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
-        "__experimentalBorder",
-        "typography",
         "shadow"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
-        "__experimentalBorder": true,
-        "typography": true,
         "shadow": true
       },
       "all_present_skipped": true,
@@ -2370,14 +2120,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "spacing",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "spacing": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2400,12 +2146,10 @@
     },
     "block_json": {
       "supports_present": [
-        "color",
-        "__experimentalBorder"
+        "color"
       ],
       "skip_serialization": {
-        "color": true,
-        "__experimentalBorder": true
+        "color": true
       },
       "all_present_skipped": true,
       "parse_error": null
@@ -2429,12 +2173,10 @@
     "block_json": {
       "supports_present": [
         "color",
-        "spacing",
         "__experimentalBorder"
       ],
       "skip_serialization": {
         "color": true,
-        "spacing": true,
         "__experimentalBorder": true
       },
       "all_present_skipped": true,

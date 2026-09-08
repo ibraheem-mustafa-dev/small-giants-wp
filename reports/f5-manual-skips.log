@@ -91,3 +91,18 @@ timestamp | script | type | reason
 2026-09-07 10:45:17 | db-consistency/run.py | MANUAL SKIP | 1 remaining violation is sgs/timeline.textColourHover, a concurrent session's own in-progress colour-conformance work outside this commit's scope, confirmed via git diff
 2026-09-07 10:47:29 | db-consistency/run.py | MANUAL SKIP | 1 remaining violation is sgs/timeline.textColourHover, a concurrent session's own in-progress colour-conformance work outside this commit's scope, confirmed via git diff
 2026-09-07 10:58:21 | db-consistency/run.py | MANUAL SKIP | all 3 violations are sgs/timeline routing-determinism/undeclared-subelement issues from another concurrent session's in-flight work, unrelated to hero/product-card order changes
+2026-09-07 18:19:35 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename (uncommitted + lines in attr-classification-overrides.json; neither block declares the attr yet). Not my work: this commit touches no block.json and no overrides file.
+2026-09-07 18:30:39 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename; this commit adds one new script and touches no block.json or overrides file.
+2026-09-07 19:01:46 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename; this commit touches two converter resolvers and decisions.md only.
+2026-09-07 19:28:20 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename; this commit touches two CSS files, one block.json supports key, and decisions.md.
+2026-09-07 19:29:13 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename; this commit touches two CSS files, one block.json supports key, and decisions.md.
+2026-09-07 19:29:48 | db-consistency/run.py | MANUAL SKIP | peer in-flight shadowColourHover rename
+2026-09-07 19:30:34 | db-consistency/run.py | MANUAL SKIP | peer in-flight shadowColourHover rename on card-grid/team-member
+2026-09-07 19:31:15 | db-consistency/run.py | MANUAL SKIP | peer in-flight shadowColourHover rename
+2026-09-07 19:31:53 | db-consistency/run.py | MANUAL SKIP | peer in-flight shadowColourHover rename
+2026-09-07 20:21:58 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover on card-grid/team-member is a peer session's half-applied ShadowControl rename; this commit touches the box-shape atom twins, its parity fixture and decisions.md.
+2026-09-07 20:42:24 | db-consistency/run.py | MANUAL SKIP | Check#8 shadowColourHover card-grid/team-member is a peer's half-applied ShadowControl rename
+2026-09-07 20:43:25 | db-consistency/run.py | MANUAL SKIP | peer's half-applied shadowColourHover rename
+2026-09-07 20:59:52 | db-consistency/run.py | MANUAL SKIP | peer's half-applied shadowColourHover rename on card-grid/team-member
+2026-09-07 21:32:58 | db-consistency/run.py | MANUAL SKIP | peer's half-applied shadowColourHover rename on card-grid/team-member
+2026-09-07 21:58:35 | db-consistency/run.py | MANUAL SKIP | peer in-flight shadow rename
