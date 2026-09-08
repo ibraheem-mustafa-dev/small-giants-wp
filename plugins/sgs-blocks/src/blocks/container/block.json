@@ -204,7 +204,7 @@
 				"stack",
 				"grid"
 			],
-			"default": "flex"
+			"default": ""
 		},
 		"tagName": {
 			"type": "string",

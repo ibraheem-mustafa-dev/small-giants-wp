@@ -22,7 +22,22 @@ import {
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
 
+/*
+ * 'Default' is the EMPTY value, and it is a real choice, not a placeholder for
+ * "unset". It emits no `display` at all, leaving the container in CSS normal
+ * flow (WordPress calls this `is-layout-flow`): children are block-level boxes
+ * that fill the container's width and stack vertically.
+ *
+ * It is listed FIRST and is the schema default because that is what a section
+ * which declares no layout should be. A cloned draft that says nothing about
+ * layout must arrive here, not as an explicit flex row — see the container's
+ * block.json `layout` default and the 2026-09-08 note there.
+ *
+ * Distinct from 'Stack', which is flex-column: stack gives you `gap` and no
+ * margin collapsing, and stretches its children; Default is ordinary block flow.
+ */
 const LAYOUT_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Flex', 'sgs-blocks' ), value: 'flex' },
 	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
 	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
@@ -77,7 +92,10 @@ export function LayoutPanel( {
 	enableColumnShapePicker = false,
 } ) {
 	const {
-		layout = 'flex',
+		// '' (Default / normal flow) — must MATCH the block.json default. A
+		// non-empty fallback here would make the control display a layout the
+		// block does not actually have, on every caller that leaves it unset.
+		layout = '',
 		alignItems = 'start',
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
