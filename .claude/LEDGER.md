@@ -57,6 +57,30 @@ has a live-measured evidence report.
 
 **Parity across three runs: 76% → 80% → 81% CSS, 97% → 99% content.**
 
+### Later in the same session — three more tracks
+
+13. **Type scale rebuilt and shipped (D1007).** No fluid typography; ladder 9 → 6. Both font
+    defects Bean reported are closed and measured live: body 14px → **16px** on phones, `small`
+    13.0082px → **14px**, footer body text → **16px**. New `theme/sgs-theme/assets/css/type-scale.css`
+    (redefines the three display presets per breakpoint at `:root:root`, so it wins on specificity
+    not enqueue order) + `scripts/migrate-font-size-ladder.py` (43 declarations rehomed; 20
+    self-test assertions with negative controls; `--check` is a standing gate).
+    ⚠ **One regression shipped and was caught by Bean's question, not by me:** moving every preset
+    to `fluid: false` without adding `display` to the media overrides left the 404 numeral flat at
+    120px on phones (it had been 56px). Fixed by retiring `display` and putting explicit tiers on
+    the block. **A preset moved off fluid needs its media-query override in the SAME change.**
+14. **Doc audit — four parallel agents** across `plans/`, `specs/` (two clusters) and `.claude/`
+    root. Nine fixes applied, each re-verified before use. **Three agent claims were REJECTED after
+    checking:** a "37 xfail goldens is stale, it's 10" claim (the file says 37 — applying it would
+    have replaced a correct number with a wrong one), a "`--dry-run` really deploys" claim
+    (unprovable either way — documented as a contradiction instead of guessed), and a "this plan is
+    DONE" claim (the plan contradicted itself; that was the real defect).
+15. **Repo hygiene.** 1 worktree + 4 merged branches pruned (all verified ancestors of
+    `origin/main`, zero salvage), 2,499 dangling commits cleared, 0 stashes. 39 non-stash orphans
+    preserved as `refs/salvage/*` rather than deleted on a judgement call — one is
+    `feat(icon-list): per-item icon colour`, which the plugin CLAUDE.md still lists as an open gap.
+    ⚠ A 152MB orphaned pack could not be removed — VS Code's Git extension holds it open.
+
 Two further commits this session were NOT part of that twelve — they were uncommitted work
 already in the shared checkout, which I read, verified and committed rather than deploy on a
 dirty tree: `4f441cac8` (container `min-height` flex-fill onto the content band, a documented
@@ -125,23 +149,107 @@ entries in the editor picker; nothing references them, nothing renders wrong.
 so a client with a materially different ladder inherits the framework curve. Affects
 hand-authored patterns only — the cloner writes measured raw numbers and never touches presets.
 
-### 2. Fix the parity tool before fixing the clone
+### 2. TRACK B — parity tool + the 14 defects: IN FLIGHT IN ANOTHER SESSION
 
-It is wrong in both directions and its score is currently unusable as a gate.
+⛔ **Do not start Track B blind.** Bean is running it in a parallel session and it has already
+landed `computed-parity.js` v1.3.0 (pseudo-element paint fallback + widened tag-defaults census,
+both council-falsified). **Check `git log -- plugins/sgs-blocks/scripts/parity/` before touching
+anything there.** The programme doc is
+`.claude/prompts/2026-09-08-clone-fidelity-programme.md`; its §2.1 is an out-of-scope stub
+because typography moved to Track A.
 
-- **False positives, proven:** it reads an element's own `background-color`, but SGS paints
-  backgrounds on `::after` by design. `sgs/info-box` own bg is transparent, its `::after` white —
-  36 diffs likely artefact. Borders may be the same (Bean says they already work).
-- **False negatives:** fourteen real defects scored clean. The likely structural gap is that it
-  compares computed CSS properties but **not layout geometry** — and most of Bean's findings are
-  position/width defects.
-- **Re-baseline after fixing.** Expect the score to move; that is the ruler straightening.
+⚠ **Its §1.4 ledger is now partly obsolete:** the `font-size` (77) and `line-height` (74)
+clusters — 151 diffs, 29% of the total — had fluid typography as their root cause, which Track A
+removed. **Re-measure before investigating them**; chasing them now measures a defect that is
+gone.
 
-### 3. Then root-cause the fourteen defects, then fix them
+---
 
-Phases 3 and 4 of the programme doc. Bean's binding method: **investigation separate from fixing,
-every finding falsified by a second agent (`/qc-council`), fixes explained before building, and no
-hardcoding a value to make this draft pass.**
+## Task 1 — Deploy-verify the type scale on a second page
+
+**What:** confirm the 6-preset ladder renders correctly somewhere other than the homepage + 404.
+**Why:** both surfaces verified so far are ones Track A touched directly. A page nobody edited is
+the honest control.
+**Estimated time:** 10 min
+
+**Orchestration:**
+- Execution: inline (main thread) — it is a measurement, not a build
+- Depends on: none. Parallel with: Task 2
+- /qc gate after: no — the measurement IS the gate
+- **Acceptance:** at 375 / 900 / 1440, `small`/`regular`/`large` are flat 14/16/20 and
+  `x-large`/`xx-large`/`hero` step 21-22-24 / 27-30-36 / 33-40-50, on a page not edited this
+  session. Any preset resolving to a `clamp()` is a failure.
+
+## Task 2 — Resolve the `--dry-run` contradiction
+
+**What:** `.claude/dev-setup.md` now documents an unresolved conflict — the code says `--dry-run`
+never deploys (every step passes `args.dry_run` to `run()`, which returns early), but D991 records
+a real incident where it built, packaged, SCP'd and installed live. `build-deploy.py` has had no
+commits since.
+**Why:** an operator cannot currently trust a "safe preview". One of the two records is wrong and
+nobody knows which.
+**Estimated time:** 20 min
+
+**Orchestration:**
+- Execution: inline. This needs a deliberate empirical test, not a code read — two agents have
+  now reasoned about it and reasoning is what produced the disagreement.
+- Method: run `--dry-run` against a throwaway target with a tripwire file, then check whether the
+  remote changed. Do NOT test against the live canary.
+- Depends on: none. Parallel with: Task 1
+- /qc gate after: no
+- **Acceptance:** a one-line verdict in `dev-setup.md` + D991 amended, backed by an observed
+  remote state — not by reading the script again.
+
+## Task 3 — Decide the fate of `refs/salvage/*` (39 refs)
+
+**What:** 39 orphaned commits were preserved rather than deleted during the gc. Most are junk
+(`probe2`, `test commit message`, an empty subject) or log-only chores. **One is
+`feat(icon-list): per-item icon colour + gradient override`**, and `plugins/sgs-blocks/CLAUDE.md`
+lists icon-list per-item colour as a still-OPEN gap.
+**Why:** either that commit is real unlanded work worth recovering, or the refs are dead weight.
+**Estimated time:** 15 min
+
+**Orchestration:**
+- Execution: delegated — cold, mechanical triage
+  - Model: sonnet via `/delegate`
+  - Dispatch: single agent
+  - Brief: for each `refs/salvage/*`, diff against `origin/main` and classify KEEP / DROP. Report
+    only; do not delete refs and do not cherry-pick.
+  - Context it needs: the framework is pre-production; `git cherry`/patch-id is unreliable here
+    because the repo squash-merges, so compare CONTENT not commit identity.
+- Depends on: none
+- /qc gate after: yes — `/qc-inline` on the KEEP list before anything is cherry-picked
+- **Acceptance:** every ref classified with evidence; Bean decides on the KEEP list. Deleting the
+  refs is not this task's job.
+
+## Task 4 — Two doc items the audit surfaced but did not close
+
+**What:** (a) **47 living-doc citations point into `plans/archive/`**, against the working-area
+rule that archived plans are git-blame-only. Many are deliberately labelled "(ARCHIVED —
+historical)", so the RULE may be wrong rather than the citations — that needs Bean's call, not a
+mass edit. (b) Three plans are stalled with no doc saying so: `merged-spec36-37` (partial since
+D423, 2026-07-30), the `drawer-architecture` design gate (still un-run 40 days on), and
+`snooza-configurator` — **which has real client stakes, a fixed pitch date and a 6-week quote, and
+nothing anywhere flags that it stopped moving.**
+**Why:** (b) is the one with money attached.
+**Estimated time:** 10 min to surface; the decisions are Bean's
+
+**Orchestration:**
+- Execution: inline — these are questions for Bean, not work
+- Depends on: none
+- /qc gate after: no
+- **Acceptance:** Bean has answered on snooza and on the archive-citation rule. Do NOT open
+  parking entries for either without asking first.
+
+## Dependency graph
+
+```
+Task 1 + Task 2 + Task 3 (all independent, dispatch together)
+  ↓  Task 3 only: /qc-inline on its KEEP list
+Task 4 (ask Bean; blocks nothing)
+
+Track B runs in a SEPARATE session — do not start it here.
+```
 
 ## Open — real, not blocking
 
@@ -230,7 +338,7 @@ here despite being indexed, which is itself worth knowing.)*
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1006** — verify with
+- **D-ceiling:** **D1007** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Homepage page **2742**. **Deployed + re-cloned this session**;
   all twelve fixes verified live.
