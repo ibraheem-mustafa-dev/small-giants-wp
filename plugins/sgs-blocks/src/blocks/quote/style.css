@@ -14,6 +14,12 @@
 	/* Reset browser blockquote indent so padding attrs work cleanly. */
 	margin: 0;
 	padding: 0;
+	/* Component's own default (HC2-permitted inheritable ROOT default, not a per-element
+	   override — a child sgs/text's own explicit font-style still wins by cascade). Quote
+	   bodies read as italic by design-system convention; proven missing 2026-09-08
+	   (qc-council) — the block had no font-style anywhere, so the body paragraph rendered
+	   upright with no way to opt in short of an explicit per-instance override. */
+	font-style: italic;
 }
 
 /* Attribution slot — display block so it sits below the body. */

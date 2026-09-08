@@ -74,6 +74,25 @@
  * inline-wrapper hoist (button labels in a <span>), stable image identity (alt else src-basename),
  * duplicate-text occurrence disambiguation (key#N), auto↔0px min-* twins.
  *
+ * ── v1.3.0 (qc-council, 2026-09-08) ──
+ * Two proven false-negative gaps closed, both council-falsified against fresh live measurement
+ * before being fixed (not from a single agent's report):
+ *   (1) PSEUDO-ELEMENT PAINT FALLBACK — SGS paints backgrounds/gradient borders on ::after/
+ *       ::before (sgs_block_background_layer_css/sgs_border_gradient_css), which readAll() never
+ *       queried. Every such block false-flagged as "background/border missing". Fixed as a
+ *       fallback in readAll(): the pseudo value is used ONLY when the element's own value is a
+ *       non-painting default, so a genuinely unpainted element still scores as empty.
+ *   (2) TAG-DEFAULTS CENSUS WIDENED — the per-tag defaults census covered only 16 tags; any
+ *       unmatched element of a missing tag (found live: <article>, e.g. the testimonial cards)
+ *       scored ZERO lost props by construction, regardless of actual severity. List widened +
+ *       both consumers now fall back to `dDef.div` rather than `{}` for a genuinely novel tag.
+ * NOT fixed this pass (documented, not silently dropped): a node-MATCHING bug where, when
+ * several nested elements share identical normalised text, the box-collision resolver can land
+ * on a wrapper that structurally cannot carry the box-level property actually being compared
+ * (e.g. a border painted on an ancestor <section>, matched against a descendant it doesn't own).
+ * This needs its own design pass — a "deepest wins" vs "shallowest wins" flip fixes one confirmed
+ * case and breaks another, per council findings 2026-09-08. Tracked, not guessed at.
+ *
  * Usage:
  *   node computed-parity.js --draft <url|path> --clone <url|path> \
  *        [--viewports 375,768,1440] [--out report.json] [--exclude <text substrings>]
@@ -416,12 +435,44 @@ const CAPTURE_SRC = `() => {
     // round fractional px so 25.6px == 26px cross-browser/DPR
     return v.replace(/(-?\\d+\\.\\d+)px/g, (m, n) => Math.round(parseFloat(n)) + 'px');
   };
+  // v1.3.0 pseudo-element paint fallback (qc-council, 2026-09-08): SGS deliberately paints
+  // backgrounds (sgs_block_background_layer_css) and gradient borders (sgs_border_gradient_css)
+  // on a ::after/::before layer instead of the element itself, so the element's OWN
+  // background/border reads as transparent/none by design. Previously the tool never looked at
+  // a pseudo-element at all, so every block using this pattern false-flagged as "paint missing"
+  // (measurement-vs-eye.md: "pseudo-elements" is part of the mandatory extended set). This is a
+  // FALLBACK only — the pseudo value is used ONLY when the element's own value is a non-painting
+  // default, so an element that genuinely paints nothing on either layer still reports as empty.
+  const PSEUDO_PAINT_PROPS = ['background-color', 'background-image',
+    'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color',
+    'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width',
+    'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'];
+  const isEmptyPaint = (p, v) => {
+    if (v == null) return true;
+    if (/-color$/.test(p)) return v === 'rgba(0, 0, 0, 0)' || v === 'transparent' || v === '';
+    if (/-width$/.test(p)) return (parseFloat(v) || 0) === 0;
+    if (/-style$/.test(p)) return !v || v === 'none';
+    if (p === 'background-image') return !v || v === 'none';
+    return false;
+  };
+  const mergePseudoPaint = (el, r) => {
+    for (const pseudo of ['::after', '::before']) {
+      let pcs; try { pcs = getComputedStyle(el, pseudo); } catch (e) { continue; }
+      if (!pcs || !pcs.content || pcs.content === 'none') continue;  // pseudo generates no box
+      for (const p of PSEUDO_PAINT_PROPS) {
+        if (!isEmptyPaint(p, r[p])) continue;  // own element already paints this layer
+        const pv = normVal(p, pcs.getPropertyValue(p));
+        if (!isEmptyPaint(p, pv)) r[p] = pv;
+      }
+    }
+  };
   const readAll = (el) => { const cs = getComputedStyle(el), r = {};
     const isAlignfull = el.classList && el.classList.contains('alignfull');
     for (let i = 0; i < cs.length; i++) { const p = cs[i];
       if (p.charCodeAt(0) === 45 || BLOCK.has(p) || LOGICAL.test(p)) continue;  // vendor '-' + blocklist + logical dupes
       if (isAlignfull && ALIGNFULL_EXTRA_BLOCK.has(p)) continue;  // alignfull-scoped margin blocklist
       r[p] = normVal(p, cs.getPropertyValue(p)); }
+    mergePseudoPaint(el, r);
     return r; };
   // v1.1.0 per-element geometry/parent context for the sub-visible predicates.
   const ctx = (el) => {
@@ -535,7 +586,18 @@ const CAPTURE_SRC = `() => {
   const hold = document.createElement('div');
   hold.style.cssText = 'position:absolute;left:-99999px;top:0;width:200px;';
   document.body.appendChild(hold);
-  ['div','p','span','a','h1','h2','h3','h4','h5','ul','li','blockquote','section','img','button','em','strong'].forEach(t => {
+  // v1.3.0 (qc-council, 2026-09-08): was 16 tags and silently omitted every other real HTML tag
+  // (article/h6/footer/header/nav/figure/figcaption/table/form/input/label and more) — an
+  // unmatched element of a missing tag always scored ZERO lost props regardless of severity
+  // (meaningfulCountUnmatched's dDef[drec.tag] || {} fallback below), which is exactly how the
+  // testimonial cards' real border loss contributed nothing to the score. List widened to cover
+  // every tag SGS/WordPress markup plausibly emits; dDef.div is still the safety-net fallback
+  // for anything genuinely novel, rather than trusting this list to be exhaustive forever.
+  ['div','p','span','a','h1','h2','h3','h4','h5','h6','ul','ol','li','dl','dt','dd','blockquote',
+   'section','article','header','footer','nav','main','aside','figure','figcaption','table',
+   'thead','tbody','tr','td','th','form','fieldset','legend','label','input','textarea','select',
+   'details','summary','time','address','picture','iframe','video','audio',
+   'img','button','em','strong','b','i','small','mark'].forEach(t => {
     const e = document.createElement(t); if (t === 'img') e.alt = ''; hold.appendChild(e); defaults[t] = readAll(e); });
   document.body.removeChild(hold);
 
@@ -685,7 +747,12 @@ function subVisibleBucket(prop, dv, cv, drec, crec) {
 // the number could not see. A missing element is the WORST possible fidelity outcome; it must
 // score as a total loss, not as an exemption.
 function meaningfulCountUnmatched(drec, dDef) {
-  const ddef = dDef[drec.tag] || {};
+  // v1.3.0: fall back to the div defaults rather than {} for a tag not in the census list — an
+  // empty ddef makes EVERY prop read as "no default to compare against", so an unmatched element
+  // of a missing tag always scored 0 lost props no matter how much it actually lost (confirmed:
+  // the 3 unmatched testimonial <article> cards' real border loss contributed nothing to the
+  // score). div is the safest generic fallback (block-level, no special initial values).
+  const ddef = dDef[drec.tag] || dDef.div || {};
   let n = 0;
   for (const p of Object.keys(drec.css)) {
     if (ddef[p] !== undefined && drec.css[p] !== ddef[p]) n++;
@@ -695,7 +762,7 @@ function meaningfulCountUnmatched(drec, dDef) {
 
 function comparePair(drec, crec, dDef, viewportPx) {
   let total = 0, match = 0, declined = 0; const diffs = [], sub = [], fluid = [];
-  const ddef = dDef[drec.tag] || {};
+  const ddef = dDef[drec.tag] || dDef.div || {};  // v1.3.0: same fallback as meaningfulCountUnmatched
   // Computed ONCE per pair (not per-prop) so the line-height branch below can require it.
   // `fsResult` = {equivalent, declined, predictedPx} — see fluidEquivalentFontSize's docblock.
   const fsResult = fluidEquivalentFontSize(drec, crec, viewportPx);

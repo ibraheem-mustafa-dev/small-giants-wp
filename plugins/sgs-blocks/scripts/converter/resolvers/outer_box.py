@@ -456,14 +456,30 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
         # mirroring sgs/container (R-31-9). Mirrors content_band.py's D307
         # branch EXACTLY (ONE mechanism, R-31-9).
         if sides["left"] == sides["right"] == "auto":
-            return gap_writer(
-                ctx, decl, GapOrigin.EXCLUDED,
-                f"{prop} left/right are both 'auto' — horizontal centring is "
-                f"already reproduced by the band's contentWidth rule "
-                f"(class-sgs-container-wrapper.php margin-inline:auto), so "
-                f"lifting it onto the OUTER {attr!r} attr would be the wrong "
-                f"layer and a duplicate.",
-            )
+            # PROVEN 2026-09-08 (qc-council falsified against live DOM + this exact code
+            # path): only the LEFT/RIGHT auto-centring components are excluded here — that
+            # centring is reproduced elsewhere (the band's contentWidth rule). TOP/BOTTOM in
+            # this SAME shorthand (e.g. `margin: 0 auto 36px`) are real, author-declared
+            # values with no other transfer path; excluding the WHOLE declaration silently
+            # dropped them. Confirmed live: an ingredients-section text block lost its entire
+            # 36px bottom margin this way, reproducing on every max-width+centred instance.
+            # PHP box-object readers already handle a missing side key defensively (every
+            # `sgs_box_object_shorthand()` call site treats an absent key as unset, per this
+            # file's own box-object interface contract) — a partial {top,bottom} object is
+            # safe; left/right simply carry no override from THIS attr.
+            vertical_sides = {
+                k: v for k, v in sides.items()
+                if k in ("top", "bottom") and v not in (None, "0", "0px")
+            }
+            if not vertical_sides:
+                return gap_writer(
+                    ctx, decl, GapOrigin.EXCLUDED,
+                    f"{prop} left/right are both 'auto' — horizontal centring is "
+                    f"already reproduced by the band's contentWidth rule "
+                    f"(class-sgs-container-wrapper.php margin-inline:auto), and no "
+                    f"non-zero top/bottom value remains to transfer.",
+                )
+            return Write(attr=attr, value=vertical_sides, property=prop, tier=decl.tier)
         # Applied AFTER the auto-centring guard above ON PURPOSE: that guard
         # reads sides['left']/['right'], which no longer exist once these keys
         # are renamed. Remapping first raises KeyError on every border-radius.
