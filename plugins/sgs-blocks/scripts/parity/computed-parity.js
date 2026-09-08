@@ -420,7 +420,13 @@ const CAPTURE_SRC = `() => {
   };
   // normalise Unicode whitespace too (NBSP/zero-width/BOM), not just ASCII \\s.
   const WS_RE = /[\\s\\u00A0\\u200B\\uFEFF]+/g;
-  const norm = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,80);
+  // v1.4.0 (2026-09-08): cap raised 80 -> 300. Nothing else in this file depends on the literal
+  // 80 (grepped) -- it was just a bound on the anchor-key length, and the tight bound is what
+  // caused a wrapper and its own first child (whose innerText necessarily SHARES the wrapper's
+  // opening text) to collide on an identical truncated key even when their real, full text
+  // differs. 300 is generous enough that this stops happening for ordinary paragraph-length
+  // content while still keeping keys bounded.
+  const norm = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,300);
   const normFull = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'');
   const BLOCK = new Set(${JSON.stringify([...BLOCK])});
   const ALIGNFULL_EXTRA_BLOCK = new Set(['margin-left', 'margin-right']);
@@ -601,8 +607,8 @@ const CAPTURE_SRC = `() => {
     const e = document.createElement(t); if (t === 'img') e.alt = ''; hold.appendChild(e); defaults[t] = readAll(e); });
   document.body.removeChild(hold);
 
-  const texts = [], images = [], links = [], textEls = {};
-  const dkeyOccurrence = {};
+  const texts = [], images = [], links = [];
+  const textElsRaw = {};
   const boxElsRaw = {};
   const mk = (el) => ({ tag: el.tagName.toLowerCase(), cls: clsList(el), css: readAll(el),
     declared: { fontSize: declaredValue(el, 'font-size'), lineHeight: declaredValue(el, 'line-height') },
@@ -704,6 +710,42 @@ const CAPTURE_SRC = `() => {
     }
     return { ...base, css: mergedCss };
   };
+  // v1.4.0 unified anchor-key mechanism (2026-09-08). Two previously-separate bugs share one
+  // root cause: the anchor key was TEXT-ONLY, so it was either too SPARSE (an element with
+  // short/no text — an icon button, a spacer, a badge count — got no key at all and was
+  // structurally invisible to the whole comparison) or too COLLISION-PRONE (two DIFFERENT
+  // elements whose first N chars of text happened to match got the SAME key — the proven
+  // gift-section wrapper/child bug, only partly addressed by the BEM same-family merge above).
+  // One mechanism now covers both: every key is TAG-prefixed (helps disambiguate a
+  // same-truncated-prefix collision between two different tags, on top of the raised cap
+  // above); and an element whose OWN text is too short to be a reliable key falls back to a
+  // STRUCTURAL key — this element's tag + its position among same-tag siblings under its
+  // parent, anchored to the nearest ANCESTOR that DOES have real (matchable) text — rather
+  // than being dropped from the comparison entirely. The ancestor anchor is what makes this
+  // safe to compare cross-document: raw DOM depth/position never matches between a draft page
+  // and its WordPress clone, but an ancestor's visible TEXT does, and a faithfully-cloned
+  // repeated structure (e.g. 4 trust-bar badge icons) preserves sibling order underneath it.
+  const siblingIndexAmongSameTag = (el) => {
+    if (!el.parentElement) return 0;
+    let i = 0;
+    for (const sib of el.parentElement.children) {
+      if (sib === el) return i;
+      if (sib.tagName === el.tagName) i++;
+    }
+    return i;
+  };
+  const nearestQualifyingAncestorAnchor = (el, minLen) => {
+    for (let anc = el.parentElement; anc && anc.tagName !== 'BODY' && anc.tagName !== 'HTML'; anc = anc.parentElement) {
+      if (inChrome(anc)) continue;
+      const t = norm(anc.innerText);
+      if (t.length >= minLen) return t;
+    }
+    return null;
+  };
+  const structuralAnchor = (el, minLen) => {
+    const ancestorText = nearestQualifyingAncestorAnchor(el, minLen);
+    return ancestorText == null ? null : ('struct|' + el.tagName + '|' + siblingIndexAmongSameTag(el) + '|' + ancestorText);
+  };
   document.querySelectorAll('*').forEach((el) => {
     if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
     const isHtmlOrBody = el.tagName === 'HTML' || el.tagName === 'BODY';
@@ -723,25 +765,46 @@ const CAPTURE_SRC = `() => {
              && anchorEl.parentElement.tagName !== 'BODY') {
         anchorEl = anchorEl.parentElement;
       }
-      const occ = (dkeyOccurrence[dkey] = (dkeyOccurrence[dkey] || 0) + 1);
-      const slot = occ === 1 ? dkey : (dkey + '#' + occ);  // 2nd+ occurrence gets its own slot
-      if (!textEls[slot]) textEls[slot] = mk(anchorEl); }
+      const textKey = anchorEl.tagName + '|' + dkey;
+      (textElsRaw[textKey] = textElsRaw[textKey] || []).push({ rec: mk(anchorEl), el: anchorEl });
+    } else if (!isHtmlOrBody) {
+      // Short/empty direct text — structural fallback instead of dropping the element.
+      const structKey = structuralAnchor(el, 4);
+      if (structKey) (textElsRaw[structKey] = textElsRaw[structKey] || []).push({ rec: mk(el), el });
+    }
     if (!isHtmlOrBody && (el.childElementCount > 0 || el.tagName === 'IMG')) {
-      const anchor = el.tagName === 'IMG' ? ('img:' + imgIdentity(el)) : norm(el.innerText);
-      if (anchor.length >= 5) {
-        (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
+      if (el.tagName === 'IMG') {
+        const anchor = 'img:' + imgIdentity(el);
+        if (anchor.length >= 5) (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
+      } else {
+        const anchorText = norm(el.innerText);
+        const anchor = anchorText.length >= 5
+          ? (el.tagName + '|' + anchorText)
+          : structuralAnchor(el, 5);
+        if (anchor) (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
       }
     }
   });
-  const boxEls = {};
-  for (const k of Object.keys(boxElsRaw)) {
-    const candidates = boxElsRaw[k];
-    if (candidates.length === 1) { boxEls[k] = candidates[0].rec; continue; }
-    const cluster = familyClusterFor(candidates);
-    boxEls[k] = cluster
-      ? mergeFamilyBoxRecords(cluster)
-      : candidates.map(c => c.rec);  // no known relationship — try-all-candidates downstream
-  }
+  // Shared collapse for BOTH raw maps — a text-node collision can be BEM same-family related
+  // exactly like a box collision (the deterministic merge doesn't care which map it came from),
+  // and otherwise falls back to the same array-of-candidates + downstream bestPairing (runTier)
+  // that boxEls already had. textEls previously had NEITHER — a duplicate dkey silently
+  // overwrote nothing (first-write-wins via an ordinal #2/#3 slot keyed by DOM order, with
+  // no correctness check at all), which is now closed.
+  const collapseRaw = (raw) => {
+    const out = {};
+    for (const k of Object.keys(raw)) {
+      const candidates = raw[k];
+      if (candidates.length === 1) { out[k] = candidates[0].rec; continue; }
+      const cluster = familyClusterFor(candidates);
+      out[k] = cluster
+        ? mergeFamilyBoxRecords(cluster)
+        : candidates.map(c => c.rec);  // no known relationship — try-all-candidates downstream
+    }
+    return out;
+  };
+  const boxEls = collapseRaw(boxElsRaw);
+  const textEls = collapseRaw(textElsRaw);
   const fullText = normFull(document.body ? document.body.innerText : '').slice(0, 200000);
   return { texts: [...new Set(texts)], images: [...new Set(images)], links: [...new Set(links)], textEls, boxEls, defaults, fullText };
 }`;
@@ -957,6 +1020,14 @@ async function selfTest() {
   const browser = await chromium.launch();
   const page = await (await browser.newContext({ deviceScaleFactor: 1 })).newPage();
   const VW = 375;
+  // v1.4.0: textEls keys are now tag-prefixed ('P|...') rather than the bare text, and a
+  // fixture's own <p> may resolve to an array on an unresolved collision — go through the same
+  // findByAnchor() lookup + array-normalisation runTier() itself uses, rather than a direct
+  // bracket lookup by the bare literal text (which no longer exists as a key).
+  const findText = (map, text) => {
+    const found = findByAnchor(text, map, false);
+    return Array.isArray(found) ? found[0] : found;
+  };
   let failures = 0;
   const check = (label, cond, detail) => {
     console.log(`  [${cond ? 'PASS' : 'FAIL'}] ${label}${detail ? ' — ' + detail : ''}`);
@@ -967,7 +1038,7 @@ async function selfTest() {
   {
     const d = await capture(page, toURL(draftPath), VW);
     const c = await capture(page, toURL(goodClonePath), VW);
-    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    const drec = findText(d.textEls, TEXT), crec = findText(c.textEls, TEXT);
     check('positive fixture: both elements captured', !!drec && !!crec);
     const r = comparePair(drec, crec, d.defaults, VW);
     const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
@@ -985,7 +1056,7 @@ async function selfTest() {
   {
     const d = await capture(page, toURL(draftPath), VW);
     const c = await capture(page, toURL(badClonePath), VW);
-    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    const drec = findText(d.textEls, TEXT), crec = findText(c.textEls, TEXT);
     check('negative fixture: both elements captured', !!drec && !!crec);
     const r = comparePair(drec, crec, d.defaults, VW);
     const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
@@ -999,7 +1070,7 @@ async function selfTest() {
   {
     const d = await capture(page, toURL(guardDraftPath), VW);
     const c = await capture(page, toURL(guardClonePath), VW);
-    const drec = d.textEls[TEXT], crec = c.textEls[TEXT];
+    const drec = findText(d.textEls, TEXT), crec = findText(c.textEls, TEXT);
     check('guard fixture: both elements captured', !!drec && !!crec);
     const r = comparePair(drec, crec, d.defaults, VW);
     const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
@@ -1013,7 +1084,7 @@ async function selfTest() {
   {
     const d = await capture(page, toURL(misDraftPath), VW);
     const c = await capture(page, toURL(misClonePath), VW);
-    const drec = d.textEls[TEXT2], crec = c.textEls[TEXT2];
+    const drec = findText(d.textEls, TEXT2), crec = findText(c.textEls, TEXT2);
     check('misattribution fixture: both elements captured', !!drec && !!crec);
     const r = comparePair(drec, crec, d.defaults, VW);
     const fsMiss = r.diffs.some((x) => x.prop === 'font-size');
