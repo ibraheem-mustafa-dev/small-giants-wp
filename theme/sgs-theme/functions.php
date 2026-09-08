@@ -127,6 +127,10 @@ function setup(): void {
 
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
+	// The responsive half of the type scale (D1007). Loaded into the editor canvas as
+	// well as the front end, or an operator resizing the canvas would see desktop
+	// heading sizes at every width while the published page shrank them.
+	add_editor_style( 'assets/css/type-scale.css' );
 }
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
@@ -285,6 +289,17 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/utilities.css' ),
 		array(),
 		asset_version( 'assets/css/utilities.css', $theme_version )
+	);
+
+	// Responsive type scale (D1007). Redefines the three display presets' generated
+	// custom properties per breakpoint — the alternative to hand-authoring a tier
+	// object on all 147 pattern declarations. Wins on specificity (`:root:root`), not
+	// on enqueue order, so it does not matter where global styles land relative to it.
+	wp_enqueue_style(
+		'sgs-type-scale',
+		get_theme_file_uri( 'assets/css/type-scale.css' ),
+		array(),
+		asset_version( 'assets/css/type-scale.css', $theme_version )
 	);
 
 	// Per-variation stylesheet enqueue DELETED 2026-05-22 (Phase 5a Decision 18).

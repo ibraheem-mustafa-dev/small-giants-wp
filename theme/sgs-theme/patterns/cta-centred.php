@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"Start Your Journey Today","textAlign":"center","fontSize":{"desktop":"xx-large"}} /-->
 
-	<!-- wp:sgs/text {"text":"Join hundreds of satisfied clients who have transformed their businesses with our help.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+	<!-- wp:sgs/text {"text":"Join hundreds of satisfied clients who have transformed their businesses with our help.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 
 	<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 		<!-- wp:sgs/button {"label":"Book a Consultation","inheritStyle":"primary","borderRadius":{"desktop":"8px"}} /-->

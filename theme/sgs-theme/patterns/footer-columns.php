@@ -19,11 +19,11 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/responsive-logo {"width":160,"linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Company Links"},"flexWrap":"wrap"} -->
-<!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Company","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
 <ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
@@ -39,7 +39,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Services Links"},"flexWrap":"wrap"} -->
-<!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Services","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
 <ul style="padding-left:0;line-height:2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
@@ -55,7 +55,7 @@
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Newsletter"},"flexWrap":"wrap"} -->
-<!-- wp:sgs/heading {"content":"Stay Updated","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Stay Updated","level":"h4","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
 <!-- wp:sgs/text {"text":"Subscribe to our newsletter for the latest updates, tips, and insights.","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
 

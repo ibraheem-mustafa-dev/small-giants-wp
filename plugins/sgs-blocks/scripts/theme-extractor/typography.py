@@ -78,7 +78,7 @@ def base_typography(facts: dict, trace: list) -> dict:
     return out
 
 
-BASE_FONT_SIZE_SLUG = "base"
+BASE_FONT_SIZE_SLUG = "regular"
 
 
 def register_base_font_size_preset(settings: dict, base_styles: dict, trace: list) -> None:
@@ -114,7 +114,7 @@ def register_base_font_size_preset(settings: dict, base_styles: dict, trace: lis
     else:
         # Insert in ascending size order so the editor's font-size picker stays sensible —
         # a "Base" 16px sitting after "Hero" 50px reads as a bug to the client.
-        new = {"slug": BASE_FONT_SIZE_SLUG, "name": "Base", "size": size, "fluid": False}
+        new = {"slug": BASE_FONT_SIZE_SLUG, "name": "Regular", "size": size, "fluid": False}
         mine = _px(size, 16.0) or 0.0
         for i, entry in enumerate(presets):
             if (_px(str(entry.get("size", "")), 16.0) or 0.0) > mine:

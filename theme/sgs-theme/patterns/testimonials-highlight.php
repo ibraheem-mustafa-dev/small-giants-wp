@@ -15,7 +15,7 @@
 
 	<!-- wp:sgs/text {"text":"\"This team didn't just build us a website — they built us a platform for growth. Our conversion rate doubled within the first three months.\"","textAlign":"center","textColour":"surface","fontSize":{"desktop":"x-large"},"fontStyle":"italic","lineHeight":{"desktop":1.6},"lineHeightUnit":""} /-->
 
-	<!-- wp:sgs/text {"text":"<strong>David Thompson</strong>","textAlign":"center","textColour":"surface","fontSize":{"desktop":"medium"},"margin":{"bottom":"0"}} /-->
+	<!-- wp:sgs/text {"text":"<strong>David Thompson</strong>","textAlign":"center","textColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"0"}} /-->
 
 	<!-- wp:sgs/text {"text":"Founder, GHI Enterprises","textAlign":"center","textColour":"text-inverse","fontSize":{"desktop":"small"},"margin":{"top":"0"}} /-->
 

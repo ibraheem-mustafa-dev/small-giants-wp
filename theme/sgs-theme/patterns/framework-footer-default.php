@@ -41,7 +41,7 @@
 
 			<!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true,"margin":{"bottom":"var:preset|spacing|30"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":{"desktop":"small"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"description","textColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface","margin":{"top":"var:preset|spacing|30"}} /-->
 
@@ -49,7 +49,7 @@
 
 		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"},"layout":"stack","flexWrap":"wrap"} -->
 
-			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
 			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
@@ -79,17 +79,17 @@
 
 		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"},"layout":"stack","flexWrap":"wrap"} -->
 
-			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"small"},"margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"small"},"margin":{"bottom":"var:preset|spacing|10"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|10"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"small"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
 
-			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontSize":{"desktop":"medium"},"fontWeight":"700","margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":{"desktop":"small"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":{"desktop":"regular"}} /-->
 
 		<!-- /wp:sgs/container -->
 

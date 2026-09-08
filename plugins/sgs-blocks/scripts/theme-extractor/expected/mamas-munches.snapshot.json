@@ -144,76 +144,46 @@
       ],
       "fontSizes": [
         {
-          "slug": "x-small",
-          "size": "12px",
-          "name": "XSmall",
-          "fluid": false
-        },
-        {
           "slug": "small",
           "size": "14px",
           "name": "Small",
-          "fluid": {
-            "min": "13px",
-            "max": "14px"
-          }
-        },
-        {
-          "slug": "base",
-          "name": "Base",
-          "size": "16px",
           "fluid": false
         },
         {
-          "slug": "medium",
-          "size": "18px",
-          "name": "Medium",
+          "slug": "regular",
+          "size": "16px",
+          "name": "Regular",
           "fluid": false
         },
         {
           "slug": "large",
           "size": "20px",
           "name": "Large",
-          "fluid": {
-            "min": "17px",
-            "max": "20px"
-          }
+          "fluid": false
         },
         {
           "slug": "x-large",
           "size": "24px",
           "name": "XL",
-          "fluid": {
-            "min": "20px",
-            "max": "24px"
-          }
+          "fluid": false
         },
         {
           "slug": "xx-large",
           "size": "36px",
           "name": "XXL",
-          "fluid": {
-            "min": "26px",
-            "max": "36px"
-          }
+          "fluid": false
         },
         {
           "slug": "hero",
           "size": "50px",
           "name": "Hero",
-          "fluid": {
-            "min": "32px",
-            "max": "50px"
-          }
+          "fluid": false
         },
         {
           "slug": "display",
           "size": "120px",
           "name": "Display",
-          "fluid": {
-            "min": "56px",
-            "max": "120px"
-          }
+          "fluid": false
         }
       ],
       "defaultFontSizes": false
@@ -426,7 +396,7 @@
     },
     "typography": {
       "fontFamily": "var:preset|font-family|body",
-      "fontSize": "var:preset|font-size|base",
+      "fontSize": "var:preset|font-size|regular",
       "lineHeight": "1.6",
       "fontWeight": "400"
     },
@@ -494,7 +464,7 @@
       },
       "h5": {
         "typography": {
-          "fontSize": "var:preset|font-size|medium",
+          "fontSize": "var:preset|font-size|regular",
           "fontWeight": "700"
         }
       },
@@ -513,7 +483,7 @@
         },
         "typography": {
           "fontWeight": "600",
-          "fontSize": "var:preset|font-size|medium"
+          "fontSize": "var:preset|font-size|regular"
         },
         "border": {
           "radius": "8px"

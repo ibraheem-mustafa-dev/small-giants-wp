@@ -17,7 +17,7 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"60% 40%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"}} -->
 
 		<!-- wp:sgs/container {"flexWrap":"wrap"} -->
-			<!-- wp:sgs/text {"text":"Fill in the form below and we’ll get back to you within 24 hours.","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+			<!-- wp:sgs/text {"text":"Fill in the form below and we’ll get back to you within 24 hours.","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 			<!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"borderRadius":{"desktop":"12px"}} -->
 				<!-- wp:sgs/text {"text":"[Insert your contact form block or shortcode here]","textColour":"text-muted"} /-->
 			<!-- /wp:sgs/container -->

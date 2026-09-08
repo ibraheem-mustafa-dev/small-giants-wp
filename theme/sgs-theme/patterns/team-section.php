@@ -13,7 +13,7 @@
 
 	<!-- wp:sgs/heading {"content":"Meet Our Team","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-	<!-- wp:sgs/text {"text":"The talented people behind our success.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
+	<!-- wp:sgs/text {"text":"The talented people behind our success.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"}} -->
 

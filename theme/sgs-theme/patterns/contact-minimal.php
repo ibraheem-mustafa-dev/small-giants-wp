@@ -14,7 +14,7 @@
 
 	<!-- wp:sgs/heading {"content":"Let’s Start a Conversation","textAlign":"center","fontSize":{"desktop":"xx-large"}} /-->
 
-	<!-- wp:sgs/text {"text":"Ready to discuss your project? Reach out and we’ll respond within one working day.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+	<!-- wp:sgs/text {"text":"Ready to discuss your project? Reach out and we’ll respond within one working day.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 
 	<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
 		<!-- wp:sgs/button {"label":"Email Us","inheritStyle":"primary","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"email"}}}},"borderRadius":{"desktop":"8px"}} /-->

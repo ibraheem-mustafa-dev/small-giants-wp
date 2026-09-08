@@ -22,13 +22,13 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/responsive-logo {"width":200,"linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
 <!-- wp:sgs/business-info {"displayType":"socials"} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Links and Contact"},"flexWrap":"wrap"} -->
-<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
 <!-- wp:list {"style":{"typography":{"lineHeight":"2.2"},"spacing":{"padding":{"left":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
 <ul style="padding-left:0;line-height:2.2" class="has-text-inverse-color has-text-color has-small-font-size"><!-- wp:list-item -->
@@ -42,23 +42,23 @@
 <!-- /wp:list-item --></ul>
 <!-- /wp:list -->
 
-<!-- wp:sgs/heading {"content":"Contact","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Contact","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
-<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"hours","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"hours","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Map and Address"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/business-info {"displayType":"map"} /-->
 
-<!-- wp:sgs/heading {"content":"Address","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Address","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
 <!-- wp:sgs/multi-button {"justifyContent":{"desktop":"flex-start"}} -->
 <!-- wp:sgs/button {"label":"Get Directions","url":"#","inheritStyle":"custom","colourBackground":"accent","colourText":"text","fontSize":{"desktop":14},"borderRadius":{"desktop":"8px"}} /-->

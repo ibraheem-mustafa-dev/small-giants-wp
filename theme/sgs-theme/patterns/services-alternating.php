@@ -16,7 +16,7 @@
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"50% 50%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"},"margin":{"bottom":"var:preset|spacing|60"}} -->
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}","flexWrap":"wrap"} -->
 			<!-- wp:sgs/heading {"content":"Strategy & Planning","level":"h3","fontSize":{"desktop":"x-large"}} /-->
-			<!-- wp:sgs/text {"text":"We begin every project with a thorough understanding of your goals, audience, and market. Our strategic approach ensures every decision is purposeful.","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+			<!-- wp:sgs/text {"text":"We begin every project with a thorough understanding of your goals, audience, and market. Our strategic approach ensures every decision is purposeful.","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 		<!-- /wp:sgs/container -->
 		<!-- wp:sgs/container -->
 			<!-- wp:sgs/media {"imageUrl":"https://placehold.co/600x400/0F7E80/FFFFFF?text=Strategy","imageAlt":"Strategy and planning","borderRadius":{"topLeft":"12px","topRight":"12px","bottomLeft":"12px","bottomRight":"12px"}} /-->
@@ -29,7 +29,7 @@
 		<!-- /wp:sgs/container -->
 		<!-- wp:sgs/container {"sgsCustomCss":"&selector{align-self:center;}","flexWrap":"wrap"} -->
 			<!-- wp:sgs/heading {"content":"Execution & Delivery","level":"h3","fontSize":{"desktop":"x-large"}} /-->
-			<!-- wp:sgs/text {"text":"Our expert team brings your vision to life with precision and care. We deliver on time, every time, without compromising on quality.","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+			<!-- wp:sgs/text {"text":"Our expert team brings your vision to life with precision and care. We deliver on time, every time, without compromising on quality.","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 		<!-- /wp:sgs/container -->
 	<!-- /wp:sgs/container -->
 

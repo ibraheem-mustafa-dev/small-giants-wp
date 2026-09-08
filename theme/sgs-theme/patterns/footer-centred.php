@@ -18,7 +18,7 @@
 
 <!-- wp:sgs/responsive-logo {"width":180,"align":"center","linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
 <!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"flexWrap":{"desktop":"wrap"}} -->
 <!-- wp:sgs/button {"label":"Home","url":"#","inheritStyle":"custom","colourText":"text-inverse","fontSize":{"desktop":14}} /-->

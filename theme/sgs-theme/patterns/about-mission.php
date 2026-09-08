@@ -15,7 +15,7 @@
 
 	<!-- wp:sgs/heading {"content":"Empowering Businesses to Reach Their Full Potential","textAlign":"center","fontSize":{"desktop":"xx-large"}} /-->
 
-	<!-- wp:sgs/text {"text":"We believe every business deserves access to world-class digital solutions that drive growth and create meaningful connections.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"medium"}} /-->
+	<!-- wp:sgs/text {"text":"We believe every business deserves access to world-class digital solutions that drive growth and create meaningful connections.","textAlign":"center","textColour":"text-muted","fontSize":{"desktop":"regular"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|60"}} -->
 

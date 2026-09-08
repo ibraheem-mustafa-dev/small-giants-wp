@@ -22,17 +22,17 @@
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Brand"},"flexWrap":"wrap"} -->
 <!-- wp:sgs/responsive-logo {"width":200,"linkToHome":true} /-->
 
-<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"description","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 <!-- /wp:sgs/container -->
 
 <!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"},"flexWrap":"wrap"} -->
-<!-- wp:sgs/heading {"content":"Get In Touch","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"medium"}} /-->
+<!-- wp:sgs/heading {"content":"Get In Touch","level":"h3","textColour":"surface","fontWeight":"700","fontSize":{"desktop":"large"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"phone","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"email","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
-<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":{"desktop":"small"}} /-->
+<!-- wp:sgs/business-info {"displayType":"address","textColour":"text-inverse","fontSize":{"desktop":"regular"}} /-->
 
 <!-- wp:sgs/business-info {"displayType":"socials"} /-->
 <!-- /wp:sgs/container -->

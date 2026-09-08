@@ -70,9 +70,9 @@ def test_base_font_size_is_a_non_fluid_preset_reference():
     16px base renders 14px at 375px. Routing it through a ``"fluid": false`` preset is WP's
     own opt-out, and is the shape the framework baseline already uses for its own base."""
     snap = _snapshot()
-    assert snap["styles"]["typography"]["fontSize"] == "var:preset|font-size|base"
+    assert snap["styles"]["typography"]["fontSize"] == "var:preset|font-size|regular"
     preset = _base_preset(snap)
-    assert preset is not None, "base preset was never registered"
+    assert preset is not None, "regular preset was never registered"
     assert preset["fluid"] is False, "a fluid base is exactly the defect this closes"
     assert preset["size"] == "16px"
 
@@ -81,17 +81,17 @@ def test_base_font_size_preset_negative_control():
     """The check must FAIL on a literal base — otherwise it would pass against a dead feature."""
     settings, styles, trace = {}, {"fontSize": "16px"}, []
     typo.register_base_font_size_preset(settings, styles, trace)
-    assert styles["fontSize"] == "var:preset|font-size|base"
+    assert styles["fontSize"] == "var:preset|font-size|regular"
 
     # Negative control: skipping the call leaves the literal in place, and the assertion
     # above would fail. Proves the test is measuring the fix, not passing vacuously.
     untouched = {"fontSize": "16px"}
-    assert untouched["fontSize"] != "var:preset|font-size|base"
+    assert untouched["fontSize"] != "var:preset|font-size|regular"
 
     # Idempotent + never clobbers an existing preset reference.
     typo.register_base_font_size_preset(settings, styles, trace)
     slugs = [p["slug"] for p in settings["typography"]["fontSizes"]]
-    assert slugs.count("base") == 1
+    assert slugs.count("regular") == 1
 
 
 def test_base_preset_inserted_in_ascending_size_order():
@@ -100,7 +100,7 @@ def test_base_preset_inserted_in_ascending_size_order():
         {"slug": "small", "size": "14px"}, {"slug": "hero", "size": "50px"},
     ]}}
     typo.register_base_font_size_preset(settings, {"fontSize": "16px"}, [])
-    assert [p["slug"] for p in settings["typography"]["fontSizes"]] == ["small", "base", "hero"]
+    assert [p["slug"] for p in settings["typography"]["fontSizes"]] == ["small", "regular", "hero"]
 
 
 def test_d303_heading_line_height_is_1_2_not_hero_1_15():
@@ -126,7 +126,10 @@ def test_chrome_heading_excluded():
     """
     snap = _snapshot()
     h5 = snap["styles"]["elements"]["h5"]["typography"]
-    assert h5["fontSize"] == "var:preset|font-size|medium"   # framework baseline, untouched
+    # `medium` was retired from the ladder at D1007 and h5 rehomed to `regular` (16px).
+    # The assertion tracks the framework baseline, whatever it currently is — the REQUIREMENT
+    # being guarded is that the 11px footer/chrome measurement never becomes the global h5.
+    assert h5["fontSize"] == "var:preset|font-size|regular"  # framework baseline, untouched
     assert h5["fontSize"] != "11px"                          # the footer/chrome value never lands
     assert h5["fontWeight"] == "700"                         # non-derived baseline key survives
 

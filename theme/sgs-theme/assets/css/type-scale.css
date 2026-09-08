@@ -1,0 +1,69 @@
+/**
+ * Responsive type scale — the per-device half of the font-size ladder.
+ *
+ * WHY THIS FILE EXISTS
+ * --------------------
+ * A `theme.json` font-size preset holds exactly ONE value. There is no per-breakpoint
+ * preset in WordPress. So a ladder that shrinks headings on small screens needs a
+ * mechanism, and there are only two:
+ *
+ *   (a) every block declaration carries its own {desktop,tablet,mobile} tier object —
+ *       147 hand-authored edits across 46 pattern files, and each one bakes a pixel
+ *       value that should have been per-client; or
+ *   (b) redefine the preset's generated custom property inside a media query — one
+ *       block of CSS, automatic for EVERY use of that preset, nothing to keep in sync.
+ *
+ * (b) is what this file does. Bean chose it 2026-09-08. See D1007.
+ *
+ * WHY `:root:root`
+ * ----------------
+ * WordPress prints its preset custom properties on `:root` (specificity 0,1,0) from
+ * `wp_enqueue_global_styles`. Whether that lands before or after a theme stylesheet is
+ * an enqueue-order detail we should not depend on — a rule that loses is indistinguishable
+ * from one that is absent. Doubling the selector gives 0,2,0, so these overrides win on
+ * specificity rather than on source order. It also clears `body` (0,0,1), which some
+ * WordPress versions use instead.
+ *
+ * WHAT IS DELIBERATELY NOT HERE
+ * -----------------------------
+ * Reading sizes — `small` 14, `regular` 16, `large` 20 — are ABSENT on purpose. They do
+ * not shrink at any width. That is GOV.UK's post-2022 position (body text stopped
+ * shrinking on mobile entirely) and it is what keeps body copy at the 16px floor, which
+ * is both the WCAG-comfortable size and iOS Safari's form-input auto-zoom threshold. The
+ * framework ships form blocks, so dropping under 16px is a live bug, not a theoretical one.
+ *
+ * Only the three display sizes compress, and the compression widens with size — GOV.UK's
+ * published curve (1.14x, 1.33x, 1.51x). A 2px change is invisible at 50px and obvious
+ * at 16px, which is why a single uniform ratio reads badly at both ends.
+ *
+ * Values are each preset's own previous fluid `min`, so rendered output barely moves.
+ * This makes existing behaviour EXPLICIT; it is not a redesign.
+ *
+ * ⚠ PER-CLIENT: these numbers are the FRAMEWORK default. A client whose scale differs
+ * gets their own values from the Spec 33 extractor — that emit is not built yet, so a
+ * client with a materially different ladder currently inherits this curve. Named as
+ * remaining work in D1007, not silently assumed away.
+ *
+ * ⛔ Do not add `clamp()` here or reintroduce `fluid` in theme.json. Fluid typography was
+ * rejected on evidence (D1007): GOV.UK never adopted it, Designsystemet Norway shipped and
+ * then reversed it in production, and `clamp()` built on `vw` can fail WCAG 1.4.4 because
+ * viewport units ignore browser zoom.
+ */
+
+/* Tablet — up to 1023px. Matches helpers-responsive.php's tablet tier exactly. */
+@media (max-width: 1023px) {
+	:root:root {
+		--wp--preset--font-size--x-large: 22px;
+		--wp--preset--font-size--xx-large: 30px;
+		--wp--preset--font-size--hero: 40px;
+	}
+}
+
+/* Mobile — up to 767px. Matches helpers-responsive.php's mobile tier exactly. */
+@media (max-width: 767px) {
+	:root:root {
+		--wp--preset--font-size--x-large: 21px;
+		--wp--preset--font-size--xx-large: 27px;
+		--wp--preset--font-size--hero: 33px;
+	}
+}
