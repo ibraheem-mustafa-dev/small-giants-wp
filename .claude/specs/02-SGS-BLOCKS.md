@@ -1029,21 +1029,33 @@ Cross-references: D107 (voter rewrite, tier-driven recognition), D108 (`block_co
 `.sgs-business-attribution` is the recognised classifier. It must stay in lockstep with the draft-side classifier `.sgs-footer__credit` (Spec 33 §Website-credit recognition) — change one, change both.
 
 **Attribute surface — TYPOGRAPHY ONLY (deliberately narrow, Bean-locked).** No content attr, no URL attr, no layout attrs. An operator may restyle it; they may not re-point it:
-- `textColour` (default: **resolved**, see below) · `linkHoverColour` (default `#e7d768`)
+- `textColour` (default: **resolved**, see below) · `linkHoverColour` (default `#d4a73c`)
 - font family / size / weight / style / line-height via the shared `TypographyControls` component + `sgs_typography_css_rule()` — **never** hand-rolled controls (R-22-13). Default = inherit, so it matches the site's base paragraph font/size out of the box.
 
 **Default colour is COMPUTED, not assumed.** `textColour` unset ⇒ resolve the surrounding background to hex via `sgs_resolve_palette_hex()` and pick the readable foreground via `sgs_wcag_text_colour_for_bg()` (`includes/helpers-colour-wcag.php` — the same helpers `sgs/product-card` and `sgs/option-picker` already use; do NOT build a second resolver). Never assume a token NAME implies luminance — `primary-dark` is a **pink** on mamas-munches (STOP-TOKEN-NAME-IS-NOT-A-LUMINANCE, D338). Where the background cannot be resolved, fall back to `currentColor` (inherit), never to a literal.
 
-**Hover — left-to-right colour sweep to `#e7d768`** (Bean's reference behaviour on both live Astra sites). Implement as a `background-clip:text` gradient wipe, NOT a plain `color` transition:
+**Hover — colour fade to `#d4a73c` plus a left-to-right underline that grows from zero width.** Bean's reference behaviour is muslimsinconstruction.uk (named 2026-09-08). Implement the underline as a pseudo-element, NOT `text-decoration` — only a box can be animated from zero to full width:
 ```css
-.sgs-business-attribution__link-inner { background-image: linear-gradient(90deg, #e7d768 50%, currentColor 50%);
-  background-size: 200% 100%; background-position: 100% 0;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  transition: background-position 320ms ease; }
-:hover { background-position: 0 0; }
-@media (prefers-reduced-motion: reduce) { transition: none; }
+.sgs-business-attribution .sgs-business-info__link {
+  position: relative; text-decoration: none; color: inherit;
+  transition: color 300ms ease; }
+.sgs-business-attribution .sgs-business-info__link::after {
+  content: ""; position: absolute; bottom: -2px; left: 0;
+  width: 0; height: 1px; background: #d4a73c;
+  transition: width 300ms ease; }
+:hover, :focus-visible { color: #d4a73c; }
+:hover::after, :focus-visible::after { width: 100%; }
+@media (prefers-reduced-motion: reduce) { transition: none; }  /* keep both end states */
 ```
-Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#e7d768` must meet it against the footer background at hover — verify per client palette, not once (STOP-VERIFY-EVERY-CLIENT).
+
+⚠ **SUPERSEDED 2026-09-08 — do not reinstate the previous version.** This slot specified a
+`background-clip: text` gradient WIPE to `#e7d768`, which recoloured the glyphs left-to-right
+and drew no underline. It also forced `color: transparent` on the resting link, so it required
+an `@supports not (background-clip: text)` fallback purely to stop the credit rendering
+INVISIBLE on unsupporting browsers. The underline form rests on an ordinary `color`, so that
+failure mode does not exist and the fallback is deleted rather than ported.
+
+Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#d4a73c` must meet it against the footer background at hover — verify per client palette, not once (STOP-VERIFY-EVERY-CLIENT). `:focus-visible` must receive the identical treatment; the effect may not be mouse-only (WCAG 2.1.1).
 
 **Defaults are intentionally thin.** The cloning pipeline sets the real styling per client (Spec 33) — these defaults only need to be sane and accessible out of the box, not final.
 

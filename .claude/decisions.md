@@ -18,6 +18,78 @@ with rate limiting and stale-stock re-sync), which is the correct shape under th
 **Do not** re-propose an SGS cart/checkout/order engine, and do not read Spec 27's older framing
 as licence to build one.
 
+## D1005 [ROUTINE] — sgs/container `layout` default reverted to flow; D742 partly reversed
+
+**2026-09-08.** `layout` default `"flex"` -> `""` (`container/block.json`), plus the two
+editor-side halves that had drifted from it: `LayoutPanel.js` destructured
+`layout = 'flex'` (so the control showed Flex on a block whose stored value was empty),
+and `LAYOUT_OPTIONS` offered no way to select no-layout at all — it now leads with
+"Default".
+
+**Why.** WordPress substitutes a schema default when an attribute is ABSENT, before
+render.php runs. The converter faithfully writes no `layout` when the draft declares none,
+so "the draft said nothing" and "the author chose a flex row" arrived identically,
+destroying the absence the converter had preserved. Every block-level child of such a
+container became a shrink-wrapping flex item packed to the start of a wrapped row.
+
+Measured on the gift section at 1440: the "Send to ward" strip 592px instead of 960, and —
+unreported until then — the eyebrow label and the H2 rendering SIDE BY SIDE (heading left
+edge 473 = 233 + the label's 241px). After: all five children 960px, stacked.
+
+**D742 still holds where it was aimed.** Its reasoning (CSS's own flex-direction default is
+`row`) is correct for a container declaring flex-with-no-direction. It does not hold for one
+declaring no layout. `sgs/container` was also the only general-purpose container defaulting
+to flex — its eleven siblings all default to `""`; this restores that consistency. Blocks
+with a genuine purpose (form=stack, gallery/post-grid/trust-bar=grid, site-header-row=flex)
+are untouched.
+
+**Not the converter.** Explicit emission is unchanged: 12 `grid` + 8 `flex` in the runs
+before and after. The default only governs containers the converter writes nothing for.
+
+Whole-page parity 80% -> 81% CSS, 99% content. Report:
+`reports/visual-diff/container-2026-09-08.md`.
+
+---
+
+## D1006 [ROUTINE] — credit-link hover is an underline-grow, not a gradient sweep; base body type is 16px
+
+**2026-09-08.** Two typography/credit decisions, both Bean-directed.
+
+**1. `sgs/business-info` attribution hover.** Replaced the `background-clip: text` gradient
+WIPE to `#e7d768` with a colour fade to `#d4a73c` plus a 1px `::after` underline growing
+from zero width, both 300ms — the muslimsinconstruction.uk reference Bean named. The
+`@supports not (background-clip: text)` fallback is DELETED rather than ported: the wipe
+forced `color: transparent` on the resting link and needed that fallback to avoid rendering
+the credit invisible; the underline form rests on an ordinary `color`, so the failure mode
+no longer exists. `#d4a73c` is a component constant (CLAUDE.md "a component's OWN constant
+STAYS"). Spec 02 §business-info and `plugins/sgs-blocks/CLAUDE.md` updated — the spec had
+specified the superseded wipe verbatim.
+
+Credit size also corrected `x-small` (12px) -> `small` (14px). The 12px was set earlier the
+same day reasoning a credit should read as subordinate; measured against the footer's own
+scale that was wrong — it made the credit smaller than everything around it.
+
+**2. Base body font size: 16px, as `1rem`, never fluid-shrunk below it.** Researched
+2026-09-08, high confidence, both raters converged —
+`~/.claude/memory/research/2026-09-08-mobile-base-font-size-16px-vs-14px.md`. Decisive
+point: iOS Safari zooms the viewport when a form input computes under 16px, and SGS ships
+form blocks. No major design system shrinks base body below 16px on mobile. WCAG mandates
+no absolute px minimum — do not cite 16px as a WCAG requirement.
+
+**Fluid stays ON for display presets.** Measured: theme patterns author 24 x `xx-large` and
+8 x `hero` with NO mobile tier, so disabling fluid wholesale would render a 50px heading on
+a 375px screen. Cloned content does not need fluid at all (the converter transfers explicit
+per-device values — 84 tiered objects last run). Decision: remove fluid from the base and
+from `small`; keep it on `large`/`x-large`/`xx-large`/`hero`.
+
+**Build deferred deliberately.** The base size is emitted by `theme-extractor/typography.py:71`
+as a bare px literal, which WordPress fluidises; the snapshot is GENERATED, so hand-editing
+it would be overwritten and is the hardcode-to-match-this-draft anti-pattern. The fix
+carries a design choice (non-fluid base preset vs disabling fluid) and is queued as item one
+of `.claude/prompts/2026-09-08-clone-fidelity-programme.md`.
+
+---
+
 ## D1004 — the REAL cloning gap is the header and footer, not motion
 
 **2026-09-07. Bean:** *"the footer and headers are still ugly though and they need to be clones of

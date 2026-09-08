@@ -24,9 +24,13 @@ green number means nothing. **Fix the ruler first.**
 1. **Investigation and fixing are separate jobs, run as separate dispatches.** An agent
    that investigates does not fix. An agent that fixes works from a written,
    already-reviewed root cause.
-2. **Every investigation is fact-checked by a second agent** before its finding is
-   accepted. The checker's job is to falsify the claim, not to agree with it. State
-   PROVEN (evidence cited to file:line or a measured value) or UNPROVEN.
+2. **Run investigations through a council — `/qc-council` for fix-shape validation,
+   `/adversarial-council` for a design before it is built.** At minimum, a second agent
+   must try to FALSIFY each finding before it is accepted; a lone agent's claim is not a
+   finding. State PROVEN (cited to file:line or a measured value) or UNPROVEN. Three
+   claims were disproven this week by exactly this check — a "missing" background that
+   renders correctly on `::after`, a draft line-number citation pointing past the end of
+   the file, and a font-size "drift" where clone and draft already matched.
 3. **Explain the fix before building it.** Say which mechanism is wrong and what the
    change is, then wait. This exists to catch the failure mode below.
 4. ⛔ **Never hardcode a value to make this draft pass.** The deliverable is a pipeline
@@ -93,6 +97,43 @@ worth testing:
 Root cause PROVEN and researched — see Phase 2.1. Do not re-investigate; verify only that
 no *other* cause hides inside this cluster.
 
+### 1.4 The complete parity ledger — every cluster must be triaged
+
+**524 diffs total.** Every one belongs in exactly one bucket by the end of Phase 1:
+REAL DEFECT, TOOL ARTEFACT, or EQUIVALENT-BY-DIFFERENT-MECHANISM (clone reaches the same
+visible result another way — legitimate, and the tool should stop scoring it).
+
+Counts are per-viewport (375 / 768 / 1440).
+
+| Cluster | Diffs | 375 | 768 | 1440 | Status entering Phase 1 |
+|---|---|---|---|---|---|
+| font-size | 77 | 35 | 35 | 7 | Root cause proven → §2.1 |
+| line-height | 74 | 34 | 35 | 5 | Same cause as above |
+| background-color | 36 | 12 | 12 | 12 | Proven artefact (`::after`) — confirm all 7 elements |
+| margin-bottom | 30 | 10 | 10 | 10 | **Untriaged cluster.** 3.9/3.11 are two instances; what are the rest? |
+| font-weight | 21 | 7 | 7 | 7 | **Untriaged.** Includes 3.6 (product name weight). Not only a pill issue |
+| justify-content | 16 | 6 | 5 | 5 | **Untriaged.** May be equivalent-by-mechanism; prove it |
+| text-align | 15 | 5 | 5 | 5 | **Untriaged.** Related to 3.8 (blocks left vs text centred) |
+| padding (4 sides) | 48 | 16 | 16 | 16 | **Untriaged.** Includes 3.3 (hero content padding) |
+| border-* family (12 props) | 72 | 24 | 24 | 24 | Bean says borders work — likely artefact, confirm (3.15) |
+| background-size / repeat / position | 36 | 12 | 12 | 12 | Treat as ONE image-background cluster (3.19) |
+| border-image-slice | 12 | 4 | 4 | 4 | **Unmentioned until now.** Probably rides with the background cluster |
+| appearance | 12 | 4 | 4 | 4 | **Unmentioned until now.** Likely form/button UA-style difference |
+| max-width | 10 | 4 | 3 | 3 | 3.16 — Bean cannot see it; decide if real |
+| row-gap / column-gap | 18 | 6 | 6 | 6 | Bean says product-card gaps look fine (3.20) |
+| font-style | 9 | 3 | 3 | 3 | **Unmentioned until now.** Italic vs normal somewhere |
+| flex-grow | 9 | 3 | 3 | 3 | 3.17 — Bean sees no effect |
+| align-items | 8 | 2 | 3 | 3 | **Unmentioned until now.** Alignment — may relate to 3.8 |
+| display | 4 | 2 | 1 | 1 | **Unmentioned until now.** flex vs block on a tag element |
+| max-height | 3 | 1 | 1 | 1 | **Unmentioned until now.** May relate to 3.7 (brand image sizing) |
+| flex-basis | 3 | 1 | 1 | 1 | **Unmentioned until now.** |
+| order / object-position / flex-direction | 3 | 3 | 0 | 0 | **Unmentioned until now.** Mobile-only — art-direction ordering? |
+
+⚠ Twelve of these clusters (78 diffs, ~15 %) had never been looked at before this
+document. Four of the largest — margin-bottom, padding, font-weight, justify-content —
+were previously dismissed inside a single anecdote about pill styling that Bean says he
+cannot see. **Do not inherit that dismissal.** Triage each cluster on its own evidence.
+
 **Deliverable:** a written finding per item, each fact-checked, naming what the tool
 measures, what it fails to measure, and why.
 
@@ -131,6 +172,61 @@ the hardcode-to-match-this-draft failure this document forbids.
 - **(b)** Extractor sets `settings.typography.fluid: false` when the draft itself uses no
   fluid type. More faithful to "transfer what the draft has"; loses heading fluidity.
 
+### 2.1a Fluid typography — measured, decided, needs building
+
+Bean asked: *are fluid sizes even helpful, and do the current sizes cause a problem on
+small devices? If not, switch it off.* Measured answer: **do not switch it off globally.**
+
+Two facts, both checked:
+
+**Fluid is redundant for CLONED content.** The draft carries its own responsive
+typography — 13 media queries, 11 font-size declarations inside them — and the converter
+already transfers those as explicit per-device values (84 tiered `fontSize` objects in the
+last run, e.g. `{"desktop":52,"mobile":34}`). Fluid is a second, competing mechanism
+shrinking text the draft never asked to shrink.
+
+**But fluid IS load-bearing for HAND-AUTHORED content.** Theme patterns use the big presets
+with no mobile tier at all — 24 × `xx-large`, 8 × `hero`, authored as
+`{"desktop":"xx-large"}`. Switch fluid off wholesale and those render at full desktop size
+on a phone:
+
+| Preset | Desktop | With fluid @375 | Without fluid @375 |
+|---|---|---|---|
+| `hero` | 50px | 32px | **50px** |
+| `xx-large` | 36px | 26px | **36px** |
+
+**Recommendation — switch it off selectively:**
+- **Remove fluid from the base body** — this is the actual bug (§2.1).
+- **Remove it from `small`** (14→13px): it drops below a sensible floor and buys nothing.
+- **Keep it on `large` / `x-large` / `xx-large` / `hero`**, where it prevents a 50px
+  heading on a 375px screen.
+
+This also matches the research verdict: fluid earns its keep on display text; the base is
+where it does damage.
+
+### 2.1b Footer text size — answered, no action unless Bean wants it
+
+Bean asked why footer text is smaller than the rest of the site and said it should match
+"unless there's a good reason".
+
+**There is a good reason: the draft designs it that way.**
+
+```
+.sgs-footer__tagline      font-size: 14px
+.sgs-footer__meta         font-size: 13px
+.sgs-footer__col ul li a  font-size: 14px
+                          font-size: 13px / 11px
+```
+
+The draft's footer runs 11–14px against its 16px body. The framework footer pattern uses
+14px for links and body text, which **matches the draft's 14px exactly**. Raising it would
+move away from the design, not toward it.
+
+⚠ One caveat worth stating: the footer is framework chrome and is NOT cloned from the
+draft, so this match is convention rather than derivation. If Bean wants the footer at body
+size anyway, that is a design preference and a one-line pattern change — not a bug fix, and
+it affects every client using the default footer.
+
 ### 2.2 Fix the parity tool
 
 Driven by Phase 1. At minimum it must stop reporting `::after`-painted backgrounds and
@@ -155,7 +251,7 @@ Investigation with fact-checking. No fixes until each is written up and reviewed
 
 | # | Defect | Notes |
 |---|---|---|
-| 3.1 | **Hero escapes the right edge of the page on every device** | Bean: "a huge issue". The tool sees a constant ~9px overrun at rest (1440→1449, 768→777, 375→384). Likely the same cause as 3.2. |
+| 3.1 | **The hero block extends outside the right side of the page, on every device** | Bean's own observation, and he calls it "a huge issue" — treat his eye as the finding, not the number. The tool separately shows a constant overrun at rest (1440→1449, 768→777, 375→384), but that instrument is the one under suspicion, so use it as corroboration only. Likely the same cause as 3.2. |
 | 3.2 | **Hero has -24px margins on both sides, and looks too tall** | A negative margin would explain 3.1. Find what emits it — a breakout hack, or a faithfully-transferred draft value? |
 | 3.3 | **Hero content column has no padding** | Check whether the draft's padding is extracted at all, and whether it reaches the right element. |
 | 3.4 | **Trust bar's 4th icon (star) renders black**; the other three match the draft | One icon differing points at the icon-identity resolver or a per-item colour attribute. |
@@ -175,20 +271,22 @@ Investigation with fact-checking. No fixes until each is written up and reviewed
 | # | Claim | Status |
 |---|---|---|
 | 3.15 | Borders not transferring | **Bean says already working.** Likely a Phase 1 false positive. Confirm, then close. |
-| 3.16 | `max-width: 1280px` applied to 3 elements the draft never capped | Bean: "Where does this exist? It's not visible anywhere." Either show the visible effect or close it. Caused by `sgs/container`'s `contentWidth` default `"normal"` — the sibling of the `layout` default already fixed. |
+| 3.16 | `max-width: 1280px` applied to 3 elements the draft never capped | Bean: "Where does this exist? It's not visible anywhere." **First establish whether the defect is real and visible at all** — do not start from a cause. If it IS real, one candidate worth testing (not assumed) is `sgs/container`'s `contentWidth` default `"normal"`, the sibling of the `layout` default already fixed. If it is not visible, close it and fix the tool instead. |
 | 3.17 | `flex-grow: 1` on two buttons and the hero content | Bean has seen no button expand. `flex-grow: 1` means "take a share of the leftover space on this row" — it changes width, not hover. Confirm whether it has any visible effect; close if not. |
 | 3.18 | Pill styling drift (weight 600→500/700, text-align, 1px padding) | Bean cannot see it. Some are likely equivalent-by-different-mechanism (draft centres with `text-align`, clone with `justify-content`). Confirm visually before treating as defects. |
-| 3.19 | `background-size: auto` → `cover` on three images | Name which images, and whether it changes anything visible. Bean's instruction: **our defaults should align with the draft's.** |
+| 3.19 | Image-background cluster: `background-size` auto→cover, plus `background-repeat` and `background-position` (12 diffs each, 36 total) and probably `border-image-slice` (12) | Treat as ONE cluster — the same handful of image elements almost certainly drives all four properties. Bean asked three things: **which images**, **does it change anything visible** versus the draft's `auto`, and — his instruction — **our defaults should align with the draft's**. Answer all three. |
 | 3.20 | Product-card gaps wrong | Bean: they look fine. Probably another false positive. |
 
 ### Not a defect — answer and close
 
-**3.21** `<a class="skip-link screen-reader-text" id="wp-skip-link" href="#main">Skip to
-content</a>` is a standard WordPress accessibility feature, not clone bleed. It lets
-keyboard and screen-reader users jump past the navigation, and it is required for WCAG
-2.4.1 (Bypass Blocks). It is visually hidden until focused, which is why it only appears
-in the markup. **One thing to verify:** that its `#main` target exists on the page — a
-skip link pointing at nothing is a real accessibility bug.
+**3.21 — CLOSED, verified.** `<a class="skip-link screen-reader-text" id="wp-skip-link"
+href="#main">Skip to content</a>` is a standard WordPress accessibility feature, not clone
+bleed. It lets keyboard and screen-reader users jump past the navigation, and it is
+required for WCAG 2.4.1 (Bypass Blocks). It is visually hidden until focused, which is why
+it only shows up when reading the markup.
+
+Its target was checked live on 2026-09-08: `#main` resolves to a real `<main id="main">`
+element on the page. The link works. **No action.**
 
 ---
 
