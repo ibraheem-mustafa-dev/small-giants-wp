@@ -417,21 +417,39 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 			}
 		}
 
-		$max_width_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidth' );
-		$max_width_unit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidthUnit' );
-		$max_width_raw      = $attributes[ $max_width_key ] ?? null;
-		$max_width_desktop  = is_array( $max_width_raw ) ? ( $max_width_raw['desktop'] ?? null ) : null;
-		if ( null !== $max_width_desktop && '' !== $max_width_desktop ) {
-			$decls[] = '--sgs-media-max-width:' . $max_width_desktop . ( $attributes[ $max_width_unit_key ] ?? 'px' );
-		}
+			// max-width/max-height (2026-09-08 fix): previously read the DESKTOP tier
+			// only (tablet/mobile silently dropped) and string-concatenated a unit
+			// directly onto the stored value with no "already has a unit" check --
+			// the stored tier-object values are unit-embedded strings (e.g. "440px"),
+			// so the blind concat produced "440pxpx", an invalid CSS length that
+			// made max-height/max-width compute to `none`/inert everywhere. Fixed to
+			// match width's/min-height's own pattern exactly: loop all three tiers,
+			// resolve via sgs_media_atom_box_shape_format_length() (the same helper
+			// width already uses), which returns an already-unit-embedded string
+			// value UNCHANGED rather than appending a second unit onto it.
+			$max_width_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidth' );
+			$max_width_unit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxWidthUnit' );
+			$max_width_raw      = $attributes[ $max_width_key ] ?? null;
+			$max_width_obj      = is_array( $max_width_raw ) ? $max_width_raw : array();
+			$max_width_unit     = $attributes[ $max_width_unit_key ] ?? 'px';
+			foreach ( $mh_tiers as $tier => $suffix ) {
+				$val = sgs_media_atom_box_shape_format_length( $max_width_obj[ $tier ] ?? null, $max_width_unit, false );
+				if ( '' !== $val ) {
+					$decls[] = '--sgs-media-max-width' . $suffix . ':' . $val;
+				}
+			}
 
-		$max_height_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeight' );
-		$max_height_unit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeightUnit' );
-		$max_height_raw      = $attributes[ $max_height_key ] ?? null;
-		$max_height_desktop  = is_array( $max_height_raw ) ? ( $max_height_raw['desktop'] ?? null ) : null;
-		if ( null !== $max_height_desktop && '' !== $max_height_desktop ) {
-			$decls[] = '--sgs-media-max-height:' . $max_height_desktop . ( $attributes[ $max_height_unit_key ] ?? 'px' );
-		}
+			$max_height_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeight' );
+			$max_height_unit_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MaxHeightUnit' );
+			$max_height_raw      = $attributes[ $max_height_key ] ?? null;
+			$max_height_obj      = is_array( $max_height_raw ) ? $max_height_raw : array();
+			$max_height_unit     = $attributes[ $max_height_unit_key ] ?? 'px';
+			foreach ( $mh_tiers as $tier => $suffix ) {
+				$val = sgs_media_atom_box_shape_format_length( $max_height_obj[ $tier ] ?? null, $max_height_unit, false );
+				if ( '' !== $val ) {
+					$decls[] = '--sgs-media-max-height' . $suffix . ':' . $val;
+				}
+			}
 
 		$shape_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Shape' );
 		$shape     = sgs_media_atom_box_shape_validate_shape( $attributes[ $shape_key ] ?? null );

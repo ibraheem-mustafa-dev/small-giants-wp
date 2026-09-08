@@ -606,21 +606,39 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		}
 	} );
 
+	// max-width/max-height (2026-09-08 fix, mirrors box-shape.php): previously
+	// read the DESKTOP tier only and string-concatenated a unit directly onto
+	// an already-unit-embedded stored value (e.g. "440px" + "px" = "440pxpx"),
+	// an invalid CSS length. Fixed to match width's/min-height's own pattern:
+	// loop all three tiers via the shared formatLength() helper, which leaves
+	// an already-embedded-unit string unchanged instead of appending a second one.
 	const maxWidthKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidth' );
 	const maxWidthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthUnit' );
 	const maxWidthRaw = attributes[ maxWidthKey ];
-	const maxWidthDesktop = maxWidthRaw && 'object' === typeof maxWidthRaw ? maxWidthRaw.desktop : undefined;
-	if ( undefined !== maxWidthDesktop && null !== maxWidthDesktop && '' !== maxWidthDesktop ) {
-		decls.push( `--sgs-media-max-width:${ maxWidthDesktop }${ attributes[ maxWidthUnitKey ] || 'px' }` );
-	}
+	const maxWidthObj = maxWidthRaw && 'object' === typeof maxWidthRaw ? maxWidthRaw : {};
+	const maxWidthUnit = attributes[ maxWidthUnitKey ] || 'px';
+	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
+		const tier = pair[ 0 ];
+		const suffix = pair[ 1 ];
+		const val = formatLength( maxWidthObj[ tier ], maxWidthUnit, false );
+		if ( val ) {
+			decls.push( `--sgs-media-max-width${ suffix }:${ val }` );
+		}
+	} );
 
 	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
 	const maxHeightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeightUnit' );
 	const maxHeightRaw = attributes[ maxHeightKey ];
-	const maxHeightDesktop = maxHeightRaw && 'object' === typeof maxHeightRaw ? maxHeightRaw.desktop : undefined;
-	if ( undefined !== maxHeightDesktop && null !== maxHeightDesktop && '' !== maxHeightDesktop ) {
-		decls.push( `--sgs-media-max-height:${ maxHeightDesktop }${ attributes[ maxHeightUnitKey ] || 'px' }` );
-	}
+	const maxHeightObj = maxHeightRaw && 'object' === typeof maxHeightRaw ? maxHeightRaw : {};
+	const maxHeightUnit = attributes[ maxHeightUnitKey ] || 'px';
+	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
+		const tier = pair[ 0 ];
+		const suffix = pair[ 1 ];
+		const val = formatLength( maxHeightObj[ tier ], maxHeightUnit, false );
+		if ( val ) {
+			decls.push( `--sgs-media-max-height${ suffix }:${ val }` );
+		}
+	} );
 
 	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );
 	const shape = validateShape( attributes[ shapeKey ] );

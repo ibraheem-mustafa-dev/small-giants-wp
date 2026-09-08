@@ -312,13 +312,17 @@
  * slice:1` is a harmless companion when no gradient is set (`none 1` is a
  * standard, non-`initial`/`unset`/`revert` no-op value).
  *
- * Height/Width/BorderRadius follow the mobile -> tablet -> desktop ->
- * initial fallback chain `_base.css` documents; min-height does the same.
- * Aspect-ratio, max-width/max-height/clip-path/border-
+ * Height/Width/BorderRadius/max-width/max-height (2026-09-08) follow the
+ * mobile -> tablet -> desktop -> initial fallback chain `_base.css`
+ * documents; min-height does the same. Aspect-ratio/clip-path/border-
  * width/border-style/border-color/border-image are single-value (no device
- * tiers — MEDIA_TIERED_BASES does not carry them; per-device border WIDTH
- * is cancelled outright, not merely untiered, per CLAUDE.md "Border
- * controls").
+ * tiers — per-device border WIDTH is cancelled outright, not merely
+ * untiered, per CLAUDE.md "Border controls"; the others have no per-device
+ * use case). Earlier revisions of this comment cited "MEDIA_TIERED_BASES
+ * does not carry them" as the reason max-width/max-height stayed
+ * single-value — that array governs media SOURCE attrs (ImageId/ImageUrl/…)
+ * and was never the relevant mechanism for box-shape sizing tiers at all;
+ * height/width/border-radius were already tiered without being in it.
  */
 
 .sgs-media-el {
@@ -373,6 +377,8 @@
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
 		border-radius: var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) );
+		max-height: var( --sgs-media-max-height-tablet, var( --sgs-media-max-height, none ) );
+		max-width: var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) );
 	}
 }
 
@@ -389,6 +395,14 @@
 		border-radius: var(
 			--sgs-media-border-radius-mobile,
 			var( --sgs-media-border-radius-tablet, var( --sgs-media-border-radius, 0 ) )
+		);
+		max-height: var(
+			--sgs-media-max-height-mobile,
+			var( --sgs-media-max-height-tablet, var( --sgs-media-max-height, none ) )
+		);
+		max-width: var(
+			--sgs-media-max-width-mobile,
+			var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) )
 		);
 	}
 }
