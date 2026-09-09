@@ -1,0 +1,9003 @@
+{
+ "draft": "file:///C:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html",
+ "clone": "https://sandybrown-nightingale-600381.hostingersite.com/fresh-clone-verification-mamas-munches-homepage-re-clone/",
+ "method": "computed values, matched by content, all-props-minus-blocklist, meaningful-only, visible-fidelity (Spec 20 v1.2.0 / rule 4a). font-family primary-only; sub-visible twins bucketed (unscored) by invisibility predicate; tag scored separately; classes context-only. v1.2.0 (2026-08-04): a draft element with NO clone counterpart now scores its meaningful props as MISSES instead of being excluded from the score, and every pct carries its denominator.",
+ "viewports": {
+  "375": {
+   "content": {
+    "pct": 100,
+    "total": 78,
+    "matched": 78,
+    "dropped": 0,
+    "dropped_text": [],
+    "dropped_images": [],
+    "dropped_links": []
+   },
+   "css": {
+    "pct": 59,
+    "meaningful_props": 1734,
+    "match": 1016,
+    "pct_matched_only": 77,
+    "meaningful_props_lost_to_unmatched": 410,
+    "unmatched_elements": [
+     {
+      "text": "struct|rect|0|free uk delivery over £35",
+      "tag": "rect",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|0|our signature zookies  our sign",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "struct|IMG|0|mamas munches zookies baked fre",
+      "tag": "img",
+      "meaningful_props_lost": 2
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 9
+     },
+     {
+      "text": "P|baked fresh every week and posted the same",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "BUTTON|8pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|12pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|20pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|40pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|new start here",
+      "tag": "div",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "P|not sure yet try 3 classic zookies and see",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "P| zainab founder of mamas munches",
+      "tag": "p",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "struct|DIV|0|most thoughtful 40day care bund",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|give the gift of nourishment a ",
+      "tag": "div",
+      "meaningful_props_lost": 23
+     },
+     {
+      "text": "struct|DIV|0|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "SPAN| trustpilot",
+      "tag": "span",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|SPAN|1| trustpilot  leave us a review",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "SPAN|leave us a review  help other mums find",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|ARTICLE|0| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| i was sceptical but honestly t",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|i was sceptical but honestly these have ma",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|reham london",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|1| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| bought these for my best frien",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|bought these for my best friend who was re",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|sarah m manchester",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|2| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| zainab is so responsive and lo",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|zainab is so responsive and lovely the coo",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|halimah birmingham",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "MAIN|handmade in birmingham made for the mum",
+      "tag": "main",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "SECTION|our signature zookies  our signature",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|our signature zookies  our signature gia",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|she was struggling with breastfeeding he",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "SECTION|what mums are saying real feedback f",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|what mums are saying real feedback from ",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "DIV| i was sceptical but honestly these have",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "ARTICLE| i was sceptical but honestly these ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| bought these for my best friend who",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| zainab is so responsive and lovely ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     }
+    ],
+    "mismatches": [
+     {
+      "text": "struct|SECTION|0|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"media\" \"content\"",
+        "clone": "none"
+       },
+       {
+        "prop": "min-height",
+        "draft": "0px",
+        "clone": "360px"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "P|handmade lactation cookies with proper galac",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "420px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__sub"
+       ],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-6df8d019"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "flex-basis",
+        "draft": "auto",
+        "clone": "100%"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       },
+       {
+        "prop": "order",
+        "draft": "0",
+        "clone": "1"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|1|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "none",
+        "clone": "block"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 50%",
+        "clone": "50% 20%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 3 12 L 12 3 L 21 12\")",
+        "clone": "path(\"M 15 21 V 13 A 1 1 0 0 0 14 12 H 10 A 1 1 0 0 0 9 13 V 21\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|path|1|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 5 10 V 20 A 1 1 0 0 0 6 21 H 9 V 15 H 15 V 21 H 18 A 1 1 0 0 0 19 20 V 10\")",
+        "clone": "path(\"M 3 10 A 2 2 0 0 1 3.709 8.472 L 10.709 2.472 A 2 2 0 0 1 13.291 2.472 L 20.291 8.472 A 2 2 0 0 1 21 10 V 19 A 2 2 0 0 1 19 21 H 5 A 2 2 0 0 1 3 19 Z\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|registered food business",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|free uk delivery over £35",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 16 8 L 21 10 V 15 H 16 Z\")",
+        "clone": "path(\"M 14 18 V 6 A 2 2 0 0 0 12 4 H 4 A 2 2 0 0 0 2 6 V 17 A 1 1 0 0 0 3 18 H 5\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|0|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "6px",
+        "clone": "17px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|1|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "19px",
+        "clone": "7px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|polygon|0|loved by breastfeeding mums",
+      "tag": "polygon",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-button",
+        "sgs-button--primary"
+       ],
+       "clone": [
+        "sgs-button",
+        "sgs-button--primary",
+        "sgs-product-card__cta--primary"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|new start here the trial pack not",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "block"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "0%",
+        "clone": "auto"
+       },
+       {
+        "prop": "flex-direction",
+        "draft": "column",
+        "clone": "row"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "1",
+        "clone": "0"
+       },
+       {
+        "prop": "padding-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-left",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-right",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-top",
+        "draft": "20px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__media-wrap"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|3|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "32px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "32px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|a story that started with a frien",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "32px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "32px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "P|she was struggling with breastfeeding her ne",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-6c5d1080"
+       ]
+      }
+     },
+     {
+      "text": "P|they helped her i was so grateful",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-bfcb93ac"
+       ]
+      }
+     },
+     {
+      "text": "P|now i make them for breastfeeding mums acros",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-1cb6eed3"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|a story that started with a frien",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|4|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "P|every zookie contains the same four galactag",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "36px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-section-heading__intro"
+       ],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-4d7fca4a"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-a1b506db",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-3669a73d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-10eda395",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-4b2a6d4d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|gift idea new baby gift box the p",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "16px"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "grid"
+       },
+       {
+        "prop": "font-family",
+        "draft": "Fraunces, serif",
+        "clone": "Inter, sans-serif"
+       },
+       {
+        "prop": "font-size",
+        "draft": "30px",
+        "clone": "16px"
+       },
+       {
+        "prop": "font-weight",
+        "draft": "700",
+        "clone": "400"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "line-height",
+        "draft": "48px",
+        "clone": "26px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__card-price"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "A|find out more ",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px"
+       },
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "sgs-button",
+        "sgs-btn-16be7323",
+        "wp-block-sgs-button"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|handmade in birmingham made for the mu",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"media\" \"content\"",
+        "clone": "none"
+       },
+       {
+        "prop": "min-height",
+        "draft": "0px",
+        "clone": "360px"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham made for the mum wh",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(245, 194, 200)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "flex"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "auto",
+        "clone": "100%"
+       },
+       {
+        "prop": "flex-direction",
+        "draft": "row",
+        "clone": "column"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "order",
+        "draft": "0",
+        "clone": "2"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__content"
+       ],
+       "clone": [
+        "sgs-hero__content"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "flex-basis",
+        "draft": "auto",
+        "clone": "100%"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       },
+       {
+        "prop": "order",
+        "draft": "0",
+        "clone": "1"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:freshly baked mamas munches lactation cook",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:closeup of mamas munches zookies  real ing",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 50%",
+        "clone": "50% 20%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham registered food bus",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "start"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__inner"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "img:stack of mamas munches zookies lactation c",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-3--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|8pack 12pack 20pack 40pack",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "7px",
+        "clone": "16px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "7px",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__pill-group"
+       ],
+       "clone": [
+        "sgs-option-picker__options"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£1000 8pack  free delivery over £35",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "DIV|new start here the trial pack not sure yet",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "8px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "8px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__body"
+       ]
+      }
+     },
+     {
+      "text": "img:mamas munches cookies in a bakery display",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£500 3 classic zookies  postage included",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|a story that started with a friend she",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "32px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "32px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|a story that started with a friend she was",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "32px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "32px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "img:a mum smiling and holding mamas munches co",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|whats in them proper ingredients prope",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|gift idea new baby gift box the perfect gi",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__cards"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| heading to hospital ask us about our send",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-announcement-bar--send-to-ward"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| trustpilot  leave us a review  help other",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-social-proof__trustpilot-bar"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     }
+    ]
+   },
+   "tag": {
+    "pct": 76,
+    "pairs": 189,
+    "match": 143,
+    "mismatches": []
+   },
+   "sub_visible": {
+    "count": 18,
+    "elements": [
+     {
+      "text": "SPAN|handmade in birmingham",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop zookies",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|try 3 for £5",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|our signature",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|mamas munches zookies",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "21px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|the trial pack",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|read the full story ",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|whats in them",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|give the gift of nourishment",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|gift idea",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop gift box",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|most thoughtful",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop bundle",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     }
+    ]
+   },
+   "fluid_equivalent": {
+    "count": 0,
+    "elements": []
+   },
+   "fluid_declined": 5
+  },
+  "768": {
+   "content": {
+    "pct": 100,
+    "total": 78,
+    "matched": 78,
+    "dropped": 0,
+    "dropped_text": [],
+    "dropped_images": [],
+    "dropped_links": []
+   },
+   "css": {
+    "pct": 59,
+    "meaningful_props": 1731,
+    "match": 1020,
+    "pct_matched_only": 77,
+    "meaningful_props_lost_to_unmatched": 410,
+    "unmatched_elements": [
+     {
+      "text": "struct|rect|0|free uk delivery over £35",
+      "tag": "rect",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|0|our signature zookies  our sign",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "struct|IMG|0|mamas munches zookies baked fre",
+      "tag": "img",
+      "meaningful_props_lost": 2
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 9
+     },
+     {
+      "text": "P|baked fresh every week and posted the same",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "BUTTON|8pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|12pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|20pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|40pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|new start here",
+      "tag": "div",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "P|not sure yet try 3 classic zookies and see",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "P| zainab founder of mamas munches",
+      "tag": "p",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "struct|DIV|0|most thoughtful 40day care bund",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|give the gift of nourishment a ",
+      "tag": "div",
+      "meaningful_props_lost": 23
+     },
+     {
+      "text": "struct|DIV|0|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "SPAN| trustpilot",
+      "tag": "span",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|SPAN|1| trustpilot  leave us a review",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "SPAN|leave us a review  help other mums find",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|ARTICLE|0| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| i was sceptical but honestly t",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|i was sceptical but honestly these have ma",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|reham london",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|1| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| bought these for my best frien",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|bought these for my best friend who was re",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|sarah m manchester",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|2| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| zainab is so responsive and lo",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|zainab is so responsive and lovely the coo",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|halimah birmingham",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "MAIN|handmade in birmingham made for the mum",
+      "tag": "main",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "SECTION|our signature zookies  our signature",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|our signature zookies  our signature gia",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|she was struggling with breastfeeding he",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "SECTION|what mums are saying real feedback f",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|what mums are saying real feedback from ",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "DIV| i was sceptical but honestly these have",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "ARTICLE| i was sceptical but honestly these ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| bought these for my best friend who",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| zainab is so responsive and lovely ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     }
+    ],
+    "mismatches": [
+     {
+      "text": "struct|SECTION|0|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"content media\"",
+        "clone": "none"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__ctas"
+       ],
+       "clone": [
+        "sgs-container",
+        "sgs-multi-button",
+        "sgs-mb-1",
+        "sgs-container--flex",
+        "sgs-container-582cd268",
+        "wp-block-sgs-multi-button"
+       ]
+      }
+     },
+     {
+      "text": "A|shop zookies",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-button",
+        "sgs-button--primary"
+       ],
+       "clone": [
+        "sgs-button",
+        "sgs-button--primary",
+        "sgs-btn-2730a509",
+        "wp-block-sgs-button"
+       ]
+      }
+     },
+     {
+      "text": "A|try 3 for £5",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-button",
+        "sgs-button--secondary"
+       ],
+       "clone": [
+        "sgs-button",
+        "sgs-button--secondary",
+        "sgs-btn-6745573a",
+        "wp-block-sgs-button"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "none",
+        "clone": "block"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 20%",
+        "clone": "50% 50%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|1|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 3 12 L 12 3 L 21 12\")",
+        "clone": "path(\"M 15 21 V 13 A 1 1 0 0 0 14 12 H 10 A 1 1 0 0 0 9 13 V 21\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|path|1|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 5 10 V 20 A 1 1 0 0 0 6 21 H 9 V 15 H 15 V 21 H 18 A 1 1 0 0 0 19 20 V 10\")",
+        "clone": "path(\"M 3 10 A 2 2 0 0 1 3.709 8.472 L 10.709 2.472 A 2 2 0 0 1 13.291 2.472 L 20.291 8.472 A 2 2 0 0 1 21 10 V 19 A 2 2 0 0 1 19 21 H 5 A 2 2 0 0 1 3 19 Z\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|registered food business",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|free uk delivery over £35",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 16 8 L 21 10 V 15 H 16 Z\")",
+        "clone": "path(\"M 14 18 V 6 A 2 2 0 0 0 12 4 H 4 A 2 2 0 0 0 2 6 V 17 A 1 1 0 0 0 3 18 H 5\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|0|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "6px",
+        "clone": "17px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|1|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "19px",
+        "clone": "7px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|polygon|0|loved by breastfeeding mums",
+      "tag": "polygon",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-button",
+        "sgs-button--primary"
+       ],
+       "clone": [
+        "sgs-button",
+        "sgs-button--primary",
+        "sgs-product-card__cta--primary"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|new start here the trial pack not",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "block"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "0%",
+        "clone": "auto"
+       },
+       {
+        "prop": "flex-direction",
+        "draft": "column",
+        "clone": "row"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "1",
+        "clone": "0"
+       },
+       {
+        "prop": "padding-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-left",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-right",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-top",
+        "draft": "20px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__media-wrap"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|3|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "center",
+        "clone": "normal"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "60px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "60px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|a story that started with a frien",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "60px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "60px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "P|she was struggling with breastfeeding her ne",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-6c5d1080"
+       ]
+      }
+     },
+     {
+      "text": "P|they helped her i was so grateful",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-bfcb93ac"
+       ]
+      }
+     },
+     {
+      "text": "P|now i make them for breastfeeding mums acros",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-1cb6eed3"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|a story that started with a frien",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|4|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "P|every zookie contains the same four galactag",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "36px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-section-heading__intro"
+       ],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-4d7fca4a"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-a1b506db",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-3669a73d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-10eda395",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-4b2a6d4d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|gift idea new baby gift box the p",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "16px"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "grid"
+       },
+       {
+        "prop": "font-family",
+        "draft": "Fraunces, serif",
+        "clone": "Inter, sans-serif"
+       },
+       {
+        "prop": "font-size",
+        "draft": "30px",
+        "clone": "16px"
+       },
+       {
+        "prop": "font-weight",
+        "draft": "700",
+        "clone": "400"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "line-height",
+        "draft": "48px",
+        "clone": "26px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__card-price"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "A|find out more ",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px"
+       },
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "sgs-button",
+        "sgs-btn-16be7323",
+        "wp-block-sgs-button"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|handmade in birmingham made for the mu",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"content media\"",
+        "clone": "none"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham made for the mum wh",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(245, 194, 200)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "auto",
+        "clone": "50%"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__content"
+       ],
+       "clone": [
+        "sgs-hero__content"
+       ]
+      }
+     },
+     {
+      "text": "DIV|shop zookies try 3 for £5",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__ctas"
+       ],
+       "clone": [
+        "sgs-container",
+        "sgs-multi-button",
+        "sgs-mb-1",
+        "sgs-container--flex",
+        "sgs-container-582cd268",
+        "wp-block-sgs-multi-button"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:freshly baked mamas munches lactation cook",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 20%",
+        "clone": "50% 50%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:closeup of mamas munches zookies  real ing",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham registered food bus",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "start"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__inner"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "img:stack of mamas munches zookies lactation c",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-3--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|8pack 12pack 20pack 40pack",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "7px",
+        "clone": "16px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "7px",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__pill-group"
+       ],
+       "clone": [
+        "sgs-option-picker__options"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£1000 8pack  free delivery over £35",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "DIV|new start here the trial pack not sure yet",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "8px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "8px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__body"
+       ]
+      }
+     },
+     {
+      "text": "img:mamas munches cookies in a bakery display",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£500 3 classic zookies  postage included",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|a story that started with a friend she",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "center",
+        "clone": "normal"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "60px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "60px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|a story that started with a friend she was",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "60px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "60px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "img:a mum smiling and holding mamas munches co",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|whats in them proper ingredients prope",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|gift idea new baby gift box the perfect gi",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__cards"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| heading to hospital ask us about our send",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-announcement-bar--send-to-ward"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| trustpilot  leave us a review  help other",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-social-proof__trustpilot-bar"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     }
+    ]
+   },
+   "tag": {
+    "pct": 76,
+    "pairs": 189,
+    "match": 143,
+    "mismatches": []
+   },
+   "sub_visible": {
+    "count": 16,
+    "elements": [
+     {
+      "text": "SPAN|handmade in birmingham",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|our signature",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|mamas munches zookies",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "21px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|the trial pack",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|read the full story ",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|whats in them",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|give the gift of nourishment",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|gift idea",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop gift box",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|most thoughtful",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop bundle",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     }
+    ]
+   },
+   "fluid_equivalent": {
+    "count": 0,
+    "elements": []
+   },
+   "fluid_declined": 5
+  },
+  "1440": {
+   "content": {
+    "pct": 100,
+    "total": 78,
+    "matched": 78,
+    "dropped": 0,
+    "dropped_text": [],
+    "dropped_images": [],
+    "dropped_links": []
+   },
+   "css": {
+    "pct": 59,
+    "meaningful_props": 1753,
+    "match": 1034,
+    "pct_matched_only": 77,
+    "meaningful_props_lost_to_unmatched": 418,
+    "unmatched_elements": [
+     {
+      "text": "struct|rect|0|free uk delivery over £35",
+      "tag": "rect",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|0|our signature zookies  our sign",
+      "tag": "div",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "struct|IMG|0|mamas munches zookies baked fre",
+      "tag": "img",
+      "meaningful_props_lost": 2
+     },
+     {
+      "text": "struct|DIV|0|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 9
+     },
+     {
+      "text": "P|baked fresh every week and posted the same",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "BUTTON|8pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|12pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|20pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "BUTTON|40pack",
+      "tag": "button",
+      "meaningful_props_lost": 20
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|DIV|1|mamas munches zookies baked fre",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|new start here",
+      "tag": "div",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "P|not sure yet try 3 classic zookies and see",
+      "tag": "p",
+      "meaningful_props_lost": 7
+     },
+     {
+      "text": "P| zainab founder of mamas munches",
+      "tag": "p",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "struct|DIV|0|most thoughtful 40day care bund",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|give the gift of nourishment a ",
+      "tag": "div",
+      "meaningful_props_lost": 23
+     },
+     {
+      "text": "struct|DIV|0|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "SPAN| trustpilot",
+      "tag": "span",
+      "meaningful_props_lost": 6
+     },
+     {
+      "text": "struct|SPAN|1| trustpilot  leave us a review",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "SPAN|leave us a review  help other mums find",
+      "tag": "span",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|DIV|1|what mums are saying real feedb",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "struct|ARTICLE|0| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| i was sceptical but honestly t",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|i was sceptical but honestly these have ma",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|reham london",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|1| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| bought these for my best frien",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|bought these for my best friend who was re",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|sarah m manchester",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "struct|ARTICLE|2| i was sceptical but honest",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "struct|DIV|0| zainab is so responsive and lo",
+      "tag": "div",
+      "meaningful_props_lost": 4
+     },
+     {
+      "text": "P|zainab is so responsive and lovely the coo",
+      "tag": "p",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "P|halimah birmingham",
+      "tag": "p",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "MAIN|handmade in birmingham made for the mum",
+      "tag": "main",
+      "meaningful_props_lost": 0
+     },
+     {
+      "text": "SECTION|our signature zookies  our signature",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|our signature zookies  our signature gia",
+      "tag": "div",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|mamas munches zookies baked fresh every ",
+      "tag": "div",
+      "meaningful_props_lost": 19
+     },
+     {
+      "text": "DIV|she was struggling with breastfeeding he",
+      "tag": "div",
+      "meaningful_props_lost": 1
+     },
+     {
+      "text": "SECTION|what mums are saying real feedback f",
+      "tag": "section",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "DIV|what mums are saying real feedback from ",
+      "tag": "div",
+      "meaningful_props_lost": 3
+     },
+     {
+      "text": "DIV| i was sceptical but honestly these have",
+      "tag": "div",
+      "meaningful_props_lost": 5
+     },
+     {
+      "text": "ARTICLE| i was sceptical but honestly these ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| bought these for my best friend who",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     },
+     {
+      "text": "ARTICLE| zainab is so responsive and lovely ",
+      "tag": "article",
+      "meaningful_props_lost": 18
+     }
+    ],
+    "mismatches": [
+     {
+      "text": "struct|SECTION|0|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"content media\"",
+        "clone": "none"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__ctas"
+       ],
+       "clone": [
+        "sgs-container",
+        "sgs-multi-button",
+        "sgs-mb-1",
+        "sgs-container--flex",
+        "sgs-container-582cd268",
+        "wp-block-sgs-multi-button"
+       ]
+      }
+     },
+     {
+      "text": "P|handmade lactation cookies with proper galac",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "margin-left",
+        "draft": "0px",
+        "clone": "86px"
+       },
+       {
+        "prop": "margin-right",
+        "draft": "0px",
+        "clone": "86px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__sub"
+       ],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-6df8d019"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "none",
+        "clone": "block"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 20%",
+        "clone": "50% 50%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|1|handmade in birmingham made for t",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 3 12 L 12 3 L 21 12\")",
+        "clone": "path(\"M 15 21 V 13 A 1 1 0 0 0 14 12 H 10 A 1 1 0 0 0 9 13 V 21\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|path|1|handmade in birmingham",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 5 10 V 20 A 1 1 0 0 0 6 21 H 9 V 15 H 15 V 21 H 18 A 1 1 0 0 0 19 20 V 10\")",
+        "clone": "path(\"M 3 10 A 2 2 0 0 1 3.709 8.472 L 10.709 2.472 A 2 2 0 0 1 13.291 2.472 L 20.291 8.472 A 2 2 0 0 1 21 10 V 19 A 2 2 0 0 1 19 21 H 5 A 2 2 0 0 1 3 19 Z\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|registered food business",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|path|0|free uk delivery over £35",
+      "tag": "path",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "d",
+        "draft": "path(\"M 16 8 L 21 10 V 15 H 16 Z\")",
+        "clone": "path(\"M 14 18 V 6 A 2 2 0 0 0 12 4 H 4 A 2 2 0 0 0 2 6 V 17 A 1 1 0 0 0 3 18 H 5\")"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|0|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "6px",
+        "clone": "17px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|circle|1|free uk delivery over £35",
+      "tag": "circle",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "cx",
+        "draft": "19px",
+        "clone": "7px"
+       },
+       {
+        "prop": "cy",
+        "draft": "19px",
+        "clone": "18px"
+       },
+       {
+        "prop": "r",
+        "draft": "3px",
+        "clone": "2px"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "struct|polygon|0|loved by breastfeeding mums",
+      "tag": "polygon",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-button",
+        "sgs-button--primary"
+       ],
+       "clone": [
+        "sgs-button",
+        "sgs-button--primary",
+        "sgs-product-card__cta--primary"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|new start here the trial pack not",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "block"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "0%",
+        "clone": "auto"
+       },
+       {
+        "prop": "flex-direction",
+        "draft": "column",
+        "clone": "row"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "1",
+        "clone": "0"
+       },
+       {
+        "prop": "padding-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-left",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-right",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "padding-top",
+        "draft": "20px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__media-wrap"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|new start here the trial pack not",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|3|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "center",
+        "clone": "normal"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "60px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "60px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|a story that started with a frien",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "60px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "60px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "P|she was struggling with breastfeeding her ne",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-6c5d1080"
+       ]
+      }
+     },
+     {
+      "text": "P|they helped her i was so grateful",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-bfcb93ac"
+       ]
+      }
+     },
+     {
+      "text": "P|now i make them for breastfeeding mums acros",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "font-style",
+        "draft": "normal",
+        "clone": "italic"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-1cb6eed3"
+       ]
+      }
+     },
+     {
+      "text": "struct|IMG|0|a story that started with a frien",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "struct|SECTION|4|handmade in birmingham made f",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "P|every zookie contains the same four galactag",
+      "tag": "p",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "36px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-section-heading__intro"
+       ],
+       "clone": [
+        "wp-block-sgs-text",
+        "sgs-text-4d7fca4a"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-a1b506db",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-3669a73d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-10eda395",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(230, 138, 149)"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "inline-flex"
+       },
+       {
+        "prop": "font-size",
+        "draft": "32px",
+        "clone": "16px"
+       },
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-info-box__icon"
+       ],
+       "clone": [
+        "sgs-icon",
+        "sgs-icon--source-emoji",
+        "sgs-icn-4b2a6d4d",
+        "wp-block-sgs-icon"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|0|gift idea new baby gift box the p",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "16px"
+       },
+       {
+        "prop": "display",
+        "draft": "block",
+        "clone": "grid"
+       },
+       {
+        "prop": "font-family",
+        "draft": "Fraunces, serif",
+        "clone": "Inter, sans-serif"
+       },
+       {
+        "prop": "font-size",
+        "draft": "30px",
+        "clone": "16px"
+       },
+       {
+        "prop": "font-weight",
+        "draft": "700",
+        "clone": "400"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "line-height",
+        "draft": "48px",
+        "clone": "26px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__card-price"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "A|find out more ",
+      "tag": "a",
+      "diffs": [
+       {
+        "prop": "justify-content",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px"
+       },
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "sgs-button",
+        "sgs-btn-16be7323",
+        "wp-block-sgs-button"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|handmade in birmingham made for the mu",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "grid-template-areas",
+        "draft": "\"content media\"",
+        "clone": "none"
+       },
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "clip"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero"
+       ],
+       "clone": [
+        "sgs-c-89044281",
+        "sgs-container",
+        "sgs-hero",
+        "sgs-hero--split",
+        "sgs-hero--align-left",
+        "alignfull",
+        "sgs-hero-ad0b993a",
+        "has-background",
+        "sgs-container--grid",
+        "sgs-container-4cb9dac7",
+        "wp-block-sgs-hero"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham made for the mum wh",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(245, 194, 200)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "flex-basis",
+        "draft": "auto",
+        "clone": "50%"
+       },
+       {
+        "prop": "flex-grow",
+        "draft": "0",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__content"
+       ],
+       "clone": [
+        "sgs-hero__content"
+       ]
+      }
+     },
+     {
+      "text": "DIV|shop zookies try 3 for £5",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__ctas"
+       ],
+       "clone": [
+        "sgs-container",
+        "sgs-multi-button",
+        "sgs-mb-1",
+        "sgs-container--flex",
+        "sgs-container-582cd268",
+        "wp-block-sgs-multi-button"
+       ]
+      }
+     },
+     {
+      "text": "struct|DIV|1|handmade in birmingham made for t",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "overflow-block",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-x",
+        "draft": "hidden",
+        "clone": "visible"
+       },
+       {
+        "prop": "overflow-y",
+        "draft": "hidden",
+        "clone": "visible"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__media"
+       ],
+       "clone": [
+        "sgs-hero__media",
+        "sgs-media-box",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:freshly baked mamas munches lactation cook",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       },
+       {
+        "prop": "object-position",
+        "draft": "50% 20%",
+        "clone": "50% 50%"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--mobile"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--mobile",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "img:closeup of mamas munches zookies  real ing",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-hero__split-image",
+        "sgs-hero__split-image--desktop"
+       ],
+       "clone": [
+        "sgs-hero__split-media",
+        "sgs-hero__split-media--desktop",
+        "sgs-hero__split-media--image",
+        "sgs-hero__split-image",
+        "sgs-media-el",
+        "sgs-hero-ad0b993a--splitmedia"
+       ]
+      }
+     },
+     {
+      "text": "DIV|handmade in birmingham registered food bus",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "start"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__inner"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|handmade in birmingham",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|handmade in birmingham",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-home"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|registered food business",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|registered food business",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-check"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|free uk delivery over £35",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|free uk delivery over £35",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke-linecap",
+        "draft": "butt",
+        "clone": "round"
+       },
+       {
+        "prop": "stroke-linejoin",
+        "draft": "miter",
+        "clone": "round"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": [
+        "lucide",
+        "lucide-truck"
+       ]
+      }
+     },
+     {
+      "text": "struct|SPAN|0|loved by breastfeeding mums",
+      "tag": "span",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgb(251, 243, 220)"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "0px",
+        "clone": "1px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "none",
+        "clone": "solid"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "0px",
+        "clone": "1px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-trust-bar__icon"
+       ],
+       "clone": [
+        "sgs-trust-bar__circle",
+        "sgs-trust-bar__circle--filled"
+       ]
+      }
+     },
+     {
+      "text": "struct|svg|0|loved by breastfeeding mums",
+      "tag": "svg",
+      "diffs": [
+       {
+        "prop": "color",
+        "draft": "rgb(58, 46, 38)",
+        "clone": "rgb(197, 106, 122)"
+       },
+       {
+        "prop": "stroke",
+        "draft": "rgb(197, 106, 122)",
+        "clone": "none"
+       }
+      ],
+      "classes": {
+       "draft": [],
+       "clone": []
+      }
+     },
+     {
+      "text": "img:stack of mamas munches zookies lactation c",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-3--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|8pack 12pack 20pack 40pack",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "7px",
+        "clone": "16px"
+       },
+       {
+        "prop": "margin-bottom",
+        "draft": "16px",
+        "clone": "0px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "7px",
+        "clone": "16px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__pill-group"
+       ],
+       "clone": [
+        "sgs-option-picker__options"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£1000 8pack  free delivery over £35",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "DIV|new start here the trial pack not sure yet",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "column-gap",
+        "draft": "normal",
+        "clone": "8px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "normal",
+        "clone": "8px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__body"
+       ],
+       "clone": [
+        "sgs-product-card__body"
+       ]
+      }
+     },
+     {
+      "text": "img:mamas munches cookies in a bakery display",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__image"
+       ],
+       "clone": [
+        "sgs-product-card__image",
+        "sgs-media-el",
+        "sgs-pc-4--main"
+       ]
+      }
+     },
+     {
+      "text": "DIV|£500 3 classic zookies  postage included",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "14px",
+        "clone": "0px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-product-card__price-row"
+       ],
+       "clone": [
+        "sgs-product-card__price-row"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|a story that started with a friend she",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "center",
+        "clone": "normal"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "60px",
+        "clone": "normal"
+       },
+       {
+        "prop": "display",
+        "draft": "grid",
+        "clone": "block"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "2",
+        "clone": "none"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "1",
+        "clone": "none"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "60px",
+        "clone": "normal"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-bba2ce6d",
+        "sgs-container--grid",
+        "sgs-container-bba2ce6d",
+        "sgs-brand",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|a story that started with a friend she was",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "align-items",
+        "draft": "normal",
+        "clone": "center"
+       },
+       {
+        "prop": "column-gap",
+        "draft": "16px",
+        "clone": "60px"
+       },
+       {
+        "prop": "display",
+        "draft": "flex",
+        "clone": "grid"
+       },
+       {
+        "prop": "grid-template-columns",
+        "draft": "none",
+        "clone": "2"
+       },
+       {
+        "prop": "grid-template-rows",
+        "draft": "none",
+        "clone": "1"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       },
+       {
+        "prop": "row-gap",
+        "draft": "16px",
+        "clone": "60px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__content"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "img:a mum smiling and holding mamas munches co",
+      "tag": "img",
+      "diffs": [
+       {
+        "prop": "background-position",
+        "draft": "0% 0%",
+        "clone": "50% 50%"
+       },
+       {
+        "prop": "background-repeat",
+        "draft": "repeat",
+        "clone": "no-repeat"
+       },
+       {
+        "prop": "background-size",
+        "draft": "auto",
+        "clone": "cover"
+       },
+       {
+        "prop": "border-image-slice",
+        "draft": "100%",
+        "clone": "1"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-brand__image"
+       ],
+       "clone": [
+        "sgs-media",
+        "sgs-media--align-left",
+        "sgs-media-91ef4c24",
+        "wp-block-sgs-media",
+        "sgs-media__img",
+        "sgs-media-el"
+       ]
+      }
+     },
+     {
+      "text": "SECTION|whats in them proper ingredients prope",
+      "tag": "section",
+      "diffs": [
+       {
+        "prop": "text-align",
+        "draft": "start",
+        "clone": "center"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-ingredients-section"
+       ],
+       "clone": [
+        "sgs-container",
+        "has-global-padding",
+        "sgs-cst-dc4ff8c7",
+        "has-text-align-center",
+        "sgs-container-dc4ff8c7",
+        "sgs-ingredients-section",
+        "wp-block-sgs-container"
+       ]
+      }
+     },
+     {
+      "text": "DIV|gift idea new baby gift box the perfect gi",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "margin-bottom",
+        "draft": "20px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-gift-section__cards"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| heading to hospital ask us about our send",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-announcement-bar--send-to-ward"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     },
+     {
+      "text": "DIV| trustpilot  leave us a review  help other",
+      "tag": "div",
+      "diffs": [
+       {
+        "prop": "background-color",
+        "draft": "rgb(255, 255, 255)",
+        "clone": "rgba(0, 0, 0, 0)"
+       },
+       {
+        "prop": "border-bottom-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-bottom-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-bottom-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-left-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-left-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-right-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-right-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-left-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-right-radius",
+        "draft": "10px",
+        "clone": "0px"
+       },
+       {
+        "prop": "border-top-style",
+        "draft": "solid",
+        "clone": "none"
+       },
+       {
+        "prop": "border-top-width",
+        "draft": "1px",
+        "clone": "0px"
+       },
+       {
+        "prop": "max-width",
+        "draft": "none",
+        "clone": "1280px"
+       }
+      ],
+      "classes": {
+       "draft": [
+        "sgs-social-proof__trustpilot-bar"
+       ],
+       "clone": [
+        "sgs-container__inner"
+       ]
+      }
+     }
+    ]
+   },
+   "tag": {
+    "pct": 76,
+    "pairs": 189,
+    "match": 143,
+    "mismatches": []
+   },
+   "sub_visible": {
+    "count": 18,
+    "elements": [
+     {
+      "text": "SPAN|handmade in birmingham",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop zookies",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|try 3 for £5",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|our signature",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|mamas munches zookies",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|add to cart  £10",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "21px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "H3|the trial pack",
+      "tag": "h3",
+      "sub": [
+       {
+        "prop": "margin-bottom",
+        "draft": "6px",
+        "clone": "0px",
+        "bucket": "margin-absorbed-by-gap"
+       }
+      ]
+     },
+     {
+      "text": "A|read the full story ",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "22px",
+        "clone": "17px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|whats in them",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| oats rich in iron used in postpa",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| brewers yeast bvitamins and chro",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| flaxseed omega3 fatty acids good",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "struct|DIV|0| fenugreek traditional postpartum",
+      "tag": "div",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "51px",
+        "clone": "26px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|give the gift of nourishment",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "19px",
+        "clone": "14px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|gift idea",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop gift box",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "SPAN|most thoughtful",
+      "tag": "span",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "18px",
+        "clone": "13px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     },
+     {
+      "text": "A|shop bundle",
+      "tag": "a",
+      "sub": [
+       {
+        "prop": "line-height",
+        "draft": "24px",
+        "clone": "18px",
+        "bucket": "line-height-single-line"
+       }
+      ]
+     }
+    ]
+   },
+   "fluid_equivalent": {
+    "count": 0,
+    "elements": []
+   },
+   "fluid_declined": 0
+  }
+ },
+ "overall_css_pct": 59,
+ "overall_tag_pct": 76,
+ "sub_visible_total": 52,
+ "fluid_equivalent_total": 0,
+ "fluid_declined_total": 10
+}
