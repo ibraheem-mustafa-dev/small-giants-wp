@@ -2,7 +2,7 @@
 plan_id: measurement-integrity-2026-09-09
 phase_name: Measurement Integrity
 project: small-giants-wp
-cost_estimate: ~2h wall-time across 13 steps + 4 QA gates (revised down from a padded 7h — see Execution notes)
+cost_estimate: ~2h wall-time across 13 steps + 4 QA gates
 docscore_grade: pending
 mode: ad-hoc (council-scoped, no parent strategic-plan)
 ---
@@ -21,9 +21,7 @@ regression risk; the rest are surgical but must not be executed without that con
 
 **Aggregate estimate:** ~2 hours wall-time across 13 steps + 4 QA gates. Every step is a
 surgical edit to ONE file with a proven cause and a fixture that tells you within seconds whether
-it worked. Treat these as the expected figure, not a floor — the first draft of this plan padded
-them to ~7h, which is the documented anti-pattern (`~/.claude/rules/time-estimates.md`): an
-inflated estimate stalls the start and makes the whole plan read as bigger than it is.
+it worked. Treat these as the expected figure, not a floor.
 
 ---
 
@@ -77,19 +75,14 @@ inflated estimate stalls the start and makes the whole plan read as bigger than 
 
 - Commit `2baf3171e` (2026-09-08) — introduced the regression. Its purpose was to close a
   wrapper/child key collision; **that closure must survive this phase** (see KJC-1).
-- **Regression PROVEN by controlled test, 2026-09-09 — read this before quoting any number.**
-  An earlier draft of this plan cited "83–84%" as the pre-regression baseline and inferred the
-  regression from a before/after comparison. Both were defective: the real prior figures are
-  **80% (2026-09-07-233003) and 81% (2026-09-08-105524)**, and those runs measured the SITE ROOT
-  (`/` = page **2742**, the live homepage carrying every manual fix from the 2026-09-08 session),
-  whereas the 59% run measured page **3448** (a virgin clone with none of them). That comparison
-  changed TWO variables at once and could not support the conclusion drawn from it.
-  The variable was then isolated properly: the CURRENT tool run against **page 2742 — the same
-  target as the 80–81% runs — scores 59%**. Identical inputs, 21 points lost. The tool is the
-  entire cause; the clone target is irrelevant to the drop. The conclusion survived, the original
-  evidence for it did not.
-  ⚠ Therefore: `unmatched: 4` / `lost: 3` from the prior runs are figures for page **2742**, not
-  3448. Do NOT compare them against a 3448 run without re-baselining on the same target.
+- **Pre-regression baseline, measured on page 2742:** 80% (`mamas-munches-homepage-2026-09-07-233003`)
+  and 81% (`mamas-munches-homepage-2026-09-08-105524`), both with `unmatched: 4`, `lost: 3`.
+- **The regression is proven, not inferred:** the current tool run against page **2742** — the same
+  target as those 80–81% runs — scores **59%**. Identical inputs, ~21 points lost. The tool is the
+  cause; the clone target is irrelevant to the drop.
+- ⛔ **Never cross-compare a page-2742 figure with a page-3448 figure.** 2742 is the live homepage
+  carrying the 2026-09-08 session's manual fixes; 3448 is a virgin clone with none of them. They are
+  different populations, and a before/after spanning both proves nothing about either.
 - `~/.claude/rules/measurement-vs-eye.md` — a measurement can be wrong in both directions.
 - MEMORY `feedback_negative_control_or_the_test_is_vacuous` + `feedback_a_negative_control_has_its_own_vacuity_mode`.
 - MEMORY `feedback_a_gates_scope_is_not_the_defects_scope` — read the emitted output, never close on a green gate.
@@ -163,7 +156,7 @@ Action:      Extend computed-parity.js::selfTest with SEVEN fixtures, each asser
                  remain distinguishable. MUST assert WHICH draft element paired with WHICH clone
                  element (identity), never merely that both survived — otherwise it can pass by
                  accident after Step 7. Verify it FAILS if the same-tag tie-break is removed;
-             (7) THE OVER-EXCLUSION CONTROL (added by Hidden-Decisions review) — `background-size`
+             (7) THE OVER-EXCLUSION CONTROL — `background-size`
                  diverging on a <div> MUST still score, while the same property on an <img> must
                  not. Without this, Step 9 can ship a global background-* exclusion and every
                  other fixture still passes.
@@ -324,27 +317,26 @@ Test:
 
 ```
 Model:       sonnet
-Action:      ⚠ CORRECTED BY HIDDEN-DECISIONS REVIEW — the original description of this defect was
-             WRONG and would have sent an implementer to duplicate existing logic.
-             `::inChrome` does NOT blindly treat any FOOTER-ancestor as chrome. Its helper
-             `::isPageLevelChromeTag` already walks up to BODY and returns "not chrome" the moment
-             it meets a SECTION / ARTICLE / MAIN ancestor — so a <footer> inside an <article> is
-             ALREADY exempt. The real defect is narrower: the bail-out only fires when the wrapping
-             block root is one of those three content-sectioning tags, so it MISSES when the root is
-             a bare <div> — which is exactly sgs/testimonial's current markup.
-             THEREFORE: this step is INVESTIGATE-FIRST, fix-second. Confirm on the live page which
-             element actually wraps the attribution before writing anything. Two legitimate
-             outcomes: (a) widen the bail-out's accepted set / test for content context rather than
-             tag identity; or (b) conclude the correct fix is the block's own <div>→<article> root
-             (currently a stated Non-goal) — in which case STOP, report, and re-scope rather than
-             patching the ruler to compensate for a block-markup inconsistency.
+Action:      INVESTIGATE FIRST, fix second.
+             `::inChrome`'s helper `::isPageLevelChromeTag` already walks up to BODY and returns
+             "not chrome" on meeting a SECTION / ARTICLE / MAIN ancestor — so a <footer> inside an
+             <article> is already exempt. The defect is narrower than "any FOOTER ancestor": the
+             bail-out only fires for those three content-sectioning tags, so it misses when the
+             wrapping block root is a bare <div>, which is sgs/testimonial's current markup. The
+             consequence is a blind spot, not a miscount — those attributions are removed from the
+             clone capture and never measured at all.
+             Confirm on the live page which element actually wraps the attribution before writing
+             anything. Two legitimate outcomes: (a) the bail-out should recognise content context
+             rather than tag identity — fix it here; or (b) the correct fix is the block's own
+             <div>→<article> root, which is a stated Non-goal — in which case STOP and re-scope.
+             ⛔ Do not patch the ruler to compensate for a block-markup inconsistency.
 Files:       plugins/sgs-blocks/scripts/parity/computed-parity.js (::inChrome)
 Inputs:      Seat A "M4 — 9 props + a silent blind spot"
 Outcome:     Either the attributions appear in the capture for the first time, OR a written finding
              that the correct fix is the block's markup and this step is closed as not-a-ruler-bug.
              NOTE: a genuine fix here makes the score go DOWN by admitting never-before-measured
              elements. That is CORRECT — but "it went down" is NOT a pass condition on its own
-             (Hidden-Decisions P1): BEFORE changing code, predict the expected unmatched-count
+             BEFORE changing code, predict the expected unmatched-count
              movement for THIS fix alone and record it. A move materially larger than predicted
              means the chrome test has been loosened too far and the site footer is re-entering
              scoring — investigate rather than accept.
@@ -387,10 +379,9 @@ Action:      computed-parity.js::structuralAnchor embeds el.tagName in the key, 
              ::meaningfulCountUnmatched then charges EVERY property as lost — 139 props. This
              contradicts the tool's own docstring, which states tag divergence is expected Rule-1
              behaviour, reported separately, and "must not dilute CSS".
-             DO NOT simply delete the tag from the key — that re-opens the wrapper/child collision
-             2baf3171e was written to close. Demote tag to a TIE-BREAK instead.
-             ⚠ SCOPE CORRECTED BY HIDDEN-DECISIONS REVIEW — this is NOT "add a preference clause to
-             existing logic". Verified against the code, the real work is three parts:
+             ⛔ DO NOT simply delete the tag from the key — that re-opens the wrapper/child
+             collision `2baf3171e` was written to close, trading one defect for its predecessor.
+             Demote tag to a TIE-BREAK instead. Three parts:
              (1) STRIP the tag from THREE separate key-construction sites, not one — ::structuralAnchor,
                  the text-key (`anchorEl.tagName + '|' + dkey`), and the box-anchor
                  (`el.tagName + '|' + anchorText`);
@@ -488,18 +479,16 @@ Test:
 
 ```
 Model:       sonnet
-Action:      ⚠ SPLIT INTO 9a / 9b / 9c BY HIDDEN-DECISIONS REVIEW — this was three separate new
-             mechanisms under one 35-minute estimate. Execute and COMMIT them separately.
+Action:      Three separate mechanisms. Execute and COMMIT them separately.
 
-             ⚠ FACTUAL CORRECTION, load-bearing: the plan previously said "the colour family already
-             has this fix — generalise the existing approach". THAT MECHANISM DOES NOT EXIST. The
-             only colour-family logic in the file is inside the ::BLOCK Set — the colour longhands
-             are BLOCKLISTED (never scored at all), which is structurally a different thing from a
-             COLLAPSE (still scored, counted once). There is nothing to generalise. Design the
-             grouping from scratch. Border width/style longhands are confirmed ABSENT from ::BLOCK,
-             so a single authored `border: 1px solid red` genuinely does produce 8 scored diffs today.
+             ⛔ There is NO existing longhand-collapse mechanism to extend. The only colour-family
+             logic in the file sits inside the ::BLOCK Set, where the colour longhands are
+             BLOCKLISTED (never scored) — structurally a different thing from a COLLAPSE (scored,
+             counted once). Do not go looking for one. Border width/style longhands are confirmed
+             ABSENT from ::BLOCK, so one authored `border: 1px solid red` genuinely produces 8
+             scored diffs today.
 
-             (9a) LONGHAND COLLAPSE — ⚠ REVISED (Bean, 2026-09-09). Do NOT hand-write a family map.
+             (9a) LONGHAND COLLAPSE — ⛔ do NOT hand-write a family map.
                   The shorthand→longhand relationship is ALREADY DATA in `sgs-framework.db`:
                   `property_suffixes` carries both the shorthand row and its longhands side by side
                   (`BorderWidth`→`border-width` alongside `BorderTopWidth`→`border-top-width`,
@@ -778,83 +767,31 @@ Test:
   transfer work against a number whose meaning has not been established.
 - **Who decides:** Bean, at Step 13.
 
-### Pre-emptive decisions (Hidden Decisions pass — Sonnet implementer + Haiku sceptic, 2026-09-09)
+### Pre-emptive decisions (answered here so execution does not pause)
 
-Both reviewers were cold (no prior session context). Three of their findings were **factual
-corrections to this plan** and have already been applied in place to Steps 2, 6, 7, 9 and the QA
-gates — they are recorded here so the reasoning is not lost.
+- **Step 10 — how "fail loud on DB-unreachable" is enforced.** The implementer must show there is
+  NO catch-and-continue path: the handler re-throws or exits non-zero. A fallback kept "just for
+  tests" makes the entire DB binding vacuous. Verified at QA Gate 4 by READING the handler, not by
+  running the happy path.
 
-- **Decision:** Step 9 said "generalise the EXISTING colour-family longhand collapse". No such
-  mechanism exists.
-  - **Flagged by:** sonnet-reviewer (verified against `::BLOCK`)
-  - **Recommendation:** APPLIED — the colour longhands are *blocklisted* (never scored), which is
-    structurally different from a *collapse* (scored once). Step 9a now says build grouping from
-    scratch and name which families are in scope. Step 9 also split into 9a/9b/9c, three commits.
-  - **Why:** Sending an implementer to "generalise" a non-existent mechanism costs a session of
-    searching, then a guess — the exact failure this plan exists to prevent.
+- **Step 11 — the STRUCTURE bucket's definition.** Write it in plain English before coding:
+  *one miss per draft element that cannot be matched in the clone by content, or that matches but
+  under a different tag.* An element that is both unmatched AND tag-substituted counts **once**.
+  Splitting one number into four does not by itself make any of the four correct.
 
-- **Decision:** Step 6 described `::inChrome` as excluding any FOOTER ancestor at any depth. It
-  does not — `::isPageLevelChromeTag` already bails out on a SECTION/ARTICLE/MAIN ancestor.
-  - **Flagged by:** sonnet-reviewer
-  - **Recommendation:** APPLIED — Step 6 is now investigate-first. The real trigger is a bare
-    `<div>` block root (i.e. `sgs/testimonial`), so the correct fix may be the block's markup, which
-    is a stated Non-goal. If so: STOP and re-scope, do not patch the ruler to compensate.
-  - **Why:** Executing the original wording would have duplicated or weakened an existing guard.
+- **Step 12 — how "byte-identical" is proven.** sha256 the emitted block markup before and after,
+  and publish both hashes. "Looks the same" is not a check.
 
-- **Decision:** Step 7 was scoped as "add a preference clause to existing machinery" at 45 min.
-  - **Flagged by:** sonnet-reviewer
-  - **Recommendation:** APPLIED — `::bestPairing` has zero tag-awareness today, and tag is baked
-    into THREE key-construction sites. Real scope: strip from three sites, write the tie-break from
-    scratch, and assert the box tier's `exact=true` semantics did not loosen (previously undiscussed).
-  - **Why:** Under-scoping the one step with a live regression risk is how it gets rushed.
+- **Open: reconcile 139 vs 198.** Both figures are cited for the cost of tag-divergence
+  mismeasurement (Step 7 and Step 11 respectively) with no stated relationship. Establish which is
+  correct, and what the other counts, BEFORE either is published at Step 13 — whose whole purpose
+  is that no unreconciled number gets quoted again.
 
-- **Decision:** Nothing proved Step 9b hadn't over-excluded.
-  - **Flagged by:** haiku-sceptic (ranked P2, judged the strongest finding by the orchestrator)
-  - **Recommendation:** APPLIED — new **fixture 7** asserts `background-size` still scores on a
-    `<div>` while not scoring on an `<img>`. Without it, a global `background-*` exclusion ships and
-    every other fixture stays green.
-  - **Why:** False confidence in a measuring tool is strictly worse than a false alarm.
-
-- **Decision:** Step 6's "expect the score to move DOWN" was unfalsifiable.
-  - **Flagged by:** haiku-sceptic (P1)
-  - **Recommendation:** APPLIED — predict the expected movement for that fix ALONE before editing,
-    then compare. A materially larger move means the chrome test was loosened too far.
-
-- **Decision:** Fixture 6 (collision control) could pass by accident after Step 7.
-  - **Flagged by:** haiku-sceptic (P1)
-  - **Recommendation:** APPLIED — it must assert WHICH draft element paired with WHICH clone
-    element, and be verified to FAIL when the same-tag tie-break is removed. Presence-only is not a control.
-
-- **Decision:** Fixture 3 could pass on a half-applied de-duplication.
-  - **Flagged by:** haiku-sceptic (P2)
-  - **Recommendation:** APPLIED — assert the EXACT reduction (N unique properties → exactly N
-    fewer), never "fewer than before".
-
-- **Decision:** Step 10's "fail loud on DB-unreachable" had no enforcement.
-  - **Flagged by:** haiku-sceptic (P1)
-  - **Recommendation:** The implementer must show there is NO catch-and-continue path — the handler
-    re-throws or exits non-zero. A fallback "just for tests" makes the whole DB binding vacuous.
-    Reviewed at QA Gate 4 by reading the code, not by running the happy path.
-
-- **Decision:** Step 11's STRUCTURE bucket was undefined.
-  - **Flagged by:** haiku-sceptic (P2)
-  - **Recommendation:** Write the definition in plain English BEFORE coding, and state the
-    double-count rule explicitly: an element that is both unmatched AND tag-substituted counts
-    ONCE. Splitting one number into four does not by itself make any of the four correct.
-
-- **Decision:** Step 12's "byte-identical" claim had no method.
-  - **Flagged by:** haiku-sceptic (P3)
-  - **Recommendation:** Take a sha256 of the emitted block markup before and after and publish
-    both hashes. "Looks the same" is not a check.
-
-- **Decision:** The 139 (Step 7) and 198 (Step 11) figures for tag-divergence cost are unreconciled.
-  - **Flagged by:** sonnet-reviewer
-  - **Recommendation:** Reconcile against the seat reports before either is quoted at Step 13 —
-    whose entire purpose is that no unreconciled number ever gets published again.
-
-- **Not a defect, confirmed correct on inspection:** Step 8's substring reasoning, and Seat A's
-  `SPAN|8pack` claim (the inline-wrapper hoist stops at `childElementCount === 1`). Recorded so a
-  later reader does not re-investigate them.
+- **Already checked, do not re-investigate:** Step 8's substring reasoning is sound (a mid-string
+  insertion breaks the draft's contiguous phrase into two non-adjacent pieces, which a
+  position-agnostic `.includes()` still cannot match, whereas a prefix/suffix insertion leaves the
+  phrase intact at one end). Seat A's `SPAN|8pack` key is correct — the inline-wrapper hoist stops
+  at `childElementCount === 1`, so a hoist-only patch will not close M1.
 
 ---
 
