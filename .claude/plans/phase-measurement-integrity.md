@@ -27,11 +27,17 @@ it worked. Treat these as the expected figure, not a floor.
 
 ## Phase success criteria (done when)
 
-- [ ] `node plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test` exits 0 with **10+**
-      assertions covering blocklist, tag-substitution, tier-duplication, SVG skip, longhand
-      collapse and wrapper/child collision — where each fixture is proven to FAIL before its fix.
-- [ ] A re-run against the unchanged draft + page 3448 reports **unmatched elements ≤ 5**
-      (Seat A counterfactual V5 measured 5; baseline is 46).
+- [ ] `node plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test` exits 0 with the
+      seven new fixtures passing — blocklist, tag-substitution, tier-duplication, SVG skip, longhand
+      collapse, same-tag tie-break, over-exclusion — each proven to FAIL before its fix.
+      (Step 0 first clears four pre-existing typography failures; without it no gate's exit code
+      is readable.)
+- [ ] A re-run against the unchanged draft + page 3448 drops unmatched elements from **46 to
+      under 15**, and **every surviving entry is individually named with its mechanism**.
+      ⛔ Do not use "≤ 5" as the gate. That figure came from an unsaved probe script that
+      reimplemented the tool, and it was measured on a variant that drops the tag from the key
+      outright — which is exactly the design KJC-1 rejects. A named-residue gate is falsifiable
+      against artefacts that exist; 5 is not.
 - [ ] **The regression is closed on its own terms:** the repaired tool, run against page **2742**
       (the target the pre-regression runs used), returns to ≈80–81% — or the residual gap is
       explained. This is the only apples-to-apples check; a 3448 number cannot demonstrate it,
@@ -47,8 +53,12 @@ it worked. Treat these as the expected figure, not a floor.
 
 ## Non-goals (explicitly out of scope — do not scope-creep into these)
 
-- Building any CSS dictionary, decomposition table, or new DB column. Council verdict: the
-  mechanism exists; the dictionary closes <4% of the 209. Revisit only after re-measurement.
+- Building any CSS dictionary, decomposition table, or new DB column. The mechanism already
+  exists, and **152 of the 209 reported drops (73%) are fabricated by three over-coarse
+  `property_suffixes` rows** — proven: the draft contains exactly ONE gradient declaration while the
+  report claims 100 gradient drops. The genuinely dictionary-addressable residue has NOT been
+  reliably counted (Seat B gives 143/146/151/8 for overlapping quantities); re-derive it before any
+  number is published. Revisit the decision only after re-measurement.
 - Reconnecting or deleting `orchestrator/css_router.py`. Separate decision, needs its own gate.
 - Changing converter emit behaviour to match the draft's DOM. Seat A: 0 of 41 unmatched elements
   justify it, and it would violate CLAUDE.md rule 1 (CONVERT, don't mirror).
@@ -59,8 +69,12 @@ it worked. Treat these as the expected figure, not a floor.
 
 ## Entry context (read before starting)
 
-- `.claude/reports/2026-09-09-council-seat-a-domshape.md` — the 41-element classification, the
-  six mechanisms tallying to 418, and the V0–V5 counterfactual table.
+- `.claude/reports/2026-09-09-council-seat-a-domshape.md` — the 41-element classification and the
+  mechanism partition. ⚠ The 418 is partitioned by FIVE mechanisms plus a sibling-index residue:
+  90 (M1) + 139 (M2) + 146 (M3) + 9 (M4) + 6 (M5) + 28 (sibling-index) = 418. **M6's 54 props of
+  double-count are an OVERLAY inside M3's 146, not a sixth addend — never add it to the others.**
+  Its V0–V5 counterfactual table is unreproducible (no script was saved); treat it as indicative
+  only, never as a target.
 - `.claude/reports/2026-09-09-council-seat-c-measurement.md` — the five ruler defects, the
   corrected-band arithmetic, and the five specified fixtures.
 - `.claude/reports/2026-09-09-council-seat-b-dictionary.md` — the `_area_excluded` silent-drop
@@ -103,6 +117,47 @@ it worked. Treat these as the expected figure, not a floor.
 
 ## Steps
 
+### Step 0 — Clear the four pre-existing self-test failures
+
+```
+Model:       sonnet
+Action:      `--self-test` ALREADY FAILS at HEAD with 4 failures, and every later gate in this
+             phase depends on being able to read its result. Cause: `computed-parity.js::THEME_FLUID`
+             hardcodes a font-size ladder that `theme/sgs-theme/theme.json` no longer matches — D1007
+             (commits `ea877e35a` / `67253fb03`, 2026-09-08) moved the whole ladder to `fluid:false`
+             and renamed presets. `::verifyThemeFluidFreshness` therefore reports drift on every
+             preset plus an unrecognised `regular`=16px, and fails closed; self-test Test 1 asserts
+             fluid-equivalence IS granted, which can no longer happen.
+             Either re-sync THEME_FLUID to the current theme.json ladder, or quarantine the 4
+             typography assertions with an explicit skip naming D1007. Do NOT silently delete them.
+             ⛔ This is NOT the cause of the 59% — `fluid_equivalent_total` is 0 in all three runs
+             (both 80/81% baselines and the 59% run), so no equivalence grants were lost. It is a
+             gate defect, not a score defect. Do not chase it as part of the regression.
+Files:       plugins/sgs-blocks/scripts/parity/computed-parity.js (::THEME_FLUID, ::verifyThemeFluidFreshness, ::selfTest)
+Inputs:      theme/sgs-theme/theme.json (settings.typography.fontSizes); decisions.md D1007
+Outcome:     `--self-test` exits 0 at HEAD, so a later gate's exit code means something.
+Exec:        SEQUENTIAL
+Deps:        none
+Marker:      SESSION-START
+Time:        10 min
+Tooling:     node --self-test
+On-Fail:     If re-syncing changes any scored result, STOP — this step must be gate-only.
+Cold-Entry:  This plan; theme/sgs-theme/theme.json; decisions.md D1007
+Prompt:      `node plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test` fails with 4
+             pre-existing failures at HEAD. Cause: ::THEME_FLUID hardcodes a font-size ladder that
+             theme.json no longer matches after D1007 moved every preset to fluid:false.
+             Re-sync THEME_FLUID to the live theme.json ladder if that restores the assertions'
+             meaning; otherwise quarantine those 4 assertions with a skip that names D1007 as the
+             reason. Never silently delete an assertion. Confirm --self-test then exits 0, and
+             confirm no SCORED output changed (this is a gate fix, not a scoring fix): re-run
+             against page 2742 and show overall_css_pct is still 59. Commit with an explicit pathspec.
+Test:
+  Happy:       --self-test exits 0 at HEAD.
+  Edge:        A future theme.json change re-trips the freshness gate loudly rather than silently.
+  Fail:        Scored output moves → revert; this step must not touch scoring.
+  Integration: Page-2742 re-run still reports 59% (proving Step 0 changed nothing but the gate).
+```
+
 ### Step 1 — Capture the pre-fix baseline artefact
 
 ```
@@ -138,6 +193,42 @@ Test:
   Integration: Artefact is byte-comparable with the pipeline-state original.
 ```
 
+### Step 2a — Make the tier-scoring loop testable
+
+```
+Model:       sonnet
+Action:      Fixtures 2, 3 and 6 cannot be written against the current structure. `::selfTest` calls
+             `capture()` then `comparePair()` DIRECTLY — it never reaches the pairing machinery,
+             because `runTier` and `bestPairing` are closures declared INLINE inside `main()`, along
+             with the `T`/`M` accumulators and the unmatched-charging path. Fixture 2 needs the
+             pairing path, fixture 3 needs the `meaningful_props` totals, fixture 6 needs to report
+             WHICH draft record paired with WHICH clone record.
+             Extract the tier-scoring loop (`runTier` + `bestPairing`) out of `main()` into a
+             callable function returning `{ T, M, unmatched, pairings }`. Behaviour change: NONE.
+Files:       plugins/sgs-blocks/scripts/parity/computed-parity.js (main(), ::runTier, ::bestPairing)
+Inputs:      Step 1's baseline artefact
+Outcome:     The scoring loop is callable from a test, and a live re-run produces numbers
+             BYTE-IDENTICAL to reports/parity-baseline/2026-09-09-pre-fix.json.
+Exec:        SEQUENTIAL
+Deps:        Steps 0, 1
+Marker:      (none)
+Time:        15 min
+Tooling:     node --self-test; node against page 3448
+On-Fail:     git revert. A pure extraction that moves any number is not a pure extraction.
+Prompt:      In computed-parity.js, `runTier` and `bestPairing` are closures inside `main()`, so
+             selfTest cannot reach the pairing path, the T/M accumulators, or the unmatched-charging
+             path. Extract the tier-scoring loop into a callable function returning
+             { T, M, unmatched, pairings }, with ZERO behaviour change. Prove it: re-run against
+             page 3448 and show the output numbers are byte-identical to
+             reports/parity-baseline/2026-09-09-pre-fix.json. If ANY number moves, you have changed
+             behaviour — revert and retry. Commit with an explicit pathspec.
+Test:
+  Happy:       Re-run numbers byte-identical to the Step 1 baseline.
+  Edge:        The box tier (called with exact=true) still behaves identically.
+  Fail:        Any scored number moves → revert.
+  Integration: --self-test still exits 0 (Step 0's precondition holds).
+```
+
 ### Step 2 — Write the seven negative-control fixtures (six MUST fail)
 
 ```
@@ -152,10 +243,13 @@ Action:      Extend computed-parity.js::selfTest with SEVEN fixtures, each asser
                  half-applied de-duplication passes;
              (4) an inline <svg><path> is skipped regardless of tagName case;
              (5) a single authored `border: 1px solid red` diff counts as ONE, not eight;
-             (6) THE COLLISION CONTROL — a wrapper and its only child with identical text must
-                 remain distinguishable. MUST assert WHICH draft element paired with WHICH clone
-                 element (identity), never merely that both survived — otherwise it can pass by
-                 accident after Step 7. Verify it FAILS if the same-tag tie-break is removed;
+             (6) THE TIE-BREAK CONTROL — two elements with identical text and DIFFERENT tags, in
+                 the SAME map, must pair to their same-tag counterparts. MUST assert WHICH draft
+                 element paired with WHICH clone element, never merely that both survived, and MUST
+                 be verified to FAIL when the same-tag tie-break is removed.
+                 ⛔ Do NOT write this as "a wrapper and its only child with identical text stay
+                 distinguishable" — that tests `norm()`'s 300-char cap, which Step 7 never touches,
+                 so it would pass before and after regardless and control nothing;
              (7) THE OVER-EXCLUSION CONTROL — `background-size`
                  diverging on a <div> MUST still score, while the same property on an <img> must
                  not. Without this, Step 9 can ship a global background-* exclusion and every
@@ -166,9 +260,9 @@ Inputs:      .claude/reports/2026-09-09-council-seat-c-measurement.md (fixture s
 Outcome:     --self-test reports exactly 5 failures (1-5) and fixture 6 passing. The 5 failures
              ARE the positive control: they prove each fixture detects its defect.
 Exec:        SEQUENTIAL
-Deps:        Step 1
+Deps:        Steps 0, 1, 2a
 Marker:      (none)
-Time:        10 min
+Time:        12 min
 Tooling:     node --self-test
 On-Fail:     If a fixture PASSES before its fix, the fixture is vacuous — rewrite it until it
              fails for the right reason. Do not proceed with a vacuous fixture.
@@ -189,7 +283,7 @@ Test:
 > ```
 > Model:  haiku
 > Exec:   SEQUENTIAL
-> Deps:   Step 2
+> Deps:   Steps 0, 2a, 2
 > Check:  PowerShell (see Execution notes — do NOT use Git Bash for node on this project):
 >         node plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test
 >         Write-Host "exit=$LASTEXITCODE"
@@ -600,10 +694,11 @@ Test:
 >         node plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test
 >         Write-Host "selftest=$LASTEXITCODE"
 >         then re-run against draft + page 3448 and diff against reports/parity-baseline/2026-09-09-pre-fix.json
-> Pass:   --self-test exits 0 with ALL six fixtures passing; live re-run reports unmatched_elements
->         <= 5 (Seat A V5 measured 5, from a baseline of 46).
-> Fail:   unmatched > 5 → identify which mechanism is unclosed (the six compound; V3 alone moved
->         nothing) and return to that step. Do not adjust the target to fit the result.
+> Pass:   --self-test exits 0 with all SEVEN fixtures passing; live re-run drops unmatched_elements
+>         from 46 to under 15, AND every surviving entry is named with the mechanism explaining it.
+> Fail:   Any surviving entry that cannot be attributed to a named mechanism → that is an unclosed
+>         defect; return to the step that owns it. Do not adjust the target to fit the result, and do
+>         not substitute "<= 5" — that came from an unsaved probe of a design this plan rejects.
 > Marker: QA
 > ```
 
@@ -612,9 +707,12 @@ Test:
 ```
 Model:       inline
 Action:      Replace the single aggregate CSS percentage with four reported numbers, each carrying
-             its DENOMINATOR: CONTENT, STRUCTURE (new — absorbs unmatched + tag substitutions, so
-             7 tag substitutions read as 7 structural findings rather than 198 CSS misses), LAYOUT,
-             and PAINT+TYPE. No headline aggregate — a single number is what let a structural
+             its DENOMINATOR: CONTENT, STRUCTURE (new — absorbs unmatched + tag substitutions, so a
+             tag substitution reads as ONE structural finding rather than every property on that
+             element being charged as a CSS miss), LAYOUT, and PAINT+TYPE.
+             ⛔ Do not quote the figure 198 here: it double-counts the three testimonial articles by
+             54 props and stops being true the moment Step 4 lands. The stable figure for
+             tag-substitution cost is 139. No headline aggregate — a single number is what let a structural
              matcher defect masquerade as a CSS-transfer failure for a full session.
 Files:       plugins/sgs-blocks/scripts/parity/computed-parity.js (artefact assembly + console summary)
 Inputs:      Seat C's recommended model; Seat A's Q4 answer (parity = the draft's painted result
@@ -642,17 +740,22 @@ Test:
 ```
 Model:       sonnet
 Action:      In converter/services/fold_helpers.py::route_area_css_to_block_attrs, the local
-             _area_excluded set (grid-area, width, height, and the min/max forms, plus custom
-             properties) is tested and `continue`d BEFORE the cross_node_gap_candidate trace fires.
-             So 15 declarations are discarded with NO record anywhere — the pipeline's only truly
-             silent CSS drop. Move the exclusion test to AFTER the trace, or emit an explicit
-             excluded-with-reason trace entry, so every discarded declaration leaves evidence.
+             _area_excluded set (grid-area, width, height, the min/max forms, the cross-node
+             excluded props, and EVERY custom property `--*`) is tested and `continue`d nine lines
+             BEFORE the cross_node_gap_candidate trace fires. Those declarations are discarded with
+             NO record anywhere — the pipeline's only truly silent CSS drop. Move the exclusion test
+             to AFTER the trace, or emit an explicit excluded-with-reason entry, so every discarded
+             declaration leaves evidence.
+             ⛔ The count is UNKNOWN and that is the point — producing it IS the deliverable. Do not
+             expect a particular number: this run emitted ZERO cross_node_gap_candidate traces, so
+             there is no denominator to reason from. Report the count that appears as a NEW measurement.
              SCOPE DISCIPLINE: this step makes the drop VISIBLE. It does NOT change what is
              excluded — that is a separate decision needing its own evidence.
 Files:       plugins/sgs-blocks/scripts/converter/services/fold_helpers.py (::route_area_css_to_block_attrs)
 Inputs:      .claude/reports/2026-09-09-council-seat-b-dictionary.md ("the only truly silent CSS drop")
-Outcome:     A clone run records all 15 previously-invisible discards with a reason. Emitted block
-             markup is BYTE-IDENTICAL to before (this is a logging change only).
+Outcome:     A clone run records its previously-invisible discards, each with a reason, and reports
+             the count as a new measurement. Emitted block markup is BYTE-IDENTICAL to before, proven
+             by sha256 of the emitted markup either side (this is a logging change only).
 Exec:        PARALLEL with Steps 3-11 (different file, no shared state)
 Deps:        none
 Marker:      SESSION-START
@@ -670,10 +773,12 @@ Prompt:      In plugins/sgs-blocks/scripts/converter/services/fold_helpers.py, f
              the emitted markup is byte-identical to the previous run while the new trace entries
              appear. Paste both proofs. Commit with an explicit pathspec.
 Test:
-  Happy:       15 new trace entries with reasons; emitted markup byte-identical.
+  Happy:       Non-zero trace entries appear, each carrying a reason; sha256 of emitted markup
+               identical either side.
   Edge:        A custom property (--*) discard is also traced.
-  Fail:        Emitted markup differs → revert (the change leaked into behaviour).
-  Integration: leftover-buckets.json totals rise by the newly-visible discards; nothing else moves.
+  Fail:        Emitted markup sha256 differs → revert (the change leaked into behaviour).
+  Integration: leftover-buckets.json is UNCHANGED — it is produced by a different script
+               (leftover-bucket-router.py) and this change cannot move it. If it moves, investigate.
 ```
 
 ### Step 13 — Re-measure and publish the honest number
@@ -724,9 +829,15 @@ Test:
   equivalence dict, which R-31-1 forbids and which would need endless extension. (B) reuses
   machinery that already exists and is currently unused for this purpose, and it degrades safely:
   when a same-tag pairing exists it still wins.
-- **Cost of wrong choice:** (A) silently re-introduces a collision that inflates match rates —
-  a false-GOOD, the most dangerous direction for a measurement tool. Fixture 6 exists precisely
-  to catch it, which is why it must pass before AND after.
+- **Cost of wrong choice:** (A) removes a disambiguation guard and risks collapsing two genuinely
+  different elements into one pairing — a false-GOOD, the most dangerous direction for a
+  measurement tool.
+  ⚠ Be precise about what `2baf3171e` actually fixed: its own commit message attributes the
+  wrapper/child closure to raising `norm()`'s truncation cap from 80 to 300, and describes
+  tag-prefixing as an auxiliary tie-break that came "for free" on top of it. Removing the tag
+  therefore does NOT revert that fix — and in the canonical `<div>` wrapping `<div>` case the tag
+  prefix disambiguates nothing anyway, both tags being identical. What removing it DOES lose is the
+  weaker second guard for same-text-DIFFERENT-tag elements, which is what fixture 6 must test.
 - **Who decides:** joint — Bean has approved the phase; the implementer must stop and escalate if
   fixture 6 fails rather than patching forward.
 
