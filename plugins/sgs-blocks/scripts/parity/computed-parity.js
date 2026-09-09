@@ -779,8 +779,16 @@ const CAPTURE_SRC = `() => {
       }
       const textKey = anchorEl.tagName + '|' + dkey;
       (textElsRaw[textKey] = textElsRaw[textKey] || []).push({ rec: mk(anchorEl), el: anchorEl });
-    } else if (!isHtmlOrBody) {
+    } else if (!isHtmlOrBody && el.childElementCount === 0) {
       // Short/empty direct text — structural fallback instead of dropping the element.
+      // Step 4 (measurement-integrity, 2026-09-09, D-1/M6): gated on childElementCount===0.
+      // An element WITH children and no real direct text of its own is already captured below
+      // by the box tier (its own innerText, or ITS OWN structural fallback at minLen 5) — giving
+      // it a SECOND structural entry here scored the exact same CSS diff twice (Seat A measured
+      // 100% overlap between boxEls and textEls). An element with real direct text (>=4 chars,
+      // the branch above) still gets both a text-tier AND a box-tier entry when it also has
+      // children — that dual anchoring is deliberate (fuzzy content match + exact structural
+      // match serve different purposes) and is unaffected by this gate.
       const structKey = structuralAnchor(el, 4);
       if (structKey) (textElsRaw[structKey] = textElsRaw[structKey] || []).push({ rec: mk(el), el });
     }
