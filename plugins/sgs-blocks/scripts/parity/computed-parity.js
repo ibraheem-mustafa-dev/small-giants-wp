@@ -961,6 +961,63 @@ function comparePair(drec, crec, dDef, viewportPx) {
   return { total, match, diffs, sub, fluid, declined };
 }
 
+// ── runTier/bestPairing: the tier-scoring loop, extracted from main() (Step 2a, measurement-
+// integrity phase 2026-09-09) so --self-test can reach the pairing machinery, the T/M
+// accumulators, and the unmatched-charging path directly, instead of calling capture()+
+// comparePair() alone and never reaching this code at all. ZERO behaviour change from the
+// version formerly inlined in main() as two closures — proven by a byte-identical live re-run
+// (see reports/parity-baseline/2026-09-09-pre-fix.json).
+function bestPairing(draftCands, cloneCands, dDef, viewportPx) {
+  let best = null, bestDiffCount = Infinity;
+  for (const dc of draftCands) {
+    for (const cc of cloneCands) {
+      const r = comparePair(dc, cc, dDef, viewportPx);
+      if (r.diffs.length < bestDiffCount) { bestDiffCount = r.diffs.length; best = { drec: dc, crec: cc, r }; }
+    }
+  }
+  return best;
+}
+function runTier(map, cloneMap, exact, dDef, viewportPx) {
+  let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0;
+  const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [];
+  for (const [key, drecRaw] of Object.entries(map)) {
+    if (excluded(key)) continue;
+    const draftCands = Array.isArray(drecRaw) ? drecRaw : [drecRaw];
+    const crecRaw = findByAnchor(key, cloneMap, exact);
+    if (!crecRaw) {
+      // FR-20-4 (FIXED 2026-08-04): the draft element has NO clone counterpart — it is MISSING
+      // from the clone. Every meaningful prop it carried counts as a MISS (total += n, match +=
+      // 0), and its tag counts as a miss too. A draft-side collision is represented by its FIRST
+      // candidate here — the array shape exists to serve the clone-side statistical fallback,
+      // not to double-count an unmatched draft element.
+      const drec0 = draftCands[0];
+      const lost = meaningfulCountUnmatched(drec0, dDef);
+      unm.push({ text: key.slice(0, 44), tag: drec0.tag, meaningful_props_lost: lost });
+      T += lost; unmT += lost;
+      tagT++;
+      continue;
+    }
+    const cloneCands = Array.isArray(crecRaw) ? crecRaw : [crecRaw];
+    const { drec, crec, r } = bestPairing(draftCands, cloneCands, dDef, viewportPx);
+    // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
+    tagT++;
+    if (drec.tag === crec.tag) tagM++;
+    else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
+    // CSS dimension.
+    T += r.total; M += r.match; fluidDeclined += r.declined;
+    if (r.diffs.length) mis.push({
+      text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
+      // FR-20-10: class context ONLY — never scored, present for human/debug audit.
+      classes: { draft: drec.cls || [], clone: crec.cls || [] },
+    });
+    if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
+    if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
+    // pairings: which draft record paired with which clone record (Step 2 fixture 6 needs this).
+    pairings.push({ key, drec, crec });
+  }
+  return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, pairings };
+}
+
 // ── --self-test (2026-08-04, rewritten post-review) ────────────────────────────────────────
 // Proves the fluid-equivalence rule via the REAL pipeline (capture() + comparePair()), not a
 // reimplementation — on-disk HTML fixtures stand in for "draft" and "clone", run through the
@@ -1136,62 +1193,20 @@ if (SELF_TEST) {
     // Tier 2+3: CSS + TAG over text-leaf (fuzzy) + structural (exact), ALL props, meaningful-only.
     // `unmT` tracks how much of T came from MISSING elements, so the honest all-in score and the
     // legacy matched-only score can both be reported without one hiding the other.
-    let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0; const mis = [], unm = [], subv = [], tagMis = [], fluidv = [];
     // v1.3.0: a `boxEls` value may now be a SINGLE record (the common case, and always true for
     // textEls) or an ARRAY of candidates (an unresolved text collision with no known BEM-family
-    // relationship — see the CAPTURE_SRC collision-resolution comment). Try every draft
-    // candidate against every clone candidate and keep whichever pairing has the fewest CSS
-    // mismatches — for the 1-vs-1 common case this is exactly the old single comparePair() call,
-    // byte-identical behaviour.
-    const bestPairing = (draftCands, cloneCands) => {
-      let best = null, bestDiffCount = Infinity;
-      for (const dc of draftCands) {
-        for (const cc of cloneCands) {
-          const r = comparePair(dc, cc, d.defaults, vw);
-          if (r.diffs.length < bestDiffCount) { bestDiffCount = r.diffs.length; best = { drec: dc, crec: cc, r }; }
-        }
-      }
-      return best;
-    };
-    const runTier = (map, cloneMap, exact) => {
-      for (const [key, drecRaw] of Object.entries(map)) {
-        if (excluded(key)) continue;
-        const draftCands = Array.isArray(drecRaw) ? drecRaw : [drecRaw];
-        const crecRaw = findByAnchor(key, cloneMap, exact);
-        if (!crecRaw) {
-          // FR-20-4 (FIXED 2026-08-04): the draft element has NO clone counterpart — it is
-          // MISSING from the clone. Previously this `continue`d before touching total/match, so
-          // the worst possible outcome scored as nothing at all. Now every meaningful prop it
-          // carried counts as a MISS (total += n, match += 0), and its tag counts as a miss too.
-          // A draft-side collision (rare — draft mockups seldom nest a wrapper around identical
-          // text) is represented by its FIRST candidate here; the array shape exists to serve
-          // the clone-side statistical fallback, not to double-count an unmatched draft element.
-          const drec0 = draftCands[0];
-          const lost = meaningfulCountUnmatched(drec0, d.defaults);
-          unm.push({ text: key.slice(0, 44), tag: drec0.tag, meaningful_props_lost: lost });
-          T += lost; unmT += lost;
-          tagT++;
-          continue;
-        }
-        const cloneCands = Array.isArray(crecRaw) ? crecRaw : [crecRaw];
-        const { drec, crec, r } = bestPairing(draftCands, cloneCands);
-        // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
-        tagT++;
-        if (drec.tag === crec.tag) tagM++;
-        else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
-        // CSS dimension.
-        T += r.total; M += r.match; fluidDeclined += r.declined;
-        if (r.diffs.length) mis.push({
-          text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
-          // FR-20-10: class context ONLY — never scored, present for human/debug audit.
-          classes: { draft: drec.cls || [], clone: crec.cls || [] },
-        });
-        if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
-        if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
-      }
-    };
-    runTier(d.textEls, c.textEls, false);
-    runTier(d.boxEls, c.boxEls, true);
+    // relationship — see the CAPTURE_SRC collision-resolution comment). runTier()/bestPairing()
+    // try every draft candidate against every clone candidate and keep whichever pairing has the
+    // fewest CSS mismatches — for the 1-vs-1 common case this is exactly the old single
+    // comparePair() call, byte-identical behaviour.
+    const rText = runTier(d.textEls, c.textEls, false, d.defaults, vw);
+    const rBox = runTier(d.boxEls, c.boxEls, true, d.defaults, vw);
+    const T = rText.T + rBox.T, M = rText.M + rBox.M;
+    const tagT = rText.tagT + rBox.tagT, tagM = rText.tagM + rBox.tagM;
+    const unmT = rText.unmT + rBox.unmT, fluidDeclined = rText.fluidDeclined + rBox.fluidDeclined;
+    const mis = rText.mis.concat(rBox.mis), unm = rText.unm.concat(rBox.unm);
+    const subv = rText.subv.concat(rBox.subv), tagMis = rText.tagMis.concat(rBox.tagMis);
+    const fluidv = rText.fluidv.concat(rBox.fluidv);
 
     const subCount = subv.reduce((n, e) => n + e.sub.length, 0);
     const fluidCount = fluidv.reduce((n, e) => n + e.fluid.length, 0);
