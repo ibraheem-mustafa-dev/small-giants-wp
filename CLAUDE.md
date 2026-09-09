@@ -326,6 +326,39 @@ PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir(
 - Cross-project sync: any change affecting sgs-booking REST must also update `specs/03-SGS-BOOKING.md` + `plugins/sgs-booking/CLAUDE.md`
 - No hedging. No stubs. Finish the thing. If you can't, name the blocker.
 
+## Cite code by SYMBOL, never by line — and a "verified" claim carries its command (2026-09-09)
+
+**Two rules, because doc-rot has two diseases and only one of them is about pointers.**
+
+**1. Cite by symbol.** In specs, plans, decisions and code comments, reference code as
+`` `path/to/file.php::symbol_name` `` — one syntax, three resolvers by extension:
+`.php`/`.js`/`.ts` → a function/const/attribute NAME · `.json` → a dot-path
+(`block.json::supports.sgs.imageControls`) · `.css` → the literal selector
+(`style.css::.sgs-hero__wrapper`). ⛔ **Never `file:123`.**
+
+**Why, measured — not a style preference.** A public audit of this exact problem found
+**69 of 164 stale `file:line` citations, every one still pointing at a real, in-range
+line**; a checker validating "file exists + line in range" catches **zero**. In the same
+repo, two of three freshly-fixed citations **re-rotted within two days** under agent edit
+velocity. A wrong symbol citation is *visibly* wrong — the name disagrees with the code
+beside it. A wrong line citation is *invisibly* wrong. Rust's RFC 1946, Sphinx, Doxygen and
+Aider's repo-map all abandoned line-anchoring for the same reason. Line numbers are
+DEMOTED, not banned: allowed only as a secondary hint beside a symbol, never load-bearing.
+Full research + sources: `~/.claude/memory/research/2026-09-09-code-citation-format-for-ai-built-specs.md`.
+
+**2. A claim that asserts verification carries the command that produced it.** Symbol
+citation fixes citations that were once true and drifted. It does NOTHING for citations
+that were false when written — and a symbol-cited false claim *reads* more rigorous, so it
+is harder to doubt. Spec 36 carried `"DESIGNED-NOT-BUILT (verified: 0 in src/)"` for a
+component imported and mounted three times; the badge stopped anyone re-checking for
+months. **A "verified" / "0 in src/" / "does not exist" claim with no runnable command
+beside it is banned.** Write the command, or write the claim without the badge.
+
+**Enforcement (structural, not prose):** `lint-spec-drift.py` — `CITE-SYMBOL` gates (a
+symbol citation that does not resolve fails the commit), `CITE-LINE` + `FR-ORPHAN` are
+advisory so the gate is not red from day one; migrate on touch. `--self-test` carries
+negative controls proving each check can fail.
+
 ## Doc-op standards (Phase 13 close, 2026-05-24)
 
 Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.agents/skills/shared-references/doc-templates/`.

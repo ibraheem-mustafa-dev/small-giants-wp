@@ -60,11 +60,57 @@ SEARCH_ROOTS = [REPO / "plugins", REPO / "theme"]
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Checks that report but do NOT fail --check (see the BLOCK-SLUG note in the docstring).
-ADVISORY_CHECKS = {"BLOCK-SLUG"}
+#
+# CITE-LINE is advisory BY DESIGN and should stay that way until the existing
+# line-citations are migrated. Gating it on day one would paint the gate red on
+# every commit, and a gate that always fails is a gate nobody reads — this repo
+# has already lived that (wp-pre-merge-gate printed FAIL for months on findings
+# nobody owned, and readers learned to skip it). Advisory drives migration on
+# touch; CITE-SYMBOL gates, so anything already migrated must stay true.
+#
+# FR-ORPHAN is advisory for the same reason: its 5 findings at introduction
+# (2026-09-09) are all PRE-EXISTING and none has a mechanical fix. FR-34-* cites
+# a DELETED spec; FR-35-* cites a spec that never used FR-IDs at all (Spec 35 is
+# PART-structured). Resolving them means either giving Spec 35 real IDs or
+# re-wording the comments — a judgement call for Bean, not a lint autofix.
+# Promote to gating once the baseline is zero.
+ADVISORY_CHECKS = {"BLOCK-SLUG", "CITE-LINE", "FR-ORPHAN"}
 
 _RE_BLOCK_DIR = re.compile(r"src/blocks/([a-z][a-z0-9-]*)/")
 _RE_PHP_CLASS = re.compile(r"`(Sgs_[A-Za-z0-9_]+)`")
 _RE_BLOCK_SLUG = re.compile(r"`(sgs/[a-z][a-z0-9-]*)`")
+
+# ── Citation checks (added 2026-09-09) ───────────────────────────────────────
+#
+# WHY THESE EXIST — the measurement that shaped them. An adversarial review of
+# Spec 36 found `file:line` citations rotted: one 6 lines stale, and the source
+# file itself carrying a comment citing its own now-wrong lines.
+#
+# ⛔ The obvious checker — "does the file exist and is the line in range" — is
+# WORTHLESS, and this is measured, not reasoned. A public audit of the same
+# problem (playdeck#317) found 69 of 164 stale `file:line` citations, and EVERY
+# ONE still pointed at a real, in-range line. Such a checker catches ZERO. That
+# is why CITE-SYMBOL resolves a NAME and CITE-LINE merely deprecates the form.
+#
+# The canonical form is ONE syntax, three resolvers dispatched on extension:
+#     `path/to/file.php::function_name`          -> name must grep in that file
+#     `path/to/block.json::supports.sgs.imageControls` -> dot-path must resolve
+#     `path/to/style.css::.sgs-hero__wrapper`    -> selector string must appear
+#
+# A wrong symbol citation is VISIBLY wrong (the name disagrees with the code
+# beside it). A wrong line citation is INVISIBLY wrong (still a valid line).
+# Full research + sources: ~/.claude/memory/research/2026-09-09-code-citation-
+# format-for-ai-built-specs.md
+_RE_CITE_SYMBOL = re.compile(r"`([\w./-]+\.(?:php|js|jsx|ts|tsx|json|css))::([^`\s][^`]*)`")
+_RE_CITE_LINE = re.compile(r"`([\w./-]+\.(?:php|js|jsx|ts|tsx|json|css)):(\d+)(?:-\d+)?`")
+
+# FR-IDs. Checked CODE -> SPEC only, deliberately: an FR present in a spec but
+# absent from code is usually just NOT-BUILT YET (FR-36-27 says so in its own
+# heading), so the spec->code direction is a false-positive flood. An FR-ID in
+# CODE that exists in NO spec is a real orphan — the requirement was renumbered
+# or deleted and the comment now cites nothing.
+_RE_FR_ID = re.compile(r"\bFR-(\d{1,3})-(\d{1,3}[a-z]?)\b")
+_CODE_EXTS = ("*.php", "*.js", "*.jsx", "*.ts", "*.tsx")
 
 # Claims a spec may legitimately make about things that should NOT exist — a spec is
 # allowed to say "src/blocks/header/ is FORBIDDEN". Lines matching these are skipped.
@@ -120,6 +166,121 @@ def _db_slugs() -> set:
         return {r[0] for r in con.execute("SELECT slug FROM blocks")}
     finally:
         con.close()
+
+
+def _resolve_citation(path_str: str, symbol: str) -> tuple:
+    """Resolve `path::symbol`. Returns (ok, reason_if_not_ok).
+
+    Three resolvers dispatched on extension. Each is deliberately a STRING
+    search, not an AST parse — the point is to match what a reader (or an
+    agent) would do to check the claim by hand, so a passing check means a
+    human grep would also find it.
+    """
+    p = REPO / path_str
+    if not p.is_file():
+        return False, f"file `{path_str}` does not exist"
+    try:
+        text = p.read_text(encoding="utf-8", errors="ignore")
+    except OSError as exc:
+        return False, f"could not read `{path_str}` ({exc})"
+
+    suffix = p.suffix.lower()
+
+    if suffix == ".json":
+        # Dot-path walk. A missing key is the failure; a present-but-null key passes.
+        import json as _json
+        try:
+            data = _json.loads(text)
+        except ValueError as exc:
+            return False, f"`{path_str}` is not valid JSON ({exc})"
+        node = data
+        walked = []
+        for part in symbol.split("."):
+            walked.append(part)
+            if isinstance(node, dict) and part in node:
+                node = node[part]
+            else:
+                return False, (f"`{path_str}` has no key `{'.'.join(walked)}` "
+                               f"(full path `{symbol}`)")
+        return True, ""
+
+    if suffix == ".css":
+        # Literal selector text. Covers `.class`, `#id`, `--custom-prop`, `@media …`.
+        return (symbol in text), ("" if symbol in text
+                                  else f"`{path_str}` does not contain `{symbol}`")
+
+    # PHP / JS / TS — the symbol NAME must appear. Not a definition-only check on
+    # purpose: a spec may legitimately cite a call site, an attribute key, or a
+    # constant, and requiring `function X` would reject those and push authors
+    # back to line numbers, which is the failure this whole check exists to stop.
+    return (symbol in text), ("" if symbol in text
+                              else f"`{path_str}` does not contain `{symbol}`")
+
+
+def check_citations(spec_files) -> list:
+    """CITE-SYMBOL (gating) + CITE-LINE (advisory)."""
+    findings = []
+    for spec in spec_files:
+        for n, line in enumerate(spec.read_text(encoding="utf-8").splitlines(), 1):
+            if _NEGATIVE_CONTEXT.search(line):
+                continue
+            for path_str, symbol in _RE_CITE_SYMBOL.findall(line):
+                ok, why = _resolve_citation(path_str, symbol.strip())
+                if not ok:
+                    findings.append(Finding(
+                        "CITE-SYMBOL", spec.name, n, f"{path_str}::{symbol}",
+                        f"citation does not resolve — {why}",
+                    ))
+            for path_str, lineno in _RE_CITE_LINE.findall(line):
+                findings.append(Finding(
+                    "CITE-LINE", spec.name, n, f"{path_str}:{lineno}",
+                    f"line-number citation — rots invisibly (a stale one still points at "
+                    f"a real, in-range line). Re-cite as `{path_str}::<symbol>` naming the "
+                    f"function / JSON key / CSS selector",
+                ))
+    return findings
+
+
+def check_fr_orphans(spec_files) -> list:
+    """FR-ID cited in CODE that appears in NO spec — a requirement that was
+    renumbered or deleted, leaving the comment pointing at nothing."""
+    findings = []
+    spec_ids = set()
+    for spec in SPECS.rglob("*.md"):
+        try:
+            spec_ids |= {m.group(0) for m in _RE_FR_ID.finditer(
+                spec.read_text(encoding="utf-8", errors="ignore"))}
+        except OSError:
+            continue
+    if not spec_ids:
+        return findings  # no specs readable — do not mass-flag on a broken read
+
+    seen = {}
+    for root in SEARCH_ROOTS:
+        if not root.exists():
+            continue
+        for pattern in _CODE_EXTS:
+            for p in root.rglob(pattern):
+                if "node_modules" in p.parts or "vendor" in p.parts:
+                    continue
+                try:
+                    text = p.read_text(encoding="utf-8", errors="ignore")
+                except OSError:
+                    continue
+                for m in _RE_FR_ID.finditer(text):
+                    fr = m.group(0)
+                    if fr not in spec_ids:
+                        seen.setdefault(fr, p)
+
+    for fr, p in sorted(seen.items()):
+        findings.append(Finding(
+            "FR-ORPHAN", "(code tree)", 0, fr,
+            f"code cites `{fr}` (e.g. {p.relative_to(REPO).as_posix()}) but no spec "
+            f"in .claude/specs/ defines it — the spec was deleted (Spec 34), the spec "
+            f"never used FR-IDs at all (Spec 35 is PART-structured), it was renumbered, "
+            f"or it is a typo. Either define the ID in its spec or re-word the comment",
+        ))
+    return findings
 
 
 def check_specs(spec_files, slugs, class_cache) -> list:
@@ -192,6 +353,54 @@ def _self_test() -> int:
         print("  [PASS] php-class extraction")
     else:
         print("  [FAIL] php-class extraction")
+    # ── Citation checks. Each asserts the check can FAIL, not just that it runs —
+    # a resolver that returns True unconditionally would pass a "does it work"
+    # test and catch nothing (this repo's negative-control rule).
+    total += 1
+    if _RE_CITE_SYMBOL.findall("see `plugins/x/render.php::sgs_do_thing` now") == [
+            ("plugins/x/render.php", "sgs_do_thing")]:
+        ok += 1
+        print("  [PASS] citation extraction (path::symbol)")
+    else:
+        print("  [FAIL] citation extraction (path::symbol)")
+
+    total += 1
+    if _RE_CITE_LINE.findall("see `plugins/x/render.php:393-425` here") == [
+            ("plugins/x/render.php", "393")]:
+        ok += 1
+        print("  [PASS] line-citation detection (the deprecated form)")
+    else:
+        print("  [FAIL] line-citation detection")
+
+    total += 1  # NEGATIVE CONTROL — a citation into a file that cannot exist must FAIL
+    bad_ok, _ = _resolve_citation("plugins/sgs-blocks/does-not-exist.php", "anything")
+    if not bad_ok:
+        ok += 1
+        print("  [PASS] negative control — missing file does NOT resolve")
+    else:
+        print("  [FAIL] negative control — missing file wrongly resolved")
+
+    total += 1  # NEGATIVE CONTROL — real file, absent symbol must FAIL
+    real = "plugins/sgs-blocks/scripts/lints/lint-spec-drift.py"
+    # The absent name is COMPOSED at runtime on purpose. Writing it as a literal
+    # put the string into this very file, which the resolver then searched and
+    # found — the control passed the wrong way round and the first run caught it.
+    absent = "sgs_absent_" + "symbol_" + "control_xyzzy"
+    miss_ok, _ = _resolve_citation(real, absent)
+    hit_ok, _ = _resolve_citation(real, "check_citations")
+    if hit_ok and not miss_ok:
+        ok += 1
+        print("  [PASS] symbol resolver — real symbol resolves, fake one does not")
+    else:
+        print(f"  [FAIL] symbol resolver (real={hit_ok}, fake={miss_ok})")
+
+    total += 1
+    if _RE_FR_ID.findall("cites FR-36-6 and FR-31-9a") == [("36", "6"), ("31", "9a")]:
+        ok += 1
+        print("  [PASS] FR-ID extraction")
+    else:
+        print("  [FAIL] FR-ID extraction")
+
     print(f"\n{ok}/{total} self-tests passed")
     return 0 if ok == total else 1
 
@@ -231,7 +440,10 @@ def main() -> int:
     if not slugs:
         print("WARN: framework DB unreadable/empty — BLOCK-SLUG check skipped\n")
 
-    findings = check_specs(spec_files, slugs, {}) + check_ghost_builds()
+    findings = (check_specs(spec_files, slugs, {})
+                + check_ghost_builds()
+                + check_citations(spec_files)
+                + check_fr_orphans(spec_files))
 
     by_check = {}
     for f in findings:
@@ -245,8 +457,11 @@ def main() -> int:
     gating = [f for f in findings if f.check not in ADVISORY_CHECKS]
     advisory = [f for f in findings if f.check in ADVISORY_CHECKS]
     print(f"\n{len(findings)} total finding(s) across {len(spec_files)} spec file(s)")
-    print(f"  {len(gating)} gating  |  {len(advisory)} advisory ({'/'.join(sorted(ADVISORY_CHECKS))} "
-          f"— known false-positive-prone, see the module docstring; triage by hand)")
+    print(f"  {len(gating)} gating  |  {len(advisory)} advisory "
+          f"({'/'.join(sorted(ADVISORY_CHECKS))}). Advisory for DIFFERENT reasons — "
+          f"BLOCK-SLUG is false-positive-prone; CITE-LINE and FR-ORPHAN are true findings "
+          f"held advisory so the gate is not red from day one (migrate on touch). "
+          f"See the ADVISORY_CHECKS comment.")
     if args.check and gating:
         print("\nFAIL: specs describe things that do not exist. Fix the spec or the code.")
         return 1
