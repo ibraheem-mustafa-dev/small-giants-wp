@@ -435,6 +435,19 @@ def route_area_css_to_block_attrs(
 
     for css_prop in sorted(all_props):
         if css_prop in _area_excluded or css_prop.startswith("--"):
+            # Step 12 (measurement-integrity, 2026-09-09): this was the pipeline's only truly
+            # SILENT CSS drop -- the declaration was tested and discarded here NINE LINES BEFORE
+            # the cross_node_gap_candidate trace below could ever fire, leaving no record
+            # anywhere. Logging-only change: WHICH properties are excluded is unchanged, and
+            # emitted block markup is unaffected (this trace call has no side effect on
+            # parent_attrs) -- proven via sha256 of the emitted markup before/after.
+            trace(
+                "area_css_excluded",
+                owning_block=owning_block,
+                element_token=area,
+                css_property=css_prop,
+                reason="custom_property" if css_prop.startswith("--") else "cross_node_excluded_property",
+            )
             continue
         if _skip_padding_flat and css_prop.startswith("padding-"):
             continue  # routed into the box-object above
