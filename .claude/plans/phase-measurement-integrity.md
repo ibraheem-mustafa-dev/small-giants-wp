@@ -34,6 +34,10 @@ inflated estimate stalls the start and makes the whole plan read as bigger than 
       collapse and wrapper/child collision — where each fixture is proven to FAIL before its fix.
 - [ ] A re-run against the unchanged draft + page 3448 reports **unmatched elements ≤ 5**
       (Seat A counterfactual V5 measured 5; baseline is 46).
+- [ ] **The regression is closed on its own terms:** the repaired tool, run against page **2742**
+      (the target the pre-regression runs used), returns to ≈80–81% — or the residual gap is
+      explained. This is the only apples-to-apples check; a 3448 number cannot demonstrate it,
+      because 3448 is a virgin clone lacking 2742's manual fixes.
 - [ ] The tool's property blocklist derives from `excluded_properties` (DB), not a hardcoded
       literal — R-31-1 and Spec 20 FR-20-2 both satisfied.
 - [ ] The artefact emits per-property **PASS** counts, so a future session can audit the score
@@ -73,8 +77,19 @@ inflated estimate stalls the start and makes the whole plan read as bigger than 
 
 - Commit `2baf3171e` (2026-09-08) — introduced the regression. Its purpose was to close a
   wrapper/child key collision; **that closure must survive this phase** (see KJC-1).
-- Prior-run evidence, byte-identical draft: 2026-09-07 and 2026-09-08 10:55 both report
-  `unmatched: 4`, CSS 83–84%. This is the pre-regression reference, not a target.
+- **Regression PROVEN by controlled test, 2026-09-09 — read this before quoting any number.**
+  An earlier draft of this plan cited "83–84%" as the pre-regression baseline and inferred the
+  regression from a before/after comparison. Both were defective: the real prior figures are
+  **80% (2026-09-07-233003) and 81% (2026-09-08-105524)**, and those runs measured the SITE ROOT
+  (`/` = page **2742**, the live homepage carrying every manual fix from the 2026-09-08 session),
+  whereas the 59% run measured page **3448** (a virgin clone with none of them). That comparison
+  changed TWO variables at once and could not support the conclusion drawn from it.
+  The variable was then isolated properly: the CURRENT tool run against **page 2742 — the same
+  target as the 80–81% runs — scores 59%**. Identical inputs, 21 points lost. The tool is the
+  entire cause; the clone target is irrelevant to the drop. The conclusion survived, the original
+  evidence for it did not.
+  ⚠ Therefore: `unmatched: 4` / `lost: 3` from the prior runs are figures for page **2742**, not
+  3448. Do NOT compare them against a 3448 run without re-baselining on the same target.
 - `~/.claude/rules/measurement-vs-eye.md` — a measurement can be wrong in both directions.
 - MEMORY `feedback_negative_control_or_the_test_is_vacuous` + `feedback_a_negative_control_has_its_own_vacuity_mode`.
 - MEMORY `feedback_a_gates_scope_is_not_the_defects_scope` — read the emitted output, never close on a green gate.
