@@ -1,3 +1,55 @@
+## D1014 [INCIDENT] — 4 real regressions found in the measurement-integrity phase, all fixed same day
+
+**2026-09-10 (session-clock rolled over from 09-09).** Bean reported observing regressions in
+areas seemingly unrelated to the measurement-integrity phase's own fixes, and asked for
+`/qc-council` + `/systematic-debugging` on the whole phase's diff (`40901ce32..3abb141ea`)
+without naming what he'd seen, to keep the search unbiased. Dispatched 4 parallel adversarial
+review agents by CODE AREA (matching/pairing, capture/visibility, scoring, plus a direct
+before/after empirical comparison run by the main session) rather than by suspected cause.
+
+**All 4 found real, live-fixture-proven regressions — exactly the "fixed the fixture, not the
+general case" pattern Bean was worried about:**
+
+1. **`collapseLonghandFamilies` silently dropped the 2nd+ independently-failing member of a
+   longhand family.** Two unrelated real defects (e.g. top-border broken for one reason,
+   left-border for another) in the same DB-derived family reported only the first — the second
+   vanished from the artefact entirely, not merely uncounted. Fixed: push every failing member's
+   diff; the count still collapses to one unit (`total++` fires once per family).
+2. **`STRIP_RE` didn't preserve `\s`, gluing text across a block-boundary newline.** Step 5's
+   strip-then-trim reorder (fixing a star-glyph phantom-space bug) only preserved a literal space
+   plus 3 unicode whitespace variants — not `\s` (newline/tab/CR). A `<span>` immediately followed
+   by a block-level element (a common pattern — a section-heading label + its heading) has a real
+   newline in `.innerText` at that boundary; STRIP_RE deleted it instead of collapsing it to a
+   space, gluing "Our signature" + "Zookies..." into "our signaturezookies". Blast radius:
+   site-wide, any ancestor-text anchor spanning 2+ block-level children. Fixed by adding `\s` to
+   the preserved set (verified: does not reintroduce the star-glyph bug).
+3. **`isVisuallyHidden` misclassified `display:contents` wrappers as hidden.** A mainstream
+   layout idiom (0×0 own box, children render fully) got treated like sr-only clip-based hiding,
+   and `ancestorVisibleInnerText` deleted the WHOLE subtree — including genuinely visible
+   children — causing a false "element missing from clone" report. Fixed: check
+   `getComputedStyle(el).display === 'contents'` first, never hidden regardless of bounding rect.
+4. **Document-order pairing (Step 7's own fix) mispairs legitimately reordered repeated
+   components.** council rater-matching built a real fixture (3 identically-styled buttons,
+   clone resorted for a legitimate business reason) where document-order manufactured 3
+   confident, wrong "real CSS defect" reports. This is the mirror image of the false-good risk
+   Step 7 was built to close (fewest-diffs cross-wiring a real swap) — closing one direction
+   reopened the other, with no signal telling the two situations apart. **Bean's ruling (a design
+   decision, not a unilateral patch): decline rather than guess.** `pairAllCandidates` now pairs
+   ONLY when a tag-group has exactly one candidate on each side (unambiguous by construction);
+   2+ on either side is declined — excluded from T/M entirely, surfaced in a new
+   `declined_pairing` artefact field for visibility, never silently invisible.
+
+**Each fix shipped as its own commit with a live-fixture regression lock** (fixtures 3b, 4b, 5b,
+6b-rewritten, 6c — `plugins/sgs-blocks/scripts/parity/computed-parity.js`), verified via
+`--self-test` plus a live re-run against the real clone. Also hit and fixed the exact
+backtick-inside-a-giant-template-literal syntax trap already captured to CC memory this session
+(a markdown-style backtick-quoted term in a code comment prematurely closed the outer
+`CAPTURE_SRC` string) — recurring within the same session despite being freshly indexed.
+
+**Process note, worth repeating:** every fix here was found by giving reviewers the CODE AREA,
+never the suspected defect — Bean explicitly withheld what he'd observed specifically so the
+search wouldn't anchor on his hypothesis. All 4 were real; none were false alarms.
+
 ## D1013 [ROUTINE] — clone-parity STRUCTURE dimension never scores tag identity; measurement-integrity phase closed
 
 **2026-09-09. Bean-directed.** The measurement-integrity phase (`.claude/plans/phase-measurement-integrity.md`,

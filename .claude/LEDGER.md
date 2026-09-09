@@ -8,35 +8,39 @@ last_updated: 2026-09-09
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**The measurement tool is now trustworthy. The clone still has real fixable gaps, and we know
-exactly what they are — but nothing has been fixed yet, on your instruction.**
+**The measurement tool is now trustworthy — twice-checked. You spotted regressions after the
+first round of fixes, a council found 4 real ones, all 4 are now fixed too.**
 
-Last session's parity tool had five real bugs (a dead SVG skip, elements scored twice, a tag
-change wiping a whole element's score, a screen-reader element poisoning a text anchor, and a
-hardcoded property blocklist). All five are fixed and proven with before/after fixtures
-(`.claude/plans/phase-measurement-integrity.md`, 13 commits).
+Round 1: last session's parity tool had five real bugs (a dead SVG skip, elements scored twice,
+a tag change wiping a whole element's score, a screen-reader element poisoning a text anchor,
+and a hardcoded property blocklist). All five fixed and proven with before/after fixtures
+(`.claude/plans/phase-measurement-integrity.md`, 13 commits). You then caught a sixth problem —
+the tool was counting a native SGS block's own semantic tag choice as a defect, which is
+backwards for a "convert, don't mirror" framework. Fixed same day.
 
-While reading the fixed tool's output, you correctly caught a sixth problem: it was counting a
-native SGS block choosing its own semantic HTML tag (a `<footer>` for a testimonial's
-attribution, a `<label>` instead of a `<button>` for a picker option) as a **defect**. That's
-backwards — cloning to native blocks, not mirroring the draft's exact DOM, is the whole point of
-this framework. Fixed same day; tag choice is now informational only, never scored.
+**Round 2 (this update): you said you'd seen regressions in areas seemingly unrelated to the
+work, and asked for a proper council + root-cause hunt rather than telling me what you'd seen
+(to keep the search honest).** 4 parallel reviewers, split by CODE AREA not by hypothesis, found
+4 real regressions — each proven with a live fixture, each the same shape you were worried about
+("fixed the fixture, not the general case"): a longhand family silently dropping a second real
+defect, a text-normalisation bug gluing words together across a block boundary (site-wide blast
+radius), a `display:contents` wrapper wrongly flagged as hidden, and a pairing strategy that
+mispairs a legitimately reordered product list. The 4th needed your call, not mine — I asked, you
+picked "decline rather than guess" over either guessing strategy. All 4 fixed, each with its own
+regression-lock fixture. Full detail: D1014 in `decisions.md`.
 
-With the ruler finally honest, I re-ran the ACTUAL clone pipeline fresh (not a stale artefact)
-and root-caused the real remaining diffs — investigation and fix-design only, no code changed,
-per your explicit instruction. Full register: `.claude/reports/2026-09-09-fresh-clone-diff-triage.md`.
+**What this means for the fresh clone-diff triage report** (`.claude/reports/2026-09-09-fresh-clone-diff-triage.md`,
+written before round 2): its specific numbers are now STALE — a fresh spot-check after round 2's
+fixes shows STRUCTURE 93%/LAYOUT 75%/PAINT+TYPE 87% (was 94%/79%/82%). The report's ROOT-CAUSE
+FINDINGS (trust-bar/testimonial/pill background-transfer bug, the rating-alias lookup, the
+text-align spec gap) are still the right leads — the population just shrank slightly because
+some previously-scored elements are now correctly DECLINED as ambiguous rather than guessed at.
+**Re-run the tool fresh before trusting exact diff counts; the mechanisms found are still real.**
 
-**The headline finding: the clone is better than it looked.** All 8 elements the tool called
-"missing" are genuinely present with correct content — that's a measurement-window limitation,
-not a clone defect. The REAL gaps are 4 clusters, and 3 of them likely share ONE root cause (a
-block's own background/border isn't transferring from its root selector — trust-bar badges,
-testimonial cards, and a product trial badge). The 4th is pack-size pill typography, plus one
-confirmed spec gap (pill text-align has no CSS routing at all).
+**Nothing in the triage register has been built yet.** The next session's job is still to pick
+which fixes to build, starting with the shared-root-cause one (biggest single lever).
 
-**Nothing in that register has been built.** The next session's job is to pick which fixes to
-build, starting with the shared-root-cause one (it's the biggest single lever).
-
-## Shipped this session (2026-09-09)
+## Shipped this session (2026-09-09/10)
 
 1. **Measurement-integrity phase — 13 steps, all committed** (`75d22d92b`..`578e03d2e`,
    `.claude/plans/phase-measurement-integrity.md`). Five proven ruler bugs fixed, each behind a
@@ -44,22 +48,24 @@ build, starting with the shared-root-cause one (it's the biggest single lever).
    needed a genuine rollback + qc-council-corrected re-implementation — see D1013 for the
    detail. The tool now reports four independent dimensions instead of one aggregate.
 2. **STRUCTURE dimension corrected to stop scoring tag identity** (`3abb141ea`, Bean-directed).
-   Live effect: STRUCTURE 69% → 94%, later confirmed by direct investigation to be a true 100%
-   (see item 3).
 3. **Fresh clone-pipeline re-run + full root-cause triage, investigation only**
-   (`.claude/reports/2026-09-09-fresh-clone-diff-triage.md`). Re-cloned page 3448 from the
-   CURRENT converter (not a stale artefact) so the diffs being triaged reflect the pipeline as
-   it stands today. Verified live that all 8 "unmatched" elements are a measurement-window
-   artefact, not real content loss. Root-caused 4 real CSS clusters with proposed fix-shapes;
-   nothing implemented.
+   (`.claude/reports/2026-09-09-fresh-clone-diff-triage.md`, now stale on exact numbers — see
+   above). Verified live that all 8 "unmatched" elements were a measurement-window artefact, not
+   real content loss. Root-caused 4 real CSS clusters with proposed fix-shapes; nothing built.
+4. **4 regressions found and fixed, Bean-directed qc-council + systematic-debugging pass**
+   (`82e8be453`, `467d3ba82`, `e26e70232`, `1129f1cb6`) — see D1014 for full technical detail on
+   each: longhand-family silent-drop, block-boundary-newline text gluing (site-wide blast
+   radius), `display:contents` misclassified as hidden, and ambiguous-pairing now DECLINES
+   rather than guessing (a genuine tradeoff Bean resolved directly). Each fix has its own
+   live-fixture regression lock in `--self-test`.
 
-See D1013 in `decisions.md` for full technical detail on both the phase and the correction.
+See D1013 and D1014 in `decisions.md` for full technical detail.
 
 ## Blockers
 
-**None blocking work.** One environmental note: 4 of 5 dispatched investigation subagents this
-session hit the account's weekly rate limit (resets 11pm London time); the remaining two
-investigations were completed inline instead. Not expected to recur next session.
+**None blocking work.** (A weekly account rate limit hit 4 of 5 dispatched agents earlier this
+session, worked around by doing the remaining investigation inline; resolved by the time the
+D1014 qc-council round ran — all 4 of its dispatched agents completed normally.)
 
 **Concurrent session activity (not this session's work, noted for completeness):** two nav-drawer
 fix commits landed in this same window (`2bdcb73b7`, `32a98183e`) from a different concurrent
@@ -232,15 +238,19 @@ Task 3 (inline) -- depends on Task 1's result
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1013** — verify with
+- **D-ceiling:** **D1014** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — re-cloned this session from
   the current converter, so it reflects the pipeline as it stands today.
-- **Parity (now trustworthy, ruler-side):** CONTENT 100% (234/234), STRUCTURE true 100% (the
-  reported 94%/8-unmatched is a measurement-window artefact, see Finding 0 in the triage
-  report), LAYOUT 79% (635/802), PAINT+TYPE 82% (1383/1689). These LAYOUT/PAINT+TYPE numbers are
-  real, honest, and not yet acted on — see THE FRONT.
+- **Parity — ruler now trustworthy TWICE-checked (D1013 + D1014), figures STALE, re-run before
+  quoting:** last measured (before the D1014 regression fixes) CONTENT 100% (234/234), STRUCTURE
+  true 100% (the reported 94%/8-unmatched was a measurement-window artefact, see Finding 0 in the
+  triage report), LAYOUT 79% (635/802), PAINT+TYPE 82% (1383/1689). A spot-check AFTER the D1014
+  fixes on 1440px alone showed STRUCTURE 93%, LAYOUT 75%, PAINT+TYPE 87% — lower populations
+  (ambiguous elements now correctly DECLINE instead of being scored), not a regression. Re-run
+  `node plugins/sgs-blocks/scripts/parity/computed-parity.js --draft <mockup> --clone <url>`
+  fresh before trusting an exact figure for any CSS-transfer fix decision.
 
 ## Pointers
 
