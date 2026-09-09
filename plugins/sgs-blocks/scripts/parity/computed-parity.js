@@ -103,6 +103,8 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { execFileSync } = require('child_process');
 const { pathToFileURL } = require('url');
 
 function arg(name, def) { const i = process.argv.indexOf('--' + name); return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : def; }
@@ -977,6 +979,71 @@ function subVisibleBucket(prop, dv, cv, drec, crec) {
   return null;
 }
 
+// Step 9a (measurement-integrity, 2026-09-09, D-4): collapse a longhand family to ONE scored
+// unit, DERIVED from sgs-framework.db (R-31-1 — no hardcoded family literal). property_suffixes
+// carries the shorthand row (BorderWidth -> border-width) alongside its longhand siblings
+// (BorderTopWidth -> border-top-width, ...) side by side; modifier_suffixes' side vocabulary
+// (Top/Right/Bottom/Left) is what generates the longhand names. A longhand's shorthand is
+// derived by removing a known side/corner infix from its css_property string and checking
+// whether the result is ANOTHER row's css_property — no family name is ever hand-typed here.
+// Queried once at module load via Python's stdlib sqlite3 (read-only, matching the project's
+// own DB-read convention) since no Node sqlite driver is a project dependency.
+function deriveLonghandFamilies() {
+  const dbPath = path.join(os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db').replace(/\\/g, '/');
+  const pyScript = `import sqlite3, json\nconn = sqlite3.connect("file:${dbPath}?mode=ro", uri=True)\nrows = conn.execute("SELECT suffix, css_property FROM property_suffixes WHERE css_property IS NOT NULL").fetchall()\nprint(json.dumps(rows))`;
+  let rows;
+  try {
+    const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8' });
+    rows = JSON.parse(out);
+  } catch (e) {
+    console.error('\n⚠⚠⚠ LONGHAND-COLLAPSE DISABLED — could not query sgs-framework.db property_suffixes: ' + e.message + '\n');
+    return null;
+  }
+  const cssProps = new Set(rows.map((r) => r[1]));
+  // The side/corner NAMING GRAMMAR (a CSS-specification fact, not project data): a corner is a
+  // vertical+horizontal compound of the side vocabulary itself, never a separate hand-typed list.
+  const SIDES = ['top', 'right', 'bottom', 'left'];
+  const CORNERS = ['top', 'bottom'].flatMap((v) => ['left', 'right'].map((h) => `${v}-${h}`));
+  const family = {};
+  for (const cssProp of cssProps) {
+    for (const infix of [...SIDES, ...CORNERS]) {
+      // Middle-infix reduction: border-top-width -> border-width (side/corner sits between
+      // two other segments). Trailing-infix reduction: margin-top -> margin (side is the last
+      // segment, no third segment after it).
+      const middle = cssProp.replace(`-${infix}-`, '-');
+      const trailing = cssProp.replace(new RegExp(`-${infix}$`), '');
+      const candidate = middle !== cssProp ? middle : (trailing !== cssProp ? trailing : null);
+      if (candidate && cssProps.has(candidate)) { family[cssProp] = candidate; break; }
+    }
+  }
+  // Documented DB gap (not special-cased into this file as a literal): border-{top,right,
+  // bottom,left}-style have no per-side property_suffixes rows, so they cannot be derived
+  // into the border-style family here and each still scores individually. Confirmed via
+  // `SELECT suffix, css_property FROM property_suffixes WHERE css_property LIKE '%border%
+  // style%'` returning only the bare "BorderStyle" -> "border-style" shorthand row.
+  return family;
+}
+const LONGHAND_FAMILIES = deriveLonghandFamilies();
+function collapseLonghandFamilies(scored) {
+  const groups = new Map();
+  for (const s of scored) {
+    const key = (LONGHAND_FAMILIES && LONGHAND_FAMILIES[s.prop]) || s.prop;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+  let total = 0, match = 0; const diffs = [];
+  for (const members of groups.values()) {
+    total++;
+    const failing = members.filter((m) => !m.isMatch);
+    if (!failing.length) { match++; continue; }
+    // One representative diff per family, even when multiple sides diverge — the DEVELOPER
+    // detail (which sides) is still visible via `failing`, this just stops the COUNT
+    // multiplying per longhand for what was one authored declaration.
+    diffs.push(failing[0].diff);
+  }
+  return { total, match, diffs };
+}
+
 // Compare one matched pair over ALL props; only MEANINGFUL props count (differs OR non-default
 // on the draft). Sub-visible twins are diverted to `sub` (reported, unscored). Returns
 // {total, match, diffs, sub}.
@@ -1007,7 +1074,12 @@ function meaningfulCountUnmatched(drec, dDef) {
 }
 
 function comparePair(drec, crec, dDef, viewportPx) {
-  let total = 0, match = 0, declined = 0; const diffs = [], sub = [], fluid = [];
+  let declined = 0; const sub = [], fluid = [];
+  // Step 9a: every meaningfully-scored prop is collected here first (match or diff), THEN
+  // collapsed by longhand family in one pass at the end — collapsing must apply to PASSES as
+  // well as failures (a family with 3 matching sides + 1 real diff is still ONE unit, scored
+  // as a miss), which is why this can't be a running total++/match++ as props are visited.
+  const scored = [];
   const ddef = dDef[drec.tag] || dDef.div || {};  // v1.3.0: same fallback as meaningfulCountUnmatched
   // Computed ONCE per pair (not per-prop) so the line-height branch below can require it.
   // `fsResult` = {equivalent, declined, predictedPx} — see fluidEquivalentFontSize's docblock.
@@ -1017,25 +1089,26 @@ function comparePair(drec, crec, dDef, viewportPx) {
     if (cv === undefined) continue;
     const meaningful = (dv !== cv) || (ddef[p] !== undefined && dv !== ddef[p]);
     if (!meaningful) continue;
-    if (propMatches(p, dv, cv)) { total++; match++; continue; }
+    if (propMatches(p, dv, cv)) { scored.push({ prop: p, isMatch: true }); continue; }
     // FLUID-EQUIVALENCE (v1.2.0-fluid, 2026-08-04, source-verified per post-review rewrite): a
     // genuine PASS — counts toward match/total like any other pass — but recorded in its OWN
     // bucket so it stays visible rather than being silently absorbed into `match`. DECLINED
     // (evidence insufficient to verify either way) is counted separately and falls through to
     // the ordinary real-miss path below — never silently dropped, never guessed into a pass.
     if (p === 'font-size') {
-      if (fsResult.equivalent) { total++; match++; fluid.push({ prop: p, draft: dv, clone: cv, basis: 'wp-fluid-clamp-source-verified' }); continue; }
+      if (fsResult.equivalent) { scored.push({ prop: p, isMatch: true }); fluid.push({ prop: p, draft: dv, clone: cv, basis: 'wp-fluid-clamp-source-verified' }); continue; }
       if (fsResult.declined) declined++;
     }
     if (p === 'line-height') {
       const lhResult = lineHeightIsMechanicalConsequence(drec, crec, fsResult);
-      if (lhResult.equivalent) { total++; match++; fluid.push({ prop: p, draft: dv, clone: cv, basis: 'unitless-multiplier-source-verified' }); continue; }
+      if (lhResult.equivalent) { scored.push({ prop: p, isMatch: true }); fluid.push({ prop: p, draft: dv, clone: cv, basis: 'unitless-multiplier-source-verified' }); continue; }
       if (lhResult.declined) declined++;
     }
     const bucket = subVisibleBucket(p, dv, cv, drec, crec);
     if (bucket) { sub.push({ prop: p, draft: dv, clone: cv, bucket }); continue; }  // unscored
-    total++; diffs.push({ prop: p, draft: dv, clone: cv });
+    scored.push({ prop: p, isMatch: false, diff: { prop: p, draft: dv, clone: cv } });
   }
+  const { total, match, diffs } = collapseLonghandFamilies(scored);
   return { total, match, diffs, sub, fluid, declined };
 }
 
@@ -1360,13 +1433,16 @@ async function selfTest() {
     check('fixture 4 (SVG skip): no svg/path record captured despite lowercase inline-SVG tagName', !hasSvgTag, `tags=${JSON.stringify(allRecs.map((r) => r.tag))}`);
   }
 
-  // --- Fixture 5: LONGHAND COLLAPSE — one authored border diff counts as ONE, not eight ---
-  // (D-4/Step 9a: border-{top,right,bottom,left}-{width,style} are 8 separate computed
-  // longhands with no collapse mechanism; border-*-color is already blocklisted separately.)
+  // --- Fixture 5: LONGHAND COLLAPSE — one authored border-width diff counts as ONE, not four ---
+  // (D-4/Step 9a: border-{top,right,bottom,left}-width are 4 separate computed longhands with
+  // no collapse mechanism; border-*-color is already blocklisted separately. Varies ONLY
+  // border-width [border-style held identical] so this isolates the DB-DERIVABLE width family
+  // cleanly -- border-*-style has NO per-side property_suffixes rows [a documented DB gap, not
+  // hand-patched here] and would still score 4 separate diffs if varied in the same fixture.)
   {
     const TEXT_F5 = 'longhand collapse test unique wording here now';
-    const f5Draft = writeHtml('f5-draft.html', `<p style="border:1px solid red;">${TEXT_F5}</p>`);
-    const f5Clone = writeHtml('f5-clone.html', `<p style="border:2px dashed blue;">${TEXT_F5}</p>`);
+    const f5Draft = writeHtml('f5-draft.html', `<p style="border-style:solid;border-width:1px;">${TEXT_F5}</p>`);
+    const f5Clone = writeHtml('f5-clone.html', `<p style="border-style:solid;border-width:3px;">${TEXT_F5}</p>`);
     const d = await capture(page, toURL(f5Draft), VW);
     const c = await capture(page, toURL(f5Clone), VW);
     const drec = findText(d.textEls, TEXT_F5), crec = findText(c.textEls, TEXT_F5);
