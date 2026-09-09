@@ -1156,6 +1156,134 @@ async function selfTest() {
     check('misattribution regression: declined (evidence insufficient), never guessed via preset identity', r.declined >= 1);
   }
 
+  // ── Measurement-integrity phase fixtures (2026-09-09) ─────────────────────────────────────
+  // Seven controls per .claude/reports/2026-09-09-council-seat-c-measurement.md §4. Fixtures
+  // 1-5 and 7 MUST FAIL today (each proves a real, currently-unfixed ruler defect); fixture 6
+  // MUST PASS today (the current tag-embedded key already prevents the collision it tests —
+  // see KJC-1 in the phase plan for why this is the correct pre-Step-7 state, not a gap).
+  const writeHtml = (name, bodyHtml) => {
+    const p = path.join(dir, name);
+    fs.writeFileSync(p, `<!DOCTYPE html><html><body>${bodyHtml}</body></html>`);
+    return p;
+  };
+
+  // --- Fixture 1: BLOCKLIST — a DB-excluded property (overflow-x) must not be scored ---
+  // (D-3/§5: overflow-x is one of 5 excluded_properties DB rows absent from the tool's
+  // hardcoded BLOCK set. Bound to the DB at Step 10; today nothing excludes it.)
+  {
+    const TEXT_F1 = 'overflow x blocklist gap test unique wording here';
+    const f1Draft = writeHtml('f1-draft.html', `<div style="overflow-x:hidden;">${TEXT_F1}</div>`);
+    const f1Clone = writeHtml('f1-clone.html', `<div style="overflow-x:visible;">${TEXT_F1}</div>`);
+    const d = await capture(page, toURL(f1Draft), VW);
+    const c = await capture(page, toURL(f1Clone), VW);
+    const drec = findText(d.textEls, TEXT_F1), crec = findText(c.textEls, TEXT_F1);
+    check('fixture 1 setup: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    check('fixture 1 (blocklist): overflow-x is DB-excluded and must not be scored', !r.diffs.some((x) => x.prop === 'overflow-x'), `diffs=${JSON.stringify(r.diffs.map((x) => x.prop))}`);
+  }
+
+  // --- Fixture 2: TAG-TOLERANT MATCHING — draft <button> must pair with clone <label> ---
+  // (D-2/Step 7: the anchor key embeds the tag, so a legitimate tag substitution makes the
+  // element unmatchable and charges every property as lost instead of a tag divergence.)
+  {
+    const TEXT_F2 = 'pick your pack size right here friend today';
+    const f2Draft = writeHtml('f2-draft.html', `<button>${TEXT_F2}</button>`);
+    const f2Clone = writeHtml('f2-clone.html', `<label>${TEXT_F2}</label>`);
+    const d = await capture(page, toURL(f2Draft), VW);
+    const c = await capture(page, toURL(f2Clone), VW);
+    const r = runTier(d.textEls, c.textEls, false, d.defaults, VW);
+    check('fixture 2 (tag-tolerant matching): draft <button> pairs with clone <label>, not charged as unmatched', r.unm.length === 0, `unm=${JSON.stringify(r.unm)}`);
+  }
+
+  // --- Fixture 3: DEDUPE — a container with children + short direct text is scored ONCE ---
+  // (D-1/M6/Step 4: an element enters BOTH textElsRaw [structural fallback] and boxElsRaw
+  // [childElementCount>0], so a single authored diff is charged in both tiers. Uses
+  // border-top-width [non-inherited, so the child <p> cannot independently pick up the same
+  // diff via inheritance] and a <p> child rather than <span> [deliberately NOT in the
+  // INLINE_WRAP hoist set, so the div's own direct text stays empty and enters textElsRaw via
+  // ONLY the structural fallback — isolating this to exactly D-1's two-tier duplication rather
+  // than also exercising the separate inline-wrapper-hoist mechanism]. border-top-style is held
+  // IDENTICAL on both sides so only border-top-width differs.)
+  {
+    const TEXT_F3 = 'this is the visible child text for dedupe test';
+    const f3Draft = writeHtml('f3-draft.html', `<section><div style="border-top-style:solid;border-top-width:2px;"><p>${TEXT_F3}</p></div></section>`);
+    const f3Clone = writeHtml('f3-clone.html', `<section><div style="border-top-style:solid;border-top-width:4px;"><p>${TEXT_F3}</p></div></section>`);
+    const d = await capture(page, toURL(f3Draft), VW);
+    const c = await capture(page, toURL(f3Clone), VW);
+    const textR = runTier(d.textEls, c.textEls, false, d.defaults, VW);
+    const boxR = runTier(d.boxEls, c.boxEls, true, d.defaults, VW);
+    const allBorderWidthDiffs = [...textR.mis, ...boxR.mis].flatMap((m) => m.diffs.filter((x) => x.prop === 'border-top-width'));
+    check('fixture 3 (dedupe): one authored border-top-width diff scores exactly once, not once per tier', allBorderWidthDiffs.length === 1, `found ${allBorderWidthDiffs.length} occurrence(s)`);
+  }
+
+  // --- Fixture 4: SVG SKIP — inline SVG and its children must never be captured ---
+  // (D-3/Step 3: SKIP_TAGS is keyed uppercase but tested against raw el.tagName, which is
+  // lowercase for inline SVG, so the skip never fires.)
+  {
+    const TEXT_F4 = 'svg skip test with unique wording present here';
+    const svgMarkup = `<div><span>${TEXT_F4}</span><svg width="24" height="24"><path d="M3 12L12 3L21 12" stroke="red"></path></svg></div>`;
+    const f4Draft = writeHtml('f4-draft.html', svgMarkup);
+    const d = await capture(page, toURL(f4Draft), VW);
+    const allRecs = [...Object.values(d.textEls), ...Object.values(d.boxEls)].flatMap((r) => (Array.isArray(r) ? r : [r]));
+    const hasSvgTag = allRecs.some((r) => r.tag === 'svg' || r.tag === 'path');
+    check('fixture 4 (SVG skip): no svg/path record captured despite lowercase inline-SVG tagName', !hasSvgTag, `tags=${JSON.stringify(allRecs.map((r) => r.tag))}`);
+  }
+
+  // --- Fixture 5: LONGHAND COLLAPSE — one authored border diff counts as ONE, not eight ---
+  // (D-4/Step 9a: border-{top,right,bottom,left}-{width,style} are 8 separate computed
+  // longhands with no collapse mechanism; border-*-color is already blocklisted separately.)
+  {
+    const TEXT_F5 = 'longhand collapse test unique wording here now';
+    const f5Draft = writeHtml('f5-draft.html', `<p style="border:1px solid red;">${TEXT_F5}</p>`);
+    const f5Clone = writeHtml('f5-clone.html', `<p style="border:2px dashed blue;">${TEXT_F5}</p>`);
+    const d = await capture(page, toURL(f5Draft), VW);
+    const c = await capture(page, toURL(f5Clone), VW);
+    const drec = findText(d.textEls, TEXT_F5), crec = findText(c.textEls, TEXT_F5);
+    check('fixture 5 setup: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const borderDiffs = r.diffs.filter((x) => x.prop.startsWith('border'));
+    check('fixture 5 (longhand collapse): one authored border diff counts as ONE, not one per longhand', borderDiffs.length === 1, `found ${borderDiffs.length}: ${JSON.stringify(borderDiffs.map((x) => x.prop))}`);
+  }
+
+  // --- Fixture 6: TIE-BREAK CONTROL — same text, different tags, must pair by tag ---
+  // (KJC-1: today the tag-embedded key already separates these into distinct map entries, so
+  // this MUST PASS today. After Step 7 strips tag from the key, this same assertion must be
+  // re-verified against the NEW same-tag tie-break inside bestPairing — see Step 7's QA gate.)
+  {
+    const TEXT_F6 = 'tag collision guard element one two three four five';
+    const f6Draft = writeHtml('f6-draft.html',
+      `<div style="color: rgb(10, 10, 10);">${TEXT_F6}</div><article style="color: rgb(20, 20, 20);">${TEXT_F6}</article>`);
+    const f6Clone = writeHtml('f6-clone.html',
+      `<div style="color: rgb(30, 30, 30);">${TEXT_F6}</div><article style="color: rgb(40, 40, 40);">${TEXT_F6}</article>`);
+    const d = await capture(page, toURL(f6Draft), VW);
+    const c = await capture(page, toURL(f6Clone), VW);
+    const r = runTier(d.textEls, c.textEls, false, d.defaults, VW);
+    const divPair = r.pairings.find((p) => p.drec.tag === 'div');
+    const articlePair = r.pairings.find((p) => p.drec.tag === 'article');
+    check('fixture 6 (tie-break control): draft <div> pairs with clone <div>, not clone <article>', !!divPair && divPair.crec.tag === 'div');
+    check('fixture 6 (tie-break control): draft <article> pairs with clone <article>, not clone <div>', !!articlePair && articlePair.crec.tag === 'article');
+  }
+
+  // --- Fixture 7: OVER-EXCLUSION CONTROL — background-size scores on <div>, not on <img> ---
+  // (Step 9b: background-size/-position/-repeat + border-image-slice are inert on a replaced
+  // element but load-bearing on a <div> — exclusion must be per element type, never global.)
+  {
+    const TEXT_F7 = 'background size div scoring test unique text here';
+    const f7Draft = writeHtml('f7-draft.html',
+      `<div style="background-size:auto;">${TEXT_F7}</div><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" style="background-size:auto;" alt="bgimg">`);
+    const f7Clone = writeHtml('f7-clone.html',
+      `<div style="background-size:cover;">${TEXT_F7}</div><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" style="background-size:cover;" alt="bgimg">`);
+    const d = await capture(page, toURL(f7Draft), VW);
+    const c = await capture(page, toURL(f7Clone), VW);
+    const divD = findText(d.textEls, TEXT_F7), divC = findText(c.textEls, TEXT_F7);
+    const rDiv = comparePair(divD, divC, d.defaults, VW);
+    check('fixture 7 (over-exclusion control): background-size DIFFERS and SCORES on a <div>', rDiv.diffs.some((x) => x.prop === 'background-size'));
+    const imgD = d.boxEls['img:bgimg'], imgC = c.boxEls['img:bgimg'];
+    check('fixture 7 setup: img elements captured', !!imgD && !!imgC);
+    const rImg = comparePair(imgD, imgC, d.defaults, VW);
+    check('fixture 7 (over-exclusion control): background-size on <img> must NOT score (per-element applicability)', !rImg.diffs.some((x) => x.prop === 'background-size'), `diffs=${JSON.stringify(rImg.diffs.map((x) => x.prop))}`);
+  }
+
   await browser.close();
   console.log(failures ? `\n${failures} SELF-TEST CHECK(S) FAILED` : '\nALL SELF-TEST CHECKS PASSED');
   process.exit(failures ? 1 : 0);
