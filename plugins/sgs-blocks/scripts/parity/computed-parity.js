@@ -1092,10 +1092,17 @@ function collapseLonghandFamilies(scored) {
     total++;
     const failing = members.filter((m) => !m.isMatch);
     if (!failing.length) { match++; passes.push(members[0].prop); continue; }
-    // One representative diff per family, even when multiple sides diverge — the DEVELOPER
-    // detail (which sides) is still visible via `failing`, this just stops the COUNT
-    // multiplying per longhand for what was one authored declaration.
-    diffs.push(failing[0].diff);
+    // qc-council regression fix (2026-09-09): push EVERY failing member's diff, not just the
+    // first. The count is still collapsed to ONE unit (total++ above fires once per family,
+    // regardless of how many members fail) — only the COUNT multiplying per longhand is what
+    // this collapse exists to stop. Pushing only failing[0] silently discarded any SECOND,
+    // independently-caused defect in the same family (e.g. top-border broken for one reason,
+    // left-border broken for an unrelated one) — proven live: a fixture with two genuinely
+    // unrelated border-width diffs reported only one of them, with the other invisible even in
+    // the raw JSON, not merely uncounted. `failing` was never actually exposed on the returned
+    // object either, contradicting this comment's own prior claim that "the developer detail is
+    // still visible via failing".
+    for (const f of failing) diffs.push(f.diff);
   }
   return { total, match, diffs, passes };
 }
@@ -1508,7 +1515,38 @@ async function selfTest() {
     check('fixture 5 setup: both elements captured', !!drec && !!crec);
     const r = comparePair(drec, crec, d.defaults, VW);
     const borderDiffs = r.diffs.filter((x) => x.prop.startsWith('border'));
-    check('fixture 5 (longhand collapse): one authored border diff counts as ONE, not one per longhand', borderDiffs.length === 1, `found ${borderDiffs.length}: ${JSON.stringify(borderDiffs.map((x) => x.prop))}`);
+    // qc-council regression fix (2026-09-09): assert the SCORE collapses to one FAILING unit
+    // (r.total - r.match === 1) -- border-*-style is non-default on the draft (matches the
+    // clone, but still meaningful vs the div-default of 'none'), so it also scores as 4 PASSING
+    // units (no DB-derivable style family exists, a documented gap); r.total alone therefore
+    // isn't 1, but the failing share must still be exactly one unit -- while the raw diffs array
+    // still names EVERY failing longhand for transparency (4, one per side).
+    // collapseLonghandFamilies used to report only failing[0], silently discarding a second,
+    // independently-caused defect in the same family. Asserting diffs.length===1 (the old
+    // assertion) would have PASSED for that bug too, since it can't tell "collapsed the count"
+    // from "hid the detail".
+    check('fixture 5 (longhand collapse): one authored border-width difference scores as exactly ONE failing unit', (r.total - r.match) === 1, `total=${r.total} match=${r.match}`);
+    check('fixture 5 (longhand collapse): every failing longhand is still individually visible, not just the first', borderDiffs.length === 4, `found ${borderDiffs.length}: ${JSON.stringify(borderDiffs.map((x) => x.prop))}`);
+  }
+
+  // --- Fixture 5b: TWO INDEPENDENT failures in one family must BOTH survive (qc-council
+  // regression, 2026-09-09) --- collapseLonghandFamilies used to report only failing[0].diff,
+  // so a SECOND longhand failing for a completely unrelated reason (not the same authored
+  // declaration) vanished from the artefact entirely -- not merely uncounted, actually absent
+  // from diffs[]. border-style is held identical so this isolates the width family from the
+  // (documented, DB-gap) style family.
+  {
+    const TEXT_F5B = 'independent longhand failures regression control text';
+    const f5bDraft = writeHtml('f5b-draft.html', `<p style="border-style:solid;border-top-width:2px;border-left-width:3px;">${TEXT_F5B}</p>`);
+    const f5bClone = writeHtml('f5b-clone.html', `<p style="border-style:solid;border-top-width:6px;border-left-width:9px;">${TEXT_F5B}</p>`);
+    const d = await capture(page, toURL(f5bDraft), VW);
+    const c = await capture(page, toURL(f5bClone), VW);
+    const drec = findText(d.textEls, TEXT_F5B), crec = findText(c.textEls, TEXT_F5B);
+    check('fixture 5b setup: both elements captured', !!drec && !!crec);
+    const r = comparePair(drec, crec, d.defaults, VW);
+    const props = r.diffs.map((x) => x.prop);
+    check('fixture 5b (independent-failures regression): border-top-width diff survives', props.includes('border-top-width'), `diffs=${JSON.stringify(props)}`);
+    check('fixture 5b (independent-failures regression): border-left-width diff ALSO survives (not silently dropped)', props.includes('border-left-width'), `diffs=${JSON.stringify(props)}`);
   }
 
   // --- Fixture 6: TIE-BREAK CONTROL — same text, different tags, must pair by tag ---
