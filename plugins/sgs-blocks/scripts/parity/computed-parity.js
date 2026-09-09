@@ -431,8 +431,19 @@ const CAPTURE_SRC = `() => {
   // opening text) to collide on an identical truncated key even when their real, full text
   // differs. 300 is generous enough that this stops happening for ordinary paragraph-length
   // content while still keeping keys bounded.
-  const norm = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'').slice(0,300);
-  const normFull = (t) => (t||'').replace(WS_RE,' ').trim().toLowerCase().replace(/[^a-z0-9 £]/g,'');
+  // Step 5 (measurement-integrity, 2026-09-09, D-3/M3): strip-then-trim, not trim-then-strip.
+  // The old order trimmed BEFORE stripping the non-alphanumeric class, so text beginning with a
+  // stripped character (the draft's literal "★★★★★ Excellent") had no leading WHITESPACE for
+  // trim() to remove -- trim is a no-op on a leading star. Stripping the stars afterward then
+  // exposed the space that sat between them and the real text as a phantom LEADING space,
+  // which survived because nothing re-trimmed after the strip. Reordered: strip class first
+  // (keeping the WS_RE-recognised whitespace variants -- NBSP/zero-width/BOM -- so they still
+  // collapse to a real space rather than being silently deleted and merging two words), THEN
+  // collapse whitespace, THEN trim. Both functions reordered together -- they must stay
+  // consistent or the two key namespaces (norm vs normFull) desynchronise.
+  const STRIP_RE = /[^a-z0-9 £\\u00A0\\u200B\\uFEFF]/g;
+  const norm = (t) => (t||'').toLowerCase().replace(STRIP_RE,'').replace(WS_RE,' ').trim().slice(0,300);
+  const normFull = (t) => (t||'').toLowerCase().replace(STRIP_RE,'').replace(WS_RE,' ').trim();
   const BLOCK = new Set(${JSON.stringify([...BLOCK])});
   const ALIGNFULL_EXTRA_BLOCK = new Set(['margin-left', 'margin-right']);
   const LOGICAL = /(inline|block-|inset|-start|-end)/;
