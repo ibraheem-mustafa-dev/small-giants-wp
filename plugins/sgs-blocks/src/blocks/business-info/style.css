@@ -105,48 +105,103 @@
 	position: relative;
 	text-decoration: none;
 	color: inherit;
-	transition: color 300ms ease;
+
+	/*
+	 * The TEXT sweep. Both halves of this effect must travel the same way at the
+	 * same speed: before 2026-09-10 the underline swept left-to-right while the
+	 * colour cross-faded uniformly (`transition: color`), so the word turned gold
+	 * all at once under a line that was still arriving. Bean caught it on the live
+	 * footer.
+	 *
+	 * A gradient clipped to the glyphs is what makes a colour travel. The band is
+	 * twice the element's width — gold on the left half, the resting colour on the
+	 * right — so parking it at `100% 0` shows the resting half, and moving to
+	 * `0 0` walks the gold edge across the word from the left.
+	 *
+	 * `currentColor` is the second stop deliberately: the resting colour stays
+	 * `inherit` (see above — the credit takes the footer's own colour, with no
+	 * literal to go stale), and `currentColor` resolves against `color`, NOT
+	 * against `-webkit-text-fill-color`. So the transparent fill reveals the
+	 * gradient without collapsing the stop that feeds it.
+	 */
+	background-image: linear-gradient(
+		to right,
+		var(--sgs-bi-link-hover-text, #d4a73c) 50%,
+		currentColor 50%
+	);
+	background-size: 200% 100%;
+	background-position: 100% 0;
+	background-repeat: no-repeat;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	transition: background-position 300ms ease;
 }
 
 /*
  * The underline is a pseudo-element, not `text-decoration`, because only a box
- * can be animated from zero to full width — `text-decoration` has no animatable
- * length. `bottom: -2px` sits it just clear of the descenders.
+ * can be animated — `text-decoration` has no animatable length. `bottom: -2px`
+ * sits it just clear of the descenders.
+ *
+ * It sweeps with `transform: scaleX()` rather than `width`, for two reasons.
+ * `width` is a layout property, so animating it reflowed the line on every
+ * frame; `transform` is composited. And the hover-guard classifies a rule by
+ * what it declares — `transform` is a known motion property, so this rule is
+ * auto-guarded for touch, whereas the old `width` was unclassifiable and failed
+ * the build gate outright (it blocked every deploy, not just this block's).
  */
 .sgs-business-attribution .sgs-business-info__link::after {
 	content: "";
 	position: absolute;
 	bottom: -2px;
 	left: 0;
-	width: 0;
+	width: 100%;
 	height: 1px;
 	background: var(--sgs-bi-link-hover-bg, #d4a73c);
-	transition: width 300ms ease;
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 300ms ease;
 }
 
 /* :focus-visible gets the identical treatment — the effect must not be
- * mouse-only (WCAG 2.1.1), and a keyboard user needs the same affordance. */
+ * mouse-only (WCAG 2.1.1), and a keyboard user needs the same affordance.
+ * The hover-guard splits these selectors and wraps only the `:hover` member,
+ * so a touch device cannot strand the sweep half-finished while the keyboard
+ * path stays reachable. */
 .sgs-business-attribution .sgs-business-info__link:hover,
 .sgs-business-attribution .sgs-business-info__link:focus-visible {
-	color: var(--sgs-bi-link-hover-text, #d4a73c);
+	background-position: 0 0;
 	/* beat the generic __link:hover opacity:0.8 — dimming would mute the effect */
 	opacity: 1;
 }
 
 .sgs-business-attribution .sgs-business-info__link:hover::after,
 .sgs-business-attribution .sgs-business-info__link:focus-visible::after {
-	width: 100%;
+	transform: scaleX(1);
 }
 
 /*
  * Reduced motion: keep BOTH end states, drop only the animation between them.
- * The underline still appears on hover (it is an affordance, not decoration) —
- * it just appears at full width instead of sweeping to it.
+ * The underline still appears on hover and the text still turns gold — they are
+ * affordances, not decoration — they just arrive whole instead of sweeping.
  */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-business-attribution .sgs-business-info__link,
 	.sgs-business-attribution .sgs-business-info__link::after {
 		transition: none;
+	}
+}
+
+/*
+ * Windows High Contrast / forced-colors: a transparent text fill would render
+ * the credit INVISIBLE, because the clipped gradient is a background and
+ * forced-colors replaces backgrounds. Hand the glyphs back their own colour and
+ * drop the gradient entirely; the underline still carries the hover affordance.
+ */
+@media (forced-colors: active) {
+	.sgs-business-attribution .sgs-business-info__link {
+		background-image: none;
+		-webkit-text-fill-color: currentColor;
 	}
 }
 
