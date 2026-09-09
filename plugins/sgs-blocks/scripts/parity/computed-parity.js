@@ -758,10 +758,44 @@ const CAPTURE_SRC = `() => {
     }
     return i;
   };
+  // Step 8 (measurement-integrity, 2026-09-09, D-3/M1): a clone-injected screen-reader-only
+  // element (e.g. sgs/option-picker's <legend class="sgs-sr-only">Pack size</legend>) is
+  // visually hidden via a clip technique, so it has zero rendered area but its text STILL
+  // appears in .innerText (which respects display:none/visibility:hidden but not the
+  // clip-based sr-only pattern). Injected mid-string, it shifts the ancestor anchor's whole
+  // 300-char window and poisons every descendant's structural key at once. Detected via
+  // bounding-box area rather than a class-name list — universal across every sr-only
+  // implementation (clip-rect, clip-path, 1px width/height), not just this project's own
+  // ".sgs-sr-only" convention.
+  const isVisuallyHidden = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.width <= 1 && r.height <= 1;
+  };
+  const ancestorVisibleInnerText = (anc) => {
+    const hiddenDescendants = [...anc.querySelectorAll('*')].filter(isVisuallyHidden);
+    if (!hiddenDescendants.length) return anc.innerText;
+    // Clone rather than mutate the live DOM, so the real page (and every other anchor read
+    // during this same capture pass) is completely unaffected. Walk both trees in lockstep
+    // (querySelectorAll('*') order is deterministic document order on an unmutated subtree) to
+    // find each hidden node's counterpart in the clone and remove it there instead.
+    const clone = anc.cloneNode(true);
+    const realAll = [...anc.querySelectorAll('*')];
+    const cloneAll = clone.querySelectorAll('*');
+    for (const hidden of hiddenDescendants) {
+      const idx = realAll.indexOf(hidden);
+      const cloneNode = cloneAll[idx];
+      if (cloneNode && cloneNode.parentNode) cloneNode.parentNode.removeChild(cloneNode);
+    }
+    clone.style.cssText = 'position:absolute;left:-99999px;top:0;';
+    document.body.appendChild(clone);
+    const text = clone.innerText;
+    document.body.removeChild(clone);
+    return text;
+  };
   const nearestQualifyingAncestorAnchor = (el, minLen) => {
     for (let anc = el.parentElement; anc && anc.tagName !== 'BODY' && anc.tagName !== 'HTML'; anc = anc.parentElement) {
       if (inChrome(anc)) continue;
-      const t = norm(anc.innerText);
+      const t = norm(ancestorVisibleInnerText(anc));
       if (t.length >= minLen) return t;
     }
     return null;
