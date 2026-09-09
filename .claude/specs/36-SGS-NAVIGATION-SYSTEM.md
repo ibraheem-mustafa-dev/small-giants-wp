@@ -85,6 +85,48 @@ model/behaviours (Spec 37). Building the cloning WALKER (31/33).
 Spec 17 FR-S9-4/5 (fold→here, Spec 36) · FR-S9-8 → Spec 37 §3.8 (`sgs/mobile-nav`) · FR-S9-11 → Spec 37 FR-37-1 + FR-37-22 (clone slot-mapping) · FR-S9-2 → Spec 37 FR-37-9 (typed
 palette lists `adaptive-nav`) · Spec 33 Part 2 (emit target) · P2 §5.4/§14 · `block-migration-DONE-checklist.md`.
 
+### 1b. FR INDEX — read this before scanning the document
+
+**FR numbers record WHEN a requirement was added, not where it sits.** FR-36-27 falls between FR-36-6 and
+FR-36-7; FR-36-24 between FR-36-8 and FR-36-9; FR-36-19…26 are grouped in §4. ⛔ **Do NOT renumber to fix
+this** — measured 2026-09-09: **1,530 `FR-36-*` citations across 164 files**, including live PHP/JS comments,
+where a wrong rewrite would silently mis-document production code. Use this index instead.
+
+⛔ **No status column, deliberately.** Live build status single-sources to **`.claude/LEDGER.md`**. A status
+column here would drift — that is exactly what happened to the deleted §6a/§8a (three false claims, one
+carrying a fake "verified" badge).
+
+| FR | § | Topic |
+|---|---|---|
+| FR-36-1 | 2 | Menu data = native WP menus (classic primary) |
+| FR-36-2 | 2 | Block + CPT + plumbing roster |
+| FR-36-3 | 2 | CPT model consistent with P2 |
+| FR-36-4 | 3 | Desktop disclosure — dropdown + mega, hover-intent + close-grace |
+| FR-36-5 | 3 | The mega CPT + native-menu association |
+| **FR-36-6** | 3 | **The drawer — chrome top row + one InnerBlocks body (D1009)** |
+| FR-36-27 | 3 | Burger trigger presentation |
+| FR-36-7 | 3 | Shared nav plumbing utility |
+| FR-36-8 | 3 | Responsive collapse — three modes + per-device visibility |
+| FR-36-24 | 3 | Per-device content + settings (ownership split with FR-36-8) |
+| FR-36-9 | 3 | Nav → header decoupling (one-directional) |
+| FR-36-9a | 3 | Referential integrity + orphan lifecycle |
+| FR-36-19 | 4 | Cart (`sgs/cart`) |
+| FR-36-20 | 4 | Search — predictive combobox |
+| FR-36-21 | 4 | Social icons |
+| FR-36-22 | 4 | Logo (`sgs/responsive-logo`) |
+| FR-36-23 | 4 | Business-info — Site-Info source of truth |
+| FR-36-26 | 4 | Link lists — typed or menu-bound |
+| FR-36-10 | 5 | Disclosure vs dialog |
+| FR-36-11 | 5 | WCAG 2.1 AA + 2.2 wins |
+| FR-36-12 | 5 | Operator a11y feedback — informational only |
+| FR-36-13 | 6 | No inline styling (Spec 32) |
+| FR-36-14 | 6 | Control-completeness (Spec 35 Part L) |
+| FR-36-16 | 8 | Acceptance — reproduce both menus + regression gate |
+| FR-36-18 | 8 | Cutover for live production instances |
+| FR-36-15 | 9 | Converter-emittability |
+| FR-36-17 | 11 | Crawlable, schema-friendly, fast |
+| FR-36-25 | 11 | Structured-data-once |
+
 ## 2. Architecture
 
 ### FR-36-1 — Menu data = native WP menus (CLASSIC primary; block-menu support = Phase 3)
@@ -129,8 +171,11 @@ Top-level items are real links; an item with a submenu renders a **disclosure** 
 else its submenu is a simple dropdown. **Interaction precision:** dropdowns/mega open on **hover on
 non-touch (default) / tap on touch / keyboard throughout** (avoids the sticky-hover mobile bug). Mechanics
 (research S1): hover-opens with a hover-intent delay (**default 300 ms; attribute 100–500 ms**) AND
-click/Enter/Space; **safe-triangle** hover path when the panel is offset + a close-grace delay (default
-500 ms); the safe-triangle + these timing constants apply to the hover path only; WCAG 1.4.13
+click/Enter/Space; a hover BRIDGE with a close-grace delay (**default 170 ms**, operator attribute
+`submenuCloseGrace` — `nav-menu/render.php:153,683`; the bridge itself is documented at
+`src/shared/nav-interactivity/mega-disclosure.js:21`). ⚠ **True safe-triangle geometry is DEFERRED
+(STOP-29)** — the shipped mechanism is the close-grace bridge, not a triangle. Do not restate "safe-triangle
+ships" anywhere; the timing constants apply to the hover path only; WCAG 1.4.13
 (Dismissible/Hoverable/Persistent) on the hover panel; caret on expandable items only; distinct hover+focus
 states; active-trail (`aria-current="page"` + a visible style); a per-item **"featured"** flag; content-sized
 overlay with a max-width bound; optional backdrop blur; height-animated; `prefers-reduced-motion`-gated.
@@ -149,6 +194,13 @@ put a draft's featured fill and silently dropped it, producing accent-on-surface
 A featured style a draft can author MUST have somewhere in the data model to land — see D351.
 
 ### FR-36-5 — The mega CPT + the native-menu association
+
+⛔ **Panel locking contract — `templateLock:false` + `allowedBlocks`, NEVER `contentOnly` (D379).** Relocated
+here 2026-09-09 from the deleted §8a, where a live client-facing contract was filed as a "build note".
+`contentOnly` HID child settings, so a client could not edit the icon-list link lists — a blocking defect
+caught by a QC council. The panel lets the client add / remove / reorder 1-3 `mega-group`/`mega-aside`
+columns; each child block is internally `templateLock:'all'` (fixed shape, editable settings). See D379.
+
 **Competitive positioning (carried from Spec 02 §23):** the mega system **replaces Max Mega Menu, JetMenu (Crocoblock), and Kadence Pro mega menu** — a block-native, ARIA-compliant mega menu with semantic HTML and **zero external dependencies**. Elementor's mega menu needs Elementor Pro ($59–399/yr) and generates heavy DOM; Max Mega Menu (the most popular free alternative) has documented WCAG failures + mobile-toggle issues. (The old Spec 02 §23 `sgs/mega-menu` block that carried this line used `role="menu"` + template-part panels — both BANNED here, FR-36-10/-5 — so the block is superseded; only its positioning survives.)
 - A mega panel is a **block-based CPT post** edited in its findable admin screen; the 5 layouts (photo-grid /
   split-with-aside-CTA / logo-grid / info-box / link-columns) are **DB-registry-defined starter templates**
@@ -184,8 +236,14 @@ A featured style a draft can author MUST have somewhere in the data model to lan
 
 ### FR-36-6 — The drawer (`sgs/nav-drawer`) — full-screen modal container
 **ONE block, ONE InnerBlocks region, NO child blocks — design-gate closed 2026-09-08 (D1009).** The drawer is
-`sgs/nav-drawer` and nothing else: the gate rejected both a "row system" of child blocks and a CPT-native
-no-wrapper model. Rationale + the 5-seat council that produced it: D1009.
+`sgs/nav-drawer` and nothing else. Rationale + the 5-seat council that produced it: D1009.
+
+⛔ **Terminology, because two similar phrases mean opposite things.** The gate rejected a **"CPT-NATIVE
+no-wrapper" model** — deleting the `sgs/nav-drawer` block entirely and making the drawer post's content a bare
+list of top-level blocks with settings in post meta. It did **NOT** reject, and does not affect, the SHIPPED
+design in which **the drawer block LIVES INSIDE the `sgs_drawer` CPT as that post's content** (2026-07-29 gate,
+built W2-a — see below at "THE ARCHITECTURE DECISION IS MADE", which remains fully in force). "CPT-native" =
+no block. "In a CPT" = block intact, hosted. Do not read one as the other.
 
 **Structure = a CHROME TOP ROW + one editable body.**
 
@@ -194,10 +252,28 @@ band; everything else in it is optional. Three elements, all attribute-driven (N
 - **The × close** — always rendered. Position top-**right** default, switchable top-left. Icon selectable from
   ALL FOUR IconPicker sources (`lucide` / `wp-icon` / `dashicon` / `emoji`), the picker seeded to close-related
   names; gradient routed per-source by `sgs_icon_gradient_css()` (never restrict the source enum — see D1009).
-  Own size control. Colour/hover/gradient via the existing `toggleCloseColour*` set. `closeStyle` is a
-  **per-device tier object** `{desktop,tablet,mobile}` — studionamma swaps text→icon at 400px and a flat string
-  cannot express it.
-- **An optional logo** — show/hide, responsive via the existing media atoms (`src/components/media/atoms`).
+  Own size control. Colour/hover/gradient via the existing `toggleCloseColour*` set.
+  ⚠ **`closeStyle` MUST MIGRATE from string to a per-device tier object** `{desktop,tablet,mobile}` —
+  studionamma swaps text→icon at 400px and a flat string cannot express it. **It ships today as a flat
+  `"type": "string"` enum** (`nav-drawer/block.json:202-210`, flat `ToggleGroupControl` at `edit.js:138`), so
+  this is a MIGRATION with a coercion hazard, not a new attribute: an object-typed attr receiving a stored flat
+  string coerces to the schema default silently (see the `object-typed-attr-coerces-flat-to-default` and
+  `blockjson-enum-coerces-invalid-to-default` lessons). Ship the migration and the fallthrough check together.
+  ⚠ **A FIFTH icon source exists and is undeclared:** `edit.js` imports `close` from `@wordpress/icons` for the
+  canvas preview, while `render.php:684` hardcodes `sgs_get_lucide_icon('x')`. Neither is picker-driven today.
+  Resolve both to the same picker-driven source, or the canvas and the frontend show different icons.
+- **An optional logo** — show/hide, responsive per device.
+  ⚠ **Precedent, corrected 2026-09-09:** use the per-tier scalar pattern `sgs/responsive-logo` actually uses
+  (`logoId`/`logoUrl` + `…Tablet`/`…Mobile`, `responsive-logo/block.json:117-159`). Its own block.json states
+  the reason: `supports.sgs.imageControls` (the universal image extension) "was removed 2026-08-11 (Spec 35
+  capability-routing doctrine) **as dead** — the block's own per-device `logoId*`/`logoUrl*` art-direction
+  tiers are its real media mechanism" (`responsive-logo/block.json:78`). A logo is art-direction per device,
+  not one image with controls, which is why the generic path did not fit it.
+  **The media-atoms family is real and shared** — `src/components/media/atoms/registry.js` is imported by
+  `blocks/extensions/media-elements.js` and `blocks/media/edit.js`, with PHP twins under
+  `includes/media/atoms/` used by `sgs/hero` and `sgs/brand-strip`. It is simply not the LOGO pattern. Two
+  earlier revisions of this FR were wrong here: the first pointed at the atoms folder as the logo precedent;
+  the second claimed "only `sgs/media` imports it", which is false.
 - **An optional free slot** — ONE of heading / label / text / button. Button styling via the shared
   `sgs_button_element_style_css()` with its own prefix (precedent: `sgs/modal`, `sgs/product-card`); heading
   level switchable per `product-card`'s `headingLevel` (`css_property: tag`). This exists because two
@@ -205,6 +281,18 @@ band; everything else in it is optional. Three elements, all attribute-driven (N
   "LET'S TALK!" CTA. Verified against the extraction data: 4 of the 7 close-bearing references are logo+close
   only, so the slot is genuinely optional, not a layout system.
 - The row itself carries background / padding / height controls.
+  ⚠ **The row is NET-NEW markup.** No row node exists today — the × is a bare sibling `<button>` inside the
+  `<dialog>` (`render.php:714-720`), absolutely positioned (`style.css:79-83`). A row element must be BUILT
+  before it can be styled, and `style.css:75`'s hardcoded `padding-top:64px` (which reserves space for the
+  floating ×) is DELETED as part of that work — the row occupies that space legitimately instead.
+
+⛔ **THE CHROME ROW REPLACES THE SEEDED BLOCKS — it does not sit above them.** `edit.js:92-96` currently seeds
+`TEMPLATE = [ sgs/nav-menu, sgs/responsive-logo, sgs/button ]`. When the chrome row lands, **`sgs/responsive-logo`
+and `sgs/button` are REMOVED from that template** — their roles become the row's logo element and free slot.
+Leaving them produces a drawer with two logos and two CTAs, one of each in chrome and one still droppable in
+the body. **Done-check (a build passing every other gate can still fail this one):** after the change,
+`edit.js`'s `TEMPLATE` contains `sgs/nav-menu` ONLY, and the logo / free-slot markup appears in `render.php`'s
+printed chrome, never inside `useInnerBlocksProps` output. Assert both; no existing gate covers this.
 
 **2. The body** — the single InnerBlocks region, `templateLock:false` (client patterns may use `contentOnly`).
 Ships `sgs/nav-menu` with the primary menu preselected on every new drawer. Everything beyond that is ordinary
@@ -379,26 +467,10 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
   Spec 36+37 execution is MERGED into one track (specs stay separate documents; §1.2 same-commit
   rule unchanged). **Do not rebuild fixtures on the block path** — the container is changing.
 
-### FR-36-27 — Burger trigger presentation (added 2026-07-29, gate DP4 — NOT-BUILT)
 
-The trigger the operator gets today is burger-glyph-only with colour/bg/hover/size attrs; the
-references make the trigger a designed element (studionamma renders the word "MENU", fantasy a
-symbol, lamalama a morphing glyph). New `sgs/nav-menu` attrs, all inspector-manifested:
-`triggerStyle` (`burger`|`word`|`word-burger`|`symbol`) · `triggerLabel` (default "Menu") ·
-`triggerSymbol` (shared `IconPicker`) · `triggerOpenStyle` (`morph-x`|`swap-label`|`unchanged`) ·
-`triggerOpenLabel` (default "Close"). Open-state sync is cross-block state in `store('sgs/nav')` —
-this PROMOTES `P-DRAWER-BURGER-MORPH-SYNC` from parked follow-on to a named build item (Bean's
-client-controllability rule makes it core). The drawer's own `closeStyle` stays on the drawer:
-trigger = nav-menu's, close chrome = the Menu drawer's.
-**Status:** `NOT-BUILT` — capability wave of the merged track.
-**Done when:** all five attrs render + round-trip in the editor, the open-state morph/swap is
-live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
-- Follow-ons parked: `P-DRAWER-BURGER-MORPH-SYNC` (true cross-block morph = store state-wiring,
-  NOT a GSAP effect), `P-DRAWER-TRIGGER-ANCHOR-JS` (measure the burger's real rect at open — the
-  `--sgs-drawer-header-offset` pattern), `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`,
-  `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` (⚠ downgraded to UNDECIDED — the "reading order is wrong"
-  claim assumed column-wise reading; Bean's counter that rows-of-2 reads correctly across rows
-  stands, and the reference capture for that variant failed, so there is no ground truth yet).
+> **Relocated 2026-09-09.** The block below sat under FR-36-27 (burger trigger) but is drawer content —
+> its own closing line said so ("an editor-UX correction inside FR-36-6's existing scope"). Moved here
+> intact; no FR-ID changed, so no external citation breaks.
 
 **Historical research summary (2026-07-28 session 1 — measurements stand; the taxonomy framing is
 superseded per the corrections above). Do not re-derive.**
@@ -475,6 +547,27 @@ reaches the frontend, and no `display` is added to the dialog's base rule, so ST
 Deliberately NOT given its own FR-ID: this is an editor-UX correction inside FR-36-6's existing scope (the drawer
 block's own behaviour), not a new capability.
 
+### FR-36-27 — Burger trigger presentation (added 2026-07-29, gate DP4 — NOT-BUILT)
+
+The trigger the operator gets today is burger-glyph-only with colour/bg/hover/size attrs; the
+references make the trigger a designed element (studionamma renders the word "MENU", fantasy a
+symbol, lamalama a morphing glyph). New `sgs/nav-menu` attrs, all inspector-manifested:
+`triggerStyle` (`burger`|`word`|`word-burger`|`symbol`) · `triggerLabel` (default "Menu") ·
+`triggerSymbol` (shared `IconPicker`) · `triggerOpenStyle` (`morph-x`|`swap-label`|`unchanged`) ·
+`triggerOpenLabel` (default "Close"). Open-state sync is cross-block state in `store('sgs/nav')` —
+this PROMOTES `P-DRAWER-BURGER-MORPH-SYNC` from parked follow-on to a named build item (Bean's
+client-controllability rule makes it core). The drawer's own `closeStyle` stays on the drawer:
+trigger = nav-menu's, close chrome = the Menu drawer's.
+**Status:** `NOT-BUILT` — capability wave of the merged track.
+**Done when:** all five attrs render + round-trip in the editor, the open-state morph/swap is
+live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
+- Follow-ons parked: `P-DRAWER-BURGER-MORPH-SYNC` (true cross-block morph = store state-wiring,
+  NOT a GSAP effect), `P-DRAWER-TRIGGER-ANCHOR-JS` (measure the burger's real rect at open — the
+  `--sgs-drawer-header-offset` pattern), `P-DRAWER-POC-FIXTURES-NOT-EXACT-CLONES`,
+  `P-NAV-MENU-LISTCOLUMNS-READING-ORDER` (⚠ downgraded to UNDECIDED — the "reading order is wrong"
+  claim assumed column-wise reading; Bean's counter that rows-of-2 reads correctly across rows
+  stands, and the reference capture for that variant failed, so there is no ground truth yet).
+
 ### FR-36-7 — Shared nav plumbing utility (framework-reusable)
 One `viewScriptModule` + `store('sgs/nav', …)` (public API — the established SGS pattern; NOT core-nav's
 private store) for open/close/focus/`inert`/intent-timing across the disclosure + dialog surfaces. A UTILITY
@@ -537,9 +630,12 @@ confirmed central builder feature (Spectra parity). **Two ownership lines — do
   structural guard (a `lint-responsive-controls.py`-style gate) enforces R-31-9: every responsive-worthy attr
   routes through `ResponsiveControl`, never a bespoke per-tier control.
 
-**Named upgrade (optional, not a blocker):** the `ResponsiveTriStateControl` (on/off/inherit per tier,
-P2 §4.1) is DESIGNED-NOT-BUILT (verified: 0 in `src/`) — the richer form of (a)/(b); until then, show/hide +
-`ResponsiveControl` deliver it.
+**Named upgrade:** the `ResponsiveTriStateControl` (on/off/inherit per tier, P2 §4.1) is **BUILT** —
+exported from `src/components` and mounted in `src/blocks/site-header/edit.js:896,922,1047`; five gate
+scripts reference it (incl. `scripts/inspector-scan/rules/25-no-own-device-switcher.js`). It is the richer
+form of (a)/(b). ⚠ **Corrected 2026-09-09** — this line previously read "DESIGNED-NOT-BUILT (verified: 0 in
+`src/`)", a false claim carrying a fake verification badge, while FR-36-8 fifteen lines above already said
+BUILT. Adopt this control; never invent a parallel per-tier switcher (R-31-9).
 
 **Menu case (the one-menu-source default):** the bar and the drawer DEFAULT to ONE shared menu (the drawer's
 `sgs/nav-menu` inherits-from-bar — no drift, faithful clone), with a deliberate per-device override available
@@ -597,10 +693,11 @@ failure that policy exists to prevent.
 ### FR-36-19 — Cart (`sgs/cart`, extend) — full WooCommerce header cart
 **Honest status + phasing:** the current `sgs/cart` render.php is a **badge + link only** — the mini-cart
 preview/flyout/drawer is **UNBUILT** (its own block.json marks it "Phase 2"). So this is a **substantial BUILD
-on the existing badge shell**, NOT "~90% ready". **v1 (Phase 1) = the badge fix only:** add `role="status"` to
-the existing persistent `aria-live="polite" aria-atomic="true"` badge node (`cart/render.php:203` HAS the live
-region + atomic but NOT `role="status"` — the one verified gap) so it announces the whole "N items" string
-(WCAG 4.1.3). **The mini-cart itself = Phase 2 build.**
+on the existing badge shell**, NOT "~90% ready". **The Phase-1 badge fix is DONE** — the badge node carries
+`role="status" aria-live="polite" aria-atomic="true"` at `cart/render.php:340`, so it announces the whole
+"N items" string (WCAG 4.1.3). ⚠ **Corrected 2026-09-09** — this line previously described the missing
+`role="status"` as "the one verified gap" at `cart/render.php:203`; both the gap and the line number were
+stale. **The mini-cart itself remains the Phase 2 build.**
 - **MUST (Phase 2 build):** live item-count badge; AJAX add-to-cart via the **Store API** (NOT legacy
   cart-fragments — cache-safe by construction, WooCommerce's own guidance); mini-cart preview
   (thumbnail/name/qty/line-price); inline qty-edit + remove (no redirect); "View Cart" + "Checkout" CTAs;
@@ -1009,33 +1106,16 @@ but noted for whoever needs it hideable.
 decision, not a default.** ⚠ Still open framework-wide, NOT fixed here: the bespoke Custom CSS field
 in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks — a separate task.
 
-## 6a. Progress — verified status (updated 2026-07-28 — GATE 3 CLOSED, D401)
+## 6a. Build-order note
 
-> Per-FR evidence: `.claude/reports/2026-07-22-spec36-completion-audit.md`. Three tiers, never
-> conflated: `LIVE-VERIFIED` (observed running on the canary) / `DEPLOYED (unexercised)` (shipped +
-> checksum-verified but no page or setting currently renders it) / `BUILT (code)`.
+⛔ **Live per-FR build status is NOT tracked here.** It single-sources to **`.claude/LEDGER.md`**.
+Per-FR evidence archive: `.claude/reports/2026-07-22-spec36-completion-audit.md`.
 
-| FR | State | Evidence / what remains |
-|---|---|---|
-| 36-1, 36-2, 36-7, 36-13 | `DONE` | Phase-1 close, D352 |
-| **36-12** operator notices | `DEPLOYED (unexercised)` | Link-count `Notice` on `sgs/nav-menu`, threshold a named constant (directional per FR-36-8, deliberately not a DB default). Verified in code to carry NO save/publish gate (P1 DP2a). Editor-surface — needs an editor session. **Deferred, not dropped:** the heading-less mega-panel notice needs the `sgs_mega_menu` CPT editor (Phase 2) |
-| **36-19** mini-cart | `DEPLOYED (unexercised)` | Store API (never cart-fragments), qty-edit/remove, empty state, `displayMode` link/flyout/drawer auto-swapping DISCLOSURE↔DIALOG per FR-36-10 via the SHARED `store('sgs/nav')`. **No cart block on any canary page yet** |
-| **36-20** search extends | `DEPLOYED (unexercised)` | Genuine EXTEND — the shipped ARIA combobox is reused unmodified across all 3 display modes. **NOT DONE:** product prices; the search REST controller fixes its response shape and states "no price data — ever", so it needs its own dispatch. `filter-search` deliberately untouched (verified: no combobox, different mechanism) |
-| **36-21** social one-source | `DEPLOYED (unexercised)` | Auto-generated + editable accessible names (verb+platform), custom SVG, `rel` handling, brand-vs-theme colour. ⚠ `colourMode:'brand'` is opt-in and NOT contrast-swept per client — Snapchat yellow on filled/pill could fail SC 1.4.11 |
-| **36-24** responsive-control gate | `GATE BUILT` | `lint-responsive-controls.py` — DB-first, self-discovers sanctioned wrappers, proven by negative control (fails on a bespoke switcher fixture). 0 findings across 78 blocks. Not wired into prebuild (separate decision) |
-| 36-22 logo | `PARTIAL + open defect` | Still reads `get_theme_mod('custom_logo')`, so the logo resolves from a DIFFERENT source than contact/social. §1 flags it; FR-36-22 must resolve it deliberately |
-| **36-26** link lists | `BUILT + LIVE-VERIFIED` 2026-07-23 (D374) | Both dispatches shipped `bf312016`+`d08d3149`; multi-rater-reviewed (2 HIGH fixed); canary pages 1720/1721 — see §4 |
-| **36-3** CPT model + starter picker | `LIVE-VERIFIED 2026-07-25 (D379)` | `sgs_mega_menu` CPT + `resolve_panel_for_menu_item` built + registered (`class-sgs-mega-menu-cpt.php`). SPIKE proved LIVE on sandybrown: a panel attaches in Appearance→Menus + the resolver returns it (`item#1746 → POST#1745`). **Native "Choose a pattern" picker LIVE-VERIFIED** — fires for a new `sgs_mega_menu` post with 3 starters (`mega-general-{1col,2col,2col-aside}.php`; theme 1.5.44 busts the pattern cache). ⚠ **CF-6 CORRECTED:** the pinned `templateLock:contentOnly` HID child settings (client couldn't edit link lists) → now `templateLock:false` + `allowedBlocks:['sgs/mega-group','sgs/mega-aside']` (client adds/removes/reorders 1-3 columns; children internally `templateLock:'all'`). Class is namespaced `\SGS\Blocks\Sgs_Mega_Menu_CPT` (call FQN) |
-| **36-4** desktop disclosure | `DEPLOYED (partially live-verified)` | A mega-linked menu item renders a `<button aria-expanded>` disclosure (NOT `role=menu`) + `do_blocks` the panel at its REAL menu position — probe-verified on the canary (nav render emits interactive/trigger/panel/button-aria-expanded, no role=menu). Hover-intent (300ms) + 170ms close-grace bridge (CF-13; true safe-triangle deferred, STOP-29) + keyboard live in `store('sgs/mega')`. **NOT yet exercised:** open-on-hover/tap/keyboard on a real page (needs a populated panel + nav on a page). **⛔ SUPERSEDED 2026-09-07 — PLAIN DROPDOWNS ARE NOW BUILT.** `fc021a340` (2026-07-31) shipped them: `nav-menu/render.php:393-425` has a DROPDOWN branch reusing the mega interactivity store, so a plain-children item renders a real disclosure, not a bare link. The paragraph below is the 2026-07-28 state and is retained only as history — do NOT quote it as current. *(Historical:)* **PLAIN (non-mega) DROPDOWNS ARE NOT BUILT (recorded 2026-07-28, live-proven on canary page 1842):** FR-36-4 says "an item with a submenu renders a disclosure … else its submenu is a simple dropdown", but `nav-menu/render.php:103-109` deliberately FLATTENS `core/navigation-submenu` to the parent's own link ("no children this phase") — so a classic menu item with plain children (canary menu 100: "Recipes" → "Our Story"/"Sourcing") renders as a bare link and its children are silently ABSENT from the bar (children DO reach the resolver — `SGS_Nav_Menu_Source::classic_items_to_blocks` emits them as innerBlocks — the drop is in the nav-menu walk). Only the MEGA disclosure exists. Deferred-not-dropped, mapped to the FR-36-4 dropdown scope (STOP-29); the drawer accordion is likewise mega-only today |
-| **36-5** mega CPT + native attach + real-position | `LIVE-VERIFIED 2026-07-25` | Seam = `attrs['type']==='sgs_mega_menu'` + `attrs['id']` (from `blocks_from_classic_menu`), reuses the verified resolver. Renders at real position (structurally impossible to render last). **CF-1 recursion guard** (`includes/helpers-mega-render.php`, static-set + depth-cap 3 + `finally`) — multi-instance no-fatal PROVEN on canary (D374 class). **CF-2 escaping** — injection (`panelBg:'red;}</style><script>'`) neutralised on a REAL render. Instance-scoped panel DOM ids (no duplicate-id) |
-| **36-10** disclosure-not-menu | `LIVE-VERIFIED 2026-07-25` | Probe on canary: `<button aria-expanded>`, `[data-sgs-mega-trigger]`/`[data-sgs-mega-panel]`, NO `role=menu`. `store('sgs/mega')` is a disclosure not a modal (no scroll-lock/inert/showModal/reparent, CF-3 — drawer store untouched); Tab-off closes (no trap), ESC returns focus |
-| **36-13** no-inline (mega) | `DONE` | `audit-inline-styling.js` = 0 INLINE-via-render across the mega blocks; scoped per-uid `<style>`, content-addressed uid (STOP-NO-KSORT) |
-| **mega-panel presets** (parent-paints-child) | `FIXED + LIVE-VERIFIED 2026-07-25 (D382, `b5f2ee02`)` | render.php emits distinct Columns/Cards/Minimal layouts per `data-mega-style`. Two real causes broke BOTH the frontend and the editor canvas: **(1) self-nested selectors** — render.php prepended `$root_sel` to `$content_sel`/`$group_sel`, which already began with `$root_sel`, producing an impossible selector that matched nothing; **(2) broken style-handle filename** — block.json named the source files (`file:./style.css`/`file:./editor.css`) while the build emits `style-index.css`/`index.css`, so WP silently enqueued nothing on either surface. The same block.json bug was swept from 4 other blocks in the same commit. An earlier "WP 7.0's iframed editor canvas ignores this block's editor.css" diagnosis for this bug is FALSE — do not cite it; full retraction in CC memory `feedback_wp_iframe_canvas_ignores_editorstyle_use_style_css.md`. |
-| **mega starter patterns** | `LIVE-VERIFIED 2026-07-25` | Inserting a starter was initially broken ("Block contains unexpected or invalid content" — mega-group/aside were STATIC with a save/pattern mismatch); FIXED by making them DYNAMIC (render.php wrapper + `save→InnerBlocks.Content`); re-verified: pattern inserts real editable columns + aside. Aside media capped (170px) so an empty/large image doesn't dominate |
-| 36-8, 36-17, 36-9a (mega) | **`LIVE-VERIFIED 2026-07-28 (D401)`** | **GATE 3 CLOSED.** Fixture: canary panel **1745** populated, menu **100** (mega at position 2), page **1842** `/gate3-mega-nav/`. Every owed item discharged: **axe 0 on the OPEN mega AND the OPEN drawer** · crawl assertion (all 7 panel links + 3 headings + aside copy in the pre-JS HTML) · **live recursion test** (a panel embedding a nav on its own menu → plain link, HTTP 200, no nested panel; fixture restored) · drawer no-regression · keyboard no-trap + ESC/focus-return · reduced-motion full end state at 120ms · **Bean's R-31-13 eye sign-off GIVEN** on the geometry pass. 36-8's collapse control is now the **Burger Menu** preset (see FR-36-8) |
-| **36-6** drawer desktop variants | `BUILT + probe-verified 2026-07-28 (D403/D404)` | Per-device `anchor`/`panelSize`/surface/`closeStyle`/`variantPreset` + 7 variations + nav-menu `listColumns` + backdrop-click-to-close (`store('sgs/nav')`), commits `faa14924`/`69dfbaf9`. Council-fixed (9 findings pre-commit); defaults render property-identical (page 1648); centred/full-screen anchors + backdrop-close verified live; variation insert + `isActive` verified in the real editor. DB seeded (`variant_attr='variantPreset'`; `variant_slots` weak by construction — value-differentiated variants, see FR-36-6 note). **⛔ Task 5 RAN 2026-07-29 AND WAS REJECTED (D411).** Mechanical half PASSED (21/21 cells + D374 multi-instance + both hand-set anchors + `listColumns` canvas visibility CONFIRMED). Fidelity half FAILED on Bean's eye — *"night and day"*; the variants reproduce structure + copy, not design. Two defects OPEN: `P-ICON-LIST-INVISIBLE-ON-DARK-DRAWER` (1:1 contrast, 6 elements, 2 variants) · `P-NAV-DRAWER-ALIGN-DOES-NOT-CENTRE-MENU`. **✅ Block-vs-CPT design gate CLOSED 2026-09-08 (D1009)** — one block, chrome top row (× + optional logo + optional heading/label/text/button slot), one InnerBlocks body; child-block and CPT-native models both rejected. Block-path rework is now UNBLOCKED; FR-36-6 amended in the same commit. Deliberate simplifications recorded: burger-morph static icon; trigger anchor CSS approximation |
-| **36-10, 36-11** landmark | `LIVE-VERIFIED 2026-07-23` | One `<nav>` per instance, one label, on `/t1-nav/` (canary, classic menu 98). Distinct names derived per menu — "Primary" / "T1 Verify" — verified with BOTH exposed (drawer open), which is the case FR-36-11 governs. The 2026-07-23 "zero `<nav>`" finding was FALSE and its fix was reverted; the real bug was the unreachable menu-name fallback (`navLabel` default `'Primary'` → `''`). See the retraction note in §4. `sgs/nav-menu` contributes **zero** axe violations — negative control: the nav-free homepage reports the identical 5 |
-| 36-11, 36-16 | **`GATE — drawer axe CLOSED 2026-07-28`** | The 2026-07-23 INCONCLUSIVE is resolved: **axe 0 on the OPEN drawer** (guard: height 0→780, 14 focusables). ⚠ **METHOD CORRECTION, binding on every future run:** a scoped axe run on a CLOSED surface passes VACUOUSLY — `nav-qa/axe-run.mjs --scope .sgs-nav-drawer` returns "0 violations" with or without `--open`, because axe's `excludeHidden` defaults true. **Any earlier drawer-axe claim made with that harness proves nothing.** Every axe run on a disclosure/dialog surface MUST first assert the surface is open (open/`aria-expanded`, height > 0, focusable count > 0) and report VACUOUS, never PASS, when the guard fails. `axe-run.mjs` still needs that guard wired in — until then, use a guarded harness |
+⚠ **A status table stood here until 2026-09-09 and was DELETED.** An adversarial council found it
+carried false claims — including `ResponsiveTriStateControl` marked "DESIGNED-NOT-BUILT (verified: 0
+in `src/`)" while it was imported and mounted three times in `site-header/edit.js`. A status table
+inside a requirements doc drifts against the code and, worse, wears a verification badge that stops
+the next reader checking. Do not reinstate one.
 
 **⚠ Build-order correction (2026-07-23, Bean-caught).** A progress summary claimed FR-36-15, 36-18
 and 36-25 were "gated on Spec 33 Part 2". **Two of the three were wrong.** The specs say the
@@ -1128,34 +1208,23 @@ pipeline.
 > repo + canary + production. **The rollback path is now git history only** (the blocks are no longer
 > registered). Both sites currently render generic proof headers until cloning delivers the branded ones.
 
-### 8a. Verified build notes (live-code items — cite at build; fact-check-corrected)
-- **Menu-source detection (fact-check):** `SGS_Nav_Menu_Source::NAV_BLOCK_NAMES`
-  (`class-sgs-nav-menu-source.php:44`) hardcodes `['sgs/adaptive-nav', 'core/navigation']`. When the rebuild
-  lands, the new block's canonical slug is **`sgs/nav-menu`** — `sgs/nav` is ONLY the Interactivity store
-  namespace, NEVER a block name (do NOT "add block name `sgs/nav`"). **Route the menu-source detection off the
-  DB/registry, not a hardcoded PHP const** (R-31-1 DB-first), else the fallback resolution breaks and drifts.
-- **`show_in_nav_menus` — PROVEN 2026-07-25 (D379), no longer a spike-owed.** `Sgs_Mega_Menu_CPT::register_post_type`
-  (`class-sgs-mega-menu-cpt.php:138`) sets `show_in_nav_menus => true`; the D379 SPIKE confirmed LIVE on sandybrown
-  that a `sgs_mega_menu` post attaches in Appearance → Menus and `resolve_panel_for_menu_item` returns it
-  (`item#1746 → POST#1745 publish`). The old `class-product-templates-cpt.php:70` (FALSE) citation is retired.
-- **`templateLock` — CORRECTED 2026-07-25 (D379): the panel uses `templateLock:false` + `allowedBlocks`, NOT
-  `contentOnly`.** contentOnly HID child settings (a client could not edit the icon-list link lists — a blocking
-  defect caught by a QC council). The panel now lets the client add/remove/reorder 1-3 mega-group/mega-aside
-  columns; each child block is internally `templateLock:'all'` (fixed shape, editable settings). See D379 / FR-36-3.
-- **`sgs/cart` badge → add `role="status"`** (FR-36-19).
-- **Hide-on-scroll engine is BUILT-but-dormant** (`header-behaviours.css:118` + `view.js`; NO
-  `headerHideOnScroll` attr) — wiring it (one attr + one resolver flag in
-  `class-sgs-header-behaviours.php:196` + one toggle) is a **Spec-17 header task**, NOT a new state machine.
-  Cross-reference; don't rebuild.
-- **Existing nav blocks:** `sgs/adaptive-nav` + `sgs/mega-menu` (RETIRED, deleted — reference via git only);
-  `sgs/nav-menu` + `sgs/nav-drawer` BUILT (Phase 1). **`sgs_mega_menu` CPT BUILT** (`class-sgs-mega-menu-cpt.php`,
-  registered + `show_in_nav_menus`) and **the mega CORE — `sgs/mega-panel`/`mega-group`/`mega-aside` +
-  `store('sgs/mega')` + the nav wiring — BUILT + DEPLOYED (D379, commit `19bafc9e`, 2026-07-25).** This "do NOT
-  exist yet" line is retired.
-- **DB drift to clean via `/sgs-update` at build:** the stale `block_composition` rows (`sgs/mobile-nav`,
-  `sgs/mobile-nav-toggle`) + banned `core/navigation` in `site-header-row`'s allowed-list.
-- **⚠ LEDGER correction:** the LEDGER's P2.5 line says "wp_navigation menu data locked" — STALE vs §12(f)
-  (classic primary). Correct the LEDGER when consolidating.
+### 8a. Retired
+
+⚠ **This section held "verified build notes" and was DELETED 2026-09-09** after an adversarial council
+found that two of its eight bullets were not merely stale but INVERTED — they told a future builder to
+construct things that already existed:
+
+- It described `SGS_Nav_Menu_Source::NAV_BLOCK_NAMES` as a hardcoded const needing a DB-first refactor.
+  It is already a filtered method pruned against the live block registry
+  (`class-sgs-nav-menu-source.php:89-105`), and the code's own docblock records that it was fixed for
+  exactly this reason.
+- It said no `headerHideOnScroll` attribute existed and wiring it was a future task. It exists
+  (`site-header/block.json:183-186`), is read (`site-header/render.php:143`) and is wired end-to-end in
+  `header-behaviours/view.js`.
+
+The section was badged "fact-check-corrected", which made it worse: a reader is told not to re-check.
+Its one live contract (mega-panel `templateLock`) moved to **FR-36-5**. Everything else was status
+(**`.claude/LEDGER.md`**) or history (**`decisions.md`**). Do not reinstate a build-notes section.
 
 ## 9. Converter-emittability (Spec 31 §13 + Spec 33 Part 2)
 
@@ -1219,10 +1288,10 @@ implicit one. Made fully explicit across all placements in Phase 3 (§7).
 | # | Question | Resolution |
 |---|---|---|
 | a | Burger home | On `sgs/nav-menu` (collapsed), opens the drawer via `drawerRef` |
-| b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default); default template incl. logo+close |
-| c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**; safe-triangle ships |
+| b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default). ⚠ **Amended D1009** — the × close and the optional logo/free-slot are CHROME (attributes), never template blocks; the body seeds `sgs/nav-menu` only. See FR-36-6 |
+| c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**. ⚠ **Corrected 2026-09-09** — safe-triangle does NOT ship; the built mechanism is a 170 ms close-grace bridge, true safe-triangle geometry deferred (STOP-29). See FR-36-4 |
 | d | Mega association | **Native menu (Appearance → Menus)** — add the CPT like a page; item carries the post ID (no map/ID); resolved by `object_id`/`get_post()` |
-| e | Drawer modality | **Modal-only** (`<dialog showModal>`) + "Show header" per-row toggle |
+| e | Drawer modality | **Modal-only** (`<dialog showModal>`) by default. ⚠ **Corrected 2026-09-09** — the "Show header" per-row toggle was NEVER BUILT and is WITHDRAWN (FR-36-6); header rows are not imported into the drawer in any form. A non-modal mode (lusion's live-background shape) is a named, unbuilt follow-on — the `.show()` path exists at `nav-interactivity/store.js:616-619` as a browser-support fallback and needs exposing as an operator control |
 | f | Menu system | **Classic menus PRIMARY**; block `wp_navigation` → Phase 3 extra (Bean) |
 | g | Per-device visibility | Reuse the BUILT Responsive-Visibility ext + `labelCollapse`; tri-state = optional upgrade (FR-36-24) |
 | h | Extra competitive features + Opps 1–3 | Phase 3 (follow-on) |
