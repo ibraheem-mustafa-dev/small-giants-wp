@@ -484,10 +484,19 @@ Action:      ⚠ SPLIT INTO 9a / 9b / 9c BY HIDDEN-DECISIONS REVIEW — this was
              grouping from scratch. Border width/style longhands are confirmed ABSENT from ::BLOCK,
              so a single authored `border: 1px solid red` genuinely does produce 8 scored diffs today.
 
-             (9a) LONGHAND COLLAPSE — build family-grouping from scratch. Decide and document which
-                  longhand sets constitute one authored declaration (border width+style is the case
-                  in evidence; state explicitly whether margin / padding / inset families are in or
-                  out of scope NOW rather than discovering it mid-implementation).
+             (9a) LONGHAND COLLAPSE — ⚠ REVISED (Bean, 2026-09-09). Do NOT hand-write a family map.
+                  The shorthand→longhand relationship is ALREADY DATA in `sgs-framework.db`:
+                  `property_suffixes` carries both the shorthand row and its longhands side by side
+                  (`BorderWidth`→`border-width` alongside `BorderTopWidth`→`border-top-width`,
+                  `BorderRadius` alongside `BorderTopLeftRadius`, `MarginTop`/`MarginLeft`, …), and
+                  `modifier_suffixes` holds the generating vocabulary explicitly (`kind='side'`:
+                  Top/Right/Bottom/Left; `kind='corner'`: TL/TR/BL/BR).
+                  DERIVE the families from those two tables — a longhand belongs to the family whose
+                  shorthand row remains after stripping a known side/corner token. A hardcoded family
+                  map in the tool would violate R-31-1 and create a SECOND list to drift against the
+                  DB, which is the exact defect Step 10 exists to remove from this same file.
+                  Document any property that cannot be derived this way rather than special-casing it
+                  silently — an underivable case is a DB gap to report, not a literal to add.
              (9b) PER-ELEMENT APPLICABILITY — background-size/-position/-repeat and border-image-slice
                   are inert on a replaced <img> but load-bearing on a <div>. Exclude PER ELEMENT TYPE,
                   never via the global blocklist. Fixture 7 is the control that proves you did not
@@ -511,9 +520,17 @@ On-Fail:     git revert. Do NOT settle for a global blocklist entry for backgrou
 Prompt:      THREE separate changes, THREE separate commits. Do not bundle them.
              READ FIRST: the ::BLOCK Set blocklists the colour longhands — that is NOT a collapse
              mechanism and there is nothing to "generalise". You are building grouping from scratch.
-             (9a) Build longhand-family grouping so one authored declaration counts once, not once
-             per longhand (border is 8x today). State in a comment which families are in scope and
-             which are deliberately deferred. Fixture 5 must flip to PASS.
+             (9a) Make one authored declaration count once, not once per longhand (border is 8x
+             today). DERIVE the families from the DB — do not hand-write a map. Query:
+               python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT suffix, role, css_property FROM property_suffixes"
+               python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT suffix, kind FROM modifier_suffixes WHERE kind IN ('side','corner')"
+             property_suffixes holds shorthand and longhand rows together (BorderWidth alongside
+             BorderTopWidth/BorderLeftWidth; BorderRadius alongside BorderTopLeftRadius; MarginTop…),
+             and modifier_suffixes holds the side/corner vocabulary that generates the expansion. A
+             longhand joins the family whose shorthand row remains once a known side/corner token is
+             stripped. A hardcoded family literal violates R-31-1 and would drift against the DB —
+             the same defect Step 10 removes from this file. Report any underivable property as a DB
+             gap; do not special-case it. Fixture 5 must flip to PASS.
              (9b) Make background-size/-position/-repeat and border-image-slice non-scoring ONLY on
              replaced elements (img/video/iframe) — per element type, NEVER a global blocklist entry,
              because they are load-bearing on a <div>. Fixture 7 is your control: it asserts
