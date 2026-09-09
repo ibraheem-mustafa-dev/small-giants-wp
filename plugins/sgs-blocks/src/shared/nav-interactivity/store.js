@@ -318,6 +318,44 @@ function focusFirstIn( container ) {
 }
 
 /**
+ * Whether the container currently holds an OPEN nested `<dialog>` that owns
+ * focus containment in its own right.
+ *
+ * `showModal()` promotes a dialog into the TOP LAYER but does NOT change DOM
+ * ancestry — a `sgs/modal` opened from inside the drawer stays a descendant of
+ * the drawer (the drawer declares no `allowedBlocks`, and sgs/modal opens in
+ * place without reparenting). So the nested dialog's own Tab keydown still
+ * BUBBLES to the drawer. `:modal` is the one honest test for "the browser is
+ * already containing focus here", because modal-ness is internal browser state
+ * with no attribute to read: an open modal and an open non-modal dialog carry
+ * the identical `[open]` markup.
+ *
+ * The `:modal` fallback matters for the narrow band of engines that shipped
+ * `<dialog>`/`showModal()` before the `:modal` pseudo-class: there, treat ANY
+ * open nested dialog as containing. That is the safe direction — the drawer
+ * itself is a modal on the primary path, so the browser's own Tab order already
+ * cycles the drawer's subtree and focus cannot escape the page even if this
+ * handler stands down.
+ *
+ * @param {HTMLElement} container The drawer dialog element.
+ * @return {boolean} Whether a nested dialog is currently containing focus.
+ */
+function hasContainingNestedDialog( container ) {
+	const nested = Array.from(
+		container.querySelectorAll( 'dialog[open]' )
+	);
+	if ( 0 === nested.length ) {
+		return false;
+	}
+	try {
+		return nested.some( ( el ) => el.matches( ':modal' ) );
+	} catch ( e ) {
+		// `:modal` unsupported — `matches()` throws on an unknown selector.
+		return true;
+	}
+}
+
+/**
  * ONE canonical Tab-containment handler for the drawer (dialog surface): Tab on
  * the last focusable WRAPS to the first, Shift+Tab on the first wraps to the
  * last. This is the merge resolution of the two sources' Tab disagreement:
@@ -335,6 +373,21 @@ function focusFirstIn( container ) {
  */
 function trapTab( container, event ) {
 	if ( 'Tab' !== event.key ) {
+		return;
+	}
+	/*
+	 * Defer to a nested dialog's NATIVE containment. This listener is bound on
+	 * the drawer element and Tab keydown BUBBLES, so without this guard a
+	 * `<dialog showModal>` opened inside the drawer would have its Tab wrapped
+	 * back into the DRAWER's focusable list — the nested dialog's own
+	 * containment broken by an ancestor that is no longer the active surface.
+	 *
+	 * Cause-agnostic: this is the correct behaviour whether or not the full
+	 * failure reproduces on a given engine, and it is a strict no-op when the
+	 * drawer holds no open nested dialog (the common case — one extra
+	 * `querySelectorAll` per Tab press). Nothing else in this handler changes.
+	 */
+	if ( hasContainingNestedDialog( container ) ) {
 		return;
 	}
 	const focusable = getFocusable( container );
@@ -531,9 +584,27 @@ function openDrawerFor( ctx, trigger ) {
 	 * Two deliberate corrections to the naive reading of the rect:
 	 *  - top uses `bottom + 8`, because a panel anchored to a burger hangs BELOW
 	 *    it, not over it.
-	 *  - right uses `innerWidth - rect.right`, because a DOMRect's `.right` is a
-	 *    LEFT-origin coordinate; feeding it straight into the CSS `right`
-	 *    property would push the panel off the opposite edge.
+	 *  - right is measured from `document.documentElement.clientWidth`, not
+	 *    `window.innerWidth`, because a DOMRect's `.right` is a LEFT-origin
+	 *    coordinate; feeding it straight into the CSS `right` property would push
+	 *    the panel off the opposite edge, and the SUBTRAHEND must be the width of
+	 *    the box the panel is actually laid out against.
+	 *
+	 * On the choice of basis (do NOT "simplify" this back to `innerWidth`): the
+	 * drawer is `position:fixed`, so its `right` offset resolves against the
+	 * INITIAL CONTAINING BLOCK, which EXCLUDES a classic scrollbar.
+	 * `window.innerWidth` INCLUDES it. Those two are normally equal only because
+	 * a scroll-locked page usually has no scrollbar — but `lockScroll` above
+	 * DELIBERATELY forces the root's scrollbar track to stay while the drawer is
+	 * open (D340, to stop the anchor jumping mid-animation), so the difference is
+	 * live at exactly the moment this measurement is taken. Using `innerWidth`
+	 * therefore over-states the inset by the scrollbar width (~15px on desktop
+	 * Windows/Linux Chrome/Firefox) and the panel sits that far left of the
+	 * burger. It is invisible on macOS and on mobile, where overlay scrollbars
+	 * make `innerWidth === clientWidth` — which is why it survived review.
+	 * `documentElement.clientWidth` is the ICB's width on every platform, so this
+	 * is cause-agnostic: it is the correct basis whether or not a scrollbar
+	 * happens to exist, and a no-op on the platforms where the two agree.
 	 * Both properties are removed when there is no measurable trigger, so
 	 * render.php's `var(…, 16px)` fallbacks take over. No cleanup in runClose()
 	 * is needed (and none exists for the header offset either): every open
@@ -547,7 +618,12 @@ function openDrawerFor( ctx, trigger ) {
 		);
 		drawer.style.setProperty(
 			'--sgs-drawer-trigger-right',
-			`${ Math.max( 0, Math.round( window.innerWidth - tRect.right ) ) }px`
+			`${ Math.max(
+				0,
+				Math.round(
+					document.documentElement.clientWidth - tRect.right
+				)
+			) }px`
 		);
 	} else {
 		drawer.style.removeProperty( '--sgs-drawer-trigger-top' );

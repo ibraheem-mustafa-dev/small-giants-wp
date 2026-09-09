@@ -623,11 +623,22 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 // existing × icon, byte-identical to the pre-Task-1 output. `text-swap`
 // replaces the icon with a "Close" text label (3/8 reference sites use a
 // text-only close, no icon at all). `burger-morph` renders a 2-bar icon drawn
-// to already read as an X (an honest simplification: true cross-block
-// synchronisation with the HEADER burger's own morph would need new
-// Interactivity-store wiring between two independent block instances, which
-// is out of this task's scope — documented, not silently assumed). The ×
-// button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
+// to already read as an X — this button's OWN close affordance, rendered here.
+//
+// It does NOT animate the header burger, and the reason is scope, not wiring:
+// the wiring for that already exists and needs nothing new. The header burger
+// stays LIVE in the header row while the drawer is open (see the module
+// docstring of src/shared/nav-interactivity/store.js — it is BOTH burger and
+// ×), and `nav-menu/render.php::$toggle_html` already emits
+// `data-wp-bind--aria-expanded="state.isOpen"` on `.sgs-nav-menu__burger`, so
+// the open state is a live DOM attribute on that element throughout. A true
+// burger→× morph is therefore a pure CSS rule keyed on
+// `.sgs-nav-menu__burger[aria-expanded="true"]` in sgs/nav-menu's own
+// stylesheet — no Interactivity-store change, no cross-block message passing.
+// Whether sgs/nav-menu should ship that rule is a styling decision on THAT
+// block; nothing in this file depends on the answer.
+//
+// The × button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
 $sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph' );
 $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-x', $sgs_nd_allowed_close_styles, true )
 	? (string) $attributes['closeStyle']
