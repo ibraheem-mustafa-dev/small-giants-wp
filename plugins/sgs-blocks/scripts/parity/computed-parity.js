@@ -1040,17 +1040,21 @@ function collapseLonghandFamilies(scored) {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(s);
   }
-  let total = 0, match = 0; const diffs = [];
+  // Step 9c (measurement-integrity, 2026-09-09): `passes` names the representative prop for
+  // every FULLY-MATCHING family/prop unit, so the artefact can record PASSES as well as
+  // mismatches — today it records only mismatches, so a future session auditing the score has
+  // no way to confirm pass+fail sums to the reported denominator without re-running the tool.
+  let total = 0, match = 0; const diffs = [], passes = [];
   for (const members of groups.values()) {
     total++;
     const failing = members.filter((m) => !m.isMatch);
-    if (!failing.length) { match++; continue; }
+    if (!failing.length) { match++; passes.push(members[0].prop); continue; }
     // One representative diff per family, even when multiple sides diverge — the DEVELOPER
     // detail (which sides) is still visible via `failing`, this just stops the COUNT
     // multiplying per longhand for what was one authored declaration.
     diffs.push(failing[0].diff);
   }
-  return { total, match, diffs };
+  return { total, match, diffs, passes };
 }
 
 // Compare one matched pair over ALL props; only MEANINGFUL props count (differs OR non-default
@@ -1117,8 +1121,8 @@ function comparePair(drec, crec, dDef, viewportPx) {
     if (bucket) { sub.push({ prop: p, draft: dv, clone: cv, bucket }); continue; }  // unscored
     scored.push({ prop: p, isMatch: false, diff: { prop: p, draft: dv, clone: cv } });
   }
-  const { total, match, diffs } = collapseLonghandFamilies(scored);
-  return { total, match, diffs, sub, fluid, declined };
+  const { total, match, diffs, passes } = collapseLonghandFamilies(scored);
+  return { total, match, diffs, passes, sub, fluid, declined };
 }
 
 // ── runTier/bestPairing: the tier-scoring loop, extracted from main() (Step 2a, measurement-
@@ -1182,7 +1186,9 @@ function pairAllCandidates(draftCands, cloneCands, dDef, viewportPx) {
 }
 function runTier(map, cloneMap, exact, dDef, viewportPx) {
   let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0;
-  const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [];
+  // Step 9c: per-property PASS records, threaded alongside the existing mismatch records so
+  // the artefact can report pass counts too (see collapseLonghandFamilies's `passes`).
+  const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [], passv = [];
   // FR-20-4 (2026-08-04) + Step 7 correction (2026-09-09, qc-council): charges EVERY draft
   // candidate in the list, not just the first — the pre-existing bug this closes. A draft-side
   // collision with no clone counterpart used to charge only draftCands[0], silently dropping
@@ -1220,6 +1226,7 @@ function runTier(map, cloneMap, exact, dDef, viewportPx) {
       });
       if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
       if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
+      if (r.passes.length) passv.push({ text: key.slice(0, 46), tag: drec.tag, passes: r.passes });
       // pairings: which draft record paired with which clone record (Step 2 fixture 6 needs this).
       pairings.push({ key, drec, crec });
     }
@@ -1228,7 +1235,7 @@ function runTier(map, cloneMap, exact, dDef, viewportPx) {
     // element — never silently dropped.
     if (unmatchedDraft.length) chargeUnmatched(unmatchedDraft, key);
   }
-  return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, pairings };
+  return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, passv, pairings };
 }
 
 // ── --self-test (2026-08-04, rewritten post-review) ────────────────────────────────────────
@@ -1571,9 +1578,19 @@ if (SELF_TEST) {
     const mis = rText.mis.concat(rBox.mis), unm = rText.unm.concat(rBox.unm);
     const subv = rText.subv.concat(rBox.subv), tagMis = rText.tagMis.concat(rBox.tagMis);
     const fluidv = rText.fluidv.concat(rBox.fluidv);
+    const passv = rText.passv.concat(rBox.passv);
 
     const subCount = subv.reduce((n, e) => n + e.sub.length, 0);
     const fluidCount = fluidv.reduce((n, e) => n + e.fluid.length, 0);
+    // Step 9c: per-property PASS + FAIL counts, so the artefact can audit its own score --
+    // today it records only mismatches, so pass+fail cannot be checked against the reported
+    // denominator without re-running the tool. tally[prop].pass + .fail sums to the number of
+    // times that property was a scored unit (post longhand-family-collapse) across this
+    // viewport.
+    const propertyTally = {};
+    const tallyBump = (prop, field) => { (propertyTally[prop] = propertyTally[prop] || { pass: 0, fail: 0 })[field]++; };
+    for (const m of mis) for (const d of m.diffs) tallyBump(d.prop, 'fail');
+    for (const p of passv) for (const prop of p.passes) tallyBump(prop, 'pass');
     gT += T; gM += M; gSub += subCount; gTagT += tagT; gTagM += tagM; gFluid += fluidCount; gFluidDeclined += fluidDeclined;
     report.viewports[vw] = {
       // DENOMINATORS ARE MANDATORY (2026-08-04). `content` previously reported a bare `pct` with
@@ -1593,6 +1610,13 @@ if (SELF_TEST) {
         pct_matched_only: (T - unmT) ? Math.round(100 * M / (T - unmT)) : null,
         meaningful_props_lost_to_unmatched: unmT,
         unmatched_elements: unm, mismatches: mis,
+        // Step 9c: property_pass_counts[prop] = {pass, fail} — auditable from the artefact
+        // alone, without re-running the tool. Covers scored PAIRS only: sum(pass)+sum(fail)
+        // equals meaningful_props MINUS meaningful_props_lost_to_unmatched, never the bare
+        // meaningful_props total — an unmatched element has no clone value to compare against,
+        // so meaningfulCountUnmatched() charges a raw per-property count with no pass/fail
+        // dichotomy (and no family collapse) to route through this tally.
+        property_pass_counts: propertyTally,
       },
       tag: { pct: tagT ? Math.round(100 * tagM / tagT) : null, pairs: tagT, match: tagM, mismatches: tagMis },
       sub_visible: { count: subCount, elements: subv },
