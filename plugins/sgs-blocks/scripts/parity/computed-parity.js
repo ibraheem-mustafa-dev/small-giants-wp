@@ -1588,7 +1588,7 @@ if (SELF_TEST) {
   };
   let gT = 0, gM = 0, gSub = 0, gTagT = 0, gTagM = 0, gFluid = 0, gFluidDeclined = 0;
   // Step 11: overall (all-viewports) accumulators for the four-dimension model.
-  let gContentMatched = 0, gContentTotal = 0, gLayoutPass = 0, gLayoutFail = 0, gPaintPass = 0, gPaintFail = 0;
+  let gContentMatched = 0, gContentTotal = 0, gLayoutPass = 0, gLayoutFail = 0, gPaintPass = 0, gPaintFail = 0, gUnm = 0;
 
   for (const vw of VIEWPORTS) {
     const d = await capture(page, DRAFT, vw);
@@ -1663,16 +1663,27 @@ if (SELF_TEST) {
         // dichotomy (and no family collapse) to route through this tally.
         property_pass_counts: propertyTally,
       },
+      // `tag` is informational ONLY (FR-20-9) — a divergent tag is never scored as a defect,
+      // here or anywhere else in this file (Bean-locked 2026-09-09, corrected same day as
+      // shipped): CLAUDE.md Rule 1 is CONVERT, don't mirror — a native SGS block choosing its
+      // OWN semantic tag (blockquote/cite/footer for a testimonial, a <label> instead of a
+      // <button> for a picker option) is a legitimate implementation decision, not a DOM-
+      // mirroring defect. `pct`/`match` are kept for backward artefact-shape compatibility
+      // ONLY; do not read them as a fidelity signal — read `mismatches` as a plain list for
+      // human context (e.g. spotting a genuinely wrong substitution), never as a percentage.
       tag: { pct: tagT ? Math.round(100 * tagM / tagT) : null, pairs: tagT, match: tagM, mismatches: tagMis },
       // Step 11 (measurement-integrity, 2026-09-09): four numbers, each with its own
       // denominator, replacing the single aggregate CSS % that let a structural matcher defect
       // masquerade as a CSS-transfer failure for a full session (Seat C recommendation). NO
       // headline aggregate is computed from these — read each dimension on its own terms.
       //   content   — identical to the `content` field above (texts/images/links present).
-      //   structure — identical to the `tag` field above: one finding per draft element that
-      //               either has no clone counterpart at all, or matches under a DIFFERENT tag.
-      //               An element that is BOTH unmatched AND would-be-tag-substituted counts
-      //               ONCE (it is charged in the unmatched branch, never both).
+      //   structure — CORRECTED 2026-09-09 (Bean-directed, same-day fix): counts ONLY whether
+      //               the draft element's CONTENT was found in the clone at all (a genuine
+      //               unmatched element = a real defect). A tag divergence on an otherwise-
+      //               matched element is NEVER charged here — see the `tag` field's own
+      //               comment for why. matched = every successfully PAIRED element
+      //               (tagT - unm.length, i.e. regardless of tag); total = tagT (same
+      //               denominator as before).
       //   layout / paint_type — partitions property_pass_counts (Step 9c) by property
       //               classification (classifyPropertyBucket above); a STRUCTURE miss is never
       //               re-charged here (property_pass_counts only ever covers SCORED PAIRS).
@@ -1685,10 +1696,12 @@ if (SELF_TEST) {
         gContentMatched += cTot - cDrop; gContentTotal += cTot;
         gLayoutPass += layout.pass; gLayoutFail += layout.fail;
         gPaintPass += paint_type.pass; gPaintFail += paint_type.fail;
+        gUnm += unm.length;
         const pctOf = (b) => (b.pass + b.fail ? Math.round(100 * b.pass / (b.pass + b.fail)) : null);
+        const structureMatched = tagT - unm.length;
         return {
           content: { pct: contentPct, matched: cTot - cDrop, total: cTot },
-          structure: { pct: tagT ? Math.round(100 * tagM / tagT) : null, matched: tagM, total: tagT },
+          structure: { pct: tagT ? Math.round(100 * structureMatched / tagT) : null, matched: structureMatched, total: tagT },
           layout: { pct: pctOf(layout), matched: layout.pass, total: layout.pass + layout.fail },
           paint_type: { pct: pctOf(paint_type), matched: paint_type.pass, total: paint_type.pass + paint_type.fail },
         };
@@ -1709,7 +1722,7 @@ if (SELF_TEST) {
     const dims = report.viewports[vw].dimensions;
     console.log(`\n===== ${vw}px =====`);
     console.log(`  CONTENT     ${dims.content.pct}%   (${dims.content.matched}/${dims.content.total})`);
-    console.log(`  STRUCTURE   ${dims.structure.pct}%   (${dims.structure.matched}/${dims.structure.total} elements matched by content AND tag; ${tagMis.length} tag divergence(s), ${unm.length} unmatched)`);
+    console.log(`  STRUCTURE   ${dims.structure.pct}%   (${dims.structure.matched}/${dims.structure.total} elements — content found in the clone at all; ${unm.length} unmatched. ${tagMis.length} tag divergence(s) logged for context, NOT scored — see the artefact's own \`tag\` field comment)`);
     console.log(`  LAYOUT      ${dims.layout.pct}%   (${dims.layout.matched}/${dims.layout.total} scored props — display, grid/flex, gap, alignment, box spacing, geometry)`);
     console.log(`  PAINT+TYPE  ${dims.paint_type.pct}%   (${dims.paint_type.matched}/${dims.paint_type.total} scored props — colour, background, border, radius, font-*, line-height, text-*)`);
     console.log(`  (legacy CSS ${T ? Math.round(100 * M / T) : 0}%, ${M}/${T} — single aggregate, kept for artefact back-compat only; ${subCount} sub-visible excluded, ${fluidCount} fluid-equivalent, ${fluidDeclined} fluid-declined)`);
@@ -1732,16 +1745,21 @@ if (SELF_TEST) {
   report.fluid_declined_total = gFluidDeclined;
   // Step 11: overall (all-viewports) four-dimension summary — NO aggregate headline computed
   // from these; each dimension is read on its own terms, with its own denominator.
+  const gStructureMatched = gTagT - gUnm;
   report.dimensions = {
     content: { pct: gContentTotal ? Math.round(100 * gContentMatched / gContentTotal) : null, matched: gContentMatched, total: gContentTotal },
-    structure: { pct: gTagT ? Math.round(100 * gTagM / gTagT) : null, matched: gTagM, total: gTagT },
+    // structure — CORRECTED 2026-09-09 (Bean-directed): counts ONLY whether the draft
+    // element's content was found in the clone at all; a tag divergence is NEVER charged
+    // (CLAUDE.md Rule 1 — a native SGS block's own semantic tag choice is not a mirroring
+    // defect). See the per-viewport `structure` field's comment for the full reasoning.
+    structure: { pct: gTagT ? Math.round(100 * gStructureMatched / gTagT) : null, matched: gStructureMatched, total: gTagT },
     layout: { pct: (gLayoutPass + gLayoutFail) ? Math.round(100 * gLayoutPass / (gLayoutPass + gLayoutFail)) : null, matched: gLayoutPass, total: gLayoutPass + gLayoutFail },
     paint_type: { pct: (gPaintPass + gPaintFail) ? Math.round(100 * gPaintPass / (gPaintPass + gPaintFail)) : null, matched: gPaintPass, total: gPaintPass + gPaintFail },
   };
   const gd = report.dimensions;
   console.log(`\n##### FOUR DIMENSIONS (${VIEWPORTS.length} viewports; no single aggregate) #####`);
   console.log(`  CONTENT     ${gd.content.pct}%   (${gd.content.matched}/${gd.content.total})`);
-  console.log(`  STRUCTURE   ${gd.structure.pct}%   (${gd.structure.matched}/${gd.structure.total} elements — matched by content AND tag)`);
+  console.log(`  STRUCTURE   ${gd.structure.pct}%   (${gd.structure.matched}/${gd.structure.total} elements — content found in the clone at all; tag identity NOT scored)`);
   console.log(`  LAYOUT      ${gd.layout.pct}%   (${gd.layout.matched}/${gd.layout.total} scored props)`);
   console.log(`  PAINT+TYPE  ${gd.paint_type.pct}%   (${gd.paint_type.matched}/${gd.paint_type.total} scored props)`);
   console.log(`  (legacy aggregate — kept for artefact back-compat only, never quote as fidelity: CSS ${report.overall_css_pct}%, TAG ${report.overall_tag_pct}%, ${gSub} sub-visible excluded, ${gFluid} fluid-equivalent, ${gFluidDeclined} fluid-declined. Excludes text: ${EXCLUDE.join(', ') || 'none'})`);
