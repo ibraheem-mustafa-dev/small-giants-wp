@@ -1064,6 +1064,18 @@ function deriveLonghandFamilies() {
   return family;
 }
 const LONGHAND_FAMILIES = deriveLonghandFamilies();
+// Step 11 (measurement-integrity, 2026-09-09): LAYOUT vs PAINT+TYPE property classification.
+// Plain-English definition (written before coding, per the phase plan): LAYOUT is display,
+// grid/flex, gap, alignment, box spacing (padding/margin/border-width), and geometry (aspect-
+// ratio, box-sizing, overflow); PAINT+TYPE is colour, background, border style/colour/radius,
+// font-*, line-height, and text-*. The exact boundary is a judgement call (KJC-style — the
+// plan's own note: "the aggregate is the defect, even if the bucket boundaries need another
+// pass"); what matters is that a STRUCTURE miss can never again be silently re-charged as N
+// LAYOUT/PAINT misses.
+const LAYOUT_PROP_RE = /^(display|align-items|align-self|align-content|justify-items|justify-self|justify-content|place-items|place-content|flex-direction|flex-wrap|flex-flow|overflow(-x|-y|-block|-inline)?|grid-template-(columns|rows|areas)|grid-auto-(columns|rows|flow)|grid-column|grid-row|gap|row-gap|column-gap|aspect-ratio|box-sizing|float|clear|visibility|padding(-top|-right|-bottom|-left)?|margin(-top|-right|-bottom|-left)?|border-(top|right|bottom|left)-width|border-width)$/;
+function classifyPropertyBucket(prop) {
+  return LAYOUT_PROP_RE.test(prop) ? 'layout' : 'paint_type';
+}
 function collapseLonghandFamilies(scored) {
   const groups = new Map();
   for (const s of scored) {
@@ -1575,6 +1587,8 @@ if (SELF_TEST) {
     viewports: {},
   };
   let gT = 0, gM = 0, gSub = 0, gTagT = 0, gTagM = 0, gFluid = 0, gFluidDeclined = 0;
+  // Step 11: overall (all-viewports) accumulators for the four-dimension model.
+  let gContentMatched = 0, gContentTotal = 0, gLayoutPass = 0, gLayoutFail = 0, gPaintPass = 0, gPaintFail = 0;
 
   for (const vw of VIEWPORTS) {
     const d = await capture(page, DRAFT, vw);
@@ -1650,6 +1664,35 @@ if (SELF_TEST) {
         property_pass_counts: propertyTally,
       },
       tag: { pct: tagT ? Math.round(100 * tagM / tagT) : null, pairs: tagT, match: tagM, mismatches: tagMis },
+      // Step 11 (measurement-integrity, 2026-09-09): four numbers, each with its own
+      // denominator, replacing the single aggregate CSS % that let a structural matcher defect
+      // masquerade as a CSS-transfer failure for a full session (Seat C recommendation). NO
+      // headline aggregate is computed from these — read each dimension on its own terms.
+      //   content   — identical to the `content` field above (texts/images/links present).
+      //   structure — identical to the `tag` field above: one finding per draft element that
+      //               either has no clone counterpart at all, or matches under a DIFFERENT tag.
+      //               An element that is BOTH unmatched AND would-be-tag-substituted counts
+      //               ONCE (it is charged in the unmatched branch, never both).
+      //   layout / paint_type — partitions property_pass_counts (Step 9c) by property
+      //               classification (classifyPropertyBucket above); a STRUCTURE miss is never
+      //               re-charged here (property_pass_counts only ever covers SCORED PAIRS).
+      dimensions: (() => {
+        const layout = { pass: 0, fail: 0 }, paint_type = { pass: 0, fail: 0 };
+        for (const [prop, counts] of Object.entries(propertyTally)) {
+          const bucket = classifyPropertyBucket(prop) === 'layout' ? layout : paint_type;
+          bucket.pass += counts.pass; bucket.fail += counts.fail;
+        }
+        gContentMatched += cTot - cDrop; gContentTotal += cTot;
+        gLayoutPass += layout.pass; gLayoutFail += layout.fail;
+        gPaintPass += paint_type.pass; gPaintFail += paint_type.fail;
+        const pctOf = (b) => (b.pass + b.fail ? Math.round(100 * b.pass / (b.pass + b.fail)) : null);
+        return {
+          content: { pct: contentPct, matched: cTot - cDrop, total: cTot },
+          structure: { pct: tagT ? Math.round(100 * tagM / tagT) : null, matched: tagM, total: tagT },
+          layout: { pct: pctOf(layout), matched: layout.pass, total: layout.pass + layout.fail },
+          paint_type: { pct: pctOf(paint_type), matched: paint_type.pass, total: paint_type.pass + paint_type.fail },
+        };
+      })(),
       sub_visible: { count: subCount, elements: subv },
       // fluid_equivalent (v1.2.0-fluid, 2026-08-04): font-size/line-height "mismatches" that are
       // exactly WP's own fluid clamp() transform of the draft's flat value at this viewport —
@@ -1663,14 +1706,17 @@ if (SELF_TEST) {
       // ONLY so the "how many did we decline rather than guess" question is answerable.
       fluid_declined: fluidDeclined,
     };
+    const dims = report.viewports[vw].dimensions;
     console.log(`\n===== ${vw}px =====`);
-    console.log(`  CONTENT  ${contentPct}%   (${cTot - cDrop}/${cTot}; ${cDrop} dropped: ${dropText.length} text / ${dropImg.length} img / ${dropLink.length} link)`);
-    console.log(`  CSS      ${T ? Math.round(100 * M / T) : 0}%   (${M}/${T} MEANINGFUL props; ${mis.length} elements off; ${subCount} sub-visible excluded; ${fluidCount} fluid-equivalent [scored as PASS]; ${fluidDeclined} fluid-declined [unverifiable, scored as normal miss])`);
+    console.log(`  CONTENT     ${dims.content.pct}%   (${dims.content.matched}/${dims.content.total})`);
+    console.log(`  STRUCTURE   ${dims.structure.pct}%   (${dims.structure.matched}/${dims.structure.total} elements matched by content AND tag; ${tagMis.length} tag divergence(s), ${unm.length} unmatched)`);
+    console.log(`  LAYOUT      ${dims.layout.pct}%   (${dims.layout.matched}/${dims.layout.total} scored props — display, grid/flex, gap, alignment, box spacing, geometry)`);
+    console.log(`  PAINT+TYPE  ${dims.paint_type.pct}%   (${dims.paint_type.matched}/${dims.paint_type.total} scored props — colour, background, border, radius, font-*, line-height, text-*)`);
+    console.log(`  (legacy CSS ${T ? Math.round(100 * M / T) : 0}%, ${M}/${T} — single aggregate, kept for artefact back-compat only; ${subCount} sub-visible excluded, ${fluidCount} fluid-equivalent, ${fluidDeclined} fluid-declined)`);
     if (unm.length) {
       console.log(`  ⚠ MISSING  ${unm.length} draft element(s) have NO counterpart in the clone — ${unmT} meaningful prop(s) scored as LOST (was: excluded from the score entirely).`);
       for (const u of unm.slice(0, 6)) console.log(`      [${u.tag}] "${u.text}" (${u.meaningful_props_lost} props)`);
     }
-    console.log(`  TAG      ${tagT ? Math.round(100 * tagM / tagT) : 0}%   (${tagM}/${tagT} pairs; ${tagMis.length} tag divergences [reported, not failed])`);
     if (vw === VIEWPORTS[VIEWPORTS.length - 1]) {
       if (dropText.length) console.log('  dropped text: ' + dropText.slice(0, 8).map(t => '"' + t.slice(0, 26) + '"').join(', '));
       if (tagMis.length) console.log('  tag divergences: ' + tagMis.slice(0, 8).map(t => `"${t.text.slice(0, 20)}" ${t.draft_tag}->${t.clone_tag}`).join(', '));
@@ -1684,7 +1730,22 @@ if (SELF_TEST) {
   report.sub_visible_total = gSub;
   report.fluid_equivalent_total = gFluid;
   report.fluid_declined_total = gFluidDeclined;
-  console.log(`\n##### OVERALL CSS ${report.overall_css_pct}% (${gM}/${gT} meaningful props) | TAG ${report.overall_tag_pct}% (${gTagM}/${gTagT} pairs) | ${gSub} sub-visible excluded | ${gFluid} fluid-equivalent (scored PASS) | ${gFluidDeclined} fluid-declined (unverifiable, scored as normal miss), ${VIEWPORTS.length} viewports. VISIBLE-fidelity (Spec 20 v1.2.0; missing elements SCORED as misses); pairs with Bean's eye, never closes alone. Excludes text: ${EXCLUDE.join(', ') || 'none'} #####`);
+  // Step 11: overall (all-viewports) four-dimension summary — NO aggregate headline computed
+  // from these; each dimension is read on its own terms, with its own denominator.
+  report.dimensions = {
+    content: { pct: gContentTotal ? Math.round(100 * gContentMatched / gContentTotal) : null, matched: gContentMatched, total: gContentTotal },
+    structure: { pct: gTagT ? Math.round(100 * gTagM / gTagT) : null, matched: gTagM, total: gTagT },
+    layout: { pct: (gLayoutPass + gLayoutFail) ? Math.round(100 * gLayoutPass / (gLayoutPass + gLayoutFail)) : null, matched: gLayoutPass, total: gLayoutPass + gLayoutFail },
+    paint_type: { pct: (gPaintPass + gPaintFail) ? Math.round(100 * gPaintPass / (gPaintPass + gPaintFail)) : null, matched: gPaintPass, total: gPaintPass + gPaintFail },
+  };
+  const gd = report.dimensions;
+  console.log(`\n##### FOUR DIMENSIONS (${VIEWPORTS.length} viewports; no single aggregate) #####`);
+  console.log(`  CONTENT     ${gd.content.pct}%   (${gd.content.matched}/${gd.content.total})`);
+  console.log(`  STRUCTURE   ${gd.structure.pct}%   (${gd.structure.matched}/${gd.structure.total} elements — matched by content AND tag)`);
+  console.log(`  LAYOUT      ${gd.layout.pct}%   (${gd.layout.matched}/${gd.layout.total} scored props)`);
+  console.log(`  PAINT+TYPE  ${gd.paint_type.pct}%   (${gd.paint_type.matched}/${gd.paint_type.total} scored props)`);
+  console.log(`  (legacy aggregate — kept for artefact back-compat only, never quote as fidelity: CSS ${report.overall_css_pct}%, TAG ${report.overall_tag_pct}%, ${gSub} sub-visible excluded, ${gFluid} fluid-equivalent, ${gFluidDeclined} fluid-declined. Excludes text: ${EXCLUDE.join(', ') || 'none'})`);
+  console.log(`  VISIBLE-fidelity (Spec 20 v1.2.0; missing elements SCORED as misses); pairs with Bean's eye, never closes alone.`);
   if (OUT) { fs.writeFileSync(OUT, JSON.stringify(report, null, 1)); console.log('report -> ' + OUT); }
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });
