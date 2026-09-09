@@ -822,6 +822,16 @@ const CAPTURE_SRC = `() => {
   // implementation (clip-rect, clip-path, 1px width/height), not just this project's own
   // ".sgs-sr-only" convention.
   const isVisuallyHidden = (el) => {
+    // qc-council regression fix (2026-09-09): a display:contents element paints NO box of its
+    // own (0x0 rect) while its children render fully and normally -- a mainstream modern-CSS
+    // idiom for "this div groups semantically but shouldn't create a grid/flex item of its own".
+    // The bounding-rect check alone can't tell "genuinely invisible" (sr-only) from "no box by
+    // design, children fully visible" (display:contents), and ancestorVisibleInnerText removes
+    // the WHOLE clone subtree keyed on this check -- so a display:contents wrapper's real,
+    // visible children were being deleted from the ancestor-text comparison, producing a false
+    // "element missing from the clone" report on a perfectly matching element. Verified live
+    // through the real capture()->runTier() pipeline before this fix.
+    if (getComputedStyle(el).display === 'contents') return false;
     const r = el.getBoundingClientRect();
     return r.width <= 1 && r.height <= 1;
   };
@@ -1525,6 +1535,24 @@ async function selfTest() {
     const allRecs = [...Object.values(d.textEls), ...Object.values(d.boxEls)].flatMap((r) => (Array.isArray(r) ? r : [r]));
     const hasSvgTag = allRecs.some((r) => r.tag === 'svg' || r.tag === 'path');
     check('fixture 4 (SVG skip): no svg/path record captured despite lowercase inline-SVG tagName', !hasSvgTag, `tags=${JSON.stringify(allRecs.map((r) => r.tag))}`);
+  }
+
+  // --- Fixture 4b: display:contents WRAPPER — a genuinely visible element must not be reported
+  // missing (qc-council regression, 2026-09-09). A `display:contents` div has a 0x0 box while
+  // its children render fully -- a mainstream layout idiom (SGS wrappers never use it, so a
+  // draft using it for a grid child hits this asymmetry against its clone). isVisuallyHidden
+  // used to fire on the contents-wrapper's own zero-area rect, and ancestorVisibleInnerText then
+  // deleted its ENTIRE subtree (including the genuinely visible child) from the ancestor text,
+  // breaking the structural-anchor match for an unrelated trailing sibling.
+  {
+    const f4bMarkup = (wrapperStyle) => `<section><span>lead in</span><div style="${wrapperStyle}"><p>a real visible child paragraph unique wording xyz</p></div><b style="color:rgb(10,10,10)">Zz</b></section>`;
+    const f4bDraft = writeHtml('f4b-draft.html', f4bMarkup('display:contents;'));
+    const f4bClone = writeHtml('f4b-clone.html', f4bMarkup(''));
+    const d4b = await capture(page, toURL(f4bDraft), VW);
+    const c4b = await capture(page, toURL(f4bClone), VW);
+    const r4b = runTier(d4b.textEls, c4b.textEls, false, d4b.defaults, VW);
+    const bMatched = r4b.pairings.some((p) => p.drec.tag === 'b') || !r4b.unm.some((u) => u.tag === 'b');
+    check('fixture 4b (display:contents): a byte-identical trailing sibling is not falsely reported missing', bMatched, `unm=${JSON.stringify(r4b.unm)}`);
   }
 
   // --- Fixture 5: LONGHAND COLLAPSE — one authored border-width diff counts as ONE, not four ---
