@@ -751,8 +751,15 @@ const CAPTURE_SRC = `() => {
     const ancestorText = nearestQualifyingAncestorAnchor(el, minLen);
     return ancestorText == null ? null : ('struct|' + el.tagName + '|' + siblingIndexAmongSameTag(el) + '|' + ancestorText);
   };
+  const SVG_NS = 'http://www.w3.org/2000/svg';
   document.querySelectorAll('*').forEach((el) => {
-    if (inChrome(el) || SKIP_TAGS[el.tagName]) return;
+    // Step 3 (measurement-integrity, 2026-09-09, D-3): SKIP_TAGS is keyed uppercase (SVG,
+    // PATH) but was tested against raw el.tagName, which browsers report LOWERCASE for inline
+    // SVG elements -- so the intended skip never fired for svg/path/circle/rect/polygon/etc.
+    // Prefer namespaceURI over an expanded tag list: it covers every SVG descendant tag (not
+    // just the two named in SKIP_TAGS) with one check, and is immune to any future SVG tag
+    // this file doesn't yet enumerate.
+    if (inChrome(el) || SKIP_TAGS[el.tagName] || el.namespaceURI === SVG_NS) return;
     const isHtmlOrBody = el.tagName === 'HTML' || el.tagName === 'BODY';
     if (el.tagName === 'IMG') { images.push(imgIdentity(el)); }
     if (el.tagName === 'A') { try { let h = new URL(el.href, location.href).pathname.replace(/\\/$/,'').replace(/^\\/[A-Za-z]:\\//, '/'); if (h) links.push(h); } catch(e){} }
