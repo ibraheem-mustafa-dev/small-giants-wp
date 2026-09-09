@@ -119,6 +119,29 @@
 }
 
 /*
+ * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into (2026-09-09).
+ *
+ * `nowrap` above is correct for the HORIZONTAL bar: the bar is `flex-wrap:
+ * wrap`, so a long label keeps its item intact and the ITEM moves to a second
+ * row. Nothing is lost. The drawer reuses this same link class for a VERTICAL
+ * stacked list, where there is no second row to move to — so the label could
+ * only push sideways. Measured on the canary at 375px: one ordinary label
+ * ("Frequently Asked Questions About Delivery And Returns") put the drawer's
+ * scrollWidth at 460 against a clientWidth of 360, i.e. 100px of the menu
+ * outside its own box, painted over the page behind it, reachable only via a
+ * horizontal scrollbar the drawer should never have. In drill-down mode the
+ * bar is `overflow: hidden`, so the same label is silently CLIPPED instead.
+ *
+ * Specificity is deliberate: `:where()` keeps this at 0,1,0 — identical to the
+ * base rule above, so it wins on source order alone and never competes with
+ * the operator's `itemTextWrap` control, which render.php emits at 0,2,0.
+ */
+:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__link {
+	overflow-wrap: break-word;
+	white-space: normal;
+}
+
+/*
  * PROGRAMMATIC / mouse focus must NOT show the theme's link ":focus" styling
  * (theme.json's elements.link ":focus" has no ":focus-visible" key, so it
  * fires on ANY focus). ":focus:not(:focus-visible)" isolates real keyboard

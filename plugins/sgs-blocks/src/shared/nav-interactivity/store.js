@@ -684,6 +684,50 @@ function openDrawerFor( ctx, trigger ) {
 }
 
 /* ==========================================================================
+ * Back/forward-cache restore.
+ * ========================================================================== */
+
+/*
+ * A drawer left open when the visitor navigates away comes back OPEN from the
+ * bfcache — the browser restores the JS heap exactly as it froze it, so the
+ * dialog is still `[open]` and <body> is still `position: fixed` from
+ * `lockScroll`. The visitor sees a page that will not scroll, usually with no
+ * visible drawer, and reports it as "the site froze".
+ *
+ * Registered ONCE at module scope, not per instance: a page can host several
+ * nav instances and N duplicate listeners would be a leak. (`mega-disclosure.js`
+ * makes the same call for its own store, and states the same reasoning.)
+ *
+ * `close()` rather than `runClose()` is deliberate — a restore is not an
+ * interaction, so there is no exit animation to play, and `close()` fires the
+ * native `close` event, which is the single teardown point that restores aria
+ * state, scroll, freeze and focus.
+ *
+ * The scroll-lock check afterwards is a cause-agnostic safety net: it is
+ * correct whether the lock was left by a drawer this listener just closed, by
+ * one whose element no longer exists, or by any future surface that locks
+ * scroll. It costs one attribute read.
+ */
+function dismissOnBfcacheRestore( event ) {
+	if ( ! event.persisted ) {
+		return;
+	}
+
+	document
+		.querySelectorAll( 'dialog[data-sgs-nav-drawer][open]' )
+		.forEach( ( drawer ) => {
+			drawer.classList.remove( 'is-closing' );
+			drawer.close();
+		} );
+
+	if ( document.body.hasAttribute( SCROLL_LOCK_ATTR ) ) {
+		unlockScroll();
+	}
+}
+
+window.addEventListener( 'pageshow', dismissOnBfcacheRestore );
+
+/* ==========================================================================
  * Store registration — the public `store('sgs/nav')` surface.
  * ========================================================================== */
 

@@ -1344,7 +1344,24 @@ $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu_
  * the links remain in the server HTML for crawlers (FR-36-17). No-JS: stays
  * closed (progressive enhancement, FR-36-7).
  */
-$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));z-index:100;display:none;}';
+
+/*
+ * VERTICAL BOUND (2026-09-09). Horizontal overflow was already handled (the
+ * width:min() above + the JS edge-collision vars); the block axis had NO bound
+ * at all, so a long panel rendered past the viewport bottom with no way to
+ * reach it — the panel closes on pointer-leave, so there was nothing to scroll.
+ *
+ * The panel's top edge sits at the bar item's bottom, which in the normal
+ * (in-header) case is the header's height — hence the --sgs-header-height
+ * subtraction. The theme sets that variable unconditionally in
+ * assets/css/utilities.css, so the 80px fallback is only reached when the
+ * plugin runs under a non-SGS theme. 16px is the spacing-scale step, kept as
+ * breathing room above the viewport edge.
+ *
+ * overscroll-behavior:contain stops a scroll that reaches the panel's end from
+ * chaining to the page behind it — the same choice the drawer already makes.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:calc(100dvh - var(--sgs-header-height, 80px) - 16px);overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
 
 /*
@@ -1390,7 +1407,10 @@ if ( '' !== $sgs_nm_submenu_vars ) {
 }
 
 $css .= $uid_sel . ' .sgs-nav-menu__submenu-root{position:relative;display:flex;align-items:center;}';
-$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);z-index:100;display:none;}';
+// Same vertical bound as the mega panel above, and for the same reason — see
+// the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
+// long, since it has no width:min() forcing a wide multi-column layout.
+$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);max-height:calc(100dvh - var(--sgs-header-height, 80px) - 16px);overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 
 /*
  * LIFT THE WHOLE ITEM while its submenu is open (Bean, 2026-07-31 — live-caught:
