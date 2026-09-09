@@ -11,10 +11,20 @@ last_updated: 2026-09-08
 The homepage clone had a long list of visible faults. We fixed twelve of them, and every fix
 is a change to the **pipeline**, not a patch to make this one page look right.
 
-The bigger finding is about the measuring tool. You inspected the page by eye and found
+The bigger finding was about the measuring tool. You inspected the page by eye and found
 **fourteen defects the parity tool scored as clean** — while several things it *did* report
-turned out to render correctly. So the ruler is bent in both directions, and the 81% score
-it prints does not mean much yet. **The next session fixes the ruler before the clone.**
+turned out to render correctly. The ruler was bent in both directions.
+
+**UPDATE 2026-09-09 — the ruler is now fixed (measurement-integrity phase, 13 commits).** A
+four-seat research council found five distinct bugs in `computed-parity.js`; a full phase plan
+(`.claude/plans/phase-measurement-integrity.md`) fixed them one commit at a time, each proven
+with a fixture that failed before its fix and passed after. The old 59%/78%/81% numbers are ALL
+retired — none of them measured what they claimed to. **The tool now reports FOUR numbers
+instead of one** (a single aggregate is what let a structural bug hide as a CSS bug for a whole
+session): on the unchanged mamas-munches draft vs page 3448, CONTENT 100% (234/234), STRUCTURE
+69% (276/402 — 34 tag divergences + 8 unmatched, now visible on their own terms instead of
+erasing every property on those elements), LAYOUT 79% (635/802 scored props), PAINT+TYPE 82%
+(1383/1689 scored props). **Never quote a single "clone fidelity %" again — read all four.**
 
 Two things I got wrong and corrected on the record: the hero's `max-width:420px` and the
 trust-bar font sizes are faithful — your draft specifies both. I had reported them as bugs.
@@ -149,19 +159,23 @@ entries in the editor picker; nothing references them, nothing renders wrong.
 so a client with a materially different ladder inherits the framework curve. Affects
 hand-authored patterns only — the cloner writes measured raw numbers and never touches presets.
 
-### 2. TRACK B — parity tool + the 14 defects: IN FLIGHT IN ANOTHER SESSION
+### 2. TRACK B — parity tool + the 14 defects: RULER FIXED (2026-09-09), clone work NOT started
 
-⛔ **Do not start Track B blind.** Bean is running it in a parallel session and it has already
-landed `computed-parity.js` v1.3.0 (pseudo-element paint fallback + widened tag-defaults census,
-both council-falsified). **Check `git log -- plugins/sgs-blocks/scripts/parity/` before touching
-anything there.** The programme doc is
-`.claude/prompts/2026-09-08-clone-fidelity-programme.md`; its §2.1 is an out-of-scope stub
-because typography moved to Track A.
+**The measurement-integrity phase is DONE** — 13 steps, 13 commits (`75d22d92b`..`0e8c4f134`,
+`.claude/plans/phase-measurement-integrity.md`). Five proven ruler defects fixed, each behind a
+self-test fixture that failed before its fix: dead SVG skip, double-scoring of childful
+elements, tag-embedded match keys (the risky one — first attempt reverted per its own rollback
+trigger after a qc-council-caught false-good risk; corrected re-implementation shipped), a
+screen-reader-injected-text anchor poisoning, longhand-family multiplication, per-element
+paint-property applicability, and a hardcoded blocklist now bound to `sgs-framework.db`.
 
-⚠ **Its §1.4 ledger is now partly obsolete:** the `font-size` (77) and `line-height` (74)
-clusters — 151 diffs, 29% of the total — had fluid typography as their root cause, which Track A
-removed. **Re-measure before investigating them**; chasing them now measures a defect that is
-gone.
+⚠ **This closed the RULER question, not the CLONE question.** The four-dimension numbers above
+(STRUCTURE 69%, LAYOUT 79%, PAINT+TYPE 82%) are a fresh, trustworthy baseline — they are NOT
+yet investigated for root cause. Building CSS-transfer fixes against them is the next session's
+job, not this one's (KJC-4 in the phase plan: a corrected-tool number is a new baseline to
+triage, never a verdict to act on immediately). The old programme doc
+`.claude/prompts/2026-09-08-clone-fidelity-programme.md` and its §1.4 diff ledger are RETIRED —
+they were built against the pre-fix, now-known-wrong artefact; do not resume work from it.
 
 ---
 

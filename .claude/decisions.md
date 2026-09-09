@@ -1,3 +1,39 @@
+## D1010 [ROUTINE] — measurement-integrity phase CLOSED: parity tool ruler fixed, four-dimension reporting model replaces the single aggregate
+
+**2026-09-09.** Closes `.claude/plans/phase-measurement-integrity.md` (13 steps, 13 commits,
+`75d22d92b`..`0e8c4f134`). Retires the 59%/78%/81% figures previously quoted for
+`computed-parity.js` — none of them measured what they claimed to; the tool had five distinct,
+proven defects (dead SVG skip, double-scoring of childful elements, tag-embedded match keys
+charging a legitimate tag substitution as total property loss, a screen-reader-injected-text
+anchor poisoning, longhand-property multiplication, plus an unbound hardcoded blocklist).
+
+**The reporting model changed:** a single aggregate CSS percentage is replaced by four numbers,
+each with its own denominator (CONTENT / STRUCTURE / LAYOUT / PAINT+TYPE) — the single number
+was itself a defect, letting a structural matcher bug masquerade as a CSS-transfer failure for
+a full prior session. On the unchanged mamas-munches draft vs page 3448: CONTENT 100%
+(234/234), STRUCTURE 69% (276/402), LAYOUT 79% (635/802), PAINT+TYPE 82% (1383/1689). The
+legacy `overall_css_pct`/`overall_tag_pct` fields are kept in the artefact for the Stage 11.6
+orchestrator's back-compat only — never quote them as fidelity again.
+
+**Step 7 (tag-tolerant matching) was implemented twice.** The first attempt stripped tag from
+the match key and added a same-tag-preferring tie-break inside a single-best-pair function; a
+self-test fixture (two same-text-different-tag element pairs on each side) caught it collapsing
+one pair incorrectly, and it was reverted immediately per the plan's own rollback trigger
+(project STOP #19 — roll back fast, don't patch forward under context pressure). A `/qc-council`
+run (2 cross-model raters) on the corrected shape found the real defect BEFORE it shipped:
+pairing multiple same-tag candidates by fewest-CSS-diffs is unsafe — two elements whose values
+got swapped between them would greedily cross-pair to the lower-diff combination and score the
+swap as a PASS, the single most dangerous failure direction for a measurement tool. Corrected to
+a document-order pairing (same-tag groups first, then cross-tag leftover), verified against a
+new false-good regression fixture.
+
+**What this closes, and what it does NOT close.** The ruler is now trustworthy; the CLONE itself
+has not been investigated against these new numbers. Building CSS-transfer fixes against
+STRUCTURE/LAYOUT/PAINT+TYPE is deliberately NOT started here (KJC-4 in the phase plan) — a
+corrected-tool number is a new baseline to triage, never a verdict to act on immediately, since
+comparing it to the pre-fix number compares different populations (the ruler now measures
+elements it never measured before). See `.claude/LEDGER.md` Track B for the live status.
+
 ## D1009 [ROUTINE] — nav-drawer design gate CLOSED: one block, a chrome top row, one body. No child blocks, no CPT-native rewrite
 
 **2026-09-08. Bean-decided, after a 5-seat qc-council.** Closes the gate deferred on 2026-07-30
