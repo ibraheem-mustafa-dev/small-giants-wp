@@ -1,3 +1,32 @@
+## D1013 [ROUTINE] — clone-parity STRUCTURE dimension never scores tag identity; measurement-integrity phase closed
+
+**2026-09-09. Bean-directed.** The measurement-integrity phase (`.claude/plans/phase-measurement-integrity.md`,
+13 steps, commits `75d22d92b`..`578e03d2e`) fixed five proven bugs in `computed-parity.js`'s
+matching/scoring machinery, each behind a self-test fixture that failed before its fix. Full detail
+in the plan doc and its commits; not repeated here.
+
+**Follow-up correction, same session:** Step 11 split the single CSS % into four dimensions
+(CONTENT/STRUCTURE/LAYOUT/PAINT+TYPE) and rolled tag divergence into STRUCTURE's percentage — 34
+correct, often MORE-semantic tag choices (`<footer>` for a testimonial's attribution, `<blockquote>`
+for its quote, a `<label>` instead of a `<button>` for a picker option) were being counted as 34/134
+structural failures. **This contradicts CLAUDE.md Rule 1 (CONVERT, don't mirror) — a native SGS
+block's own semantic tag choice is a legitimate implementation decision, not a DOM-mirroring defect.**
+Fixed (`3abb141ea`): STRUCTURE now counts ONLY whether a draft element's content was found in the
+clone at all; tag divergences stay visible in the `tag` field's mismatches list for human context,
+never scored. Live effect: STRUCTURE 69% → 94% (126/134 → later confirmed via live investigation to
+be a TRUE 100%, see below).
+
+**Fresh clone-diff triage (investigation only, no implementation — `.claude/reports/2026-09-09-fresh-clone-diff-triage.md`):**
+re-ran the actual clone pipeline fresh against page 3448 and root-caused the real remaining diffs.
+Verified live: all 8 "unmatched" STRUCTURE entries genuinely exist in the clone with correct content
+— the tool's 300-char anchor-key window is defeated by longer/differently-composed surrounding text,
+not a real defect. True STRUCTURE real-defect rate is 0/134. Found 4 real CSS-fidelity clusters
+(trust-bar badge background/border, testimonial card background/border + quote italic/spacing + star
+rating colour, pack-size pill typography + a trial badge, and a likely-shared root cause across three
+of them: a block's own ROOT/wrapper CSS declarations aren't extracted by the converter the same way a
+nested BEM child's are). None of these fixes has been implemented — Bean's explicit instruction was
+investigate-and-design only.
+
 ## D1012 [INCIDENT] — the drawer's `.show()` branch is unreachable dead code, not a fallback, and it hides two defects
 
 **2026-09-09.** `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::openDrawerFor` picks its

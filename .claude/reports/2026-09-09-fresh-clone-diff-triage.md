@@ -9,8 +9,11 @@ CLAUDE.md Rule 1 ("CONVERT, don't mirror"). Nothing in this document has been im
 every finding is diagnosis + a proposed fix-shape only, per Bean's explicit instruction to
 uncover and design before touching any code.
 
-**Fresh dimensions (post-fix, this run):** CONTENT 100% · STRUCTURE 94% (126/134; see finding
-below — the true rate is higher) · LAYOUT 79% (209/266) · PAINT+TYPE 82% (461/565).
+**Fresh dimensions (post-fix, this run, 375px viewport only — the overall all-3-viewport
+aggregate in `LEDGER.md`'s State Snapshot is CONTENT 100%/234, STRUCTURE 94%/378/402, LAYOUT
+79%/635/802, PAINT+TYPE 82%/1383/1689; both are correct, drawn from the same artefact, at
+different scopes):** CONTENT 100% · STRUCTURE 94% (126/134; see finding below — the true rate is
+higher) · LAYOUT 79% (209/266) · PAINT+TYPE 82% (461/565).
 
 ---
 
