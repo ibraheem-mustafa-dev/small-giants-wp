@@ -741,12 +741,20 @@ const CAPTURE_SRC = `() => {
   // safe to compare cross-document: raw DOM depth/position never matches between a draft page
   // and its WordPress clone, but an ancestor's visible TEXT does, and a faithfully-cloned
   // repeated structure (e.g. 4 trust-bar badge icons) preserves sibling order underneath it.
-  const siblingIndexAmongSameTag = (el) => {
+  // Step 7 (measurement-integrity, 2026-09-09, D-2/M2, qc-council-corrected): renamed from
+  // siblingIndexAmongSameTag and made TAG-AGNOSTIC (counts position among ALL element
+  // children, not just same-tag ones). A same-tag-scoped index still desynchronised on a real
+  // tag substitution: if a draft sibling changes tag on the clone, every SURVIVING same-tag
+  // sibling after it renumbers, so even a stripped-of-tag key string still diverged via its
+  // index component (found live: Seat A's council report shows exactly this shape on
+  // mamas-munches' testimonial cards, where a p->blockquote substitution shifts sibling
+  // indices). A pure positional index is unaffected by any sibling's tag changing.
+  const siblingIndexAmongSiblings = (el) => {
     if (!el.parentElement) return 0;
     let i = 0;
     for (const sib of el.parentElement.children) {
       if (sib === el) return i;
-      if (sib.tagName === el.tagName) i++;
+      i++;
     }
     return i;
   };
@@ -760,7 +768,11 @@ const CAPTURE_SRC = `() => {
   };
   const structuralAnchor = (el, minLen) => {
     const ancestorText = nearestQualifyingAncestorAnchor(el, minLen);
-    return ancestorText == null ? null : ('struct|' + el.tagName + '|' + siblingIndexAmongSameTag(el) + '|' + ancestorText);
+    // Step 7: tag STRIPPED from the key (was 'struct|' + el.tagName + '|' + ...). A legitimate
+    // Rule-1 tag substitution previously made the key un-findable, charging every meaningful
+    // property as lost instead of a single tag divergence. Demoted to a tie-break inside
+    // pairAllCandidates (KJC-1 decision B) rather than removed outright.
+    return ancestorText == null ? null : ('struct|' + siblingIndexAmongSiblings(el) + '|' + ancestorText);
   };
   const SVG_NS = 'http://www.w3.org/2000/svg';
   document.querySelectorAll('*').forEach((el) => {
@@ -788,7 +800,11 @@ const CAPTURE_SRC = `() => {
              && anchorEl.parentElement.tagName !== 'BODY') {
         anchorEl = anchorEl.parentElement;
       }
-      const textKey = anchorEl.tagName + '|' + dkey;
+      // Step 7: tag STRIPPED from the text key (was anchorEl.tagName + '|' + dkey). Same
+      // reasoning as structuralAnchor above -- a tag substitution must not make the element
+      // unmatchable; pairAllCandidates re-disambiguates same-text-different-tag candidates
+      // once they land in the same key's candidate array.
+      const textKey = dkey;
       (textElsRaw[textKey] = textElsRaw[textKey] || []).push({ rec: mk(anchorEl), el: anchorEl });
     } else if (!isHtmlOrBody && el.childElementCount === 0) {
       // Short/empty direct text — structural fallback instead of dropping the element.
@@ -809,8 +825,10 @@ const CAPTURE_SRC = `() => {
         if (anchor.length >= 5) (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
       } else {
         const anchorText = norm(el.innerText);
+        // Step 7: tag STRIPPED from the box anchor (was el.tagName + '|' + anchorText). Same
+        // tag-tolerant-matching reasoning as the text-tier keys above.
         const anchor = anchorText.length >= 5
-          ? (el.tagName + '|' + anchorText)
+          ? anchorText
           : structuralAnchor(el, 5);
         if (anchor) (boxElsRaw[anchor] = boxElsRaw[anchor] || []).push({ rec: mk(el), el });
       }
@@ -993,53 +1011,106 @@ function comparePair(drec, crec, dDef, viewportPx) {
 // comparePair() alone and never reaching this code at all. ZERO behaviour change from the
 // version formerly inlined in main() as two closures — proven by a byte-identical live re-run
 // (see reports/parity-baseline/2026-09-09-pre-fix.json).
-function bestPairing(draftCands, cloneCands, dDef, viewportPx) {
-  let best = null, bestDiffCount = Infinity;
-  for (const dc of draftCands) {
-    for (const cc of cloneCands) {
-      const r = comparePair(dc, cc, dDef, viewportPx);
-      if (r.diffs.length < bestDiffCount) { bestDiffCount = r.diffs.length; best = { drec: dc, crec: cc, r }; }
+// Step 7 (measurement-integrity, 2026-09-09, D-2/M2, qc-council-corrected): replaces the
+// single-best-pair bestPairing(). Once tag is stripped from the three key-construction sites
+// above, a same-text-different-tag OR same-text-same-tag-repeated-instance collision can put
+// 2+ candidates on BOTH the draft and clone side under one key — proven live on mamas-munches
+// (a product-card's wrapper <div>, body <div> and <img> all anchor to the same ancestor text
+// at "index 0 of their own tag"; council rater-structural traced this to Seat A's report
+// entries 3/5/11/12). The old bestPairing() could only ever resolve ONE pair, silently losing
+// the rest.
+//
+// A two-rater qc-council caught two defects in the design that would have shipped otherwise:
+//   1. A same-tag-scoped sibling index still desynchronises the key across a real tag
+//      substitution (renumbers every SURVIVING same-tag sibling after the substituted one) —
+//      closed by making structuralAnchor's index tag-agnostic (siblingIndexAmongSiblings).
+//   2. Pairing candidates by FEWEST DIFFS is unsafe: two same-tag candidates whose values got
+//      swapped between them (a real defect — e.g. the wrapper's border leaked onto the body
+//      instead) would greedily cross-pair to whichever combination scores fewer diffs, scoring
+//      the swap as a PASS. That is the single most dangerous failure direction for a
+//      measurement tool (a false-GOOD; see the phase plan's own Step 7 comment on this exact
+//      risk). Fixed by pairing candidates in DOCUMENT ORDER instead — a decision made with
+//      zero reference to the CSS being measured, so a defect can never steer which elements
+//      get compared to which.
+//
+// Returns { pairs: [{drec,crec,r}, ...], unmatchedDraft: [...] }. Two passes:
+//   Pass 1 (same-tag priority): partition both pools by tag; for each tag present on BOTH
+//   sides, zip candidates in document order (the order they were collected in, which IS
+//   document order for both the draft and clone captures) up to min(group lengths).
+//   Pass 2 (cross-tag fallback — the genuine Rule-1 substitution case): whatever remains after
+//   pass 1 (a tag had no counterpart on the other side) is zipped in document order across the
+//   whole remaining pool, regardless of tag.
+// Any draft candidates still unmatched after both passes (draft pool bigger than clone pool)
+// are returned in unmatchedDraft for the caller to charge as lost.
+function pairAllCandidates(draftCands, cloneCands, dDef, viewportPx) {
+  const dPool = draftCands.slice();
+  const cPool = cloneCands.slice();
+  const pairs = [];
+  const zipAndRemove = (dGroup, cGroup) => {
+    const n = Math.min(dGroup.length, cGroup.length);
+    for (let i = 0; i < n; i++) {
+      const dc = dGroup[i], cc = cGroup[i];
+      pairs.push({ drec: dc, crec: cc, r: comparePair(dc, cc, dDef, viewportPx) });
+      dPool.splice(dPool.indexOf(dc), 1);
+      cPool.splice(cPool.indexOf(cc), 1);
     }
+  };
+  const tags = new Set(dPool.map((d) => d.tag));
+  for (const tag of tags) {
+    const dGroup = dPool.filter((d) => d.tag === tag);
+    const cGroup = cPool.filter((c) => c.tag === tag);
+    if (dGroup.length && cGroup.length) zipAndRemove(dGroup, cGroup);
   }
-  return best;
+  if (dPool.length && cPool.length) zipAndRemove(dPool.slice(), cPool.slice());
+  return { pairs, unmatchedDraft: dPool };
 }
 function runTier(map, cloneMap, exact, dDef, viewportPx) {
   let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0;
   const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [];
+  // FR-20-4 (2026-08-04) + Step 7 correction (2026-09-09, qc-council): charges EVERY draft
+  // candidate in the list, not just the first — the pre-existing bug this closes. A draft-side
+  // collision with no clone counterpart used to charge only draftCands[0], silently dropping
+  // any sibling candidate's lost props (rater-codepath flagged this before it shipped).
+  const chargeUnmatched = (drecList, key) => {
+    for (const drec0 of drecList) {
+      const lost = meaningfulCountUnmatched(drec0, dDef);
+      unm.push({ text: key.slice(0, 44), tag: drec0.tag, meaningful_props_lost: lost });
+      T += lost; unmT += lost;
+      tagT++;
+    }
+  };
   for (const [key, drecRaw] of Object.entries(map)) {
     if (excluded(key)) continue;
     const draftCands = Array.isArray(drecRaw) ? drecRaw : [drecRaw];
     const crecRaw = findByAnchor(key, cloneMap, exact);
     if (!crecRaw) {
-      // FR-20-4 (FIXED 2026-08-04): the draft element has NO clone counterpart — it is MISSING
-      // from the clone. Every meaningful prop it carried counts as a MISS (total += n, match +=
-      // 0), and its tag counts as a miss too. A draft-side collision is represented by its FIRST
-      // candidate here — the array shape exists to serve the clone-side statistical fallback,
-      // not to double-count an unmatched draft element.
-      const drec0 = draftCands[0];
-      const lost = meaningfulCountUnmatched(drec0, dDef);
-      unm.push({ text: key.slice(0, 44), tag: drec0.tag, meaningful_props_lost: lost });
-      T += lost; unmT += lost;
-      tagT++;
+      // The draft element(s) have NO clone counterpart at all — MISSING from the clone.
+      chargeUnmatched(draftCands, key);
       continue;
     }
     const cloneCands = Array.isArray(crecRaw) ? crecRaw : [crecRaw];
-    const { drec, crec, r } = bestPairing(draftCands, cloneCands, dDef, viewportPx);
-    // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
-    tagT++;
-    if (drec.tag === crec.tag) tagM++;
-    else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
-    // CSS dimension.
-    T += r.total; M += r.match; fluidDeclined += r.declined;
-    if (r.diffs.length) mis.push({
-      text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
-      // FR-20-10: class context ONLY — never scored, present for human/debug audit.
-      classes: { draft: drec.cls || [], clone: crec.cls || [] },
-    });
-    if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
-    if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
-    // pairings: which draft record paired with which clone record (Step 2 fixture 6 needs this).
-    pairings.push({ key, drec, crec });
+    const { pairs, unmatchedDraft } = pairAllCandidates(draftCands, cloneCands, dDef, viewportPx);
+    for (const { drec, crec, r } of pairs) {
+      // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
+      tagT++;
+      if (drec.tag === crec.tag) tagM++;
+      else tagMis.push({ text: key.slice(0, 40), draft_tag: drec.tag, clone_tag: crec.tag });
+      // CSS dimension.
+      T += r.total; M += r.match; fluidDeclined += r.declined;
+      if (r.diffs.length) mis.push({
+        text: key.slice(0, 46), tag: drec.tag, diffs: r.diffs,
+        // FR-20-10: class context ONLY — never scored, present for human/debug audit.
+        classes: { draft: drec.cls || [], clone: crec.cls || [] },
+      });
+      if (r.sub.length) subv.push({ text: key.slice(0, 46), tag: drec.tag, sub: r.sub });
+      if (r.fluid.length) fluidv.push({ text: key.slice(0, 46), tag: drec.tag, fluid: r.fluid });
+      // pairings: which draft record paired with which clone record (Step 2 fixture 6 needs this).
+      pairings.push({ key, drec, crec });
+    }
+    // A draft candidate that shared this key but found no clone counterpart even after both
+    // pairing passes (unequal candidate counts) is charged the same as a fully-unmatched
+    // element — never silently dropped.
+    if (unmatchedDraft.length) chargeUnmatched(unmatchedDraft, key);
   }
   return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, pairings };
 }
@@ -1288,6 +1359,26 @@ async function selfTest() {
     const articlePair = r.pairings.find((p) => p.drec.tag === 'article');
     check('fixture 6 (tie-break control): draft <div> pairs with clone <div>, not clone <article>', !!divPair && divPair.crec.tag === 'div');
     check('fixture 6 (tie-break control): draft <article> pairs with clone <article>, not clone <div>', !!articlePair && articlePair.crec.tag === 'article');
+  }
+
+  // --- Fixture 6b: FALSE-GOOD REGRESSION CONTROL — same-tag candidates must pair by DOCUMENT
+  // ORDER, never by fewest-diffs. (qc-council rater-structural, 2026-09-09: a fewest-diffs
+  // pairing tie-break would greedily cross-wire two same-tag elements whose values got SWAPPED
+  // between them, scoring a real defect as a pass — the single most dangerous failure
+  // direction for a measurement tool. Two draft <div>s share IDENTICAL text and collide under
+  // one key; their clone counterparts hold the SAME two values but SWAPPED. Document-order
+  // pairing must report 2 real diffs; a fewest-diffs pairing would report 0.)
+  {
+    const TEXT_F6B = 'swap detection guard element text unique here';
+    const f6bDraft = writeHtml('f6b-draft.html',
+      `<section>guard context<div style="letter-spacing:2px;">${TEXT_F6B}</div><div style="letter-spacing:6px;">${TEXT_F6B}</div></section>`);
+    const f6bClone = writeHtml('f6b-clone.html',
+      `<section>guard context<div style="letter-spacing:6px;">${TEXT_F6B}</div><div style="letter-spacing:2px;">${TEXT_F6B}</div></section>`);
+    const d = await capture(page, toURL(f6bDraft), VW);
+    const c = await capture(page, toURL(f6bClone), VW);
+    const r = runTier(d.textEls, c.textEls, false, d.defaults, VW);
+    const letterSpacingDiffs = r.mis.flatMap((m) => m.diffs.filter((x) => x.prop === 'letter-spacing'));
+    check('fixture 6b (false-good regression control): a real value swap between two same-tag siblings reports 2 diffs, not 0 (document-order pairing, not fewest-diffs)', letterSpacingDiffs.length === 2, `found ${letterSpacingDiffs.length}`);
   }
 
   // --- Fixture 7: OVER-EXCLUSION CONTROL — background-size scores on <div>, not on <img> ---
