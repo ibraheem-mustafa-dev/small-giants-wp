@@ -490,11 +490,20 @@ const CAPTURE_SRC = `() => {
       }
     }
   };
+  // Step 9b (measurement-integrity, 2026-09-09): background-size/-position/-repeat and
+  // border-image-slice are INERT on a replaced element (it paints via its own intrinsic
+  // content, e.g. src) but LOAD-BEARING on a <div> — excluded PER ELEMENT TYPE here, never
+  // via the global BLOCK set, which would silence every real defect on a non-replaced element
+  // to remove noise in one place (KJC-2, settled).
+  const REPLACED_TAGS = { IMG: 1, VIDEO: 1, IFRAME: 1, CANVAS: 1, EMBED: 1, OBJECT: 1 };
+  const REPLACED_INERT_PROPS = new Set(['background-size', 'background-position', 'background-repeat', 'border-image-slice']);
   const readAll = (el) => { const cs = getComputedStyle(el), r = {};
     const isAlignfull = el.classList && el.classList.contains('alignfull');
+    const isReplaced = !!REPLACED_TAGS[el.tagName];
     for (let i = 0; i < cs.length; i++) { const p = cs[i];
       if (p.charCodeAt(0) === 45 || BLOCK.has(p) || LOGICAL.test(p)) continue;  // vendor '-' + blocklist + logical dupes
       if (isAlignfull && ALIGNFULL_EXTRA_BLOCK.has(p)) continue;  // alignfull-scoped margin blocklist
+      if (isReplaced && REPLACED_INERT_PROPS.has(p)) continue;  // per-element applicability (Step 9b)
       r[p] = normVal(p, cs.getPropertyValue(p)); }
     mergePseudoPaint(el, r);
     return r; };
