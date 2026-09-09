@@ -1225,42 +1225,74 @@ function comparePair(drec, crec, dDef, viewportPx) {
 //      zero reference to the CSS being measured, so a defect can never steer which elements
 //      get compared to which.
 //
-// Returns { pairs: [{drec,crec,r}, ...], unmatchedDraft: [...] }. Two passes:
-//   Pass 1 (same-tag priority): partition both pools by tag; for each tag present on BOTH
-//   sides, zip candidates in document order (the order they were collected in, which IS
-//   document order for both the draft and clone captures) up to min(group lengths).
-//   Pass 2 (cross-tag fallback — the genuine Rule-1 substitution case): whatever remains after
-//   pass 1 (a tag had no counterpart on the other side) is zipped in document order across the
-//   whole remaining pool, regardless of tag.
-// Any draft candidates still unmatched after both passes (draft pool bigger than clone pool)
-// are returned in unmatchedDraft for the caller to charge as lost.
+// Returns { pairs: [{drec,crec,r}, ...], unmatchedDraft: [...], declined: [...] }.
+//
+// qc-council regression fix (2026-09-09, Bean-directed): the DOCUMENT-ORDER zip (below,
+// formerly used for 2+ candidate groups) was itself proven to cause a false-POSITIVE
+// regression — council rater-matching built a real fixture (3 identically-styled product cards,
+// clone legitimately re-sorted for a business reason) where document-order pairing manufactured
+// three confident, WRONG "real CSS defect" reports on elements that were actually identical.
+// That is the mirror image of the false-GOOD risk the original fewest-diffs design had (a real
+// swap scoring as a pass) — closing one direction reopened the other, and there is no signal
+// that tells the two situations apart from inside this file.
+//
+// DECLINE RATHER THAN GUESS (Bean's ruling): when 2+ candidates exist on EITHER side of a
+// tag-group, this file cannot tell whether they were reordered for a legitimate reason or
+// whether a real defect swapped their values — pairing by ANY method (fewest-diffs, document
+// order) risks manufacturing a false result in one direction or the other. Matches this file's
+// own established convention for insufficient evidence (fluidEquivalentFontSize /
+// lineHeightIsMechanicalConsequence: never guessed, always declined). These candidates are
+// excluded from scoring entirely (contribute to neither T/M nor the unmatched-lost charge) and
+// surfaced in their own `declined` bucket for human visibility — never silently invisible, but
+// also never a guessed score.
+//
+// Only a tag-group with EXACTLY ONE candidate on each side is paired — that correspondence is
+// unambiguous by construction, no guessing involved (this also covers the genuine Rule-1 tag-
+// substitution case: a single draft candidate of one tag against a single clone candidate of a
+// different tag, once each side's own same-tag groups are exhausted).
 function pairAllCandidates(draftCands, cloneCands, dDef, viewportPx) {
   const dPool = draftCands.slice();
   const cPool = cloneCands.slice();
   const pairs = [];
-  const zipAndRemove = (dGroup, cGroup) => {
-    const n = Math.min(dGroup.length, cGroup.length);
-    for (let i = 0; i < n; i++) {
-      const dc = dGroup[i], cc = cGroup[i];
-      pairs.push({ drec: dc, crec: cc, r: comparePair(dc, cc, dDef, viewportPx) });
-      dPool.splice(dPool.indexOf(dc), 1);
-      cPool.splice(cPool.indexOf(cc), 1);
-    }
+  const declined = [];
+  const pairUnambiguous = (dGroup, cGroup) => {
+    if (dGroup.length !== 1 || cGroup.length !== 1) return false;
+    const dc = dGroup[0], cc = cGroup[0];
+    pairs.push({ drec: dc, crec: cc, r: comparePair(dc, cc, dDef, viewportPx) });
+    dPool.splice(dPool.indexOf(dc), 1);
+    cPool.splice(cPool.indexOf(cc), 1);
+    return true;
   };
+  const decline = (dGroup, cGroup) => {
+    for (const dc of dGroup) { declined.push(dc); dPool.splice(dPool.indexOf(dc), 1); }
+    for (const cc of cGroup) { cPool.splice(cPool.indexOf(cc), 1); }
+  };
+  // Pass 1 (same-tag): a tag-group present on both sides pairs only when unambiguous (1-vs-1);
+  // 2+ on either side is declined as a group, never guessed at.
   const tags = new Set(dPool.map((d) => d.tag));
   for (const tag of tags) {
     const dGroup = dPool.filter((d) => d.tag === tag);
     const cGroup = cPool.filter((c) => c.tag === tag);
-    if (dGroup.length && cGroup.length) zipAndRemove(dGroup, cGroup);
+    if (!dGroup.length || !cGroup.length) continue;
+    if (!pairUnambiguous(dGroup, cGroup)) decline(dGroup, cGroup);
   }
-  if (dPool.length && cPool.length) zipAndRemove(dPool.slice(), cPool.slice());
-  return { pairs, unmatchedDraft: dPool };
+  // Pass 2 (cross-tag fallback — the genuine Rule-1 substitution case): whatever remains after
+  // pass 1 (a tag had no counterpart on the other side) pairs only when unambiguous overall.
+  if (dPool.length && cPool.length) {
+    const dRemain = dPool.slice(), cRemain = cPool.slice();
+    if (!pairUnambiguous(dRemain, cRemain)) decline(dRemain, cRemain);
+  }
+  return { pairs, unmatchedDraft: dPool, declined };
 }
 function runTier(map, cloneMap, exact, dDef, viewportPx) {
   let T = 0, M = 0, tagT = 0, tagM = 0, unmT = 0, fluidDeclined = 0;
   // Step 9c: per-property PASS records, threaded alongside the existing mismatch records so
   // the artefact can report pass counts too (see collapseLonghandFamilies's `passes`).
-  const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [], passv = [];
+  // `declinedPairing`: qc-council regression fix (2026-09-09) — candidates whose correspondence
+  // was ambiguous (2+ on either side of a tag-group) and were declined rather than guessed at
+  // (see pairAllCandidates). Never scored (no T/M contribution, no unmatched-lost charge) but
+  // never silently invisible either.
+  const mis = [], unm = [], subv = [], tagMis = [], fluidv = [], pairings = [], passv = [], declinedPairing = [];
   // FR-20-4 (2026-08-04) + Step 7 correction (2026-09-09, qc-council): charges EVERY draft
   // candidate in the list, not just the first — the pre-existing bug this closes. A draft-side
   // collision with no clone counterpart used to charge only draftCands[0], silently dropping
@@ -1283,7 +1315,7 @@ function runTier(map, cloneMap, exact, dDef, viewportPx) {
       continue;
     }
     const cloneCands = Array.isArray(crecRaw) ? crecRaw : [crecRaw];
-    const { pairs, unmatchedDraft } = pairAllCandidates(draftCands, cloneCands, dDef, viewportPx);
+    const { pairs, unmatchedDraft, declined } = pairAllCandidates(draftCands, cloneCands, dDef, viewportPx);
     for (const { drec, crec, r } of pairs) {
       // TAG dimension (FR-20-9) — scored SEPARATELY from CSS; reported, never auto-failed.
       tagT++;
@@ -1306,8 +1338,9 @@ function runTier(map, cloneMap, exact, dDef, viewportPx) {
     // pairing passes (unequal candidate counts) is charged the same as a fully-unmatched
     // element — never silently dropped.
     if (unmatchedDraft.length) chargeUnmatched(unmatchedDraft, key);
+    if (declined.length) declinedPairing.push({ text: key.slice(0, 44), count: declined.length, tags: declined.map((d) => d.tag) });
   }
-  return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, passv, pairings };
+  return { T, M, tagT, tagM, unmT, fluidDeclined, mis, unm, subv, tagMis, fluidv, passv, pairings, declinedPairing };
 }
 
 // ── --self-test (2026-08-04, rewritten post-review) ────────────────────────────────────────
@@ -1624,13 +1657,18 @@ async function selfTest() {
     check('fixture 6 (tie-break control): draft <article> pairs with clone <article>, not clone <div>', !!articlePair && articlePair.crec.tag === 'article');
   }
 
-  // --- Fixture 6b: FALSE-GOOD REGRESSION CONTROL — same-tag candidates must pair by DOCUMENT
-  // ORDER, never by fewest-diffs. (qc-council rater-structural, 2026-09-09: a fewest-diffs
-  // pairing tie-break would greedily cross-wire two same-tag elements whose values got SWAPPED
-  // between them, scoring a real defect as a pass — the single most dangerous failure
-  // direction for a measurement tool. Two draft <div>s share IDENTICAL text and collide under
-  // one key; their clone counterparts hold the SAME two values but SWAPPED. Document-order
-  // pairing must report 2 real diffs; a fewest-diffs pairing would report 0.)
+  // --- Fixture 6b: AMBIGUOUS-PAIRING CONTROL — decline rather than guess. (Bean-directed,
+  // 2026-09-09, qc-council: TWO prior pairing strategies were each proven to cause a real
+  // regression in opposite directions. Fewest-diffs greedily cross-wires two same-tag elements
+  // whose values got SWAPPED between them, scoring a real defect as a PASS (a false-good — the
+  // single most dangerous direction for a measurement tool). Document-order then replaced it,
+  // but council rater-matching proved THAT causes the mirror-image failure: a legitimately
+  // reordered repeated component (e.g. a resorted product grid) gets pairs assigned purely by
+  // position, manufacturing confident, WRONG "real CSS defect" reports on elements that are
+  // actually identical (a false-positive). Neither guessing strategy is safe. Bean's ruling:
+  // when 2+ candidates share one collapsed key, DECLINE the whole group rather than guess by
+  // either method — these candidates score ZERO (no T/M contribution either way) and are
+  // surfaced in `declinedPairing` for human visibility, never silently invisible.
   {
     const TEXT_F6B = 'swap detection guard element text unique here';
     const f6bDraft = writeHtml('f6b-draft.html',
@@ -1641,7 +1679,28 @@ async function selfTest() {
     const c = await capture(page, toURL(f6bClone), VW);
     const r = runTier(d.textEls, c.textEls, false, d.defaults, VW);
     const letterSpacingDiffs = r.mis.flatMap((m) => m.diffs.filter((x) => x.prop === 'letter-spacing'));
-    check('fixture 6b (false-good regression control): a real value swap between two same-tag siblings reports 2 diffs, not 0 (document-order pairing, not fewest-diffs)', letterSpacingDiffs.length === 2, `found ${letterSpacingDiffs.length}`);
+    check('fixture 6b (ambiguous-pairing control): an ambiguous same-tag swap reports ZERO diffs (never guessed, not a false-good either)', letterSpacingDiffs.length === 0, `found ${letterSpacingDiffs.length}`);
+    check('fixture 6b (ambiguous-pairing control): the ambiguous candidates are visibly DECLINED, not silently absorbed', r.declinedPairing.length > 0 && r.declinedPairing.some((dp) => dp.count === 2), `declinedPairing=${JSON.stringify(r.declinedPairing)}`);
+  }
+
+  // --- Fixture 6c: REORDERED-LIST REGRESSION CONTROL — a legitimately reordered repeated
+  // component must NOT produce a false-positive CSS diff (qc-council rater-matching's exact
+  // repro, 2026-09-09). Three identically-styled "buttons" whose surrounding cards are resorted
+  // between draft and clone for a legitimate reason (e.g. featured-item-first). Document-order
+  // pairing manufactured 3 confident, wrong diffs here; decline-rather-than-guess must report 0.
+  {
+    const f6cDraft = writeHtml('f6c-draft.html',
+      `<section>card guard<button style="background-color:rgb(200,0,0);">Add to Basket</button><button style="background-color:rgb(0,150,0);">Add to Basket</button><button style="background-color:rgb(0,0,200);">Add to Basket</button></section>`);
+    // Clone re-sorts the three cards (a legitimate business reason, e.g. featured-first) --
+    // each button's OWN colour is unchanged, only the document order differs.
+    const f6cClone = writeHtml('f6c-clone.html',
+      `<section>card guard<button style="background-color:rgb(0,0,200);">Add to Basket</button><button style="background-color:rgb(200,0,0);">Add to Basket</button><button style="background-color:rgb(0,150,0);">Add to Basket</button></section>`);
+    const d = await capture(page, toURL(f6cDraft), VW);
+    const c = await capture(page, toURL(f6cClone), VW);
+    const r = runTier(d.textEls, c.textEls, false, d.defaults, VW);
+    const bgDiffs = r.mis.flatMap((m) => m.diffs.filter((x) => x.prop === 'background-color'));
+    check('fixture 6c (reordered-list regression): a legitimately reordered repeated component reports ZERO false-positive diffs', bgDiffs.length === 0, `found ${bgDiffs.length}: ${JSON.stringify(bgDiffs)}`);
+    check('fixture 6c (reordered-list regression): the ambiguous group is visibly declined, not silently guessed', r.declinedPairing.some((dp) => dp.count === 3), `declinedPairing=${JSON.stringify(r.declinedPairing)}`);
   }
 
   // --- Fixture 7: OVER-EXCLUSION CONTROL — background-size scores on <div>, not on <img> ---
@@ -1718,6 +1777,7 @@ if (SELF_TEST) {
     const subv = rText.subv.concat(rBox.subv), tagMis = rText.tagMis.concat(rBox.tagMis);
     const fluidv = rText.fluidv.concat(rBox.fluidv);
     const passv = rText.passv.concat(rBox.passv);
+    const declinedPairing = rText.declinedPairing.concat(rBox.declinedPairing);
 
     const subCount = subv.reduce((n, e) => n + e.sub.length, 0);
     const fluidCount = fluidv.reduce((n, e) => n + e.fluid.length, 0);
@@ -1749,6 +1809,12 @@ if (SELF_TEST) {
         pct_matched_only: (T - unmT) ? Math.round(100 * M / (T - unmT)) : null,
         meaningful_props_lost_to_unmatched: unmT,
         unmatched_elements: unm, mismatches: mis,
+        // qc-council regression fix (2026-09-09): candidates whose correspondence was ambiguous
+        // (2+ on either side of a same-tag group, e.g. a legitimately-reordered repeated
+        // component) and were DECLINED rather than paired by a guess -- never scored (no T/M
+        // contribution), never silently invisible. See pairAllCandidates's own comment for why
+        // neither fewest-diffs nor document-order can safely resolve these.
+        declined_pairing: declinedPairing,
         // Step 9c: property_pass_counts[prop] = {pass, fail} — auditable from the artefact
         // alone, without re-running the tool. Covers scored PAIRS only: sum(pass)+sum(fail)
         // equals meaningful_props MINUS meaningful_props_lost_to_unmatched, never the bare
