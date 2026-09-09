@@ -1401,6 +1401,21 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
   `<dialog>` bypasses your close handler entirely** — intercept `cancel` or ESC will behave
   differently from every other close route.
 
+- **STOP-DIALOG-NONMODAL-TAB-RING** — NEW 2026-09-09 (D1011/D1012). When the drawer runs
+  **non-modal** (`.show()`, per D1011), `store.js::trapTab` must NOT wrap Tab strictly inside the
+  `<dialog>` while `store.js::freezeBackground` is deliberately leaving the toggle's ancestor chain
+  live. Those two are wired independently today — `trapTab` sits OUTSIDE the `if/else` in
+  `store.js::openDrawerFor`, so it applies to both paths — and in combination they produce header
+  controls that are **visible, clickable, and unreachable by keyboard**: a **WCAG SC 2.1.1 Keyboard
+  (Level A)** failure, not a polish item. **Rule: on the non-modal path the tab ring must be
+  `{toggle-ancestor-chain ∪ drawer}`, or the header's non-toggle content must be made `inert` with
+  the toggle explicitly included in the ring.** Whichever is chosen, the ring and the freeze set are
+  ONE decision — never two functions each correct alone. Also: `aria-modal="true"` must never be
+  added to a non-modal drawer (it would hide the deliberately-live burger from AT, the opposite of
+  the intent). Currently LATENT only because the `.show()` branch is unreachable (D1012); it becomes
+  live the moment non-modal ships. Sibling of `STOP-DIALOG-CLOSE-KILLS-THE-EXIT-ANIMATION` and
+  `STOP-DIALOG-DISPLAY-GATE`.
+
 - **STOP-VERIFY-COMMIT-LANDED-ON-SHARED-CHECKOUT** — NEW 2026-07-22 (Track-1, earned Fronts
   1/2). On a shared checkout with a co-active session, the hash a `git commit` REPORTS can be
   the OTHER session's racing commit. Verify via `git log -1` (your message at HEAD) + `git
@@ -1732,6 +1747,20 @@ for real before claiming done?
     (STOP-A-DATA-FILE-SECTION-WITH-ZERO-READERS-IS-NOT-A-SOURCE-OF-TRUTH)
 
 ## D. D101 count-check receipt
+
+- **2026-09-09 (nav-drawer modality design council — one STOP entry added to §B, none removed, no
+  question added):** measured with this file's own canonical commands AFTER writing (the receipt
+  bullet below is itself a `- **` line, hence bullets +2 for one entry). DEFINED entries
+  (`grep -c '^- \*\*STOP-'`) 278 -> **279** (+1). Unique `STOP-*` tokens
+  (`grep -oE 'STOP-[A-Z0-9-]+' | sort -u | wc -l`) 344 -> **345** (+1). Bullet defences
+  (`grep -cE '^- \*\*'`) 348 -> **350** (+2: the new entry plus THIS receipt line). Ritual questions
+  (§C) 15 -> **15**, unchanged.
+  ADDED **1** (`STOP-DIALOG-NONMODAL-TAB-RING`) and SUBTRACTED **none**. 279 >= 278. 345 >= 344.
+  350 >= 348. 15 >= 15. ALL PASS. No ritual question added: this is a domain constraint on one
+  block's interaction model, not a new class of verification error. Earned by D1012 — two
+  functions (`trapTab`, `freezeBackground`) each correct in isolation and contradictory in
+  combination, sitting in a `.show()` branch that a capability sniff makes unreachable, so no gate
+  and no test could ever have entered it.
 
 - **2026-09-07 (session 2 — gates-honesty track: three STOP entries added to §A, none removed, no
   question added):** measured with this file's own canonical commands AFTER writing.

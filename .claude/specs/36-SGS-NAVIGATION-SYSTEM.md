@@ -1,8 +1,8 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.1
-status: SIGNED-OFF (v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav home; Phase 6 spec-purge + build-planning now unblocked). Council-driven integration 2026-07-19 — 7-persona adversarial council + fact-check: the former appended "PART TWO / §14–17" is now INTEGRATED into the body (utility pieces → §4 as FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner rulings applied: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker); over-engineered failure states removed (kept only mega-`object_id` resolution + the non-deletable drawer close); Nav Health stays Phase 3. Lineage: v2.0 added the utility pieces; v1.3 folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions (classic WP menus PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT Responsive-Visibility extension; labelCollapse is BUILT). Passed QC council + adversarial council + gap-analysis. Bean signed off 2026-07-19; Phase 6 (spec purge) + build-planning next.)
+spec_version: 2.2
+status: SIGNED-OFF (v2.2, design-council repairs 2026-09-09 — six repairs applied with no FR renumbering: the late-CSS A/B defined with a procedure + pass condition (§8); the Indus gate-2 TBD restructured to derive N from the draft at gate time (§8); a Bean's-eye pre-check rubric added under R-31-13, which it does NOT weaken (§8); the §1 Site-Info/logo defect RESOLVED as FR-36-22's first MUST (owner option A — Site Info as a middle resolution tier); FR-36-9's inverted hide-on-scroll dependency corrected and closed-by-design; a `Spec maturity: OUTLINE|DISPATCHABLE` field added to the six §4 FRs plus an index (spec readiness, explicitly NOT build status). Plus: every line-form code citation converted to symbol form, eight of them stale; `ResponsiveTriStateControl` mount count corrected 3→4 in three places; and the drawer-modality decision recorded as APPROVED-NOT-BUILT (non-modal `.show()` + z-index, header above panel; `aria-modal="true"` banned), with the consequent accuracy edits to FR-36-10 and FR-36-13. v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav home; Phase 6 spec-purge + build-planning now unblocked). Council-driven integration 2026-07-19 — 7-persona adversarial council + fact-check: the former appended "PART TWO / §14–17" is now INTEGRATED into the body (utility pieces → §4 as FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner rulings applied: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker); over-engineered failure states removed (kept only mega-`object_id` resolution + the non-deletable drawer close); Nav Health stays Phase 3. Lineage: v2.0 added the utility pieces; v1.3 folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions (classic WP menus PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT Responsive-Visibility extension; labelCollapse is BUILT). Passed QC council + adversarial council + gap-analysis. Bean signed off 2026-07-19; Phase 6 (spec purge) + build-planning next.)
 owner: framework
 date: 2026-07-19
 companions:
@@ -56,10 +56,12 @@ Site Info admin page with its server-side validation and reserved-key denylist (
 **Bean's reasoning (2026-07-21):** the data is site-wide — an address belongs on a contact page as much as
 in a footer — it is delivered as a block, and all five blocks that consume it (FR-36-19…23) already live
 here. Splitting a store from its only consumers serves nobody.
-**⚠ Open defect inherited with it:** Site Info does **not** feed `sgs/responsive-logo` —
-`responsive-logo/render.php:66` reads `get_theme_mod('custom_logo')`, WP's native Customiser setting. So
-the logo resolves from a different source than contact/social. FR-36-22 should resolve this deliberately
-rather than inherit it silently.
+**⚠ Defect inherited with it — RESOLVED, see FR-36-22's first MUST.** Site Info does **not** feed
+`sgs/responsive-logo`: the block reads WP's native Customiser setting at
+`plugins/sgs-blocks/src/blocks/responsive-logo/render.php::$sgs_site_logo_id` (`get_theme_mod( 'custom_logo', 0 )`), so the logo resolves
+from a different source than contact/social. The owner's resolution (2026-09-09) is **option A — Site Info
+becomes a middle tier in the logo resolution chain**, specified as FR-36-22's first MUST. Do not re-open it
+here.
 
 **Does NOT own (→ Spec 37, header/footer builder):** the header/footer container blocks + row model, header
 behaviours (sticky/transparent/shrink/hide-on-scroll), and the CPT editing home + `Sgs_Header_Rules`
@@ -172,9 +174,10 @@ else its submenu is a simple dropdown. **Interaction precision:** dropdowns/mega
 non-touch (default) / tap on touch / keyboard throughout** (avoids the sticky-hover mobile bug). Mechanics
 (research S1): hover-opens with a hover-intent delay (**default 300 ms; attribute 100–500 ms**) AND
 click/Enter/Space; a hover BRIDGE with a close-grace delay (**default 170 ms**, operator attribute
-`submenuCloseGrace` — `nav-menu/render.php::SGS_Nav_Menu_Bar_Renderer::__construct`). ⚠ **Safe-triangle
+`submenuCloseGrace` — `plugins/sgs-blocks/src/blocks/nav-menu/render.php::submenuCloseGrace`, read into the
+renderer's `close_grace` default). ⚠ **Safe-triangle
 geometry SHIPS, layered in front of the close-grace bridge — corrected 2026-09-09.** Both mechanisms are
-built: `mega-disclosure.js::isHeadingIntoOpenPanel` tests the pointer against the open panel's top-left and
+built: `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::isHeadingIntoOpenPanel` tests the pointer against the open panel's top-left and
 top-right corners via `::pointInTriangle`/`::triangleSign`, and `::scheduleIntentOpen` defers the open while
 that test holds, re-polling every `TRIANGLE_RECHECK_MS`; when the geometry is unavailable it falls through to
 the 170 ms bridge, which is the deterministic fallback. Verify rather than trusting this line:
@@ -263,19 +266,23 @@ band; everything else in it is optional. Three elements, all attribute-driven (N
   Own size control. Colour/hover/gradient via the existing `toggleCloseColour*` set.
   ⚠ **`closeStyle` MUST MIGRATE from string to a per-device tier object** `{desktop,tablet,mobile}` —
   studionamma swaps text→icon at 400px and a flat string cannot express it. **It ships today as a flat
-  `"type": "string"` enum** (`nav-drawer/block.json:202-210`, flat `ToggleGroupControl` at `edit.js:138`), so
+  `"type": "string"` enum** (`plugins/sgs-blocks/src/blocks/nav-drawer/block.json::attributes.closeStyle`, driven by the flat
+  `ToggleGroupControl` bound to `closeStyle` in `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::Edit`), so
   this is a MIGRATION with a coercion hazard, not a new attribute: an object-typed attr receiving a stored flat
   string coerces to the schema default silently (see the `object-typed-attr-coerces-flat-to-default` and
   `blockjson-enum-coerces-invalid-to-default` lessons). Ship the migration and the fallthrough check together.
   ⚠ **A FIFTH icon source exists and is undeclared:** `edit.js` imports `close` from `@wordpress/icons` for the
-  canvas preview, while `render.php:684` hardcodes `sgs_get_lucide_icon('x')`. Neither is picker-driven today.
+  canvas preview, while `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$sgs_nd_close_inner` hardcodes `sgs_get_lucide_icon( 'x' )`
+  in its `else` branch. Neither is picker-driven today.
   Resolve both to the same picker-driven source, or the canvas and the frontend show different icons.
 - **An optional logo** — show/hide, responsive per device.
   ⚠ **Precedent, corrected 2026-09-09:** use the per-tier scalar pattern `sgs/responsive-logo` actually uses
-  (`logoId`/`logoUrl` + `…Tablet`/`…Mobile`, `responsive-logo/block.json:117-159`). Its own block.json states
+  (`plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.logoId` / `.logoUrl`, plus their `…Tablet` / `…Mobile` siblings).
+  Its own block.json states
   the reason: `supports.sgs.imageControls` (the universal image extension) "was removed 2026-08-11 (Spec 35
   capability-routing doctrine) **as dead** — the block's own per-device `logoId*`/`logoUrl*` art-direction
-  tiers are its real media mechanism" (`responsive-logo/block.json:78`). A logo is art-direction per device,
+  tiers are its real media mechanism" (`plugins/sgs-blocks/src/blocks/responsive-logo/block.json::supports.sgs.elements.wrapper._note`).
+  A logo is art-direction per device,
   not one image with controls, which is why the generic path did not fit it.
   **The media-atoms family is real and shared** — `src/components/media/atoms/registry.js` is imported by
   `blocks/extensions/media-elements.js` and `blocks/media/edit.js`, with PHP twins under
@@ -290,11 +297,14 @@ band; everything else in it is optional. Three elements, all attribute-driven (N
   only, so the slot is genuinely optional, not a layout system.
 - The row itself carries background / padding / height controls.
   ⚠ **The row is NET-NEW markup.** No row node exists today — the × is a bare sibling `<button>` inside the
-  `<dialog>` (`render.php:714-720`), absolutely positioned (`style.css:79-83`). A row element must be BUILT
-  before it can be styled, and `style.css:75`'s hardcoded `padding-top:64px` (which reserves space for the
+  `<dialog>` (built as `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$close_html`, printed as the second argument of the final
+  `<dialog>` `printf`), absolutely positioned by `plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__close`. A row element
+  must be BUILT before it can be styled, and the hardcoded `padding-top:64px` in
+  `plugins/sgs-blocks/src/blocks/nav-drawer/style.css::.sgs-nav-drawer__body` (which reserves space for the
   floating ×) is DELETED as part of that work — the row occupies that space legitimately instead.
 
-⛔ **THE CHROME ROW REPLACES THE SEEDED BLOCKS — it does not sit above them.** `edit.js:92-96` currently seeds
+⛔ **THE CHROME ROW REPLACES THE SEEDED BLOCKS — it does not sit above them.** `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE`
+currently seeds
 `TEMPLATE = [ sgs/nav-menu, sgs/responsive-logo, sgs/button ]`. When the chrome row lands, **`sgs/responsive-logo`
 and `sgs/button` are REMOVED from that template** — their roles become the row's logo element and free slot.
 Leaving them produces a drawer with two logos and two CTAs, one of each in chrome and one still droppable in
@@ -307,9 +317,13 @@ Ships `sgs/nav-menu` with the primary menu preselected on every new drawer. Ever
 blocks — `sgs/container` rows exactly as on a normal page (Bean's standing position (A)). There is NO
 `allowedBlocks` restriction and none is to be added.
 
-**Full-screen `<dialog showModal>` modal** (Bean default): top-layer → survives a transformed
-header ancestor; focus contained; background `inert`; mandatory Escape; `::backdrop` scrim; rely on native
-`<dialog>` semantics (no `role="dialog"`/`aria-modal`).
+**Full-screen native `<dialog>`** (Bean default): focus contained; background `inert`; mandatory Escape;
+rely on native `<dialog>` semantics — ⛔ never add `role="dialog"` (implicit) or `aria-modal` (see the
+Modality section below, where the prohibition on `aria-modal="true"` is binding). **As built today** it opens
+with `showModal()`, giving top-layer promotion (which survives a transformed header ancestor) and a
+`::backdrop` scrim. **That is the current implementation, not the contract** — see Modality below for the
+approved move to `.show()`, under which neither the top layer nor `::backdrop` is available and the
+transform-ancestor escape is carried by D323's body-reparent instead.
 
 ⛔ **Close is CHROME, not content — and the guarantee is stated HONESTLY here (amended 2026-09-08, D1009).**
 The × is rendered by render.php as fixed dialog chrome OUTSIDE the editable InnerBlocks, so an operator editing
@@ -328,9 +342,47 @@ re-injection), not by a block lock, for the same reason.
 inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **Geometry:** per-device `anchor`
 (`full-screen` | `header` | `trigger` | `centred`) + `panelSize` — ⚠ these SUPERSEDED the retired `edge`/`width`
 scalars in the 2026-07-28 desktop-variant migration; the old names are gone from block.json and must not be
-cited. **Modality:** a non-modal mode (background stays live and clickable — lusion's shape) is a named
-follow-on, not built; the `.show()` code path already exists at `src/shared/nav-interactivity/store.js:616-619`
-as a browser-support fallback and needs exposing as an operator control.
+cited.
+
+#### Modality — MOVE TO NON-MODAL. Approved 2026-09-09, NOT YET BUILT.
+
+**Status:** `APPROVED — NOT BUILT`. Owner-approved direction, ~3h of work, not scheduled here. Live build
+status single-sources to `.claude/LEDGER.md`.
+
+**The direction.** The drawer moves from `showModal()` to **`.show()` plus an explicit z-index scale that
+puts the header ABOVE the drawer panel**, with author-managed background inertness (the `inert` attribute,
+focus containment, Escape and focus-return all kept exactly as they are today). The `.show()` code path
+already exists as a browser-support fallback in `src/shared/nav-interactivity/store.js` (search
+`grep -n "drawer.show()" plugins/sgs-blocks/src/shared/nav-interactivity/store.js`); this promotes it from a
+fallback to the primary path and exposes the choice as an operator control.
+
+**Why — measured, not preferred.** Live DOM measurement of 15 top-tier reference sites:
+
+| Finding | Count |
+|---|---|
+| Keep the nav trigger VISIBLE and TOPMOST while the drawer is open | **14 of 15** |
+| Use the SAME element to open and to close | 12 of 15 |
+| Of the 7 primary references, cover the full viewport | 5 of 7 |
+| Of the 7 primary references, lift the header above the panel BY Z-INDEX — i.e. none is a top-layer dialog | **7 of 7** |
+
+The single exception that hides its trigger (basicagency) is also the only reference forced to build a
+separate in-drawer close control — **which is exactly the cost this framework pays today.**
+
+**Why `showModal()` structurally blocks it.** A `showModal()` dialog is promoted to the browser's top layer,
+and **nothing can be painted above a top-layer element by z-index** — the manoeuvre all seven references use
+is unavailable for as long as `showModal()` is in the code path. This is not a styling preference that could
+be worked around; it is a property of the top layer.
+
+⛔ **`aria-modal="true"` must NOT be added — this is binding, not advisory.** It instructs assistive
+technology to ignore everything outside the dialog. Under the non-modal design the burger is *deliberately*
+left live and reachable, so `aria-modal="true"` would hide from screen-reader users the exact affordance the
+change exists to create — destroying the benefit while looking like a correctness fix. The drawer's root
+stays a native `<dialog>` and keeps its implicit `role="dialog"`; inertness is managed by the author, on the
+background, not declared on the dialog.
+
+**Two accuracy consequences elsewhere in this spec, already applied:** FR-36-10's dialog side no longer names
+`showModal()` as the contract, and FR-36-13's `<dialog>` exception no longer rests its justification on
+top-layer promotion or `::backdrop`. See both.
 
 ⛔ **The "Show header" toggle described in earlier revisions of this FR was NEVER BUILT and is now WITHDRAWN**
 (2026-09-08). No `showHeader`/`headerRows` attribute or markup has ever existed in block.json, edit.js or
@@ -618,7 +670,7 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   sgs-blocks) + `ResponsiveControl` for tiered values + the BUILT **`labelCollapse`** (Spec 37 §3.8 / FR-S9-8, live
   on button/business-info — collapse an item's label to icon-only per tier). **`labelCollapse` is RETAINED**
   (Bean's rule: keep an operator TOGGLE, bin an AUTOMATIC behaviour; code confirms it is a toggle —
-  `button/edit.js:347`, `business-info/edit.js:88`). Full reasoning: Spec 37 §3.8. The per-device cascade this
+  `plugins/sgs-blocks/src/blocks/button/edit.js::labelCollapse`, `plugins/sgs-blocks/src/blocks/business-info/edit.js::labelCollapse`). Full reasoning: Spec 37 §3.8. The per-device cascade this
   would have deferred to (Spec 35's `resolveTier()`) is BUILT; the feature that would consume it to hide
   equivalent elements per device is not — revisit `labelCollapse` against it whenever that feature ships.
   Note the two mechanisms are not interchangeable: the cascade HIDES an element at a tier,
@@ -639,7 +691,11 @@ confirmed central builder feature (Spectra parity). **Two ownership lines — do
   routes through `ResponsiveControl`, never a bespoke per-tier control.
 
 **Named upgrade:** the `ResponsiveTriStateControl` (on/off/inherit per tier, P2 §4.1) is **BUILT** —
-exported from `src/components` and mounted in `src/blocks/site-header/edit.js:896,922,1047`; five gate
+exported from `src/components` and mounted **FOUR** times inside `plugins/sgs-blocks/src/blocks/site-header/edit.js::Edit`. Verify with
+`grep -n "<ResponsiveTriStateControl" plugins/sgs-blocks/src/blocks/site-header/edit.js` — it returns FIVE
+hits, of which four are JSX mounts and the fifth is the name appearing in prose inside a code comment (that
+comment itself says "its four siblings", corroborating the count). ⚠ **An earlier revision of this line said
+"mounted three times", undercounting by one.** Five gate
 scripts reference it (incl. `scripts/inspector-scan/rules/25-no-own-device-switcher.js`). It is the richer
 form of (a)/(b). ⚠ **Corrected 2026-09-09** — this line previously read "DESIGNED-NOT-BUILT (verified: 0 in
 `src/`)", a false claim carrying a fake verification badge, while FR-36-8 fifteen lines above already said
@@ -653,11 +709,41 @@ menus" is an explicit opt-in, not the default.
 ### FR-36-9 — Nav → header decoupling (one-directional)
 The header knows nothing about the nav; coupling is nav → header only, via the header's **real published
 surface (verified in live code):** `--sgs-header-height` (a `:root`/`body` CSS var from a ResizeObserver,
-`header-behaviours/view.js`) + the body classes **`is-header-scrolled` / `is-header-shrunk`** (there is NO
-`data-sgs-header-state` attribute — a richer signal would be NEW Spec-17 work). A partial-width drawer binds
-`top`/`max-height` to `--sgs-header-height`. **Forward dep:** "header hidden on scroll → drawer full height"
-needs the unbuilt hide-on-scroll feature (a Spec-17 header task, not new nav work — §8 build notes); the
-full-screen modal drawer (default) needs none of this.
+`plugins/sgs-blocks/src/header-behaviours/view.js::publishHeight`) + the state classes **`is-header-scrolled` / `is-header-shrunk`**
+(toggled in `plugins/sgs-blocks/src/header-behaviours/view.js::initScrollBehaviours`; there is NO `data-sgs-header-state` attribute —
+a richer signal would be NEW Spec 37 work). A partial-width drawer binds `top`/`max-height` to
+`--sgs-header-height`.
+
+**Tracked dependency — "header hidden on scroll → drawer full height".**
+
+| Field | Value |
+|---|---|
+| **Status** | `CLOSED BY DESIGN` for the default drawer · `OPEN (blocked on a published signal)` for a partial-width drawer |
+| **Depends on** | A *hidden*-state signal published from the header to the nav |
+| **Blocking?** | No. Nothing in Phase 1 or Phase 2 waits on it |
+
+⛔ **Hide-on-scroll itself is BUILT — the earlier wording ("needs the unbuilt hide-on-scroll feature") was
+INVERTED.** It is wired end to end: `plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerHideOnScroll` →
+`plugins/sgs-blocks/src/blocks/site-header/render.php::$sh_hide` → per-tier resolution and the row-state toggle in
+`plugins/sgs-blocks/src/header-behaviours/view.js::initRowBehaviours` / `::setRowCollapsed` → the state rule
+`plugins/sgs-blocks/assets/css/header-behaviours.css::.sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden`. Verify
+rather than trusting this line:
+`grep -rn "headerHideOnScroll\|is-row-hidden" plugins/sgs-blocks/src/blocks/site-header plugins/sgs-blocks/src/header-behaviours plugins/sgs-blocks/assets/css/header-behaviours.css`.
+The deleted §8a had already retracted the "unbuilt" claim; FR-36-9 was simply never updated to match, which
+is how a false dependency survived ~570 lines below its own retraction.
+
+**The genuine residual, stated precisely.** What the header publishes is a HEIGHT
+(`--sgs-header-height`) plus the scroll-state classes `is-header-scrolled` / `is-header-shrunk`. It publishes
+no *hidden*-state signal the nav can read — `is-row-hidden` lands on the individual ROW element, not on a
+document-level surface a `<dialog>` in the top layer could key off. So a drawer cannot currently know the
+header is hidden and reclaim its space.
+
+**This is moot in the common case and is recorded as closed-by-design there.** The default drawer is
+full-viewport (FR-36-6), so it already occupies the header's space whether the header is hidden or not — there
+is nothing to reclaim and no signal is needed. The residual applies ONLY to a partial-width drawer anchored
+below the header (the `header` anchor). If and when that combination is built against a hide-on-scroll header,
+a published hidden-state signal is owed from Spec 37 first; do not work around it on the nav side by reading
+the header's DOM.
 
 ### FR-36-9a — Referential integrity + orphan lifecycle
 No reference silently breaks: (1) a menu item whose mega target is trashed/missing renders as a **plain
@@ -679,7 +765,7 @@ plain-English copy and different one-click fixes: **no drawer** → *"Add the mo
 top-level block the menu sits in, and selects it so the operator lands on its content; **dangling ref** →
 *"Open “X” instead"* re-points `drawerRef` at the drawer that does exist.
 **Binding details, all mirrored from the render path rather than assumed:** a blank `drawerRef` resolves to
-`sgs-nav-drawer` on BOTH sides (`nav-menu/render.php:295-297`, `nav-drawer/render.php:61-65`), so the editor
+`sgs-nav-drawer` on BOTH sides (`plugins/sgs-blocks/src/blocks/nav-menu/render.php::$drawer_ref`, `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$drawer_ref`), so the editor
 compares *effective* refs — a blank-vs-default pair is a MATCH, not a mismatch. A `sgs/nav-menu` **inside** a
 drawer renders a vertical list, not a burger, and is suppressed from the notice entirely. The fix action is
 gated on `sgs/nav-drawer` being registered (`createBlock` throws on an unregistered slug).
@@ -698,13 +784,43 @@ failure that policy exists to prevent.
 > — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Part L controls,
 > converter-emittable, WCAG, perf, UK).
 
+#### Spec maturity index — read this before dispatching any §4 FR
+
+The six FRs in this section sit at **wildly uneven maturity** and nothing else in the document signals it.
+FR-36-26 is a dispatchable sub-spec (frozen attribute table, named sequential dispatches, definition of done,
+converter contract); the other five are one page of intent each. A reader who assumes they are peers will
+hand an OUTLINE FR to a builder and get five different implementations.
+
+⛔ **`Spec maturity` is NOT build status, and this index is NOT the deleted §6a/§8a returning.** It answers
+exactly one question: **"can this FR be handed to a builder AS WRITTEN, without a design pass first?"** That
+is a property of *this document's own text*, which is why it belongs here — it changes when the spec is
+edited, never when code ships. Live build status single-sources to **`.claude/LEDGER.md`** (§1b). Do not merge
+the two, and do not delete this field as a status column.
+
+| FR | Piece | Spec maturity | Owed before it can be dispatched |
+|---|---|---|---|
+| FR-36-19 | Cart | `OUTLINE` | A frozen attribute table for `displayMode` and the mini-cart panel; the Store-API call surface (endpoints, error + empty states); which of MUST/SHOULD/NICE is in scope for the dispatch |
+| FR-36-20 | Search | `OUTLINE` | A frozen attribute table for `displayMode`; the debounce/cap values as attributes not prose; the result-source wiring (Store API vs post query) and how the three display modes share ONE combobox instance |
+| FR-36-21 | Social icons | `OUTLINE` | The platform set as data (DB-first, R-31-1) not a hardcoded list; the accessible-name generation rule as a named helper; the custom-SVG upload + sanitisation path |
+| FR-36-22 | Logo | `OUTLINE` | The resolution chain above is frozen and dispatchable on its own; the REST of the FR is not — the lockup / favicon-sync / variant attrs need a frozen table before the Phase-3 half can be dispatched |
+| FR-36-23 | Business info | `OUTLINE` | The `sgs_site_info` field roster + its sanitisers as a frozen table; the open/closed-state computation rule; the `labelCollapse` reuse points named per element |
+| FR-36-26 | Link lists | `DISPATCHABLE` | Nothing — FR-36-26c freezes the attribute table, names two sequential dispatches with their file lists, and states a definition of done and the live verification owed |
+
+**Rule when adding a §4 FR:** it starts at `OUTLINE` and carries its own "owed before dispatch" row. It moves
+to `DISPATCHABLE` only when a frozen attribute table, a named dispatch shape and a definition of done all
+exist in its own text. Promoting it on confidence rather than on those three artefacts is what this index is
+here to prevent.
+
 ### FR-36-19 — Cart (`sgs/cart`, extend) — full WooCommerce header cart
+**Spec maturity: `OUTLINE`** — needs a frozen attribute table + the Store-API call surface before dispatch (§4 index).
+
 **Honest status + phasing:** the current `sgs/cart` render.php is a **badge + link only** — the mini-cart
 preview/flyout/drawer is **UNBUILT** (its own block.json marks it "Phase 2"). So this is a **substantial BUILD
 on the existing badge shell**, NOT "~90% ready". **The Phase-1 badge fix is DONE** — the badge node carries
-`role="status" aria-live="polite" aria-atomic="true"` at `cart/render.php:340`, so it announces the whole
-"N items" string (WCAG 4.1.3). ⚠ **Corrected 2026-09-09** — this line previously described the missing
-`role="status"` as "the one verified gap" at `cart/render.php:203`; both the gap and the line number were
+`role="status" aria-live="polite" aria-atomic="true"` on the `.sgs-cart__badge` span emitted by
+`cart/render.php` (`grep -n 'role="status"' plugins/sgs-blocks/src/blocks/cart/render.php`), so it announces
+the whole "N items" string (WCAG 4.1.3). ⚠ **Corrected 2026-09-09** — this line previously described the
+missing `role="status"` as "the one verified gap" at a line number; both the gap and the line number were
 stale. **The mini-cart itself remains the Phase 2 build.**
 - **MUST (Phase 2 build):** live item-count badge; AJAX add-to-cart via the **Store API** (NOT legacy
   cart-fragments — cache-safe by construction, WooCommerce's own guidance); mini-cart preview
@@ -720,6 +836,8 @@ stale. **The mini-cart itself remains the Phase 2 build.**
   announces (drawer copy while open; suppress the frozen original) — no double-announce.
 
 ### FR-36-20 — Search (`sgs/product-search` / `filter-search`, extend) — predictive combobox
+**Spec maturity: `OUTLINE`** — needs a frozen `displayMode` table + the result-source wiring before dispatch (§4 index).
+
 **Honest status + phasing (Phase 2):** a **genuine EXTEND** — the full WAI-ARIA **combobox** pattern is
 ALREADY SHIPPED LIVE in `sgs/product-search` (`role="combobox"` + `aria-expanded`/`aria-controls`/
 `aria-activedescendant` + `role="listbox"`/`option` in render.php). Extend it with product-preview + display
@@ -737,6 +855,8 @@ modes; NOT a rebuild.
   (FiboSearch). Result count / no-results = a live region (WCAG 4.1.3), same as the cart.
 
 ### FR-36-21 — Social icons (extend the SGS social block)
+**Spec maturity: `OUTLINE`** — needs the platform set as DB data + the name-generation helper named before dispatch (§4 index).
+
 **Phasing (Phase 2). Extend** the social block (add accessible-name generation + `rel` + one-source rendering).
 - **MUST:** curated platform set + first-class custom-SVG upload; **accessible name per icon auto-generated +
   editable** (verb+platform, "Follow us on Instagram"; glyph `aria-hidden` — WP core omits `aria-label` by
@@ -749,9 +869,29 @@ modes; NOT a rebuild.
   optional `rel="me"`.
 
 ### FR-36-22 — Logo (`sgs/responsive-logo`, extend) — the logo OBJECT
+**Spec maturity: `OUTLINE`** — the resolution chain below is frozen and dispatchable on its own; the Phase-3
+lockup / favicon / variant half needs a frozen attribute table first (§4 index).
+
 **Phasing: basics = Phase 1** (left-aligned default, link-to-home, per-device image, functional alt — the logo
 appears in Mama's header + the drawer default template). **lockup + favicon-sync + transparent/dark variants =
 Phase 3.** **Extend** `sgs/responsive-logo`.
+- **MUST — the logo resolution chain (owner decision 2026-09-09, option A; closes the §1 defect).** The logo
+  resolves through THREE tiers, first non-empty wins, evaluated per device tier:
+
+  | Order | Source | Where it lives |
+  |---|---|---|
+  | 1 | The block's own per-device art-direction attrs | `plugins/sgs-blocks/src/blocks/responsive-logo/block.json::attributes.logoId` / `.logoUrl` (+ `…Tablet` / `…Mobile`) |
+  | 2 | **Site Info** — a NEW `logo` key in the `sgs_site_info` option store | `sgs_site_info` (this spec's store, §1) |
+  | 3 | WP's Customiser site logo | `plugins/sgs-blocks/src/blocks/responsive-logo/render.php::$sgs_site_logo_id` (`get_theme_mod( 'custom_logo', 0 )`) |
+  | 4 | Nothing — render no logo element at all | — |
+
+  **Backwards-compatible by construction:** tier 2 is inserted BETWEEN two existing tiers, so a site that has
+  never set a Site Info logo resolves exactly as it does today. ⚠ **Tier 2 is NET-NEW BUILD, not a read of an
+  existing field.** Today the Site Info admin's Identity section only *previews* the Customiser logo and
+  deep-links to the Site Editor (`plugins/sgs-blocks/includes/class-sgs-site-info-admin-fields.php::render_identity_section`) — it stores
+  nothing. The `logo` key, its media control, its sanitisation and its reserved-key registration are all part
+  of this MUST. **Done when:** setting a Site Info logo with no block-level `logoId` renders that logo, and
+  clearing it falls through to the Customiser logo — both live-verified, not asserted.
 - **MUST (basics, Phase 1):** left-aligned default (NN/g: 6× better home-return); link-to-home on by default;
   **separate desktop/tablet/mobile IMAGE upload** (swap the file, not resize-only); SVG upload; **functional
   alt** ("[Business] home", inline authoring hint, never "logo"); max-width/height per breakpoint;
@@ -764,6 +904,8 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
   visible focus (first tab-stop); `<img>` in `<a href="/">` near DOM top.
 
 ### FR-36-23 — Business-info / contact (`sgs/business-info`, extend) — the Site-Info source of truth
+**Spec maturity: `OUTLINE`** — needs the `sgs_site_info` field roster + sanitisers as a frozen table before dispatch (§4 index).
+
 **Phasing (Phase 2). Extend** `sgs/business-info` — the Site-Info source of truth.
 - **MUST:** click-to-call (`tel:` E.164); click-to-email (`mailto:` descriptive text, not a raw address);
   click-to-map (Google Maps URL/Place ID); the **single Site-Info source of truth**
@@ -778,6 +920,9 @@ Phase 3.** **Extend** `sgs/responsive-logo`.
   native live open/closed without a plugin.
 
 ### FR-36-26 — Link lists (footer + anywhere): typed or menu-bound, in ONE block
+**Spec maturity: `DISPATCHABLE`** — FR-36-26c freezes the attribute table, the two sequential dispatches with
+their file lists, the definition of done and the live verification owed (§4 index).
+
 **Added 2026-07-23 (Bean-directed). REVISED the same day — an earlier draft proposed a compound
 wrapper switching between two child blocks; that is SUPERSEDED by the simpler shape below.
 Status: `BUILT + LIVE-VERIFIED 2026-07-23` (D374, commits `bf312016` + `d08d3149`).** Both
@@ -848,7 +993,7 @@ Three rules that make this optimal rather than box-ticking:
    name, so unique landmark names hold **by construction** and `landmark-unique` cannot regress —
    with no duplicated label to drift out of sync.
 2. **`aria-current="page"` is computed CLIENT-SIDE — reuse it, never re-derive it.**
-   `nav-menu/view.js:48` already does this and documents why: LiteSpeed (this stack's confirmed
+   `plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage` already does this and documents why: LiteSpeed (this stack's confirmed
    cache layer) would otherwise cache one page's answer and serve it on every page (FR-36-11).
 3. **`<nav>` is OPT-IN, never automatic.** A four-column footer where every column is a landmark
    yields four nav landmarks; landmark bloat is itself an accessibility defect. Menu-bound defaults
@@ -1043,7 +1188,12 @@ any change to `sgs/nav-menu`, which keeps the bar/drawer role untouched.
 ### FR-36-10 — Disclosure vs dialog
 Dropdowns AND mega = **DISCLOSURE** (`<nav aria-label>` + `<button aria-expanded>`; `aria-controls` SHOULD;
 OMIT `aria-haspopup`; Tab through, NO trap; Escape closes + returns focus; arrow keys optional). NEVER
-`role="menu"/"menubar"`. Drawer = **DIALOG (modal)** (native `<dialog showModal>`). Mega = a bigger
+`role="menu"/"menubar"`. Drawer = **DIALOG** — a native `<dialog>`, modal-in-BEHAVIOUR via either
+`showModal()` or `.show()` + author-managed inertness. **The contract is the disclosure-vs-dialog binary, not
+the API call.** A `.show()` drawer that inerts the background, moves focus in, closes on Escape and returns
+focus to its trigger is fully on the DIALOG side of this gate; `showModal()` is one implementation of that
+contract, and per FR-36-6's approved modality direction it is not the one the drawer is moving to. ⛔ Do not
+add `aria-modal="true"` under either — see FR-36-6. Mega = a bigger
 disclosure sharing `sgs/nav-menu`'s contract. **This is the ONE a11y gate every §4 interactive piece reuses**
 (cart/search `displayMode` auto-swaps between the two patterns) — never a second contract.
 
@@ -1069,9 +1219,21 @@ Nothing renders as inline `style="…"`: native supports flip to scoped serialis
 `sgs/nav-menu` (bar) keeps the scoped `SGS_Container_Wrapper`.
 
 **`<dialog>` exception — `sgs/nav-drawer` is content-KIND BLOCK-PRIVATE, not a wrapper composite** (D294,
-Bean-approved; built + live 2026-07-20). The drawer's root element must BE the `<dialog>` — that is what makes
-`showModal()`, the top-layer promotion, the `::backdrop`, and the native ESC/`cancel` behaviour available at
-all. `SGS_Container_Wrapper` emits its own `<div>` as the block root, so hosting the drawer in it would either
+Bean-approved; built + live 2026-07-20). The drawer's root element must BE the `<dialog>`.
+
+⚠ **The reasoning below was REWRITTEN 2026-09-09 and the exception still holds — do not delete it as
+unsupported.** It previously rested on three things `<dialog>` provides: `showModal()`, top-layer promotion,
+and the `::backdrop` pseudo-element. Under FR-36-6's approved non-modal direction two of those three no
+longer apply (there is no top-layer promotion under `.show()`, and `::backdrop` does not render for a
+non-modal dialog). **What survives is sufficient on its own and is modality-independent:**
+
+1. **The UA open/close mechanism.** `<dialog>` is the element that carries the `open` state, the `.show()` /
+   `.close()` API, the `close`/`cancel` events, and the UA's own `dialog:not([open]){display:none}` rule. No
+   other element provides this without hand-rolled JS.
+2. **The implicit `role="dialog"`.** The semantics come from the element, with no ARIA to keep in sync.
+
+Both hold identically under `showModal()` and `.show()`, so the exception is not contingent on the modality
+decision. `SGS_Container_Wrapper` emits its own `<div>` as the block root, so hosting the drawer in it would either
 bury the `<dialog>` one level down (losing the wrapper's box/width controls over the actual modal surface) or
 put a `display` value on the `<dialog>` base rule, which defeats the UA's `dialog:not([open]){display:none}`
 and leaves the drawer permanently visible (STOP-DIALOG-DISPLAY-GATE, D338). The drawer therefore renders
@@ -1121,7 +1283,7 @@ Per-FR evidence archive: `.claude/reports/2026-07-22-spec36-completion-audit.md`
 
 ⚠ **A status table stood here until 2026-09-09 and was DELETED.** An adversarial council found it
 carried false claims — including `ResponsiveTriStateControl` marked "DESIGNED-NOT-BUILT (verified: 0
-in `src/`)" while it was imported and mounted three times in `site-header/edit.js`. A status table
+in `src/`)" while it was imported and mounted FOUR times in `plugins/sgs-blocks/src/blocks/site-header/edit.js::Edit`. A status table
 inside a requirements doc drifts against the code and, worse, wears a verification badge that stops
 the next reader checking. Do not reinstate one.
 
@@ -1166,18 +1328,65 @@ utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo bui
 - **Mama's (gate-1):** flat 5-item classic-menu bar + a **featured** item + a **cart badge** (`sgs/cart` with
   the `role="status"` fix); mobile → burger → drawer (accordion) + CTA + logo basics.
 - **Indus (gate-2):** a 7-item bar of plain links + **3 dropdowns + at least one mega ("Brands"), rendered at
-  its real menu position** (not last). The framework supports **5 mega layout templates**; the **exact live
-  Indus mega count + layouts is TBD via the named arbitration step and RECORDED here before gate-2 passes** —
-  the sources don't resolve 1-vs-5, so no confident count is asserted. Two-row header = the header builder's
-  rows.
+  its real menu position** (not last). The framework supports **5 mega layout templates**.
+
+  ⛔ **The mega COUNT is derived at gate time, never pre-known.** A criterion that names a number the spec
+  does not know can be neither passed nor failed — the previous wording ("TBD via the named arbitration
+  step") was exactly that, and no such step is defined anywhere in this repo
+  (`grep -rn "arbitration step" .claude --include=*.md` returns this line and two grader reports that credit
+  it into existence, nothing more). The criterion is therefore restated so it does not depend on a number:
+
+  | Step | Action |
+  |---|---|
+  | 1 | Derive **N** — the count of mega-shaped nav regions — from the draft at `sites/indus-foods/mockups/Indus Foods Ltd Homepage.html`, at gate time. |
+  | 2 | Record **N, the deriving command, and the per-region list** in the gate report. ⛔ Never in this spec — a number written here drifts the moment the draft changes. |
+  | 3 | Build one mega for each of the N regions. |
+
+  **PASS =** every one of the N derived regions is covered by a mega that renders at its real menu position,
+  **and** any divergence from the draft (a region built as a plain dropdown, a layout substituted, a region
+  merged) is RECORDED WITH ITS REASON in the same gate report. **FAIL =** a region silently absent, or a
+  divergence with no reason beside it. N being 1 and N being 5 both pass on this criterion; what fails is an
+  unaccounted-for region. Two-row header = the header builder's rows.
 - **The live gate (one pass, cache-clear FIRST):** 375/768/1440 + **a non-default collapse-N** sweep; **axe = 0
   on the OPEN drawer AND an OPEN desktop mega**; the **`elementFromPoint` occlusion sweep** (methodology below);
-  ESC/focus-return/Tab-containment; scroll-lock frame sweep; drawer geometry; late-CSS A/B; real desktop
+  ESC/focus-return/Tab-containment; scroll-lock frame sweep; drawer geometry; **the late-CSS A/B (defined
+  below)**; real desktop
   scrollbar; **a `prefers-reduced-motion` + `forced-colors` emulated-media sweep** (borders/focus rings survive;
   motion suppressed); **the `<details>` no-JS drawer + no-JS bar links** assertion; **the crawl assertion**
   (every bar+dropdown+mega link AND mega content in the pre-JS HTML); **mega renders at real position N, not
   last**; **the integrity sweep** (FR-36-9a); **`wp-perf-gate`** (no-CLS + budget; JS <50 KB / CSS <100 KB);
   RTL/logical properties; + Bean's cropped screenshot pair.
+
+**The late-CSS A/B — what it is, how to run it, what passes.** *(Defined here 2026-09-09. The phrase had
+stood in the bullet above as a bare name since it was absorbed from Spec 34; its intent is recovered from
+`.claude/plans/archive/2026-07-15-spec34-build-plan.md` — "the late-CSS A/B (block stylesheet disabled →
+restored) produces IDENTICAL open-drawer geometry — the 'random widths' class is dead" — and
+`.claude/reports/2026-07-18-P2.5-qc-consistency-upgrades.md` §F3.)*
+
+**What it asserts.** The open drawer's GEOMETRY comes from the block's own scoped `<style>`, not from an
+external stylesheet that may arrive late, be deferred, be combined, or be optimised away by LiteSpeed. A
+drawer whose width or position depends on a late-arriving sheet renders at the wrong size for the interval
+before that sheet lands — the "random widths" defect class this check exists to kill.
+
+**Procedure — one page, two runs, drawer OPEN in both, at 375 / 768 / 1440.**
+
+| Run | Setup |
+|---|---|
+| **A — normal load** | The page as a visitor gets it. Open the drawer. Measure. |
+| **B — all external CSS blocked** | Block every external stylesheet request before navigation (Playwright: route-abort every `stylesheet` resource type). The block's own inline scoped `<style>` is emitted by render.php inside the document and is NOT an external request, so it survives. Open the drawer. Measure. |
+
+**Measured in both runs, at each of the three widths:** `getBoundingClientRect()` on (1) the `<dialog>`
+itself, (2) the close control (`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$close_html` → `.sgs-nav-drawer__close`), and (3) the
+first nav link inside the drawer.
+
+**PASS =** every measured rect matches between A and B within **±1px** on all four edges, at all three
+widths, **AND** the drawer is still dismissible in run B (× click closes it; Escape closes it; focus returns
+to the burger).
+
+⚠ **Colour, typography, spacing-from-theme-tokens and background differences between A and B are EXPECTED
+and are NOT a failure.** Run B deliberately strips the theme and global stylesheets, so run B will look
+wrong. This check asserts **geometry and dismissibility only** — nothing else. Do not report a B-run visual
+diff as a defect of this gate.
 
 **`elementFromPoint` occlusion sweep — methodology carried verbatim from Spec 34 FR-S9-5 / FR-34-7 (D101,
 reproducible from Spec 36 alone since Spec 34 is deleted):** with the drawer OPEN, at 375 + 768 + 1440:
@@ -1190,6 +1399,49 @@ all three widths; the frame sweep during open shows width/anchor CONSTANT (the *
 **real desktop width with a classic scrollbar**; device emulation cannot reproduce the scrollbar-vanish bounce,
 so the check is otherwise vacuous). Cache: clear the CDN/LiteSpeed cache FIRST (`hosting_clearWebsiteCacheV1` +
 `wp litespeed-purge all`) or you measure the stale `?ver`.
+
+### The Bean's-eye pre-check rubric (R-31-13 — makes the veto PREDICTABLE, never weaker)
+
+R-31-13 stands unchanged: the owner's visual sign-off is co-authoritative, the numbers alone never close a
+gate, and the eye may reject on any ground it likes. **The problem this rubric solves is not authority, it is
+predictability.** At D411 the mechanical half passed 21/21 sweep cells and the eye returned *"night and
+day"* / *"all of these clone attempts need huge fixes"* — every ground it rejected on was outside what the
+mechanical half measured. Presenting again without having answered those grounds spends the veto on things
+the builder could have checked first.
+
+**Self-check before presenting. Answer every row with evidence, not intent.** Grounds 1–5 are the exact
+grounds D411 rejected on (`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md` §D3); 6–7 are
+the two defects the same report proved live (§D1, §D2).
+
+| # | Ground | Answer it with |
+|---|---|---|
+| 1 | **Text styling** — family, weight, size, case, tracking, leading | A side-by-side of the draft's computed values against the clone's, on the same painted element |
+| 2 | **Surface + borders** — panel background, border lines, dividers, radii, shadow | Computed values, both sides |
+| 3 | **Symbols + iconography** — the actual glyphs, not "an icon is present" | The rendered symbols, both sides |
+| 4 | **Control treatment** — button fill, shape, size, hover/focus appearance | Computed values in both resting and hover state |
+| 5 | **Imagery AND its motion** — every image, and whether it cycles / animates / floats as the reference does. A still image where the reference cycles is a MISS, not a near-miss | A capture of the motion, not a single frame |
+| 6 | **Every text element's contrast against its REAL painted background** — not a sample | See false-pass A below |
+| 7 | **Does an alignment setting do what its NAME says?** `drawerAlign: 'center'` must visibly centre the menu, not just its sibling boxes | A measured x-position of the nav links, not the presence of the attribute |
+
+**Two named false-pass modes. Both have already shipped a green report on a broken page:**
+
+- **A — a sampled contrast check reports the sample, not the page.** The D411 sweep measured
+  `.sgs-nav-menu__link-text` alone and reported a healthy 13.14:1 for `centred-statement`, while that same
+  drawer rendered **6 text elements at 1:1 — literally invisible** across 2 variants. **Sweep EVERY text
+  node in the surface under test, each against its own real painted background.** A check scoped to one
+  selector reports that selector's health and nothing else.
+- **B — a capture that never asserted "open" proves nothing.** `shoot-drawer-pairs.mjs` clicked a trigger and
+  screenshotted without asserting a panel had opened, so a "6/7 references captured" figure was false — one
+  "reference" was a homepage with no menu open. **Assert the open state, then capture.** This is the same
+  vacuous-check class as a negative control that never landed.
+
+**Rules of use, so this stays a floor and not a ceiling:**
+1. **Presenting with unanswered rows wastes the veto.** The eye is expensive and single-threaded; spending it
+   on a ground the builder could have measured is the failure this rubric prevents.
+2. **Any NEW ground the eye names is ADDED to this table, never argued with.** The table is a record of what
+   has rejected before, not a list of what is allowed to reject. It only ever grows.
+3. **A clean rubric is not a pass.** All seven rows answered means the work is ready to be LOOKED AT. R-31-13
+   is unchanged: only the eye closes.
 
 ### FR-36-18 — Cutover for the LIVE production instances (mirror P2 §6c) + light rollback
 **Historical — the pre-deletion checklist.** At the time, `sgs/adaptive-nav` was live on both client sites. It was DELETED at Phase-1 close (2026-07-20); `sgs/nav-menu` + `sgs/nav-drawer` replace it. The checks that were run before deleting:
@@ -1224,11 +1476,15 @@ construct things that already existed:
 
 - It described `SGS_Nav_Menu_Source::NAV_BLOCK_NAMES` as a hardcoded const needing a DB-first refactor.
   It is already a filtered method pruned against the live block registry
-  (`class-sgs-nav-menu-source.php:89-105`), and the code's own docblock records that it was fixed for
+  (`plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::get_nav_block_names`), and the method's own docblock records that it was fixed for
   exactly this reason.
 - It said no `headerHideOnScroll` attribute existed and wiring it was a future task. It exists
-  (`site-header/block.json:183-186`), is read (`site-header/render.php:143`) and is wired end-to-end in
-  `header-behaviours/view.js`.
+  (`plugins/sgs-blocks/src/blocks/site-header/block.json::attributes.headerHideOnScroll`), is read
+  (`plugins/sgs-blocks/src/blocks/site-header/render.php::$sh_hide`) and is wired end-to-end in
+  `plugins/sgs-blocks/src/header-behaviours/view.js::initRowBehaviours` / `::setRowCollapsed`, with the state rule at
+  `plugins/sgs-blocks/assets/css/header-behaviours.css::.sgs-row-behaviour[data-sgs-row-hide-on-scroll].is-row-hidden`.
+  **FR-36-9 carried the same inverted claim ~570 lines above and has now been corrected too** — a retraction
+  filed in one section does not repair the section that stated the error.
 
 The section was badged "fact-check-corrected", which made it worse: a reader is told not to re-check.
 Its one live contract (mega-panel `templateLock`) moved to **FR-36-5**. Everything else was status
@@ -1292,6 +1548,14 @@ edited once and rendered in header + footer + drawer + (for Site-Info) `LocalBus
 site-info` toggle on social/business-info) — v2 makes it the explicit, spec-level differentiator, not an
 implicit one. Made fully explicit across all placements in Phase 3 (§7).
 
+**Honest scope of "entered ONCE" for the LOGO.** The logo joins this claim only through FR-36-22's
+resolution chain, and only at that chain's tier 2. A logo set in Site Info is entered once and rendered
+everywhere; a logo set on an individual `sgs/responsive-logo` instance (tier 1, per-device art direction) is a
+deliberate per-placement override and is NOT covered by this claim — that override is the feature, not a leak.
+A site that has set neither still resolves from the Customiser (tier 3), which is WP's store, not this one. So
+the claim is: **one Site-Info entry is the default source for every placement**, not "the logo can only ever be
+entered once".
+
 ## 12. Open sub-decisions — RESOLVED (Bean's veto at sign-off)
 | # | Question | Resolution |
 |---|---|---|
@@ -1299,7 +1563,7 @@ implicit one. Made fully explicit across all placements in Phase 3 (§7).
 | b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default). ⚠ **Amended D1009** — the × close and the optional logo/free-slot are CHROME (attributes), never template blocks; the body seeds `sgs/nav-menu` only. See FR-36-6 |
 | c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**. ⚠ **Re-corrected 2026-09-09** — an earlier same-day edit claimed safe-triangle does not ship. It does: the geometric triangle is layered in front of the 170 ms close-grace bridge, which is the fallback. Both are built. See FR-36-4 for the proving command |
 | d | Mega association | **Native menu (Appearance → Menus)** — add the CPT like a page; item carries the post ID (no map/ID); resolved by `object_id`/`get_post()` |
-| e | Drawer modality | **Modal-only** (`<dialog showModal>`) by default. ⚠ **Corrected 2026-09-09** — the "Show header" per-row toggle was NEVER BUILT and is WITHDRAWN (FR-36-6); header rows are not imported into the drawer in any form. A non-modal mode (lusion's live-background shape) is a named, unbuilt follow-on — the `.show()` path exists at `nav-interactivity/store.js:616-619` as a browser-support fallback and needs exposing as an operator control |
+| e | Drawer modality | **Moving to NON-MODAL** — `.show()` + an explicit z-index scale with the header ABOVE the drawer panel, background inertness author-managed. **Status: `APPROVED 2026-09-09 — NOT BUILT`** (~3h). Grounded in live DOM measurement of 15 references: 14/15 keep the trigger visible and topmost, and 7/7 of the full-viewport primaries lift the header by z-index — which `showModal()`'s top-layer promotion makes structurally impossible. ⛔ `aria-modal="true"` must NOT be added; it would hide the deliberately-live burger from assistive tech. ⚠ Also corrected 2026-09-09 — the "Show header" per-row toggle was NEVER BUILT and is WITHDRAWN; header rows are not imported into the drawer in any form. Full record + the measurement table: FR-36-6 |
 | f | Menu system | **Classic menus PRIMARY**; block `wp_navigation` → Phase 3 extra (Bean) |
 | g | Per-device visibility | Reuse the BUILT Responsive-Visibility ext + `labelCollapse`; tri-state = optional upgrade (FR-36-24) |
 | h | Extra competitive features + Opps 1–3 | Phase 3 (follow-on) |
@@ -1308,7 +1572,9 @@ implicit one. Made fully explicit across all placements in Phase 3 (§7).
 Phase-1 research + QC council + adversarial council + gap-analysis (3 graders, B ~3.9)
 (`.claude/reports/2026-07-18-P2.5-*`). Live-code checks: `class-sgs-nav-menu-source.php`, `adaptive-nav/render.php`,
 `header-behaviours/view.js`, `labelCollapse` (button/business-info — BUILT), `ResponsiveTriStateControl`
-(docs-only — unbuilt), sgs-blocks CLAUDE.md (`sgs/cart`, D270, TypographyControls R-22-13, Responsive-Visibility
+(⚠ **corrected 2026-09-09 — this said "docs-only — unbuilt"; it is BUILT and mounted four times, see
+FR-36-24.** It was the third surviving instance of the same false claim in this one document), sgs-blocks
+CLAUDE.md (`sgs/cart`, D270, TypographyControls R-22-13, Responsive-Visibility
 ext). Primary a11y: W3C APG, WCAG 2.1/2.2, MDN, Adrian Roselli. UX: NN/g, Baymard, Smashing, IxDF, LogRocket.
 Platform: MDN/Chrome (Popover, `<dialog>`, `<details name>` — ⚠ re-verify at build). Internal: Spec 37, 32, 35,
 31 §13, 33 Part 2, P2 builder design-gate; D270, D323, D334, D340; seo-schema/seo-technical.
@@ -1318,8 +1584,14 @@ Platform: MDN/Chrome (Popover, `<dialog>`, `<details name>` — ⚠ re-verify at
 integration driver `-spec36-v2-adversarial-council.md`. WP/Woo: Store API, Mini-Cart block, `core/search`,
 `core/site-logo`(`shouldSyncIcon`)/`site-title`/`social-links`, `LocalBusiness` schema. Competitor:
 Kadence/Blocksy/Spectra/Bricks header builders. UX: NN/g, Baymard, Algolia. Live-code verified (qc-council
-2026-07-19): `class-sgs-nav-menu-source.php:44`, `button`/`business-info` `labelCollapse`,
-`extensions/responsive-visibility.js` + `includes/device-visibility.php`, `cart/render.php:203` + `view.js:113`,
-`header-behaviours/view.js:70` + `css:118`. **Fact-check correction:** `class-product-templates-cpt.php:70` sets
+2026-07-19): `plugins/sgs-blocks/includes/class-sgs-nav-menu-source.php::get_nav_block_names`,
+`plugins/sgs-blocks/src/blocks/button/edit.js::labelCollapse` / `plugins/sgs-blocks/src/blocks/business-info/edit.js::labelCollapse`,
+`extensions/responsive-visibility.js` + `includes/device-visibility.php`,
+`cart/render.php` (the `role="status"` badge) + `plugins/sgs-blocks/src/blocks/cart/view.js::updateCartWidgets`,
+`plugins/sgs-blocks/src/header-behaviours/view.js::publishHeight` + `assets/css/header-behaviours.css`.
+⚠ **All five citations in this line were re-resolved to symbols 2026-09-09 and four of the old line numbers
+were STALE.** The worst paired a `header-behaviours/view.js` line number with a bare "css" line number that
+named no file at all — unresolvable as written, yet sitting inside a list headed "Live-code verified".
+**Fact-check correction:** `plugins/sgs-blocks/includes/class-product-templates-cpt.php::register_post_type` sets
 `show_in_nav_menus` to FALSE — it is NOT proof the mechanism works; `show_in_nav_menus:true` is to be proven by
 spike (§8 build notes), not this citation.

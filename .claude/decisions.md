@@ -1,3 +1,65 @@
+## D1012 [INCIDENT] — the drawer's `.show()` branch is unreachable dead code, not a fallback, and it hides two defects
+
+**2026-09-09.** `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::openDrawerFor` picks its
+path with `if ( typeof drawer.showModal === 'function' ) { … } else { drawer.show(); }`, and an
+earlier guard in the same function returns early when NEITHER method exists. The `else` therefore
+requires a browser that exposes `show()` but not `showModal()`. `HTMLDialogElement` defines both, so
+no such browser exists: **the branch is unreachable by construction and has never once executed.**
+The capability sniff reads as safety; it is a design sketch.
+
+**Two defects sit inside it, latent only because nothing reaches them.**
+1. **`store.js::trapTab` is wired OUTSIDE the `if/else`**, so it applies to both paths. On the
+   non-modal path it wraps Tab strictly inside the dialog — defeating the deliberate hole
+   `store.js::freezeBackground` opens to keep the burger live. Result the moment the path becomes
+   reachable: header controls that are **visible, clickable and unreachable by keyboard** — a
+   **WCAG SC 2.1.1 Keyboard (Level A)** failure. Defence: `STOP-DIALOG-NONMODAL-TAB-RING`.
+2. **`store.js::resolveScrim` looks for `[data-sgs-nav-scrim="…"]` and no scrim element is rendered
+   anywhere.** Verified: `grep -rn "sgs-nav-scrim" --include=*.php --include=*.html .` → **0 hits**;
+   positive control `grep -rln "data-sgs-nav-drawer" --include=*.php . | wc -l` → **5 files** (so the
+   search shape does find drawer markup when it is there).
+
+**The generalisable rule, and why it is an INCIDENT rather than a tidy-up:** *an untested branch
+guarded by a capability sniff that can never be false is not a fallback — it is a design sketch that
+reads as safety.* Both defects would have shipped live the instant D1011's non-modal move promoted
+this branch to the primary path, and nothing in the gate stack looks at a branch no test can enter.
+Both are in D1011's build scope.
+
+## D1011 [ROUTINE] — `sgs/nav-drawer` moves to a NON-MODAL drawer: the trigger stays live and topmost; `aria-modal` is banned
+
+**2026-09-09. Bean-approved, NOT yet built (~3 hrs).** Design council outcome, grounded in live-DOM
+measurement of 15 top-tier agency sites (dogstudio, fantasy, buck, studionamma, wearecollins,
+lamalama, lusion, vercel, linear, stripe, hellomonday, locomotive, instrument, basicagency, unseen).
+
+**What the measurement found.**
+- **14 of 15 keep the nav trigger VISIBLE AND TOPMOST while the drawer is open**, verified with
+  `elementFromPoint` at the trigger's own coordinates. The single exception (basicagency) is also the
+  only site forced to build a separate in-drawer close control — which is exactly the cost SGS pays
+  today.
+- **5 of 7 primary references cover the full viewport, and every one lifts the header ABOVE the panel
+  by z-index** (fantasy 10 > 9 · wearecollins 9 > 1 · studionamma 10000 > 3 · buck 9100 > 1300). They
+  are full-bleed panels, **not top-layer dialogs**.
+- 12 of 15 use the SAME element to open and close (the burger morphs in place); 9 of 15 animate it;
+  4 of 15 use a word ("Menu" → "Close") rather than a glyph.
+
+**Why the current implementation cannot reach that shape.** A `showModal()` dialog sits in the
+browser's **top layer**, which no z-index can overlay — the header-above-panel manoeuvre every
+reference uses is structurally unavailable to SGS today. Hence: **`.show()` plus an explicit z-index
+scale, header above drawer.**
+
+**Binding constraint — `aria-modal="true"` must NEVER be added.** It instructs assistive tech to
+ignore everything outside the dialog, which would hide the deliberately-live burger and destroy the
+exact affordance this change exists to enable. Non-modal is a promise to AT as well as to the mouse.
+
+**FR-36-10 is NOT contradicted.** Its content is the disclosure-vs-dialog binary; a `.show()` drawer
+with an inert background, focus moved in, Escape to close and focus returned is still firmly on the
+dialog side. `showModal()` was the implementation the requirement NAMED, not the contract it made.
+
+**Build scope** (parked as `P-NAV-DRAWER-NONMODAL-BUILD`, and it carries D1012's two latent defects
+because this change is what makes them reachable): an operator modality attribute · the
+`trapTab`/`freezeBackground` tab-ring fix · the z-index scale · moving the ESC handler onto the
+primary path (it is currently a `cancel` listener registered only inside the `showModal()` branch of
+`store.js::openDrawerFor`) · a scrim for the partial-width anchors only.
+
 ## D1010 [ROUTINE] — measurement-integrity phase CLOSED: parity tool ruler fixed, four-dimension reporting model replaces the single aggregate
 
 **2026-09-09.** Closes `.claude/plans/phase-measurement-integrity.md` (13 steps, 13 commits,
