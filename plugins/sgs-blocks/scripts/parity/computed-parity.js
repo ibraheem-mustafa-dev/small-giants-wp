@@ -364,7 +364,16 @@ function lineHeightIsMechanicalConsequence(drec, crec, fsResult) {
 // transfers EXCEPT width/height (rendered geometry; a documented limit). Vendor-prefixed props
 // (start with '-') and interaction/animation timing are dropped as non-visual. `interactivity`
 // (v1.1.0) is an experimental clone-side property with zero paint — never a fidelity signal.
-const BLOCK = new Set([
+// Step 10 (measurement-integrity, 2026-09-09, R-31-1/FR-20-2): renamed BLOCK_LEGACY. This
+// literal was previously the ENTIRE blocklist with zero DB binding — measured drift: 5 of the
+// DB's 10 excluded_properties rows (overflow-x, overflow-y, flex-grow, flex-shrink, flex-basis)
+// were absent here and scored live, while every entry below has no DB record at all. The DB is
+// now the authoritative source (see queryExcludedPropertiesDB below); this literal is KEPT
+// functioning as a legacy layer rather than silently dropped, but reconciling each entry
+// against the DB (a genuine reason + decider row, or removal) is future work this step does
+// NOT invent wholesale — a fabricated "decided_by" for 60+ entries nobody actually decided on
+// would be worse than the gap it claims to close. Do not add new entries here; add a DB row.
+const BLOCK_LEGACY = new Set([
   // rendered geometry (container-dependent — documented limit)
   'width', 'height', 'inline-size', 'block-size', 'min-width',
   'min-inline-size', 'min-block-size', 'max-inline-size', 'max-block-size',
@@ -390,6 +399,28 @@ const BLOCK = new Set([
   'animation-fill-mode', 'animation-play-state', 'animation-range', 'animation-composition',
   'speak', 'quotes', 'unicode-bidi', 'isolation', 'mix-blend-mode',
 ]);
+// Step 10: reads sgs-framework.db's excluded_properties table (css_property/reason/
+// decided_by/date) at module load — the authoritative source per FR-20-2, never a hardcoded
+// literal. On DB-unreachable this THROWS (no try/catch, no fallback to an empty or the legacy
+// hardcoded set) — a silently empty exclusion list would score every DB-decided exclusion as
+// a real defect, which is worse than the tool refusing to run at all.
+function queryExcludedPropertiesDB() {
+  const dbPath = path.join(os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db').replace(/\\/g, '/');
+  const pyScript = `import sqlite3, json\nconn = sqlite3.connect("file:${dbPath}?mode=ro", uri=True)\nrows = conn.execute("SELECT css_property FROM excluded_properties").fetchall()\nprint(json.dumps([r[0] for r in rows]))`;
+  const out = execFileSync('python', ['-c', pyScript], { encoding: 'utf8' });
+  return JSON.parse(out);
+}
+const DB_EXCLUDED_PROPERTIES = queryExcludedPropertiesDB();
+{
+  const dbOnlyNew = DB_EXCLUDED_PROPERTIES.filter((p) => !BLOCK_LEGACY.has(p));
+  const toolOnlyLegacy = [...BLOCK_LEGACY].filter((p) => !DB_EXCLUDED_PROPERTIES.includes(p));
+  if (dbOnlyNew.length) console.log(`  [excluded_properties DB] binding ${dbOnlyNew.length} DB row(s) not previously in the tool's blocklist: ${dbOnlyNew.join(', ')}`);
+  console.log(`  [excluded_properties DB] ${toolOnlyLegacy.length} legacy tool-only exclusion(s) have no DB row yet (unreconciled, kept functioning) — see BLOCK_LEGACY's own comment.`);
+}
+// The MERGED, effective blocklist: every DB row is authoritative and always included; the
+// legacy literal keeps functioning until each entry is individually reconciled (Step 10's own
+// scope — see BLOCK_LEGACY's comment).
+const BLOCK = new Set([...BLOCK_LEGACY, ...DB_EXCLUDED_PROPERTIES]);
 // Logical-property duplicates (border-block-end-*, margin-inline-*, inset-*, *-start-start-*)
 // exactly mirror their physical longhands (border-bottom-*, margin-left-*, top/left) — drop
 // them so a single spacing/border diff isn't counted 2-3x. Physical longhands are KEPT.
