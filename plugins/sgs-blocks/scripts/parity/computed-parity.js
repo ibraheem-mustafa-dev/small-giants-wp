@@ -474,7 +474,19 @@ const CAPTURE_SRC = `() => {
   // collapse to a real space rather than being silently deleted and merging two words), THEN
   // collapse whitespace, THEN trim. Both functions reordered together -- they must stay
   // consistent or the two key namespaces (norm vs normFull) desynchronise.
-  const STRIP_RE = /[^a-z0-9 £\\u00A0\\u200B\\uFEFF]/g;
+  // qc-council regression fix (2026-09-09): STRIP_RE preserved a literal space and the specific
+  // unicode whitespace variants, but NOT \\s (which also covers newline/tab/CR/form-feed).
+  // Browsers commonly insert a REAL newline character in .innerText at a block-level element
+  // boundary (e.g. a <span> immediately followed by an <h2> — very common: a section-heading
+  // label + its heading), and this runs BEFORE WS_RE now (Step 5's strip-then-trim reorder), so
+  // that newline was silently DELETED rather than collapsed to a space — gluing "Our signature"
+  // and "Zookies..." into "our signaturezookies" with no space, breaking the ancestor-anchor
+  // match for every element under that heading. Verified live: two runs of the identical tool
+  // against the identical clone content, one with the pre-phase code and one with this bug,
+  // produced DIFFERENT key text at this exact boundary. Adding \\s restores the old behaviour
+  // (newline collapses to a space) without reintroducing the star-glyph phantom-space bug
+  // Step 5 was built to fix (verified: norm('★★★★★ Excellent') === norm('Excellent') still holds).
+  const STRIP_RE = /[^a-z0-9 £\\s\\u00A0\\u200B\\uFEFF]/g;
   const norm = (t) => (t||'').toLowerCase().replace(STRIP_RE,'').replace(WS_RE,' ').trim().slice(0,300);
   const normFull = (t) => (t||'').toLowerCase().replace(STRIP_RE,'').replace(WS_RE,' ').trim();
   const BLOCK = new Set(${JSON.stringify([...BLOCK])});
@@ -1484,6 +1496,22 @@ async function selfTest() {
     const boxR = runTier(d.boxEls, c.boxEls, true, d.defaults, VW);
     const allBorderWidthDiffs = [...textR.mis, ...boxR.mis].flatMap((m) => m.diffs.filter((x) => x.prop === 'border-top-width'));
     check('fixture 3 (dedupe): one authored border-top-width diff scores exactly once, not once per tier', allBorderWidthDiffs.length === 1, `found ${allBorderWidthDiffs.length} occurrence(s)`);
+  }
+
+  // --- Fixture 3b: BLOCK-BOUNDARY WHITESPACE — norm() must not glue adjacent block-level
+  // elements' text together (qc-council regression, 2026-09-09). A <span> immediately followed
+  // by an <h2> is a common real pattern (a section-heading label + its heading); the browser's
+  // own .innerText inserts a real newline at that boundary. STRIP_RE ran BEFORE WS_RE (Step 5's
+  // reorder) and didn't preserve \s, so that newline was silently DELETED rather than collapsed
+  // to a space -- verified live this glued "our signature" + "zookies..." into
+  // "our signaturezookies" (no space) on the real mamas-munches site, breaking the ancestor
+  // anchor for every element under that heading.
+  {
+    const f3bMarkup = `<section><span>Our signature</span><h2>Zookies unique wording control text</h2></section>`;
+    const f3bPage = writeHtml('f3b.html', f3bMarkup);
+    const d3b = await capture(page, toURL(f3bPage), VW);
+    const sectionKey = Object.keys(d3b.boxEls).find((k) => k.includes('zookies'));
+    check('fixture 3b (block-boundary whitespace): adjacent <span>+<h2> text keeps a space at the boundary, not glued', !!sectionKey && sectionKey.includes('signature zookies'), `key=${JSON.stringify(sectionKey)}`);
   }
 
   // --- Fixture 4: SVG SKIP — inline SVG and its children must never be captured ---
