@@ -172,10 +172,18 @@ else its submenu is a simple dropdown. **Interaction precision:** dropdowns/mega
 non-touch (default) / tap on touch / keyboard throughout** (avoids the sticky-hover mobile bug). Mechanics
 (research S1): hover-opens with a hover-intent delay (**default 300 ms; attribute 100–500 ms**) AND
 click/Enter/Space; a hover BRIDGE with a close-grace delay (**default 170 ms**, operator attribute
-`submenuCloseGrace` — `nav-menu/render.php:153,683`; the bridge itself is documented at
-`src/shared/nav-interactivity/mega-disclosure.js:21`). ⚠ **True safe-triangle geometry is DEFERRED
-(STOP-29)** — the shipped mechanism is the close-grace bridge, not a triangle. Do not restate "safe-triangle
-ships" anywhere; the timing constants apply to the hover path only; WCAG 1.4.13
+`submenuCloseGrace` — `nav-menu/render.php::SGS_Nav_Menu_Bar_Renderer::__construct`). ⚠ **Safe-triangle
+geometry SHIPS, layered in front of the close-grace bridge — corrected 2026-09-09.** Both mechanisms are
+built: `mega-disclosure.js::isHeadingIntoOpenPanel` tests the pointer against the open panel's top-left and
+top-right corners via `::pointInTriangle`/`::triangleSign`, and `::scheduleIntentOpen` defers the open while
+that test holds, re-polling every `TRIANGLE_RECHECK_MS`; when the geometry is unavailable it falls through to
+the 170 ms bridge, which is the deterministic fallback. Verify rather than trusting this line:
+`grep -n "pointInTriangle\|isHeadingIntoOpenPanel\|scheduleIntentOpen" plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`
+(5 symbols). ⛔ **This paragraph previously asserted the opposite** — "true safe-triangle geometry is DEFERRED
+(STOP-29) … do not restate 'safe-triangle ships' anywhere" — introduced by `4533682c1` on 2026-09-09 in a
+commit titled "correct false claims". It was a confident negative written with no command beside it, which is
+exactly what the CITE-SYMBOL rule bans; a builder following it would have rebuilt the triangle or deleted the
+working one. The timing constants apply to the hover path only; WCAG 1.4.13
 (Dismissible/Hoverable/Persistent) on the hover panel; caret on expandable items only; distinct hover+focus
 states; active-trail (`aria-current="page"` + a visible style); a per-item **"featured"** flag; content-sized
 overlay with a max-width bound; optional backdrop blur; height-animated; `prefers-reduced-motion`-gated.
@@ -1289,7 +1297,7 @@ implicit one. Made fully explicit across all placements in Phase 3 (§7).
 |---|---|---|
 | a | Burger home | On `sgs/nav-menu` (collapsed), opens the drawer via `drawerRef` |
 | b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default). ⚠ **Amended D1009** — the × close and the optional logo/free-slot are CHROME (attributes), never template blocks; the body seeds `sgs/nav-menu` only. See FR-36-6 |
-| c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**. ⚠ **Corrected 2026-09-09** — safe-triangle does NOT ship; the built mechanism is a 170 ms close-grace bridge, true safe-triangle geometry deferred (STOP-29). See FR-36-4 |
+| c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**. ⚠ **Re-corrected 2026-09-09** — an earlier same-day edit claimed safe-triangle does not ship. It does: the geometric triangle is layered in front of the 170 ms close-grace bridge, which is the fallback. Both are built. See FR-36-4 for the proving command |
 | d | Mega association | **Native menu (Appearance → Menus)** — add the CPT like a page; item carries the post ID (no map/ID); resolved by `object_id`/`get_post()` |
 | e | Drawer modality | **Modal-only** (`<dialog showModal>`) by default. ⚠ **Corrected 2026-09-09** — the "Show header" per-row toggle was NEVER BUILT and is WITHDRAWN (FR-36-6); header rows are not imported into the drawer in any form. A non-modal mode (lusion's live-background shape) is a named, unbuilt follow-on — the `.show()` path exists at `nav-interactivity/store.js:616-619` as a browser-support fallback and needs exposing as an operator control |
 | f | Menu system | **Classic menus PRIMARY**; block `wp_navigation` → Phase 3 extra (Bean) |
