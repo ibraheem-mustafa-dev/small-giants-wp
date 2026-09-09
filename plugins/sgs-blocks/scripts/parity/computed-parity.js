@@ -138,14 +138,19 @@ const THEME_FLUID = {
   // Registered presets (theme.json settings.typography.fontSizes, verbatim). A base px value
   // that matches one of these EXACTLY uses ITS declared fluid setting (respects `fluid:false`
   // per-size, req. 3) instead of the generic auto-generation path below.
+  // Re-synced to theme.json 2026-09-09 (D1007, commits ea877e35a/67253fb03) — that change moved
+  // EVERY registered font-size preset to fluid:false and renamed/added slugs (x-small + medium
+  // removed, "regular"=16px added). Production scoring (fluidEquivalentFontSize) does not read
+  // this list — it parses the clone's OWN declared clamp() text directly — so this re-sync only
+  // restores verifyThemeFluidFreshness()'s drift gate; it cannot move any scored result (Step 0's
+  // own on-fail condition, verified after this edit by re-running against page 2742).
   presets: [
-    { sizePx: 12, fluid: false },                    // x-small
-    { sizePx: 14, fluid: { min: 13, max: 14 } },      // small
-    { sizePx: 18, fluid: false },                     // medium
-    { sizePx: 20, fluid: { min: 17, max: 20 } },      // large
-    { sizePx: 24, fluid: { min: 20, max: 24 } },      // x-large
-    { sizePx: 36, fluid: { min: 26, max: 36 } },      // xx-large
-    { sizePx: 50, fluid: { min: 32, max: 50 } },      // hero
+    { sizePx: 14, fluid: false },   // small
+    { sizePx: 16, fluid: false },   // regular
+    { sizePx: 20, fluid: false },   // large
+    { sizePx: 24, fluid: false },   // x-large
+    { sizePx: 36, fluid: false },   // xx-large
+    { sizePx: 50, fluid: false },   // hero
   ],
 };
 // DRIFT GUARD (adversarial-review finding, 2026-08-04): THEME_FLUID above is a hand-copied
