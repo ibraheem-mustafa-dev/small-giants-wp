@@ -2339,10 +2339,27 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// relies on it staying clipped (ken-burns/parallax bleed containment).
 			// The transition-property + hover/focus-within scale rules need no such
 			// guard — they simply match nothing when no `.sgs-media-el` exists.
+			//
+			// Scale VALUE (2026-09-10, dedup follow-up): reuses `--sgs-hover-scale`,
+			// the SAME custom property `hover-effects.php` already emits for the
+			// client-configurable `sgsHoverScale`/`sgsHoverScalePreset` attributes
+			// (rendered `.sgs-has-hover-scale:hover{transform:scale(var(--sgs-hover-
+			// scale,1))}` in `assets/css/extensions.css`). This is NOT the same
+			// mechanism as that root-hover rule — it scales a nested media CHILD on
+			// hovering its own box, not the composite root, so it stays its own
+			// selector — but it must not be a SECOND hardcoded literal beside an
+			// existing configurable one (CLAUDE.md Rule 3, no carve-outs). `var()`
+			// falls back to the previous hardcoded 1.05 when the block hasn't
+			// opted into the generic hover panel (or the client hasn't set a
+			// value), so this is a zero-regression change: identical output until
+			// a block also declares `enabledExtensions:['hover']`, at which point
+			// the client's own hover-scale setting (already inherited from the
+			// shared root ancestor — custom properties cascade by DOM position,
+			// not by which class scoped the declaration) drives this rule too.
 			if ( $hover_spill_scale && $uid ) {
 				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
 				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}';
-				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(1.05);}}';
+				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
 			}
 
 			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations
