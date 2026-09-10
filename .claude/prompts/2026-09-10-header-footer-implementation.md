@@ -72,17 +72,28 @@ direct-render (no pattern-registry indirection), the container blocks
 set (sticky/transparent/shrink/hide-on-scroll/contrast-safe), and the
 preview-before-active flow.
 
-**Genuinely open:**
+**Genuinely open (re-verified against code 2026-09-11 — this section was previously
+wrong on 3 of 5 items; don't trust old copies of this prompt):**
 - Per-site branded content authoring (the actual blocker above).
-- The visual column-shape picker (FR-37-42) — **correction, 2026-09-11: this
-  line was stale.** The picker is now wired to all three consumers
-  (`sgs/site-footer-row` 2026-08-26, then `sgs/site-header-row` +
-  `sgs/container` 2026-08-27 — `71a5d4d42`, `e90a1b313`). What's actually
-  still open is deploying to the live canary and Bean's eye-verification,
-  not the code rollout.
-- Scrolled-colour control (FR-37-45) — not built, not designed.
+- The visual column-shape picker (FR-37-42) — code rollout DONE on all three
+  consumers since 2026-08-27 (`71a5d4d42`, `e90a1b313`). Only live-canary
+  deployment + eye-verification remain.
+- FR-37-12 never-overflow sweep — header AND footer rows both already pass a
+  real 109-width sweep at 0 overflow. What's left is sweeping Indus Foods'
+  own pages on the same canary install (there's no second WordPress site any
+  more — palestine-lives.org retired 2026-08-10).
 - The rules engine (FR-37-20) targets file-registered patterns only, not
-  CPT posts.
+  CPT posts — still genuinely open, this one was correct.
+
+**Already built, previously mis-flagged as open — do not redo:**
+- FR-37-16 (container responsive attrs → object shape) — done, `9b2996a68`
+  (2026-09-05).
+- FR-37-18 (inspector roster membership) — both containers are in
+  `roster.json`; `sgs/site-footer` still has some real typography GAPs to
+  close, but that's a smaller residual than "not in the roster."
+- Scrolled-colour control (FR-37-45) — built: `backgroundColourScrolled` /
+  `textColourScrolled` / `headerTransparentDirection` all exist and are wired
+  in `site-header/render.php`.
 
 **The strategic plan is stalled, not abandoned.** `.claude/plans/2026-07-29-
 merged-spec36-37-track-strategic-plan.md` lays out 5 waves. Only Wave 1 and

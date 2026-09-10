@@ -21,15 +21,25 @@ status_history:
     Bean's rule — keep an operator TOGGLE, bin an AUTOMATIC behaviour — decided it;
     code confirms it is a toggle. Spec 36 amended in the same commit per §1.2's
     both-specs-same-commit boundary rule. §8.2 open question 1 closed.
-  - 2026-09-11 — staleness correction pass (fact-check requested by Bean). FR-37-42 /
-    §3.3's "still to roll out to site-header-row + sgs/container" claim was stale —
-    both were wired 2026-08-27 (`71a5d4d42`, `e90a1b313`), one day after the cited
-    cutoff; corrected in both places. This same stale claim had already propagated
-    into `.claude/prompts/2026-09-10-header-footer-implementation.md`, corrected there
-    too. FR-37-29 was internally self-contradictory (FR text said NOT-BUILT, §5 table
-    said DEPLOYED) and both readings were moot — the per-control switcher it targets
-    was deleted 2026-08-19 in favour of a global toggle (Spec 35); FR rewritten to flag
-    it needs a fresh a11y check against the new control, not a continuation.
+  - 2026-09-11 — staleness correction pass (fact-check requested by Bean), two rounds.
+    Round 1: FR-37-42/§3.3's "still to roll out to site-header-row + sgs/container"
+    claim was stale — both were wired 2026-08-27 (`71a5d4d42`, `e90a1b313`); corrected
+    in both places, and in `.claude/prompts/2026-09-10-header-footer-implementation.md`
+    which had copied the same stale claim. FR-37-29 collapsed to a one-line
+    `SUPERSEDED` placeholder — the per-control switcher it targeted was deleted
+    2026-08-19 for a global toggle (Spec 35); the FR no longer applies.
+    Round 2 (Bean pushed back — "are you sure 16 isn't done?"): direct code
+    verification found FR-37-16 (container tier-object migration), FR-37-18 (roster
+    membership) and FR-37-45 (scrolled-colour control) were ALL already built and the
+    spec hadn't been updated — corrected to BUILT/PARTIAL with commit evidence
+    (`9b2996a68`, `roster.json`, `render.php:255-266`+`:162-165`). FR-37-12 was also
+    found narrower than stated: both header AND footer rows have a real 109-width
+    sweep at 0 overflow (the "footer never swept" claim was wrong); what's left is
+    Indus Foods' own pages on the same canary install, not a second WordPress site
+    (palestine-lives.org was retired 2026-08-10). **Lesson: a 3-for-5 stale-status hit
+    rate on a single ad-hoc check means this spec's `Status:` lines cannot be trusted
+    without re-verifying against code — treat every "NOT-BUILT"/"PARTIAL" in this doc
+    as a hypothesis, not a fact, until spot-checked.**
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -930,10 +940,20 @@ VERIFIED 2026-08-01, D456: 3 columns at 1023–900px, a content-driven drop to 2
 
 #### FR-37-12 — Never-overflow contract
 §3.6 holds on every shipped header and footer.
-**Status:** `PARTIAL` — a `min-width:0` wrapper backstop shipped but was never
-live-emission-proven (LEDGER, Spec 35 track).
-**Done when:** `scrollWidth <= innerWidth` **swept 1400px → 320px in ≤10px steps** (`plugins/sgs-blocks/scripts/row-fit-sweep.mjs`) on both dev sites, measured on
-the live page, not asserted.
+**Status:** `PARTIAL — corrected 2026-09-11, narrower than previously stated.` Both the header row
+(`reports/visual-diff/site-header-row-2026-08-01.md`) AND the footer row
+(`reports/visual-diff/site-footer-row-2026-08-01.md`, D456) have a real 1400→320px, ≤10px-step
+`row-fit-sweep.mjs` sweep with **0 of 109 widths overflowing**, both including negative controls
+and a WebKit re-run. The earlier claim that "the footer has never been swept" was wrong — read the
+report directly, don't trust the summary. **What's genuinely still open:** there is no longer a
+literal second WordPress install to sweep — `palestine-lives.org` was retired 2026-08-10, so
+`sandybrown` is the only site (project CLAUDE.md). "Both dev sites" now means: sweep Indus Foods'
+own pages on that same install (different content + `theme-snapshot.json` tokens can shift the
+transition widths — the footer report itself flags real footer copy will move its 860px/1160px
+cliffs), which has not been done.
+**Done when:** `scrollWidth <= innerWidth` **swept 1400px → 320px in ≤10px steps**
+(`plugins/sgs-blocks/scripts/row-fit-sweep.mjs`) on the canary's own header/footer content — met —
+**and** on Indus Foods' pages on the same install — not yet done.
 
 ### Behaviours
 
@@ -1043,19 +1063,25 @@ cascading from desktop when a tier is null. Device tiers are 768 / 1024 per
 > only, kept out of the hash path, because reordering keys would re-key every scoped-CSS
 > selector and break the collector's cross-page dedup.
 >
-> **Object-typed tiered attrs live on the ROWS, not the containers:** `sgs/site-header` has
-> 0 object-typed attrs and 20 flat suffixed ones (`maxWidthTablet`, `paddingTopMobile`, …);
-> `sgs/site-header-row` has 5 object-typed (`gap`, `maxWidth`, `contentWidth`, `padding`,
-> `margin`) and 0 flat.
+> **Corrected 2026-09-11 — this used to be true and no longer is.** Object-typed tiered attrs
+> used to live on the ROWS only, with both containers entirely flat (20 suffixed attrs on
+> `site-header`). The library-wide tier-object migration (`plugins/sgs-blocks/scripts/
+> migrate-tier-object.py`) closed the containers too — see Status below. Do not cite the old
+> "0 object-typed attrs on site-header" claim; it is stale.
 
-**Status:** `PARTIAL` — object shape on the ROW blocks (5 attrs each); the CONTAINER blocks are
-entirely flat (20 suffixed attrs on `site-header`). Converting the containers is real work, not
-polish, and falls under FR-37-14's clean-reshape clause (pre-live, no migration, no fallback);
-existing dev instances are recovered via the Site Editor's "Attempt Block Recovery", the only
-permitted route under the no-deprecations policy.
+**Status:** `✅ BUILT` — confirmed 2026-09-11 by reading `site-header/block.json` and
+`site-footer/block.json` directly: `padding`, `margin`, `maxWidth`, `contentWidth`,
+`borderRadius`, `borderWidth`, `minHeight`, `contentBandPadding`, `backgroundOverlayOpacity` are
+all object-shaped (`{desktop, tablet, mobile}`), matching `sgs/container`'s shape exactly. Closed
+by commit `9b2996a68` (2026-09-05, "migrate padding/margin/borderRadius to tier-of-boxes across
+the framework") with a follow-up QC commit `5fdaafa52` (2026-09-11) settling attribute
+classification. The only remaining device-suffixed attrs on either container are
+`backgroundImageTablet`/`Mobile` and `bgVideoTablet`/`Mobile` — media-asset pickers, correctly
+flat under the framework's own RECORD/ASSET taxonomy, not the layout/spacing shape this FR is
+about.
 **Done when:** every responsive property on all four blocks uses the object shape; no flat
-`*Tablet`/`*Mobile` attr remains on either container; uid generation is unchanged and
-`STOP-NO-KSORT` still holds.
+`*Tablet`/`*Mobile` attr remains on either container for a layout/spacing property; uid
+generation is unchanged and `STOP-NO-KSORT` still holds. ✅ met.
 
 #### FR-37-17 — Site Info + global defaults
 §3.7 holds.
@@ -1065,8 +1091,16 @@ verified on both dev sites.
 
 #### FR-37-18 — Inspector conformance
 Every control in both containers satisfies Spec 35 Part L (the per-block definition of done).
-**Status:** `NOT-BUILT` — neither container appears in the Spec 35 manifested roster.
+**Status:** `PARTIAL — corrected 2026-09-11.` The "neither container appears in the manifested
+roster" claim was wrong: both `sgs/site-header` and `sgs/site-footer` are in
+`plugins/sgs-blocks/scripts/consistency/roster.json` (Spec 35 UNIT A0's audit denominator) with
+populated entries, and `check-element-manifest-conformance.js --json` reports `manifested_count:
+83, skipped_count: 0` across the whole framework — neither block is skipped. What's genuinely
+still open: `sgs/site-footer` has real per-property GAP findings against some text-typography
+members (e.g. `css:font-size`) in that same conformance run — being IN the roster is not the same
+as passing it with zero GAPs.
 **Done when:** both containers pass `check-element-manifest-conformance.js` with zero GAPs.
+Roster membership is met; zero-GAPs is not yet confirmed.
 
 #### FR-37-19 — Accessibility feedback is informational only
 Contrast/a11y feedback from operator choices is a **passive notice** in the editor and admin —
@@ -1284,25 +1318,9 @@ and the logo/nav cluster visibly centred in the canvas.
 **Done when:** at least one preset control exists on the header container and sets its
 attributes such that the converter round-trips them unchanged. ✅ met.
 
-#### FR-37-29 — Device-switcher accessibility — SUPERSEDED, needs a rewrite (flagged 2026-09-11)
-Originally: the per-control inspector device switcher (desktop/tablet/mobile toggle shown on each
-individual setting) should be a real `tablist` with roving tabindex and arrow-key navigation, with
-targets ≥44×44px.
-
-**This FR's own text and the §5 summary table entry for the same FR contradicted each other**
-(the text said `NOT-BUILT`, citing a plain `ButtonGroup` in `ResponsiveControl.js:77-89`; the §5
-table said `DEPLOYED (unexercised)`, citing a landed fix commit) — neither had been reconciled
-after the fix shipped. **Both readings are now moot regardless of which was once correct:** the
-per-control switcher this FR describes was deleted entirely on 2026-08-19 in favour of a global
-device-tier toggle docked at the bottom of the inspector (a Spec 35 change), and `inspector-scan`
-rule 25 now forbids re-adding a per-control switcher. There is no per-control tablist left to make
-accessible.
-**Status:** `NEEDS REWRITE` — the control surface this FR targets no longer exists. Before closing
-or reopening this FR, someone must check whether the NEW global device-tier toggle itself meets
-the tablist/roving-tabindex/44px bar — that is a fresh, small a11y check against different code,
-not a continuation of this FR.
-**Done when (as rewritten):** axe reports zero violations on the global device-tier toggle and its
-targets measure ≥44px.
+#### FR-37-29 — SUPERSEDED (2026-09-11)
+The per-control device switcher this FR targeted was deleted 2026-08-19 in favour of a global
+device-tier toggle (Spec 35). This FR no longer applies. Number retained, not reused.
 
 #### FR-37-30 — WP-CLI surface (developer and pipeline only)
 A reduced `wp sgs` command set covers the header/footer lifecycle non-interactively: set/clear
@@ -1716,10 +1734,18 @@ can be inverted (e.g. a dark scrolled state instead of the hardcoded light `surf
 constraint recorded against `P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` — read that block
 before changing the scrolled-state CSS; the `!important` is there because a lower-specificity rule
 was previously losing the flip entirely, not by accident.
-**Status:** `NOT-BUILT` — gap recorded 2026-08-19, not yet designed.
+**Status:** `✅ BUILT — corrected 2026-09-11.` Confirmed directly in code: `site-header/block.json`
+declares `backgroundColourScrolled`, `backgroundColourScrolledGradient` and `textColourScrolled`
+(wired into `supports.sgs.elements.wrapper.states.scrolled.attrMap`, so they're real inspector
+controls, not orphaned schema), and `render.php:255-266` reads them directly with no hardcoded
+fallback. The direction switch also exists: `render.php:162-165` reads `headerTransparentDirection`
+or `solid-first`) to let the operator invert which state is transparent vs solid. Live-canary
+eye-verification against the `P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` regression is the
+only piece not independently re-confirmed in this pass.
 **Done when:** the scrolled-background colour is an operator-set control (not the hardcoded
-`surface` token), the transparent/solid pair can be inverted, and the
-`P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` regression stays fixed under the new control.
+`surface` token) — met; the transparent/solid pair can be inverted — met; the
+`P-TRANSPARENT-HEADER-SCROLLED-BG-NOT-FLIPPING` regression stays fixed under the new control — not
+re-verified live in this pass.
 
 ---
 
@@ -1763,13 +1789,13 @@ was previously losing the flip entirely, not by accident.
 | Shrink-hides-element + headerEssential guardrail (FR-37-39) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` — chosen child `display:none` while shrunk, sibling row unaffected; guardrail proven SERVER-SIDE (target pointed at the logo → no hide attr, no rule) and declarative via `supports.sgs.headerEssential`, not a hardcoded list |
 | Footer parity for per-row behaviours (FR-37-37/38) | `✅ LIVE-VERIFIED 2026-07-26` — measured on the ACTIVE footer **CPT 1654** (not the obvious 1571; check `sgs_active_footer_cpt_id`): top row 60px→30px, siblings unaffected |
 | Sticky model — HEADER-level, rows collapse (FR-37-40) | `✅ BUILT + LIVE-VERIFIED 2026-07-26` (`5716f7b7` D391 + `494e5d50` D392) — per-row `position:sticky` REJECTED on the short-parent trap (D389); offset chain deliberately not built; footer rows get no sticky (→ Spec 18). Scroll-padding publisher gated on MEASURED pinning, explicit `0px` otherwise, negative-control-verified. Collapse-when-pinned: gap = **0.00** unrounded at desktop/tablet/mobile; non-pinned path byte-identical `translateY(-100%)` with no inline height; header re-publishes its shrunken height (92→68px) for free. Sticky-breaking-ancestor guard warns, advisory only. D4 multi-sticky warning + sticky↔hide-on-scroll exclusion deliberately NOT built (both specified against the rejected per-row model). Not live-verified: `prefers-reduced-motion` |
-| Never-overflow (FR-37-12) | `⚠ RE-VERIFY` — the 2026-07-23 evidence below was taken at THREE FIXED WIDTHS and predates the D420/D455 sweep requirement; a three-point pass is exactly what missed D420 (clean at 770px, broken at 766px). The header row WAS re-swept at D455 (`reports/visual-diff/site-header-row-2026-08-01.md`, 109 widths); the FOOTER and the second dev site have NOT been swept. Original evidence: `scrollWidth <= innerWidth` at 375 / 768 / 1440 on the canary (−15px at all three). The only elements past the viewport edge are inside the testimonial carousel, a horizontal-scroll container by design |
+| Never-overflow (FR-37-12) | `PARTIAL (corrected 2026-09-11)` — both the header row (D455) AND the footer row (D456) have a real 109-width, ≤10px-step sweep, **0 overflow on either** — `reports/visual-diff/site-header-row-2026-08-01.md` and `site-footer-row-2026-08-01.md`. The previous claim that the footer was unswept was wrong. What's actually still open: sweeping Indus Foods' own pages on the same canary install (there is no separate second WordPress site any more — `palestine-lives.org` retired 2026-08-10) |
 | Container-query row reflow (FR-37-35) | `✅ LIVE-VERIFIED 2026-07-23` — `containerType: inline-size` computed on both real rendered rows. Adds a container-level layer; no existing viewport `@media` rule was altered (STOP-CONTAINER-TIER-IS-NOT-VIEWPORT) |
 | sticky / transparent / shrink | `BUILT` — reshaped tri-state 2026-07-28, see FR-37-14 row below (superseded the earlier flat shape) |
 | hide-on-scroll + transparent + shrink (FR-37-13) | `✅ SHIPPED + LIVE-VERIFIED` (D376, 2026-07-24) — fix B landed: `sgs/site-header` renders a semantic `<header>`; view.js + all 21 `header-behaviours.css` selectors retargeted to `header.sgs-site-header`. Live on the canary (CPT 1655): scroll-down hides (`translateY(-119px)`), scroll-up returns; one banner landmark; F1 publisher revived; axe zero NEW hit. Plus Option B one-header guard + editor `<header>`. See FR-37-13 above |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
-| Device-switcher a11y (FR-37-29) | `SUPERSEDED (corrected 2026-09-11)` — this row previously said `DEPLOYED (unexercised)` while the FR's own body text said `NOT-BUILT`; both were true of a control (the per-control `DeviceTabs` switcher) that was deleted 2026-08-19 in favour of a global device-tier toggle (Spec 35). Neither status describes current code. See the rewritten FR-37-29 above — the open work, if any, is a fresh a11y check on the new global toggle |
+| Device-switcher a11y (FR-37-29) | `SUPERSEDED (2026-09-11)` — the control it targeted was deleted 2026-08-19; see FR-37-29 |
 | Tri-state shape (FR-37-14) | `✅ BUILT + LIVE-VERIFIED 2026-07-28` (`e4bd72ef`+`eb255f06`) — all 4 behaviour attrs reshaped to tri-state objects on the canonical `resolveTier()` cascade; single-writer merged `@media` emission; rows unified onto `sgs_resolve_on_tiers()`; `sgs_resolve_tier_booleans()` DELETED |
 | Scoped behaviour CSS (FR-37-15) | `DONE` (2026-08-19) — all FIVE behaviours are `#uid`-scoped per-tier CSS. sticky/transparent/shrink/hide-on-scroll via `sgs_emit_tier_rules()` (2026-07-28); `contrastSafe` via the new N-value `sgs_emit_tier_rules_map()` (2026-08-19, FR-37-44), retiring the last body-class rules |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
