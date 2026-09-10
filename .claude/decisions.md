@@ -1,3 +1,35 @@
+## D1019 [ROUTINE] — R8's WebGL reference-file pulling admitted as a per-source, Bean-owned risk decision — NOT a legal clearance
+
+**2026-09-10.** Extends D880 (the Stripe shader-porting precedent, 2026-08-28) from a one-off
+exception into a named, repeatable capability inside R8's Tier 4b/4c motion-recognition design
+(`.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md`). Bean directed that when the
+pipeline detects genuine WebGL usage on a cloned source (Tier 4a's presence-detection) and Tier
+4c's style-classification can't approximate it with SGS's existing 2 Tier W effects, the
+operator gets the option to pull the actual reference file(s) involved — same shape as the
+Stripe precedent — as a documented, per-source, Bean-confirmed action, never an automated
+pipeline default.
+
+**What this decision is, precisely — and what it is NOT.** Bean's stated reasoning: the
+underlying work always gets rebuilt and made modular into SGS's own attribute/control system
+afterward, so he judges the practical risk acceptable for his business. **This is recorded as
+Bean's own risk-tolerance call, not a legal clearance.** Reworking copied material into a new
+form is what makes it a *derivative work* — under UK/US copyright that still generally requires
+the original owner's permission absent a specific exception (fair use/fair dealing, fact-specific,
+not automatic) — the rebuild step changes what ships, it does not retroactively license the
+initial copy. D880's own record already flagged this precisely: a UK IP solicitor's opinion on
+the client-indemnity question was recommended before the one-off Stripe exception, and it was
+never obtained. **That flag is NOT resolved by this decision and stays open** — if anything, it
+carries MORE weight now that this is a repeatable feature firing on every future clone rather
+than one considered one-off act, since the exposure is no longer bounded to a single named
+source.
+
+**What's built as a result:** Tier 4b/4c's design now includes "pull the reference file(s)" as a
+real, Bean-confirmed-per-source option alongside style-approximation — see the plan doc for the
+mechanism. What is NOT changed: no automated pulling, no blanket policy applied without Bean's
+per-source confirmation, and the solicitor's-hour recommendation remains an open, named item —
+carried forward here so a future session does not read Bean's risk-acceptance as a legal opinion
+that was never actually obtained.
+
 ## D1018 [ROUTINE] — Tier-migration requirements doc's three open design questions settled; R1/R9/R10 batch shipped
 
 **2026-09-10.** Settled the three design questions the tier-migration requirements doc had flagged
