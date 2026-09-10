@@ -211,6 +211,24 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
         "check",              # standalone check icon element
         "verified-icon",      # verification checkmark icon
         "badge-number",       # numeric badge (notification-style)
+        # 2026-09-10 (Bean-directed, trust-bar icon-circle background gap):
+        # sgs/trust-bar's block_attributes rows for iconCircleBackground /
+        # iconColour / iconCircleBorderRadius / iconCircleShadow etc. were
+        # seeded with css_element='icon-badge' — a DB-internal semantic label
+        # for "the icon's circular badge wrapper", chosen at attr-classification
+        # time and never actually present as a literal class on ANY draft (nor
+        # in the block's own rendered CSS, which uses .sgs-trust-bar__circle).
+        # The real draft BEM element is 'icon' (.sgs-trust-bar__icon). Neither
+        # 'icon' nor 'icon-badge' bridged to the other anywhere in this table,
+        # so attr_for_area_property('sgs/trust-bar','icon','background-color')
+        # gapped even after assembly.py's step-3d walker was fixed to REACH the
+        # node — proven via a direct convert_section() run against the real
+        # trust-bar draft markup. Adding 'icon-badge' as an alias of the
+        # canonical 'icon' slot lets attr_for_area_property's canonical-slot
+        # fallback (added same day) resolve area='icon' -> canonical 'icon' ->
+        # ALSO tried as an alias target, closing the gap without inventing a
+        # second, competing lookup path or hand-editing block_attributes rows.
+        "icon-badge",
     ]),
 
     # ----- rating / stars slot aliases ---------------------------------

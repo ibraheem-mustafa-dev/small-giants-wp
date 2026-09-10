@@ -62,6 +62,53 @@ def _fold_trace(stage: str, **kwargs: Any) -> None:
     detail = " ".join(f"{k}={v!r}" for k, v in sorted(kwargs.items()))
     _LOG.warning("[fold-gap] %s %s", stage, detail)
 
+
+def _walk_area_nodes(node: Any) -> Any:
+    """Yield ``(child, area)`` for EVERY BEM-element descendant of ``node``,
+    at ANY depth, in document (pre-order) order — full traversal, not
+    direct-children-only.
+
+    Fixes the step-3d GRID-PER-AREA fold's original ``section_root.children``
+    walk, which only ever saw DIRECT children of the section root. A
+    repeated/collection child (trust-bar's badge-item repeater, a
+    product-card's pill wrapper) nests its own named area two or more levels
+    deep — e.g. trust-bar's icon-circle sits inside a badge-item wrapper
+    inside the repeater — so it never reached the loop at all, and its CSS
+    (DB-confirmed correctly routable: icon-badge -> iconCircleBackground) was
+    silently excluded before ``route_area_css_to_block_attrs`` was ever
+    attempted, with no gap trace (the node itself was never examined).
+
+    Deliberately NOT shallow-stop-on-first-match: an intermediate wrapper
+    (trust-bar's repeater ``__list`` / ``__item`` / ``__badge``) legitimately
+    carries its own BEM-element class under the SGS-BEM convention, so
+    stopping descent at the first match would hide every genuinely deeper
+    area (verified empirically against a synthetic badge-repeater fixture —
+    stopping at ``__list`` never reached ``__icon-circle`` at all). Visiting
+    every node is safe: ``route_area_css_to_block_attrs`` is a no-op for a
+    node with no own CSS declarations, and a node whose element has no
+    matching ``block_attributes`` row is an honest DB-gated gap (never a
+    coerced/wrong write) — see ``attr_for_area_property``'s docstring.
+
+    The double-match guard lives in the CALLER, not here: a once-per-area-
+    NAME set (``_seen_areas``) so a REPEATED area (every badge item carries
+    the identical element class) routes from its first, document-order
+    occurrence only — matching the pre-existing ``attrs.setdefault``
+    collision precedent used everywhere else in this function (earlier
+    occurrence wins, never overwritten by a later duplicate).
+    """
+    for _child in getattr(node, "children", None) or []:
+        if not getattr(_child, "name", None):
+            continue  # skip NavigableString / non-Tag nodes
+        _el: str | None = None
+        for _cls in (_child.get("class", []) or []):
+            _bem = db_lookup.parse_sgs_bem(_cls)
+            if _bem and _bem.element:
+                _el = _bem.element
+                break
+        if _el is not None:
+            yield _child, _el
+        yield from _walk_area_nodes(_child)
+
 from converter.context import ChildBlock, ContentGap, Recognition, ScalarLift
 from converter.recognition import variant_attrs
 from converter.dispatch_spine import emit_block_markup
@@ -367,17 +414,23 @@ def build_block_markup(
         from converter.services.fold_helpers import route_area_css_to_block_attrs
         from converter.services.styling_helpers import serialise_residual_bands
         from converter.models import ResidualBand
-        for _area_child in section_root.children:
-            if not getattr(_area_child, "name", None):
-                continue  # skip NavigableString / non-Tag nodes
-            _area_el: str | None = None
-            for _cls in (_area_child.get("class", []) or []):
-                _bem = db_lookup.parse_sgs_bem(_cls)
-                if _bem and _bem.element:
-                    _area_el = _bem.element
-                    break
-            if _area_el is None:
+        # Widened 2026-09-10 (Bean-directed root-cause fix): walk ALL BEM-element
+        # descendants at any depth (full traversal, see _walk_area_nodes
+        # docstring), not just DIRECT children of section_root — a
+        # repeated/collection child (trust-bar
+        # badge-item repeater, product-card pill wrapper) nests its own named area
+        # two-plus levels deep, so the old direct-children-only loop never even
+        # examined it (silent exclusion, no gap trace). `_seen_areas` is the
+        # explicit once-per-area guard: a REPEATED area name (every badge item
+        # carries the same element class) routes from its first occurrence only —
+        # same precedence as the `attrs.setdefault` collision rule used throughout
+        # this function — so a later duplicate never re-triggers the route call or
+        # overwrites the first area's already-folded attrs.
+        _seen_areas: set[str] = set()
+        for _area_child, _area_el in _walk_area_nodes(section_root):
+            if _area_el in _seen_areas:
                 continue
+            _seen_areas.add(_area_el)
             _area_attrs: dict = {}
             _area_sink: list[ResidualBand] = []
             route_area_css_to_block_attrs(

@@ -43,6 +43,15 @@ from converter.services.styling_helpers import (
     split_value_unit,
     strip_important,
 )
+# expand_background_border_shorthand is imported LAZILY inside
+# route_area_css_to_block_attrs (not here at module level) — root_supports.py
+# imports converter.dispatch_spine, which imports converter.resolvers, which
+# imports converter.services.content_band, which imports THIS module
+# (fold_helpers) for `_resolve_co_declared_var` — a module-level import here
+# would deadlock that cycle at import time (proven: ImportError "partially
+# initialized module 'converter.dispatch_spine'" the first time this was
+# tried as a top-level import). Same shape as assembly.py's own documented
+# late-bound `_ext` import.
 
 
 # ---------------------------------------------------------------------------
@@ -298,6 +307,27 @@ def route_area_css_to_block_attrs(
     for prop in ("padding", "margin"):
         base_decls = _expand_box_shorthand(base_decls, prop)
         bp_decls = {k: _expand_box_shorthand(v, prop) for k, v in bp_decls.items()}
+
+    # background/border shorthand -> longhand (2026-09-10, Bean-directed —
+    # trust-bar icon-circle background gap, 3rd distinct root cause found in
+    # the same investigation). This per-AREA collection never normalised
+    # `background`/`border` shorthand the way the OUTER css_pass branch
+    # already does (root_supports.expand_background_border_shorthand,
+    # D307) — proven via a real convert_section() run against the trust-bar
+    # draft: the draft declares `background: white` (shorthand) on
+    # `.sgs-trust-bar__icon`, `attr_for_area_property` only ever matches on
+    # `background-color` (the DB-registered css_property for
+    # iconCircleBackground), and a bare `background` key has no per-area
+    # destination of its own — so the badge circle's colour gapped silently
+    # even after the depth-walker + css_element-alias fixes landed. Reuses
+    # the SAME existing, already-tested normalisation function rather than
+    # re-deriving shorthand-splitting logic a second time (R-31-9) — mutates
+    # each decls dict in place; a value the draft already declared as the
+    # longhand always wins (the function only ever `setdefault`s).
+    from converter.services.root_supports import expand_background_border_shorthand
+    expand_background_border_shorthand(base_decls, slug=owning_block)
+    for _tier_decls in bp_decls.values():
+        expand_background_border_shorthand(_tier_decls, slug=owning_block)
 
     _area_excluded = _CROSS_NODE_EXCLUDED_PROPS | {"grid-area", "width", "height",
                                                    "max-width", "min-width",

@@ -5620,6 +5620,69 @@ def attr_for_area_property(
             )
             return canon_rows[0][0]
 
+    # Check 3 (fallback, 2026-09-10 — Bean-directed, trust-bar icon-circle gap):
+    # Check 2 only resolves alias -> canonical (`area` is a synonym of a
+    # DIFFERENTLY-named canonical slot registered as the block's css_element).
+    # It cannot resolve the MIRROR case: `area` IS ALREADY the universal
+    # canonical name (self-mapped in `slots`, e.g. 'icon'), but THIS block's
+    # attr was seeded under a SIBLING alias of that same canonical
+    # (sgs/trust-bar's iconCircleBackground etc. carry css_element='icon-badge',
+    # an alias of canonical 'icon' chosen to disambiguate the circular badge
+    # wrapper from the universal icon-CONTENT slot) — proven via a direct
+    # convert_section() run against the real trust-bar draft markup: Check 1
+    # (literal 'icon') and Check 2 (canonical_slot_for('icon') == 'icon', so
+    # `canonical != area` is False, no retry) both miss, silently.
+    #
+    # Broadcast to every OTHER alias sharing `area`'s canonical slot (siblings,
+    # not `area` or `canonical` themselves — both already tried) and try each
+    # as a literal css_element. A universal broadening of the SAME 2026-09-10
+    # fallback, not a per-block carve-out: any block whose attr is seeded under
+    # a sibling alias rather than the canonical name benefits identically.
+    # Ambiguous only if 2+ DIFFERENT sibling aliases each independently match
+    # (never silently picks one) — a single alias matching once is the normal,
+    # expected case.
+    if canonical:
+        _sibling_hits: list[tuple[str, str]] = []  # (attr_name, via_alias)
+        for _sibling in _slot_alias_siblings(canonical):
+            if _sibling in (area, canonical):
+                continue
+            try:
+                _sib_rows = _query(_sibling)
+            except sqlite3.OperationalError:
+                _sib_rows = []
+            if len(_sib_rows) > 1:
+                raise AmbiguousAreaAttrError(
+                    f"attr_for_area_property({block_slug!r}, {area!r}, {css_property!r}): "
+                    f"{len(_sib_rows)} base-domain attrs match via sibling alias "
+                    f"{_sibling!r} of canonical {canonical!r} "
+                    f"({', '.join(r[0] for r in _sib_rows)}); "
+                    "add a css_state/css_tier disambiguator or remove the duplicate registration."
+                )
+            if _sib_rows:
+                _sibling_hits.append((_sib_rows[0][0], _sibling))
+
+        if len(_sibling_hits) > 1 and len({h[0] for h in _sibling_hits}) > 1:
+            raise AmbiguousAreaAttrError(
+                f"attr_for_area_property({block_slug!r}, {area!r}, {css_property!r}): "
+                f"{len(_sibling_hits)} DIFFERENT sibling aliases of canonical {canonical!r} "
+                f"each independently match "
+                f"({', '.join(f'{a}(via {v})' for a, v in _sibling_hits)}); "
+                "add a css_state/css_tier disambiguator or remove the duplicate registration."
+            )
+        if _sibling_hits:
+            _attr_name, _via = _sibling_hits[0]
+            _trace(
+                "attr_for_area_property_hit",
+                block_slug=block_slug,
+                area=area,
+                css_property=css_property,
+                attr_name=_attr_name,
+                match_via="slot_alias_sibling",
+                canonical_slot=canonical,
+                sibling_alias=_via,
+            )
+            return _attr_name
+
     _trace(
         "attr_for_area_property_miss",
         block_slug=block_slug,
@@ -5627,6 +5690,40 @@ def attr_for_area_property(
         css_property=css_property,
     )
     return None
+
+
+@functools.lru_cache(maxsize=1)
+def _slot_alias_groups() -> dict[str, list[str]]:
+    """Return {canonical_slot: [every alias + the canonical itself]} for
+    element-scope slots — the RAW grouping ``_slot_synonyms()`` flattens away.
+
+    Declarative (reads the same `slots` table `_slot_synonyms()` reads);
+    used solely by ``attr_for_area_property``'s Check 3 (sibling-alias
+    broadcast) to find every OTHER name registered under the same canonical
+    concept as a resolved ``area`` token.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT slot_name, aliases FROM slots WHERE scope='element'"
+        ).fetchall()
+    finally:
+        conn.close()
+    out: dict[str, list[str]] = {}
+    for canonical, aliases_json in rows:
+        group = [canonical]
+        if aliases_json:
+            try:
+                group.extend(json.loads(aliases_json))
+            except (ValueError, TypeError):
+                pass
+        out[canonical] = group
+    return out
+
+
+def _slot_alias_siblings(canonical: str) -> list[str]:
+    """Every name (aliases + the canonical itself) registered under `canonical`."""
+    return _slot_alias_groups().get(canonical, [])
 
 
 @functools.lru_cache(maxsize=256)
