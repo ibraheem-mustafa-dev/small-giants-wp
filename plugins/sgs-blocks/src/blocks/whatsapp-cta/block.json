@@ -40,6 +40,7 @@
 					"margin"
 				],
 				"borderRadius": [
+					"borderRadius",
 					"borderRadiusTablet",
 					"borderRadiusMobile"
 				]
@@ -63,7 +64,7 @@
 						"css:color-gradient": "labelColourGradient",
 						"css:padding": "padding",
 						"css:margin": "margin",
-						"css:border-radius": "native:__experimentalBorder.radius"
+						"css:border-radius": "borderRadius"
 					},
 					"states": {
 						"hover": {
@@ -84,10 +85,6 @@
 		"color": {
 			"background": false,
 			"text": false,
-			"__experimentalSkipSerialization": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
 			"__experimentalSkipSerialization": true
 		}
 	},
@@ -182,6 +179,10 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the button's :hover background via background-image. Non-empty wins over backgroundColourHover; falls back to backgroundColourGradient, then none."
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {}
 		},
 		"borderRadiusTablet": {
 			"type": "object",

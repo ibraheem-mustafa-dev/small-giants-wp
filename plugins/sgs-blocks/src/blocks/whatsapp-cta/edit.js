@@ -33,7 +33,6 @@ function boxShorthand( box, keys ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
-		style,
 		phoneNumber,
 		message,
 		variant,
@@ -45,6 +44,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourGradient,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
+		borderRadius,
 		borderRadiusTablet,
 		borderRadiusMobile,
 	} = attributes;
@@ -82,7 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}
-	const radiusPreview = boxShorthand( style?.border?.radius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		rootStyle.borderRadius = radiusPreview;
 	}
@@ -261,9 +261,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Border panel ── border-radius routes to WP-native
-				   style.border.radius (base, skip-serialised → scoped) plus
-				   the borderRadiusTablet/borderRadiusMobile tier attrs. */ }
+				{ /* ── Border panel ── border-radius is a block-private object attr
+				   at all three tiers (borderRadius/Tablet/Mobile) — no more
+				   WP-native style.border.radius (retired 2026-09-11, matching
+				   the whatsapp-cta margin/padding shape already private). */ }
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -271,13 +272,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ {
-							base: style?.border?.radius ?? {},
+							base: borderRadius ?? {},
 							tablet: borderRadiusTablet ?? {},
 							mobile: borderRadiusMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, border: { ...style?.border, radius: next } } } );
+								setAttributes( { borderRadius: next } );
 							} else {
 								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}

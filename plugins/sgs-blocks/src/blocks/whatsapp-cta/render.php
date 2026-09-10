@@ -7,10 +7,13 @@
  * forward-compat, but no native colour is ever emitted by it.)
  *
  * BOX-GROUP (contract §B): padding / margin / border-radius are box objects.
- * Base padding/margin/border-radius = WP-native style.spacing.* /
- * style.border.radius objects (emitted scoped via wp_style_engine_get_styles);
- * tiers = paddingTablet/paddingMobile/marginTablet/marginMobile/
- * borderRadiusTablet/borderRadiusMobile object attrs (scoped @media 1023/767).
+ * Base padding/margin/border-radius are all block-private tier-object attrs
+ * (padding/margin/borderRadius, desktop key), emitted scoped via
+ * wp_style_engine_get_styles(); tiers = paddingTablet/paddingMobile/
+ * marginTablet/marginMobile/borderRadiusTablet/borderRadiusMobile object
+ * attrs (scoped @media 1023/767). No WP-native style.spacing or
+ * style.border.radius support remains on this block (retired 2026-09-11 —
+ * border-radius was the last of the three to go private).
  *
  * Contract §B3 (single-semantic-element blocks): the <a> IS the block root —
  * NO wrapper <div> (mirrors sgs/button, D288). It carries the BEM block class,
@@ -45,8 +48,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -93,8 +96,8 @@ if ( $encoded_message ) {
 // declaration.
 // Box-model shorthand: top right bottom left.
 // CSS border-radius shorthand order is top-left top-right bottom-right bottom-left.
-// Base padding/margin — WP-native style.spacing.* objects (skip-serialised in
-// block.json), passed straight to the style engine which formats + sanitises.
+// Base padding/margin — block-private tier-object attrs (padding/margin,
+// desktop key), passed straight to the style engine which formats + sanitises.
 $base_padding_obj = array();
 if ( ! empty( $sgs_tor_padding_desktop ) ) {
 	foreach ( $sgs_tor_padding_desktop as $spacing_side => $spacing_value ) {
@@ -112,25 +115,26 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-// Base border-radius — WP-native style.border.radius (string = uniform, or an
-// object with topLeft/topRight/bottomLeft/bottomRight keys), skip-serialised.
+// Base border-radius — block-private `borderRadius` object attr (corner keys
+// topLeft/topRight/bottomLeft/bottomRight), matching the already-private
+// borderRadiusTablet/borderRadiusMobile siblings below. Retired the WP-native
+// style.border.radius read 2026-09-11 (__experimentalBorder support removed
+// from block.json in the same change) — ResponsiveBorderRadiusControl always
+// writes the corner-object shape, never a uniform string, so no string branch
+// is needed here.
 $base_border_radius = null;
-if ( isset( $attributes['style']['border']['radius'] ) ) {
-	$radius_raw = $attributes['style']['border']['radius'];
-	if ( is_string( $radius_raw ) && '' !== $radius_raw ) {
-		$base_border_radius = $radius_raw;
-	} elseif ( is_array( $radius_raw ) ) {
-		$radius_clean   = array();
-		$has_any_corner = false;
-		foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-			$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-			if ( '' !== $radius_clean[ $corner ] ) {
-				$has_any_corner = true;
-			}
+$radius_raw         = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
+if ( ! empty( $radius_raw ) ) {
+	$radius_clean   = array();
+	$has_any_corner = false;
+	foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
+		$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
+		if ( '' !== $radius_clean[ $corner ] ) {
+			$has_any_corner = true;
 		}
-		if ( $has_any_corner ) {
-			$base_border_radius = $radius_clean;
-		}
+	}
+	if ( $has_any_corner ) {
+		$base_border_radius = $radius_clean;
 	}
 }
 
