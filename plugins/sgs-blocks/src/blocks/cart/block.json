@@ -28,11 +28,6 @@
 			"background": false,
 			"text": false
 		},
-		"spacing": {
-			"margin": true,
-			"padding": false,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"iconPicker": true,
 			"headerEssential": true,
@@ -53,6 +48,7 @@
 			],
 			"boxFamilies": {
 				"margin": [
+					"margin",
 					"marginTablet",
 					"marginMobile"
 				]
@@ -64,7 +60,7 @@
 					"clusters": [ "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:margin": "native:spacing.margin"
+						"css:margin": "margin"
 					},
 					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — layout is scoped to margin only (every other layout member is a real gap, not a missing declaration)."
 				},
@@ -136,6 +132,10 @@
 		"root": ".wp-block-sgs-cart"
 	},
 	"attributes": {
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"displayMode": {
 			"type": "string",
 			"default": "link",

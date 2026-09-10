@@ -54,9 +54,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 // one page) — matches the sgs_css_length_value() pattern established below.
 
 // ---------------------------------------------------------------------------
-// NO-INLINE (Spec 32 FR-32-4, D345): margin is a WP-native
-// style.spacing.margin object, skip-serialised so it's never auto-inlined —
-// emitted scoped via the core style engine below (mirrors sgs/label).
+// NO-INLINE (Spec 32 FR-32-4, D345): margin is a block-private object attr
+// (retired off WP-native style.spacing.margin 2026-09-11) — emitted scoped
+// via the core style engine below (mirrors sgs/label).
 // marginTablet/marginMobile are SGS object attrs, scoped @media (tablet
 // max-width:1023px, mobile max-width:767px). The `--sgs-cart-*` custom-
 // property VALUES (icon/badge/panel colours) land in the same scoped
@@ -127,11 +127,13 @@ $sgs_cart_vars = array(
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 );
 
-// ── Margin — WP-native style.spacing.margin object (skip-serialised), NOT
-// auto-inlined. Tiers are SGS custom object attrs, hand-built shorthand. ─────
+// ── Margin — block-private `margin` object attr (retired off WP-native
+// style.spacing.margin 2026-09-11), NOT auto-inlined. Tiers are SGS custom
+// object attrs, hand-built shorthand. ─────
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+if ( ! empty( $margin_raw ) ) {
+	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}

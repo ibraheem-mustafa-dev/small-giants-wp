@@ -7,6 +7,17 @@ import MediaElementPanel from '../../components/MediaElementPanel';
 import PanelSettingsControls from './PanelSettingsControls';
 import TriggerSettingsControls from './TriggerSettingsControls';
 
+// Box-object interface contract §5: base-tier canvas preview shorthand
+// (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
+// render.php's own scoped @media rules, which the editor canvas never
+// executes.
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
 /**
  * SGS Cart — block editor component.
  *
@@ -40,7 +51,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		ariaLabel,
 		showZero,
 		hideWhenEmpty,
-		style: blockStyle,
+		margin,
 		marginTablet,
 		marginMobile,
 		panelHeading,
@@ -71,6 +82,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
 			colourVar( badgeTextColour ) || undefined,
+		margin: boxShorthand( margin ),
 	};
 
 	const blockProps = useBlockProps( {
@@ -256,21 +268,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: blockStyle?.spacing?.margin ?? {},
+							base: margin ?? {},
 							tablet: marginTablet ?? {},
 							mobile: marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( {
-									style: {
-										...blockStyle,
-										spacing: {
-											...blockStyle?.spacing,
-											margin: next,
-										},
-									},
-								} );
+								setAttributes( { margin: next } );
 							} else {
 								setAttributes( {
 									[ `margin${
