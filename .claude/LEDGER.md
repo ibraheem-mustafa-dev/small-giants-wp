@@ -8,97 +8,91 @@ last_updated: 2026-09-10
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**The clone-fidelity closeout track is done. 14 real defects fixed and verified live (11 from
-the original brief + 3 found along the way), one self-caught wrong fix corrected, and an
-honest independent 3-viewport check confirms the page body (hero through gift section) is a
-genuinely faithful, production-ready clone. The header and footer are NOT part of that — they
-were found running generic template content instead of your actual branded content, and that's
-now scoped as its own next track, per your instruction.**
+**The clone-fidelity closeout track is fully done, including a second pass of smaller fixes
+found after the main closeout.** Today shipped 18 real defects/gaps fixed and verified live (14
+from the main closeout + 4 more found afterwards), the cloning pipeline's own section-finder
+bug fixed (it was missing sections nested more than one level deep), plus a design doc
+(not yet actioned) on how to widen the pipeline beyond SGS-BEM drafts. Header/footer remains
+the next track — nothing changed there today; it's still waiting on your pick from the handoff
+prompt.
 
-**What's shipped:** testimonial star colour, a font-loading bug that silently broke any new
-client font (now fixed universally, with a security hole closed in the same fix), 4 footer
-bugs, a heading-font leak, hero text centring, trust-bar background + pack-size pill
-typography, a product-card border regression, brand image sizing, the quote block's italic
-default (flipped per your call), and the hero's hover-zoom effect (rebuilt as reusable shared
-capability, per your requirement). One of those fixes (product-card title font) was later found
-wrong and corrected the same session — caught by re-running the measurement tool after the
-batch, not assumed correct.
+**What's shipped (full list, in order):**
+1. Testimonial star colour, font-loading bug + security hole, 4 footer bugs, heading-font leak,
+   hero text centring, trust-bar background + pack-size pill typography, product-card border
+   regression, brand image sizing, quote block's italic default flip, hero hover-zoom
+   (rebuilt as reusable shared capability) — the 11-defect main closeout, `decisions.md` D1015.
+2. One of those (product-card title font) was found wrong and corrected the same session — a
+   self-catch, not assumed correct. Also in D1015.
+3. Independent 3-viewport visual verification (3 design-reviewer agents, real screenshots +
+   interaction checks) confirmed page-body fidelity is genuinely excellent and confirmed the
+   header/footer gap.
+4. Parity-tool scope correction: excludes header/footer/nav chrome from scoring (a separate
+   system) and gates CSS properties on whether they can actually apply. Regression-lock fixtures
+   added same day. Commit `0aa4b25f1`.
+5. **Second pass, found after the main closeout:**
+   - Hover-zoom (`hoverSpillScale`) investigated further — the CSS was actually already working
+     live (an earlier session's "broken" report was never explained, flagged not resolved) — and
+     the hardcoded `scale(1.05)` was deduplicated to reuse the existing hover-scale token
+     mechanism. Commits `ae604c09a`, `56e51a7dd`.
+   - Trust-bar badge circle border was an unconditional hardcoded CSS fallback with no editor
+     control — added `iconCircleBorderWidth`/`iconCircleBorderStyle`/`iconCircleBorderColour`
+     following the existing box-family pattern, live-verified via `getComputedStyle`. Commit
+     `d216ca7cd`.
+   - Cloning pipeline's section-boundary detector fixed — it only recursed one level into
+     `<main>`/`<article>` for `<section>` children, missing sections nested deeper past inert
+     wrapper divs. Verified on the Mama's Munches product draft (found 8 sections, was 6) with a
+     homepage negative control (byte-identical, no regression). Commit `4b6072757`.
+     File: `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py`.
+   - Hero split-media image not filling its column at tablet width — proven CSS-specificity bug
+     (a shared media-atom rule tied with and beat the hero's own height rule on load order),
+     fixed with a higher-specificity scoped rule in `render.php`, live-verified at 7 breakpoints
+     (375-1440px). Commit `ec3fcabfd`.
+6. Two plan docs re-verified against real live evidence (not their own claimed status) and
+   archived: `2026-09-08-parity-tool-bem-layer-aware-matching-design.md` (D1017, commit
+   `1ab1abea6`) and `phase-measurement-integrity.md` (D1016, commit `80c6442c0`).
+7. **New design doc produced, NOT yet actioned** — awaiting your pick from its menu:
+   `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`. Researches widening
+   HTML-draft recognition beyond the current BEM-only rule (found an existing conversion step
+   whose output is computed but never wired into the accept/reject gate — a near-free small fix)
+   and detecting template/archive-shaped pages to take structural shortcuts. Ranked menus only.
+8. Informational research note (no build): Anthropic's "Claude Design" tool needs no special
+   pipeline support — its static-HTML export is treated like any other non-BEM source. Filed at
+   `C:\Users\Bean\.claude\memory\research\2026-09-10-claude-design-sgs-pipeline-compatibility.md`.
 
-**What's still open, and deliberately not touched here:** the header and footer are running
-generic framework content, not your draft's actual columns/links/logo/CTA styling. This is
-tracked, has a known mechanism already built (Spec 37), and just needs the real content
-authored — full handoff written to
-`.claude/prompts/2026-09-10-header-footer-implementation.md`.
-
-**The measurement tool itself was also corrected** to stop scoring header/footer chrome (a
-different system) and CSS properties with no possible visual effect — see below for the
-before/after numbers once that build lands.
-
-## Shipped this session (2026-09-10)
-
-1. **14 real clone-fidelity defects, root-caused with live evidence before any fix, each
-   validated via `/qc-council` (baseline → fix → re-check) before commit.** Full technical
-   detail: `decisions.md` D1015. Commit range `1067b2e3c..4b57be064`.
-2. **A self-caught wrong fix, corrected same session** — the product-card title font-family fix
-   initially targeted the wrong value (body font instead of heading font); found by re-running
-   the parity tool after the batch, not assumed correct. `decisions.md` D1015.
-3. **Independent 3-viewport visual verification** (not just the parity tool) — 3
-   design-reviewer agents, one per breakpoint, screenshots + real interaction checks. Confirmed
-   page-body fidelity is genuinely excellent; confirmed the header/footer gap; caught and
-   corrected one sub-agent's unverified, wrong claim by direct HTML fetch.
-4. **Header/footer scoped out as its own track**, per Bean's direction — root cause already
-   tracked (`parking.md`), Spec 37 status freshly checked (mechanism built, branded content
-   never authored), handoff written to `.claude/prompts/2026-09-10-header-footer-implementation.md`.
-5. **3 plan docs reviewed against real codebase state** (not their own claimed status):
-   - `2026-09-08-parity-tool-bem-layer-aware-matching-design.md` — mechanism shipped AND
-     verified against live evidence (D1017); the "keyed distinctly" record-keeping detail in the
-     doc didn't match what was actually built (a single merged record, not two surviving
-     entries) — corrected in the doc, now archived at `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md`.
-   - `cloning-pipeline-tier-migration-requirements.md` — block.json-level tier migration is
-     essentially DONE (0 candidates left, was 105); converter-resolver-level typography emission
-     is genuinely still flat (4 live xfails). The doc doesn't cite D1004 (header/footer outranks
-     motion), so its own priority framing is stale.
-   - `phase-measurement-integrity.md` — all 13 steps shipped; Step 6's judgement call recorded
-     and the doc archived to `plans/archive/` (D1016).
-6. **Parity tool scope correction** (build dispatched, verify result before quoting new numbers)
-   — exclude header/footer/nav chrome from scoring (separate system, was conflating two
-   different pieces of work), gate CSS properties on whether they can actually apply
-   (`background-*` on an `<img>`, `flex-basis` outside a flex parent). Per Bean's direction, NO
-   general "accepted difference" mechanism was built into the tool — per-draft design exceptions
-   (e.g. the approved Trustpilot-carousel difference) are recorded in
-   `sites/mamas-munches/accepted-differences.md` and reported as raw + adjusted scores by hand.
-
-See D1015 in `decisions.md` for full technical detail on every fix.
+**What's still genuinely open:**
+- The Mama's Munches PRODUCT draft (not the homepage) still cannot fully clone — its sections
+  are now correctly found, but every section hard-halts at the next stage because its classes
+  aren't SGS-BEM. Needs either a draft rewrite or the Tier 0 gate-wiring fix from the
+  brainstorming doc — your call, not made yet.
+- Header/footer — still the front. Nothing changed here today.
+- R8-R10 (motion/animation cloning from raw CSS) — still open, sequenced behind header/footer
+  per D1004.
+- Trust-bar pill padding gap (7px 13px draft vs 8px 16px live) — still open, minor.
 
 ## Blockers
 
-**None.** The parity-tool scope-correction build was in progress when this LEDGER was written —
-check its actual commit + before/after numbers before quoting a percentage; don't trust this
-line's absence of a number as "not done," check `git log -- plugins/sgs-blocks/scripts/parity/computed-parity.js`.
+**None.**
 
 ## THE FRONT — what to pick up next
 
-**Header/footer implementation is the front.** Read
+**Header/footer implementation is still the front.** Read
 `.claude/prompts/2026-09-10-header-footer-implementation.md` in full — it has the evidence, the
 root cause, Spec 37's real status, and the one open question to ask Bean before starting
 (hand-author this one client's content now, vs. build the Spec 33 Part 2 clone pipeline first).
 
-**Once that's underway or parked, remaining cloning-pipeline loose ends** (lower priority, not
-blocking):
-- Confirm the parity-tool scope-correction build's final numbers and update this section with
-  them.
-- `cloning-pipeline-tier-migration-requirements.md` needs a correction pass: mark R1's block.json
-  work-list closed (with today's live survey numbers), cite D1004, and re-flag that
-  converter-resolver-level typography emission is still open (4 live xfails, not closed as the
-  doc's own banner claims).
+**Once that's underway or parked, remaining loose ends** (lower priority, not blocking):
+- Pick a direction from `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
+  before attempting the Mama's Munches product-draft clone again — it will hard-halt on
+  non-BEM classes otherwise.
 - A test clone of a second draft page (Bean's own next step, to test the pipeline's claimed
-  universality) — do this AFTER the parity-tool fix lands, so the result is measured against the
-  corrected tool, not the old one.
-- Minor open items from today, not urgent: pill padding (7px 13px in draft vs 8px 16px live,
-  confirmed still open), trust-bar badge border (a real spec gap — no control exists to switch
-  it off — needs a small new feature, not a data fix), a new heading-structure oddity found on
-  the verification page only (two `<h1>` elements — likely a test-page artefact, check on
-  production page 2742 before treating as real).
+  universality) — the product draft was the first attempt; it needs the BEM-recognition
+  decision above before it can proceed further.
+- `cloning-pipeline-tier-migration-requirements.md` needs a correction pass: mark R1's block.json
+  work-list closed (with live survey numbers), cite D1004, re-flag converter-resolver-level
+  typography emission as still open (4 live xfails, not closed as the doc's own banner claims).
+- Trust-bar pill padding (7px 13px draft vs 8px 16px live) — real gap, not urgent.
+- A heading-structure oddity found on the verification page only (two `<h1>` elements) — likely
+  a test-page artefact; check on production page 2742 before treating as real.
 
 ## Methodology guardrails (carried forward — all still true)
 
@@ -141,8 +135,8 @@ blocking):
 - **A schema default erases the difference between "absent" and "chosen".** WP substitutes it
   before render.php runs. If a pipeline relies on absence meaning something, the default must be
   the absent-shaped value (D1005).
-- **Bean's eye beats the parity tool.** It scored clean on 14 real defects and flagged several
-  that render correctly. Treat its output as a hypothesis, never a verdict.
+- **Bean's eye beats the parity tool.** It scored clean on real defects and flagged several that
+  render correctly. Treat its output as a hypothesis, never a verdict.
 - **A fidelity dimension must never score a native block's own semantic choices as defects.**
   Tag identity, and by extension any other CONVERT-not-mirror decision, is informational
   context, never a percentage (D1013).
@@ -158,22 +152,29 @@ blocking):
 - **A pipeline-level fix (converter/DB) doesn't retroactively fix an already-cloned page** — it
   needs a matching content-sync applied to the live page's stored attributes, or the fix is
   correct-but-invisible until the next full re-clone.
+- **A walker-level detector bug can hide behind a downstream failure for a long time.** The
+  section-boundary detector's one-level-deep recursion bug was invisible on drafts that happened
+  to nest sections shallowly; it only surfaced once a differently-structured draft (nested past
+  an inert wrapper div) was tried. A detector passing on every drill so far is not proof it
+  generalises — test on a structurally different input before trusting it.
+- **"CSS reported broken in an earlier session" is not the same claim as "CSS is broken now."**
+  Re-verify live before rebuilding a mechanism that already works — the hover-zoom investigation
+  found the effect was actually firing correctly; the earlier report's cause was never explained
+  and is flagged, not resolved.
 
 ## State Snapshot
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1015** — verify with
+- **D-ceiling:** **D1017** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
   Production homepage: page **2742**.
 - **Parity — figures are STALE the moment a new commit lands on the tool itself; re-run before
-  quoting.** Last full run before today's scope-correction build (page 3448, post all 14 fixes):
-  STRUCTURE 93% (324/348), LAYOUT 75% (579/773), PAINT+TYPE 89% (1260/1412), CONTENT 100%
-  (234/234). These numbers UNDERSTATE today's real progress — they're dominated by hundreds of
-  properties unrelated to what got fixed; several specific, real defects are confirmed gone that
-  don't move the aggregate much. Re-run
+  quoting.** Last full run (page 3448, post all today's fixes): STRUCTURE 93% (324/348), LAYOUT
+  75% (579/773), PAINT+TYPE 89% (1260/1412), CONTENT 100% (234/234). These numbers UNDERSTATE
+  real progress — they're dominated by hundreds of properties unrelated to what got fixed. Re-run
   `node plugins/sgs-blocks/scripts/parity/computed-parity.js --draft <mockup> --clone <url>`
   fresh, and check `sites/mamas-munches/accepted-differences.md` for any recorded exception to
   subtract by hand before reporting a number to Bean.
@@ -183,7 +184,9 @@ blocking):
 | For | Read |
 |---|---|
 | **The front — header/footer implementation** | `.claude/prompts/2026-09-10-header-footer-implementation.md` |
-| Today's full fix detail | `decisions.md` D1015 (also D1013, D1014 for the measurement-tool repair that preceded it) |
+| Today's full fix detail (main closeout) | `decisions.md` D1015 (also D1013, D1014 for the measurement-tool repair that preceded it) |
+| Second-pass fixes (hover-zoom, trust-bar border, section-boundary detector, hero split-media) | commits `ae604c09a`, `56e51a7dd`, `d216ca7cd`, `4b6072757`, `ec3fcabfd` — no separate D-number, see this LEDGER's Human Summary |
+| BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
