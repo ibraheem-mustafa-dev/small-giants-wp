@@ -137,13 +137,13 @@ function buildStyle( attributes ) {
 		fontStyle,
 		textAlign,
 		padding,
+		margin,
 		borderRadius,
 		fullWidth,
 		className,
-		style,
 	} = attributes;
 
-	const marginPreview = boxShorthand( style?.spacing?.margin );
+	const marginPreview = boxShorthand( margin );
 	// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
 	// box-tier migration) — the canvas preview always shows the desktop tier.
 	const paddingPreview = boxShorthand( padding?.desktop );
@@ -214,7 +214,6 @@ function buildStyle( attributes ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		text,
-		style,
 		backgroundColour,
 		backgroundColourGradient,
 		fontSize,
@@ -232,6 +231,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		// box-tier migration) — the paddingTablet/paddingMobile sibling attrs no
 		// longer exist in this block's schema.
 		padding,
+		margin,
 		marginTablet,
 		marginMobile,
 		borderRadius,
@@ -536,13 +536,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: style?.spacing?.margin ?? {},
+							base: margin ?? {},
 							tablet: marginTablet ?? {},
 							mobile: marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								setAttributes( { margin: next } );
 							} else {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}

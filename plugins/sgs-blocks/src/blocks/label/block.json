@@ -27,17 +27,13 @@
 			"link": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": false,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"boxFamilies": {
 				"padding": [
 					"padding"
 				],
 				"margin": [
+					"margin",
 					"marginTablet",
 					"marginMobile"
 				]
@@ -65,7 +61,7 @@
 						"css:text-align": "textAlign",
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
-						"css:margin": "native:spacing.margin",
+						"css:margin": "margin",
 						"css:border-radius": "borderRadius"
 					},
 					"states": {
@@ -200,6 +196,10 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
 		},
 		"marginTablet": {
 			"type": "object",

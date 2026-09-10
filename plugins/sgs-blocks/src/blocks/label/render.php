@@ -19,9 +19,9 @@
  * has no WP-native `spacing.padding` support — padding is pill-gated, so it
  * cannot be a plain WP style.spacing.padding value). Tiers = paddingTablet /
  * paddingMobile object attrs (scoped @media 1023/767), pill-gated identically
- * to the base. `margin` IS a WP-native style.spacing.margin object (skip-
- * serialised, scoped via wp_style_engine_get_styles); marginTablet/
- * marginMobile tiers are SGS custom object attrs, NOT pill-gated.
+ * to the base. `margin` is a block-private object attr (retired off WP-native
+ * style.spacing.margin 2026-09-11), scoped via wp_style_engine_get_styles();
+ * marginTablet/marginMobile tiers are SGS custom object attrs, NOT pill-gated.
  * `borderRadius` stays a single scalar number (one uniform value, not a
  * 4-corner family — Spec 32 §6.1(c)) but is rendered scoped, never inline.
  *
@@ -53,8 +53,8 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $text = $attributes['text'] ?? '';
 // sgs/label always renders a <span> — there is no HTML-tag chooser; the
 // converter never emits one.
-$tag_name          = 'span';
-$text_colour       = $attributes['textColour'] ?? '';
+$tag_name    = 'span';
+$text_colour = $attributes['textColour'] ?? '';
 // D636 shape — sibling gradient attribute, wins over $text_colour when set+
 // valid (mirrors sgs/heading/sgs/text; added here 2026-08-22 alongside the
 // text/background pseudo-element split).
@@ -88,12 +88,14 @@ $padding_obj        = is_array( $padding_tiers['desktop'] ) ? $padding_tiers['de
 $padding_tablet_obj = is_array( $padding_tiers['tablet'] ) ? $padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $padding_tiers['mobile'] ) ? $padding_tiers['mobile'] : array();
 
-// Margin — WP-native style.spacing.margin object (skip-serialised → emitted
-// scoped via the style engine below), NOT pill-gated. Tiers are SGS custom
-// object attrs, also not pill-gated.
+// Margin — block-private `margin` object attr (retired off WP-native
+// style.spacing.margin 2026-09-11), emitted scoped via the style engine
+// below, NOT pill-gated. Tiers are SGS custom object attrs, also not
+// pill-gated.
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+if ( ! empty( $margin_raw ) ) {
+	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
@@ -168,8 +170,8 @@ if ( '' !== $text_colour_fallback_rule ) {
 	$scoped_css[] = $text_colour_fallback_rule;
 }
 
-$text_colour_hover = $attributes['textColourHover'] ?? '';
-$text_colour_gradient_hover = $attributes['textColourHoverGradient'] ?? '';
+$text_colour_hover           = $attributes['textColourHover'] ?? '';
+$text_colour_gradient_hover  = $attributes['textColourHoverGradient'] ?? '';
 $text_colour_effective_hover = sgs_resolve_text_colour_or_gradient( $text_colour_hover, $text_colour_gradient_hover );
 if ( '' !== $text_colour_effective_hover ) {
 	$text_colour_effective_hover_decl = sgs_text_colour_decl( $text_colour_effective_hover );
