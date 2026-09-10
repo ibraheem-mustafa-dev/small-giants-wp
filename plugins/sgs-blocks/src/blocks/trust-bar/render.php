@@ -60,6 +60,17 @@ $icon_colour_hover_gradient = $attributes['iconColourHoverGradient'] ?? '';
 $tb_stroke_grad_defs_used   = false;
 $text_colour                = $attributes['textColour'] ?? 'text';
 $icon_circle_border_radius  = isset( $attributes['iconCircleBorderRadius'] ) ? (string) $attributes['iconCircleBorderRadius'] : '50%';
+// iconCircleBorderWidth/Style/Colour (2026-09-10) — box-object family
+// (box_family 'iconCircleBorderWidth', mirrors sgs/hero's splitMediaBorderWidth
+// shape: sgs_box_object_shorthand() takes a MIXED value and guards internally,
+// but the riskiest caller casts first — see helpers-box.php docblock). Left
+// UNSET by default so style.css's own framework-default fallback (1px solid
+// rgba(0,0,0,.08)) keeps painting the circle exactly as before; an operator
+// override — including an explicit 0 on every side to remove the border —
+// rides the scoped custom-property VALUE below, never inline (Spec 32 FR-32-4).
+$icon_circle_border_width_obj = is_array( $attributes['iconCircleBorderWidth'] ?? null ) ? $attributes['iconCircleBorderWidth'] : array();
+$icon_circle_border_style     = isset( $attributes['iconCircleBorderStyle'] ) ? (string) $attributes['iconCircleBorderStyle'] : '';
+$icon_circle_border_colour    = $attributes['iconCircleBorderColour'] ?? '';
 
 // --- Root-element background/text colour (+ hover), D636-style gradient siblings.
 // Mirrors sgs/testimonial-slider's `slider` wrapper element exactly (css:background-color
@@ -152,6 +163,22 @@ if ( 'icon-circle' === $badge_style ) {
 	$safe_icon_circle_shadow = sgs_shadow_value_composed( $icon_circle_shadow, $icon_circle_shadow_colour );
 	if ( '' !== $safe_icon_circle_shadow ) {
 		$styles[] = '--sgs-trust-badge-circle-shadow: ' . $safe_icon_circle_shadow;
+	}
+	// Border width/style/colour: only emit when the operator has set something —
+	// unset means "inherit style.css's framework-default fallback" (Spec 32
+	// FR-32-6), which is how a client can dial the width down to 0 on every
+	// side to remove the default circle border entirely.
+	$icon_circle_border_width_val = sgs_box_object_shorthand( $icon_circle_border_width_obj );
+	if ( null !== $icon_circle_border_width_val ) {
+		$styles[] = '--sgs-trust-badge-circle-border-width: ' . $icon_circle_border_width_val;
+	}
+	if ( '' !== $icon_circle_border_style ) {
+		$allowed_icon_circle_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+		$safe_icon_circle_border_style     = in_array( $icon_circle_border_style, $allowed_icon_circle_border_styles, true ) ? $icon_circle_border_style : 'solid';
+		$styles[]                          = '--sgs-trust-badge-circle-border-style: ' . $safe_icon_circle_border_style;
+	}
+	if ( '' !== $icon_circle_border_colour ) {
+		$styles[] = '--sgs-trust-badge-circle-border-color: ' . sgs_colour_value( $icon_circle_border_colour );
 	}
 }
 

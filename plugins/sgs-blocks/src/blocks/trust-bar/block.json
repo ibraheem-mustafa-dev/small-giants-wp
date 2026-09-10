@@ -72,6 +72,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"iconCircleBorderWidth": [
+					"iconCircleBorderWidth"
 				]
 			},
 			"elements": {
@@ -138,6 +141,9 @@
 						"css:width": "iconCircleSize",
 						"css:height": "iconCircleSize",
 						"css:border-radius": "iconCircleBorderRadius",
+						"css:border-width": "iconCircleBorderWidth",
+						"css:border-style": "iconCircleBorderStyle",
+						"css:border-color": "iconCircleBorderColour",
 						"css:box-shadow": "iconCircleShadow",
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient",
@@ -495,6 +501,33 @@
 		"iconCircleShadowColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"iconCircleBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "4-side box-object family (box_family 'iconCircleBorderWidth'). Empty (unset) falls through to style.css's framework-default fallback (1px) so an unmodified block still reads as a circle; an explicit 0 on every side removes the border entirely (icon-circle variant only)."
+		},
+		"iconCircleBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Unset (default) falls through to style.css's framework-default fallback (solid)."
+		},
+		"iconCircleBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Unset (default) falls through to style.css's framework-default fallback (rgba(0,0,0,0.08))."
 		},
 		"badgeImageBorderRadius": {
 			"type": "string",

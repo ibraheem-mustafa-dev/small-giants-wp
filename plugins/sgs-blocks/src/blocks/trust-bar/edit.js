@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { DesignTokenPicker, IconPicker, IconPreview, TypographyControls, ResponsiveBoxControl, ResponsiveOverride, ShadowControl, SgsColourPanel, LinkPopoverField, BOX_UNITS, normaliseResponsiveBox, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
-import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle } from '../../utils';
+import { colourVar, resolveShadowPreview, resolveShadowPreviewComposed, resolveResponsiveTier, backgroundPreview, backgroundPaintPreview, textPaintPreview, spacingPreview, svgBackgroundPreview, generateItemKey, withStableItemKeys, resolveTextColourPreviewStyle, boxShorthand } from '../../utils';
 // trust-bar does not use the default <ContainerWrapperControls> aggregator —
 // its "Content band" / "Responsive spacing" panels write to flat attrs
 // (contentBandPaddingTop, paddingTopTablet, …) this block does not declare;
@@ -313,6 +313,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconColourGradient,
 		iconColourHoverGradient,
 		iconCircleBorderRadius,
+		iconCircleBorderWidth,
+		iconCircleBorderStyle,
+		iconCircleBorderColour,
 		iconCircleShadow,
 		iconCircleShadowColour,
 		badgeImageBorderRadius,
@@ -459,6 +462,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		? iconCircleBorderRadius
 		: undefined;
 	const circleShadowValue = resolveShadowPreviewComposed( iconCircleShadow, iconCircleShadowColour );
+	// Icon circle border (2026-09-10) — CHECK A canvas mirror. boxShorthand()
+	// mirrors render.php's sgs_box_object_shorthand() (undefined when no side
+	// is set, so the CSS var is entirely absent and style.css's own framework-
+	// default fallback paints the canvas identically to an unmodified block).
+	const circleBorderWidthValue = boxShorthand( iconCircleBorderWidth );
+	const circleBorderColourValue = iconCircleBorderColour ? colourVar( iconCircleBorderColour ) : undefined;
 
 	// Grid preview (icon-circle only — text-only/image-badge always render
 	// `.sgs-trust-bar--text-only`/`--image-badge`'s own hardcoded flex-wrap,
@@ -491,6 +500,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				'--sgs-trust-badge-text-colour': textColourValue,
 				'--sgs-trust-badge-circle-radius': circleRadiusValue,
 				'--sgs-trust-badge-circle-shadow': circleShadowValue,
+				'--sgs-trust-badge-circle-border-width': circleBorderWidthValue,
+				'--sgs-trust-badge-circle-border-style': iconCircleBorderStyle || undefined,
+				'--sgs-trust-badge-circle-border-color': circleBorderColourValue,
 			} : {} ),
 			...( badgeGridTemplateColumns ? {
 				display: 'grid',
@@ -1121,6 +1133,30 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								{ value: 'em', label: 'em', default: 0.5 },
 							] }
 							help={ __( "50% makes a circle; a px value makes a rounded square.", 'sgs-blocks' ) }
+						/>
+						{ /* Icon circle border (2026-09-10) — mirrors sgs/hero's
+						     splitMediaBorderWidth/Style/Colour family, scoped to
+						     the icon-badge element (not the block wrapper, which
+						     already has its own "Border" panel above). Unset
+						     (default) keeps style.css's framework-default fallback
+						     (1px solid rgba(0,0,0,.08)) so an unmodified block
+						     renders unchanged; dialling width to 0 on every side
+						     removes the border entirely — the control this block
+						     had no way to reach before. Radius intentionally NOT
+						     wired here (onRadiusChange omitted) — the dedicated
+						     SgsLengthControl above already owns iconCircleBorderRadius
+						     and a second radius control would duplicate it. */ }
+						<SgsBorderControl
+							label={ __( 'Icon circle border width', 'sgs-blocks' ) }
+							widthValues={ iconCircleBorderWidth ?? {} }
+							onWidthChange={ ( next ) => setAttributes( { iconCircleBorderWidth: next } ) }
+							styleValue={ iconCircleBorderStyle }
+							onStyleChange={ ( val ) => setAttributes( { iconCircleBorderStyle: val ?? '' } ) }
+							colourLabel={ __( 'Icon circle border colour', 'sgs-blocks' ) }
+							colourValue={ iconCircleBorderColour }
+							onColourChange={ ( val ) => setAttributes( { iconCircleBorderColour: val ?? '' } ) }
+							colourLinked={ true }
+							contrastAgainst={ circleBgValue }
 						/>
 						<ShadowControl
 							label={ __( 'Icon circle shadow', 'sgs-blocks' ) }
