@@ -6,6 +6,29 @@ date: 2026-08-10
 status: INPUTS — evidence captured while it was fresh. Do NOT treat as a spec or as decisions.
 ---
 
+**Correction, 2026-09-10 (re-checked against live codebase, not re-derived from memory):**
+
+- **R1 block.json object-shape emission is essentially CLOSED**, not open work — a fresh
+  `migrate-tier-object.py --all-properties --survey` shows 0 migration candidates remain (32/34
+  DECLARED tier properties done; the remaining 2 — `videoAutoplay`, `splitMediaType` — are
+  explicitly NOT R1-R7 targets per this doc's own scope rules). The G1 groundwork section below,
+  written 2026-08-11, cites 105 flat families across 41 blocks as the open work-list; a fresh
+  survey today shows 0. Every named item in that section (gridTemplateRows, columns, the font-size
+  families) is now `"type":"object"` in the live block.json files.
+- **Converter-resolver-level typography emission is genuinely STILL OPEN**, despite this doc's own
+  R1 banner claiming `typography.resolve()` already returns the object shape (citing D996). Live:
+  `test_typography_font_size_number_plus_unit`, `test_typography_line_height_unitless_sentinel_bug2`,
+  `test_typography_unit_companion_only_on_base_tier`, `test_typography_metamorphic_size_scale` all
+  still genuinely XFAIL. D996 covered padding/margin/borderRadius (box-family) only — the banner
+  overstates what shipped.
+- **D1004 (2026-09-07) is not cited anywhere in this doc and reorders its own R8-R10 priority
+  framing.** Bean ruled the header/footer clone gap outranks the motion-recognition layer this
+  doc's R8-R10 section treats as the natural next step. Read R8-R10 as "open, but not next" until
+  header/footer cloning (Spec 33 Part 2 / Spec 37 per-site content, see
+  `.claude/prompts/2026-09-10-header-footer-implementation.md`) is further along.
+
+---
+
 # Cloning-pipeline tier-migration upgrade — captured requirements
 
 **What this is.** Captured inputs for a planned **tier-migration upgrade to Spec 31**, the cloning

@@ -1,8 +1,17 @@
 # computed-parity.js — BEM layer-aware collision resolution (design)
 
-**Status:** Approved by Bean 2026-09-08. **Implemented** — the BEM same-family merge, the statistical
-fallback and the multi-candidate box comparison are all present in `computed-parity.js`. The
-Verification section below has not been recorded as run; run it before closing.
+**Status:** Approved by Bean 2026-09-08. **Implemented, with one confirmed doc/code mismatch
+(2026-09-10 re-check)** — the BEM same-family merge, the statistical fallback and the
+multi-candidate box comparison are all present in `computed-parity.js`. **Correction:** the
+"keyed distinctly" record-keeping this doc describes below (both candidates surviving as
+separate scored entries) is NOT what was built — the shipped design merges the family cluster
+into ONE record and attributes each CSS property to whichever member's value differs from that
+member's default (`mergeFamilyBoxRecords()`). Both approaches satisfy the same goal (nothing
+silently dropped), the shipped one was chosen during implementation as simpler and provably
+safer (see the file's own v1.3.1/v1.3.2 comments) — read the code as the source of truth for
+this detail, not this doc. The Verification section below has still not been recorded as run;
+the doc's own text notes it "can no longer be run as written" against a pre-change snapshot —
+verify against the draft's live computed styles instead.
 **Owning file:** `plugins/sgs-blocks/scripts/parity/computed-parity.js`
 **Context:** Clone-fidelity programme, Phase 1 (fix the parity tool). Follows the qc-council
 run that validated a purely statistical "keep all candidates, best match wins" fix for the

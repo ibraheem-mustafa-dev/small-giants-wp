@@ -580,6 +580,8 @@ The generic-underline clash and the featured-item hover controls are both built 
 
 The cutover MECHANISM is proven (a generic proof header on the new blocks passes all gates) and the framework de-client work is done, including the deletion of `sgs/adaptive-nav`. What remains is authoring the actual BRANDED Indus header content — which is a Spec 33 Part 2 cloning job, not a manual re-author, so this now depends on that pipeline rather than being independently actionable.
 
+**Cross-checked 2026-09-10** against a fresh 3-viewport visual comparison of Mama's Munches (a different client, same root cause): the live header shows extra chrome (phone/email/social icons, a dropdown) not in that client's draft, and a "Send to Ward" CTA lost its pill styling — same "mechanism proven, branded content never authored" gap, confirming this is a live, visible symptom right now, not just a theoretical residual. Handoff for picking this up: `.claude/prompts/2026-09-10-header-footer-implementation.md`.
+
 **Trigger:** after `P-SPEC37-PER-SITE-DECLIENT` closes, and once Spec 33 Part 2 (header/footer cloning) exists.
 
 ### P-NAV-ITEM-SEPARATORS — nav-menu has no divider/separator capability between items
@@ -680,6 +682,9 @@ Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regr
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
 
 The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on both live sites with generic proof content. What's left is authoring the REAL branded per-site content, which is deferred to the Spec 33 Part 2 cloning pipeline rather than being hand-built.
+
+**Cross-checked 2026-09-10:** confirmed live and visible right now on Mama's Munches — the footer renders `theme/sgs-theme/patterns/framework-footer-default.php` (generic) instead of the draft's actual columns (Shop/Information), WhatsApp button, and white logo filter; also collapses to single-column a breakpoint too early at 768px. Handoff for picking this up:
+`.claude/prompts/2026-09-10-header-footer-implementation.md`.
 
 **Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
 

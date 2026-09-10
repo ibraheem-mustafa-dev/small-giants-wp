@@ -1,3 +1,75 @@
+## D1015 [ROUTINE] — clone-fidelity closeout: 11 real defects fixed, one self-correction, header/footer scoped out as separate track
+
+**2026-09-10.** Closed out LEDGER.md's Tasks 1-3 plus a large Bean-directed brain-dump of
+additional defects (hero, product-card, brand section, ingredients/gift/reviews headings,
+footer). 6 investigation agents (split by code area, not hypothesis) root-caused 14 items with
+live evidence before any fix was built; `/qc-council` validated each fix-shape (baseline
+measurement before, live re-check after) before commit. 8 fixes dispatched in parallel across
+disjoint files, sequenced around 2 more that touched shared files.
+
+**Shipped (commit range `1067b2e3c..4b57be064`):** testimonial rating alias lookup (DB-first,
+universal — `slots.aliases` consultation added to `attr_for_area_property`) · a font-loading
+pipeline gap fixed universally (any client font missing a `fontFace` now auto-self-hosts, with
+a fail-closed gate — FR-33-14) · an SSRF hole (substring host check) caught and closed in that
+same commit before merge · 4 footer bugs (dead heading, spacing, wrong font-size preset, stale
+hover selector) · a heading-font leak fixed as an opt-in on the shared typography helper (not a
+blanket default change) · hero sub-text wrongly auto-centred (gated the fix on ancestor layout,
+not just maxWidth presence) · trust-bar background + pack-size pill typography (same root cause
+— the per-area CSS router only checked direct children, not descendants) · product-card border
+regression (fixed on a 2nd attempt — the 1st, giving the shared custom properties safe default
+VALUES, was proven live NOT to work: CSS specificity picks the winner before `var()`
+substitution ever runs; the real fix zeroes the shared rule's specificity via `:where()`) ·
+brand image height (duplicate CSS writer, same collision class as an earlier `object-fit` fix)
+· quote block's italic-by-default flipped to normal (Bean-directed, searched all 6 sitewide
+`sgs/quote` instances for a legitimate italic dependency first — none found) · hero hover-zoom
+built as a reusable `hoverSpillScale` capability on the shared composite wrapper (Bean required
+this not be a hero-only patch) — fixes a stacking-context trap AND a shared image atom's
+shorthand `transition` silently resetting the hero's own transform transition.
+
+**Self-correction, same session:** the heading-font-leak fix's target value was itself wrong.
+Block.json's `titleFontFamily` description (pre-dating this session, 2026-08-27) claimed a
+blank product-card title should inherit the BODY font — never checked against the draft. The
+draft's actual CSS declares a global `h1,h2,h3{font-family:Fraunces}` rule the card's own `h3`
+rule never overrides, so blank correctly means the HEADING font. Caught by re-running the
+parity tool after the batch and finding the "fixed" property newly appearing as a mismatch —
+reverted the opt-in, corrected the block.json description that caused the original wrong
+assumption (commit `4b57be064`).
+
+**Verification beyond the parity tool.** Bean asked for an independent check across all 3
+viewports, not just the parity tool's number (which moved only slightly — most of today's real
+fixes don't shift a percentage dominated by hundreds of unrelated properties). 3 independent
+design-reviewer agents (one per breakpoint) confirmed: hero through gift-section content is
+genuinely pixel-identical to the draft at all 3 sizes; zero horizontal overflow at 375px; all
+tap targets ≥44×44px. One agent's footer claim (said it matched the draft) directly contradicted
+the other two (found a generic template footer) — resolved by a direct `curl` of the live HTML:
+the other two were right, this agent's claim was a fast/unverified error, likely from the
+shared-browser-tab instability it disclosed. Recorded as a caution on trusting a single
+sub-agent's unverified summary line over two independently-measured ones.
+
+**Header/footer scoped OUT of the cloning-pipeline track, on purpose.** The visual comparison
+found the header/footer running generic framework content, not the draft's actual branded
+content (wrong footer columns, missing WhatsApp button, full-colour logo instead of white, a
+styled CTA button rendering as plain text). Root cause is already tracked
+(`parking.md` `P-SPEC37-PER-SITE-DECLIENT` / `P-NAV-INDUS-CUTOVER`) and is Spec 37's job, not
+this pipeline's — confirmed via a fresh Spec 37 status check (built: CPT editing/binding/
+behaviours; open: per-site branded content authoring, the actual blocker). Handoff written to
+`.claude/prompts/2026-09-10-header-footer-implementation.md`. This also surfaced that D1004
+(2026-09-07, header/footer clone outranks motion cloning) isn't cited in
+`cloning-pipeline-tier-migration-requirements.md`, which still frames motion as the next
+priority — flagged for that doc's own correction pass.
+
+**Parity tool scope correction, same session (build in progress as this entry is written).**
+The tool was scoring the shared header/footer chrome alongside page content (conflating two
+separate systems) and several CSS properties with zero possible visual effect (`background-*`
+on an `<img>`, `flex-basis` under a grid parent). Bean directed: exclude header/footer/nav from
+scoring, gate inert properties on whether they can actually apply, and do NOT build a general
+"accepted difference" mechanism for per-draft design exceptions (e.g. today's approved
+Trustpilot-carousel difference) — record those in a plain doc
+(`sites/mamas-munches/accepted-differences.md`) and report raw + adjusted scores by hand
+instead.
+
+---
+
 ## D1014 [INCIDENT] — 4 real regressions found in the measurement-integrity phase, all fixed same day
 
 **2026-09-10 (session-clock rolled over from 09-09).** Bean reported observing regressions in

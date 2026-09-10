@@ -7,6 +7,18 @@ docscore_grade: pending
 mode: ad-hoc (council-scoped, no parent strategic-plan)
 ---
 
+**Status re-check, 2026-09-10:** 12 of 13 steps confirmed fully shipped with real commit
+evidence (`git log -- plugins/sgs-blocks/scripts/parity/computed-parity.js`), all 4 QA gates
+green (`--self-test` passes in full at HEAD). **Step 6 (the `inChrome()`/chrome blind-spot
+investigation) has no recorded resolution anywhere** — no commit touches it in the phase's
+range, and neither `decisions.md` nor `LEDGER.md` records which of the plan's own two
+legitimate outcomes was reached (ruler fix, or "out of scope, block-markup issue"). This may
+already be correctly closed as out-of-scope — nothing PROVES that from evidence. **Do not move
+this doc to `plans/archive/` until Step 6's actual conclusion is written down** (one line, here
+or in decisions.md, is enough). Two later, separate incident rounds (D1013, D1014) found and
+fixed real regressions in this phase's OWN shipped fixes — those are closed, don't reopen this
+phase's step list, but are worth reading alongside this doc for the full picture.
+
 # Phase — Measurement Integrity
 
 **USP:** Every downstream decision about clone fidelity — including whether to build a CSS
