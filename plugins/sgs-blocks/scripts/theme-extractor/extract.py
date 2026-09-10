@@ -19,8 +19,11 @@ import argparse
 import copy
 import json
 import pathlib
+import re
 import subprocess
 import sys
+import urllib.error
+import urllib.request
 
 import derive as derive_mod
 import palette as palette_mod
@@ -61,31 +64,174 @@ def run_measure(draft: pathlib.Path) -> dict:
     return json.loads(out.stdout)
 
 
-def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list) -> None:
+# Google Fonts serves woff/ttf to the DEFAULT urllib User-Agent and only serves woff2 (the format
+# every self-hosted framework font uses) to a modern-browser UA — proven live 2026-09-10 (a
+# Python-urllib UA on the same URL that returns woff2 for a Chrome UA silently returns a different
+# format). Every fetch in this module MUST send this header, same class of gotcha as Hostinger's
+# WAF UA-sniff documented in push-theme-snapshot.py.
+_FONT_FETCH_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+)
+
+
+def _bundled_faces_by_family(baseline: dict) -> dict:
+    """LOWERCASED font-family name -> its self-hosted fontFace entry, read straight off the
+    framework's OWN theme.json — the single source of "already bundled", so this can never drift
+    against a hand-maintained list or the real assets/fonts/ folder contents (R-31-1 no hardcoded
+    dicts, applied to fonts)."""
+    out: dict = {}
+    for fam in (baseline.get("settings", {}).get("typography", {}).get("fontFamilies") or []):
+        for face in (fam.get("fontFace") or []):
+            name = (face.get("fontFamily") or "").strip().strip("'\"")
+            if name:
+                out[name.lower()] = face
+    return out
+
+
+def _primary_family_name(stack: str) -> str:
+    """First entry of a CSS font-family stack, quotes stripped. 'Fraunces, serif' -> 'Fraunces'."""
+    return (stack or "").split(",")[0].strip().strip("'\"")
+
+
+def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: list) -> list | None:
+    """Fetch + self-host a font family the framework does NOT already bundle — the SAME code path
+    for every font, whether it happens to be one the framework ships (Inter/DM Sans/DM Serif
+    Display, resolved via ``_bundled_faces_by_family`` instead) or one a client draft introduces
+    first (e.g. Fraunces for Mama's Munches). No special-casing "fonts we happened to bundle"
+    (R-31-9). Root cause fixed here: previously only bundled fonts got a working fontFace at all —
+    a fresh font's NAME was written with nothing loading it, so the browser silently fell back to
+    its default serif/sans-serif stack.
+
+    Reuses the EXACT Google Fonts CSS2 URL the draft itself declared (its ``<link>`` href), when one
+    names this family, so the fetched weight/axis range matches what the draft actually renders
+    rather than a guessed default. Falls back to a generic 300-900 weight request otherwise.
+
+    Returns a WP theme.json ``fontFace`` array pointing at a newly-saved local .woff2, or ``None``
+    if nothing could be fetched — callers MUST treat ``None`` as "could not self-host" and leave the
+    family with no fontFace, which the FR-33-14 gate below then fails the run closed on, rather than
+    silently shipping a name with nothing to load it.
+    """
+    slug = re.sub(r"[^a-z0-9]+", "-", family.lower()).strip("-")
+    css_url = next(
+        (u for u in links if "fonts.googleapis.com" in u
+         and re.search(rf"family={re.escape(family)}[:&]", u, re.I)),
+        None,
+    )
+    if not css_url:
+        css_url = (
+            f"https://fonts.googleapis.com/css2?family={family.replace(' ', '+')}"
+            ":wght@300;400;500;600;700;800;900&display=swap"
+        )
+
+    req = urllib.request.Request(css_url, headers={"User-Agent": _FONT_FETCH_UA})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            css_text = resp.read().decode("utf-8")
+    except (urllib.error.URLError, TimeoutError) as exc:
+        trace.append({"kind": "gap", "what": f"font-face:{family}",
+                      "reason": f"could not fetch Google Fonts CSS to self-host this family ({exc}) "
+                                "— declared with NO fontFace; the FR-33-14 gate will fail this run "
+                                "closed rather than ship a silent fallback",
+                      "attempted_url": css_url})
+        return None
+
+    dest_dir = repo / "theme" / "sgs-theme" / "assets" / "fonts" / slug
+    dest_file = dest_dir / f"{slug}-variable-latin.woff2"
+
+    faces: list = []
+    for block in re.findall(r"@font-face\s*\{([^}]*)\}", css_text):
+        m_family = re.search(r"font-family:\s*['\"]?([^;'\"]+)['\"]?\s*;", block)
+        m_style = re.search(r"font-style:\s*([^;]+);", block)
+        m_weight = re.search(r"font-weight:\s*([^;]+);", block)
+        m_src = re.search(r"src:\s*url\(([^)]+)\)", block)
+        if not (m_family and m_src) or m_family.group(1).strip().lower() != family.lower():
+            continue  # a multi-family CSS2 response — only self-host the family we asked for
+
+        if not dest_file.exists():
+            src_url = m_src.group(1).strip("'\"")
+            try:
+                freq = urllib.request.Request(src_url, headers={"User-Agent": _FONT_FETCH_UA})
+                with urllib.request.urlopen(freq, timeout=20) as fresp:
+                    font_bytes = fresp.read()
+            except (urllib.error.URLError, TimeoutError) as exc:
+                trace.append({"kind": "gap", "what": f"font-face:{family}",
+                              "reason": f"font-face CSS parsed but the .woff2 download failed "
+                                        f"({exc})"})
+                continue
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            dest_file.write_bytes(font_bytes)
+
+        faces.append({
+            "fontFamily": m_family.group(1).strip(),
+            "fontWeight": (m_weight.group(1).strip() if m_weight else "400"),
+            "fontStyle": (m_style.group(1).strip() if m_style else "normal"),
+            "fontDisplay": "swap",
+            "src": [f"file:./assets/fonts/{slug}/{dest_file.name}"],
+        })
+        break  # theme.json fontFace carries no unicode-range slot — one self-hosted latin face
+               # per family matches every other bundled font in the framework (D-precedent:
+               # inter-variable-latin.woff2, dm-sans-v15-latin-regular.woff2, etc.)
+
+    if not faces:
+        trace.append({"kind": "gap", "what": f"font-face:{family}",
+                      "reason": "Google Fonts CSS returned no usable @font-face block for this "
+                                "family — declared with NO matching fontFace",
+                      "attempted_url": css_url})
+        return None
+
+    trace.append({"kind": "font-loading", "what": f"font-face:{family}",
+                  "reason": "self-hosted a font not already bundled in the framework",
+                  "saved_to": faces[0]["src"][0], "source_css_url": css_url})
+    return faces
+
+
+def _overlay_font_families(baseline: dict, facts: dict, links: list, trace: list,
+                            repo: pathlib.Path) -> None:
     fams = baseline.setdefault("settings", {}).setdefault("typography", {}).setdefault("fontFamilies", [])
     by_slug = {f.get("slug"): f for f in fams}
     body_stack = typo_mod.representative_paragraph(facts)
     body_fam = (body_stack or facts.get("body", {})).get("fontFamily") or "sans-serif"
     head_fam = facts.get("headings", {}).get("h1", {}).get("fontFamily") \
         or facts.get("headings", {}).get("h2", {}).get("fontFamily") or body_fam
+
+    bundled = _bundled_faces_by_family(baseline)
+
+    def _resolve_face(family_stack: str) -> list | None:
+        """A fontFace array for this family — from the framework's own bundled library when the
+        family is already self-hosted there, else fetched + self-hosted fresh. Same code path for
+        every font (R-31-9): no branch for "fonts we happened to bundle" vs "fonts a client draft
+        introduces"."""
+        name = _primary_family_name(family_stack)
+        if not name:
+            return None
+        bundled_face = bundled.get(name.lower())
+        if bundled_face:
+            return [dict(bundled_face)]
+        return _self_host_google_font(name, links, repo, trace)
+
     if "body" in by_slug:
         by_slug["body"]["fontFamily"] = body_fam
         by_slug["body"]["_source"] = "declared"
+        face = _resolve_face(body_fam)
+        if face:
+            by_slug["body"]["fontFace"] = face
+        else:
+            by_slug["body"].pop("fontFace", None)
     for slug in ("heading", "display"):
         if slug in by_slug:
             by_slug[slug]["fontFamily"] = head_fam
             by_slug[slug]["name"] = f"{slug.title()} ({head_fam.split(',')[0].strip()})"
-            by_slug[slug].pop("fontFace", None)  # stale baseline face; real face loaded via font link
             by_slug[slug]["_source"] = "declared"
-    if links:
-        baseline["settings"].setdefault("custom", {})["fontLinks"] = sorted(set(links))
-        trace.append({"kind": "font-loading", "reason": "draft font <link>/@import hrefs carried",
-                      "links": sorted(set(links)),
-                      "note": "PARTIAL: heading face loads via link on the live page; theme.json "
-                              "woff2 fontFace embedding is a follow-up (FR-33-3 sub-clause)"})
+            face = _resolve_face(head_fam)
+            if face:
+                by_slug[slug]["fontFace"] = face
+            else:
+                by_slug[slug].pop("fontFace", None)
 
 
-def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list) -> dict:
+def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict, trace: list,
+                    repo: pathlib.Path) -> dict:
     root_tokens = build_draft_root_token_map(css)
     base_rules = parse_base_rules(css)
 
@@ -169,8 +315,10 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
                                 "would strip the level from the live site)",
                       "baseline_preserved": ",".join(skipped)})
 
-    # FONT FAMILIES + font loading
-    _overlay_font_families(snap, facts, presets_mod.font_links(html), trace)
+    # FONT FAMILIES + font loading (FR-33-14 — every declared family must resolve to a working
+    # self-hosted @font-face, whether already bundled in the framework or introduced fresh by
+    # this draft)
+    _overlay_font_families(snap, facts, presets_mod.font_links(html), trace, repo)
 
     # BUTTON PRESETS (FR-33-4 open bag) — MERGED onto the framework baseline, never replaced.
     #
@@ -241,6 +389,49 @@ def build_snapshot(client: str, css: str, facts: dict, html: str, baseline: dict
         "extractor_version": EXTRACTOR_VERSION,
     }
     return snap
+
+
+def validate_font_faces(snapshot: dict):
+    """Return ``(ok, [error strings])`` — FR-33-14 font-loading gate.
+
+    Every ``settings.typography.fontFamilies[]`` entry's PRIMARY family name (the first token of
+    its CSS font-family stack, e.g. ``'Fraunces, serif'`` -> ``Fraunces``) must have a matching
+    ``fontFace[].fontFamily`` entry SOMEWHERE in the array — not necessarily on the SAME entry
+    (one entry's fontFace legitimately covers every OTHER entry sharing the exact same family
+    name; the framework baseline's own ``heading`` slug reuses ``body``'s Inter @font-face this
+    way, and that pairing is fine — see the framework's own ``theme/sgs-theme/theme.json``).
+
+    Lives here rather than in ``schema_validate.py`` (this module's neighbour) deliberately — this
+    is a cross-reference check ("does a name have a matching face anywhere in the array"), not a
+    structural JSON-shape check, and it is specific to this extractor's own fail-closed contract.
+
+    Catches the bug class a live Mama's Munches clone shipped with: a font-family NAME written
+    into theme.json with nothing anywhere in the file to load it. WP emits the family into the
+    generated CSS regardless (``font-family: Fraunces, serif``); the browser silently falls back
+    to its own default serif stack (Times New Roman) with no error, no warning, nothing in the
+    rendered page to say the intended font never loaded.
+    """
+    fams = ((snapshot.get("settings") or {}).get("typography") or {}).get("fontFamilies") or []
+    declared_faces = set()
+    for fam in fams:
+        for face in (fam.get("fontFace") or []):
+            name = (face.get("fontFamily") or "").strip().strip("'\"")
+            if name:
+                declared_faces.add(name.lower())
+
+    errors = []
+    for fam in fams:
+        stack = fam.get("fontFamily") or ""
+        primary = stack.split(",")[0].strip().strip("'\"")
+        if not primary:
+            continue
+        if primary.lower() not in declared_faces:
+            errors.append(
+                f"settings.typography.fontFamilies (slug={fam.get('slug')!r}): font family "
+                f"'{primary}' has NO matching fontFace entry anywhere in fontFamilies[] — the "
+                f"browser will silently fall back to its default font for this family."
+            )
+    return (not errors, errors)
 
 
 def merge_onto(snap: dict, existing: dict, trace: list) -> dict:
@@ -391,7 +582,7 @@ def main(argv=None) -> int:
     baseline = json.loads((repo / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
 
     trace: list = []
-    snap = build_snapshot(args.client, css, facts, html, baseline, trace)
+    snap = build_snapshot(args.client, css, facts, html, baseline, trace, repo)
 
     if args.merge_onto:
         existing_path = pathlib.Path(args.merge_onto)
@@ -404,6 +595,24 @@ def main(argv=None) -> int:
         for e in errors[:10]:
             print("  -", e, file=sys.stderr)
         return 4
+
+    # FR-33-14 — fail-closed unless every declared typography.fontFamilies[] entry has a matching
+    # fontFace SOMEWHERE in the array. A name with nothing loading it silently falls back to the
+    # browser default font on every element that declares it — this is the root cause a live
+    # Mama's Munches clone shipped with (Fraunces on 14 elements silently rendering Times New
+    # Roman). Same pattern as the FR-33-12 freshness gate: fail the run closed, name the fix.
+    ok_faces, face_errors = validate_font_faces(snap)
+    if not ok_faces:
+        print("HALT (FR-33-14 font-face gate): a declared font family has no fontFace anywhere in "
+              "settings.typography.fontFamilies[] — it would silently fall back to the browser's "
+              "default font:", file=sys.stderr)
+        for e in face_errors[:10]:
+            print("  -", e, file=sys.stderr)
+        print("This usually means the Google Fonts self-host fetch failed (network error, or the "
+              "family name in the draft's <link> URL doesn't match the computed font-family). "
+              "Re-run once connectivity is available, or hand-add a fontFace entry.",
+              file=sys.stderr)
+        return 5
 
     out_path = pathlib.Path(args.out) if args.out else (repo / "sites" / args.client / "theme-snapshot.generated.json")
     trace_path = pathlib.Path(args.trace) if args.trace else out_path.with_name("theme-extract-trace.json")

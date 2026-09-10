@@ -200,12 +200,34 @@
           "fontFamily": "Fraunces, serif",
           "slug": "heading",
           "name": "Heading (Fraunces)",
+          "fontFace": [
+            {
+              "fontFamily": "Fraunces",
+              "fontWeight": "300 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/fraunces/fraunces-variable-latin.woff2"
+              ]
+            }
+          ],
           "_source": "declared"
         },
         {
           "fontFamily": "Fraunces, serif",
           "slug": "display",
           "name": "Display (Fraunces)",
+          "fontFace": [
+            {
+              "fontFamily": "Fraunces",
+              "fontWeight": "300 900",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/fraunces/fraunces-variable-latin.woff2"
+              ]
+            }
+          ],
           "_source": "declared"
         },
         {
@@ -441,11 +463,6 @@
         "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
         "linear": "linear"
       },
-      "fontLinks": [
-        "https://fonts.googleapis.com",
-        "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600&display=swap",
-        "https://fonts.gstatic.com"
-      ],
       "header": {},
       "footer": {},
       "sgs": {
