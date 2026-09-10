@@ -30,7 +30,7 @@ function boxShorthand( box ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { attributeId, threshold, placeholder, margin, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
+	const { attributeId, threshold, placeholder, margin, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
 	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
@@ -69,7 +69,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const blockProps = useBlockProps( {
 		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
-		style: { margin: boxShorthand( margin ) },
+		style: { margin: boxShorthand( margin?.desktop ) },
 	} );
 
 	return (
@@ -227,16 +227,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
+							base: margin?.desktop ?? {},
+							tablet: margin?.tablet ?? {},
+							mobile: margin?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { margin: next } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const key = 'base' === tier ? 'desktop' : tier;
+							setAttributes( { margin: { ...margin, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

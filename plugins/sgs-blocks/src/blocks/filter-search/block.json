@@ -31,9 +31,7 @@
 			},
 			"boxFamilies": {
 				"margin": [
-					"margin",
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -45,7 +43,7 @@
 					"attrMap": {
 						"css:margin": "margin"
 					},
-					"_note": "Single-element block — render.php:162-167 renders ONE root <div class=\"sgs-filter-search\">. Margin (base + marginTablet/marginMobile responsive tiers) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission. No prefix declared (attrs are bare `marginTablet`/`marginMobile`, not element-prefixed) — attrMap only, per ROLLOUT REQUIREMENT 1."
+					"_note": "Single-element block — render.php:162-167 renders ONE root <div class=\"sgs-filter-search\">. Margin (a single TIER-of-BOXES envelope attr {desktop,tablet,mobile}, folded 2026-09-11) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission."
 				}
 			}
 		}
@@ -53,7 +51,9 @@
 	"attributes": {
 		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"attributeId": {
 			"type": "number",
@@ -97,14 +97,6 @@
 		"textColourHover": {
 			"type": "string",
 			"default": ""
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		}
 	},
 	"render": "file:./render.php",

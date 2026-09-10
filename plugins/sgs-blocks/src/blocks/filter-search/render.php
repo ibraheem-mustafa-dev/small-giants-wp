@@ -169,11 +169,14 @@ if ( '' !== $input_border_colour_css ) {
 	$scoped_css[] = $input_border_colour_css;
 }
 
-// Base margin — block-private `margin` object attr (retired off WP-native
-// style.spacing.margin 2026-09-11), emitted scoped via the stable core style
-// engine.
-$base_margin_obj = array();
-$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+// Base margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
+// {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape
+// margin/marginTablet/marginMobile), read once via
+// sgs_responsive_normalise_object() and emitted scoped via the stable core
+// style engine (mirrors sgs/star-rating's already-shipped margin migration).
+$sgs_fs_margin_tiers = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$base_margin_obj     = array();
+$margin_raw          = is_array( $sgs_fs_margin_tiers['desktop'] ?? null ) ? $sgs_fs_margin_tiers['desktop'] : array();
 if ( ! empty( $margin_raw ) ) {
 	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
@@ -191,11 +194,10 @@ if ( ! empty( $base_margin_obj ) ) {
 	}
 }
 
-// Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
-// scoped @media on the same selector (contract §B2: tablet max-width:1023px,
-// mobile max-width:767px).
-$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+// Responsive margin tiers — hand-built shorthand, scoped @media on the same
+// selector (contract §B2: tablet max-width:1023px, mobile max-width:767px).
+$margin_tablet_obj = is_array( $sgs_fs_margin_tiers['tablet'] ?? null ) ? $sgs_fs_margin_tiers['tablet'] : array();
+$margin_mobile_obj = is_array( $sgs_fs_margin_tiers['mobile'] ?? null ) ? $sgs_fs_margin_tiers['mobile'] : array();
 
 $margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
 $margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );
