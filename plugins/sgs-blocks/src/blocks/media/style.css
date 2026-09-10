@@ -17,8 +17,6 @@
 	display: block;
 	width: 100%;
 	min-width: 0;
-	max-width: 100%;
-	height: auto;
 }
 
 /* Naked/root mode (linkless image — the img IS the block root, id + class on
@@ -33,8 +31,6 @@
    by source order (D303: class-match + source-order, never an ID). */
 .wp-block-sgs-media.sgs-media__img {
 	min-width: 0;
-	max-width: 100%;
-	height: auto;
 }
 
 /* object-fit is OWNED BY THE ATOM LAYER (Wave 5a). The rule now lives once, in
