@@ -22,10 +22,6 @@
 	"supports": {
 		"html": false,
 		"reusable": false,
-		"spacing": {
-			"margin": true,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"colourExemptions": {
 				"text": {
@@ -35,6 +31,7 @@
 			},
 			"boxFamilies": {
 				"margin": [
+					"margin",
 					"marginTablet",
 					"marginMobile"
 				]
@@ -46,7 +43,7 @@
 					"clusters": [ "layout" ],
 					"isWrapper": true,
 					"attrMap": {
-						"css:margin": "native:spacing.margin"
+						"css:margin": "margin"
 					},
 					"_note": "Single-element block — render.php:162-167 renders ONE root <div class=\"sgs-filter-search\">. Margin (base + marginTablet/marginMobile responsive tiers) is the ONLY styling capability declared in supports; padding/gap/width/border/fill/text/position/motion have no supports or attrs on this block (spacing.margin is the sole `sgs` support) — every other layout member is an honest GAP, not an omission. No prefix declared (attrs are bare `marginTablet`/`marginMobile`, not element-prefixed) — attrMap only, per ROLLOUT REQUIREMENT 1."
 				}
@@ -54,6 +51,10 @@
 		}
 	},
 	"attributes": {
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"attributeId": {
 			"type": "number",
 			"default": 0

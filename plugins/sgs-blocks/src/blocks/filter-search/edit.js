@@ -18,8 +18,19 @@ import { borderPaintPreview, textPaintPreview } from '../../utils';
 // This pattern mirrors the B3 crash lesson (dead-control crash on missing import).
 const { __experimentalNumberControl: NumberControl } = wp?.components ?? {};
 
+// Box-object interface contract §5: base-tier canvas preview shorthand
+// (mirrors sgs/buybox + sgs/whatsapp-cta). Tablet/mobile tiers live in
+// render.php's own scoped @media rules, which the editor canvas never
+// executes.
+function boxShorthand( box ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	const { top, right, bottom, left } = box;
+	if ( ! top && ! right && ! bottom && ! left ) return undefined;
+	return [ top, right, bottom, left ].map( ( v ) => v || '0' ).join( ' ' );
+}
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { attributeId, threshold, placeholder, style, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
+	const { attributeId, threshold, placeholder, margin, marginTablet, marginMobile, inputBorderColour, inputBorderColourGradient, inputBorderColourHover, inputBorderColourHoverGradient, focusRingColour, textColour, textColourHover } = attributes;
 
 	// D636/CHECK A: inputBorderColour/inputBorderColourGradient/textColour paint
 	// `.sgs-filter-search__input` directly on the frontend (style.css:9-20 —
@@ -58,6 +69,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const blockProps = useBlockProps( {
 		className: `sgs-filter-search sgs-filter-search--editor-preview ${ filterSearchPreviewScope }`,
+		style: { margin: boxShorthand( margin ) },
 	} );
 
 	return (
@@ -215,13 +227,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: style?.spacing?.margin ?? {},
+							base: margin ?? {},
 							tablet: marginTablet ?? {},
 							mobile: marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								setAttributes( { margin: next } );
 							} else {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}

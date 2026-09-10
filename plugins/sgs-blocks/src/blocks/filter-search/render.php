@@ -16,9 +16,10 @@
  * the filtering interaction.
  *
  * NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check. `margin`
- * is a WP-native style.spacing.margin object, emitted scoped via wp_style_engine_get_styles() into this block's own
- * `.{uid}` <style> tag. marginTablet / marginMobile are SGS custom object
- * attrs (not WP-native), scoped @media(max-width:1023px)/767px on the same
+ * is a block-private object attr (retired off WP-native style.spacing.margin
+ * 2026-09-11), emitted scoped via wp_style_engine_get_styles() into this
+ * block's own `.{uid}` <style> tag. marginTablet / marginMobile are SGS
+ * custom object attrs, scoped @media(max-width:1023px)/767px on the same
  * selector.
  *
  * @var array     $attributes Block attributes.
@@ -168,11 +169,13 @@ if ( '' !== $input_border_colour_css ) {
 	$scoped_css[] = $input_border_colour_css;
 }
 
-// Base margin — WP-native style.spacing.margin object (skip-serialised in
-// block.json), emitted scoped via the stable core style engine.
+// Base margin — block-private `margin` object attr (retired off WP-native
+// style.spacing.margin 2026-09-11), emitted scoped via the stable core style
+// engine.
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+if ( ! empty( $margin_raw ) ) {
+	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
