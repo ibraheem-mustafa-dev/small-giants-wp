@@ -3,8 +3,9 @@
 /* ===== SB-1: Grid item defaults — var(--sgs-gi-*) cascade =====
    Parent grid container sets --sgs-gi-* custom properties via inline style (render.php).
    Direct child .sgs-container elements consume them as visual defaults.
-   Per-child inline overrides always win over these via CSS specificity.
-   The .sgs-container--has-grid-item-defaults class triggers the consumption rules.
+   Per-child overrides always win over these — via zeroed specificity (see below), not
+   inline style. (Corrected 2026-09-10: there is no .sgs-container--has-grid-item-defaults
+   gate class in the selector below; that class does not exist in the current rule.)
 
    BOTH direct-child paths chained (2026-09-08 qc-council fix): SGS_Container_Wrapper's
    `.sgs-container__inner` band wrapper is CONDITIONAL — it renders only when the grid
@@ -17,9 +18,24 @@
    sub-container that merely happens to sit inside a grid ancestor somewhere up the tree —
    a real, DB-permitted nesting shape (sgs/container nests arbitrarily), not a hypothetical
    one. Chaining both KNOWN direct-child depths covers both wrapper states without reaching
-   past them. */
-.sgs-container--grid > .sgs-container,
-.sgs-container--grid > .sgs-container__inner > .sgs-container {
+   past them.
+
+   ZEROED SPECIFICITY, via :where() (2026-09-10 regression fix). This rule previously sat
+   at (0,3,0) — higher than a grid-item BLOCK's own class-selector rule (e.g. a product-card
+   grid item's own border/radius rule at (0,2,0)), so a REAL per-instance value from the
+   child block's own render.php silently lost to this "default". Giving the --sgs-gi-*
+   custom properties a harmless fallback VALUE elsewhere cannot fix this: CSS picks the
+   winning DECLARATION by specificity before var() substitution ever happens, so the
+   default rule keeps winning regardless of what its var() resolves to (proven live,
+   2026-09-10 — see decisions.md). At (0,0,0) via :where(), this rule ALWAYS loses to any
+   selector carrying at least one class, exactly the "shared default, real caller always
+   wins" contract already used elsewhere in this file (see the CHILD-LIFT :where() block
+   below) and on .sgs-media__img's object-fit default. A grid item with no border/radius/
+   background/shadow/colour of its own has nothing to contest this rule, so the default
+   still applies in that case — the whole point of a "grid-item defaults" rule is that a
+   real per-instance value always wins when one exists. */
+:where( .sgs-container--grid > .sgs-container ),
+:where( .sgs-container--grid > .sgs-container__inner > .sgs-container ) {
 	padding: var( --sgs-gi-padding );
 	background: var( --sgs-gi-bg );
 	border-radius: var( --sgs-gi-radius );
