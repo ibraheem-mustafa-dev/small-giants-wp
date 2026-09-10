@@ -131,6 +131,10 @@ cluster — this ledger entry is a pointer, not a substitute for reading it.
 
 ### Track: nav drawer (second front)
 
+**Full prompt: `.claude/prompts/2026-09-10-nav-drawer.md`** — the reading gate, the three
+tasks with their measurements, the dependency graph and the earned methodology guardrails.
+What follows is the summary; the prompt is the operative document.
+
 **Read first:** Spec 36 FR-36-6 / FR-36-4 / FR-36-10 and §12 rows (b)(c)(e); `decisions.md`
 D1009 (drawer chrome — SIGNED, not open for re-litigation), D1011, D1012;
 `reports/visual-diff/nav-menu-2026-09-10.md` + `-nav-drawer-` + `-business-info-` for what was
