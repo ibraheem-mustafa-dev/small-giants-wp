@@ -205,6 +205,34 @@
 	}
 }
 
+/*
+ * Print: the SAME failure class as forced-colors above, which is why the two
+ * blocks are identical and why they exist for one reason — the glyphs are
+ * painted by a background, so ANYTHING that discards backgrounds discards the
+ * text itself, not merely its decoration. Browsers drop background images from
+ * print output by default (`print-color-adjust: economy`), so without this the
+ * credit printed as nothing at all. Measured under print emulation
+ * 2026-09-10: with the background removed — which is exactly what a printer
+ * does — the link's rendered text row was byte-identical to a
+ * `visibility: hidden` control.
+ *
+ * The restore is cause-agnostic: handing the glyphs back `currentColor` and
+ * dropping the gradient is correct whether the background is discarded by the
+ * print pipeline, by a user's "no backgrounds" setting, or by a
+ * `print-color-adjust` value we never see. Do NOT reach for
+ * `print-color-adjust: exact` instead — that would force a decorative gold
+ * gradient onto the client's ink to solve a legibility problem.
+ *
+ * The underline pseudo-element needs no handling here: it only appears on
+ * :hover / :focus-visible, neither of which exists on paper.
+ */
+@media print {
+	.sgs-business-attribution .sgs-business-info__link {
+		background-image: none;
+		-webkit-text-fill-color: currentColor;
+	}
+}
+
 /* ── Address ─────────────────────────────────────────────────────────────── */
 
 .sgs-business-address {

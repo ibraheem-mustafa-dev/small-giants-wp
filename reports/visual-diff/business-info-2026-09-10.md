@@ -2,7 +2,7 @@
 
 verdict: PASS (live-verified on the canary after deploy)
 first_paint_capture_passed: true
-source_sha: 09c510dac188623a
+source_sha: 487ac7b14b944e72
 
 Retroactive report. The commit (`53a6c906f`) took a scoped visual-gate skip with the reason
 "before-state captured, after-capture requires this commit to deploy". This is the paired report
@@ -72,3 +72,39 @@ width/height, 3 already classified.
   Without it a transparent text fill renders the credit INVISIBLE in Windows High Contrast,
   because forced-colors replaces backgrounds and the colour is now carried by one.
 - Reduced motion keeps BOTH end states and drops only the travel.
+
+
+---
+
+## Amendment — 2026-09-10, after a QC council
+
+A three-rater council reviewed this fix and found a REGRESSION it introduced:
+**the credit printed invisible.**
+
+`-webkit-text-fill-color: transparent` means the glyphs are painted by a
+background image. Printers drop background images by default
+(`print-color-adjust: economy`, or simply "Background graphics" unchecked).
+Measured under print emulation, with the background removed exactly as a printer
+would: the link's text row came back **byte-identical to a `visibility: hidden`
+control** (166 bytes vs 166), against 3701 bytes for the shipped render — so the
+probe demonstrably could tell a rendered word from a blank one.
+
+Before this fix the resting state was an ordinary `color`, and this file's own
+docblock had recorded that the earlier `background-clip: text` wipe was replaced
+precisely because "there is no state in which the text can disappear". That
+property was reintroduced without its guard.
+
+**Fixed:** a `@media print` block mirroring the existing
+`@media (forced-colors: active)` one — `background-image: none` and
+`-webkit-text-fill-color: currentColor`. They are one failure class, not two:
+the glyphs are painted BY a background, so anything that discards backgrounds
+discards the text itself rather than its decoration.
+
+Deliberately NOT `print-color-adjust: exact`. That would force a decorative gold
+gradient onto a client's ink to solve a legibility problem.
+
+The `::after` underline needs no print rule — it is `:hover`/`:focus-visible`
+only, and neither state exists on paper.
+
+**verdict: PASS** stands; the fix is amended, not withdrawn. The sweep synchrony
+measurement (78.91% vs 78.91%) is unaffected — no timing or geometry changed.

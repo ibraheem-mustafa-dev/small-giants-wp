@@ -381,7 +381,19 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 							. '<span class="sgs-nav-menu__label sgs-nav-menu__magnet-target">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
 							. '</button>'
-							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
+							// `data-lenis-prevent`: the site runs Lenis smooth scrolling
+							// (<html class="lenis">), which intercepts wheel events
+							// document-wide and drives the PAGE. Without the opt-out, a
+							// wheel gesture over an open panel scrolls the page behind it
+							// while the panel's own `overflow-y:auto` never moves — the
+							// panel's max-height bound below would give it a scroll region
+							// no mouse could reach. `overscroll-behavior:contain` does NOT
+							// cover this: that governs native scroll CHAINING, not a JS
+							// wheel hijacker. Same attribute, same reasoning, as
+							// theme/sgs-theme/assets/js/sgs-shop-filters.js::scrollWrap.
+							// Set in the markup rather than at runtime because this
+							// element is server-rendered.
+							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
@@ -498,7 +510,11 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 							'<li class="%1$s sgs-nav-menu__item--has-submenu">'
 							. '<div class="sgs-nav-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '%4$s'
-							. '<div id="%5$s" class="sgs-nav-menu__submenu-wrap" data-sgs-mega-panel data-wp-on--keydown="actions.panelKeydown">'
+							// `data-lenis-prevent` for the same reason as the mega panel
+							// above — see that note. A dropdown is the likelier of the two
+							// to overflow its bound, so it is the likelier to need a
+							// wheel-reachable scroll region.
+							. '<div id="%5$s" class="sgs-nav-menu__submenu-wrap" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">'
 							. '<ul class="sgs-nav-menu__submenu">%6$s</ul>'
 							. '</div>'
 							. '</div></li>',
@@ -1351,17 +1367,35 @@ $css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu_
  * at all, so a long panel rendered past the viewport bottom with no way to
  * reach it — the panel closes on pointer-leave, so there was nothing to scroll.
  *
- * The panel's top edge sits at the bar item's bottom, which in the normal
- * (in-header) case is the header's height — hence the --sgs-header-height
- * subtraction. The theme sets that variable unconditionally in
- * assets/css/utilities.css, so the 80px fallback is only reached when the
- * plugin runs under a non-SGS theme. 16px is the spacing-scale step, kept as
- * breathing room above the viewport edge.
+ * The bound is the panel's OWN top edge measured against the viewport, published
+ * by mega-disclosure.js::repositionPanel as --sgs-mm-panel-max-h (a custom-
+ * property VALUE, which Spec 32 permits; a direct style.maxHeight write would
+ * not be). Measuring is the only cause-agnostic answer here: it is correct
+ * whatever the header is doing — sticky, static, tall, short, absent, or a
+ * non-SGS theme's header entirely — because it asks the panel where it actually
+ * is rather than reconstructing that from something else's geometry.
+ *
+ * ⚠ It must NOT be derived from --sgs-header-height (corrected 2026-09-10; the
+ * first version of this rule did exactly that). That variable is a SCROLL-
+ * PADDING token, not header geometry: header-behaviours/view.js::publishHeight
+ * is called as `publishHeight( isHeaderPinned( header ) ? measuredHeight : 0 )`
+ * and writes the result INLINE on documentElement/body, which outranks the
+ * theme's static :root value. sgs/site-header's `headerSticky` defaults to `{}`
+ * — a NON-sticky header is the framework default — so on a default header the
+ * token resolves to `0px`, the bound collapses to `calc(100dvh - 16px)`, and
+ * the panel overflows the viewport bottom by a full header height. It only ever
+ * looked right because the canary's header happens to be sticky.
+ *
+ * The old expression is kept as the var()'s FALLBACK, so it remains the no-JS /
+ * pre-first-open floor: too generous on a static header, but never zero.
+ * 16px is the spacing-scale step, kept as breathing room above the viewport edge.
  *
  * overscroll-behavior:contain stops a scroll that reaches the panel's end from
- * chaining to the page behind it — the same choice the drawer already makes.
+ * chaining to the page behind it — the same choice the drawer already makes. It
+ * is NOT what makes the panel wheel-scrollable at all; that is the
+ * `data-lenis-prevent` on the emitted wrap (see the markup note above).
  */
-$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:calc(100dvh - var(--sgs-header-height, 80px) - 16px);overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
 
 /*
@@ -1410,7 +1444,7 @@ $css .= $uid_sel . ' .sgs-nav-menu__submenu-root{position:relative;display:flex;
 // Same vertical bound as the mega panel above, and for the same reason — see
 // the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
 // long, since it has no width:min() forcing a wide multi-column layout.
-$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);max-height:calc(100dvh - var(--sgs-header-height, 80px) - 16px);overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 
 /*
  * LIFT THE WHOLE ITEM while its submenu is open (Bean, 2026-07-31 — live-caught:
@@ -1527,6 +1561,26 @@ $css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
 $css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 	. 'text-decoration:none;white-space:nowrap;'
 	. 'color:var(--wp--preset--color--primary, currentColor);}';
+
+/*
+ * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into (2026-09-10).
+ *
+ * Exactly the defect style.css already fixes for `.sgs-nav-menu__link`, one
+ * level down: the drawer reuses this same sublink class for a VERTICAL stacked
+ * list, so a long label has no second row to move to and can only push
+ * sideways. Measured on the canary at 375px, the top-level `__link` overflowed
+ * 0px (its fix landed) while the drawer `__sublink` overflowed 222.76px, taking
+ * the drawer to scrollWidth 561 against clientWidth 360 — the horizontal
+ * scrollbar the drawer should never have.
+ *
+ * It has to be emitted HERE rather than in style.css because the `nowrap` it
+ * overrides is emitted here too, at `$uid_sel .sgs-nav-menu__sublink` (0,2,0);
+ * style.css's floor rule for the same selector sits at 0,1,0 and would lose to
+ * it. `:where()` contributes nothing, so this stays at 0,2,0 — identical to the
+ * base rule directly above and winning on source order alone, which keeps it
+ * below any higher-specificity operator override rather than outranking one.
+ */
+$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{white-space:normal;overflow-wrap:break-word;}';
 // D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
 // Phase 3); routed as a direct decl (not the custom-property chain above)
 // because a `var(--x, …)` fed into a fixed `color:` declaration cannot

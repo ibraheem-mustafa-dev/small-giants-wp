@@ -311,6 +311,47 @@ function repositionPanel( root ) {
 		// snapshot other triggers check their pointer trajectory against —
 		// no second layout read.
 		activePanelRect = rect;
+
+		/*
+		 * VERTICAL BOUND — publish the panel's own available height as a custom-
+		 * property VALUE (Spec 32; a direct `style.maxHeight` write is a property
+		 * declaration and is not permitted). `nav-menu/render.php`'s
+		 * `.sgs-nav-menu__mega-panel-wrap` and `.sgs-nav-menu__submenu-wrap` rules
+		 * read `--sgs-mm-panel-max-h`, keeping the older header-derived expression
+		 * behind it as the no-JS / pre-first-open floor.
+		 *
+		 * MEASURED, never derived. The bound must NOT come from
+		 * `--sgs-header-height`: that is a scroll-padding token, and
+		 * `header-behaviours/view.js::publishHeight` is called as
+		 * `publishHeight( isHeaderPinned( header ) ? measuredHeight : 0 )`, writing
+		 * INLINE on documentElement/body — which outranks the theme's static
+		 * `:root` value. `sgs/site-header`'s `block.json::attributes.headerSticky`
+		 * defaults to `{}`, so a NON-STICKY header is the framework default and the
+		 * token resolves to `0px`. A derived bound therefore collapsed to
+		 * `calc(100dvh - 16px)` while the panel's top edge still sat a header-height
+		 * down the viewport, and the panel overflowed the bottom again — the very
+		 * defect the bound was added to fix. It passed live verification only
+		 * because the canary's header IS sticky.
+		 *
+		 * Cause-agnostic: asking the panel where its own top edge actually is holds
+		 * for a sticky, static, tall, short, hidden or absent header, and for a
+		 * non-SGS theme too.
+		 *
+		 * `rect.top` is safe to read here — this function writes only HORIZONTAL
+		 * geometry, so the top edge (`top: 100%` off its trigger) does not move
+		 * underneath us. GUTTER matches render.php's fallback expression;
+		 * MIN_PANEL_MAX_H keeps an oddly-measured panel usable rather than
+		 * collapsing it to nothing.
+		 */
+		const GUTTER = 16;
+		const MIN_PANEL_MAX_H = 200;
+		panel.style.setProperty(
+			'--sgs-mm-panel-max-h',
+			`${ Math.max(
+				window.innerHeight - rect.top - GUTTER,
+				MIN_PANEL_MAX_H
+			).toFixed( 2 ) }px`
+		);
 		const parent = panel.offsetParent;
 		if ( ! parent ) {
 			return;

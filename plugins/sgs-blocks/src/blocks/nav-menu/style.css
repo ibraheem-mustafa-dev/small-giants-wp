@@ -135,8 +135,21 @@
  * Specificity is deliberate: `:where()` keeps this at 0,1,0 — identical to the
  * base rule above, so it wins on source order alone and never competes with
  * the operator's `itemTextWrap` control, which render.php emits at 0,2,0.
+ *
+ * `.sgs-nav-menu__sublink` is here for the SAME defect one level down, found
+ * 2026-09-10: the first version of this rule covered only the top-level class,
+ * and the drawer's nested submenu rows use `-sublink`. Re-measured at 375px with
+ * the same label, `__link` overflowed 0px (fixed) while `__sublink` overflowed
+ * 222.76px, taking the drawer to scrollWidth 561 / clientWidth 360.
+ *
+ * ⚠ This selector is the FLOOR, not the whole fix. Unlike `__link` — whose
+ * `nowrap` is the 0,1,0 base rule above — the sublink's `nowrap` is emitted by
+ * render.php at `$uid_sel .sgs-nav-menu__sublink` (0,2,0), which outranks this
+ * rule. The matching 0,2,0 drawer override lives beside that base declaration in
+ * render.php and is what actually wins; keep the two in step.
  */
-:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__link {
+:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__link,
+:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink {
 	overflow-wrap: break-word;
 	white-space: normal;
 }
@@ -248,6 +261,30 @@
 
 .sgs-nav-menu__accordion {
 	flex: 0 0 auto;
+}
+
+/*
+ * …but in the DRAWER it must be allowed to SHRINK (2026-09-10).
+ *
+ * `flex: 0 0 auto` above is `flex-shrink: 0`, so the accordion is sized to its
+ * content and cannot be squeezed by its flex parent. In the horizontal bar that
+ * is correct — a nav item should not be compressed. In the drawer it is the
+ * reason long submenu labels still overflowed AFTER they were given permission
+ * to wrap: the text could wrap, but the box was sized as though it could not.
+ *
+ * Measured live at 375px with the label the sibling rule names: base drawer
+ * scrollWidth 561 against clientWidth 360 (201px of overflow), accordion 476px,
+ * sublink 44px — one line, unwrapped. With `flex-shrink: 1`: scrollWidth 360
+ * (zero overflow), accordion 253px, sublink 77px — wrapped to two lines.
+ * Adding `min-width: 0` on top changed nothing, and `overflow-wrap: anywhere`
+ * changed nothing, because neither can act while shrink is disabled — both were
+ * tried first and refuted.
+ *
+ * `:where()` keeps this at 0,1,0, matching the base rule above and winning on
+ * source order, so an operator rule at any higher specificity still outranks it.
+ */
+:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__accordion {
+	flex-shrink: 1;
 }
 
 /* `<summary>` is the native, no-JS-safe toggle — an icon-only 44px target
