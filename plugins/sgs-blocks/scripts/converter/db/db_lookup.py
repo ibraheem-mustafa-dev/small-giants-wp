@@ -5549,21 +5549,25 @@ def attr_for_area_property(
     if not block_slug or not area or not css_property:
         return None
 
-    conn = sqlite3.connect(SGS_DB)
+    def _query(css_element: str) -> list:
+        conn = sqlite3.connect(SGS_DB)
+        try:
+            return conn.execute(
+                "SELECT attr_name FROM block_attributes "
+                "WHERE block_slug = ? AND css_property = ? AND css_element = ? "
+                "AND (css_tier IS NULL OR css_tier = 'desktop') "
+                "AND css_state IS NULL "
+                "ORDER BY rowid",
+                (block_slug, css_property, css_element),
+            ).fetchall()
+        finally:
+            conn.close()
+
     try:
-        rows = conn.execute(
-            "SELECT attr_name FROM block_attributes "
-            "WHERE block_slug = ? AND css_property = ? AND css_element = ? "
-            "AND (css_tier IS NULL OR css_tier = 'desktop') "
-            "AND css_state IS NULL "
-            "ORDER BY rowid",
-            (block_slug, css_property, area),
-        ).fetchall()
+        rows = _query(area)
     except sqlite3.OperationalError:
         # css_element/css_property/css_state/css_tier columns absent (pre-seed DB).
         return None
-    finally:
-        conn.close()
 
     if len(rows) > 1:
         raise AmbiguousAreaAttrError(
@@ -5578,8 +5582,43 @@ def attr_for_area_property(
             area=area,
             css_property=css_property,
             attr_name=rows[0][0],
+            match_via="literal",
         )
         return rows[0][0]
+
+    # Check 2 (fallback, 2026-09-10): the literal css_element=area match found nothing —
+    # `area` may be a `slots.aliases` synonym for a differently-named canonical slot
+    # (e.g. BEM token 'stars' is an alias of canonical slot 'rating'; sgs/testimonial's
+    # attrs are registered under css_element='rating'). Resolve `area` to its canonical
+    # slot via the same slots-table alias data `scalar_media_attr_for` already trusts
+    # (canonical_slot_for -> slots WHERE scope='element'), then retry the identical
+    # query substituting the canonical name. Only a genuine zero-row result on BOTH
+    # passes is an honest gap.
+    canonical = canonical_slot_for(area)
+    if canonical and canonical != area:
+        try:
+            canon_rows = _query(canonical)
+        except sqlite3.OperationalError:
+            canon_rows = []
+
+        if len(canon_rows) > 1:
+            raise AmbiguousAreaAttrError(
+                f"attr_for_area_property({block_slug!r}, {area!r}, {css_property!r}): "
+                f"{len(canon_rows)} base-domain attrs match via canonical slot {canonical!r} "
+                f"({', '.join(r[0] for r in canon_rows)}); "
+                "add a css_state/css_tier disambiguator or remove the duplicate registration."
+            )
+        if canon_rows:
+            _trace(
+                "attr_for_area_property_hit",
+                block_slug=block_slug,
+                area=area,
+                css_property=css_property,
+                attr_name=canon_rows[0][0],
+                match_via="slot_alias",
+                canonical_slot=canonical,
+            )
+            return canon_rows[0][0]
 
     _trace(
         "attr_for_area_property_miss",
