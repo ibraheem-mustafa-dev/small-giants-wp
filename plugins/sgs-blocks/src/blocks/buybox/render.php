@@ -255,8 +255,8 @@ unset( $buybox_seed_combo );
 
 // FR-30-10 Step-10a: resolve gallery seed values from the default combo.
 // Mirrors product-card context L509-511 exactly.
-$buybox_def_gallery   = isset( $def['gallery'] ) && is_array( $def['gallery'] ) ? $def['gallery'] : array();
-$buybox_img_src       = ! empty( $buybox_def_gallery[0]['url'] )
+$buybox_def_gallery = isset( $def['gallery'] ) && is_array( $def['gallery'] ) ? $def['gallery'] : array();
+$buybox_img_src     = ! empty( $buybox_def_gallery[0]['url'] )
 	? $buybox_def_gallery[0]['url']
 	: ( '' !== $def['imageUrl'] ? $def['imageUrl'] : '' );
 // WCAG fallback: empty image alt falls back to the product name. applyPillSelection
@@ -394,8 +394,8 @@ $add_to_cart_label     = '' !== sanitize_text_field( $add_to_cart_label_raw )
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
-// sgs/container). The WP-native `spacing.margin` support (base + the two SGS
-// custom object-attr tiers) is scoped here, plus the block-private colour
+// sgs/container). `margin` is a block-private object attr (base + the two
+// SGS custom object-attr tiers), scoped here, plus the block-private colour
 // attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
@@ -404,12 +404,13 @@ $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
 
-// --- Base margin, colour, and border (WP-native style.spacing.margin/
-// style.color.*/style.border.*, skip-serialised) emitted scoped via the
-// stable core style engine (mirrors sgs/info-box pattern). ---
+// --- Base margin (block-private `margin` object attr, retired 2026-09-11
+// off WP-native spacing.margin) emitted scoped via the stable core style
+// engine (mirrors sgs/info-box pattern). ---
 $base_margin_obj = array();
-if ( isset( $attributes['style']['spacing']['margin'] ) && is_array( $attributes['style']['spacing']['margin'] ) ) {
-	foreach ( $attributes['style']['spacing']['margin'] as $margin_side => $margin_value ) {
+$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+if ( ! empty( $margin_raw ) ) {
+	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
 			$base_margin_obj[ $margin_side ] = $margin_value;
 		}
@@ -550,10 +551,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt          = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr          = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb          = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl          = '' !== $border_width_left ? $border_width_left : '0';
 		$scoped_css[] = $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -587,7 +588,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(

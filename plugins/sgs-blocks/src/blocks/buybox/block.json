@@ -27,11 +27,6 @@
 			"gradients": false,
 			"__experimentalSkipSerialization": true
 		},
-		"spacing": {
-			"margin": true,
-			"padding": false,
-			"__experimentalSkipSerialization": true
-		},
 		"sgs": {
 			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
 			"mediaElements": [
@@ -52,11 +47,15 @@
 			],
 			"boxFamilies": {
 				"margin": [
+					"margin",
 					"marginTablet",
 					"marginMobile"
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"elements": {
@@ -68,7 +67,7 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
-						"css:margin": "native:spacing.margin",
+						"css:margin": "margin",
 						"css:background-color": "backgroundColour",
 						"css:background-color-gradient": "backgroundColourGradient",
 						"css:color": "textColour",
@@ -100,6 +99,10 @@
 		"postId"
 	],
 	"attributes": {
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
 		"marginTablet": {
 			"type": "object",
 			"default": {}

@@ -30,7 +30,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showLadder,
 		framingMode,
 		decoyEnabled,
-		style,
+		margin,
 		marginTablet,
 		marginMobile,
 		backgroundColour,
@@ -339,13 +339,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: style?.spacing?.margin ?? {},
+							base: margin ?? {},
 							tablet: marginTablet ?? {},
 							mobile: marginMobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
 							if ( 'base' === tier ) {
-								setAttributes( { style: { ...style, spacing: { ...style?.spacing, margin: next } } } );
+								setAttributes( { margin: next } );
 							} else {
 								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
 							}
