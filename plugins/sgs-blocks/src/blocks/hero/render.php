@@ -856,8 +856,30 @@ if ( 'custom' === $image_object_fit ) {
 // lose it. Width stays gated — it never had an ungated equivalent.
 // Emitted base -> tablet -> mobile so the later, narrower @media rule wins at
 // its own width (same cascade convention as gap/grid-template-columns above).
+//
+// ⚠ Desktop tier ALWAYS emits, even when unset (2026-09-10 fix). style.css's
+// `.sgs-hero__split-image{height:100%}` structural default is (0,1,0) — the
+// SAME specificity as the shared media-atom stylesheet's
+// `.sgs-media-el{height:var(--sgs-media-height,auto)}` rule
+// (assets/css/media-element.css), which loads AFTER this block's own
+// style-index.css and so wins the tie. No hero split-media element ever
+// emits a `--sgs-media-height` custom property (height is not one of the
+// registered atoms — see includes/media/atoms/), so that var() always
+// resolves to its `auto` fallback: the split column silently stopped
+// filling its grid area at every breakpoint. It only LOOKED correct on
+// desktop by coincidence (the grid column's width happened to roughly
+// equal the row's content-driven height for a square source image);
+// narrower tablet widths exposed the real, always-present defect. This
+// scoped `.{uid} .sgs-hero__split-media{height:100%}` rule at (0,2,0)
+// beats the atom rule regardless of stylesheet load order — matching the
+// project's established fix for this exact class of bug (a shared
+// (0,1,0) fallback silently beating a block default at equal or lower
+// specificity; see plugins/sgs-blocks/CLAUDE.md's media-atom findings).
+// An explicit `splitMediaHeight` value below still overrides it.
 if ( null !== $image_height ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
+} else {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:100%}';
 }
 if ( null !== $image_height_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
