@@ -178,6 +178,15 @@
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
 				]
 			}
 		}

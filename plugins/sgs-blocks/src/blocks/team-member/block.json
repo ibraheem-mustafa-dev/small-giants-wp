@@ -178,6 +178,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			}
 		}

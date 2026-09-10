@@ -38,6 +38,26 @@ SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.d
 # Device-tier sibling suffixes — a name ending in one of these is a tier SIBLING,
 # never a tier BASE (see tier_object_base condition 3).
 _TIER_SIBLING_SUFFIX_RE = re.compile(r"(Tablet|Mobile|Desktop)$")
+
+# Asset-hint vocabulary for the RECORD/ASSET exclusion in tier_object_base()
+# below (2026-09-11, Finding 4 fix). Kept byte-identical to the canonical
+# definition in orchestrator/object_attr_shape.py's is_asset_like_attr() —
+# duplicated here (not imported) because orchestrator already imports FROM
+# converter.db.db_lookup, so importing the other way would be circular. If
+# the canonical vocabulary changes, update both in the same commit.
+_ASSET_HINT_WORDS = frozenset(
+    {"image", "video", "media", "thumbnail", "logo", "svg", "poster", "url", "id"}
+)
+_CAMEL_WORD_RE = re.compile(r"[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])")
+
+
+def _is_asset_like_attr_name(attr_name: str) -> bool:
+    """True when `attr_name`'s FINAL camelCase word names a per-device asset
+    slot (image/video/media/logo/svg/poster/url/id) — e.g. `backgroundMedia`,
+    `orgLogo`. Mirrors `object_attr_shape.py::is_asset_like_attr` exactly.
+    """
+    words = [w.lower() for w in _CAMEL_WORD_RE.findall(attr_name)]
+    return bool(words) and words[-1] in _ASSET_HINT_WORDS
 UIMAX_DB = Path.home() / ".agents" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
@@ -1315,8 +1335,30 @@ def tier_object_base(block_slug: str, attr_name: str) -> bool:
     sgs/text.borderWidth, sgs/heading.fontSizeUnit and .lineHeight — the last
     being ``number`` on heading while ``object`` on text, which is exactly why
     this must be resolved per (block, attr) and never by name).
+
+    5th condition, added 2026-09-11 (R1 Finding 4 fix, /qc-council-validated):
+    ``not _is_asset_like_attr_name(attr_name)`` — a RECORD/ASSET object attr
+    (``sgs/cta-section.backgroundMedia``, ``sgs/nav-drawer.backgroundImage``,
+    the same closed vocabulary ``object_attr_shape.py``'s 5-shape doctrine
+    calls shape 5) passed the first four conditions for 24 rows project-wide
+    (``box_family IS NULL`` because it isn't a box; no Tablet/Mobile sibling
+    because a media-asset slot doesn't carry one) and was wrongly classified
+    TIER-shaped. Confirmed LIVE-REACHABLE, not theoretical: a draft node in a
+    ``css_element='decorative'`` area declaring a raw ``background-image``
+    resolves via ``attr_for_area_property()`` to exactly these two attrs
+    (both carry ``css_property='background-image'``), and
+    ``fold_helpers.py``'s area-fold then wrote ``{"desktop": "<raw css
+    string>"}`` into what should hold the block's ``{id,url,alt}`` record
+    shape — silent corruption, not a gap. Verified this exclusion regresses
+    NOTHING: queried every object-typed attr whose final camelCase word is an
+    asset hint (23 rows project-wide) — every one already resolves either
+    ``flat_sibling`` (excluded by condition 4 already) or RECORD/None; zero
+    are ``tier_object``, so no existing tier-object destination shares this
+    name shape.
     """
     if _TIER_SIBLING_SUFFIX_RE.search(attr_name):
+        return False
+    if _is_asset_like_attr_name(attr_name):
         return False
     conn = sqlite3.connect(SGS_DB)
     try:

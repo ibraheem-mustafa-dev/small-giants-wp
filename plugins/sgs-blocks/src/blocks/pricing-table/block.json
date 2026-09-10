@@ -44,6 +44,9 @@
 			"boxFamilies": {
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"enabledExtensions": [

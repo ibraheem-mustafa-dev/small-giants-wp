@@ -33,7 +33,8 @@
 				{ "prefix": "", "context": "element", "atoms": [ "object-fit" ] }
 			],
 			"boxFamilies": {
-				"panelPadding": [ "panelPadding" ]
+				"panelPadding": [ "panelPadding" ],
+				"borderWidth": [ "borderWidth" ]
 			},
 			"elements": {
 				"panel": {

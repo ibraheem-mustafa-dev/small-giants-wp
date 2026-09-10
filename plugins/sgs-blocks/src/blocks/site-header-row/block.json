@@ -39,6 +39,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"elements": {

@@ -75,6 +75,9 @@
 				],
 				"iconCircleBorderWidth": [
 					"iconCircleBorderWidth"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"elements": {

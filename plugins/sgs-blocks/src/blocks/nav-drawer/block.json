@@ -33,6 +33,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"hideExtensions": [

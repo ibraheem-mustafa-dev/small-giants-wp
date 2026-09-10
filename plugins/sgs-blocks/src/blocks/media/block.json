@@ -52,6 +52,9 @@
 				],
 				"padding": [
 					"padding"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"elements": {

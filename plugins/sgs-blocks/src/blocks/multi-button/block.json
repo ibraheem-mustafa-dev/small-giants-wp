@@ -49,6 +49,12 @@
         ],
         "borderRadius": [
           "borderRadius"
+        ],
+        "borderWidth": [
+          "borderWidth"
+        ],
+        "childBtnBorderWidth": [
+          "childBtnBorderWidth"
         ]
       },
       "elements": {

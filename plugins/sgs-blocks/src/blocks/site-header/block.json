@@ -50,6 +50,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
 				]
 			},
 			"colourExemptions": {
