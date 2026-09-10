@@ -61,17 +61,36 @@ which fixes to build, starting with the shared-root-cause one (biggest single le
 
 See D1013 and D1014 in `decisions.md` for full technical detail.
 
+**Nav-drawer track (concurrent, same window):**
+
+5. **Spec 36 repaired + citation sweep** (`cd0fcb663`). Six present-but-uncheckable items fixed
+   (an undefined acceptance test, a TBD inside a signed gate, "Bean's eye" given a pre-check
+   rubric, a binding clause 600 lines from its FR, an inverted dependency claim, uneven FR
+   maturity). All 40 code citations converted to symbol form; EIGHT were stale. D1011 (non-modal
+   drawer approved) + D1012 (the `.show()` branch is unreachable dead code) recorded.
+6. **Five nav/footer fixes shipped, then FIVE regressions found in them by a 3-rater qc-council
+   and fixed** (`2bdcb73b7`, `32a98183e`, `53a6c906f`, `80ff62a55`; reports in `604adf704`).
+   The council caught: a panel bound derived from a token that publishes 0 on the DEFAULT
+   (non-sticky) header — it passed verification only because the canary is sticky; scroll
+   containers unreachable by mouse wheel under Lenis; a drawer wrap fix that needed two
+   specificity layers and STILL failed because `flex-shrink: 0` disabled shrinking; and a footer
+   credit that printed INVISIBLE. All five re-verified live post-deploy.
+
+See D1011, D1012 in `decisions.md`; measurements in `reports/visual-diff/*-2026-09-10.md`.
+
 ## Blockers
 
 **None blocking work.** (A weekly account rate limit hit 4 of 5 dispatched agents earlier this
 session, worked around by doing the remaining investigation inline; resolved by the time the
 D1014 qc-council round ran — all 4 of its dispatched agents completed normally.)
 
-**Concurrent session activity (not this session's work, noted for completeness):** two nav-drawer
-fix commits landed in this same window (`2bdcb73b7`, `32a98183e`) from a different concurrent
-session on this shared checkout — see `decisions.md` D1011 (design decision, not yet built) and
-D1012 (an incident write-up on dead code found in the drawer's fallback branch). Unrelated to the
-parity-tool work above; flagged here only so a future session isn't blind to it.
+**Two co-active tracks on this shared checkout.** The parity/clone-fidelity track (items 1-4
+above) and the nav-drawer track (items 5-6) both shipped in this window. Each has its own front
+below. Neither blocks the other; they touch disjoint files.
+
+⚠ **A peer session's `sgs/product-card` classifier fix is UNCOMMITTED.** Any clean or isolated
+build fails `db-consistency` on `pillFontWeight`/`pillFontStyle`. `build-deploy.py --no-isolate`
+reads the working tree and gets past it; a fresh clone will not. Needs that session to commit.
 
 ## THE FRONT — what to pick up next
 
@@ -109,6 +128,43 @@ estimated diffs closed per fix:
 
 None of these should be built without first reading the triage register's exact evidence per
 cluster — this ledger entry is a pointer, not a substitute for reading it.
+
+### Track: nav drawer (second front)
+
+**Read first:** Spec 36 FR-36-6 / FR-36-4 / FR-36-10 and §12 rows (b)(c)(e); `decisions.md`
+D1009 (drawer chrome — SIGNED, not open for re-litigation), D1011, D1012;
+`reports/visual-diff/nav-menu-2026-09-10.md` + `-nav-drawer-` + `-business-info-` for what was
+measured and the numbers.
+
+1. **LEAD — the drawer's sub-accordions are structurally wrong.** Bean, 2026-09-10: *"they spawn
+   inside the parent menu item."* His Spectra/Astra reference has sub-items as FULL-WIDTH rows
+   beneath the parent, edge-to-edge. Measured at 375px: drawer 360px, top-level row 317px at
+   x=22, but `.sgs-nav-menu__accordion` is **253px at x=86** and the sublinks with it.
+   Root cause: `.sgs-nav-menu__accordion-row` is `display:flex` and the `<details>` is a flex
+   SIBLING of the label, so the submenu lays out BESIDE the label rather than beneath it. Fix is
+   MARKUP in `nav-menu/render.php`'s drawer renderer, not CSS.
+   ⚠ Do not mistake `80ff62a55`'s `flex-shrink: 1` for this fix — it removed a real 201px
+   overflow and is correct, but it made sub-items NARROWER, not full-width. Keep it.
+   Bean also noted the reference opens MEGA panels inside the drawer; FR-36-6 currently declares
+   that a gap. Do not build it — record what the structural fix makes reachable.
+   **Done when:** sublink left edge + width match a top-level row (modulo a deliberate indent),
+   `scrollWidth === clientWidth`, and Bean's eye agrees vs his screenshot (R-31-13).
+
+2. **The scoped-CSS dead write.** `nav-drawer/render.php` assembles a border-style override into
+   `$scoped_css` — written once, never read or emitted (1 occurrence vs 24 working `$css .=`
+   sinks as a positive control). An explicit `border: none` never reaches the page.
+
+3. **The non-modal rebuild** (approved D1011, ~3 hrs) —
+   `parking.md::P-NAV-DRAWER-NONMODAL-BUILD`. Item 2 of its five is a LATENT Level-A a11y fix
+   (`STOP-DIALOG-NONMODAL-TAB-RING`) that becomes live the moment the path is reachable; do it
+   first. ⚠ `aria-modal="true"` must NEVER be added — it would hide the deliberately-live burger.
+
+**Open decisions — Bean's, do not decide by inference:** the `header` anchor (evidence moved —
+vercel/lamalama/lusion all use that geometry); `burger-morph` (renders a static X, animates
+nothing); the credit link's two colour controls are CROSS-WIRED ("Hover colour" paints only the
+1px underline; the one labelled for older browsers paints the whole text sweep); the submenu drop
+shadow is clipped by `overflow-y:auto`; and **scroll-lock has no reference count** — found THREE
+times independently, ~8 lines, the highest-value of the five.
 
 ---
 
