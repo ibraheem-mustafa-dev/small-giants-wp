@@ -15,11 +15,15 @@
 	margin: 0;
 	padding: 0;
 	/* Component's own default (HC2-permitted inheritable ROOT default, not a per-element
-	   override — a child sgs/text's own explicit font-style still wins by cascade). Quote
-	   bodies read as italic by design-system convention; proven missing 2026-09-08
-	   (qc-council) — the block had no font-style anywhere, so the body paragraph rendered
-	   upright with no way to opt in short of an explicit per-instance override. */
-	font-style: italic;
+	   override — a child sgs/text's own explicit font-style still wins by cascade).
+	   Baseline flipped italic → normal (2026-09-10, Bean-directed design decision):
+	   italic is opt-in per instance (attributionFontStyle / sgs/text's own fontStyle),
+	   not the block's resting state. The converter already writes an explicit italic
+	   override for any draft that genuinely declares one (styling_content.py's
+	   scalar-styling-lift for attributionFontStyle; resolvers/typography.py's
+	   pre-layer dispatch for sgs/text's fontStyle) — this default only governs a
+	   quote with no explicit font-style declared anywhere in the draft. */
+	font-style: normal;
 }
 
 /* Attribution slot — display block so it sits below the body. */
