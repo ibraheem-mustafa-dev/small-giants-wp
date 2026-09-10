@@ -75,32 +75,42 @@ When several sibling elements share the same animation shape with incrementally 
 - *Risk:* low — worst case is treating a genuine stagger as N separate simple entrances, which still produces a reasonable (if less polished) result.
 - *Value:* staggered reveals are a very common "premium" motion signature on the kind of sites this pipeline is meant to compete with (per Bean's "Awwwards-level" bar) — worth the investment once Tier 1/2 are proven.
 
-**Tier 4 — semantic classification for whatever Tiers 1-3 can't structurally match.**
-For CSS motion that doesn't cleanly match any known Tier V shape (complex multi-keyframe sequences, unusual property combinations), use a higher-cost classification step (an LLM-assisted read of the raw CSS + a description of what changes) to propose the closest matching preset, or to flag it as a genuinely new capability gap worth adding to the preset catalogue.
-- *Cost:* highest — per-draft inference cost, and it needs a human-review step before trusting its output (same discipline as any AI-assisted classification in this pipeline).
-- *Risk:* this is also the ONLY tier that could plausibly recognise something that genuinely needs Tier G (a scroll-scrubbed timeline, say) — which makes it the tier that most needs a mandatory human confirmation gate before ever emitting anything beyond Tier V, given Spec 38's ratchet-toward-cheap principle and the ban on a clone silently pulling in GSAP/Lenis/WebGL bytes nobody asked for.
-- *Value:* speculative until Tiers 1-3 are shipped and measured — the same "don't build the expensive tier on a hunch" discipline as the BEM-recognition brainstorm's own Tier 3.
+**Tier 4 — heavy-tier detection via genuine, checkable source evidence (revised 2026-09-10 — Bean-directed, see below).**
+The source page itself declares what it's actually using — a `<script src=".../gsap.min.js">` or `ScrollTrigger.create(...)` call, a `<canvas>` element with a real WebGL context (`getContext('webgl')`/`'webgl2'`), a Lenis instantiation, a genuine pin+scrub structural pattern (a sticky/fixed section whose children's transforms are driven by a scroll listener rather than a CSS `animation`). These are **concrete, checkable facts about the source**, not inferred intent — the same category of evidence Tier 1-3 already use, just reading a different signal (script/library references and canvas usage instead of CSS keyframe shapes). When the evidence is real, map it onto the corresponding ALREADY-BUILT SGS tier (Tier G's pin-scrub/scroll-scrubbed-timeline capability, Tier H's Lenis smooth-scroll, Tier W's surface-treatment/flowing-gradient) rather than treating "the source uses GSAP" as something to guess at or gate behind extra process.
+- *Cost:* moderate — script-reference and canvas-context detection is mechanical; mapping a detected pin+scrub pattern onto the SGS pin-scrub preset needs more care but is still evidence-driven, not inference.
+- *Risk:* low, PROVIDED it only fires on real, checkable evidence (a script tag, a WebGL context call, a genuine structural scroll-pin pattern) and never on a CSS shape merely *resembling* something heavier. The existing per-clone fidelity review (R-31-13 — Bean's eye is co-authoritative on every clone, already standard practice) is the checkpoint that catches a wrong call here, the same as it catches any other clone-fidelity issue. No separate motion-specific approval gate is needed on top of that.
+- *Value:* this is what makes the pipeline able to clone genuinely premium sites — like the TAG Heuer Eyewear collection page below — rather than flattening every heavy-motion source into simple CSS fades.
+
+**Tier 5 — semantic classification for whatever Tiers 1-4 can't structurally match.**
+For CSS motion that doesn't cleanly match any known Tier V shape and carries no Tier 4-style library evidence either (complex multi-keyframe sequences, unusual property combinations with no clear library signature), use a higher-cost classification step (an LLM-assisted read of the raw CSS + a description of what changes) to propose the closest matching preset, or to flag it as a genuinely new capability gap worth adding to the preset catalogue.
+- *Cost:* highest — per-draft inference cost.
+- *Risk:* the one tier here that's genuinely a best-guess rather than a read of concrete evidence — verify its output against the live clone the same way any AI-assisted classification in this pipeline gets checked, same discipline, no new process invented for this specifically.
+- *Value:* speculative until Tiers 1-4 are shipped and measured — the same "don't build the expensive tier on a hunch" discipline as the BEM-recognition brainstorm's own Tier 3.
+
+### Real-world test case (Bean-directed, 2026-09-10)
+
+**TAG Heuer Eyewear's collection page** — `https://www.tagheuer.com/fr/en/eyewear/collection-eyewear.html`, Awwwards Site-of-the-Day recognised, scored 8.40/10 on Awwwards' own "Animations/Transitions" criterion. Deliberately chosen because it spans the full range this menu needs to handle correctly in one page: blur-text intro transitions and a scrolling carousel (Tier V-shaped — Tier 1/2 territory), through to an interactive WebGL 3D scroll experience on the product itself (genuinely Tier W-shaped — Tier 4 territory, with real checkable evidence: a canvas element driven by a real WebGL context). A recognition pipeline that correctly triages this ONE page into "these bits are simple CSS, this bit genuinely needs the heavy tooling" is a strong proof that the tiering is working as designed, not just that it's cautious. Use this as the first real-source test once a tier is built.
 
 ### Recommendation
 
-Ship Tier 1 first and measure it against a handful of real non-SGS sources (scraped competitor pages, an AI-design export) — this alone may close most of the real-world gap, since simple entrance/hover/parallax motion is both the most common kind and the cheapest to recognise. Add Tier 2 as its necessary companion in the same pass (a shape without a correct trigger is incomplete). Tier 3 is worth building once the sibling-comparison machinery exists for the BEM-recognition Q2 work — reuse, don't duplicate. Tier 4 should not be started until Tiers 1-3 are shipped and shown to leave a real, measured gap — and even then, it should never be allowed to emit anything beyond Tier V without an explicit human confirmation step, given what's at stake (silent GSAP/WebGL bundle bloat on a page nobody chose that for).
+Ship Tier 1 first and measure it against a handful of real non-SGS sources (TAG Heuer's page above, plus a couple more) — this alone may close most of the real-world gap, since simple entrance/hover/parallax motion is both the most common kind and the cheapest to recognise. Add Tier 2 as its necessary companion in the same pass (a shape without a correct trigger is incomplete). Tier 3 is worth building once the sibling-comparison machinery exists for the BEM-recognition Q2 work — reuse, don't duplicate. Tier 4 (genuine heavy-tier evidence) is worth building in the same pass as Tiers 1-3 rather than deferred, since it's what makes the pipeline able to fully clone a source like TAG Heuer's rather than only its simpler half — the earlier draft of this doc gated Tier 4 behind an extra confirmation step that wasn't actually warranted; corrected above. Tier 5 (semantic fallback) stays deferred until 1-4 are shipped and measured.
 
 ### Explicit non-choice, for completeness
 
-**Tier 5 — declare raw-CSS motion recognition out of scope, formally.** This is already what happens today by default (silent drop, zero recognition) — the only change would be documenting it as a deliberate policy. Listed for completeness, not recommended: R9 measured this as the framework's single biggest capability gap, and Tier 1 alone is cheap enough that "do nothing" is a worse trade than it looks.
+**Tier 6 — declare raw-CSS motion recognition out of scope, formally.** This is already what happens today by default (silent drop, zero recognition) — the only change would be documenting it as a deliberate policy. Listed for completeness, not recommended: R9 measured this as the framework's single biggest capability gap, and Tier 1 alone is cheap enough that "do nothing" is a worse trade than it looks.
 
 ---
 
-## The governing constraint this menu must never violate
+## The governing principle this menu follows (revised 2026-09-10)
 
-**No tier in this menu may cause a clone to emit Tier G, Tier H, or Tier W motion without an explicit human decision in the loop.** Spec 38 §1's admission tests for Tiers G/H/W are deliberately narrow, D-numbered, and Bean-approved one at a time — a cloning pipeline auto-populating any of them from inferred CSS would be the exact "unbounded state §1 exists to prevent" the spec warns about repeatedly. Tiers 1-3 above are structurally incapable of this (they can only emit existing Tier V presets). Tier 4 is the only one that could plausibly recognise Tier-G-shaped source motion, and it must carry a mandatory confirmation gate if built — this is a hard constraint on that tier's eventual design, not an open question.
+**Emit the tier the source genuinely demonstrates using real, checkable evidence — never a tier inferred from a guess.** Spec 38 §1's admission tests govern whether GSAP/Lenis/WebGL are allowed INTO this framework at all — that question is already answered (they're built and shipped). They do not govern whether the cloning pipeline may use an already-built capability once the source's own code demonstrably needs it (a real library reference, a real WebGL canvas, a real structural scroll-pin) — conflating those two questions was this document's own error in its first draft, corrected here. The standing checkpoint is the same one every clone already gets: **Bean's eye is co-authoritative on fidelity (R-31-13)** — reviewed as part of normal clone verification, not a new motion-specific gate. What every tier in this menu still must not do is emit a heavier tier from an UNCHECKED GUESS (a CSS shape that merely *looks* complex, with no real library/canvas evidence behind it) — that's the actual line, not "heavier tier = forbidden."
 
 ---
 
 ## NOT recommended now
 
-1. **Tier 4 (semantic/LLM classification) as a starting point.** Expensive, and the cheap tiers haven't been measured yet to know if it's even needed.
-2. **Any recognition path that can emit Tier G/H/W automatically.** A direct Spec 38 §1 violation — explained above, not merely omitted.
+1. **Tier 5 (semantic/LLM classification) as a starting point.** Expensive, and the cheap tiers haven't been measured yet to know if it's even needed.
+2. **Emitting a heavier tier from CSS-shape inference alone, with no real library/canvas/structural evidence.** That's a guess dressed as a detection — the actual line this menu draws (see the governing principle above), not "never emit anything beyond Tier V."
 3. **A hardcoded Python dict of keyframe-name-to-preset mappings.** This project has a standing rule against exactly this shape of solution (R-31-1); any shape/trigger lookup table belongs in the DB, mirroring `fx_attr_roster()`'s own pattern.
 4. **Building this before R1's remaining 17-attribute conversion or independent of the BEM-recognition Q2 work.** Not a hard blocker, but Tier 3 above directly reuses Q2's sibling-repetition detector — sequencing R8 after (or alongside) that work avoids building the same structural-comparison logic twice.
 
@@ -108,7 +118,13 @@ Ship Tier 1 first and measure it against a handful of real non-SGS sources (scra
 
 ## Open questions for Bean
 
-1. Ship Tier 1 alone first and measure against a couple of real non-SGS sources, or bundle Tier 1+2 together since Tier 2 is a necessary companion either way?
-2. Is there a specific reference site or competitor page you'd like used as the first real-world test case for Tier 1, or should the team pick one?
-3. Does this menu warrant a `/qc-council` pass before dispatch, given it introduces a new gate behaviour (what CSS shapes get recognised and what they emit) — or is a straight `/strategic-plan` sufficient once you pick a starting tier?
-4. Should Tier 3's sibling-repetition detector be built as a genuinely shared component from day one (serving both this and the BEM-recognition Q2 problem), or built once for whichever lands first and generalised afterwards?
+1. ~~Ship Tier 1 alone first and measure, or bundle Tier 1+2 together?~~ **Resolved (implicit in Bean's feedback — build for full coverage, not a cautious slice): Tiers 1-4 as one build increment, measured together against the TAG Heuer test case.**
+2. ~~Reference site for testing?~~ **Resolved: TAG Heuer Eyewear collection page, see above.**
+3. `/qc-council` after this revision, then a build plan — see the "Plan-format recommendation" section below for `/strategic-plan` vs `/phase-planner`.
+4. Should Tier 3's sibling-repetition detector be built as a genuinely shared component from day one (serving both this and the BEM-recognition Q2 problem), or built once for whichever lands first and generalised afterwards? — still open, low-stakes, can be decided at build time.
+
+---
+
+## Plan-format recommendation: `/phase-planner`, not `/strategic-plan`
+
+Bean's own read matches the evidence: the design work is the bulk of this (now largely settled by this brainstorm + its revision), and the build+test surface is bounded — four tiers of recognition logic feeding into an already-built, already-working attribute-lift and runtime. This is **one extension to one stage of an existing pipeline**, not a multi-phase programme with its own architecture decisions still open. `/strategic-plan` is the right tool for a whole project or multi-month roadmap with several independent phases; `/phase-planner` is the right tool for a single named phase of scoped work — which is what Tiers 1-4, built and tested together, actually are. Recommend `/phase-planner` once the `/qc-council` pass below is clear.
