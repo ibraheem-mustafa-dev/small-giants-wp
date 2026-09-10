@@ -19,6 +19,19 @@ Two destination families on the container:
   - per-grid-ITEM box CSS (``padding``/``box-shadow``/``border-radius``/
     ``background-color``/``color``) → the ``gridItem*`` attrs via
     ``db.attr_for_layer_property(block, 'GRID', css_property)``.
+  - GRID-container ARRANGEMENT CSS (``align-content``/``justify-items``/
+    ``justify-content``) → the block's own GRID-layer scalar attr (e.g.
+    ``alignContent``/``justifyItems``/``justifyContent``), DB-resolved via
+    ``attr_for_layer_property(block, 'GRID', css_property)`` — added 2026-09-10
+    (`.claude/reports/2026-09-10-capability-coverage-inventory.md`). These three
+    were genuinely UNROUTED before this fix: ``property_suffixes`` seeds a row
+    for each (so a block's DB-declared destination attr exists and
+    ``attr_for_layer_property`` can resolve it) but this resolver had no code
+    branch consuming them, so every declaration fell through to the final
+    ``UNIMPLEMENTED_STUB`` catch-all below. ``align-items`` is DELIBERATELY
+    NOT in this family — see the dedicated D172 branch further down, which
+    remains an explicit routing decision (OUTER VerticalAlign path), not an
+    oversight.
 
 Tier mapping uses the standard device-tier suffix (``tier_suffix``): Base →
 unsuffixed, Tablet → ``*Tablet``, Mobile → ``*Mobile`` (Spec 31 §3.A.4; the device
@@ -66,6 +79,15 @@ _GRID_ITEM_PROPS = frozenset({
 _GRID_ITEM_RADIUS_LONGHANDS = frozenset({
     "border-top-left-radius", "border-top-right-radius",
     "border-bottom-right-radius", "border-bottom-left-radius",
+})
+# GRID-container arrangement CSS (how the container distributes its OWN grid
+# tracks/items — NOT per-grid-item box CSS) → the block's own GRID-layer
+# scalar attr. `align-items` is deliberately excluded (D172 — see its own
+# branch below); these three had zero resolver code before 2026-09-10 despite
+# carrying seeded `property_suffixes` rows and DB-declared destination attrs
+# on 10 blocks (`.claude/reports/2026-09-10-capability-coverage-inventory.md`).
+_GRID_ARRANGEMENT_PROPS = frozenset({
+    "align-content", "justify-items", "justify-content",
 })
 
 
@@ -424,6 +446,31 @@ def resolve(decl: Any, ctx: Any) -> Write | list[Write] | GAP:
             return gap_writer(
                 ctx, decl, GapOrigin.NO_DESTINATION,
                 f"{ctx.block_slug} has no GRID (gridItem*) attr for {prop}",
+            )
+        attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
+        if not validate(ctx, attr, decl.value):
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} does not declare {attr!r} (tier {decl.tier})",
+            )
+        value = value_serialise("string", None, strip_important(decl.value).strip())
+        return Write(attr=attr, value=value, property=prop, tier=decl.tier)
+
+    # --- GRID-container arrangement CSS → the block's own GRID-layer scalar
+    # attr (align-content/justify-items/justify-content) — added 2026-09-10.
+    # Same shape as the _GRID_ITEM_PROPS scalar branch immediately above (DB-
+    # resolve -> tier-suffix -> validate -> verbatim string serialise), but
+    # these three describe how the CONTAINER arranges its own grid tracks/
+    # items, not a per-child box property, so they resolve to their own
+    # (unprefixed-within-the-attr-name, e.g. `alignContent`) GRID-layer attr
+    # rather than a `gridItem*` one. `align-items` is deliberately EXCLUDED
+    # from this family — see the dedicated D172 branch directly below.
+    if prop in _GRID_ARRANGEMENT_PROPS:
+        base_attr = attr_resolve(ctx, "GRID", prop)
+        if base_attr is None:
+            return gap_writer(
+                ctx, decl, GapOrigin.NO_DESTINATION,
+                f"{ctx.block_slug} has no GRID attr for {prop}",
             )
         attr = tier_state_suffix(base_attr, decl, ctx.conn, ctx.block_slug)
         if not validate(ctx, attr, decl.value):
