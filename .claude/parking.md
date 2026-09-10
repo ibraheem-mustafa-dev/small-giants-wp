@@ -43,6 +43,16 @@ section, but does not change Stage 0's hard-reject of non-BEM markup, so this en
 decision is unaffected. Once resolved, migration is an HTML-only edit (no code change) so the
 page can clone to `sgs/option-picker` blocks.
 
+**2026-09-10 note:** a further, separate sub-issue this entry's context assumed is now RESOLVED —
+section-BOUNDARY-DETECTION (sections not even being found) was fixed today, commit `4b6072757`,
+`plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` — the detector now
+correctly finds all 8 of the page's real sections, verified via a fresh test-clone run. The core
+blocker is UNCHANGED: the draft's classes are still kebab-semantic, not SGS-BEM, so Stage 0 still
+hard-rejects them. Resolution path once Bean decides: rewrite the draft, or wire an existing-but-
+unused conversion mechanism into the accept/reject gate — see
+`.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`, "Tier 0"
+recommendation, for the second option.
+
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
 
@@ -802,6 +812,12 @@ Bean's observation (D226): the product page design does not line up with cloning
 page. Specifics — the Trustpilot review block renders "stupidly large", and the content width is
 "really really tight unnecessarily" (ties to the Spec 01 contentSize 780 finding). Bean-sequenced:
 AFTER clone-fidelity closes.
+
+**2026-09-10 note:** the stated trigger condition (clone-fidelity closing) appears to have been met
+today — today's session closed out the active clone-fidelity work (parity-tool doc archived,
+measurement-integrity doc archived, multiple real defects fixed and verified; see `LEDGER.md` for
+the full list). Flagging for Bean's decision on whether to activate this entry, not auto-activating
+it.
 
 **Trigger:** a post-fidelity design pass.
 
