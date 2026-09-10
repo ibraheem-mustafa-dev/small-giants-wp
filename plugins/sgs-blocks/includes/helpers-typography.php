@@ -99,9 +99,35 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 *   at all, deliberately: approximating the sibling semantic onto the root
 	 *   selector would indent EVERY paragraph including the first, which is a
 	 *   different feature, not a near-enough version of this one.
+	 * @param bool   $inherit_font_family_when_blank Optional, default false.
+	 *   WordPress's own `showFontFamily` picker labels its unset option
+	 *   "Default" and documents it as "whatever the theme decides"
+	 *   (TypographyControls.js SGS_TYPOGRAPHY_DEFAULT_LABEL comment,
+	 *   2026-09-06 spec) — for most callers that IS the correct behaviour:
+	 *   an unset font-family on a real heading tag (h1-h6) is SUPPOSED to
+	 *   pick up theme.json's `styles.elements.heading` preset, because the
+	 *   caller genuinely wants "use the site's heading font by default"
+	 *   (e.g. sgs/heading itself). Leave this false for that case — the
+	 *   default preserves every existing caller's behaviour unchanged.
+	 *
+	 *   Set true ONLY when the caller has made the OPPOSITE, per-attribute
+	 *   design decision that a blank value must inherit the BODY font even
+	 *   though the element renders as a real heading tag — e.g.
+	 *   product-card's `titleFontFamily`, block.json-documented: "Empty =
+	 *   inherit the theme's default (body) font — the draft's title has no
+	 *   explicit font-family, so it inherits the draft's body font (Inter)
+	 *   rather than the block's own Fraunces heading font." Without this,
+	 *   a blank value stays SILENT (no font-family declaration at all) on
+	 *   the block's own scoped rule, so theme.json's un-scoped
+	 *   `h1,h2,h3,h4,h5,h6{font-family:...}` global-styles rule wins by
+	 *   being the only rule that sets the property — even though the
+	 *   scoped class selector has higher specificity, a rule that never
+	 *   contests a property cannot beat one that does. Confirmed live on
+	 *   the product-card title (`<h3>`): computed font-family resolved to
+	 *   the heading preset instead of the draft's body font.
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '' ) {
+	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '', $inherit_font_family_when_blank = false ) {
 		$k_size        = sgs_typography_attr( $prefix, 'FontSize' );
 		$k_size_unit   = sgs_typography_attr( $prefix, 'FontSizeUnit' );
 		$k_family      = sgs_typography_attr( $prefix, 'FontFamily' );
@@ -266,6 +292,13 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			if ( '' !== $family_safe ) {
 				$base_decls[] = 'font-family:' . $family_safe . ';';
 			}
+		} elseif ( $inherit_font_family_when_blank ) {
+			// See the $inherit_font_family_when_blank param doc above — an
+			// explicit `inherit` on THIS scoped selector contests the
+			// property so theme.json's global heading rule no longer wins
+			// by default (matches the established convention already live
+			// on button/form/label/tabs/audio style.css).
+			$base_decls[] = 'font-family:inherit;';
 		}
 		if ( ! empty( $attributes[ $k_weight ] ) ) {
 			$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string) $attributes[ $k_weight ] ) . ';';

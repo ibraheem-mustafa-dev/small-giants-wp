@@ -201,7 +201,13 @@ $classes[] = $sgs_card_uid;
 // satisfy that gate. Adding a fifth prefixed font-family attr means adding a
 // fifth baseline row, with the same verify-before-trusting clause.
 
-$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
+// title passes $inherit_font_family_when_blank=true (helpers-typography.php):
+// the title tag is dynamic (h2/h3/h4/p via $sgs_bound_htag), and per this
+// block's own block.json titleFontFamily description, a blank value must
+// inherit the BODY font (matches the draft's plain heading with no explicit
+// font-family) rather than theme.json's heading-preset — the opposite of
+// most heading-tagged callers, which want the heading preset by default.
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3', '', true );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
 // 'pill' typography targets the option-picker pill (both typed + bound pack
