@@ -160,6 +160,41 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		}
 
 		/**
+		 * Whether a block has declared a named `supports.sgs.enabledExtensions`
+		 * capability (2026-09-10, the hero hover-spill-scale build). Reuses the
+		 * exact same block->block_type->supports resolution `resolve_kind()`
+		 * already uses above — a SEPARATE method rather than a refactor of
+		 * `resolve_kind()` itself, so this stays a pure additive read with zero
+		 * risk to the existing (working) kind-resolution path.
+		 *
+		 * Membership-only: it does not narrow/derive anything else, mirroring
+		 * `resolve_kind()`'s own "no narrowing from mere declaration" stance —
+		 * a block simply either has opted into a named capability or it hasn't.
+		 *
+		 * @param \WP_Block|null $block     Block instance passed to render.php.
+		 * @param string         $extension Capability name, e.g. 'hoverSpillScale'.
+		 * @return bool
+		 */
+		public static function has_extension( $block, string $extension ): bool {
+			$supports = null;
+			if ( $block instanceof \WP_Block && isset( $block->block_type->supports ) && is_array( $block->block_type->supports ) ) {
+				$supports = $block->block_type->supports;
+			} elseif ( $block instanceof \WP_Block && ! empty( $block->name ) ) {
+				$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block->name );
+				if ( null !== $registered && is_array( $registered->supports ?? null ) ) {
+					$supports = $registered->supports;
+				}
+			}
+
+			if ( null === $supports ) {
+				return false;
+			}
+
+			$enabled = $supports['sgs']['enabledExtensions'] ?? null;
+			return is_array( $enabled ) && in_array( $extension, $enabled, true );
+		}
+
+		/**
 		 * Render the outer wrapper for a container-style block.
 		 *
 		 * Returns a single pre-joined string:
@@ -226,6 +261,20 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$is_section = 'section' === $kind;
 			$is_layout  = 'layout' === $kind;
 			// content kind = only maxWidth/align/contentWidth/padding; used by content-level composites.
+
+			// Hover-spill-scale capability (2026-09-10, Bean-directed — the hero
+			// hover-zoom-behind-trust-bar bug). Opt-in via
+			// `supports.sgs.enabledExtensions: ['hoverSpillScale']`. Promotes the
+			// WHOLE composite's own stacking-context unit above a document-later
+			// sibling still sitting at the default z-index layer, and lets a
+			// hover-zoomed media child spill past the composite's own box without
+			// creating a page-level horizontal scrollbar. Reads the block's
+			// DECLARED supports (never per-instance attributes), so it is either
+			// on for every instance of a block or off for all of them — matching
+			// every other `enabledExtensions` member. OFF for every block that
+			// doesn't declare it; see the CSS emission further down, gated on
+			// `$hover_spill_scale && $uid`.
+			$hover_spill_scale = self::has_extension( $block, 'hoverSpillScale' );
 
 			// Spec 37 FR-37-16, RENAMED D555 (2026-08-10). This flag used to be
 			// `responsive_model => 'object'` and gated TWO things: object-shaped value
@@ -1642,6 +1691,14 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = $opt_block_class;
 			}
 
+			// Hover-spill-scale marker (see `$hover_spill_scale` above) — a debug/QA
+			// visibility aid only; the actual behaviour is the `.{uid}`-scoped rule
+			// emitted below once $uid exists. Harmless if present with no matching
+			// `.sgs-media-box` descendant (the CSS below is `:has()`-scoped).
+			if ( $hover_spill_scale ) {
+				$classes[] = 'sgs-container--hover-spill-scale';
+			}
+
 			// Merge extra classes from caller.
 			foreach ( $opt_extra_classes as $ec ) {
 				if ( '' !== $ec ) {
@@ -2227,7 +2284,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| '' !== $grid_item_background_hover_gradient
 				|| '' !== $grid_item_text_colour_hover
 				|| '' !== $grid_item_text_colour_gradient
-				|| '' !== $grid_item_text_colour_hover_gradient;
+				|| '' !== $grid_item_text_colour_hover_gradient
+				// Hover-spill-scale (see `$hover_spill_scale` above) — its CSS below is
+				// always a `.$uid`-scoped rule, so a block that opts in must always mint
+				// a uid, even when it has no OTHER reason to (a minimal split-media hero
+				// with no background/overlay/shape-divider would otherwise never get one).
+				|| $hover_spill_scale;
 
 			$uid = '';
 			if ( $needs_uid ) {
@@ -2245,6 +2307,42 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// guaranteed set here whenever $styles is non-empty (see $needs_uid above).
 			if ( ! empty( $styles ) && $uid ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $styles ) . ';}';
+			}
+
+			// Hover-spill-scale capability (2026-09-10, Bean-directed) — universal,
+			// composite-agnostic. Two-part shared mechanism mirroring the composite-
+			// mirror rule (Spec 31 §13.6): the wrapper owns the OUTER stacking/overflow
+			// promotion, and the media-atom markers (`assets/css/media-element.css`)
+			// already own the transform target, so this capability needs zero
+			// block-specific selector knowledge.
+			//
+			// THE BUG THIS FIXES: a composite's own `overflow-x:clip` (needed so a
+			// hover-zoomed media child can spill past its box without a page-level
+			// horizontal scrollbar) creates a NEW stacking context on the composite
+			// root. The media child's own `z-index:1` (itself just the generic
+			// CHILD-LIFT wildcard rule every direct child of `.sgs-container` gets,
+			// `container/style.css` `:where(.sgs-container) > *`) is then TRAPPED
+			// inside that new stacking context — it never reaches the page-level
+			// stacking order at all, so a document-LATER sibling section sitting at
+			// the default layer always paints over the spilling image regardless of
+			// any z-index inside the composite. The fix promotes the WHOLE composite
+			// root explicitly (`position:relative;z-index:2`), so its stacking
+			// context participates in the PARENT's stacking order at an explicit,
+			// non-auto layer instead of the default one every other untouched
+			// sibling still occupies.
+			//
+			// `:has(.sgs-media-box)` scopes the overflow/z-index promotion to
+			// instances that actually contain a media-box descendant — inert
+			// (matches nothing) on a variant with no split/media slot at all (e.g.
+			// hero's own `standard` variant), so this can never turn a composite's
+			// existing `overflow:hidden` into `overflow-y:visible` on a variant that
+			// relies on it staying clipped (ken-burns/parallax bleed containment).
+			// The transition-property + hover/focus-within scale rules need no such
+			// guard — they simply match nothing when no `.sgs-media-el` exists.
+			if ( $hover_spill_scale && $uid ) {
+				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
+				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s;transition-timing-function:ease-in-out;}';
+				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(1.05);}}';
 			}
 
 			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations

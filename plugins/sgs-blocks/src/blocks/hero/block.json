@@ -35,8 +35,10 @@
 			"enabledExtensions": [
 				"width",
 				"background",
-				"shapeDividers"
+				"shapeDividers",
+				"hoverSpillScale"
 			],
+			"_comment_hoverSpillScale": "2026-09-10, Bean-directed — shared wrapper capability (class-sgs-container-wrapper.php), migrated off hero's own private CSS. Promotes the whole composite root's stacking context above a document-later sibling and lets the split-media hover-zoom spill past its column without a page-level horizontal scrollbar. Universal — targets the shared .sgs-media-box/.sgs-media-el marker pair, so it applies to ANY composite that opts in, not just hero. Inert on the standard variant (no .sgs-media-box descendant there).",
 			"_comment_mediaElements": "Wave 6 (2026-09-01, uniform-prefix rename 2026-09-07). Migrates the split-media feature (image/video/SVG slot beside the text column) onto the shared media-atom system — NOT the section-level background (bgVideo/bgParallax/bgKenBurns/backgroundOverlay*), which stays on SGS_Container_Wrapper. Every split-media attribute uses ONE uniform prefix, 'splitMedia' — the earlier three-prefix split ('split'/'splitMedia'/'media') was naming drift, not a real constraint. The one exception is the media-type atom (base literally 'MediaType'), which stays prefix 'split' to avoid a double-noun 'splitMediaMediaType'; it already produces the correct 'splitMediaType' name. The source atom's picker writes a NEW {base}Id/{base}Url pair (its own canonical shape) rather than hero's legacy composite {id,url,alt} object. NO read-time fallback to the legacy object — Bean-locked (2026-09-02): R-31-14 bans exactly that shape, and this block already carries a 2026-08-13 precedent of deleting an identically-shaped bridge for the same reason. An already-published hero instance holding only the legacy splitImage/splitVideo/splitSvg shape renders an EMPTY split-media slot until re-uploaded through the new picker (see render.php's own comment at the split-media source resolution).",
 			"mediaElements": [
 				{

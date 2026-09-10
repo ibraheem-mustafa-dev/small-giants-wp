@@ -11,7 +11,20 @@
 
 .sgs-media-el {
 	box-shadow: var( --sgs-media-box-shadow, none );
-	transition: box-shadow 0.3s ease;
+	/* LONGHAND, not `transition: box-shadow 0.3s ease` (2026-09-10 — the hero
+	 * hover-spill-scale build). A `transition` SHORTHAND always resets
+	 * `transition-property` to its own value, so ANY other rule on this same
+	 * element declaring its own `transition-property: transform` (e.g. the
+	 * shared hover-spill-scale capability, `class-sgs-container-wrapper.php`)
+	 * gets silently overwritten the moment this partial's rule wins the
+	 * cascade — the scale effect then jumps instantly instead of animating,
+	 * with nothing to grep for (both rules look correct in isolation).
+	 * Longhand scopes this atom to the ONE property it actually owns and
+	 * leaves every other property's transition alone, for any current or
+	 * future `.sgs-media-el` consumer, not just hero. */
+	transition-property: box-shadow;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
 }
 
 .sgs-media-el:hover,
