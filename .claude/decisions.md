@@ -1,3 +1,25 @@
+## D1016 [ROUTINE] — Step 6's judgement call recorded, `phase-measurement-integrity.md` archived
+
+**2026-09-10.** Closed the one open item blocking archival of the measurement-integrity phase
+plan (D1013/D1014's parent). Step 6 ("Fix the `inChrome()` blind spot") asked whether the
+chrome-exclusion machinery had a real bug or was already correct; verified via `git log`/
+`git merge-base --is-ancestor` that commit `0aa4b25f1` (2026-09-10, ancestor of HEAD) already
+answered it — the exclusion code (`isPageLevelChromeTag`/`inChrome`) was already-correct
+retained v1.0.0 machinery, so neither of the plan's two anticipated outcomes applied; what was
+missing was test coverage. The commit added self-test fixture 8 (negative control: page
+header/footer never scored on either side; positive control: a content-area `<footer>`, the
+live testimonial-card shape on page 3448, is NOT blanket-excluded by tag name alone) and was
+verified live against page 3448 before being written. Re-ran `node
+plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test` at HEAD — all fixtures
+(1-8) pass, "ALL SELF-TEST CHECKS PASSED". Recorded the conclusion in the plan doc's status
+header, matching D1015's "Parity tool scope correction" note. Moved
+`.claude/plans/phase-measurement-integrity.md` to `.claude/plans/archive/` (all 13 steps now
+shipped) with an `ARCHIVED — DONE` status header; live status for this track stays in
+`LEDGER.md`, not the archived plan. Repointed `LEDGER.md`'s 3 references (Human Summary +
+State Snapshot + Pointers table) from "needs Step 6 recorded" to the archive path.
+
+---
+
 ## D1015 [ROUTINE] — clone-fidelity closeout: 11 real defects fixed, one self-correction, header/footer scoped out as separate track
 
 **2026-09-10.** Closed out LEDGER.md's Tasks 1-3 plus a large Bean-directed brain-dump of

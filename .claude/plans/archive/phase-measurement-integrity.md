@@ -5,19 +5,37 @@ project: small-giants-wp
 cost_estimate: ~2h wall-time across 13 steps + 4 QA gates
 docscore_grade: pending
 mode: ad-hoc (council-scoped, no parent strategic-plan)
+status: ARCHIVED — DONE. All 13 steps shipped, Step 6's judgement call recorded 2026-09-10
+        (see status note below), archived 2026-09-10 (decisions.md D1016). Live status for
+        the cloning-fidelity track lives in `../../LEDGER.md`, not here.
+archived: 2026-09-10
 ---
 
-**Status re-check, 2026-09-10:** 12 of 13 steps confirmed fully shipped with real commit
-evidence (`git log -- plugins/sgs-blocks/scripts/parity/computed-parity.js`), all 4 QA gates
-green (`--self-test` passes in full at HEAD). **Step 6 (the `inChrome()`/chrome blind-spot
-investigation) has no recorded resolution anywhere** — no commit touches it in the phase's
-range, and neither `decisions.md` nor `LEDGER.md` records which of the plan's own two
-legitimate outcomes was reached (ruler fix, or "out of scope, block-markup issue"). This may
-already be correctly closed as out-of-scope — nothing PROVES that from evidence. **Do not move
-this doc to `plans/archive/` until Step 6's actual conclusion is written down** (one line, here
-or in decisions.md, is enough). Two later, separate incident rounds (D1013, D1014) found and
-fixed real regressions in this phase's OWN shipped fixes — those are closed, don't reopen this
-phase's step list, but are worth reading alongside this doc for the full picture.
+**Status re-check, 2026-09-10 (RESOLVED — all 13 steps closed):** 12 of 13 steps confirmed fully
+shipped with real commit evidence (`git log -- plugins/sgs-blocks/scripts/parity/computed-parity.js`),
+all 4 QA gates green (`--self-test` passes in full at HEAD). **Step 6's judgement call is now
+recorded** — commit `0aa4b25f1` (2026-09-10, an ancestor of HEAD; `git merge-base --is-ancestor
+0aa4b25f1 HEAD` confirms) investigated the `inChrome()`/chrome blind-spot and found neither of
+the plan's own two anticipated outcomes: the exclusion machinery (`isPageLevelChromeTag` walking
+up to BODY and bailing on a SECTION/ARTICLE/MAIN ancestor; `inChrome`'s class-token check) was
+**already correct retained v1.0.0 code** — it needed no `inChrome()` edit and the "block-markup
+bug, re-scope" branch didn't apply either. What was missing was *test coverage*: no self-test
+fixture exercised the chrome side at all, so nobody could prove the correct-looking code actually
+behaved correctly. The commit added fixture 8 (negative control: page header/footer content on
+neither side ever reaches the scored map; positive control: a content-area `<footer>` — the live
+testimonial-card shape on page 3448 — is NOT blanket-excluded by tag name alone), verified live
+against page 3448 and the real mockup structure before the fixture was written, and separately
+recorded the one approved per-draft design exception (Trustpilot carousel vs. the draft's static
+grid) in `sites/mamas-munches/accepted-differences.md` per Bean's D1015 direction, deliberately
+NOT wired into the tool's scoring logic. Re-run at HEAD, `node
+plugins/sgs-blocks/scripts/parity/computed-parity.js --self-test` passes all 4 fixture-8 assertions
+alongside fixtures 1-7 — "ALL SELF-TEST CHECKS PASSED". Because no code in `inChrome()`/
+`isPageLevelChromeTag()` changed, there is no unmatched-count movement to predict or explain (the
+plan's "score moves down" caveat applies only to a genuine widening fix, which this wasn't).
+`decisions.md` D1015 records the same finding under "Parity tool scope correction". Two later,
+separate incident rounds (D1013, D1014) found and fixed real regressions in this phase's OWN
+shipped fixes — those are closed and don't reopen this phase's step list, but are worth reading
+alongside this doc for the full picture.
 
 # Phase — Measurement Integrity
 

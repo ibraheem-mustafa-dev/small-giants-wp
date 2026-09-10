@@ -57,9 +57,8 @@ before/after numbers once that build lands.
      essentially DONE (0 candidates left, was 105); converter-resolver-level typography emission
      is genuinely still flat (4 live xfails). The doc doesn't cite D1004 (header/footer outranks
      motion), so its own priority framing is stale.
-   - `phase-measurement-integrity.md` — 12 of 13 steps fully shipped with commit evidence; Step 6
-     (chrome blind-spot investigation) has no recorded resolution anywhere — not necessarily
-     wrong, just unattested. Hold off archiving until that's written down.
+   - `phase-measurement-integrity.md` — all 13 steps shipped; Step 6's judgement call recorded
+     and the doc archived to `plans/archive/` (D1016).
 6. **Parity tool scope correction** (build dispatched, verify result before quoting new numbers)
    — exclude header/footer/nav chrome from scoring (separate system, was conflating two
    different pieces of work), gate CSS properties on whether they can actually apply
@@ -91,8 +90,6 @@ blocking):
   work-list closed (with today's live survey numbers), cite D1004, and re-flag that
   converter-resolver-level typography emission is still open (4 live xfails, not closed as the
   doc's own banner claims).
-- `phase-measurement-integrity.md` Step 6 needs one line recording what it concluded, before it
-  can move to `plans/archive/`.
 - A test clone of a second draft page (Bean's own next step, to test the pipeline's claimed
   universality) — do this AFTER the parity-tool fix lands, so the result is measured against the
   corrected tool, not the old one.
@@ -193,7 +190,7 @@ blocking):
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |
 | Tier-migration plan (needs a correction pass, see above) | `plans/cloning-pipeline-tier-migration-requirements.md` |
 | BEM layer-aware matching design (needs a correction pass, see above) | `plans/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
-| Measurement-integrity phase (needs Step 6 recorded before archiving) | `plans/phase-measurement-integrity.md` |
+| Measurement-integrity phase (DONE, archived — D1016) | `plans/archive/phase-measurement-integrity.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector UX standard | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |
 | System architecture | `architecture.md` |
