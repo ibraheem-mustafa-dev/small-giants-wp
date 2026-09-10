@@ -51,8 +51,8 @@
 
 			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
-			<ul class="is-style-no-bullets has-small-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
+			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"regular"} -->
+			<ul class="is-style-no-bullets has-regular-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
 			<!-- wp:list-item -->
 			<li><a href="#">Home</a></li>
 			<!-- /wp:list-item -->
@@ -81,15 +81,11 @@
 
 			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|10"}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"bottom":"var:preset|spacing|30"}} /-->
-
-			<!-- wp:sgs/heading {"content":"Opening Hours","level":"h3","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|20"}} /-->
-
-			<!-- wp:sgs/business-info {"displayType":"hours","textColour":"surface","labelColour":"surface","fontSize":{"desktop":"regular"}} /-->
 
 		<!-- /wp:sgs/container -->
 

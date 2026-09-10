@@ -608,13 +608,13 @@ footer .wp-block-list a:hover,
 	padding-left: 0 !important;
 }
 
-.has-footer-bg-background-color .is-style-no-bullets a {
+footer .is-style-no-bullets a {
 	color: var(--wp--preset--color--surface, #ffffff);
 	text-decoration: none;
 	transition: color 0.2s ease;
 }
 
-.has-footer-bg-background-color .is-style-no-bullets a:hover {
+footer .is-style-no-bullets a:hover {
 	color: var(--wp--preset--color--accent, #d8ca50);
 }
 
