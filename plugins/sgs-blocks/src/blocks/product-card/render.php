@@ -201,13 +201,17 @@ $classes[] = $sgs_card_uid;
 // satisfy that gate. Adding a fifth prefixed font-family attr means adding a
 // fifth baseline row, with the same verify-before-trusting clause.
 
-// title passes $inherit_font_family_when_blank=true (helpers-typography.php):
-// the title tag is dynamic (h2/h3/h4/p via $sgs_bound_htag), and per this
-// block's own block.json titleFontFamily description, a blank value must
-// inherit the BODY font (matches the draft's plain heading with no explicit
-// font-family) rather than theme.json's heading-preset — the opposite of
-// most heading-tagged callers, which want the heading preset by default.
-$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3', '', true );
+// CORRECTED 2026-09-10: title does NOT pass $inherit_font_family_when_blank — a
+// prior version of this comment (and the matching block.json description) claimed
+// a blank title font-family should inherit the BODY font, reasoning that "the
+// draft's plain heading has no explicit font-family". That was checked against
+// the Mama's Munches draft's actual CSS and found wrong: the draft declares a
+// GLOBAL `h1, h2, h3 { font-family: 'Fraunces', serif }` rule, and the product
+// card's own `.sgs-product-card h3` rule (size/weight/colour/margin only) never
+// overrides font-family — so a blank value correctly falls through to Fraunces,
+// same as theme.json's heading-preset default every other heading-tagged caller
+// already gets. No opt-in needed; the helper's normal default is already correct.
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'desc', '.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc' );
 // 'pill' typography targets the option-picker pill (both typed + bound pack

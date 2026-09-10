@@ -779,7 +779,7 @@
 		"titleFontFamily": {
 			"type": "string",
 			"default": "",
-			"description": "Font family for the product title heading, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's default (body) font — the draft's title has no explicit font-family, so it inherits the draft's body font (Inter) rather than the block's own Fraunces heading font."
+			"description": "Font family for the product title heading, sourced from theme.json's typography.fontFamilies preset list via the shared TypographyControls font-family picker. Empty = inherit the theme's heading preset (corrected 2026-09-10 — this used to claim a blank value should inherit the body font, reasoning that the draft's title carries no explicit font-family rule; that was checked against the Mama's Munches draft and found wrong: the draft declares a global h1/h2/h3 heading-font rule its own product-card h3 rule never overrides, so the heading preset is the correct inherited default, matching every other heading-tagged block)."
 		},
 		"titleLineHeight": {
 			"type": "number"
