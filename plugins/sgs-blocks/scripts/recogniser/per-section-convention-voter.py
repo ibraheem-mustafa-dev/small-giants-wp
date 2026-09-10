@@ -420,43 +420,76 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     """Walk the page top-down, return (node, selector) for every top-level
     landmark section.
 
-    Treats `<main>` (and any other landmark whose role is to contain inner
-    sections rather than be the section itself) as a transparent container:
-    the inner `<section>` children get promoted to top-level boundaries.
-    This matches the canonical SGS mockup shape -- body > header + main + footer
+    Universal recursive-descent, not a fixed-depth landmark lookup: any node
+    whose tag is a LEAF_SECTION_TAG (`section`/`header`/`footer`/`aside`/
+    `nav`) is emitted as a boundary and NOT recursed into further (its own
+    children become that section's content, walked by later pipeline
+    stages). Every other node -- whether a semantic landmark CONTAINER
+    (`main`/`article`, which exists purely to wrap inner sections rather
+    than be one), OR an INERT non-semantic wrapper (a `<div>`/`<span>` with
+    no BEM class, no semantic tag, no registered block match -- e.g. a bare
+    CSS grid wrapper the draft author added for layout only) -- is treated
+    as a transparent pass-through and recursed into at ANY depth, not just
+    one level.
+
+    This is a deliberate, documented extension of the existing "transparent
+    container" concept (previously hardcoded to {"main", "article"} and
+    capped at one level of recursion) to be name-free and depth-unlimited,
+    per CLAUDE.md Rule 3 (universal, no carve-outs): a section nested inside
+    an inert wrapper div must be found exactly as if it were a direct child
+    of body, regardless of how many inert layers separate them. An inert
+    wrapper is never itself emitted as a section/gap-candidate -- it carries
+    no naming signal to vote on, so surfacing it would just create a
+    permanently-unresolvable gap-candidate boundary. It is invisible by
+    design; only its section-like descendants become boundaries.
+
+    Matches the canonical SGS mockup shape -- body > header + main + footer
     where main wraps the content sections (hero, trust-bar, featured-product,
-    brand, ingredients-section, gift-section, social-proof).
+    brand, ingredients-section, gift-section, social-proof) -- AND the
+    product-page shape where main wraps a plain `<div class="product-page">`
+    that itself wraps `<section class="product-gallery">` /
+    `<section class="product-info">`.
     """
     out: list[tuple[Tag, str]] = []
     body = soup.body or soup
 
-    # Tags that are landmark CONTAINERS rather than themselves leaf sections.
-    # When we hit one, we walk into it for child sections rather than
-    # treating it as a single section.
-    transparent_containers = {"main", "article"}
+    # SECTION_TAGS includes "main" (it is a valid single-section shape when
+    # a mockup has no inner <section> children at all -- see the fallback
+    # branch below). But "main"/"article" are LANDMARK CONTAINERS whose
+    # normal role is to wrap other sections, so they must never stop
+    # recursion the way a leaf section tag does. Split the two concerns.
+    landmark_container_tags = {"main", "article"}
+    leaf_section_tags = tuple(t for t in SECTION_TAGS if t not in landmark_container_tags)
 
     def emit_section(node: Tag) -> None:
         classes = collect_class_signature(node)
         selector = f"{node.name}.{classes[0]}" if classes else node.name
         out.append((node, selector))
 
-    for child in body.find_all(recursive=False):
-        if not isinstance(child, Tag):
-            continue
-        if child.name in transparent_containers:
-            # Promote inner section-tag children to top-level boundaries.
-            inner_sections = [
-                c for c in child.find_all(recursive=False)
-                if isinstance(c, Tag) and c.name in SECTION_TAGS
-            ]
-            if inner_sections:
-                for inner in inner_sections:
-                    emit_section(inner)
-            else:
-                # No inner sections -- treat the container itself as a section.
+    def walk(container: Tag) -> None:
+        found_any = False
+        for child in container.find_all(recursive=False):
+            if not isinstance(child, Tag):
+                continue
+            if child.name in leaf_section_tags:
                 emit_section(child)
-        elif child.name in SECTION_TAGS:
-            emit_section(child)
+                found_any = True
+            else:
+                # Not a leaf section-tag: recurse through it (semantic
+                # landmark container OR inert non-semantic wrapper -- both
+                # get the same transparent treatment, at unlimited depth).
+                before = len(out)
+                walk(child)
+                if len(out) > before:
+                    found_any = True
+        if not found_any and container.name in landmark_container_tags:
+            # A landmark container with no section-like descendants at all
+            # (not even nested) is itself the section -- preserves the
+            # pre-existing fallback for a main/article with no inner
+            # structure whatsoever.
+            emit_section(container)
+
+    walk(body)
 
     # Fallback: if body had no direct landmark children, walk deeper.
     if not out and body:
