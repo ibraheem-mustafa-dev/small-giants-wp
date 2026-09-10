@@ -74,9 +74,12 @@ preview-before-active flow.
 
 **Genuinely open:**
 - Per-site branded content authoring (the actual blocker above).
-- The visual column-shape picker (FR-37-42) — built for
-  `sgs/site-footer-row` only, not yet on `sgs/site-header-row` or
-  `sgs/container`, and not yet deployed.
+- The visual column-shape picker (FR-37-42) — **correction, 2026-09-11: this
+  line was stale.** The picker is now wired to all three consumers
+  (`sgs/site-footer-row` 2026-08-26, then `sgs/site-header-row` +
+  `sgs/container` 2026-08-27 — `71a5d4d42`, `e90a1b313`). What's actually
+  still open is deploying to the live canary and Bean's eye-verification,
+  not the code rollout.
 - Scrolled-colour control (FR-37-45) — not built, not designed.
 - The rules engine (FR-37-20) targets file-registered patterns only, not
   CPT posts.

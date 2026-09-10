@@ -21,6 +21,15 @@ status_history:
     Bean's rule — keep an operator TOGGLE, bin an AUTOMATIC behaviour — decided it;
     code confirms it is a toggle. Spec 36 amended in the same commit per §1.2's
     both-specs-same-commit boundary rule. §8.2 open question 1 closed.
+  - 2026-09-11 — staleness correction pass (fact-check requested by Bean). FR-37-42 /
+    §3.3's "still to roll out to site-header-row + sgs/container" claim was stale —
+    both were wired 2026-08-27 (`71a5d4d42`, `e90a1b313`), one day after the cited
+    cutoff; corrected in both places. This same stale claim had already propagated
+    into `.claude/prompts/2026-09-10-header-footer-implementation.md`, corrected there
+    too. FR-37-29 was internally self-contradictory (FR text said NOT-BUILT, §5 table
+    said DEPLOYED) and both readings were moot — the per-control switcher it targets
+    was deleted 2026-08-19 in favour of a global toggle (Spec 35); FR rewritten to flag
+    it needs a fresh a11y check against the new control, not a continuation.
 references:
   - .claude/specs/36-SGS-NAVIGATION-SYSTEM.md          # nav — the extension of this spec
   - .claude/specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md
@@ -252,9 +261,13 @@ opportunity, not a reason to avoid the design**.
 - Shapes are expressed in `fr`, not px, so they stay fluid (the reference's `340px 680px 340px`
   is ≈ `1fr 2fr 1fr`).
 
-**Status:** `PARTIAL — built 2026-08-26 (`2e46fc3f2`), wired to `sgs/site-footer-row` only;
-`sgs/site-header-row` + `sgs/container` still to roll out. NOT yet deployed or eye-verified.`
-Recorded here rather than
+**Status:** `PARTIAL — code rollout DONE, live verification owed (corrected 2026-09-11).`
+Built 2026-08-26 (`2e46fc3f2`) on `sgs/site-footer-row`; `sgs/site-header-row` (`71a5d4d42`) and
+`sgs/container` (`e90a1b313`) followed the next day, 2026-08-27 — all three consumers now mount
+the picker. **The "still to roll out" wording below (FR-37-42) was stale as of 2026-09-11 and has
+been corrected there too; this line previously read the same way and had not been updated after
+the 2026-08-27 commits landed.** What remains open is deployment to the live canary + Bean's eye
+verification, not the code. Recorded here rather than
 left in a plan file, because a rejection standing unamended in a governing spec is exactly the
 D358 failure: the next session reads "ratio rejected, do not re-litigate" and never builds it.
 
@@ -1271,13 +1284,25 @@ and the logo/nav cluster visibly centred in the canvas.
 **Done when:** at least one preset control exists on the header container and sets its
 attributes such that the converter round-trips them unchanged. ✅ met.
 
-#### FR-37-29 — Device-switcher accessibility
-The inspector's device switcher is a real `tablist` with roving tabindex and arrow-key
-navigation, and its targets are ≥44×44px.
-**Status:** `NOT-BUILT` — a diagnosed defect: `ResponsiveControl.js:77-89` is a plain
-`ButtonGroup` with no `tablist` role and Tab-key-only navigation; `:80-87` uses `size="small"`
-(~24-32px). P2 §4.3 records this as a correction to an earlier false claim that WP provided it.
-**Done when:** axe reports zero violations on the switcher and the targets measure ≥44px.
+#### FR-37-29 — Device-switcher accessibility — SUPERSEDED, needs a rewrite (flagged 2026-09-11)
+Originally: the per-control inspector device switcher (desktop/tablet/mobile toggle shown on each
+individual setting) should be a real `tablist` with roving tabindex and arrow-key navigation, with
+targets ≥44×44px.
+
+**This FR's own text and the §5 summary table entry for the same FR contradicted each other**
+(the text said `NOT-BUILT`, citing a plain `ButtonGroup` in `ResponsiveControl.js:77-89`; the §5
+table said `DEPLOYED (unexercised)`, citing a landed fix commit) — neither had been reconciled
+after the fix shipped. **Both readings are now moot regardless of which was once correct:** the
+per-control switcher this FR describes was deleted entirely on 2026-08-19 in favour of a global
+device-tier toggle docked at the bottom of the inspector (a Spec 35 change), and `inspector-scan`
+rule 25 now forbids re-adding a per-control switcher. There is no per-control tablist left to make
+accessible.
+**Status:** `NEEDS REWRITE` — the control surface this FR targets no longer exists. Before closing
+or reopening this FR, someone must check whether the NEW global device-tier toggle itself meets
+the tablist/roving-tabindex/44px bar — that is a fresh, small a11y check against different code,
+not a continuation of this FR.
+**Done when (as rewritten):** axe reports zero violations on the global device-tier toggle and its
+targets measure ≥44px.
 
 #### FR-37-30 — WP-CLI surface (developer and pipeline only)
 A reduced `wp sgs` command set covers the header/footer lifecycle non-interactively: set/clear
@@ -1591,10 +1616,13 @@ after, which must be unchanged.
 
 **⚠ Do NOT re-derive the shape list from taste.** It comes from the reference teardowns; any
 shape added later needs a measured reference behind it.
-**Status:** `PARTIAL` — built 2026-08-26 (`2e46fc3f2`);
-`src/components/ColumnShapePicker.js`, mounted at `src/blocks/site-footer-row/edit.js:~415`.
-`sgs/site-header-row` and `sgs/container` still to roll out (Bean's build-time call: all three
-share one control). NOT yet deployed, so the eye-verified half of Done-when is OPEN.
+**Status:** `PARTIAL — code rollout DONE on all three consumers; live/eye verification owed
+(corrected 2026-09-11 — this line was stale and had propagated into the 2026-09-10 handoff
+prompt).` `src/components/ColumnShapePicker.js`, mounted 2026-08-26 (`2e46fc3f2`) at
+`src/blocks/site-footer-row/edit.js:~415`, then 2026-08-27 at `src/blocks/site-header-row/edit.js`
+(`71a5d4d42`) and `src/blocks/container/edit.js` (`e90a1b313`) — Bean's build-time call (§3.3) was
+"all three share one control," and all three now do. NOT yet deployed to the live canary, so the
+eye-verified half of Done-when is still OPEN — that is the only genuinely remaining piece.
 
 **Built to the gold standard, not to taste** — `reports/2026-08-26-column-shape-picker-gold-standard.md`:
 · Core's own column picker is **insert-time only** (`columns/edit.js` swaps the Placeholder once the
@@ -1741,7 +1769,7 @@ was previously losing the flip entirely, not by accident.
 | hide-on-scroll + transparent + shrink (FR-37-13) | `✅ SHIPPED + LIVE-VERIFIED` (D376, 2026-07-24) — fix B landed: `sgs/site-header` renders a semantic `<header>`; view.js + all 21 `header-behaviours.css` selectors retargeted to `header.sgs-site-header`. Live on the canary (CPT 1655): scroll-down hides (`translateY(-119px)`), scroll-up returns; one banner landmark; F1 publisher revived; axe zero NEW hit. Plus Option B one-header guard + editor `<header>`. See FR-37-13 above |
 | Informational a11y notice (FR-37-19) | `DEPLOYED (unexercised)` — passive `Notice` on both containers; verified in code to carry NO `lockPostSaving`/gating (P1 DP2a). Editor-surface only, so it needs an editor session to see |
 | Simple-surface cap lint (FR-37-27) | `GATE BUILT` — `check-simple-surface-cap.js` exists and is proven by negative control. `sgs/site-header` shows **7 default-visible controls against the P2 §5 DEFAULT of 3** — an advisory nudge toward the roster, **not a defect** (the ≤3 is a default, not a ceiling — see FR-37-27's 2026-07-23 correction). WARN-ONLY, exit 0, opt-in `--strict`; not wired into prebuild |
-| Device-switcher a11y (FR-37-29) | `DEPLOYED (unexercised)` — shared `DeviceTabs` extracted; **fixes 21 blocks at once**. The framework already had a correct tablist in `ResponsiveOverride` (2 consumers) that the widely-used `ResponsiveControl` had never adopted — this was ADOPTION, not new design. Editor-surface only |
+| Device-switcher a11y (FR-37-29) | `SUPERSEDED (corrected 2026-09-11)` — this row previously said `DEPLOYED (unexercised)` while the FR's own body text said `NOT-BUILT`; both were true of a control (the per-control `DeviceTabs` switcher) that was deleted 2026-08-19 in favour of a global device-tier toggle (Spec 35). Neither status describes current code. See the rewritten FR-37-29 above — the open work, if any, is a fresh a11y check on the new global toggle |
 | Tri-state shape (FR-37-14) | `✅ BUILT + LIVE-VERIFIED 2026-07-28` (`e4bd72ef`+`eb255f06`) — all 4 behaviour attrs reshaped to tri-state objects on the canonical `resolveTier()` cascade; single-writer merged `@media` emission; rows unified onto `sgs_resolve_on_tiers()`; `sgs_resolve_tier_booleans()` DELETED |
 | Scoped behaviour CSS (FR-37-15) | `DONE` (2026-08-19) — all FIVE behaviours are `#uid`-scoped per-tier CSS. sticky/transparent/shrink/hide-on-scroll via `sgs_emit_tier_rules()` (2026-07-28); `contrastSafe` via the new N-value `sgs_emit_tier_rules_map()` (2026-08-19, FR-37-44), retiring the last body-class rules |
 | Empty the header template part (FR-37-6) | `PARTIAL` — file step DONE (`9b9a8028`) + orphan client pattern DELETED (`94ab240f`); only the per-site CPT authoring remains (§3.9a) |
