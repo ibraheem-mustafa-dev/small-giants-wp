@@ -492,7 +492,9 @@
 		},
 		"gridItemBorderRadius": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"gridItemBorder": {
 			"type": "string",
