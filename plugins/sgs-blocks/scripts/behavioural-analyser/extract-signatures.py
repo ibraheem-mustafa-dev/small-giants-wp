@@ -21,13 +21,69 @@ import re
 import json
 import sqlite3
 import os
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parents[4]  # small-giants-wp/
 BLOCKS_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
+INCLUDES_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "includes"
 DB_PATH = Path(os.path.expanduser("~")) / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# ── Shared render files (2026-09-10, colour-resolution root-cause report) ──────
+# A colour attribute genuinely resolved ONLY inside a SHARED include (never
+# referenced again in the consuming block's own render.php) is invisible to
+# every shape detector below — they only ever read `{block_dir}/render.php`.
+# Keyed by the literal call signature that PROVES a given block's OWN
+# render.php actually routes through the shared file — evidence-gated, never
+# a hardcoded per-block roster (R-31-9). See the widen-scan comment inside
+# `extract_css_property_and_layer()` for how this is applied.
+_SHARED_RENDER_FILES: "dict[str, Path]" = {
+    "SGS_Container_Wrapper::": INCLUDES_DIR / "class-sgs-container-wrapper.php",
+}
+
+# The shared file's OWN fixed BEM slug — real, structural evidence, not a
+# per-block guess. `class-sgs-container-wrapper.php` renders every consuming
+# block's shared markup (e.g. the overlay span) with a LITERAL, non-slug-
+# interpolated class name — `.sgs-container__overlay`, verbatim, regardless
+# of which block (cta-section, site-header, …) is the caller (confirmed by
+# reading the file: `'.' . $uid . ' .sgs-container__overlay{' . ...`). So a
+# selector found WHILE SCANNING THIS SHARED FILE'S OWN TEXT should resolve its
+# BEM element against the file's OWN identity ("container"), never the
+# calling block's slug — that literal text genuinely never contains the
+# calling block's slug at all. Consulted as a FALLBACK, after the calling
+# block's own slug fails to match, by `_derive_bem_element_with_fallback()`
+# below (2026-09-10, db-consistency F6 fix).
+_SHARED_RENDER_FILE_BEM_SLUGS: "tuple[str, ...]" = ("container",)
+
+
+@lru_cache(maxsize=None)
+def _read_shared_render_file(path: Path) -> str:
+    """Read + comment-strip a shared render file once per run — many blocks
+    route through the SAME shared file, so this avoids re-reading and
+    re-stripping it once per consuming block."""
+    return _strip_php_comments(path.read_text(encoding="utf-8", errors="ignore"))
+
+
+def _derive_bem_element_with_fallback(selector: str, block_short_slug: str) -> "str | None":
+    """Try `_derive_bem_element_from_selector` against the calling block's own
+    slug first (the normal case); if that finds nothing, ALSO try each shared
+    render file's own fixed BEM slug (`_SHARED_RENDER_FILE_BEM_SLUGS`) — see
+    that constant's docblock for why this is real evidence, not a guess. Used
+    by Shape D2 and Shape G, both of which can scan text that originated
+    inside a shared file via the widened-file-scan.
+    """
+    element = _derive_bem_element_from_selector(selector, block_short_slug)
+    if element:
+        return element
+    for shared_slug in _SHARED_RENDER_FILE_BEM_SLUGS:
+        if shared_slug == block_short_slug:
+            continue  # already tried above
+        element = _derive_bem_element_from_selector(selector, shared_slug)
+        if element:
+            return element
+    return None
 
 # ── PHP escape-function patterns ───────────────────────────────────────────────
 # Ordered by output role: esc_html and wp_kses_post emit visible content;
@@ -1568,7 +1624,7 @@ def _attrs_from_state_colour_helper_calls(
     attr_names: "set[str]",
     block_short_slug: str,
     var_attr: "dict[str, str]",
-) -> "dict[str, set[str]]":
+) -> "tuple[dict[str, set[str]], dict[str, set[str]]]":
     """Shape D2 (Cause A): `sgs_emit_state_colour_css($selector, $decls_normal,
     $decls_hover)` paints its declarations on a real BEM selector (its 1st arg),
     but that selector never reaches the attribute whose value feeds the decls
@@ -1576,7 +1632,8 @@ def _attrs_from_state_colour_helper_calls(
     `$card_grid_hover_decls[] = 'color:' . sgs_colour_value( $hover_text );`) and
     CONSUMED by the helper call in a separate, later statement (render.php:277-281).
     css_property for that attr is already resolved elsewhere (Shapes B/C, on the
-    array-building statement itself); this fills in the missing css_element.
+    array-building statement itself); this fills in the missing css_element AND
+    (2026-09-10 extension, see below) the missing css_state.
 
     Two-pass, evidence-only (mirrors Shape D's "only literal prefixes resolved,
     never guessed" discipline):
@@ -1584,14 +1641,40 @@ def _attrs_from_state_colour_helper_calls(
     1. Walk every `$arrVar[] = ...;` push statement, and resolve every attribute
        feeding it — either a direct `$attributes['x']` read, or a local variable
        already resolved by `_build_php_var_attr_map` (the SAME `var_attr` map the
-       rest of this module uses) — giving {array-var-name -> set of attrs}.
+       rest of this module uses) — giving {array-var-name -> set of attrs}. Also
+       walk every `$resultVar = <known Shape F composer>(...);` DIRECT assignment
+       (2026-09-10) — the SAME "value feeds this call's decls array" relationship,
+       just via a scalar result variable rather than an array push, e.g.
+       class-sgs-container-wrapper.php:2545:
+         `$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover, $overlay_gradient_hover );`
+       then consumed at :2547-2551 as `sgs_emit_state_colour_css( $sel, array(),
+       array( $overlay_hover_paint ) )` — both sources are merged into the SAME
+       `array_push_attrs` map so step 2 treats them identically.
     2. Walk every `sgs_emit_state_colour_css(...)` call site, derive the BEM
        element from the LITERAL selector text of its 1st arg (reusing
        `_derive_bem_element_from_selector`, the same evidence Shape D already
        reads off a helper's selector argument), and apply that element to every
-       attr feeding the 2nd/3rd-arg decls array — ONLY when that arg is a bare
-       `$variable` reference (a literal `array()` with no element evidence, or
-       any other expression shape, is refused rather than guessed).
+       attr feeding the 2nd/3rd-arg decls array — when that arg is a bare
+       `$variable` reference OR a single-element `array( $variable )` wrapper
+       (2026-09-10: widened from bare-`$var`-only, because a caller with only
+       ONE decl string routinely inlines it as `array( $x )` rather than
+       pre-assigning an array variable — the exact shape at the overlay-hover
+       call site above; any other expression shape is still refused rather
+       than guessed).
+
+       STATE (2026-09-10 extension): every attr resolved via the 3rd
+       (`$decls_hover`) argument position is also assigned css_state='hover' —
+       positional evidence from a KNOWN helper's fixed signature, the same
+       standing as Shape F's positional arg->property map, never a name guess.
+       The 2nd (`$decls_normal`) position gets no state (this codebase's
+       existing convention: a resting/base attr simply carries no css_state —
+       confirmed on every already-correct base/hover pair in the DB, e.g.
+       sgs/hero's own backgroundOverlayColour). Distinguishing base from hover
+       this way is what makes a base/hover pair resolve to DIFFERENT
+       (property, layer, element, state, tier) tuples instead of colliding on
+       the SAME one — the db-consistency F6 AmbiguousLayerAttrError this
+       extension exists to close (found live 2026-09-10, the very first
+       `/sgs-update --stage 1` run after Shape F/G shipped).
 
     A call whose selector reduces to a bare root variable (`$root_sel`, no
     `sgs-{slug}__` substring — e.g. sgs/testimonial's `quoteColourHover` call)
@@ -1600,11 +1683,16 @@ def _attrs_from_state_colour_helper_calls(
     selector` already returns None for it — Causes A and C are told apart by
     this evidence, never by helper name or attr name pattern (the root-cause
     report's Q3 explicitly warns the helper's use does not predict A vs C; each
-    call site must be read on its own selector text).
+    call site must be read on its own selector text). STATE is deliberately
+    NOT gated behind this element check (2026-09-10) — it is independent,
+    argument-position evidence, so a root-scoped call (or one scanned via the
+    widened shared-file text, whose literal selector never names the CONSUMING
+    block's own slug) still yields state, even though it yields no element.
     """
     elements: "dict[str, set[str]]" = defaultdict(set)
+    states: "dict[str, set[str]]" = defaultdict(set)
     if not block_short_slug:
-        return elements
+        return elements, states
 
     # Module-wide `finditer`, NOT per-`_split_php_statements`-chunk-anchored — this
     # codebase's real push shape is routinely `if ( $x ) { $arr[] = ...; }`
@@ -1627,22 +1715,59 @@ def _attrs_from_state_colour_helper_calls(
             if mapped:
                 array_push_attrs[arr_var].add(mapped)
 
+    # 2026-09-10 extension — value-composer RESULT variables (see docstring
+    # step 1 above). A direct, single, non-push assignment whose RHS is a call
+    # to a KNOWN Shape F composer (`_VALUE_COMPOSER_ARG_PROPS`), resolved via
+    # the SAME `_resolve_call_arg_to_attr` helper Shape F itself uses.
+    composer_assign_re = re.compile(
+        r"\$(\w+)\s*=\s*("
+        + "|".join(re.escape(h) for h in _VALUE_COMPOSER_ARG_PROPS)
+        + r")\s*\(",
+        re.DOTALL,
+    )
+    for m in composer_assign_re.finditer(php_src):
+        result_var, helper = m.group(1), m.group(2)
+        call_args = _split_balanced_call_args(php_src, m.end())
+        if not call_args:
+            continue
+        for arg in call_args:
+            attr = _resolve_call_arg_to_attr(arg, var_attr)
+            if attr:
+                array_push_attrs[result_var].add(attr)
+
     for m in _STATE_COLOUR_HELPER_CALL_RE.finditer(php_src):
         call_args = _split_balanced_call_args(php_src, m.end())
         if not call_args or len(call_args) != 3:
             continue
         selector_arg, normal_arg, hover_arg = call_args
-        bem_element = _derive_bem_element_from_selector(selector_arg, block_short_slug)
-        if not bem_element:
-            continue  # Cause C shape (root-scoped selector) — out of scope, no guess
-        for decls_arg in (normal_arg, hover_arg):
+        # 2026-09-10: element and state are INDEPENDENT evidence axes — element
+        # needs a BEM-bearing selector (Cause A vs Cause C, unchanged below),
+        # but state is pure ARGUMENT-POSITION evidence (2nd vs 3rd) that holds
+        # regardless of whether the selector happens to name THIS block's own
+        # slug. Do NOT gate this loop on `bem_element` truthiness any more.
+        # `_derive_bem_element_with_fallback` additionally tries the shared
+        # file's OWN fixed slug (see that helper's docblock) — needed because
+        # class-sgs-container-wrapper.php's overlay selector is the LITERAL
+        # `.sgs-container__overlay` regardless of which block (site-header,
+        # cta-section, …) is the caller, so the plain per-block-slug lookup
+        # never matches for 5 of the 6 wrapper-routed blocks.
+        bem_element = _derive_bem_element_with_fallback(selector_arg, block_short_slug)
+        for position, decls_arg in (("normal", normal_arg), ("hover", hover_arg)):
             arg_var_m = re.match(r"^\s*\$(\w+)\s*$", decls_arg)
+            if not arg_var_m:
+                # 2026-09-10 widen: a single-element `array( $var )` wrapper —
+                # see docstring step 2.
+                arg_var_m = re.match(r"^\s*array\s*\(\s*\$(\w+)\s*\)\s*$", decls_arg)
             if not arg_var_m:
                 continue  # non-bare-variable decls arg — documented gap, never guessed
             for attr in array_push_attrs.get(arg_var_m.group(1), ()):
-                if attr in attr_names:
+                if attr not in attr_names:
+                    continue
+                if position == "hover":
+                    states[attr].add("hover")
+                if bem_element:
                     elements[attr].add(bem_element)
-    return elements
+    return elements, states
 
 
 # ── Shape E: the text-colour-or-gradient resolver pair ─────────────────────────
@@ -1703,6 +1828,225 @@ def _attrs_from_text_colour_resolver_calls(
         if var_m and var_m.group(1) in var_attr:
             props[var_attr[var_m.group(1)]].add("color")
     return props
+
+
+def _resolve_call_arg_to_attr(arg: str, var_attr: "dict[str, str]") -> "str | None":
+    """Shared by Shapes F/G below: resolve ONE raw call-argument fragment to a
+    real attribute name — either a direct `$attributes['x']`/`$attrs['x']`
+    literal, or a bare `$var` already resolved by `_build_php_var_attr_map`.
+    Anything else (a cast, a ternary, a nested call) is refused rather than
+    guessed — same discipline as Shape E's own inline version of this check.
+    """
+    arg = arg.strip()
+    attr_m = re.match(r"^\$(?:attributes|attrs)\[['\"](\w+)['\"]\]$", arg)
+    if attr_m:
+        return attr_m.group(1)
+    var_m = re.match(r"^\$(\w+)$", arg)
+    if var_m:
+        return var_attr.get(var_m.group(1))
+    return None
+
+
+# ── Shape F: known VALUE-COMPOSER helper calls ─────────────────────────────────
+# A closed, documented vocabulary of shared helpers whose call-site ARGUMENTS are
+# themselves already-resolved attribute values (unlike Shape D's `(attrs, prefix,
+# selector)` helpers, and unlike Shapes B/C's literal `'prop:' . $var` tokens) —
+# the CSS property each positional argument drives is fixed by the helper's own
+# signature, read directly off its source (`includes/helpers-tokens.php`), the
+# same "closed documented vocabulary" discipline as `_HELPER_SUFFIX_PROPS` above.
+#
+#   sgs_overlay_decls( $colour, $gradient, $opacity = null, $blend_mode = null )
+#     — helpers-tokens.php:1105. Composes a WHOLE overlay paint into one opaque
+#     declaration string (delegates to sgs_background_paint_decl() for the
+#     colour/gradient pair), consumed by every call site as a single chunk —
+#     e.g. class-sgs-container-wrapper.php:1928/2545 —
+#       $overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
+#       ...
+#       $responsive_css .= '.' . $uid . ' .sgs-container__overlay{' . $overlay_decls . '}';
+#     — invisible to Shapes B/C, which only recognise a LITERAL property token
+#     directly in the scanned file's own text; the token here lives inside the
+#     helper's OWN body, in a DIFFERENT file (2026-09-10, colour-resolution
+#     root-cause report, Instance 1 — `backgroundOverlayColour` unresolved on
+#     6 blocks that route the read through `class-sgs-container-wrapper.php`
+#     rather than their own render.php).
+_VALUE_COMPOSER_ARG_PROPS: "dict[str, dict[int, str]]" = {
+    "sgs_overlay_decls": {
+        0: "background-color",
+        1: "background-image",
+        2: "opacity",
+        3: "mix-blend-mode",
+    },
+}
+_VALUE_COMPOSER_CALL_RE = {
+    helper: re.compile(re.escape(helper) + r"\s*\(")
+    for helper in _VALUE_COMPOSER_ARG_PROPS
+}
+
+
+def _attrs_from_value_composer_calls(
+    php_src: str, var_attr: "dict[str, str]"
+) -> "dict[str, set[str]]":
+    """Shape F: every call to a known VALUE-COMPOSER helper (see
+    `_VALUE_COMPOSER_ARG_PROPS` above) resolves each positional argument to the
+    fixed CSS property that argument drives — via `_resolve_call_arg_to_attr`,
+    the SAME resolution discipline as Shape E (a bare `$var` through `var_attr`,
+    or a direct `$attributes['x']` literal; anything else an honest, reported
+    gap, never guessed). A call with fewer arguments than the helper's full
+    signature (e.g. the 2-arg hover-only call at class-sgs-container-wrapper.php:2545)
+    simply yields evidence for the arguments actually present.
+    """
+    props: dict[str, set[str]] = defaultdict(set)
+    for helper, arg_props in _VALUE_COMPOSER_ARG_PROPS.items():
+        for m in _VALUE_COMPOSER_CALL_RE[helper].finditer(php_src):
+            call_args = _split_balanced_call_args(php_src, m.end())
+            if not call_args:
+                continue
+            for idx, prop in arg_props.items():
+                if idx >= len(call_args):
+                    continue
+                attr = _resolve_call_arg_to_attr(call_args[idx], var_attr)
+                if attr:
+                    props[attr].add(prop)
+    return props
+
+
+# ── Shape G: the documented colour-emission CONFIG-MAP convention ──────────────
+# `plugins/sgs-blocks/CLAUDE.md`'s "Colour EMISSION helpers" section documents a
+# closed set of per-mechanism composer functions that all take a `$map` argument
+# of the SAME shape — `['base' => attrName, 'hover' => attrName, 'gradient' =>
+# attrName, 'hover_gradient' => attrName]`, only 'base' required — read directly
+# off `includes/helpers-colour-variants.php` (2026-09-10, colour-resolution
+# root-cause report). E.g. sgs/team-member/render.php:575-583:
+#   $sgs_tm_bg_decls = sgs_fill_decls( $attributes, array(
+#       'base' => 'backgroundColour', 'hover' => 'backgroundColourHover',
+#       'gradient' => 'backgroundColourGradient', 'hover_gradient' => '...',
+#   ) );
+# The attribute names are STRING VALUES inside an array-literal argument, never
+# a bracket-accessed key — invisible to Shapes A-C (which need a literal
+# `'attrName' => '--sgs-foo'`/`'prop:' . $var` shape) and to Shape D (which
+# needs a `(attrs, prefix, selector)` call, not `(attrs, map)`/`(selector,
+# attrs, map)`). 'base'/'hover' resolve to the mechanism's PRIMARY property
+# (fixed per function, read off each function's own body); 'gradient'/
+# 'hover_gradient' are mapped ONLY for the fill family, where
+# `sgs_background_paint_decl()`'s contract is unambiguous (background-image for
+# a gradient). The text family's gradient/hover_gradient members are left
+# unresolved here — they are Shape E's territory (already correctly resolved
+# via an explicit, hand-curated `css:background-image` attrMap entry per that
+# shape's own module comment) and border's gradient path is a masked ::before
+# ring construct with no single honest property to attribute it to (see
+# `sgs_border_states_css()`'s own docblock) — both genuinely harder cases, left
+# as honest gaps rather than guessed.
+_CONFIG_MAP_BASE_HOVER_PROPS: "dict[str, str]" = {
+    "sgs_fill_decls": "background-color",
+    "sgs_fill_states_css": "background-color",
+    "sgs_text_decls": "color",
+    "sgs_text_states_css": "color",
+    "sgs_border_states_css": "border-color",
+}
+_CONFIG_MAP_GRADIENT_PROPS: "dict[str, str]" = {
+    "sgs_fill_decls": "background-image",
+    "sgs_fill_states_css": "background-image",
+}
+_CONFIG_MAP_CALL_RE = {
+    helper: re.compile(re.escape(helper) + r"\s*\(")
+    for helper in _CONFIG_MAP_BASE_HOVER_PROPS
+}
+_CONFIG_MAP_ENTRY_RE = re.compile(
+    r"['\"](base|hover|gradient|hover_gradient)['\"]\s*=>\s*['\"](\w+)['\"]"
+)
+
+
+def _attrs_from_config_map_calls(
+    php_src: str, block_short_slug: str = ""
+) -> "tuple[dict[str, set[str]], dict[str, set[str]], dict[str, set[str]]]":
+    """Shape G: every call to a documented colour-emission config-map composer
+    (see the module comment above `_CONFIG_MAP_BASE_HOVER_PROPS`) resolves each
+    `'base'|'hover'|'gradient'|'hover_gradient' => 'attrName'` array-literal
+    entry inside its `$map` argument to a fixed CSS property. Only a LITERAL
+    string value is matched (`_CONFIG_MAP_ENTRY_RE` requires a quoted RHS) — a
+    map built from variables would be a documented, reported gap, never
+    guessed, mirroring Shape D's "only literal prefixes resolved" discipline.
+    Scans the call's FULL argument span (from the call's own match through its
+    balanced closing paren) rather than requiring an exact argument index, so
+    both the 2-arg `(attrs, map)` shape and the 3-arg `(selector, attrs, map)`
+    shape are handled by the same scan.
+
+    Also returns `elements` and `states` (2026-09-10, db-consistency F6 fix —
+    the config-map family hit the SAME base/hover collision Shape F did on its
+    first live run, e.g. sgs/filter-search inputBorderColour/-Hover both
+    resolving to (border-color, None, None, None, None)):
+
+    - `elements`: for the 3-arg `(selector, attrs, map)` shape ONLY (the 2-arg
+      `sgs_fill_decls`/`sgs_text_decls` forms hand back declarations for the
+      CALLER to place, so their own call site carries no selector at all —
+      an honest gap, same as Shape E), arg[0] IS a real selector; derive the
+      BEM element from it exactly as Shape D does off a helper's selector
+      argument, and apply it to every attr this call resolves.
+    - `states`: the map KEY ITSELF is the evidence — 'hover'/'hover_gradient'
+      are literal, closed-vocabulary words in the documented calling
+      convention (not a guess at the attribute's own name), so an attr bound
+      to either key gets css_state='hover'. 'base'/'gradient' get no state,
+      matching this codebase's existing resting-state convention.
+
+    FINAL SAFETY NET (2026-09-10, same db-consistency F6 fix): a real call
+    site can still name a selector with NO matchable BEM element at all — the
+    class itself may not follow the project's own SGS-BEM convention (e.g.
+    sgs/form's `.sgs-form-tile`, which has no `__` separator at all) or may
+    use a compound prefix that never equals the block's short slug (e.g.
+    `.sgs-form-field__file-label` against block_short_slug='form'). When that
+    happens for TWO OR MORE attrs sharing the exact same (property, state)
+    within this SAME block, this function REFUSES to resolve either — never
+    guesses which one "really" owns the slot. Mirrors the Shape-A-inverse
+    "a span naming MORE THAN ONE distinct attribute is skipped entirely"
+    discipline already documented above (`_attr_to_raw_props_php`).
+    """
+    props: dict[str, set[str]] = defaultdict(set)
+    elements: dict[str, set[str]] = defaultdict(set)
+    states: dict[str, set[str]] = defaultdict(set)
+    hover_keys = {"hover", "hover_gradient"}
+    for helper, base_prop in _CONFIG_MAP_BASE_HOVER_PROPS.items():
+        gradient_prop = _CONFIG_MAP_GRADIENT_PROPS.get(helper)
+        for m in _CONFIG_MAP_CALL_RE[helper].finditer(php_src):
+            call_args = _split_balanced_call_args(php_src, m.end())
+            if not call_args:
+                continue
+            map_arg = call_args[-1]  # $map is always the LAST positional arg
+            bem_element = None
+            if len(call_args) == 3 and block_short_slug:
+                bem_element = _derive_bem_element_with_fallback(
+                    call_args[0], block_short_slug
+                )
+            for key, attr in _CONFIG_MAP_ENTRY_RE.findall(map_arg):
+                prop = None
+                if key in ("base", "hover"):
+                    prop = base_prop
+                elif key in ("gradient", "hover_gradient") and gradient_prop:
+                    prop = gradient_prop
+                if not prop:
+                    continue
+                props[attr].add(prop)
+                if bem_element:
+                    elements[attr].add(bem_element)
+                if key in hover_keys:
+                    states[attr].add("hover")
+
+    # Final safety net — see docstring. Group every UNELEMENTED attr by its
+    # (property, state) slot; any slot with 2+ contending attrs is refused
+    # for ALL of them, not guessed at.
+    by_slot: "dict[tuple[str, str | None], set[str]]" = defaultdict(set)
+    for attr, prop_set in props.items():
+        if elements.get(attr):
+            continue  # has a distinguishing element — cannot collide here
+        state = next(iter(states.get(attr, ())), None)
+        for prop in prop_set:
+            by_slot[(prop, state)].add(attr)
+    ambiguous_attrs = {a for members in by_slot.values() if len(members) > 1 for a in members}
+    for attr in ambiguous_attrs:
+        props.pop(attr, None)
+        elements.pop(attr, None)
+        states.pop(attr, None)
+
+    return props, elements, states
 
 
 _SELECTOR_VAR_STRING_LITERAL_RE = re.compile(
@@ -2574,7 +2918,35 @@ def extract_css_property_and_layer() -> dict:
 
         php_src_raw = php_path.read_text(encoding="utf-8", errors="ignore")
         css_src_raw = css_path.read_text(encoding="utf-8", errors="ignore")
-        php_src = _strip_php_comments(php_src_raw)
+        php_src_own = _strip_php_comments(php_src_raw)
+        php_src = php_src_own
+
+        # ---- widen scan to shared render files (2026-09-10, colour-resolution
+        # root-cause report, Instance 1) — reuse every shape detector below
+        # against a shared include's own text, appended after the block's own
+        # source, ONLY for a block whose OWN render.php contains the literal
+        # signature proving it actually calls that shared file (never guessed,
+        # never a hardcoded per-block roster). Safe by construction: the
+        # `if attr not in block_attr_names: continue` gate later in this loop
+        # already refuses any resolved attr this block does not itself declare
+        # in the DB, so widening the TEXT scanned cannot manufacture a false
+        # positive on an attribute the block never adopted.
+        #
+        # `php_src_own` (NOT widened) is kept alongside `php_src` (widened)
+        # for Shape E specifically (2026-09-10 db-consistency F6 fix): Shape E
+        # has NO selector evidence at its call site by design (its docstring:
+        # "the resolver never sees a selector argument at all"), so it can
+        # never derive a css_element. That was an honest, harmless gap while
+        # Shape E only ever saw a block's OWN text — but scanning it against
+        # the SHARED wrapper file's grid-item colour code newly resolves
+        # `sgs/container.gridItemTextColourHover` to a property that DOES
+        # need an element (Check #8's "undeclared sub-element paint" rule),
+        # with no way to supply one. Scoping Shape E back to `php_src_own`
+        # keeps every genuine fix from Part A (Shapes A/B/C/D/D2/F/G all stay
+        # on the widened `php_src`) while withdrawing this one over-reach.
+        for _signature, _shared_path in _SHARED_RENDER_FILES.items():
+            if _signature in php_src_raw and _shared_path.exists():
+                php_src += "\n" + _read_shared_render_file(_shared_path)
 
         consumed, gradient_props, shorthand_slot, state_of, element_of = _custom_props_consumed(css_src_raw, short_slug)
         var_attr = _build_php_var_attr_map(php_src)
@@ -2586,13 +2958,30 @@ def extract_css_property_and_layer() -> dict:
         # Cause A (2026-08-27): sgs_emit_state_colour_css() call sites — see
         # `_attrs_from_state_colour_helper_calls` docstring. css_property for
         # these attrs is already resolved above (Shapes B/C on the decls-array
-        # build statement); this contributes only css_element evidence, merged
-        # alongside `helper_elements` at the `attr_bem_elements` union below.
-        state_colour_elements = _attrs_from_state_colour_helper_calls(
+        # build statement); this contributes css_element evidence, merged
+        # alongside `helper_elements` at the `attr_bem_elements` union below,
+        # AND (2026-09-10 extension) css_state evidence for the hover-argument
+        # position, merged alongside `php_attr_state` at the `attr_states`
+        # union below.
+        state_colour_elements, state_colour_states = _attrs_from_state_colour_helper_calls(
             php_src, block_attr_names, short_slug, var_attr
         )
-        text_colour_resolver_props = _attrs_from_text_colour_resolver_calls(php_src, var_attr)
+        text_colour_resolver_props = _attrs_from_text_colour_resolver_calls(php_src_own, var_attr)
         for attr, props in text_colour_resolver_props.items():
+            raw[attr] = raw.get(attr, set()) | props
+        # Shape F (2026-09-10, colour-resolution root-cause report Instance 1) —
+        # known VALUE-COMPOSER helper calls (e.g. sgs_overlay_decls()), whose
+        # own body — not this file's text — decides the CSS property.
+        value_composer_props = _attrs_from_value_composer_calls(php_src, var_attr)
+        for attr, props in value_composer_props.items():
+            raw[attr] = raw.get(attr, set()) | props
+        # Shape G (2026-09-10, same report, the documented config-map
+        # convention) — 'base'/'hover'/'gradient'/'hover_gradient' entries
+        # inside a known composer's literal `$map` argument.
+        config_map_props, config_map_elements, config_map_states = (
+            _attrs_from_config_map_calls(php_src, short_slug)
+        )
+        for attr, props in config_map_props.items():
             raw[attr] = raw.get(attr, set()) | props
 
         for attr, tokens in raw.items():
@@ -2627,6 +3016,13 @@ def extract_css_property_and_layer() -> dict:
             attr_bem_elements |= helper_elements.get(attr, set())
             # Cause A (2026-08-27) — same unanimous-or-unassigned merge.
             attr_bem_elements |= state_colour_elements.get(attr, set())
+            # 2026-09-10 extension — hover-argument-position state evidence
+            # from the same Cause A call sites, same unanimous-or-unassigned merge.
+            attr_states |= state_colour_states.get(attr, set())
+            # Shape G (2026-09-10) — config-map selector-arg element evidence
+            # and map-key state evidence, same unanimous-or-unassigned merge.
+            attr_bem_elements |= config_map_elements.get(attr, set())
+            attr_states |= config_map_states.get(attr, set())
             php_state = php_attr_state.get(attr)
             if php_state:
                 attr_states.add(php_state)
@@ -2659,6 +3055,42 @@ def extract_css_property_and_layer() -> dict:
                         + " never reaches a real CSS declaration within depth 5 "
                         "(stylesheet may only consume it via JS, e.g. getComputedStyle)"
                     )
+
+        # ---- Cross-shape ambiguity safety net (2026-09-10, db-consistency F6
+        # fix) — scoped to THIS block, run once every shape detector above has
+        # contributed. Two attrs of the SAME block resolving to the IDENTICAL
+        # (css_property, css_state) with NEITHER carrying a distinguishing
+        # css_element are indistinguishable at clone-routing time (F6's
+        # AmbiguousLayerAttrError) — refuse BOTH rather than let the live
+        # resolver silently pick one by rowid order. Restricted to attrs
+        # actually touched by Shape F/Shape G (`value_composer_props`/
+        # `config_map_props`) — every attr resolved by a PRE-EXISTING shape
+        # already passed this exact gate before this fix, so re-litigating
+        # them here is needless, riskier scope. Real example this closes:
+        # sgs/physics-canvas's `overlayGradient` (Shape F, the wrapper's
+        # overlay span) vs `backgroundColourGradient` (Shape G, the block's
+        # OWN root fill) — two genuinely different elements, but neither has
+        # a matchable BEM selector to prove it, so both stay honestly
+        # unresolved rather than one winning a guess.
+        _new_shape_attrs = (set(value_composer_props) | set(config_map_props)) & block_attr_names
+        if _new_shape_attrs:
+            _slot_map: "dict[tuple, set[str]]" = defaultdict(set)
+            for _attr in _new_shape_attrs:
+                if (slug, _attr) not in resolved:
+                    continue
+                if (slug, _attr) in resolved_bem_element:
+                    continue  # has a distinguishing element — cannot collide here
+                _prop_key = tuple(sorted(resolved[(slug, _attr)]))
+                _state_key = resolved_state.get((slug, _attr))
+                _slot_map[(_prop_key, _state_key)].add(_attr)
+            for _members in _slot_map.values():
+                if len(_members) < 2:
+                    continue
+                for _attr in _members:
+                    resolved.pop((slug, _attr), None)
+                    resolved_state.pop((slug, _attr), None)
+                    resolved_bem_element.pop((slug, _attr), None)
+                    resolved_tier.pop((slug, _attr), None)
 
     # ---- write the DERIVED LAYER to its JSON truth file (base layer; overrides win —
     # see CSS_PROPERTY_CLASSIFICATIONS_PATH docstring above). No bare DB UPDATE here.
@@ -3806,7 +4238,7 @@ def _self_test_state_colour_helper_selector_yields_bem_element() -> bool:
     )
     attr_names = {"textColourHover", "quoteColourHover"}
     var_attr = _build_php_var_attr_map(fixture_php)
-    elements = _attrs_from_state_colour_helper_calls(fixture_php, attr_names, "selftest", var_attr)
+    elements, states = _attrs_from_state_colour_helper_calls(fixture_php, attr_names, "selftest", var_attr)
 
     if elements.get("textColourHover") != {"item"}:
         print(
@@ -3825,12 +4257,42 @@ def _self_test_state_colour_helper_selector_yields_bem_element() -> bool:
             file=sys.stderr,
         )
         ok = False
+    # 2026-09-10 extension — STATE is a SEPARATE evidence axis from ELEMENT,
+    # deliberately NOT gated on the selector carrying a BEM element. Both
+    # fixture attrs feed the HOVER (3rd) argument position, so BOTH must
+    # carry css_state='hover' — including the root-scoped quoteColourHover,
+    # whose ELEMENT stays correctly withheld above (Cause C) while its STATE
+    # is still real, position-derived evidence (this is exactly the shape the
+    # db-consistency F6 fix needs: a shared file's selector never names a
+    # non-container block's own slug, so element evidence is unavailable for
+    # 5 of 6 wrapper-routed blocks, but state evidence must not be withheld
+    # along with it or the base/hover collision this extension exists to
+    # close would still recur on every one of those 5 blocks).
+    if states.get("textColourHover") != {"hover"}:
+        print(
+            f"[self-test] FAIL: state-colour-helper states['textColourHover'] = "
+            f"{states.get('textColourHover')!r}, expected {{'hover'}} (POSITIVE "
+            "control — the attr feeds the 3rd/hover argument position)",
+            file=sys.stderr,
+        )
+        ok = False
+    if states.get("quoteColourHover") != {"hover"}:
+        print(
+            f"[self-test] FAIL: state-colour-helper states['quoteColourHover'] = "
+            f"{states.get('quoteColourHover')!r}, expected {{'hover'}} (POSITIVE "
+            "control — state evidence is independent of element evidence; a "
+            "root-scoped selector withholds ELEMENT [Cause C] but not STATE)",
+            file=sys.stderr,
+        )
+        ok = False
 
     if ok:
         print(
             "[self-test] PASS: sgs_emit_state_colour_css() call sites now feed "
             "BEM element evidence for an item-scoped selector, and correctly "
-            "feed none for a bare root selector."
+            "feed none for a bare root selector; the hover-argument position "
+            "now also feeds css_state='hover' evidence for BOTH, independent "
+            "of whether element evidence was available."
         )
     return ok
 
