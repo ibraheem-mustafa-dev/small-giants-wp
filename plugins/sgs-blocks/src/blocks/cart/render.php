@@ -127,11 +127,15 @@ $sgs_cart_vars = array(
 	'--sgs-cart-icon-colour:' . sgs_colour_value( $icon_colour ),
 );
 
-// ── Margin — block-private `margin` object attr (retired off WP-native
-// style.spacing.margin 2026-09-11), NOT auto-inlined. Tiers are SGS custom
-// object attrs, hand-built shorthand. ─────
-$base_margin_obj = array();
-$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+// ── Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
+// {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape
+// margin/marginTablet/marginMobile), read once via
+// sgs_responsive_normalise_object(), NOT auto-inlined. Hand-built shorthand
+// for the tablet/mobile tiers (mirrors sgs/star-rating's already-shipped
+// margin migration). ─────
+$sgs_cart_margin_tiers = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$base_margin_obj       = array();
+$margin_raw            = is_array( $sgs_cart_margin_tiers['desktop'] ?? null ) ? $sgs_cart_margin_tiers['desktop'] : array();
 if ( ! empty( $margin_raw ) ) {
 	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
@@ -139,8 +143,8 @@ if ( ! empty( $margin_raw ) ) {
 		}
 	}
 }
-$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$margin_tablet_obj = is_array( $sgs_cart_margin_tiers['tablet'] ?? null ) ? $sgs_cart_margin_tiers['tablet'] : array();
+$margin_mobile_obj = is_array( $sgs_cart_margin_tiers['mobile'] ?? null ) ? $sgs_cart_margin_tiers['mobile'] : array();
 
 // ── uid/selector — CLASS pattern mirrors sgs/label/sgs/heading/sgs/container.
 $uid       = 'sgs-cart-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );

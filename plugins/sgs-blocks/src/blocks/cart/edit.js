@@ -52,8 +52,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showZero,
 		hideWhenEmpty,
 		margin,
-		marginTablet,
-		marginMobile,
 		panelHeading,
 		emptyCartMessage,
 		emptyCartCtaLabel,
@@ -82,7 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-cart-badge-colour': colourVar( badgeColour ) || undefined,
 		'--sgs-cart-badge-text-colour':
 			colourVar( badgeTextColour ) || undefined,
-		margin: boxShorthand( margin ),
+		margin: boxShorthand( margin?.desktop ),
 	};
 
 	const blockProps = useBlockProps( {
@@ -268,20 +266,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
+							base: margin?.desktop ?? {},
+							tablet: margin?.tablet ?? {},
+							mobile: margin?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { margin: next } );
-							} else {
-								setAttributes( {
-									[ `margin${
-										'tablet' === tier ? 'Tablet' : 'Mobile'
-									}` ]: next,
-								} );
-							}
+							const key = 'base' === tier ? 'desktop' : tier;
+							setAttributes( { margin: { ...margin, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

@@ -48,9 +48,7 @@
 			],
 			"boxFamilies": {
 				"margin": [
-					"margin",
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -134,7 +132,9 @@
 	"attributes": {
 		"margin": {
 			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"displayMode": {
 			"type": "string",
@@ -207,14 +207,6 @@
 		"hideWhenEmpty": {
 			"type": "boolean",
 			"default": false
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
 		},
 		"panelHeading": {
 			"type": "string",
