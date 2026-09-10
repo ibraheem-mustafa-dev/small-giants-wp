@@ -5303,6 +5303,22 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "pillFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "pillFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "priceColour",
       "fields": {
         "css_property": "color",
@@ -7292,9 +7308,34 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "iconCircleBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "icon-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "iconCircleBorderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "icon-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "icon-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "iconCircleBorderWidth",
+      "fields": {
+        "css_property": "border-width",
         "css_element": "icon-badge"
       }
     },
