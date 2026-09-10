@@ -1338,10 +1338,20 @@ $css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-
 // trigger is a <button>, not an <a>, so it needs a minimal reset to inherit
 // the bar link's look rather than the browser's default button chrome.
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger{background:none;border:0;font:inherit;cursor:pointer;}';
-// Caret flips when the disclosure is open (300ms = theme medium; reduced-motion snaps).
-$css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;transition:transform .3s var(--wp--custom--transition--medium, ease);}';
+
+/*
+ * Caret flips when the disclosure opens. Bean, 2026-09-10: the flip used to
+ * animate over 300ms while EVERY consumer of this shared `.caret` class opens
+ * its own panel INSTANTLY -- the mega dropdown toggles `display:none/block`
+ * (no transition possible on `display` directly) and the drawer's native
+ * `<details>` has no animation of its own either. An animated caret paired
+ * with an instant panel always reads as lagging behind, in both places that
+ * share this rule, not just the one currently in view -- so this is instant
+ * everywhere rather than a per-consumer carve-out. Since there's no
+ * transition, no reduced-motion override is needed either.
+ */
+$css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;}';
 $css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
-$css .= '@media (prefers-reduced-motion: reduce){' . $uid_sel . ' .sgs-nav-menu__caret{transition:none;}}';
 
 /*
  * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
@@ -1589,6 +1599,30 @@ $css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-
  * below any higher-specificity operator override rather than outranking one.
  */
 $css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{white-space:normal;overflow-wrap:break-word;}';
+
+/*
+ * …and in the drawer specifically, text defaults to the drawer's OWN
+ * WCAG-computed foreground (`color:inherit`, matching every other drawer
+ * text element) rather than the flat bar's link-token default directly
+ * above (Bean, 2026-09-10). Same (0,2,0) technique as the `nowrap` fix
+ * immediately above -- `:where()` costs nothing, `$uid_sel` + `.sublink`
+ * keeps real specificity, positioned AFTER the base rule (wins over it in
+ * the drawer) but BEFORE the operator's `submenuColour` block below (loses
+ * to it when the operator has actually set one).
+ *
+ * The drawer's background is entirely operator-chosen per instance (any
+ * palette colour), which is exactly why the drawer computes its own
+ * foreground in the first place (block.json's `drawerFgHex` note) -- the
+ * flat bar's link-token default has no such per-instance background to
+ * stay safe against, so it can afford to be a fixed brand colour. Applying
+ * that same fixed colour inside the drawer breaks the safety the computed
+ * foreground exists for: on THIS canary instance, the link token and the
+ * chosen `drawerBg` resolve to the identical colour, so a first attempt at
+ * this fix (routing straight to a real global default via `:where()` on
+ * the OLD override instead of adding this one) rendered sub-item text
+ * invisible against its own background — caught live before shipping.
+ */
+$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{color:inherit;}';
 // D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
 // Phase 3); routed as a direct decl (not the custom-property chain above)
 // because a `var(--x, …)` fed into a fixed `color:` declaration cannot
@@ -1682,9 +1716,31 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  * instance specifically — the bar's subtoggle split has no drawer
  * equivalent — but still serves the flat bar's own dropdowns, so it stays).
  */
+
+/*
+ * Background default (Bean, 2026-09-10): this used to be an UNCONDITIONAL
+ * literal -- an operator's own `submenuBg` choice (the SAME custom property
+ * the flat bar's dropdown already honours, set on `$uid_sel` above as
+ * `--sgs-nm-submenu-bg` whenever `submenuBg` is non-empty) had zero effect
+ * inside the drawer. Referencing it here costs nothing (no specificity
+ * fight -- a custom property resolves via inheritance of the VALUE, not rule
+ * priority) and the adaptive `color-mix` tint survives as the fallback for an
+ * unset operator value, so an untouched drawer still adapts to whatever
+ * `drawerBg` colour the operator picked, exactly as before.
+ *
+ * Text colour is handled separately, near the base `.sublink` rule above --
+ * see the comment there. It is NOT fixed the same way this background is:
+ * a first attempt did drop the drawer's `color:inherit` all the way down via
+ * `:where()`, and DID let the operator's real `submenuColour` win when set --
+ * but it ALSO fell below the flat bar's unconditional link-token default,
+ * which happened to equal THIS canary instance's own `drawerBg` and rendered
+ * sub-item text in the exact same colour as its own background (measured
+ * live: both `rgb(230, 138, 149)` -- 1:1 contrast, invisible). Caught before
+ * committing, not guessed at.
+ */
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;border:0;min-width:0;'
-	. 'background:color-mix(in srgb, currentColor 6%, transparent);border-radius:0;padding:0;margin:0;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{color:inherit;padding:0 16px 0 12px;gap:8px;'
+	. 'background:var(--sgs-nm-submenu-bg, color-mix(in srgb, currentColor 6%, transparent));border-radius:0;padding:0;margin:0;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{padding:0 16px 0 12px;gap:8px;'
 	. 'border-left:2px solid color-mix(in srgb, currentColor 25%, transparent);}';
 // D1011-adjacent (Bean, 2026-09-10): the marker icon lives INSIDE the same
 // 32px indent the border-left always occupied -- 12px padding + 14px icon +
