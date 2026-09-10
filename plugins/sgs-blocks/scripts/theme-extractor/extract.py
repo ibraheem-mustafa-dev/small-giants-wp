@@ -23,7 +23,29 @@ import re
 import subprocess
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
+
+# Exact hostnames this module is allowed to fetch from — Google Fonts' CSS endpoint and its
+# font-file CDN. A DRAFT MOCKUP is external input (client-supplied, or scraped from a live site
+# per this project's own uimax-sgs-scrape-pattern tooling), so any URL derived from it (its own
+# <link> tags, or a src: url(...) inside the CSS that link returns) is a security boundary, not a
+# trusted value. Host validation MUST be exact-match on the parsed hostname — a substring check
+# (e.g. "fonts.googleapis.com" in url) is bypassable by a crafted URL that merely CONTAINS the
+# substring (as a subdomain suffix, a path segment, or a query value) while pointing anywhere else,
+# including an internal/metadata address. Never widen this to a substring or regex "contains" check.
+_ALLOWED_FONT_CSS_HOSTS = {"fonts.googleapis.com"}
+_ALLOWED_FONT_FILE_HOSTS = {"fonts.gstatic.com"}
+
+
+def _is_allowed_https_url(url: str, allowed_hosts: set[str]) -> bool:
+    """True only for an https:// URL whose exact hostname is in ``allowed_hosts`` — never a
+    substring/contains check (see the module-level comment above)."""
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme == "https" and parsed.hostname in allowed_hosts
 
 import derive as derive_mod
 import palette as palette_mod
@@ -114,7 +136,7 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
     """
     slug = re.sub(r"[^a-z0-9]+", "-", family.lower()).strip("-")
     css_url = next(
-        (u for u in links if "fonts.googleapis.com" in u
+        (u for u in links if _is_allowed_https_url(u, _ALLOWED_FONT_CSS_HOSTS)
          and re.search(rf"family={re.escape(family)}[:&]", u, re.I)),
         None,
     )
@@ -123,6 +145,14 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
             f"https://fonts.googleapis.com/css2?family={family.replace(' ', '+')}"
             ":wght@300;400;500;600;700;800;900&display=swap"
         )
+    elif not _is_allowed_https_url(css_url, _ALLOWED_FONT_CSS_HOSTS):
+        # Belt-and-braces — the generator expression above already filters on this, but a future
+        # edit to that expression must not silently reopen the SSRF hole this guards against.
+        trace.append({"kind": "gap", "what": f"font-face:{family}",
+                      "reason": "draft-declared font-css link failed host validation — refusing "
+                                "to fetch a URL outside the Google Fonts allowlist",
+                      "attempted_url": css_url})
+        return None
 
     req = urllib.request.Request(css_url, headers={"User-Agent": _FONT_FETCH_UA})
     try:
@@ -150,6 +180,15 @@ def _self_host_google_font(family: str, links: list, repo: pathlib.Path, trace: 
 
         if not dest_file.exists():
             src_url = m_src.group(1).strip("'\"")
+            if not _is_allowed_https_url(src_url, _ALLOWED_FONT_FILE_HOSTS):
+                # The CSS response's src: url(...) is itself untrusted — validate its host before
+                # fetching, same reasoning as the CSS URL above (see module-level comment).
+                trace.append({"kind": "gap", "what": f"font-face:{family}",
+                              "reason": "font-face CSS parsed but its src: url() failed host "
+                                        "validation — refusing to fetch a URL outside the Google "
+                                        "Fonts CDN allowlist",
+                              "attempted_url": src_url})
+                continue
             try:
                 freq = urllib.request.Request(src_url, headers={"User-Agent": _FONT_FETCH_UA})
                 with urllib.request.urlopen(freq, timeout=20) as fresp:
