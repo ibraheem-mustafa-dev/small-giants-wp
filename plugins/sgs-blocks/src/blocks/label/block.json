@@ -33,9 +33,7 @@
 					"padding"
 				],
 				"margin": [
-					"margin",
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				]
 			},
 			"elements": {
@@ -199,15 +197,9 @@
 		},
 		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"borderRadius": {
 			"type": [

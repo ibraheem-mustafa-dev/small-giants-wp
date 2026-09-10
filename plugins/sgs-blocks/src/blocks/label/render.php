@@ -19,9 +19,10 @@
  * has no WP-native `spacing.padding` support — padding is pill-gated, so it
  * cannot be a plain WP style.spacing.padding value). Tiers = paddingTablet /
  * paddingMobile object attrs (scoped @media 1023/767), pill-gated identically
- * to the base. `margin` is a block-private object attr (retired off WP-native
- * style.spacing.margin 2026-09-11), scoped via wp_style_engine_get_styles();
- * marginTablet/marginMobile tiers are SGS custom object attrs, NOT pill-gated.
+ * to the base. `margin` is a single block-owned TIER-of-BOXES envelope attr
+ * {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape
+ * margin/marginTablet/marginMobile), scoped via wp_style_engine_get_styles();
+ * NOT pill-gated.
  * `borderRadius` stays a single scalar number (one uniform value, not a
  * 4-corner family — Spec 32 §6.1(c)) but is rendered scoped, never inline.
  *
@@ -88,12 +89,16 @@ $padding_obj        = is_array( $padding_tiers['desktop'] ) ? $padding_tiers['de
 $padding_tablet_obj = is_array( $padding_tiers['tablet'] ) ? $padding_tiers['tablet'] : array();
 $padding_mobile_obj = is_array( $padding_tiers['mobile'] ) ? $padding_tiers['mobile'] : array();
 
-// Margin — block-private `margin` object attr (retired off WP-native
-// style.spacing.margin 2026-09-11), emitted scoped via the style engine
-// below, NOT pill-gated. Tiers are SGS custom object attrs, also not
+// Margin — `margin` is a single block-owned TIER-of-BOXES envelope attr
+// {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling shape
+// margin/marginTablet/marginMobile), read once via
+// sgs_responsive_normalise_object() — same reader as `padding` immediately
+// above, and the same envelope sgs/star-rating's already-shipped margin
+// migration uses — emitted scoped via the style engine below, NOT
 // pill-gated.
+$margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $base_margin_obj = array();
-$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+$margin_raw      = is_array( $margin_tiers['desktop'] ?? null ) ? $margin_tiers['desktop'] : array();
 if ( ! empty( $margin_raw ) ) {
 	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
@@ -101,8 +106,8 @@ if ( ! empty( $margin_raw ) ) {
 		}
 	}
 }
-$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$margin_tablet_obj = is_array( $margin_tiers['tablet'] ?? null ) ? $margin_tiers['tablet'] : array();
+$margin_mobile_obj = is_array( $margin_tiers['mobile'] ?? null ) ? $margin_tiers['mobile'] : array();
 
 // WP `color` support values (skip-serialised in block.json → NOT auto-inlined).
 $style_color_text = isset( $attributes['style']['color']['text'] ) ? (string) $attributes['style']['color']['text'] : '';

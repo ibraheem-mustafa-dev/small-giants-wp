@@ -143,7 +143,10 @@ function buildStyle( attributes ) {
 		className,
 	} = attributes;
 
-	const marginPreview = boxShorthand( margin );
+	// margin is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (folded
+	// 2026-09-11 from the wrong 3-sibling shape) — the canvas preview always
+	// shows the desktop tier, same as padding immediately below.
+	const marginPreview = boxShorthand( margin?.desktop );
 	// padding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
 	// box-tier migration) — the canvas preview always shows the desktop tier.
 	const paddingPreview = boxShorthand( padding?.desktop );
@@ -232,8 +235,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		// longer exist in this block's schema.
 		padding,
 		margin,
-		marginTablet,
-		marginMobile,
 		borderRadius,
 		fullWidth,
 	} = attributes;
@@ -532,20 +533,26 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Spacing', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					{ /* margin is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile}
+					     (folded 2026-09-11 from the wrong 3-sibling shape) — ONE
+					     attr, same envelope + fold pattern as padding above. */ }
 					<ResponsiveBoxControl
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
+							base: margin?.desktop ?? {},
+							tablet: margin?.tablet ?? {},
+							mobile: margin?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { margin: next } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const tierKey = {
+								base: 'desktop',
+								tablet: 'tablet',
+								mobile: 'mobile',
+							}[ tier ];
+							setAttributes( {
+								margin: { ...margin, [ tierKey ]: next },
+							} );
 						} }
 					/>
 				</PanelBody>
