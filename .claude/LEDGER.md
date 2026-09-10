@@ -79,13 +79,14 @@ prompt.
      detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
 
 **What's still genuinely open:**
-- **R8 (motion/animation cloning from raw CSS) — the one item left from the tier-migration doc,
-  now the front for that track.** Everything else in it (R1/R9/R10) is done or has a small
-  concrete work-list. Needs its own `/brainstorming` wave — recognising motion intent from raw
-  CSS (not just SGS-authored fx attributes) is a genuinely harder problem than the shape-fixing
-  work that preceded it. Not yet started.
-- R1's remaining 17-attribute conversion (rescoped, not yet built) — see
-  `reports/2026-09-10-r1-rescoped-worklist.md`.
+- **R8 (motion/animation cloning from raw CSS) — the active front.** Brainstorming + `/qc-council`
+  + `/research-buddies` all done (see `plans/2026-09-10-r8-motion-recognition-brainstorm.md`);
+  build not yet started, `/phase-planner` next.
+- **R1 is NOT done** — corrected 2026-09-10 later same day (was miswritten as "done" here and in
+  `decisions.md` D1018 in the same breath as listing its own open work; Bean caught it). Only
+  R1's MEASUREMENT is done (96% already correct); the real remaining 17-attribute conversion has
+  not been built — verified via `git log` showing zero converter commits touching it since
+  `reports/2026-09-10-r1-rescoped-worklist.md` landed.
 - A latent bug flagged, not fixed: an older predicate (`tier_object_base()`) over-matches 67
   unrelated attributes the new `tier_shape` column correctly excludes — hasn't caused a live
   problem yet (confirmed via `sgs/gallery.padding`). Needs a decision: fix now or park.
@@ -104,12 +105,17 @@ prompt.
 
 **R8 (motion cloning from raw CSS) is the active front as of today** — Bean directed work here
 ahead of header/footer, by-passing D1004's original ordering deliberately (not a reversion, a
-live re-prioritisation). It needs a dedicated `/brainstorming` wave: R9 confirmed motion as the
-largest capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
-`@keyframes`/`animation`/`transition`), and it's a genuinely harder recognition problem than the
-shape-fixing work (R1/R9/R10) that just closed — see
-`plans/cloning-pipeline-tier-migration-requirements.md` R8 section for the full framing and the
-governing constraint (Spec 38's four-tier motion doctrine).
+live re-prioritisation). **Design work is DONE — `/phase-planner` is the next step, not another
+brainstorm.** Full sequence completed: `/brainstorming` (ranked tier menu) →
+`/qc-council` (4 raters, real corrections: a genuine Spec 38 conflict caught, a feasibility
+gap found, a reuse claim corrected, a sequencing risk flagged) → `/research-buddies` (upgraded
+Tier 4a's feasibility materially — DOM-runtime signals beat bundle-parsing) → a Bean-directed
+addendum (Tier 4c, WebGL style-approximation). Full doc:
+`plans/2026-09-10-r8-motion-recognition-brainstorm.md`. R9 confirmed motion as the largest
+capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
+`@keyframes`/`animation`/`transition`) — a genuinely harder recognition problem than the R1/R9/R10
+shape-fixing work that preceded it (R9/R10 fully closed; R1 rescoped with 17 attrs still open,
+see below — do NOT describe R1 as closed, corrected 2026-09-10).
 
 **Header/footer implementation is paused, not dropped** — still next after R8. Read
 `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up — it has
@@ -230,7 +236,7 @@ first).
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |
-| Tier-migration plan (R1/R9/R10 done — D1018; R8 is the front) | `plans/cloning-pipeline-tier-migration-requirements.md` |
+| Tier-migration plan (R9/R10 done, R1 rescoped with 17 attrs still open — D1018; R8 is the front) | `plans/cloning-pipeline-tier-migration-requirements.md` |
 | BEM layer-aware matching design (DONE, verified + archived — D1017) | `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
 | Measurement-integrity phase (DONE, archived — D1016) | `plans/archive/phase-measurement-integrity.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |

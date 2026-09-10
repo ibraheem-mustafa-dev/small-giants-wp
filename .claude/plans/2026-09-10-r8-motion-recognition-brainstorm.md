@@ -77,6 +77,8 @@ When several sibling elements share the same animation shape with incrementally 
 - *Risk:* low — worst case is treating a genuine stagger as N separate simple entrances, which still produces a reasonable (if less polished) result.
 - *Value:* staggered reveals are a very common "premium" motion signature on the kind of sites this pipeline is meant to compete with (per Bean's "Awwwards-level" bar) — worth the investment once Tier 1/2 are proven.
 
+**Build decision (Bean, 2026-09-10):** build the "these siblings are shape-alike" pre-filter as its own small, standalone module when building Tier 3 — NOT embedded inside Tier 3's own code — so the BEM-recognition doc's Q2 work can import it later instead of reimplementing it. Bean's reasoning: low risk, and building shared from day 1 is faster than building twice. Scope is narrow and deliberately limited to what rater C confirmed is genuinely reusable (the shape-alike comparison only) — the timing-offset/delta-pattern logic stays Tier-3-private, since Q2 doesn't need it and building it into the shared module would be exactly the premature-abstraction risk this project avoids elsewhere.
+
 **Tier 4 — heavy-tier detection via genuine, checkable source evidence — SPLIT 2026-09-10 (`/qc-council`) into two sub-tiers with materially different cost, feasibility, and legality.**
 
 The first two drafts treated "detect GSAP/Lenis/WebGL usage and map it onto the corresponding already-built SGS tier" as one moderate-cost tier. The council found this wrong on two independent grounds — a real spec conflict for the WebGL case, and a real feasibility gap for everything except the cheapest signal. Split accordingly:
@@ -178,8 +180,8 @@ Dispatched after Bean questioned whether the WebGL ban predated the modular Tier
 1. ~~Ship Tier 1 alone first and measure, or bundle Tier 1+2 together?~~ **Resolved: Tiers 1/2/3/4a as one phase-plan with an internal measurement checkpoint after Tier 1+2 (see Recommendation above).**
 2. ~~Reference site for testing?~~ **Resolved: TAG Heuer Eyewear collection page, see above.**
 3. ~~`/qc-council` after this revision?~~ **Done — 4 raters, findings incorporated above (see "`/qc-council` findings" section).**
-4. Should Tier 3's sibling-repetition detector be built as a genuinely shared component from day one (serving both this and the BEM-recognition Q2 problem), or built once for whichever lands first and generalised afterwards? — still open, low-stakes, can be decided at build time.
-5. Tier 4b (WebGL/Tier-W cloning) is ruled out by an explicit spec clause, not a judgement call — is that acceptable as a standing "not now, needs its own design-gate" answer, or is this worth a dedicated conversation given TAG Heuer's WebGL section is exactly the kind of effect the "Awwwards-level" bar is aiming at?
+4. ~~Should Tier 3's sibling-repetition detector be a shared component from day one?~~ **Resolved (Bean, 2026-09-10): yes — build the shape-alike pre-filter as its own standalone module from day 1, scoped narrowly to what's genuinely reusable (see Tier 3 above).**
+5. ~~Is Tier 4b's exclusion acceptable as a standing answer, or worth a dedicated conversation?~~ **Partially addressed: Tier 4c (style-approximation via screenshot) gives a real path for sources whose WebGL matches SGS's existing 2 effects. The bigger question — should Tier W ever grow a NEW admitted effect (e.g. a 3D-object-viewer type) to cover sources like TAG Heuer's that neither existing effect approximates — is confirmed OUT of scope for now (Bean, 2026-09-10): "system can wait for later."**
 
 ---
 

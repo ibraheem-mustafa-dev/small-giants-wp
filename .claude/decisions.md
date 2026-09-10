@@ -65,11 +65,18 @@ and re-querying the live DB rather than trusting either agent's report — held 
 confidence 92/100, ship. Full `/qc-council` was judged not worth the marginal cost on top of that
 direct verification and was not run.
 
-**What this closes:** R1, R9, R10 are now closed per this doc's own definition of done (a real,
-current work-list plus the two capability gaps R9 surfaced, fixed and verified). Genuinely still
-open: R1's remaining 17-attribute conversion (not yet built), R8 (motion — the next front), the
-flagged `tier_object_base()` latent-bug, and `sgs/testimonial`'s unresolved colour attrs (documented
-limitation, not scheduled work).
+**What this closes, precisely — corrected 2026-09-10 later same day, Bean caught imprecise wording
+here that called R1 "closed" two sentences before listing its own open work.** R9 and R10 are
+fully closed (real gaps found, fixed, verified). **R1 is NOT closed** — only its MEASUREMENT
+phase is: the stale 105-families/41-blocks estimate is replaced by a real, DB-cross-referenced
+work-list (`reports/2026-09-10-r1-rescoped-worklist.md`), which shows 432 of 449 properties
+already correctly converted and only 17 genuinely outstanding. Those 17 attributes across 9
+blocks have NOT been built — verified via `git log feefcb7a3..HEAD -- plugins/sgs-blocks/scripts/converter/`,
+which shows zero converter commits touching that work-list since the rescoping report landed.
+Genuinely still open: R1's remaining 17-attribute conversion (not yet built), R8 (motion — the
+next front), the flagged `tier_object_base()` latent-bug (fix-now-vs-park decision never actually
+asked of Bean), and `sgs/testimonial`'s unresolved colour attrs (documented limitation, not
+scheduled work).
 
 ## D1017 [ROUTINE] — BEM-layer-aware-matching design doc verified against live evidence, archived
 
