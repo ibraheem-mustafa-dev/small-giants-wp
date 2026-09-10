@@ -247,61 +247,51 @@
 	border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
 }
 
-/* Split parent-link from expander (FR-36-6): a full-width row, link takes the
- * free space, the expander is a distinct 44px touch target at the end.
+/*
+ * Split parent-link from expander (FR-36-6): the link takes the full row
+ * width, the expander is a distinct 44px touch target OVERLAID top-right —
+ * never a flex sibling of the link (2026-09-10, corrected same day as the
+ * first version of this fix).
  *
- * `flex-wrap: wrap` + the open accordion's `flex-basis: 100%` below (2026-09-10)
- * make the open submenu drop onto its own full-width line instead of laying
- * out in the leftover flex space beside the label — without them, `<summary>`
- * + the submenu `<ul>` both live INSIDE the `<details>` flex item, so opening
- * it constrained the submenu to that item's own box (measured live at 375px:
- * submenu 253px wide starting at left:86px, versus the row's 317px at left:22px). */
+ * The first version of this fix made `.accordion-row` a WRAPPING flex row
+ * and gave the open `<details>` `flex-basis:100%`, so the submenu dropped
+ * onto its own full-width line — but `<summary>` (the caret) is INSIDE that
+ * same `<details>` flex item, so it moved down onto that new line too,
+ * extending the row by a whole line and re-centring the caret in the middle
+ * of it instead of leaving it in place next to the label. `display:contents`
+ * on `<details>` was tried next, to hoist `<summary>`/`<ul>` out as direct
+ * flex items of the row — tested LIVE via injected CSS before writing this:
+ * Chrome gives `<details>` special internal box treatment and silently
+ * ignores `display:contents` on it (the child never actually became a flex
+ * item; explicit `flex:0 0 100%` on the ul had no effect either).
+ *
+ * The fix that measured correctly live: `.accordion-row` is a normal BLOCK
+ * (not flex) container, `position:relative` as the caret's anchor. The link
+ * fills the row's full width with padding reserved for the caret. `<details>`
+ * is a normal block too, so when open its content (the `<ul>`) flows as a
+ * full-width block right after the link — exactly the accordion behaviour
+ * wanted, with zero flex-basis/flex-wrap involved. `<summary>` (the caret) is
+ * `position:absolute; top:0; right:0` — removed from flow entirely, so it
+ * never contributes to the row's height in either state and never moves.
+ */
 .sgs-nav-menu__accordion-row {
-	align-items: center;
-	display: flex;
-	flex-wrap: wrap;
+	position: relative;
 	width: 100%;
 }
 
-.sgs-nav-menu__accordion[open] {
-	flex-basis: 100%;
-}
-
 .sgs-nav-menu__accordion-row > .sgs-nav-menu__link {
-	flex: 1 1 auto;
+	padding-inline-end: 56px;
 }
 
 .sgs-nav-menu__accordion {
-	flex: 0 0 auto;
+	display: block;
 }
 
-/*
- * …but in the DRAWER it must be allowed to SHRINK (2026-09-10).
- *
- * `flex: 0 0 auto` above is `flex-shrink: 0`, so the accordion is sized to its
- * content and cannot be squeezed by its flex parent. In the horizontal bar that
- * is correct — a nav item should not be compressed. In the drawer it is the
- * reason long submenu labels still overflowed AFTER they were given permission
- * to wrap: the text could wrap, but the box was sized as though it could not.
- *
- * Measured live at 375px with the label the sibling rule names: base drawer
- * scrollWidth 561 against clientWidth 360 (201px of overflow), accordion 476px,
- * sublink 44px — one line, unwrapped. With `flex-shrink: 1`: scrollWidth 360
- * (zero overflow), accordion 253px, sublink 77px — wrapped to two lines.
- * Adding `min-width: 0` on top changed nothing, and `overflow-wrap: anywhere`
- * changed nothing, because neither can act while shrink is disabled — both were
- * tried first and refuted.
- *
- * `:where()` keeps this at 0,1,0, matching the base rule above and winning on
- * source order, so an operator rule at any higher specificity still outranks it.
- */
-:where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__accordion {
-	flex-shrink: 1;
-}
-
-/* `<summary>` is the native, no-JS-safe toggle — an icon-only 44px target
- * (its accessible name comes from `aria-label`, not visible text, since the
- * adjacent link already carries the visible label). */
+/* `<summary>` is the native, no-JS-safe toggle — an icon-only 44px target,
+ * pinned top-right of the row (its accessible name comes from `aria-label`,
+ * not visible text, since the adjacent link already carries the visible
+ * label). Absolute positioning is why it never reflows when `<details>`
+ * opens — see the comment above `.accordion-row`. */
 .sgs-nav-menu__accordion-summary {
 	align-items: center;
 	cursor: pointer;
@@ -310,6 +300,9 @@
 	list-style: none;
 	min-height: 44px;
 	min-width: 44px;
+	position: absolute;
+	inset-inline-end: 0;
+	top: 0;
 }
 
 .sgs-nav-menu__accordion-summary::-webkit-details-marker {

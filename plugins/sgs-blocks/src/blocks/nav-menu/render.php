@@ -589,6 +589,13 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 
 				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
 				if ( $children ) {
+					// Bean, 2026-09-10 (reference site): a small right-pointing marker
+					// in each sub-item's indent, matching the reference's convention of
+					// using the same caret family for both "this expands" (chevron-down,
+					// rotates on open) and "this is a leaf" (chevron-right, static).
+					$sub_marker = function_exists( 'sgs_get_lucide_icon' )
+						? '<span class="sgs-nav-menu__sublink-marker" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-right' ) . '</span>'
+						: '';
 					$child_html = '';
 					foreach ( $children as $child ) {
 						if ( '' === (string) ( $child['label'] ?? '' ) ) {
@@ -596,10 +603,11 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 						}
 						$child_featured = in_array( $child['identifier'], $this->featured_ids, true );
 						$child_html    .= sprintf(
-							'<li class="sgs-nav-menu__subitem%1$s"><a class="sgs-nav-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s</a></li>',
+							'<li class="sgs-nav-menu__subitem%1$s"><a class="sgs-nav-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
 							$child_featured ? ' sgs-nav-menu__subitem--featured' : '',
 							esc_url( $child['url'] ),
 							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
+							$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon(), same pattern as $caret elsewhere in this file.
 							esc_html( $child['label'] )
 						);
 					}
@@ -1676,8 +1684,13 @@ $css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid cu
  */
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;border:0;min-width:0;'
 	. 'background:color-mix(in srgb, currentColor 6%, transparent);border-radius:0;padding:0;margin:0;}';
-$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{color:inherit;padding:0 16px 0 32px;'
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{color:inherit;padding:0 16px 0 12px;gap:8px;'
 	. 'border-left:2px solid color-mix(in srgb, currentColor 25%, transparent);}';
+// D1011-adjacent (Bean, 2026-09-10): the marker icon lives INSIDE the same
+// 32px indent the border-left always occupied -- 12px padding + 14px icon +
+// 8px gap keeps the visual indent unchanged from before this icon existed.
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}';
+$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker svg{width:14px;height:14px;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit;}';
 $css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__item + .sgs-nav-menu__item,'
 	. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subitem'
