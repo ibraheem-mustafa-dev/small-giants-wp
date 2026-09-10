@@ -1723,6 +1723,53 @@ async function selfTest() {
     check('fixture 7 (over-exclusion control): background-size on <img> must NOT score (per-element applicability)', !rImg.diffs.some((x) => x.prop === 'background-size'), `diffs=${JSON.stringify(rImg.diffs.map((x) => x.prop))}`);
   }
 
+  // --- Fixture 8: CHROME SCOPING CONTROL — page-level header/footer/nav excluded from BOTH
+  // sides entirely; a content-area <footer> nested inside real content (e.g. a testimonial
+  // card's own <footer>, exactly the live canary shape confirmed on page 3448 — a genuine
+  // <footer class="sgs-testimonial__footer"> sits inside <main>, alongside the real
+  // <header class="sgs-site-header">/<footer class="sgs-site-footer"> which sit OUTSIDE it) is
+  // NOT blanket-excluded by tag name alone. This is retained v1.0.0 machinery (CAPTURE_SRC's
+  // isPageLevelChromeTag()/inChrome(), called at the document.querySelectorAll('*') collection
+  // entry point — the exclusion happens BEFORE an element can ever reach textEls/boxEls, not as
+  // a post-scoring filter that would still count it "unmatched") — this fixture is new coverage
+  // added 2026-09-10 (parity-tool scope correction, D1015) proving it does what D1015 claims.
+  {
+    const TEXT_F8_HEADER = 'chrome header exclusion test unique wording xyzzy';
+    const TEXT_F8_FOOTER = 'chrome footer exclusion test unique wording plugh';
+    const TEXT_F8_CARD_FOOTER = 'testimonial card footer content still scored quux';
+    const TEXT_F8_CONTENT = 'genuine main content mismatch still scored corge';
+    const f8Draft = writeHtml('f8-draft.html',
+      `<header class="sgs-header"><div style="color:rgb(0,0,0);">${TEXT_F8_HEADER}</div></header>` +
+      `<main><div style="color:rgb(0,0,0);">${TEXT_F8_CONTENT}</div>` +
+      `<footer class="sgs-testimonial__footer" style="color:rgb(0,0,0);">${TEXT_F8_CARD_FOOTER}</footer></main>` +
+      `<footer class="sgs-footer"><div style="color:rgb(0,0,0);">${TEXT_F8_FOOTER}</div></footer>`);
+    // Clone side deliberately uses the LIVE canary's real class names (sgs-site-header/
+    // sgs-site-footer via wp-block-sgs-site-header/-footer), proving the exclusion holds on tag
+    // alone (top-level <header>/<footer>, not nested in SECTION/ARTICLE/MAIN) even when the BEM
+    // class token doesn't match the draft's chromeToken() literals.
+    const f8Clone = writeHtml('f8-clone.html',
+      `<header class="wp-block-sgs-site-header"><div style="color:rgb(255,0,0);">${TEXT_F8_HEADER}</div></header>` +
+      `<main><div style="color:rgb(255,0,0);">${TEXT_F8_CONTENT}</div>` +
+      `<footer class="sgs-testimonial__footer" style="color:rgb(255,0,0);">${TEXT_F8_CARD_FOOTER}</footer></main>` +
+      `<footer class="wp-block-sgs-site-footer"><div style="color:rgb(255,0,0);">${TEXT_F8_FOOTER}</div></footer>`);
+    const d = await capture(page, toURL(f8Draft), VW);
+    const c = await capture(page, toURL(f8Clone), VW);
+    check('fixture 8 (chrome exclusion, negative control): page-header content never enters the draft-side scored map', !findText(d.textEls, TEXT_F8_HEADER));
+    check('fixture 8 (chrome exclusion, negative control): page-footer content never enters the clone-side scored map', !findText(c.textEls, TEXT_F8_FOOTER));
+    check('fixture 8 (chrome exclusion, positive control): a genuine main-content colour mismatch is still captured and scored', (() => {
+      const dr = findText(d.textEls, TEXT_F8_CONTENT), cr = findText(c.textEls, TEXT_F8_CONTENT);
+      if (!dr || !cr) return false;
+      const r = comparePair(dr, cr, d.defaults, VW);
+      return r.diffs.some((x) => x.prop === 'color');
+    })());
+    check('fixture 8 (chrome exclusion, positive control): a content-area <footer> (testimonial card) is NOT blanket-excluded by tag name alone', (() => {
+      const dr = findText(d.textEls, TEXT_F8_CARD_FOOTER), cr = findText(c.textEls, TEXT_F8_CARD_FOOTER);
+      if (!dr || !cr) return false;
+      const r = comparePair(dr, cr, d.defaults, VW);
+      return r.diffs.some((x) => x.prop === 'color');
+    })());
+  }
+
   await browser.close();
   console.log(failures ? `\n${failures} SELF-TEST CHECK(S) FAILED` : '\nALL SELF-TEST CHECKS PASSED');
   process.exit(failures ? 1 : 0);
