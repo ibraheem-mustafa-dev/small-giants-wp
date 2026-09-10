@@ -58,15 +58,42 @@ prompt.
 8. Informational research note (no build): Anthropic's "Claude Design" tool needs no special
    pipeline support — its static-HTML export is treated like any other non-BEM source. Filed at
    `C:\Users\Bean\.claude\memory\research\2026-09-10-claude-design-sgs-pipeline-compatibility.md`.
+9. **Third pass, same day — tier-migration doc's 3 open design questions settled + R1/R9/R10
+   shipped (D1018):**
+   - New DB column `block_attributes.tier_shape` — promotes an existing but buried discriminator
+     (flat-sibling / tier-object / box-only) into a proper DB-derived column, matching the
+     `box_family` pattern. Independently gap-checked by a separate agent (5/6 held up; one
+     disclosed process gap — an unfindable `/qc-council` transcript, not a defect). Commit
+     `58642349d`.
+   - **R1 rescoped and found 96% already done** — the old 105-families/41-blocks estimate was
+     stale. Real remaining work: 17 attributes across 9 blocks (not yet built). Report:
+     `reports/2026-09-10-r1-rescoped-worklist.md`, commit `feefcb7a3`.
+   - **R9 capability-coverage inventory run** — confirmed motion as the biggest gap, found and
+     fixed a new one (`align-content`/`justify-items`, commit `23cd8322f`). Report:
+     `reports/2026-09-10-capability-coverage-inventory.md`, commit `09e223a81`.
+   - **R10 colour root cause found and fixed** — not a broken colour system, a diagnostic
+     classifier blind to shared-file CSS. Unresolved count 253→233. Commit `f6085e72b` (root
+     cause), `b9ea6047f` (fix).
+   - Both fixes independently re-verified via inline `/qc-inline` (direct code read + live
+     self-test run + live DB query, not agent self-report) — held up, 92/100, shipped. Full
+     detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
 
 **What's still genuinely open:**
+- **R8 (motion/animation cloning from raw CSS) — the one item left from the tier-migration doc,
+  now the front for that track.** Everything else in it (R1/R9/R10) is done or has a small
+  concrete work-list. Needs its own `/brainstorming` wave — recognising motion intent from raw
+  CSS (not just SGS-authored fx attributes) is a genuinely harder problem than the shape-fixing
+  work that preceded it. Not yet started.
+- R1's remaining 17-attribute conversion (rescoped, not yet built) — see
+  `reports/2026-09-10-r1-rescoped-worklist.md`.
+- A latent bug flagged, not fixed: an older predicate (`tier_object_base()`) over-matches 67
+  unrelated attributes the new `tier_shape` column correctly excludes — hasn't caused a live
+  problem yet (confirmed via `sgs/gallery.padding`). Needs a decision: fix now or park.
 - The Mama's Munches PRODUCT draft (not the homepage) still cannot fully clone — its sections
   are now correctly found, but every section hard-halts at the next stage because its classes
   aren't SGS-BEM. Needs either a draft rewrite or the Tier 0 gate-wiring fix from the
   brainstorming doc — your call, not made yet.
-- Header/footer — still the front. Nothing changed here today.
-- R8-R10 (motion/animation cloning from raw CSS) — still open, sequenced behind header/footer
-  per D1004.
+- Header/footer — still paused behind R8 per today's focus; nothing changed here today.
 - Trust-bar pill padding gap (7px 13px draft vs 8px 16px live) — still open, minor.
 
 ## Blockers
@@ -75,21 +102,32 @@ prompt.
 
 ## THE FRONT — what to pick up next
 
-**Header/footer implementation is still the front.** Read
-`.claude/prompts/2026-09-10-header-footer-implementation.md` in full — it has the evidence, the
-root cause, Spec 37's real status, and the one open question to ask Bean before starting
-(hand-author this one client's content now, vs. build the Spec 33 Part 2 clone pipeline first).
+**R8 (motion cloning from raw CSS) is the active front as of today** — Bean directed work here
+ahead of header/footer, by-passing D1004's original ordering deliberately (not a reversion, a
+live re-prioritisation). It needs a dedicated `/brainstorming` wave: R9 confirmed motion as the
+largest capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
+`@keyframes`/`animation`/`transition`), and it's a genuinely harder recognition problem than the
+shape-fixing work (R1/R9/R10) that just closed — see
+`plans/cloning-pipeline-tier-migration-requirements.md` R8 section for the full framing and the
+governing constraint (Spec 38's four-tier motion doctrine).
 
-**Once that's underway or parked, remaining loose ends** (lower priority, not blocking):
+**Header/footer implementation is paused, not dropped** — still next after R8. Read
+`.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up — it has
+the evidence, the root cause, Spec 37's real status, and the one open question to ask Bean before
+starting (hand-author this one client's content now, vs. build the Spec 33 Part 2 clone pipeline
+first).
+
+**Other loose ends** (lower priority, not blocking):
+- R1's remaining 17-attribute conversion (rescoped today, not yet built) —
+  `reports/2026-09-10-r1-rescoped-worklist.md`.
+- The `tier_object_base()` latent-bug flag (67 over-matched attrs, not yet triggered) — needs a
+  fix-now-or-park decision.
 - Pick a direction from `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
   before attempting the Mama's Munches product-draft clone again — it will hard-halt on
   non-BEM classes otherwise.
 - A test clone of a second draft page (Bean's own next step, to test the pipeline's claimed
   universality) — the product draft was the first attempt; it needs the BEM-recognition
   decision above before it can proceed further.
-- `cloning-pipeline-tier-migration-requirements.md` needs a correction pass: mark R1's block.json
-  work-list closed (with live survey numbers), cite D1004, re-flag converter-resolver-level
-  typography emission as still open (4 live xfails, not closed as the doc's own banner claims).
 - Trust-bar pill padding (7px 13px draft vs 8px 16px live) — real gap, not urgent.
 - A heading-structure oddity found on the verification page only (two `<h1>` elements) — likely
   a test-page artefact; check on production page 2742 before treating as real.
@@ -166,7 +204,7 @@ root cause, Spec 37's real status, and the one open question to ask Bean before 
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1017** — verify with
+- **D-ceiling:** **D1018** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -192,7 +230,7 @@ root cause, Spec 37's real status, and the one open question to ask Bean before 
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |
-| Tier-migration plan (needs a correction pass, see above) | `plans/cloning-pipeline-tier-migration-requirements.md` |
+| Tier-migration plan (R1/R9/R10 done — D1018; R8 is the front) | `plans/cloning-pipeline-tier-migration-requirements.md` |
 | BEM layer-aware matching design (DONE, verified + archived — D1017) | `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
 | Measurement-integrity phase (DONE, archived — D1016) | `plans/archive/phase-measurement-integrity.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |

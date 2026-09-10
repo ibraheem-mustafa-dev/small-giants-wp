@@ -1,3 +1,76 @@
+## D1018 [ROUTINE] — Tier-migration requirements doc's three open design questions settled; R1/R9/R10 batch shipped
+
+**2026-09-10.** Settled the three design questions the tier-migration requirements doc had flagged
+as unresolved (G5's three-shapes-under-one-label problem, R1's object-only-vs-transition-window
+question, R3's derived-view question), then executed the resulting work. All three resolved the
+same direction: promote the existing correct-but-buried logic into the DB (matching the `box_family`
+precedent), never build parallel/legacy-preserving machinery, convert cleanly with no transition
+window — consistent with this project's pre-production status (no live content to protect) and its
+existing no-legacy-shim rule.
+
+**Shipped, each independently verified (not self-graded):**
+1. **`block_attributes.tier_shape` column** (`flat_sibling`/`tier_object`/`box_only`/NULL) —
+   promotes the PHP-consumer-reachability discriminator `check_flat_tier_regression.py` already
+   used into a proper DB-derived column, recomputed every `/sgs-update` run, never hand-edited.
+   Consolidated two independently-evolved copies of the discriminator logic into one shared module
+   (`orchestrator/object_attr_shape.py`) in the process. Commit `58642349d`. Independently
+   verified by a separate gap-check agent against real PHP reads (not the builder's own sample) —
+   5 of 6 checks held up; the one gap (an unfindable `/qc-council` transcript for the build) is a
+   disclosed process gap, not a defect in the column itself.
+2. **R1 rescoped** — the 2026-08-11 survey (105 families/41 blocks) was stale and overstated the
+   remaining work. Using the new `tier_shape` column: 449 `tier_object` rows across 64 blocks, of
+   which 432 (96%) are already correctly converted; only **17 attributes across 9 blocks** are
+   genuinely still flat. The `xfail(strict=True)` tests that made R1 look open were themselves
+   stale (asserting the old contract against already-fixed code), not evidence of real remaining
+   work. Report: `reports/2026-09-10-r1-rescoped-worklist.md`, commit `feefcb7a3`. Flagged, not
+   fixed: an older predicate (`tier_object_base()`) over-matches 67 unrelated RECORD/ASSET/BOX
+   attributes the new column correctly excludes — latent, not yet triggered (e.g.
+   `sgs/gallery.padding`).
+3. **R9 capability-coverage inventory** — generalised R8's motion-measurement method to every
+   capability family. Motion confirmed as the largest gap (2,880 attrs/32 blocks, ~0 converter
+   coverage). New find: `align-content`/`justify-items` (36 attrs/18 blocks, 0 coverage) — fixed
+   same day, see below. Report: `reports/2026-09-10-capability-coverage-inventory.md`, commit
+   `09e223a81`.
+4. **R10 colour root-cause found** — the "389/1,286 colour attrs unresolved" figure was never a
+   broken colour system; it was a blind spot in the diagnostic classifier that only reads a
+   block's own render.php, missing colours applied via shared files
+   (`class-sgs-container-wrapper.php`) or shared colour-composer config-maps. Root-cause report:
+   `reports/2026-09-10-colour-resolution-root-cause.md`, commit `f6085e72b`. Fixed same day, see
+   below.
+5. **Fix — `align-content`/`justify-items`/`justify-content` converter gap.** `grid.py` had zero
+   code path for these three properties on grid-layer blocks (10 of 18 affected); fell through to
+   the unimplemented stub. Fixed by extending the resolver with the same shape the existing
+   `_GRID_ITEM_PROPS` branch already uses — no new mechanism. `align-items` stays excluded by
+   design (D172). Verified: full test suite (819, no regressions) + live deploy/DOM check on the
+   canary. Commit `23cd8322f`.
+6. **Fix — colour classifier shared-file blind spot.** Widened
+   `extract_css_property_and_layer()` to also scan `class-sgs-container-wrapper.php` plus two
+   documented shared-composer calling conventions (value-composer helper calls; the
+   base/hover config-map convention). Added a cross-shape ambiguity safety net (refuses rather than
+   guesses when two attrs on the same block would land on an identical property+state with no
+   distinguishing element) after it caught 13 then 2 real ambiguous-routing defects on the first
+   live run. Unresolved colour count: 253 → 233. Full regression diff on previously-resolved rows:
+   0 changed. `sgs/testimonial.linkColour`/`linkColourHover` and `gridItemShadowColour` left
+   correctly unresolved (real architectural mismatch, not a special-case-worth-building). Commit
+   `b9ea6047f`.
+
+**Process note, disclosed not hidden:** items 5 and 6 were both supposed to get a `/qc-council`
+pass before landing; the dispatched agents' environments didn't have subagent-dispatch available
+(the session had invoked `/qc-inline` rather than `/qc-council` upstream, which likely constrained
+the tool surface handed to them) and both self-substituted equivalent rigour instead (precedent
+match + before/after measurement + live verification for #5; an F6-gate-anchored adversarial
+self-review that found and fixed real defects for #6). An inline `/qc-inline` pass was run
+afterwards as the independent check, reading both diffs directly, re-running the self-test suites,
+and re-querying the live DB rather than trusting either agent's report — held up on all counts,
+confidence 92/100, ship. Full `/qc-council` was judged not worth the marginal cost on top of that
+direct verification and was not run.
+
+**What this closes:** R1, R9, R10 are now closed per this doc's own definition of done (a real,
+current work-list plus the two capability gaps R9 surfaced, fixed and verified). Genuinely still
+open: R1's remaining 17-attribute conversion (not yet built), R8 (motion — the next front), the
+flagged `tier_object_base()` latent-bug, and `sgs/testimonial`'s unresolved colour attrs (documented
+limitation, not scheduled work).
+
 ## D1017 [ROUTINE] — BEM-layer-aware-matching design doc verified against live evidence, archived
 
 **2026-09-10.** Closed the one open item on the BEM-layer-aware-matching design doc (originally

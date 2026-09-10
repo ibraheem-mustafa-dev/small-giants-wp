@@ -6,6 +6,31 @@ date: 2026-08-10
 status: INPUTS — evidence captured while it was fresh. Do NOT treat as a spec or as decisions.
 ---
 
+**Second correction, 2026-09-10 (later same day — D1018, supersedes the banner below where it conflicts):**
+
+- **All three of this doc's open design questions are now settled**, not open: G5's
+  three-shapes-discriminator is now a real DB column (`block_attributes.tier_shape`, commit
+  `58642349d`) rather than logic buried in one gate script; R1's object-vs-transition-window
+  question is settled as clean atomic per-property cutover, no dual-shape window (matches this
+  project's pre-production no-legacy-shim stance); R3's derived-view question is settled as no
+  persisted view — consumers read the object shape directly. See `decisions.md` D1018 for full
+  reasoning and evidence.
+- **R1 is now 96% actually done, not "largely shipped, unmeasured."** Using the new `tier_shape`
+  column: 449 `tier_object` rows across 64 blocks, 432 already correctly converted. The real
+  remaining work is **17 attributes across 9 blocks** — see
+  `reports/2026-09-10-r1-rescoped-worklist.md` for the exact list. The `xfail` tests that made this
+  doc's earlier banner (below) treat R1 as unmeasured were themselves stale, asserting an
+  already-fixed contract.
+- **R9 (measure every capability family, not just motion) is done.** Motion confirmed as the
+  largest gap; a second real gap found (`align-content`/`justify-items`) and fixed same day
+  (commit `23cd8322f`). See `reports/2026-09-10-capability-coverage-inventory.md`.
+- **R10 (colour resolution root cause) is done.** Not a broken colour system — a diagnostic
+  classifier blind spot to shared-file CSS, fixed same day for the fixable ~29% (commit
+  `b9ea6047f`; unresolved count 253→233). See `reports/2026-09-10-colour-resolution-root-cause.md`.
+- **R8 (motion cloning from raw CSS) is the one item in this doc still genuinely unaddressed** —
+  now the front. Everything else in R1-R10 is either done or has a concrete small remaining
+  work-list.
+
 **Correction, 2026-09-10 (re-checked against live codebase, not re-derived from memory):**
 
 - **R1 block.json object-shape emission is essentially CLOSED**, not open work — a fresh
