@@ -123,6 +123,25 @@ Let Bean force template-mode on or off at clone time for edge cases the structur
 - *Risk:* none; it's a safety valve, not the detector.
 - *Value:* cheap insurance, but adds no automation on its own — per CLAUDE.md's "AI independence" philosophy (get it right first time, need less manual intervention over time), this should sit alongside Tier 1, not replace it.
 
+### Addendum (2026-09-10, research-buddies) — two concrete tools for Tier 1's build
+
+Found via a condensed research-buddies pass while researching Claude Design's compatibility
+(separate question, same session) — kept here rather than a new doc since both bear directly
+on Tier 1's open questions:
+
+- **DOM-shape repetition, no class names needed.** A real scraping-community tool pattern
+  (`extract-repetitions`-style: finds repeated content purely from tag/depth shape) — relevant
+  if Tier 1 needs to fire on a draft where the repeated cards don't even share a class
+  signature, which the "near-identical class signature" half of Tier 1's current definition
+  above doesn't cover on its own.
+- **Answers the open "what threshold" question (see open question 2 below).** Rather than
+  hand-picking a sibling count, compute a blended structural+style similarity score between
+  candidate siblings (`html-similarity`/`niteru`-style libraries) and pick a cutoff
+  empirically against real drafts, instead of guessing a number up front.
+
+Not evaluated for licensing/dependency fit yet — flagged as a build-time input for whoever
+picks up Tier 1, not vetted or committed to here.
+
 ### Not recommended: WC/CPT archive URL pattern as the *detection* mechanism
 
 Explicitly the Rule-3 violation the question asked to avoid. Flagged so it's visible as the excluded option, not silently dropped: URL-pattern matching is fine as an **output-routing** decision after structural detection has already fired (e.g. "this boundary was independently detected as template-shaped, and it also happens to sit on a WC archive URL, so route its output specifically to Product Collection rather than a generic repeated InnerBlocks template") — but it must never be the trigger that decides "should this get template treatment at all."
