@@ -137,6 +137,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		surfaceBlur,
 		closeStyle,
 		animateFrom,
+		modality,
 		drawerBg,
 		drawerTextColour,
 		drawerTextColourGradient,
@@ -324,6 +325,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							animateFrom: 'auto',
 							closeStyle: 'separate-x',
 							submenuModel: 'accordion',
+							modality: 'modal',
 						} )
 					}
 				>
@@ -425,6 +427,28 @@ export default function Edit( { attributes, setAttributes } ) {
 							</ResponsiveControl>
 						</ToolsPanelItem>
 					) }
+
+					<ToolsPanelItem
+						label={ __( 'Header stays live', 'sgs-blocks' ) }
+						hasValue={ () => modality === 'non-modal' }
+						onDeselect={ () => setAttributes( { modality: 'modal' } ) }
+					>
+						<ToggleGroupControl
+							label={ __( 'Header stays live', 'sgs-blocks' ) }
+							help={ __(
+								'Modal (default) dims and disables the rest of the page while the drawer is open. Non-modal keeps the header row — including the burger button — visible and usable, matching the pattern most reference sites use.',
+								'sgs-blocks'
+							) }
+							value={ modality || 'modal' }
+							onChange={ ( value ) => setAttributes( { modality: value || 'modal' } ) }
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption value="modal" label={ __( 'Modal', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="non-modal" label={ __( 'Non-modal', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
+					</ToolsPanelItem>
 
 					<ToolsPanelItem
 						label={ __( 'Open animation', 'sgs-blocks' ) }

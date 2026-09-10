@@ -28,6 +28,17 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	-webkit-overflow-scrolling: touch;
+	/*
+	 * D1011 explicit z-index scale. A native `showModal()` dialog is promoted
+	 * to the browser's top layer and ignores z-index entirely, so this value
+	 * only matters on the non-modal `.show()` path, where the dialog renders
+	 * in normal document flow. Deliberately BELOW the header's z-index:100
+	 * (site-header/style.css) so the header/burger row stays visibly and
+	 * hit-testably on top — the manoeuvre every reference site measured for
+	 * this build uses. Still above ordinary page content (z-index:1, see
+	 * site-header/style.css's own comment on that value).
+	 */
+	z-index: 90;
 }
 
 /* Height defaults live in :where() (specificity 0) so the `panelSize`
@@ -54,6 +65,36 @@
 /* Native modal scrim. */
 .wp-block-sgs-nav-drawer::backdrop {
 	background-color: rgba(0, 0, 0, 0.55);
+}
+
+/*
+ * D1011 item 5 — the real element `resolveScrim()` (store.js) looks for on the
+ * non-modal path only, rendered by render.php ONLY for a partial-width anchor
+ * (header/trigger/centred) — a full-screen anchor already covers the whole
+ * viewport, so nothing behind it could ever be clicked anyway. Hidden by
+ * default; `.is-open` is toggled by store.js on open/close. z-index sits
+ * between ordinary page content (z-index:1) and both the header (100) and
+ * this file's own drawer z-index (90), so it never competes with either.
+ */
+.sgs-nav-drawer__scrim {
+	position: fixed;
+	inset: 0;
+	z-index: 89;
+	background-color: rgba(0, 0, 0, 0.55);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s ease;
+}
+
+.sgs-nav-drawer__scrim.is-open {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-drawer__scrim {
+		transition-duration: 0.01ms;
+	}
 }
 
 /* A nav-menu placed inside the drawer renders as a vertical link list; its own

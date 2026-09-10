@@ -216,6 +216,15 @@
 				"fade"
 			]
 		},
+		"modality": {
+			"type": "string",
+			"default": "modal",
+			"enum": [
+				"modal",
+				"non-modal"
+			],
+			"description": "D1011: modal (default) uses native showModal() — the visible page is fully inert. non-modal uses show() with freezeBackground()'s selective inert, keeping the header/burger row live and keyboard-reachable while the drawer is open. Never pair non-modal with aria-modal=\"true\" on the dialog — that would hide the deliberately-live header from assistive tech."
+		},
 		"drawerBg": {
 			"type": "string",
 			"default": "primary"

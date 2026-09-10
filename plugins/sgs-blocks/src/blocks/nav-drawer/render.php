@@ -378,6 +378,7 @@ if ( '' !== $close_colour_hover_slug ) {
 // pre-Task-1 output — style.css's base rule already IS the full-screen
 // geometry, so emitting it again here for the untouched default would be a
 // redundant (harmless but non-identical) duplicate rule.
+$sgs_nd_needs_scrim = false;
 if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	$sgs_nd_anchor_desktop = sgs_resolve_tier( $anchor_attr_raw, 'desktop', 'full-screen' )['value'];
 	$sgs_nd_anchor_tablet  = sgs_resolve_tier( $anchor_attr_raw, 'tablet', 'full-screen' )['value'];
@@ -386,6 +387,15 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	$sgs_nd_anchor_desktop = in_array( $sgs_nd_anchor_desktop, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_desktop : 'full-screen';
 	$sgs_nd_anchor_tablet  = in_array( $sgs_nd_anchor_tablet, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_tablet : 'full-screen';
 	$sgs_nd_anchor_mobile  = in_array( $sgs_nd_anchor_mobile, $sgs_nd_allowed_anchors, true ) ? $sgs_nd_anchor_mobile : 'full-screen';
+
+	// D1011 item 5: needed only when at least one tier resolves to a
+	// PARTIAL-WIDTH anchor — see the fuller comment beside $sgs_nd_needs_scrim's
+	// consumer below.
+	$sgs_nd_needs_scrim = (
+		'full-screen' !== $sgs_nd_anchor_desktop
+		|| 'full-screen' !== $sgs_nd_anchor_tablet
+		|| 'full-screen' !== $sgs_nd_anchor_mobile
+	);
 
 	// panelSize is a free-text CSS length expression (calc()/clamp() are valid
 	// operator input, e.g. 'calc(100% - 40px)') — the strict digits/dot/%/unit-
@@ -415,9 +425,19 @@ if ( $sgs_nd_anchor_is_set || $sgs_nd_panel_is_set ) {
 	}
 }
 
-// ── Surface (opacity + blur on the panel itself — no separate scrim element;
-// 8/8 reference sites skip a dedicated scrim div). Opaque + unblurred (the
-// existing default) emits nothing extra so an untouched drawer is unaffected.
+// D1011 item 5: `$sgs_nd_needs_scrim` (set above, defaults false when neither
+// `anchor` nor `panelSize` is set — the zero-attribute default is always
+// full-screen) gates the scrim markup emitted near the end of this file.
+// `resolveScrim()` (store.js) looks for `[data-sgs-nav-scrim="{drawerRef}"]`
+// on every open, modal or not, so this element existing is what makes that
+// lookup non-null; the full-screen anchor correctly renders none (8/8
+// reference sites skip a dedicated scrim div there, and it would sit
+// unclickable behind a dialog that already covers the whole viewport).
+
+// ── Surface (opacity + blur on the panel itself — separate from the scrim
+// above; the drawer's OWN opaque/blur styling, not the page BEHIND it).
+// Opaque + unblurred (the existing default) emits nothing extra so an
+// untouched drawer is unaffected.
 $sgs_nd_surface_opacity = isset( $attributes['surfaceOpacity'] ) ? (float) $attributes['surfaceOpacity'] : 1.0;
 $sgs_nd_surface_opacity = max( 0.0, min( 1.0, $sgs_nd_surface_opacity ) );
 $sgs_nd_surface_blur    = sgs_css_length_value( $attributes['surfaceBlur'] ?? '' );
@@ -531,7 +551,7 @@ if ( 'none' !== $border_style ) {
 	// class default) would otherwise keep painting even though the
 	// operator picked "no border". Cause-agnostic: harmless when no
 	// such default exists, a real fix when one does.
-	$scoped_css[] = $root_sel . '{border-style:none;border-width:0;}';
+	$css .= $root_sel . '{border-style:none;border-width:0;}';
 }
 
 // ── Block-private border-radius (radius is no longer native -- Shape B now
@@ -665,15 +685,22 @@ if ( '' !== $variant_preset_slug ) {
 	$classes[] = 'sgs-nav-drawer--preset-' . $variant_preset_slug;
 }
 
-$wrapper_args       = array(
-	'class'               => implode( ' ', $classes ),
-	'id'                  => $drawer_ref,
-	'data-sgs-nav-drawer' => '',
+// ── D1011: modality selects the store's showModal()/show() branch. Read here
+// (not sniffed from browser capability, which is always true — D1012) and
+// carried as a data attribute so store.js has it before it opens the dialog.
+$modality_raw = (string) ( $attributes['modality'] ?? 'modal' );
+$modality     = in_array( $modality_raw, array( 'modal', 'non-modal' ), true ) ? $modality_raw : 'modal';
+
+$wrapper_args = array(
+	'class'                 => implode( ' ', $classes ),
+	'id'                    => $drawer_ref,
+	'data-sgs-nav-drawer'   => '',
+	'data-sgs-nav-modality' => $modality,
 	// The dialog's accessible name. Operator-settable because this block supports
 	// MULTIPLE drawers on one site (that is what the Drawer ID exists for), and two
 	// dialogs both announced as "Navigation menu" cannot be told apart by a screen
 	// reader. Falls back to the generic name when unset, so nothing regresses.
-	'aria-label'          => '' !== ( $attributes['ariaLabel'] ?? '' )
+	'aria-label'            => '' !== ( $attributes['ariaLabel'] ?? '' )
 		? esc_attr( $attributes['ariaLabel'] )
 		: esc_attr__( 'Navigation menu', 'sgs-blocks' ),
 );
@@ -712,15 +739,27 @@ if ( $bg_image_needs_note ) {
 	);
 }
 
-// ── Emit the scoped <style> then the dialog. wp_strip_all_tags (NOT esc_html)
-// blocks a </style> breakout while leaving CSS combinators intact; every value
-// reaching $css is pre-sanitised (sanitize_html_class slugs / $sgs_nd_css_*
-// sanitisers / esc_attr / wp_style_engine_get_styles), so no un-sanitised value
-// survives here.
-// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sanitize_html_class / $sgs_nd_css_* / esc_attr / wp_style_engine_get_styles), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $close_html pre-escaped + trusted Lucide SVG; $content is trusted WP InnerBlocks output.
+// ── D1011 item 5 — the scrim itself, a plain sibling <div> rendered BEFORE the
+// dialog (store.js's reparentToBody() appends scrim then dialog, in that
+// order, so the dialog's own z-index still paints on top by DOM order + the
+// explicit scale in style.css). resolveScrim() matches on `data-sgs-nav-scrim`
+// alone, so the click-to-close + `.is-open` visibility toggle are wired
+// entirely by store.js — this element supplies nothing but the hook.
+$sgs_nd_scrim_html = $sgs_nd_needs_scrim
+	? sprintf( '<div class="sgs-nav-drawer__scrim" data-sgs-nav-scrim="%s" aria-hidden="true"></div>', esc_attr( $drawer_ref ) )
+	: '';
+
+// ── Emit the scoped <style> then the scrim + dialog. wp_strip_all_tags (NOT
+// esc_html) blocks a </style> breakout while leaving CSS combinators intact;
+// every value reaching $css is pre-sanitised (sanitize_html_class slugs /
+// $sgs_nd_css_* sanitisers / esc_attr / wp_style_engine_get_styles), so no
+// un-sanitised value survives here.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $css pre-sanitised (sanitize_html_class / $sgs_nd_css_* / esc_attr / wp_style_engine_get_styles), wp_strip_all_tags guards </style>; $wrapper_attributes from get_block_wrapper_attributes(); $close_html pre-escaped + trusted Lucide SVG; $sgs_nd_scrim_html built from esc_attr() alone; $content is trusted WP InnerBlocks output.
 if ( '' !== $css ) {
 	printf( '<style>%s</style>', wp_strip_all_tags( $css ) );
 }
+
+echo $sgs_nd_scrim_html;
 
 printf(
 	'<dialog %1$s>%2$s%3$s<div class="sgs-nav-drawer__body">%4$s</div></dialog>',

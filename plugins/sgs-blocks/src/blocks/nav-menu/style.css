@@ -248,11 +248,23 @@
 }
 
 /* Split parent-link from expander (FR-36-6): a full-width row, link takes the
- * free space, the expander is a distinct 44px touch target at the end. */
+ * free space, the expander is a distinct 44px touch target at the end.
+ *
+ * `flex-wrap: wrap` + the open accordion's `flex-basis: 100%` below (2026-09-10)
+ * make the open submenu drop onto its own full-width line instead of laying
+ * out in the leftover flex space beside the label — without them, `<summary>`
+ * + the submenu `<ul>` both live INSIDE the `<details>` flex item, so opening
+ * it constrained the submenu to that item's own box (measured live at 375px:
+ * submenu 253px wide starting at left:86px, versus the row's 317px at left:22px). */
 .sgs-nav-menu__accordion-row {
 	align-items: center;
 	display: flex;
+	flex-wrap: wrap;
 	width: 100%;
+}
+
+.sgs-nav-menu__accordion[open] {
+	flex-basis: 100%;
 }
 
 .sgs-nav-menu__accordion-row > .sgs-nav-menu__link {

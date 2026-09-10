@@ -540,6 +540,17 @@ function openDrawerFor( ctx, trigger ) {
 		return;
 	}
 
+	// D1011: modality is an OPERATOR CHOICE (block.json `modality` attribute,
+	// carried as `data-sgs-nav-modality`), never a capability sniff — every
+	// browser's `HTMLDialogElement` defines BOTH `showModal` and `show`
+	// (D1012), so a sniff can never actually choose the non-modal branch.
+	// `hasModal`/`hasShow` still guard the (currently theoretical) case of a
+	// dialog implementation missing one method outright.
+	const hasModal = typeof drawer.showModal === 'function';
+	const hasShow = typeof drawer.show === 'function';
+	const wantsNonModal = 'non-modal' === drawer.dataset.sgsNavModality;
+	const useModal = hasModal && ( ! wantsNonModal || ! hasShow );
+
 	const scrim = resolveScrim( ctx.drawerRef );
 	const bookkeeping = { trigger, scrim, frozen: [], cleanup: [] };
 
@@ -630,7 +641,7 @@ function openDrawerFor( ctx, trigger ) {
 		drawer.style.removeProperty( '--sgs-drawer-trigger-right' );
 	}
 
-	if ( typeof drawer.showModal === 'function' ) {
+	if ( useModal ) {
 		// FR-36-6 default: full-screen modal in the top layer — survives a
 		// transformed header ancestor; native inert background + native ESC +
 		// native `::backdrop`. (Body-scroll-lock is NOT native — kept above.)
@@ -688,14 +699,43 @@ function openDrawerFor( ctx, trigger ) {
 		bookkeeping.cleanup.push( () =>
 			drawer.removeEventListener( 'click', onBackdropClick )
 		);
+
+		/*
+		 * Tab-trap — MODAL PATH ONLY (D1012 fix, 2026-09-10). A native
+		 * `showModal()` dialog already contains focus via the top layer, but
+		 * this hand-rolled trap makes the wrap explicit and matches the
+		 * pre-existing behaviour exactly.
+		 *
+		 * It must NOT also bind on the non-modal path below: `freezeBackground`
+		 * inerts everything except the live header row specifically so that
+		 * native Tab order alone cycles {header, drawer} with no hand-rolled
+		 * trap needed (see its own docblock). A trap bound unconditionally here
+		 * wraps Tab strictly within `getFocusable(drawer)`, so once focus is
+		 * inside the drawer it can never reach the still-visible, still-
+		 * clickable header/burger controls — a WCAG 2.1.1 (Level A) keyboard
+		 * trap the moment the non-modal branch goes live.
+		 */
+		const onTab = ( e ) => trapTab( drawer, e );
+		drawer.addEventListener( 'keydown', onTab );
+		bookkeeping.cleanup.push( () =>
+			drawer.removeEventListener( 'keydown', onTab )
+		);
 	} else {
-		// Fallback: non-modal `.show()` (the Spec-34 model). A non-modal dialog
-		// does NOT inert the background or auto-close on ESC, so the selective
-		// freeze gives EMERGENT containment and ESC is hand-rolled below.
+		// Fallback / D1011 primary: non-modal `.show()`. A non-modal dialog does
+		// NOT inert the background or auto-close on ESC, so the selective freeze
+		// gives EMERGENT containment and ESC is hand-rolled below.
+		// No hand-rolled Tab-trap here — see the comment on the modal branch's
+		// `onTab` above.
 		drawer.show();
 		bookkeeping.frozen = freezeBackground( trigger, drawer, scrim );
 		const onEsc = ( e ) => {
 			if ( 'Escape' === e.key && drawer.open ) {
+				// stopPropagation: this listener is document-level with no
+				// containment check beyond `drawer.open`, so without it, an
+				// ESC press would also reach `mega-disclosure.js`'s own
+				// element-scoped `data-wp-on--keydown` ESC handling if a mega
+				// panel happened to be open at the same time (D1011 item 4).
+				e.stopPropagation();
 				runClose( drawer, scrim );
 			}
 		};
@@ -704,11 +744,6 @@ function openDrawerFor( ctx, trigger ) {
 			document.removeEventListener( 'keydown', onEsc )
 		);
 	}
-
-	// Belt-and-braces Tab-trap (essential under `.show()`, harmless under modal).
-	const onTab = ( e ) => trapTab( drawer, e );
-	drawer.addEventListener( 'keydown', onTab );
-	bookkeeping.cleanup.push( () => drawer.removeEventListener( 'keydown', onTab ) );
 
 	// × close — chrome INSIDE the drawer (FR-36-6). Wired imperatively because a
 	// `data-wp-on--click` directive de-hydrates once the drawer leaves its region.
