@@ -50,9 +50,10 @@ before/after numbers once that build lands.
    tracked (`parking.md`), Spec 37 status freshly checked (mechanism built, branded content
    never authored), handoff written to `.claude/prompts/2026-09-10-header-footer-implementation.md`.
 5. **3 plan docs reviewed against real codebase state** (not their own claimed status):
-   - `2026-09-08-parity-tool-bem-layer-aware-matching-design.md` — mechanism shipped, but the
-     "keyed distinctly" record-keeping detail in the doc doesn't match what was actually built
-     (a single merged record, not two surviving entries) — doc needs a correction, not a rebuild.
+   - `2026-09-08-parity-tool-bem-layer-aware-matching-design.md` — mechanism shipped AND
+     verified against live evidence (D1017); the "keyed distinctly" record-keeping detail in the
+     doc didn't match what was actually built (a single merged record, not two surviving
+     entries) — corrected in the doc, now archived at `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md`.
    - `cloning-pipeline-tier-migration-requirements.md` — block.json-level tier migration is
      essentially DONE (0 candidates left, was 105); converter-resolver-level typography emission
      is genuinely still flat (4 live xfails). The doc doesn't cite D1004 (header/footer outranks
@@ -189,7 +190,7 @@ blocking):
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |
 | Tier-migration plan (needs a correction pass, see above) | `plans/cloning-pipeline-tier-migration-requirements.md` |
-| BEM layer-aware matching design (needs a correction pass, see above) | `plans/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
+| BEM layer-aware matching design (DONE, verified + archived — D1017) | `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
 | Measurement-integrity phase (DONE, archived — D1016) | `plans/archive/phase-measurement-integrity.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
 | Inspector UX standard | `specs/35-BLOCK-INSPECTOR-UX-STANDARD.md` |

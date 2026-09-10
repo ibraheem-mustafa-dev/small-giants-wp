@@ -1,3 +1,28 @@
+## D1017 [ROUTINE] — BEM-layer-aware-matching design doc verified against live evidence, archived
+
+**2026-09-10.** Closed the one open item on the BEM-layer-aware-matching design doc (originally
+`.claude/plans/2026-09-08-parity-tool-bem-layer-aware-matching-design.md`, now archived — see
+below; the design for `mergeFamilyBoxRecords()` — the collision-resolution mechanism that stops the
+parity tool discarding a composite wrapper's own border/box properties in favour of its
+borderless `__inner` child). The doc's Verification section had never actually been run; its own
+text noted the original pre/post-snapshot plan could no longer be executed post-implementation.
+Ran the replacement plan (compare against the draft's live computed styles) for real: re-ran
+`computed-parity.js` against the production homepage (page 2742) and, as a cross-check, the
+fresh re-clone (page 3448) — materially identical results on both. Announcement-bar and
+Trustpilot-bar `border-top-width`: confirmed MATCH at the CSS-source level (draft `border: 1px
+solid`, clone's lifted stylesheet `border-width:1px 1px 1px 1px`) — absent from the tool's
+mismatch list, i.e. scored correctly, not the previous false-0px drop. Footer-row
+(`.sgs-footer__bottom`) turned out to be page-level chrome (top-level `<footer>`), excluded from
+scoring on both sides by design — the doc's own wording had assumed scored content; verified
+instead via the tool's self-test Fixture 8 (added by the parallel measurement-integrity track,
+D1013-D1016 — both its negative control, page-chrome footer never scored, and its positive
+control, a content-area footer still scores real diffs, pass). No-collision spot-check
+(`.sgs-gift-section__card`) confirmed ordinary one-to-one matching, no collision-merge artefact
+where none should apply. `node computed-parity.js --self-test` — all fixtures pass. Doc's Status
+header updated to reflect verification complete (implementation-detail correction re
+`mergeFamilyBoxRecords()` vs the doc's original "keyed distinctly" design kept, still accurate).
+Moved to `.claude/plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md`.
+
 ## D1016 [ROUTINE] — Step 6's judgement call recorded, `phase-measurement-integrity.md` archived
 
 **2026-09-10.** Closed the one open item blocking archival of the measurement-integrity phase
