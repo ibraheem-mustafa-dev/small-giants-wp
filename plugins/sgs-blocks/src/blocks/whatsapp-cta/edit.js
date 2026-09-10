@@ -45,8 +45,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHover,
 		backgroundColourHoverGradient,
 		borderRadius,
-		borderRadiusTablet,
-		borderRadiusMobile,
 	} = attributes;
 
 	// Visibility — tier object attr (D777/S2 fix). Only desktop/mobile ever
@@ -82,7 +80,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	if ( marginPreview ) {
 		rootStyle.margin = marginPreview;
 	}
-	const radiusPreview = boxShorthand( borderRadius, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
+	const radiusPreview = boxShorthand( borderRadius?.desktop, [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ] );
 	if ( radiusPreview ) {
 		rootStyle.borderRadius = radiusPreview;
 	}
@@ -261,10 +259,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
-				{ /* ── Border panel ── border-radius is a block-private object attr
-				   at all three tiers (borderRadius/Tablet/Mobile) — no more
-				   WP-native style.border.radius (retired 2026-09-11, matching
-				   the whatsapp-cta margin/padding shape already private). */ }
+				{ /* ── Border panel ── border-radius is a single block-owned
+				   TIER-of-BOXES envelope attr { desktop, tablet, mobile }
+				   (folded 2026-09-11 from the wrong 3-sibling shape — no more
+				   WP-native style.border.radius, retired the same day this
+				   block's margin/padding went private). Same envelope +
+				   fold pattern as sgs/star-rating's already-shipped
+				   borderRadius migration. */ }
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -272,16 +273,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<ResponsiveBorderRadiusControl
 						label={ __( 'Border radius', 'sgs-blocks' ) }
 						values={ {
-							base: borderRadius ?? {},
-							tablet: borderRadiusTablet ?? {},
-							mobile: borderRadiusMobile ?? {},
+							base: borderRadius?.desktop ?? {},
+							tablet: borderRadius?.tablet ?? {},
+							mobile: borderRadius?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { borderRadius: next } );
-							} else {
-								setAttributes( { [ `borderRadius${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const key = 'base' === tier ? 'desktop' : tier;
+							setAttributes( { borderRadius: { ...borderRadius, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

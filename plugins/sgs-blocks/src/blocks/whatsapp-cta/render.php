@@ -115,36 +115,26 @@ if ( ! empty( $sgs_tor_margin_desktop ) ) {
 	}
 }
 
-// Base border-radius — block-private `borderRadius` object attr (corner keys
-// topLeft/topRight/bottomLeft/bottomRight), matching the already-private
-// borderRadiusTablet/borderRadiusMobile siblings below. Retired the WP-native
-// style.border.radius read 2026-09-11 (__experimentalBorder support removed
-// from block.json in the same change) — ResponsiveBorderRadiusControl always
-// writes the corner-object shape, never a uniform string, so no string branch
-// is needed here.
-$base_border_radius = null;
-$radius_raw         = is_array( $attributes['borderRadius'] ?? null ) ? $attributes['borderRadius'] : array();
-if ( ! empty( $radius_raw ) ) {
-	$radius_clean   = array();
-	$has_any_corner = false;
-	foreach ( array( 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ) as $corner ) {
-		$radius_clean[ $corner ] = isset( $radius_raw[ $corner ] ) ? sgs_css_length_value( $radius_raw[ $corner ] ) : '';
-		if ( '' !== $radius_clean[ $corner ] ) {
-			$has_any_corner = true;
-		}
-	}
-	if ( $has_any_corner ) {
-		$base_border_radius = $radius_clean;
-	}
-}
+// Base border-radius — block-private `borderRadius` TIER-of-BOXES envelope
+// attr {desktop,tablet,mobile}, each a corner object (topLeft/topRight/
+// bottomLeft/bottomRight). Folded 2026-09-11 from the wrong 3-sibling shape
+// (borderRadius/borderRadiusTablet/borderRadiusMobile as three separate
+// attrs) into the canonical envelope — same shape + same shared helper as
+// sgs/star-rating's already-shipped `borderRadius` migration. Retired the
+// WP-native style.border.radius read the same day __experimentalBorder
+// support was removed from block.json — ResponsiveBorderRadiusControl always
+// writes the corner-object shape, never a uniform string, so no string
+// branch is needed beyond what sgs_border_radius_tiers() already handles.
+$border_radius_tiers      = sgs_border_radius_tiers( $attributes );
+$base_border_radius       = $border_radius_tiers['base'];
+$border_radius_tablet_obj = $border_radius_tiers['tablet'];
+$border_radius_mobile_obj = $border_radius_tiers['mobile'];
 
 // Responsive tiers — SGS custom object attrs.
-$padding_tablet_obj       = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
-$padding_mobile_obj       = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
-$margin_tablet_obj        = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
-$margin_mobile_obj        = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
-$border_radius_tablet_obj = is_array( $attributes['borderRadiusTablet'] ?? null ) ? $attributes['borderRadiusTablet'] : array();
-$border_radius_mobile_obj = is_array( $attributes['borderRadiusMobile'] ?? null ) ? $attributes['borderRadiusMobile'] : array();
+$padding_tablet_obj = is_array( $sgs_tor_padding_tiers['tablet'] ?? null ) ? $sgs_tor_padding_tiers['tablet'] : array();
+$padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sgs_tor_padding_tiers['mobile'] : array();
+$margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
+$margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
 // Visibility classes.
 $visibility_classes = array();
