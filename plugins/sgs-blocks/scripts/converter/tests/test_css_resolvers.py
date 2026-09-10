@@ -47,12 +47,14 @@ def test_content_band_max_width_to_contentWidth(conn):
     assert (out.attr, out.value) == ("contentWidth", {"desktop": "780px"})
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_content_band_tier_suffix(conn):
+    # sgs/container.contentWidth is a MIGRATED tier-object attr (Spec 35 /
+    # D802-class fix extended to CONTENT) — a Tablet-tier declaration lands in
+    # the object's 'tablet' key, not a flat contentWidthTablet sibling.
+    # Rewritten 2026-09-10 per the R1 rescoped work-list (Finding 1): the
+    # converter already emits the object shape; only this assertion was stale.
     out = content_band.resolve(Decl("max-width", "720px", "Tablet"), _ctx(conn))
-    assert (out.attr, out.value) == ("contentWidthTablet", "720px")
+    assert (out.attr, out.value) == ("contentWidth", {"tablet": "720px"})
 
 
 def test_content_band_padding_transfers_to_content_band_padding_attr(conn):
@@ -223,13 +225,35 @@ def test_grid_explicit_tracks_no_count(conn):
 
 
 @pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
+    "NOT the original D554 ruling C debt (that part IS done, verified 2026-09-10 "
+    "per the R1 rescoped work-list, report 2026-09-10-r1-rescoped-worklist.md "
+    "Finding 1 — sgs/container.gridTemplateColumns/.columns are already migrated "
+    "tier-object attrs and the resolver already emits the object shape). This "
+    "test is blocked by a SEPARATE, newly-discovered live DB conflict found "
+    "2026-09-10 while rewriting this test: block_attributes now carries TWO "
+    "rows for (sgs/container, GRID, grid-template-columns) — attr_name='columns' "
+    "(css_element=NULL) and attr_name='gridTemplateColumns' (css_element='inner') "
+    "— and db_lookup.attr_for_property() picks the wrong one ('columns') for "
+    "BOTH the template-string Write and the count Write, so both writes land on "
+    "attr='columns' instead of splitting across 'gridTemplateColumns'/'columns'. "
+    "This also currently breaks 3 previously-passing sibling tests "
+    "(test_grid_template_plus_columns_count, test_grid_explicit_tracks_no_count, "
+    "test_grid_metamorphic_count_scales_with_repeat_n) — confirmed pre-existing, "
+    "not caused by this task's Task 1/2/3 work (git log shows no local commit "
+    "touched db_lookup.py, grid.py's routing, or this DB table), most likely a "
+    "concurrent session's block.json/DB reseed on sgs/container mid-session. Not "
+    "fixed here — editing the shared live sgs-framework.db while other concurrent "
+    "sessions may be mid-write on the SAME block is out of scope and too risky "
+    "for this task. The assertions below assert the CORRECT post-fix shape (the "
+    "same object-tier pattern already verified for fontSize/lineHeight/gap/"
+    "contentWidth above) so this test flips to a real pass the moment the DB "
+    "conflict is resolved."
 ))
 def test_grid_tier_suffix_on_both(conn):
     out = grid.resolve(Decl("grid-template-columns", "repeat(2, 1fr)", "Tablet"), _ctx(conn))
-    pairs = {(w.attr, w.value) for w in out}
-    assert ("gridTemplateColumnsTablet", "repeat(2, 1fr)") in pairs
-    assert ("columnsTablet", 2) in pairs
+    pairs = [(w.attr, w.value) for w in out]
+    assert ("gridTemplateColumns", {"tablet": "repeat(2, 1fr)"}) in pairs
+    assert ("columns", {"tablet": 2}) in pairs
 
 
 def test_grid_gap(conn):
@@ -251,14 +275,16 @@ def test_grid_metamorphic_count_scales_with_repeat_n(conn):
 # typography — layer-agnostic (number+unit companion; weight/colour normalisation)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_typography_font_size_number_plus_unit(conn):
+    # sgs/heading.fontSize is a MIGRATED tier-object attr (Spec 35 / D802) —
+    # the Base-tier NUMBER lands in the object's 'desktop' key; the Unit
+    # companion stays a separate flat attr (unit is base-tier-wide, not
+    # per-device). Rewritten 2026-09-10 per the R1 rescoped work-list
+    # (Finding 1): the converter already emits this shape.
     out = typography.resolve(Decl("font-size", "58px", "Base"), _ctx(conn, slug="sgs/heading"))
     assert isinstance(out, list)
-    pairs = {(w.attr, w.value) for w in out}
-    assert ("fontSize", 58) in pairs          # NUMBER, not "58px"
+    pairs = [(w.attr, w.value) for w in out]
+    assert ("fontSize", {"desktop": 58}) in pairs          # NUMBER, not "58px"
     assert ("fontSizeUnit", "px") in pairs
 
 
@@ -277,35 +303,39 @@ def test_typography_colour_bare_slug_bug1(conn):
     assert (out.attr, out.value) == ("textColour", "primary")
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT (sgs/heading.lineHeight, same as its fontSize sibling above), so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_typography_line_height_unitless_sentinel_bug2(conn):
+    # sgs/heading.lineHeight is a MIGRATED tier-object attr, same as its
+    # fontSize sibling above. Rewritten 2026-09-10 per the R1 rescoped
+    # work-list (Finding 1): the converter already emits this shape.
     out = typography.resolve(Decl("line-height", "1.15", "Base"), _ctx(conn, slug="sgs/heading"))
-    pairs = {(w.attr, w.value) for w in out}
-    assert ("lineHeight", 1.15) in pairs
+    pairs = [(w.attr, w.value) for w in out]
+    assert ("lineHeight", {"desktop": 1.15}) in pairs
     assert ("lineHeightUnit", "unitless") in pairs
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_typography_unit_companion_only_on_base_tier(conn):
-    # The unit companion is written only alongside the BASE attr, never a variant.
+    # The unit companion is written only alongside the BASE tier, never a
+    # variant tier — and on a migrated tier-object attr, the Mobile
+    # declaration lands inside the SAME `fontSize` object's 'mobile' key,
+    # not a flat `fontSizeMobile` sibling attr. Rewritten 2026-09-10 per the
+    # R1 rescoped work-list (Finding 1): the converter already emits this
+    # shape.
     out = typography.resolve(Decl("font-size", "34px", "Mobile"), _ctx(conn, slug="sgs/heading"))
-    attrs = {w.attr for w in (out if isinstance(out, list) else [out])}
-    assert "fontSizeMobile" in attrs
-    assert not any(a.endswith("Unit") for a in attrs)
+    writes = out if isinstance(out, list) else [out]
+    by_attr = {w.attr: w.value for w in writes}
+    assert by_attr.get("fontSize") == {"mobile": 34}
+    assert "fontSizeMobile" not in by_attr
+    assert not any(a.endswith("Unit") for a in by_attr)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_typography_metamorphic_size_scale(conn):
+    # fontSize is a MIGRATED tier-object attr — the Write's value is now
+    # {'desktop': N}, not a bare number. Rewritten 2026-09-10 per the R1
+    # rescoped work-list (Finding 1): the converter already emits this shape.
     a = typography.resolve(Decl("font-size", "20px", "Base"), _ctx(conn, slug="sgs/heading"))
     b = typography.resolve(Decl("font-size", "40px", "Base"), _ctx(conn, slug="sgs/heading"))
-    va = next(w.value for w in a if w.attr == "fontSize")
-    vb = next(w.value for w in b if w.attr == "fontSize")
+    va = next(w.value for w in a if w.attr == "fontSize")["desktop"]
+    vb = next(w.value for w in b if w.attr == "fontSize")["desktop"]
     assert va * 2 == vb
 
 

@@ -122,13 +122,17 @@ def test_container_gap_reaches_destination_attr():
 # and Mobile gaps flow through to the grid resolver's real `gap`/`gapMobile` attrs.
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(strict=True, reason=(
-    "D554 ruling C: the converter deliberately STAYS FLAT for every property outside the box family - D996 superseded ruling C for padding/margin/borderRadius and their prefixed variants ONLY, which do now emit tier objects; this property is not one of them. A temporary shim was rejected by name. This test asserts the pre-migration flat tier-suffixed shape for a property whose block.json is now a tier OBJECT, so it cannot pass until Spec 31's tier-migration upgrade reaches this property. strict=True so it FAILS LOUD the moment the converter starts emitting tier objects here - i.e. this is a live checklist item for that upgrade, not a silenced test. See .claude/plans/archive/2026-08-12-converter-db-drift.md."
-))
 def test_bp_tier_not_consumed_by_native_lift_flows_through():
     """A container without blockGap support: BOTH the base gap and the Mobile
-    tier's gap must flow through to the grid resolver's real attrs (`gap` /
-    `gapMobile`), not a dead style.spacing.blockGap leaf (QC #1)."""
+    tier's gap must flow through to the grid resolver's real `gap` attr, not a
+    dead style.spacing.blockGap leaf (QC #1).
+
+    sgs/container.gap is a MIGRATED tier-object attr (Spec 35 / D802-class fix
+    extended to GRID) — both tiers merge into ONE `gap` object
+    ({desktop, mobile}), not separate `gap`/`gapMobile` scalars. Rewritten
+    2026-09-10 per the R1 rescoped work-list (report 2026-09-10-r1-rescoped-
+    worklist.md, Finding 1) — the converter already emits the object shape;
+    only this assertion was stale."""
     node = _node('<div class="sgs-container"><h2 class="sgs-heading">Hi</h2></div>')
     rec = recognise(node)
     assert rec.slug == "sgs/container"
@@ -139,17 +143,16 @@ def test_bp_tier_not_consumed_by_native_lift_flows_through():
     }
     markup = build_block_markup(rec, node, css_rules=css_rules, is_root=False)
 
-    # Base tier: NOT natively consumed (no blockGap support) → real `gap` attr.
-    assert '"gap":"24px"' in markup, (
-        f"base-tier gap must flow through to the `gap` attr, got: {markup}"
+    # Both tiers merge into ONE tier-object `gap` attr.
+    assert '"gap":{"desktop":"24px","mobile":"32px"}' in markup, (
+        f"base + Mobile gap must merge into one gap tier-object, got: {markup}"
     )
     assert '"blockGap"' not in markup, (
         f"gap must NOT land in a dead style.spacing.blockGap leaf, got: {markup}"
     )
-    # Mobile tier → the grid resolver derives the correct `gapMobile` attr.
-    assert '"gapMobile":"32px"' in markup, (
-        f"the Mobile-tier gap must flow through to process_element and land as "
-        f"gapMobile, got: {markup}"
+    assert '"gapMobile"' not in markup, (
+        f"gap must NOT land in a flat gapMobile sibling attr any more — it is "
+        f"folded into the gap tier-object, got: {markup}"
     )
 
 
