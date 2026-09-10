@@ -207,6 +207,61 @@ if ( $inherit_style ) {
 	return;
 }
 
+// Auto-centring ancestor gate (2026-09-10 fix — see the maxWidth block below
+// for the full defect writeup). Wrapped in function_exists() because
+// render.php runs once PER sgs/text INSTANCE on a page — a bare top-level
+// `function` declaration fatals with "cannot redeclare" the second time this
+// file is included (the exact class of bug this codebase already tracks: no
+// top-level function in a per-render render.php).
+if ( ! function_exists( 'sgs_text_nearest_ancestor_establishes_own_alignment' ) ) {
+	/**
+	 * True when the nearest ancestor WP_Block already controls its children's
+	 * horizontal position via its own flex/grid/stack layout (the same
+	 * 'layout' attribute contract shared by sgs/container, sgs/hero,
+	 * sgs/multi-button, sgs/feature-grid, sgs/cta-section, sgs/card-grid —
+	 * D152's composite-mirror rule) — i.e. pairing a maxWidth child with
+	 * margin-inline:auto there would FIGHT that machinery rather than
+	 * respect it. False (including "no ancestor found") means the ancestor
+	 * is plain block-flow, where the traditional auto-centring pairing is
+	 * correct.
+	 *
+	 * Sgs/text has no ancestor providing block context for this (sgs/container
+	 * only provides gridItem* keys; sgs/hero provides none at all — wiring a
+	 * new context channel would mean editing those blocks' own block.json,
+	 * out of this fix's scope), so the ancestor is read off the PHP call
+	 * stack instead: WP_Block::render() (wp-includes/class-wp-block.php)
+	 * calls `$inner_block->render()` directly from within its OWN render()
+	 * method, so every ancestor's WP_Block instance is a real, present frame
+	 * at the moment this file runs. The first WP_Block::render() frame found
+	 * is this block's own (sgs/text); the next one is the immediate parent.
+	 *
+	 * @return bool
+	 */
+	function sgs_text_nearest_ancestor_establishes_own_alignment() {
+		if ( ! function_exists( 'debug_backtrace' ) ) {
+			return false;
+		}
+		$trace           = debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT, 40 ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- reading the WP_Block ancestor chain already on the stack, not a debugging leftover.
+		$self_frame_seen = false;
+		foreach ( $trace as $frame ) {
+			if ( ! isset( $frame['class'], $frame['function'], $frame['object'] ) ) {
+				continue;
+			}
+			if ( 'WP_Block' !== $frame['class'] || 'render' !== $frame['function'] ) {
+				continue;
+			}
+			if ( ! $self_frame_seen ) {
+				$self_frame_seen = true;
+				continue;
+			}
+			$ancestor        = $frame['object'];
+			$ancestor_layout = isset( $ancestor->attributes['layout'] ) ? (string) $ancestor->attributes['layout'] : '';
+			return in_array( $ancestor_layout, array( 'flex', 'grid', 'stack' ), true );
+		}
+		return false;
+	}
+}
+
 // Non-responsive base declarations — id-scoped external CSS (step 6), NOT
 // inline (Spec 32 FR-32-1). font-size / line-height / letter-spacing are
 // handled separately below (they have tablet/mobile tiers — Pattern A).
@@ -243,7 +298,24 @@ if ( null !== $max_width && '' !== $max_width ) {
 	// this, a maxWidth-constrained text block sits flush left in any wider
 	// parent, exactly the "text is centred, the block isn't" defect this fix
 	// closes.
-	$base_decls[] = 'margin-inline:auto';
+	//
+	// 2026-09-10 regression fix: that blanket pairing assumed every parent is
+	// plain block-flow (true for quote/testimonial/before-after/option-picker,
+	// each a standalone top-level composite). sgs/text is a generic leaf used
+	// EVERYWHERE, including inside a flex/grid ancestor that already controls
+	// its children's horizontal position (e.g. sgs/hero's split content
+	// column — display:flex, flex-direction:column, align-items:stretch under
+	// its LEFT-aligned variant). There, margin-inline:auto FIGHTS the
+	// ancestor's own alignment instead of respecting it: the hero's
+	// sub-headline was pulled centre when the draft's own CSS never declared
+	// a centring margin for it at all, and sat flush left. Gate the pairing on
+	// whether the nearest ancestor already establishes flex/grid/stack for its
+	// children — skip auto-centring there; keep it for a plain block-flow
+	// ancestor (or none at all), which is exactly the quote/testimonial/
+	// before-after/option-picker shape this pairing was built for.
+	if ( ! sgs_text_nearest_ancestor_establishes_own_alignment() ) {
+		$base_decls[] = 'margin-inline:auto';
+	}
 }
 
 // Custom width (overrides max-width when both are set — only one emitted).
