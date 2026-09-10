@@ -3,7 +3,7 @@
   "source_dir": "plugins/sgs-blocks/scripts/migrations",
   "file_count_found": 3,
   "counts": {
-    "DB-MIGRATION": 29,
+    "DB-MIGRATION": 30,
     "NOT-A-DB-MIGRATION": 1,
     "UNCLASSIFIED": 0
   },
@@ -192,6 +192,12 @@
       "filename": "2026-08-24-drop-fossil-columns.py",
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then ALTER TABLE ... DROP COLUMN for block_attributes.signature_confidence, blocks.grade, blocks.grade_score. Refuses any column holding a non-NULL value, re-checked at run time.",
+      "also_writes_files": false
+    },
+    {
+      "filename": "2026-09-10-add-tier-shape-column.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then ALTER TABLE block_attributes ADD COLUMN tier_shape TEXT. Idempotent — skips if column already present.",
       "also_writes_files": false
     }
   ],

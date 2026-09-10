@@ -86,6 +86,18 @@ from typing import Callable
 # Windows / UTF-8 output fix — must be before any print()
 sys.stdout.reconfigure(encoding="utf-8")
 
+# Shared object-attribute shape discriminator (2026-09-10) — see
+# orchestrator/object_attr_shape.py's docstring for the full 5-shape
+# doctrine. Aliased to the private names this file already used, so every
+# existing call site (is_responsive computation, wrapper evidence, etc.)
+# is unchanged by the move.
+sys.path.insert(0, str(Path(__file__).resolve().parent / "orchestrator"))
+from object_attr_shape import (  # noqa: E402
+    classify_object_attr_shape,
+    has_declared_tier_sibling,
+    tier_object_attrs_from_php as _tier_object_attrs_from_php,
+)
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -552,184 +564,11 @@ _CONTAINER_WRAPPER_PHP_PATH = (
     Path(__file__).resolve().parent.parent / "includes" / "class-sgs-container-wrapper.php"
 )
 
-# Two call shapes, both real render evidence that an object attr's value is
-# unpacked per-tier — see the module comment above for why a single-shape
-# regex silently missed submenuPadding/drawerGap/drawerPadding/listColumns/
-# gridItemPadding/gridItemBorderRadius despite each carrying literal evidence.
-_TIER_OBJECT_EVIDENCE_RE = re.compile(
-    r"sgs_responsive_normalise_object\(\s*\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]"
-    r"|'value'\s*=>\s*\$attributes\[\s*['\"]([A-Za-z0-9_]+)['\"]\s*\]"
-)
-
-# Spec 35's CLOSED, NAMED box set (survey-responsive-shape.py's `BOX_BASES`) —
-# used ONLY as the fallback when no render evidence exists either way (the
-# dynamic-key typography family). Bare name or a capitalised suffix counts as
-# a "prefixed variant" (`cardPadding`, `ctaBorderRadius`, `tagPadding`).
-_BOX_FAMILY_BASES = ("padding", "margin", "borderWidth", "borderRadius")
-
-
-def _is_box_family_base_name(attr_name: str) -> bool:
-    """Box test, valid ONLY for BASE names, and ONLY inside
-    `_compute_is_responsive`'s no-evidence fallback branch — NOT a
-    general-purpose "is this a box attribute?" test. True when `attr_name`
-    IS one of Spec 35's closed box bases, or a prefixed variant of one (name
-    ends with the base, capitalised). Deliberately NOT consulted when render
-    evidence exists (see the module comment above `_CONTAINER_WRAPPER_PHP_PATH`).
-
-    ⚠ BLIND TO TIER SUFFIXES BY CONSTRUCTION, DELIBERATELY LEFT AS-IS
-    (task-review I3, 2nd pass): this test is BLIND to a `Tablet`/`Mobile` tier suffix —
-    `"paddingTablet".endswith("Padding")` is `False`, so a tier sibling of a
-    box base is classified NON-box by this function. On a block where the
-    base (`padding`) is native `supports.spacing` rather than a declared
-    attr (e.g. `sgs/info-box`), mechanism 1b in `_compute_is_responsive`
-    can't find the base in `attrs` either, so `paddingTablet` falls through
-    to mechanism 2's box-doctrine fallback and reaches `1` ONLY because THIS
-    function's suffix-blindness makes it look non-box. The answer (1) is
-    right; the reasoning path is fragile — a future "tidy" of this function
-    to strip the tier suffix first would flip it to a wrong 0 (no mechanism
-    1 coverage, no render evidence, and now correctly-but-uselessly
-    box-by-name). Deliberately NOT changed here: extending mechanism 1 to
-    "own" a tier sibling whose base isn't itself a declared attr is a wider
-    behaviour change than this review-closure pass can verify against the
-    whole corpus. Pinned instead by a dedicated self-test fixture
-    (`_self_test_is_responsive`, "info-box padding-tablet-without-declared-
-    base" case) so a future refactor that flips this gets caught immediately.
-    """
-    for base in _BOX_FAMILY_BASES:
-        suffix = base[0].upper() + base[1:]
-        if attr_name == base or attr_name.endswith(suffix):
-            return True
-    return False
-
-
-# ASSET shape — the fifth doctrine category, ported from
-# `scripts/surveys/survey-responsive-shape.py`'s `ASSET_HINTS` (task review,
-# 3rd pass). A single-object media SLOT (`{id,url,alt,type}`, `sgs_render_media()`
-# consumes it whole) is a different RESOURCE per device, not a cascading
-# value — `sgs/testimonial.orgLogo`/`.workMedia`, `sgs/cta-section.
-# backgroundMedia`, `sgs/decorative-image.decorMedia`, `sgs/nav-drawer.
-# backgroundImage` all have no Tablet/Mobile siblings, no render evidence of
-# per-tier unpacking (nothing calls `sgs_responsive_normalise_object()` or the
-# `'value' => $attributes[...]` shape on them — they go straight into
-# `sgs_render_media()` as a single opaque object), and an empty/null
-# `default` that `_is_record_object_attr` correctly declines to call a
-# record. Left unclassified, all five fell into "tier by elimination" and
-# read a wrong 1 — a REGRESSION versus the pre-2026-09-05 state, where they
-# correctly read 0 (by coincidence, not by design: the old one-line check
-# only ever looked for a Tablet/Mobile sibling, which these attrs never had).
-#
-# ⚠ Tokenised on the FINAL camelCase word ONLY, not `any(hint in words)` like
-# the survey script — the survey is a human-triaged census where an
-# over-inclusive hint is fine (a person reads every finding); this is a
-# closed-loop seeder branch where over-inclusion silently reclassifies a real
-# cascading value. `splitMediaHeight`/`splitMediaMinHeight`/
-# `splitMediaMaxWidth`/`splitMediaMaxHeight` (sgs/hero, all object-typed, no
-# siblings, no evidence) each contain the word "media" but ARE genuine
-# cascading tier values (their own render evidence proves it elsewhere in the
-# corpus for the sibling attrs in this family) — the attribute's name is
-# built as `{assetAttr}{StylingProperty}`, so only testing the LAST word
-# (Height/Width, not Media) tells "is this attribute itself an asset" apart
-# from "is this a styling property OF an asset". Whole-word matching (not
-# substring) reuses the same word-splitter as the survey script for the same
-# reason it documents: a naive substring check matched "id" inside "hideOn".
-_ASSET_HINT_WORDS = frozenset(
-    {"image", "video", "media", "thumbnail", "logo", "svg", "poster", "url", "id"}
-)
-_CAMEL_WORD_RE = re.compile(r"[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])")
-
-
-def _camel_words(name: str) -> list:
-    """Split a camelCase attribute name into lower-cased whole words. Mirrors
-    `survey-responsive-shape.py`'s `camel_words()` byte-for-byte (word-boundary
-    matching is mandatory, not a nicety — see that function's own docstring
-    for the "id" inside "hideOn" false-positive it was built to prevent)."""
-    return [w.lower() for w in _CAMEL_WORD_RE.findall(name)]
-
-
-def _is_asset_like_attr(attr_name: str) -> bool:
-    """True when `attr_name`'s FINAL camelCase word names a per-device asset
-    (image/video/media/logo/svg/poster/url/id) — i.e. the attribute itself
-    IS an asset slot, not a styling property of one. See the module comment
-    above `_ASSET_HINT_WORDS` for why this is last-word-only, not
-    any-word, unlike the survey script it is ported from.
-    """
-    words = _camel_words(attr_name)
-    return bool(words) and words[-1] in _ASSET_HINT_WORDS
-
-
-# Device-tier and box-side vocabularies, shared by `_is_record_object_attr`
-# below (task-review C1). An object attr's `default` intersecting NEITHER
-# set — while the object itself is not a plain empty `{}` — proves it is a
-# fixed-shape RECORD (a small config struct), not a tier object and not a
-# box object. Distinct from `_BOX_FAMILY_BASES` (a NAME doctrine); this is a
-# SHAPE doctrine over the attr's own declared `default`/`properties`.
-_TIER_KEY_NAMES = frozenset({"desktop", "tablet", "mobile"})
-_BOX_SIDE_KEY_NAMES = frozenset({"top", "right", "bottom", "left"})
-
-
-def _is_record_object_attr(attr_def) -> bool:
-    """True when an object-typed attr's OWN declaration proves it is a
-    fixed-shape RECORD (a small config struct with named, non-tier,
-    non-box fields) rather than a tier object or a box object — a FOURTH
-    shape the doctrine's tier-by-elimination fallback previously missed
-    entirely (task-review C1, 2nd pass). Two independent proofs, either
-    sufficient:
-
-    1. The attr declares a top-level `"properties"` schema — an explicit
-       field-by-field record (e.g. `sgs/mega-panel.asideSeparator`'s
-       `{"style":..., "colour":..., "width":...}`). Deliberately scoped to
-       TOP LEVEL only: every other `"properties"` hit in the corpus lives
-       inside an `items` schema for an ARRAY attr, which never reaches this
-       function (the caller gates on `attr_type == 'object'`).
-    2. `default` is a non-empty object whose keys intersect NEITHER the
-       device-tier vocabulary NOR the box-side vocabulary — e.g.
-       `shapeDividerTopScale`'s `{"x": 100, "y": 100}` 2-axis scale. An
-       empty `{}` default (the overwhelming majority of object attrs) is
-       NOT a record by this rule — it carries no shape information either
-       way and stays in the tier-by-elimination fallback.
-
-    Verified against the live corpus before shipping: exactly 11 rows match
-    (`shapeDividerTopScale`/`shapeDividerBottomScale` on 5 blocks,
-    `asideSeparator` on `sgs/mega-panel`), zero more, zero fewer — both
-    rules independently converge on the same 11, and a full-corpus scan of
-    every object-typed attr's `default` found no other non-empty dict whose
-    keys avoid both vocabularies.
-    """
-    if not isinstance(attr_def, dict):
-        return False
-    _props = attr_def.get("properties")
-    if isinstance(_props, dict) and _props:
-        return True
-    _default = attr_def.get("default")
-    if isinstance(_default, dict) and _default:
-        _keys = set(_default.keys())
-        if not (_keys & _TIER_KEY_NAMES) and not (_keys & _BOX_SIDE_KEY_NAMES):
-            return True
-    return False
-
-
-def _tier_object_attrs_from_php(path: Path) -> set:
-    """Attr names with literal render evidence of per-tier unpacking (either
-    call shape — see `_TIER_OBJECT_EVIDENCE_RE`) in one PHP file. Returns an
-    empty set (never raises) when the file is absent or unreadable, so a
-    missing render.php just means "no evidence found there", not a crash.
-    Callers that require the file to exist (the shared wrapper, below) add
-    their own hard assertion — this function alone cannot distinguish
-    "genuinely no render.php" (fine) from "the ONE shared wrapper file
-    vanished" (a real breakage) since both look identical from here.
-    """
-    if not path.is_file():
-        return set()
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError:
-        return set()
-    found = set()
-    for m in _TIER_OBJECT_EVIDENCE_RE.finditer(text):
-        name = m.group(1) or m.group(2)
-        if name:
-            found.add(name)
-    return found
+# Box/record/asset primitives moved to the shared object_attr_shape module
+# (2026-09-10) — used by BOTH this seeder (is_responsive + tier_shape) and
+# check_flat_tier_regression.py's D554 gate. See that module's docstring for
+# the full 5-shape doctrine. Imported below as the same private names this
+# file already used, so every call site is unchanged.
 
 
 # Loaded once per process — the shared wrapper file does not change per-block.
@@ -840,82 +679,23 @@ def _compute_is_responsive(
     independently so this specific attr's VALUE was never wrong — the gating
     is a correctness fix for the general case, not a value fix for this one).
     """
-    # Mechanism 1a — this attr IS a base with a declared Tablet/Mobile sibling.
-    if f"{attr_name}Tablet" in attrs or f"{attr_name}Mobile" in attrs:
+    # Mechanism 1a/1b — this attr IS a base with a declared Tablet/Mobile
+    # sibling, OR IS a Tablet/Mobile sibling of a declared base. Applies
+    # regardless of attr_type (a scalar flat-sibling trio is responsive
+    # too) — checked BEFORE the object-only branch below.
+    if has_declared_tier_sibling(attr_name, attrs):
         return 1
-    # Mechanism 1b — this attr IS a Tablet/Mobile sibling of a declared base.
-    _m = re.match(r"^(.+?)(?:Tablet|Mobile)$", attr_name)
-    if _m and _m.group(1) in attrs:
-        return 1
-    # Mechanism 2 — a tier-object. Gated on attr_type == 'object' throughout:
-    # neither evidence channel nor the box-doctrine fallback may ever fire for
-    # a 'number'/'string' attr of the same name on an unrelated block (e.g.
-    # core/gallery's scalar `columns`).
-    if attr_type == "object":
-        has_evidence = attr_name in render_tier_attrs or attr_name in wrapper_tier_attrs
-        is_box_by_name = _is_box_family_base_name(attr_name)
-        if has_evidence:
-            if is_box_by_name:
-                # Real evidence overrides a box-shaped NAME — see the module
-                # comment's "evidence beats the name doctrine" paragraph.
-                # Printed (not just returned) so the override is auditable
-                # during every reseed, not a silent divergence from the
-                # literal name-only fix-shape.
-                print(
-                    f"  NOTE is_responsive: '{attr_name}' is box-family BY NAME "
-                    f"but has literal render evidence of per-tier unpacking — "
-                    f"classified as tier (1), not box (0)."
-                )
-            return 1
-        if not is_box_by_name:
-            # No evidence either way (the dynamic-key typography family) —
-            # BEFORE falling to "tier by elimination", refuse a FOURTH shape
-            # the doctrine's binary tier/box choice cannot express: a
-            # fixed-shape RECORD (task-review C1, 2nd pass). A record has no
-            # tier sibling, is never box-named, and can never be reached by
-            # evidence (nothing unpacks it per-device) — so without this
-            # check every record in the corpus fell into "tier by
-            # elimination" and read a wrong 1
-            # (shapeDividerTopScale/BottomScale on 5 blocks,
-            # sgs/mega-panel.asideSeparator — 11 rows, verified against the
-            # live corpus before shipping, see `_is_record_object_attr`'s
-            # own docstring for the count proof).
-            if _is_record_object_attr(attr_def):
-                print(
-                    f"  NOTE is_responsive: '{attr_name}' is object-typed with "
-                    f"no tier sibling, no box name, and no render evidence, "
-                    f"but its own declaration ('properties' schema or a "
-                    f"non-tier/non-box 'default' shape) proves it is a fixed-"
-                    f"shape RECORD, not a tier by elimination — classified "
-                    f"non-responsive (0)."
-                )
-                return 0
-            # ASSET shape (task review, 3rd pass) — BEFORE falling to "tier
-            # by elimination", refuse a fifth shape the doctrine's binary
-            # tier/box choice cannot express: a single-object media SLOT
-            # whose FINAL word names an asset (see `_is_asset_like_attr`'s
-            # own docstring + the module comment above `_ASSET_HINT_WORDS`).
-            # Without this check every such slot in the corpus fell into
-            # "tier by elimination" and read a wrong 1 (orgLogo/workMedia on
-            # sgs/testimonial, backgroundMedia on sgs/cta-section, decorMedia
-            # on sgs/decorative-image, backgroundImage on sgs/nav-drawer —
-            # verified against the live corpus before shipping, see the
-            # dispatch's confirmed-wrong-1s table).
-            if _is_asset_like_attr(attr_name):
-                print(
-                    f"  NOTE is_responsive: '{attr_name}' is object-typed with "
-                    f"no tier sibling, no box name, no render evidence, and no "
-                    f"record shape, but its FINAL camelCase word names a "
-                    f"per-device ASSET (image/video/media/logo/svg/poster/url/"
-                    f"id) rather than a cascading value — classified "
-                    f"non-responsive (0)."
-                )
-                return 0
-            # Doctrine fallback: anything object-typed outside the closed
-            # box set, not a proven record, and not a proven asset slot is a
-            # tier by elimination.
-            return 1
-    return 0
+    # Mechanism 2 — delegates to the shared 5-shape classifier
+    # (object_attr_shape.classify_object_attr_shape, moved out 2026-09-10 —
+    # same decision tree, D968, now shared with block_attributes.tier_shape).
+    # Gated on attr_type == 'object' inside the classifier itself, so a
+    # 'number'/'string' attr of the same name on an unrelated block (e.g.
+    # core/gallery's scalar `columns`) never reaches evidence/box/record/
+    # asset classification.
+    shape = classify_object_attr_shape(
+        attr_name, attr_type, attr_def, attrs, render_tier_attrs, wrapper_tier_attrs,
+    )
+    return 1 if shape in ("flat_sibling", "tier_object") else 0
 
 
 def _self_test_is_responsive() -> int:
@@ -1264,6 +1044,16 @@ def _index_sgs_block_files(
         )
         print("Stage 1: block_capabilities.kind column added (existing rows -> 'functional')")
 
+    # Idempotent column-add for block_attributes.tier_shape (2026-09-10) —
+    # same guard shape as block_capabilities.kind above, so a live DB that
+    # hasn't yet replayed the migration still seeds cleanly rather than
+    # failing on an unknown column. NULL default (no DEFAULT clause) mirrors
+    # box_family — populated only for object-typed attrs, see
+    # classify_object_attr_shape().
+    if "tier_shape" not in {r[1] for r in c.execute("PRAGMA table_info(block_attributes)")}:
+        c.execute("ALTER TABLE block_attributes ADD COLUMN tier_shape TEXT")
+        print("Stage 1: block_attributes.tier_shape column added")
+
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
             continue
@@ -1370,7 +1160,7 @@ def _index_sgs_block_files(
                     continue
                 ex_attr = c.execute(
                     "SELECT attr_type, default_value, enum_values, description, "
-                    "is_responsive FROM block_attributes "
+                    "is_responsive, tier_shape FROM block_attributes "
                     "WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
                     (slug, attr_name),
                 ).fetchone()
@@ -1380,12 +1170,16 @@ def _index_sgs_block_files(
                 is_responsive = _compute_is_responsive(
                     attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
                 )
+                tier_shape = classify_object_attr_shape(
+                    attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
+                )
                 scraped_attr = (
                     attr_type,
                     json.dumps(default) if default is not None else None,
                     json.dumps(enum_vals) if enum_vals else None,
                     attr_def.get("description", ""),
                     is_responsive,
+                    tier_shape,
                 )
                 if ex_attr is None:
                     new_attrs += 1
@@ -1830,6 +1624,14 @@ def _index_sgs_block_files(
             is_responsive = _compute_is_responsive(
                 attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
             )
+            # tier_shape (2026-09-10) — the closed 3-value classification
+            # (flat_sibling/tier_object/box_only/NULL) for OBJECT-typed attrs
+            # only. Reuses the SAME per-block render_tier_attrs/
+            # wrapper_tier_attrs evidence already assembled for
+            # is_responsive above — never a second PHP scan.
+            tier_shape = classify_object_attr_shape(
+                attr_name, attr_type, attr_def, attrs, _render_tier_attrs, _wrapper_tier_attrs
+            )
             default_json = json.dumps(default) if default is not None else None
             enum_json = json.dumps(enum_vals) if enum_vals else None
             attr_desc = attr_def.get("description", "")
@@ -1838,10 +1640,11 @@ def _index_sgs_block_files(
                 """
                 INSERT OR IGNORE INTO block_attributes
                     (block_slug, attr_name, attr_type, default_value, enum_values,
-                     description, is_responsive, source)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'sgs')
+                     description, is_responsive, tier_shape, source)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sgs')
                 """,
-                (slug, attr_name, attr_type, default_json, enum_json, attr_desc, is_responsive),
+                (slug, attr_name, attr_type, default_json, enum_json, attr_desc,
+                 is_responsive, tier_shape),
             )
             if result.rowcount:
                 new_attrs += 1
@@ -1849,23 +1652,26 @@ def _index_sgs_block_files(
                 # Check for drift on tracked fields
                 existing_attr = c.execute(
                     "SELECT attr_type, default_value, enum_values, description, "
-                    "is_responsive FROM block_attributes "
+                    "is_responsive, tier_shape FROM block_attributes "
                     "WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'",
                     (slug, attr_name),
                 ).fetchone()
                 if existing_attr is not None:
-                    scraped_attr = (attr_type, default_json, enum_json, attr_desc, is_responsive)
+                    scraped_attr = (
+                        attr_type, default_json, enum_json, attr_desc,
+                        is_responsive, tier_shape,
+                    )
                     if tuple(existing_attr) != scraped_attr:
                         c.execute(
                             """
                             UPDATE block_attributes
                             SET attr_type = ?, default_value = ?, enum_values = ?,
-                                description = ?, is_responsive = ?
+                                description = ?, is_responsive = ?, tier_shape = ?
                             WHERE block_slug = ? AND attr_name = ? AND source = 'sgs'
                             """,
                             (
                                 attr_type, default_json, enum_json, attr_desc,
-                                is_responsive, slug, attr_name,
+                                is_responsive, tier_shape, slug, attr_name,
                             ),
                         )
                         updated_attrs += 1

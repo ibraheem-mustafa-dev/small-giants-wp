@@ -170,7 +170,6 @@ UK English in all output.
 from __future__ import annotations
 
 import argparse
-import functools
 import json
 import re
 import sys
@@ -187,8 +186,6 @@ REPO_ROOT = HERE.parent.parent.parent.parent  # plugins/sgs-blocks/scripts/orche
 PIPELINE_STATE_DIR = REPO_ROOT / "pipeline-state"
 BLOCKS_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 INCLUDES_DIR = REPO_ROOT / "plugins" / "sgs-blocks" / "includes"
-WRAPPER_PHP = INCLUDES_DIR / "class-sgs-container-wrapper.php"
-HELPERS_TYPOGRAPHY_PHP = INCLUDES_DIR / "helpers-typography.php"
 FIXTURES_DIR = HERE.parent / "fixtures" / "flat-tier-gate"
 
 # Reuse the structural (never comment-text) block-markup parser + loader from
@@ -196,203 +193,23 @@ FIXTURES_DIR = HERE.parent / "fixtures" / "flat-tier-gate"
 sys.path.insert(0, str(HERE))
 from check_no_mirror import load_block_markup, parse_block_markup  # noqa: E402
 
+# Shared object-attribute shape discriminator (2026-09-10) — the PHP-evidence
+# scan + box/record/asset primitives used here now live in ONE place, shared
+# with sgs-update-v2.py's Stage 1 seeding (block_attributes.tier_shape). This
+# gate keeps its OWN, deliberately CONSERVATIVE migrated-property map below
+# (evidence-required, no elimination fallback — a hard build-failing gate
+# must never false-positive) — only the primitives are shared, not the
+# candidate-selection policy.
+from object_attr_shape import (  # noqa: E402
+    attr_tier_consumer_evidence as _attr_tier_consumer_evidence,
+    breakpoint_suffixes as _breakpoint_suffixes,
+    has_declared_tier_sibling,
+)
+
 # ---------------------------------------------------------------------------
 # Flat-tier suffix pattern: <property>Tablet or <property>Mobile
 # ---------------------------------------------------------------------------
 FLAT_TIER_SUFFIX_RE = re.compile(r"^(.+)(Tablet|Mobile)$")
-
-
-# ---------------------------------------------------------------------------
-# DB-backed breakpoint suffix vocabulary (R-31-1 — never a hardcoded dict)
-# ---------------------------------------------------------------------------
-
-def _get_db_lookup():
-    """Lazy-import converter.db.db_lookup (same pattern as css_router.py's
-    _get_db()), so this module still loads without the converter package on
-    sys.path (test isolation)."""
-    if str(_SCRIPTS_ROOT) not in sys.path:
-        sys.path.insert(0, str(_SCRIPTS_ROOT))
-    from converter.db import db_lookup
-    return db_lookup
-
-
-@functools.lru_cache(maxsize=None)
-def _breakpoint_suffixes() -> tuple[str, ...]:
-    """{'Mobile', 'Tablet', 'Desktop'} from modifier_suffixes WHERE kind='breakpoint'.
-
-    R-31-1: the breakpoint suffix vocabulary is DB-owned; hardcoding it here
-    would be exactly the violation tier_suffix.py's own docstring records
-    against its retired `_TIER_SUFFIX` literal dict.
-    """
-    return _get_db_lookup().modifier_suffixes("breakpoint")
-
-
-# ---------------------------------------------------------------------------
-# PHP-consumer evidence (2026-08-12 fix — see module docstring "BUG 2")
-# ---------------------------------------------------------------------------
-
-@functools.lru_cache(maxsize=None)
-def _read_text_cached(path_str: str) -> str:
-    try:
-        return Path(path_str).read_text(encoding="utf-8")
-    except OSError:
-        return ""
-
-
-@functools.lru_cache(maxsize=None)
-def _typography_property_suffixes(helpers_path: Path = HELPERS_TYPOGRAPHY_PHP) -> frozenset[str]:
-    """Derive the typography sub-property suffix vocabulary (FontSize,
-    LineHeight, LetterSpacing, …) from helpers-typography.php itself —
-    the ONE shared `sgs_typography_attr( $prefix, '<Suffix>' )` helper's own
-    call sites inside `sgs_typography_css_rule()` ARE the source of truth,
-    so this is code-derived, not a hardcoded property-name dict (R-31-1
-    targets the DB-owned MODIFIER suffix grammar specifically; this is a
-    different vocabulary — the shared PHP helper's own fixed parameter
-    names — with no DB table of its own, so deriving it from the one place
-    it is defined is the R-31-1-consistent choice over inventing either a
-    literal list or a DB table for a two-file convention).
-
-    Scan is bounded to `sgs_typography_css_rule()`'s own body (up to the
-    next top-level `function `) so an unrelated later use of
-    `sgs_typography_attr()` elsewhere in the file cannot smuggle in an
-    unrelated suffix.
-    """
-    text = _read_text_cached(str(helpers_path))
-    start = text.find("function sgs_typography_css_rule")
-    if start == -1:
-        return frozenset()
-    end = text.find("\nfunction ", start + 1)
-    if end == -1:
-        end = len(text)
-    body = text[start:end]
-    return frozenset(re.findall(r"sgs_typography_attr\(\s*\$prefix\s*,\s*['\"]([A-Za-z]+)['\"]", body))
-
-
-def _lcfirst(value: str) -> str:
-    return value[:1].lower() + value[1:] if value else value
-
-
-def _attr_tier_consumer_evidence(
-    block_slug: str,
-    attr_name: str,
-    blocks_dir: Path = BLOCKS_DIR,
-    wrapper_path: Path = WRAPPER_PHP,
-) -> bool:
-    """Return True when real PHP evidence shows `attr_name` on `block_slug`
-    is genuinely read through the tier-normalisation pipeline
-    (`sgs_responsive_normalise_object()` — directly, indirectly via a
-    `'value' => $attributes['<attr>']` entry collected into an
-    `sgs_emit_responsive_css()` prop-map, indirectly via a
-    `'<attr>' => '<css-prop>'` array driving a `foreach ( … as $sgs_attr =>
-    $sgs_css_prop )` DYNAMIC-KEY dispatch into the same prop-map (the
-    class-sgs-container-wrapper.php "LAYOUT properties" loop —
-    `gridTemplateRows` is the live example: its `'value' => $attributes[
-    $sgs_attr ]` never contains the literal string 'gridTemplateRows', only
-    the array key does), or via the shared `sgs_typography_css_rule()`
-    helper) — i.e. is truly Shape 2 (a migrated tier-object), never merely
-    Shape 3 (an object-typed, sibling-free box attribute with NO
-    device-tier destination at all — see module docstring "BUG 2"). Scans
-    the block's own render.php PLUS the shared
-    class-sgs-container-wrapper.php, since composite blocks (container,
-    hero, cta-section, trust-bar, accordion, …) delegate wrapper-level
-    properties like `gap`/`gridItemPadding` to that one shared file rather
-    than reading them inline. Also covers the sibling tier-boolean pair
-    `sgs_resolve_on_tiers()` / `sgs_emit_tier_rules()` (helpers-responsive.php,
-    same file as `sgs_responsive_normalise_object()`) — live example:
-    `sgs/site-header.headerHideOnScroll` assigns `$sh_hide =
-    $attributes['headerHideOnScroll']` then calls
-    `sgs_resolve_on_tiers( $sh_hide, … )` several lines later, so the attr
-    name never appears as a literal argument to the tier function itself —
-    traced via the assigned variable name, not a literal-string match.
-    """
-    block_dir_name = block_slug.split("/")[-1]
-    candidate_paths = [blocks_dir / block_dir_name / "render.php", wrapper_path]
-
-    direct_re = re.compile(
-        r"sgs_responsive_normalise_object\(\s*\$attributes\[\s*['\"]"
-        + re.escape(attr_name) + r"['\"]\s*\]"
-    )
-    collected_re = re.compile(
-        r"'value'\s*=>\s*\$attributes\[\s*['\"]" + re.escape(attr_name) + r"['\"]\s*\]"
-    )
-    dynamic_key_array_re = re.compile(
-        r"['\"]" + re.escape(attr_name) + r"['\"]\s*=>\s*['\"][^'\"]*['\"]\s*,"
-    )
-    dynamic_key_dispatch_re = re.compile(r"'value'\s*=>\s*\$attributes\[\s*\$\w+\s*\]")
-    emit_re = re.compile(r"sgs_emit_responsive_css\(")
-    # $var = [is_array(]?[isset(]? $attributes['<attr>'] ... — captures the
-    # variable name a value is assigned into, regardless of the guard idiom
-    # wrapping it (is_array(...?...), isset(...)?...:, or a bare assignment).
-    var_assign_re = re.compile(
-        r"\$(\w+)\s*=[^;]*\$attributes\[\s*['\"]" + re.escape(attr_name) + r"['\"]\s*\]"
-    )
-    tier_fn_call_re = re.compile(r"sgs_(?:resolve_on_tiers|emit_tier_rules)\(")
-
-    typo_suffixes = _typography_property_suffixes()
-    # Longest suffix first so e.g. 'LineHeightUnit' is tried before 'LineHeight'.
-    prefixed_matches = sorted(
-        (s for s in typo_suffixes if attr_name.endswith(s) and attr_name != s),
-        key=len, reverse=True,
-    )
-    # prefix='' case: sgs_typography_attr('', 'FontSize') === lcfirst('FontSize')
-    # === 'fontSize' — the suffix's own casing doesn't appear as a literal
-    # tail on the attr name here, so it needs its own equality check.
-    base_level_suffix = next(
-        (s for s in typo_suffixes if attr_name == _lcfirst(s)), None
-    )
-
-    for path in candidate_paths:
-        if not path.is_file():
-            continue
-        text = _read_text_cached(str(path))
-        if direct_re.search(text):
-            return True
-        if collected_re.search(text) and emit_re.search(text):
-            return True
-        if (
-            dynamic_key_array_re.search(text)
-            and dynamic_key_dispatch_re.search(text)
-            and emit_re.search(text)
-        ):
-            return True
-        for suffix in prefixed_matches:
-            prefix = attr_name[: -len(suffix)]
-            typo_re = re.compile(
-                r"sgs_typography_css_rule\(\s*\$attributes\s*,\s*['\"]"
-                + re.escape(prefix) + r"['\"]"
-            )
-            if typo_re.search(text):
-                return True
-        if base_level_suffix is not None:
-            typo_re = re.compile(r"sgs_typography_css_rule\(\s*\$attributes\s*,\s*(''|\"\")")
-            if typo_re.search(text):
-                return True
-
-        var_match = var_assign_re.search(text)
-        if var_match:
-            var_name = var_match.group(1)
-            var_use_re = re.compile(r"\$" + re.escape(var_name) + r"\b")
-
-            # sgs_resolve_on_tiers()/sgs_emit_tier_rules() — the tier-boolean
-            # pair (helpers-responsive.php, same file as
-            # sgs_responsive_normalise_object()). Live example:
-            # sgs/site-header.headerHideOnScroll assigns $sh_hide then calls
-            # sgs_resolve_on_tiers( $sh_hide, … ) several lines later.
-            tier_fn_match = tier_fn_call_re.search(text)
-            if tier_fn_match and var_use_re.search(text, tier_fn_match.start()):
-                return True
-
-            # 'value' => $var — the SAME collected-prop-map pattern as
-            # `collected_re` above, but through an intermediate variable
-            # (usually one carrying its own tier-shaped default, e.g.
-            # sgs/mega-panel.groupGap: `$group_gap_obj = ... ?: array(
-            # 'desktop' => '44px' ); … 'value' => $group_gap_obj`) rather
-            # than the literal $attributes['<attr>'] expression.
-            collected_var_re = re.compile(r"'value'\s*=>\s*\$" + re.escape(var_name) + r"\b")
-            if collected_var_re.search(text) and emit_re.search(text):
-                return True
-
-    return False
 
 
 # ---------------------------------------------------------------------------
@@ -427,9 +244,7 @@ def _naive_object_candidates(attrs: dict, breakpoint_suffixes: tuple[str, ...]) 
         ):
             continue
 
-        has_tablet = f"{prop_name}Tablet" in attrs
-        has_mobile = f"{prop_name}Mobile" in attrs
-        if has_tablet or has_mobile:
+        if has_declared_tier_sibling(prop_name, attrs):
             # Object-typed WITH siblings is not the migrated shape this
             # gate is about (e.g. a per-tier media-object attribute).
             continue

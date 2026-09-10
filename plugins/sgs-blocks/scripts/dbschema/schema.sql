@@ -39,7 +39,7 @@ CREATE TABLE block_attributes (
         default_value TEXT,
         enum_values TEXT,
         description TEXT,
-        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT,
+        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT, tier_shape TEXT,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, attr_name)
     );
