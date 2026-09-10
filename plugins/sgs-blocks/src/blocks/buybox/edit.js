@@ -31,8 +31,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		framingMode,
 		decoyEnabled,
 		margin,
-		marginTablet,
-		marginMobile,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -339,16 +337,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Margin', 'sgs-blocks' ) }
 						presets
 						values={ {
-							base: margin ?? {},
-							tablet: marginTablet ?? {},
-							mobile: marginMobile ?? {},
+							base: margin?.desktop ?? {},
+							tablet: margin?.tablet ?? {},
+							mobile: margin?.mobile ?? {},
 						} }
 						onChange={ ( tier, next ) => {
-							if ( 'base' === tier ) {
-								setAttributes( { margin: next } );
-							} else {
-								setAttributes( { [ `margin${ 'tablet' === tier ? 'Tablet' : 'Mobile' }` ]: next } );
-							}
+							const key = 'base' === tier ? 'desktop' : tier;
+							setAttributes( { margin: { ...margin, [ key ]: next } } );
 						} }
 					/>
 				</PanelBody>

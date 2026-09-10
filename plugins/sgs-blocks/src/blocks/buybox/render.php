@@ -404,11 +404,15 @@ $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
 
-// --- Base margin (block-private `margin` object attr, retired 2026-09-11
-// off WP-native spacing.margin) emitted scoped via the stable core style
-// engine (mirrors sgs/info-box pattern). ---
-$base_margin_obj = array();
-$margin_raw      = is_array( $attributes['margin'] ?? null ) ? $attributes['margin'] : array();
+// --- Base margin — `margin` is a single block-owned TIER-of-BOXES envelope
+// attr {desktop,tablet,mobile} (folded 2026-09-11 from the wrong 3-sibling
+// shape margin/marginTablet/marginMobile), read once via
+// sgs_responsive_normalise_object() and emitted scoped via the stable core
+// style engine (mirrors sgs/info-box + sgs/star-rating's already-shipped
+// margin migration). ---
+$sgs_bb_margin_tiers = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$base_margin_obj     = array();
+$margin_raw          = is_array( $sgs_bb_margin_tiers['desktop'] ?? null ) ? $sgs_bb_margin_tiers['desktop'] : array();
 if ( ! empty( $margin_raw ) ) {
 	foreach ( $margin_raw as $margin_side => $margin_value ) {
 		if ( is_string( $margin_value ) && '' !== $margin_value ) {
@@ -510,8 +514,8 @@ if ( '' !== $sgs_bb_bg_layer_css ) {
 // --- Responsive margin tiers — SGS custom object attrs, hand-built shorthand,
 // scoped @media on the SAME selector (contract §B2: tablet max-width:1023px,
 // mobile max-width:767px). ---
-$margin_tablet_obj = is_array( $attributes['marginTablet'] ?? null ) ? $attributes['marginTablet'] : array();
-$margin_mobile_obj = is_array( $attributes['marginMobile'] ?? null ) ? $attributes['marginMobile'] : array();
+$margin_tablet_obj = is_array( $sgs_bb_margin_tiers['tablet'] ?? null ) ? $sgs_bb_margin_tiers['tablet'] : array();
+$margin_mobile_obj = is_array( $sgs_bb_margin_tiers['mobile'] ?? null ) ? $sgs_bb_margin_tiers['mobile'] : array();
 
 $margin_tab_val = sgs_box_object_shorthand( $margin_tablet_obj );
 $margin_mob_val = sgs_box_object_shorthand( $margin_mobile_obj );

@@ -47,9 +47,7 @@
 			],
 			"boxFamilies": {
 				"margin": [
-					"margin",
-					"marginTablet",
-					"marginMobile"
+					"margin"
 				],
 				"borderRadius": [
 					"borderRadius"
@@ -101,15 +99,9 @@
 	"attributes": {
 		"margin": {
 			"type": "object",
-			"default": {}
-		},
-		"marginTablet": {
-			"type": "object",
-			"default": {}
-		},
-		"marginMobile": {
-			"type": "object",
-			"default": {}
+			"default": {
+				"desktop": {}
+			}
 		},
 		"soldOutLabel": {
 			"type": "string",
