@@ -144,7 +144,7 @@ picks up Tier 1, not vetted or committed to here.
 
 ### Addendum 2 (2026-09-10, research-buddies via the R8 motion-recognition brainstorm) — the `_SHADCN.data_slot_attrs` dead flag has a cheap fix
 
-Found while researching R8's motion-library-detection problem (`.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md`), unprompted lateral hit, flagged here since it bears directly on this doc's own §6 finding (`_SHADCN`'s `data_slot_attrs: True` flag is declared but never read by `lingua_franca.py::_try_rule`).
+Found while researching R8's motion-library-detection problem (`.claude/plans/archive/2026-09-10-r8-motion-recognition-brainstorm.md` — R8 has since shipped in full, D1020-D1032), unprompted lateral hit, flagged here since it bears directly on this doc's own §6 finding (`_SHADCN`'s `data_slot_attrs: True` flag is declared but never read by `lingua_franca.py::_try_rule`).
 
 Real-world libraries that inject runtime `data-*` attributes (shadcn/Radix's `data-slot`/`data-radix-*`, among others) leave those attributes in the rendered DOM regardless of class-name minification/hashing — the exact same "durable runtime signal survives what a static-only detector misses" shape the R8 research found for GSAP/Lenis/Three.js (body classes, a pin-spacer wrapper, a `data-engine` attribute). A DOM-attribute probe built to close R8's Tier 4a gap could very plausibly wire up this dead flag in the same pass, rather than needing its own separate build — worth checking at implementation time for either track, not designed here. Full findings: `C:\Users\Bean\.claude\memory\research\2026-09-10-detecting-motion-libraries-in-bundled-js.md`.
 
