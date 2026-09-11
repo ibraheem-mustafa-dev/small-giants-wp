@@ -160,4 +160,147 @@ this step's blast radius to its one writable directory.
 
 ## Step 8 — `render.php` split (pure refactor)
 
-See the second table + notes appended below once step 8 executes.
+**Landed module roster** — exactly 4 PHP files, matching Bean's decision (code-lines is
+the enforced measure; comments do not count on this file, D722):
+
+| File | Raw lines | Code lines | Leans on |
+|---|---|---|---|
+| `src/blocks/nav-menu/render.php` | 590 | 224 | class/entry (constructor, `flatten()`, `from_link()`, `from_page_list()`, new `get_submenu()` getter), menu resolution, attribute normalisation — the two CSS-assembly functions below |
+| `includes/nav-menu-markup.php` | 468 | 250 | `sgs_nav_menu_render_items()`, `sgs_nav_menu_render_items_drawer()` (extracted from the class's own methods — see note below), `sgs_nav_menu_burger_toggle_markup()` |
+| `includes/nav-menu-css.php` | 432 | 190 | `sgs_nav_menu_item_state_css()` — item typography, nav container colour, item text/background colour + pill/text/underline hover treatments, featured-item sweep |
+| `includes/nav-menu-submenu-css.php` | 742 | 234 | `sgs_nav_menu_submenu_css()` — burger colour/bg/hover/size, collapse-point switch, mega/dropdown disclosure positioning, drawer-specific overrides, listColumns grid, sliding-indicator colour, root box, custom-CSS escape hatch |
+
+**All 4 files land at or under 300 CODE lines individually** (max is
+`includes/nav-menu-markup.php` at 250). **Projected `render.php` code-count once step 15
+adds `sgs_nav_menu_typography_hover_rule()` (owner ruling 2, ~30 lines, stays block-private
+in render.php per FR-41-21):** 224 + 30 = **254 code lines** — still comfortably under 300.
+
+### ⚠ Not a pure copy-paste at the CLASS boundary — disclosed, not hidden
+
+The plan's own file assignment splits `render_items()`/`render_items_drawer()` OUT of
+`SGS_Nav_Menu_Bar_Renderer` into `includes/nav-menu-markup.php`, while the constructor/
+`flatten()`/`from_link()`/`from_page_list()` STAY in `render.php` as the class. A class
+cannot have some methods in file A and some in file B, so this required converting
+`render_items()`/`render_items_drawer()` from CLASS METHODS into STANDALONE FUNCTIONS:
+
+- `$this->featured_ids` → explicit `$featured_ids` parameter
+- `$this->uid` → explicit `$uid` parameter
+- `$this->submenu[...]` → explicit `$submenu` parameter (array)
+- A new `public function get_submenu(): array { return $this->submenu; }` getter was added
+  to the class — the ONLY new surface this split adds. `render.php`'s own bar-mode call
+  site changed from `$bar_renderer->render_items( $flat_items )` to
+  `sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() )`.
+
+Every function BODY is otherwise byte-identical to the class method it replaces — no
+logic, condition, or string literal changed, only the variable-binding mechanism. This is
+disclosed here rather than silently treated as "pure" because it is a structural change
+beyond a straight relocation, even though it is behaviour-neutral (proven below).
+
+### Reuse lever — already spent, confirmed by both named surveys (expected result)
+
+```
+$ python scripts/migrate-render-closures.py --survey
+0 files | closures: css_length=0 css_keyword=0 box_shorthand=0 corner_shorthand=0 radius_shorthand=0 | total=0
+missing require: 0 files
+
+$ python scripts/migrate-length-sanitiser.py --survey
+... (10 BARE/SKIP entries, none in nav-menu)
+MIGRATABLE:    0  (migratable = call + comment)
+```
+
+Both return 0 migratable, matching the plan's own prediction. `render.php` already carries
+27 shared-helper call sites (`sgs_hover_state_rules`, `sgs_colour_value`,
+`sgs_background_paint_decl`, etc.) — this is the correct, expected "none applies" row, not
+a "didn't look" row.
+
+### Byte-identity proof — pasted, not asserted
+
+Built a scratchpad-only harness (`nav-menu-byte-identity-harness.php`, deleted after use)
+extending `plugins/sgs-blocks/scripts/qa/lib/wp-stubs.php` with `wp_get_nav_menu_object()`/
+`wp_get_nav_menu_items()`/`wp_parse_url()`/`parse_blocks()`/`WP_Block_Type_Registry` stubs
+so a real classic-menu fixture with nested children could be built (the shared harness's
+default page-list fallback resolves to an EMPTY menu via its `get_pages()` stub, which
+would short-circuit `render.php` at `if ('' === $items_html) { return ''; }` before the
+CSS-assembly section ever ran — a vacuous test that can't be used for this proof).
+
+**Fixture covers every element the step names**: an item background + hover
+(`itemBg`/`itemBgHover`), a featured item (`featuredItemIds:['id:5']` +
+`featuredBg`/`featuredColourHover`), a submenu with a min-width (`submenuMinWidth:'260px'`,
+the "Services" item's child "Sub Service"), a burger with a hover colour
+(`burgerHoverColour`), and the drawer fork (run twice — bar mode with no `$block->context`,
+drawer mode with `sgs/navDrawerSubmenuModel: 'accordion'`) — plus nav container colour,
+sliding indicator, underline hover-style variant attrs, and responsive padding/listColumns
+tiers, for full coverage of every CSS-assembly section moved.
+
+⚠ **Each target run in ITS OWN `php` CLI process** — OLD and NEW both declare the same
+`SGS_Nav_Menu_Bar_Renderer` class name behind a `class_exists()` guard; running both in one
+PHP process meant whichever ran first froze the class for the rest of the process, so the
+second file's own class body (carrying the new `get_submenu()` getter) never loaded. Fixed
+by invoking the harness 4 times (`--target=old|new --mode=bar|drawer`), each a fresh process.
+
+```
+$ php nav-menu-byte-identity-harness.php --target=old --mode=bar    # exit 0
+$ php nav-menu-byte-identity-harness.php --target=new --mode=bar    # exit 0
+$ php nav-menu-byte-identity-harness.php --target=old --mode=drawer # exit 0
+$ php nav-menu-byte-identity-harness.php --target=new --mode=drawer # exit 0
+
+=== BAR MODE ===
+old css len: 11321  new css len: 11321  CSS IDENTICAL: True  HTML IDENTICAL: True
+
+=== DRAWER MODE ===
+old css len: 11321  new css len: 11321  CSS IDENTICAL: True  HTML IDENTICAL: True
+```
+
+OLD is the git HEAD `render.php` at commit `614c97751` (the pre-step-8 state, saved via
+`git show 614c97751:...`). The OLD copy was placed temporarily at
+`plugins/sgs-blocks/src/blocks/nav-menu/render_OLD_scratch_tmp.php` (same directory depth
+as the real file, so `dirname(__DIR__,3)` resolves identically) and deleted immediately
+after the harness run — `git status` confirmed the tree carries no trace of it afterwards.
+
+### `php -l` — clean on every touched file
+
+```
+No syntax errors detected in src/blocks/nav-menu/render.php
+No syntax errors detected in includes/nav-menu-markup.php
+No syntax errors detected in includes/nav-menu-css.php
+No syntax errors detected in includes/nav-menu-submenu-css.php
+```
+
+### Build — `includes/` ships via its live source path, not a `build/` copy
+
+`npx wp-scripts build --experimental-modules --webpack-copy-php` exits 0, `webpack ...
+compiled successfully`. `diff src/blocks/nav-menu/render.php build/blocks/nav-menu/render.php`
+— identical (webpack-copy-php correctly copies the split `render.php` verbatim).
+`includes/nav-menu-{markup,css,submenu-css}.php` are NOT copied into `build/` — confirmed
+this is correct, not missing: `dirname( __DIR__, 3 )` resolves to `plugins/sgs-blocks`
+(the plugin root) from BOTH `src/blocks/nav-menu/render.php` and
+`build/blocks/nav-menu/render.php` (3 levels up from either is the same plugin root), so
+every `require_once dirname( __DIR__, 3 ) . '/includes/...'` call resolves to the live
+`plugins/sgs-blocks/includes/` directory regardless of which copy of `render.php` is
+executing — exactly product-card's own proven precedent, restated in the step's own prompt.
+
+### `git diff --stat`
+
+```
+plugins/sgs-blocks/src/blocks/nav-menu/render.php | 1511 +--------------------
+1 file changed, 35 insertions(+), 1476 deletions(-)
+```
+Plus 3 new files: `includes/nav-menu-markup.php`, `includes/nav-menu-css.php`,
+`includes/nav-menu-submenu-css.php`.
+
+### Fatal-avoidance (the two-instances-per-page requirement)
+
+Every extracted function in `includes/nav-menu-markup.php`, `nav-menu-css.php` and
+`nav-menu-submenu-css.php` is wrapped in its own `if ( ! function_exists( '...' ) )` guard.
+`SGS_Nav_Menu_Bar_Renderer` (which stays in `render.php`) already carried a `class_exists()`
+guard before this step and still does — untouched. This page carries two nav-menu
+instances (header bar + the drawer's own seeded instance); both `require_once` every file
+and neither re-declares anything on the second pass.
+
+### Load-order note (written into the files themselves, not just here)
+
+Both `nav-menu-css.php` and `nav-menu-submenu-css.php` (and `nav-menu-markup.php`) carry a
+docblock note that they are `require_once`'d PER-INSTANCE from `render.php`, NOT
+bootstrap-loaded like `helpers-tokens.php`/`helpers-hover-state.php`/
+`helpers-colour-variants.php` — their functions are only in scope after nav-menu's own
+`render.php` has run at least once on that page load. Matches the step's own required note.
