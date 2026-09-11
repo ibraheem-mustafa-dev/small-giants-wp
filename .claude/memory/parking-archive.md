@@ -7,6 +7,39 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-11 — 2 entries SUPERSEDED: no longer parked because the blocking assumption behind both was wrong, and the work is being actively picked up this session
+
+> ### P-NAV-INDUS-CUTOVER — Indus header re-authoring onto sgs/nav-menu + sgs/nav-drawer: branded content authoring now open
+> **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
+>
+> The cutover MECHANISM is proven (a generic proof header on the new blocks passes all gates) and the framework de-client work is done, including the deletion of `sgs/adaptive-nav`. What remains is authoring the actual BRANDED Indus header content — which is **directly actionable NOW via the CPT editor on the shared canary**, not blocked on any pipeline. This session proved the capability by porting Indus's real Brands mega-menu CONTENT into a working test post (ID 3482).
+>
+> **Cross-checked 2026-09-10** against a fresh 3-viewport visual comparison of Mama's Munches (a different client, same root cause): the live header shows extra chrome (phone/email/social icons, a dropdown) not in that client's draft, and a "Send to Ward" CTA lost its pill styling — same "mechanism proven, branded content never authored" gap, confirming this is a live, visible symptom right now, not just a theoretical residual.
+>
+> **Trigger:** next session on Indus branded header authoring — the mechanism and canary are ready; it is independently actionable.
+
+> ### P-SPEC37-PER-SITE-DECLIENT — per-site header/footer content authoring (framework de-client complete; branded content independently actionable)
+> **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
+>
+> The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on the live canary with generic proof content. **What's left is authoring the REAL branded per-site content, which is directly actionable NOW via the CPT editor on sandybrown-nightingale-600381.hostingersite.com** — no pipeline dependency. A client's colour palette pushes via `push-theme-snapshot.py --client <slug>`; different clients' CPT content coexists on one install; which content is "live" is switchable via a WordPress option.
+>
+> **Cross-checked 2026-09-10:** confirmed live and visible right now on Mama's Munches — the footer renders `theme/sgs-theme/patterns/framework-footer-default.php` (generic) instead of the draft's actual columns (Shop/Information), WhatsApp button, and white logo filter; also collapses to single-column a breakpoint too early at 768px. This session also proved Indus's Brands mega-menu CONTENT in a working test post (ID 3482), confirming the hand-authoring path is open.
+>
+> **Trigger:** next session on Mama's/Indus branded header/footer content — both are independently actionable now.
+
+**SUPERSEDED, not resolved — the work itself is not yet done.** Both entries originally parked on the assumption that real branded content authoring depended on an unbuilt "Spec 33 Part 2" cloning pipeline or a second WordPress install. That assumption was found and corrected earlier the same day (2026-09-11): `push-theme-snapshot.py` already defaults to the one shared canary, a real Indus-content test post (ID 3482) already coexists there with Mama's Munches' own test content, and which client's content is live is one WordPress option away from switching — so there was never a pipeline to wait for. Removed from parking (not left sitting as "PARTIAL, blocked") because the corrected understanding makes them active, immediately-actionable work rather than deferred work — the session picking this up next goes straight to authoring the real content, not to re-litigating whether a pipeline is needed first. If the CPT authoring itself stalls for a genuinely new reason, re-park with a fresh entry naming that reason, not this one.
+
+## 2026-09-11 — 1 entry RESOLVED (found stale, already fixed 2026-08-05): mega blocks were added to the container-wrapping roster over a month before this pass
+
+> ### P-MEGA-BLOCKS-MISSING-FROM-CONTAINER-ROSTER — three mega blocks absent from the container-wrapping roster
+> **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
+>
+> `/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py`) WARNS: detection finds `sgs/mega-panel` (section-kind) plus `sgs/mega-aside` and `sgs/mega-group` (content-kind) as container-wrapping blocks, but they are absent from the script's expected ground-truth roster, so the sync fails closed before `--apply` (correct behaviour; diffs at `pipeline-state/container-inheritance-sync/2026-07-28/`). Declaring them is a composite-mirror scope statement (D152 lineage), not a mechanical edit — which is why it is parked rather than patched.
+>
+> **Trigger:** next Spec-36 session or the next full `/sgs-update` — confirm each mega block's KIND, add to the expected roster, re-run Stage 11 clean. Owned by Track 2.
+
+**RESOLVED, found already fixed 2026-08-05 (not this session's work).** `sync-container-wrapping-blocks.py`'s `EXPECTED` roster already lists all three — `sgs/mega-panel` under `section` (line ~1125, "CONFIRMED + added 2026-08-05... each DECLARES `supports.sgs.containerKind: "section"`") and `sgs/mega-aside`/`sgs/mega-group` under `content` (line ~1170, "CONFIRMED + added 2026-08-05, same refresh"). Re-ran the script dry-run 2026-09-11: exit 0, zero WARN/EXTRA/MISSING for any of the three, `[VALIDATION PASS] Roster matches ground truth`. This entry sat OPEN in parking.md for over a month after the actual fix landed — same staleness pattern this session found repeatedly in Spec 37's `Status:` lines. Nothing was built this session; only the doc was corrected.
+
 ## 2026-09-05 — 1 entry RESOLVED: nav-drawer's variant discriminators fixed via a new composition-based signal
 
 > ### P-NAV-DRAWER-VARIANTS-NO-DISCRIMINATORS — nav-drawer's 7 variantPresets have empty structural discriminators

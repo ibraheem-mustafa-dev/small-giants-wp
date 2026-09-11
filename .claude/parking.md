@@ -578,15 +578,6 @@ The generic-underline clash and the featured-item hover controls are both built 
 
 **Trigger:** header-clone pipeline exists and has been run against this item.
 
-### P-NAV-INDUS-CUTOVER — Indus header re-authoring onto sgs/nav-menu + sgs/nav-drawer: branded content authoring now open
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
-
-The cutover MECHANISM is proven (a generic proof header on the new blocks passes all gates) and the framework de-client work is done, including the deletion of `sgs/adaptive-nav`. What remains is authoring the actual BRANDED Indus header content — which is **directly actionable NOW via the CPT editor on the shared canary**, not blocked on any pipeline. This session proved the capability by porting Indus's real Brands mega-menu CONTENT into a working test post (ID 3482).
-
-**Cross-checked 2026-09-10** against a fresh 3-viewport visual comparison of Mama's Munches (a different client, same root cause): the live header shows extra chrome (phone/email/social icons, a dropdown) not in that client's draft, and a "Send to Ward" CTA lost its pill styling — same "mechanism proven, branded content never authored" gap, confirming this is a live, visible symptom right now, not just a theoretical residual.
-
-**Trigger:** next session on Indus branded header authoring — the mechanism and canary are ready; it is independently actionable.
-
 ### P-NAV-ITEM-SEPARATORS — nav-menu has no divider/separator capability between items
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-20
 
@@ -680,15 +671,6 @@ block's actual intended default visually.
 Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regression contract needs a successor statement in the FR-37-31 retirement; (b) the 3 layout starter variants fold into FR-37-8; (c) FR-S5-3's non-carried WP-CLI commands need a decision on what happens to the rest of the set; (d) the FR-37-12 responsive width set is missing the 320–374px band; (e) Spec 17's prose-only REST capability-gating content needs restating under the FR-37-14 "attribute shape frozen" guardrail.
 
 **Trigger:** alongside the FR-37-31 retirement work.
-
-### P-SPEC37-PER-SITE-DECLIENT — per-site header/footer content authoring (framework de-client complete; branded content independently actionable)
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
-
-The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on the live canary with generic proof content. **What's left is authoring the REAL branded per-site content, which is directly actionable NOW via the CPT editor on sandybrown-nightingale-600381.hostingersite.com** — no pipeline dependency. A client's colour palette pushes via `push-theme-snapshot.py --client <slug>`; different clients' CPT content coexists on one install; which content is "live" is switchable via a WordPress option.
-
-**Cross-checked 2026-09-10:** confirmed live and visible right now on Mama's Munches — the footer renders `theme/sgs-theme/patterns/framework-footer-default.php` (generic) instead of the draft's actual columns (Shop/Information), WhatsApp button, and white logo filter; also collapses to single-column a breakpoint too early at 768px. This session also proved Indus's Brands mega-menu CONTENT in a working test post (ID 3482), confirming the hand-authoring path is open.
-
-**Trigger:** next session on Mama's/Indus branded header/footer content — both are independently actionable now.
 
 ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-15
