@@ -903,7 +903,13 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * STRUCTURAL and lives in style.css — only the operator-chosen fill (or its
 		 * token default) is attribute-driven, so it belongs in the scoped <style>.
 		 */
-		if ( 'pill' === $indicator_style && '' !== $indicator_colour ) {
+		// D956 -- sibling gradient wins when the solid swatch is empty (same
+		// pattern as item_colour_gradient at nav-menu-css.php:112). An operator
+		// who sets Highlight + a gradient-only fill (no solid itemBgHover) was
+		// getting a completely invisible pill: this guard checked ONLY the solid
+		// colour, so sgs_background_paint_decl() — which DOES resolve the
+		// gradient on its own — never even ran (G13 scenario 2).
+		if ( 'pill' === $indicator_style && ( '' !== $indicator_colour || '' !== $indicator_colour_gradient ) ) {
 			$css .= $uid_sel . ' .sgs-nav-menu__indicator{' . sgs_background_paint_decl( $indicator_colour, $indicator_colour_gradient ) . ';}';
 		}
 		

@@ -97,9 +97,23 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// state (Spec 35 element-first): the pre-2026-07-20 model paired resting TEXT
 	// against hover BACKGROUND in one toggle, so an operator could never set a
 	// hover text colour at all — it was auto-computed and unreachable.
-	$sgs_nm_hex  = static function ( $raw ): string {
+	// Resolves EITHER a palette slug OR a raw CSS colour (hex/rgb/hsl/…) to an
+	// actual computable hex. Used ONLY for WCAG smart-contrast maths below —
+	// never for the paint declaration itself (see $item_bg_hex vs $item_bg_raw
+	// split further down): `sgs_resolve_palette_hex()` alone silently returns
+	// '' for a raw hex (it is a slug-only lookup), which is why a client-chosen
+	// custom colour (not a theme swatch) made `itemSmartContrast` a no-op —
+	// $bg_hex/$preferred_hex both resolved empty and `$smart_fg()` returned the
+	// input unchanged (G16(c)).
+	$sgs_nm_hex = static function ( $raw ): string {
 		$raw = (string) $raw;
-		return '' !== $raw ? (string) sgs_resolve_palette_hex( sanitize_html_class( $raw ), '' ) : '';
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( sgs_is_css_colour( $raw ) ) {
+			return sgs_functional_colour_to_hex( $raw );
+		}
+		return (string) sgs_resolve_palette_hex( sanitize_html_class( $raw ), '' );
 	};
 	$item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
 	// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
@@ -111,7 +125,13 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// also condition 2's blocking input for the text Sweep (FR-41-26).
 	$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
 	$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
-	$item_bg_hex      = $sgs_nm_hex( $attributes['itemBg'] ?? '' );
+	// RAW attribute value, never resolved to a literal hex — a slug flows
+	// through sgs_background_paint_decl() -> sgs_colour_value() as a live
+	// var(--wp--preset--color--{slug}) reference, so a later theme recolour
+	// picks it up. Resolving to hex here would bake today's swatch in
+	// permanently (the "tokens not literals" rule this file's own docblock
+	// states at the top of the SHAPE section above).
+	$item_bg_raw      = isset( $attributes['itemBg'] ) ? (string) $attributes['itemBg'] : '';
 	$item_bg_gradient = sgs_css_gradient_value( $attributes['itemBgGradient'] ?? '' );
 
 	/*
@@ -133,11 +153,17 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * It replaces the retired flat `itemRadius`/`itemRadiusHover` scalars: radius
 	 * rides `SgsBorderControl`'s own radius pair, and there is no hover radius
 	 * (the control has no state axis for shape).
+	 *
+	 * ⛔ NOT emitted here — the pre-0.4.6 behaviour (§8.4, G13 scenario 4) only
+	 * ever rounded corners "in the one case where the radius is visible": when
+	 * the item has a background to clip. An item with no background renders no
+	 * `border-radius` rule at all, default-8px or not. The shorthand is computed
+	 * here (so it is available before the background branch needs it) but
+	 * EMITTED further down, gated on the same background-presence condition the
+	 * `::before` fill branch already checks — see `$item_radius_shorthand` use
+	 * below.
 	 */
 	$item_radius_shorthand = sgs_corner_object_shorthand( $attributes['itemBorderRadius'] ?? null );
-	if ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ) {
-		$css .= $link_sel . '{border-radius:' . $item_radius_shorthand . ';}';
-	}
 
 	/*
 	 * ── ITEM TEXT — three states (FR-41-3 / FR-41-23). ───────────────────────
@@ -155,8 +181,13 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * shipped behaviour being preserved. An operator who wants their unreadable
 	 * colour rendered as-is switches the toggle off; that is what it is for.
 	 */
-	$item_bg_hover_hex        = $sgs_nm_hex( $attributes['itemBgHover'] ?? '' );
-	$item_bg_current_hex      = $sgs_nm_hex( $attributes['itemBgCurrent'] ?? '' );
+	// RAW values feed the paint declaration (see $item_bg_raw's comment above);
+	// the _hex siblings are resolved ONLY for the WCAG maths below — luminance
+	// cannot be computed against a var() reference.
+	$item_bg_hover_raw        = isset( $attributes['itemBgHover'] ) ? (string) $attributes['itemBgHover'] : '';
+	$item_bg_current_raw      = isset( $attributes['itemBgCurrent'] ) ? (string) $attributes['itemBgCurrent'] : '';
+	$item_bg_hover_hex        = $sgs_nm_hex( $item_bg_hover_raw );
+	$item_bg_current_hex      = $sgs_nm_hex( $item_bg_current_raw );
 	$item_bg_hover_gradient   = sgs_css_gradient_value( $attributes['itemBgHoverGradient'] ?? '' );
 	$item_bg_current_gradient = sgs_css_gradient_value( $attributes['itemBgCurrentGradient'] ?? '' );
 
@@ -165,11 +196,15 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 
 	$smart_contrast = ! isset( $attributes['itemSmartContrast'] ) || (bool) $attributes['itemSmartContrast'];
 	if ( $smart_contrast ) {
-		$smart_fg = static function ( string $bg_hex, string $preferred ): string {
+		// $sgs_nm_hex handles a slug OR a raw CSS colour for $preferred too —
+		// the same G16(c) gap applied here: a client-chosen custom hex text
+		// colour previously fell straight to the "unresolved" branch below and
+		// was silently discarded even when it cleared AA.
+		$smart_fg = static function ( string $bg_hex, string $preferred ) use ( $sgs_nm_hex ): string {
 			if ( '' === $bg_hex ) {
 				return $preferred;
 			}
-			$preferred_hex = '' !== $preferred ? (string) sgs_resolve_palette_hex( $preferred, '' ) : '';
+			$preferred_hex = $sgs_nm_hex( $preferred );
 			return '' !== $preferred_hex
 				? (string) sgs_wcag_preferred_text_colour_for_bg( $bg_hex, $preferred_hex )
 				: (string) sgs_wcag_text_colour_for_bg( $bg_hex );
@@ -256,15 +291,20 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * pill does not replace it) and the Hover swatch (the pill is PAINTED in it)
 	 * both survive. The stored `itemBgCurrent` is not cleared.
 	 */
-	$item_bg_normal_decl  = sgs_background_paint_decl( $item_bg_hex, $item_bg_gradient );
+	$item_bg_normal_decl  = sgs_background_paint_decl( $item_bg_raw, $item_bg_gradient );
 	$item_bg_hover_decl   = ( 'highlight' === $t_bg || 'none' === $t_bg )
 		? ''
-		: sgs_background_paint_decl( $item_bg_hover_hex, $item_bg_hover_gradient );
+		: sgs_background_paint_decl( $item_bg_hover_raw, $item_bg_hover_gradient );
 	$item_bg_current_decl = 'highlight' === $t_bg
 		? ''
-		: sgs_background_paint_decl( $item_bg_current_hex, $item_bg_current_gradient );
+		: sgs_background_paint_decl( $item_bg_current_raw, $item_bg_current_gradient );
 
 	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl ) {
+		// Radius only ever rounds a VISIBLE fill (G13 scenario 4) — emitted here,
+		// alongside the background branch it exists for, not unconditionally.
+		if ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ) {
+			$css .= $link_sel . '{border-radius:' . $item_radius_shorthand . ';}';
+		}
 		/*
 		 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
 		 * `itemBg`'s `background-color:` used to paint the SAME selector
@@ -615,7 +655,12 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// selector and reintroduce a solid bottom border exactly while the
 	// submenu is hovered/focused — a technique mismatch, not a fix. Only
 	// 'swap' uses a plain border-colour hover this rule can faithfully copy.
-	if ( 'swap' === $t_border && '' !== $item_colour_hover ) {
+	// ⛔ Gated on the BORDER'S OWN hover colour, not $item_colour_hover (a
+	// leftover from copy-pasting the text branch above) — an item with a
+	// border-only hover (no text hover colour at all, G7's exact live-caught
+	// case) previously never reached this branch, so the rescue rule never
+	// computed for it in the first place.
+	if ( 'swap' === $t_border ) {
 		$item_border_hover_colour = sgs_colour_value( (string) ( $attributes['itemBorderColourHover'] ?? '' ) );
 		if ( '' !== $item_border_hover_colour ) {
 			$item_hover_decls['border'] = 'border-color:' . $item_border_hover_colour;
@@ -623,52 +668,56 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	}
 
 	// Only emit FR-41-13 rules if there are hover declarations to paint.
+	//
+	// ⛔ 'text' and 'border' both paint the LINK element itself and are
+	// combined into ONE declaration string; 'bg' paints the `::before` layer
+	// (FR-41-23's item-background mechanism) and stays separate. A prior
+	// version of this block checked only 'text'/'bg' in its if/elseif chain,
+	// so a border-only hover (G7's exact live-caught case — `itemBorderColourHover`
+	// set with no text hover colour) computed a 'border' entry above that was
+	// silently never read here: none of the four branches matched
+	// text-absent/bg-absent/border-present, so nothing emitted at all.
 	if ( ! empty( $item_hover_decls ) ) {
+		$link_decls = array_filter(
+			array( $item_hover_decls['text'] ?? '', $item_hover_decls['border'] ?? '' )
+		);
+		$link_decl_str = implode( ';', $link_decls );
+		$bg_decl_str   = $item_hover_decls['bg'] ?? '';
+
 		// Mouse half — bar fork.
 		$bar_mouse_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link';
-		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
-			// Text only: emit unguarded.
-			$css .= $bar_mouse_sel . '{' . $item_hover_decls['text'] . ';}';
-		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			// Background only: use pseudo-element.
-			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $item_hover_decls['bg'] );
-		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			// Both text and bg: emit text via hover guard, bg via pseudo-element.
-			$css .= sgs_hover_guarded_rule( $bar_mouse_sel, $item_hover_decls['text'] );
-			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $item_hover_decls['bg'] );
+		if ( '' !== $link_decl_str ) {
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel, $link_decl_str );
+		}
+		if ( '' !== $bg_decl_str ) {
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $bg_decl_str );
 		}
 
 		// Mouse half — drawer fork.
 		$drawer_mouse_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:hover > .sgs-nav-menu__link';
-		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
-			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $item_hover_decls['text'] );
-		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel . '::before', $item_hover_decls['bg'] );
-		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $item_hover_decls['text'] );
-			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel . '::before', $item_hover_decls['bg'] );
+		if ( '' !== $link_decl_str ) {
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $link_decl_str );
+		}
+		if ( '' !== $bg_decl_str ) {
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel . '::before', $bg_decl_str );
 		}
 
 		// Keyboard half — bar fork.
 		$bar_keyboard_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
-		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
-			$css .= $bar_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
-		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= $bar_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
-		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= $bar_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
-			$css .= $bar_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		if ( '' !== $link_decl_str ) {
+			$css .= $bar_keyboard_sel . '{' . $link_decl_str . ';}';
+		}
+		if ( '' !== $bg_decl_str ) {
+			$css .= $bar_keyboard_sel . '::before{' . $bg_decl_str . ';}';
 		}
 
 		// Keyboard half — drawer fork.
 		$drawer_keyboard_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
-		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
-			$css .= $drawer_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
-		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= $drawer_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
-		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
-			$css .= $drawer_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
-			$css .= $drawer_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		if ( '' !== $link_decl_str ) {
+			$css .= $drawer_keyboard_sel . '{' . $link_decl_str . ';}';
+		}
+		if ( '' !== $bg_decl_str ) {
+			$css .= $drawer_keyboard_sel . '::before{' . $bg_decl_str . ';}';
 		}
 	}
 
