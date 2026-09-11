@@ -1,3 +1,52 @@
+## D1031 [INCIDENT] — sgs/brand-strip's logos[].media schema wiped the WHOLE logos array (sibling to D1027 card-grid)
+
+**2026-09-11.** `brand-strip/block.json` declared `logos[].media` as a bare `{"type":"object"}` with no `properties` — a defect shape on its own. The block's editor picker (`MediaPicker.js::normaliseMedia()`) writes the object shape (`url`/`type`/`id`/`alt`/`mime`/`width`/`height`), and the picker's Remove action + the `addLogo()` function both write `media: null`. `WP_Block_Type::prepare_attributes_for_render()` validates the WHOLE `logos` array against the block.json schema on every server render — one item with a `null` media value (or any item with the actual object shape in a field declaring bare `{"type":"object"}`) fails array validation and WordPress silently resets `logos` to its default `[]`. The practical impact is identical to D1027: any real brand-strip page (where an operator removes a logo or adds an empty new item, triggering the `media: null` state, or where an item is authored through the picker's object-shaped output) renders a completely blank grid on the live frontend, with no error anywhere.
+
+**This is the exact sibling bug to D1027**, same mechanism, same root cause, same WP-core behaviour (rest_validate_array_value_from_schema returning the FIRST WP_Error for the array, not the item). D1027's fix review and WP-core verification (canary testing of the fix shape, the full `anyOf` declaration, the properties list) all apply directly here — no re-discovery needed.
+
+**Fix:** identical to D1027 — `logos[].media` widened to a genuine `anyOf` across all three write shapes: bare string (back-compat, though brand-strip's patterns don't use it), `null` (the picker's remove/add-empty state), and the real media object with actual `properties`. Searched other logos[]/items[] fields in this block — all correct types matching what edit.js writes.
+
+**Verified:** webpack build passed; git push to origin/main completed (commit `c6a0338e6`). Live sandybrown canary verification pending (see task report).
+
+---
+
+## D1030 [ROUTINE] — a parallel peer session independently fixed Spec 41 Step 9's deploy-blocking regression; re-verified, not trusted
+
+**2026-09-11.** Spec 41's Step 9 (manifest rewrite, 79→132 attributes — the phase's highest-blast-radius step) left `sgs/nav-menu` broken on deploy: dead editor controls, a dead sliding-indicator render path, and a missing `submenuBgGradient` attribute. A parallel/peer Claude session working the same tree found and fixed all three, independently of this phase's own plan (commits `5b638a231`, `8d3978d0f`, both already on `main` before Step 12's QA-3 close ran).
+
+**This session did not take the peer's fix on trust** — Step 12 (QA-3, Wave A close) re-verified both commits directly against the live tree before recording Wave A as clean, per this project's standing rule that a peer's claim about its own fix is not verified by default (`feedback_a_peers_claim_about_who_caused_a_change_is_not_verified_by_default`). Confirmed genuine, no further action needed.
+
+**Worth recording as a decision, not just a LEDGER line,** because it is the second time in this same phase (see D1029 below) that concurrent sessions working the shared `nav-menu` tree materially affected each other's work — a pattern this project already tracks (D753, D948, D883 and the `git`-hygiene incident register), not a one-off.
+
+---
+
+## D1029 [INCIDENT] — shared-worktree commit corruption during Spec 41 Step 5: a correctly-messaged commit carried a different step's byte-identical diff
+
+**2026-09-11.** Spec 41 Step 5 (`SgsColourPanel` gains an optional row `heading`) landed as commit `fc7934180`, with its own distinct, correct commit message — but an adversarial review found its actual diff was **byte-identical to a different, unrelated commit**, Step 4's `fe70cd052` (`fx-magnet.css` exposing `--sgs-magnet-transition`). The real Step 5 code had never actually landed; it sat uncommitted in the working tree until found and re-committed as `d00039862`.
+
+**Root cause:** not diagnosed to a specific git command (no `stash`, `checkout --`, or `--amend` was implicated) — this is a distinct failure mode from this project's existing shared-worktree incident register (D753 stash-on-orders, D948 unscoped-stash-wipes-16-files, D883 false-completion-claim). Recorded as its own class: **a commit's message and its diff can disagree** on a tree with concurrent committers, so a commit message is not sufficient proof of what it contains — `git show <hash> -- <path>` against the actual intended file must be checked, not just the log line.
+
+**No lasting damage:** the real Step 5 work was recovered and correctly re-landed (`d00039862`); Step 4's own commit (`fe70cd052`) was unaffected — the corruption manifested as a duplicate diff under Step 5's hash, not as damage to Step 4's original commit.
+
+**Follow-up for future sessions on a shared worktree:** when a step's own verification checks "did my commit land", diffing the commit's message against its actual content (not just its existence) is now a live, evidenced failure mode here — not a hypothetical.
+
+---
+
+## D1028 [ROUTINE] — Spec 41 nav-menu phase's shared-component extension pattern (5 touches); D722's code-lines-not-wc–l ruling reconfirmed on this file
+
+**2026-09-11.** Five framework-shared components were extended mid-phase to support Spec 41's 3-state (Normal/Hover/Current) colour model — the first block to carry that model end to end, so this is the shape every future stateful block will copy. All five followed the same discipline: **additive-only**, byte-identical output for every existing caller, proven by execution rather than asserted:
+
+1. `SgsBorderControl` gains `showColour` (`3f87e559e`) — 55+ existing mounts unaffected.
+2. `fx-magnet.css` exposes `--sgs-magnet-transition` as a custom property, replacing a hardcoded `180ms` literal (`fe70cd052`).
+3. `SgsColourPanel` gains an optional row `heading` (`d00039862` — the real commit; see D1029 for the corrupted first attempt at this same step).
+4. `SgsColourPanel` gains `after` (a slot) + `contrastLargeText` forwarding (`fc74f179d`), landed later in the phase as a Bean-approved plan amendment during Step 13.
+5. The PHP colour emitters (`sgs_emit_state_colour_css()`, `sgs_fill_decls()`/`sgs_text_decls()`/`sgs_border_states_css()`) gain an optional Current state plus `suppress_edges`, byte-identity proven against all 122 existing `sgs_emit_state_colour_css()` call sites (`b61b4d19e`).
+6. `fillRow`/`textRow` (the row-descriptor shape `colourRows` builds from) gain a `current`/`currentGradient` key, additively, as part of the same Step 13 work.
+
+**Reconfirmed during this phase, not re-decided: `render.php`'s split-file measurement is on CODE LINES, not raw `wc -l`.** This is the same ruling as **D722** (2026-08-21, which rejected a raw-line-count gate on this exact file for being comment-heavy), applied afresh by Bean on 2026-09-11 to the nav-menu `render.php` split (which grew from the planned 4 files to 6 once Steps 15/16 added genuinely new CSS-emission logic, not just refactor). At the time of D722 the file was 48% comments; re-measured for this phase it is 52% — the ruling's premise still holds, so no new D-number is needed for it, only this pointer. `edit.js`, by contrast, is measured on raw `wc -l` (only ~11% comments, so its bulk is real code, not documentation) — it split into 13 JS files and still did not reach the ≤250-line target (landed ~625 lines; `colourRows` and the panel mounts cannot leave the file without breaking the inspector-scan detector or mount ordering — disclosed, not silently shipped).
+
+---
+
 ## D1027 [INCIDENT] — sgs/card-grid's items[].media schema wiped the WHOLE grid for every editor-authored card
 
 **2026-09-11.** `card-grid/block.json` declared `items[].media` as `{"type":"string"}`, but the block's own real editor picker (`MediaPicker.js::normaliseMedia()`) always writes an object (`url`/`type`/`id`/`alt`/`mime`/`width`/`height`), and its remove/add actions write `null`. `WP_Block_Type::prepare_attributes_for_render()` validates the WHOLE `items` array against the block.json schema on every server render — one item with the wrong-typed `media` value fails validation for the ARRAY, not the item, and WordPress silently resets `items` to its default `[]`. Proven live against the sandybrown canary: `parse_blocks()` on a real post showed 12 correct items; `prepare_attributes_for_render()` on the identical attributes returned 0. Only the bare-string shape — used by two starter pattern files, never by a human clicking through the picker — survived. Practical impact: any real card-grid page authored the normal way (not from a pattern) rendered a completely blank grid on the live frontend, with no PHP or console error anywhere.
