@@ -80,6 +80,8 @@ import urllib.request
 from pathlib import Path
 from typing import Optional
 
+from tier4a_gate_verification import reverify_gate
+
 # Windows consoles default to cp1252; force UTF-8 so a cosmetic encoding
 # fault can never masquerade as a failed pull (same fix as
 # capture-tier-fixture.py / webgl_draw_call_probe.py / webgl_style_classifier.py).
@@ -154,14 +156,21 @@ def check_tier4d_eligible(
         even though Tier 4c found one. Never defaults True.
 
     Returns `{"eligible": bool, "reason": str}`.
+
+    The `tier4a_gate["confirmed"]` claim is INDEPENDENTLY RE-VERIFIED via
+    `tier4a_gate_verification.py::reverify_gate()` (QC-council hardening,
+    2026-09-11) rather than trusted as a bare boolean -- a hand-built
+    `{"confirmed": True}` dict with no real Tier 4a evidence behind it is
+    refused here even though it reads truthy.
     """
-    if not tier4a_gate.get("confirmed"):
+    if not reverify_gate(tier4a_gate):
         return {
             "eligible": False,
             "reason": (
                 "Tier 4a has not confirmed genuine WebGL presence for this "
-                "source. Tier 4d must never fire on a guess -- see this "
-                "module's docblock, 'THE HARD GATE'."
+                "source (or the gate failed independent re-verification). "
+                "Tier 4d must never fire on a guess -- see this module's "
+                "docblock, 'THE HARD GATE'."
             ),
         }
 

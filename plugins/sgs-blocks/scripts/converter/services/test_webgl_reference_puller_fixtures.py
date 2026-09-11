@@ -42,6 +42,10 @@ tmp_root = Path(tempfile.mkdtemp(prefix="tier4d-fixture-"))
 # ---------------------------------------------------------------------------
 tier4a_confirmed = {
     "confirmed": True,
+    "evidence": {
+        "library_signals": [{"library_name": "three-js"}],
+        "draw_call_result": None,
+    },
     "source": "three-js-dom-signal",
     "reason": "Three.js self-tagged its own <canvas data-engine> attribute.",
 }

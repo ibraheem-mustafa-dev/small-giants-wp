@@ -74,7 +74,8 @@ here as a documented gap, not silently worked around (R-31-8 discipline).
 
 VISION-CAPABLE READ, MADE CONCRETE
 ----------------------------------------------------
-`classify_visual_character()` takes an optional `classify_fn` callback --
+`_classify_visual_character()` (internal only -- `build_operator_suggestion()`
+is the public entry point) takes an optional `classify_fn` callback --
 the real integration point for a genuine vision-model read (e.g. an agent
 dispatched with the Read tool viewing the screenshot directly, or a future
 wired-up vision API call; no such wiring exists anywhere else in this
@@ -97,6 +98,8 @@ import os
 import sys
 from pathlib import Path
 from typing import Any, Callable, Optional
+
+from tier4a_gate_verification import reverify_gate
 
 # Windows consoles default to cp1252; force UTF-8 so a cosmetic encoding
 # fault can never masquerade as a failed classification (same fix as
@@ -158,12 +161,26 @@ def check_tier4a_confirmed_webgl(
         returns. `webgl_draw_call_seen=True` with no `error` means a real
         `drawArrays` call fired during the probe's dwell window.
 
-    Returns `{"confirmed": bool, "source": str|None, "reason": str}`.
+    Returns `{"confirmed": bool, "evidence": dict, "source": str|None,
+    "reason": str}`. `evidence` ALWAYS embeds the real detection output
+    this decision was derived from (`library_signals` verbatim,
+    `draw_call_result` verbatim) -- never just the boolean summary. This
+    is what lets a downstream consumer independently RE-VERIFY the claim
+    rather than trusting `confirmed` as a bare, unauthenticated boolean
+    (`tier4a_gate_verification.py::reverify_gate()` -- QC-council hardening,
+    2026-09-11: a hand-built `{"confirmed": True}` dict with no evidence
+    previously passed every downstream gate).
     """
+    evidence = {
+        "library_signals": list(found_signals or []),
+        "draw_call_result": draw_call_result,
+    }
+
     for sig in found_signals or []:
         if sig.get("library_name") == _THREEJS_LIBRARY_NAME:
             return {
                 "confirmed": True,
+                "evidence": evidence,
                 "source": "three-js-dom-signal",
                 "reason": (
                     "Three.js self-tagged its own <canvas data-engine> "
@@ -176,6 +193,7 @@ def check_tier4a_confirmed_webgl(
         if draw_call_result.get("webgl_draw_call_seen") is True:
             return {
                 "confirmed": True,
+                "evidence": evidence,
                 "source": "draw-call-probe",
                 "reason": (
                     "WebGLRenderingContext.drawArrays fired at least once "
@@ -185,6 +203,7 @@ def check_tier4a_confirmed_webgl(
 
     return {
         "confirmed": False,
+        "evidence": evidence,
         "source": None,
         "reason": (
             "Neither a Three.js DOM signal nor a confirmed draw-call was "
@@ -195,9 +214,16 @@ def check_tier4a_confirmed_webgl(
 
 
 def _require_gate(gate: dict) -> None:
-    if not gate.get("confirmed"):
+    """Refuse unless the gate's `confirmed` claim independently
+    RE-VERIFIES against its own embedded evidence (QC-council hardening,
+    2026-09-11) -- not merely truthy. A forged `{"confirmed": True}` dict
+    with no real evidence behind it is refused here even though the bare
+    boolean check alone would have let it through.
+    """
+    if not reverify_gate(gate):
         raise ClassifierNotGatedError(
-            "Tier 4c refused to run: " + gate.get("reason", "no Tier 4a confirmation supplied")
+            "Tier 4c refused to run: "
+            + (gate.get("reason", "no Tier 4a confirmation supplied") if isinstance(gate, dict) else "gate is not a dict")
         )
 
 
@@ -271,7 +297,7 @@ def capture_canvas_screenshot_standalone(
 # Dominant-colour sampling
 # ---------------------------------------------------------------------------
 
-def sample_dominant_colours(image_path: "Path | str", n: int = 3) -> list[dict]:
+def _sample_dominant_colours(image_path: "Path | str", n: int = 3) -> list[dict]:
     """Sample the `n` most common colours in the screenshot, downsampled
     first for speed. Returns `[{"hex": "#rrggbb", "weight": 0.0-1.0}, ...]`
     sorted by weight descending. Plain hex -- see this module's docblock,
@@ -429,7 +455,7 @@ def _heuristic_classify(image_path: "Path | str") -> dict:
     }
 
 
-def classify_visual_character(
+def _classify_visual_character(
     image_path: "Path | str",
     classify_fn: Optional[Callable[[str], dict]] = None,
 ) -> dict:
@@ -479,10 +505,20 @@ def _sub_classify_treatment(image_path: "Path | str") -> str:
     return "halftone" if bimodal > 0.3 else "grain"
 
 
-def match_to_shipped_effect(character_result: dict, dominant_colours: list[dict]) -> dict:
+def _match_to_shipped_effect(character_result: dict, dominant_colours: list[dict]) -> dict:
     """Map a classified character + sampled colours onto a concrete,
     OPERATOR-CONFIRMABLE suggestion. Never writes anything -- see this
     module's docblock, 'NEVER AUTO-APPLIES'.
+
+    INTERNAL ONLY (QC-council hardening, 2026-09-11) -- `_`-prefixed
+    because `build_operator_suggestion()` is the sole public entry point.
+    This function does real classification-matching work and returns a
+    complete, user-visible suggestion artefact without itself passing
+    through the Tier 4a gate; it must never be called directly by anything
+    outside this module. Confirmed live: calling this (or
+    `_classify_visual_character()` / `_sample_dominant_colours()`) directly
+    previously bypassed `check_tier4a_confirmed_webgl()`/`_require_gate()`
+    entirely and still returned a full suggestion.
     """
     character = character_result.get("character")
 
@@ -563,9 +599,9 @@ def build_operator_suggestion(
     """
     _require_gate(gate)
 
-    character_result = classify_visual_character(image_path, classify_fn=classify_fn)
-    dominant_colours = sample_dominant_colours(image_path, n=n_colours)
-    suggestion = match_to_shipped_effect(character_result, dominant_colours)
+    character_result = _classify_visual_character(image_path, classify_fn=classify_fn)
+    dominant_colours = _sample_dominant_colours(image_path, n=n_colours)
+    suggestion = _match_to_shipped_effect(character_result, dominant_colours)
 
     if suggestion.get("matched_effect") == "surface-treatment":
         suggestion["suggested_attributes"]["fxTreatment"] = _sub_classify_treatment(image_path)
