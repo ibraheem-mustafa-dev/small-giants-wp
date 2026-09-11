@@ -470,6 +470,15 @@ well-shaped, completely static page. R8–R10 below are the part of this seed th
 
 ## R8 — Motion cloning EXISTS, but only for SGS-authored drafts
 
+**⚠ STALE, 2026-09-11 (flagged by `/qc-council` doc audit) — the gap this section names is now
+CLOSED.** This section was written 2026-09-07 as INPUTS (captured evidence, not a decision) and
+correctly described the state at the time: no raw-CSS motion inference existed. That gap is what
+the shipped "R8" track (D1020–D1032, `.claude/plans/archive/phase-r8-motion-recognition.md`) built
+— Tier 1/2 static-CSS classifiers plus a Tier 4b live-DOM probe, reaching 7/13 real-world
+coverage. Read this section as the ORIGINAL PROBLEM STATEMENT that motivated that build, not as
+current fact — "raw-CSS motion inference — none" and "that recognition layer does not exist in
+any form today" are both now false. Current status: `.claude/LEDGER.md`.
+
 ⚑ **Measure the converter's motion coverage with a grep you have verified returns non-empty on a
 known hit.** A malformed `git grep -licE` (combining the mutually exclusive `-l` and `-c`) returns
 nothing and looks exactly like a clean result — enough to conclude "no motion support anywhere" and
