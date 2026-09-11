@@ -98,13 +98,26 @@ prompt.
   all 13 motion_shape + 5 motion_trigger fixtures pass unchanged, full converter pytest suite 828
   passed/1 skipped/1 xfailed/0 failures, plus dedicated scratch fixtures proving the hover case now
   resolves `sgsAnimation` + `fxTrigger='hover'` and the ancestor-hover shape correctly stays
-  undetected. Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix rounds against a genuine 0/13
-  measurement — modest, not strong, and disclosed as such (this hover fix widens DETECTION scope,
-  not the measured real-world sample). Full detail: `decisions.md` D1021 + D1022 + D1023,
+  undetected. **fade-up/slide-up structural tie ALSO closed same day (D1025, `966efb518`):** the two
+  presets were true duplicates (identical CSS + a magnitude-band-widening fix from an earlier round
+  makes them permanently indistinguishable by magnitude alone — a magnitude-only fix was
+  investigated and found to be a structural no-op before building it). Real fix: a new
+  `co_animates_opacity` DB axis (AOS's real fade-vs-slide convention, fetched from source) makes
+  them genuinely distinguishable — `slide-*` now opts out of the shared opacity fade + moves a
+  genuinely larger 100px. Design-reviewed by 2 parallel agents against the live code before
+  building. Real-world Tier 1+2 coverage: **6/13 (~46%)**, up from 5/13, after 2 genuine new
+  real-world matches (TAG Heuer's `slideUp`, `dy_appear_from_bottom`) traded against one coincidental
+  cross-shape match that never wrote a real attribute anyway (`preloaderAppear`↔`border-accent`).
+  Full detail: `decisions.md` D1021 + D1022 + D1023 + D1024 + D1025,
   `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
   `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
   One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
-  of this phase's files (keyword collision), not a code defect.
+  of this phase's files (keyword collision), not a code defect. **Also confirmed, not yet fixed:**
+  `extract_shape_from_transition` (the `:hover`-transition-driven extractor, e.g. `border-accent`'s
+  real shape) is dead code in the live pipeline — `scoped_motion_css_text`'s transition branch never
+  produces a `@keyframes` block, so it can never reach that extractor. Found by a design-review
+  agent during D1025's build, disclosed, deliberately not fixed (separate, pre-existing, unscoped
+  gap).
 - **R1 is NOT done** — corrected 2026-09-10 later same day (was miswritten as "done" here and in
   `decisions.md` D1018 in the same breath as listing its own open work; Bean caught it). Only
   R1's MEASUREMENT is done (96% already correct); the real remaining 17-attribute conversion has
