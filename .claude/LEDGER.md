@@ -1,20 +1,27 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-10
+last_updated: 2026-09-11
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**The clone-fidelity closeout track is fully done, including a second pass of smaller fixes
-found after the main closeout.** Today shipped 18 real defects/gaps fixed and verified live (14
-from the main closeout + 4 more found afterwards), the cloning pipeline's own section-finder
-bug fixed (it was missing sections nested more than one level deep), plus a design doc
-(not yet actioned) on how to widen the pipeline beyond SGS-BEM drafts. Header/footer remains
-the next track — nothing changed there today; it's still waiting on your pick from the handoff
-prompt.
+**The front is now Spec 41 — the `sgs/nav-menu` colour/state/border/typography/motion rebuild
+— Waves A+B closed (17/27 steps), Wave C next.** This is the block a visitor
+touches on every page of every client site; it turns three competing colour mechanisms into
+one 3-state (Normal/Hover/Current) model, the first block to carry that shape end to end. Five
+shared framework components were safely extended along the way (additive-only, nothing existing
+broke) — `decisions.md` D1028. A real shared-worktree commit-corruption incident was caught and
+fixed clean (D1029), and a peer session independently fixed a regression this phase's own
+manifest rewrite left behind, re-verified rather than trusted (D1030). One real design question
+is still open (see below) — it blocks a small piece of follow-up work, not the rest of Wave C.
+
+**Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
+below for the record; not the front any more.
+
+## Prior work (closed) — clone-fidelity closeout + R8 motion recognition
 
 **What's shipped (full list, in order):**
 1. Testimonial star colour, font-loading bug + security hole, 4 footer bugs, heading-font leak,
@@ -145,19 +152,46 @@ prompt.
 
 ## THE FRONT — what to pick up next
 
-**R8 (motion cloning from raw CSS) SHIPPED 2026-09-11 — header/footer is next.** Full sequence
-completed end to end: `/brainstorming` → `/qc-council` (4 raters) → `/research-buddies` →
-Bean-directed Tier 4c/4d addendum (D1019) → `/phase-planner` (14-step plan, docscore A/95%) →
-full execution (`/subagent-driven-development`-style dispatch, every step independently verified)
-→ closing `/qc` pass on the plan doc itself (3 accuracy fixes) → live TAG Heuer verification
-(Step 14). All commits on `main`, pushed. Design doc: `plans/2026-09-10-r8-motion-recognition-brainstorm.md`.
-Execution record: `plans/phase-r8-motion-recognition.md` + `decisions.md` D1021.
+**Spec 41 nav-menu colour/state system — IN EXECUTION. Waves A+B CLOSED (steps 1-17 of 27),
+Wave C next.** Plan: `plans/phase-nav-menu-colour-state.md` — read its
+**"Execution Progress Log"** section (near the top) as the single source of truth for what has
+landed; the step bodies further down are the original plan text and are not updated in place.
 
-**Header/footer implementation is paused, not dropped** — still next after R8. Read
-`.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up — it has
-the evidence, the root cause, Spec 37's real status, and the one open question to ask Bean before
-starting (hand-author this one client's content now, vs. build the Spec 33 Part 2 clone pipeline
-first).
+- **Wave A (steps 1-12, shared components + manifest + detector):** closed. Manifest rewrite
+  went 79→132 attributes (`bb9df82dc`); QA-5 council found + fixed a real attrMap gap
+  (`b2174ada1`); QA-3 close re-verified a parallel peer session's independent fix to a
+  deploy-blocking regression Step 9 left behind (D1030).
+- **Wave B (steps 13-17, inspector rebuild + CSS emission):** closed, run as two parallel
+  subagent lanes. `colourRows` rebuilt 3-state (`76e0cfa11`), full panel rebuild
+  (`b8229503f`), `nav-drawer` close-button parity (`8c9330716`), full CSS-emission rewrite
+  (`070fbc9a8`), FR-41-15 fate table executed both surfaces (`61a141fbf`), `style.css`
+  finishing touches + a found-and-fixed dead `submenuAnimation` render consumer (`3fec38190`,
+  `c2ecf8b84`).
+- **Wave C (steps 18-27, NOT STARTED):** behaviour fixes (FR-41-13), migration notice
+  (FR-41-34), static gate sweep (QA-6), build+deploy, two Playwright verification lanes,
+  stored-content migration, Bean's visual sign-off, detector WARN→HARD, living-docs update.
+
+**One open design question — blocks only its own follow-up work, NOT the rest of Wave C:**
+the `sublink-marker` colour row. Originally planned as a Normal-only exemption; **Bean's actual
+direction (2026-09-11, supersedes the exemption)** is full Hover/Current states + a gradient
+toggle like every other row, but with the picker hidden by default (silently inheriting the
+sublink text's own colour) until an operator actually overrides it. This is a real
+`fillRow`/row-descriptor conditional-visibility behaviour, not a one-line manifest exemption —
+**do not add a `colourExemptions.sublink-marker` entry, that approach is superseded.** Needs
+building as part of (or a small follow-up to) Step 13's territory once Bean confirms the exact
+mechanism. Everything else in Wave C is unblocked and can proceed independently.
+
+Five shared framework components were safely extended for this (D1028); a shared-worktree
+commit-corruption incident was caught and fixed (D1029).
+
+**Also open (disclosed, not blocking):** Bean asked (2026-09-11) whether other colour-row blocks
+have a pattern nav-menu is missing, since `edit.js` landed at 625 lines against a 250 target
+(`colourRows`/panel mounts can't leave the file — detector constraint) — research dispatched,
+result pending.
+
+**Prior track (R8 motion cloning + header/footer) — see "Prior work (closed)" above for R8's
+full record.** Header/footer implementation is still paused behind this phase, not dropped —
+read `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up.
 
 **Other loose ends** (lower priority, not blocking):
 - R1's remaining 17-attribute conversion (rescoped today, not yet built) —
@@ -246,7 +280,7 @@ first).
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1020** — verify with
+- **D-ceiling:** **D1030** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -269,7 +303,7 @@ first).
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | R8 motion-recognition design (settled, references only) | `plans/2026-09-10-r8-motion-recognition-brainstorm.md` |
 | **R8 execution plan (start here to build — Step 1 is SESSION-START)** | `plans/phase-r8-motion-recognition.md` |
-| **Spec 41 nav-menu colour/state — BUILD PLAN, ready to execute, blocked on 7 owner decisions (KJC-7 is a real spec-vs-code gap)** | `plans/phase-nav-menu-colour-state.md` (spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` v0.4.6) |
+| **Spec 41 nav-menu colour/state — THE FRONT, Waves A+B closed (17/27 steps)** | `plans/phase-nav-menu-colour-state.md` — read "Execution Progress Log" first (spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`) |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
