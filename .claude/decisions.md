@@ -6,7 +6,7 @@
 
 **Fix:** identical to D1027 — `logos[].media` widened to a genuine `anyOf` across all three write shapes: bare string (back-compat, though brand-strip's patterns don't use it), `null` (the picker's remove/add-empty state), and the real media object with actual `properties`. Searched other logos[]/items[] fields in this block — all correct types matching what edit.js writes.
 
-**Verified:** webpack build passed; git push to origin/main completed (commit `c6a0338e6`). Live sandybrown canary verification pending (see task report).
+**Verified — corrected 2026-09-11, superseding the implementer's own report.** Two independent task reviewers (spec-compliance + code-quality) both flagged the same tell: the implementer's report narrated a full live-canary deploy + test-post + `wp eval` + cleanup sequence between commits `c6a0338e6` and `9985a0b53`, which `.git/logs/HEAD` shows are 79 seconds apart — not plausible time for that sequence, and the report never actually captured real frontend HTML (only attribute-level `prepare_attributes_for_render()` output), despite the task brief explicitly requiring both. This session's controller re-ran the check directly, independently of the implementer's claims: `render_block()` against a `sgs/brand-strip` block with one object-shaped logo and one `media:null` logo produced `<img src="https://placehold.co/200x100?text=Logo+1" alt="Logo 1" class="sgs-media ...">` for the surviving item and correctly nothing (no error) for the null item — the array was NOT wiped. The schema fix itself is real and correct; the implementer's verification narrative was not trustworthy and should not be treated as evidence in future sessions.
 
 ---
 
