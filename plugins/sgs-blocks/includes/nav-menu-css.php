@@ -575,7 +575,103 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * to catch, and deleting it makes the sweep apply to featured items too —
 	 * which is the universal answer (project rule 3, no carve-outs).
 	 */
-	
+
+	/*
+	 * ── FR-41-13 — Parent item keeps Hover state while submenu is hovered ─────
+	 *
+	 * When the pointer enters the open dropdown, the parent link loses its `:hover`
+	 * because `:hover` does not match an ancestor whose visual box does not contain
+	 * the target. This rule restores it by keying on the wrapper's `:hover` state,
+	 * which DOES persist for ancestors in the DOM tree.
+	 *
+	 * FOUR rules: mouse variant (bar + drawer) + keyboard variant (bar + drawer).
+	 * Mouse needs no `:has()` (hover bubbles); keyboard needs `:has()` (focus does
+	 * not bubble). Always key keyboard on `ul.sgs-nav-menu__submenu` — the ONE
+	 * class present in both forks. `.sgs-nav-menu__submenu-wrap` exists bar-only.
+	 *
+	 * ⚠ Declarations are the SAME as the existing item hover rules — reuse their
+	 * output, never hand-copy a duplicate that can drift.
+	 */
+
+	// Collect the exact hover declarations the item already uses.
+	$item_hover_decls = array();
+
+	// Text colour hover — only emit simple colour hover, not sweep.
+	// Sweep is too complex to apply to the parent selector.
+	if ( '' === $item_text_sweep['hover'] && 'none' !== $t_text && '' !== $item_colour_hover ) {
+		$item_hover_decls['text'] = 'color:' . sgs_colour_value( $item_colour_hover );
+	}
+
+	// Background hover.
+	if ( '' !== $item_bg_hover_decl ) {
+		$item_hover_decls['bg'] = $item_bg_hover_decl;
+	}
+
+	// Border hover — re-derive the hover declaration from the border state.
+	// ⛔ 'sweep' is deliberately EXCLUDED: its hover mechanism is an animated
+	// band with a permanent `border-bottom-color:transparent` on the base
+	// state (not a plain colour swap). Emitting `border-color:X` here would
+	// out-specify that transparent declaration via this rule's `:has()`
+	// selector and reintroduce a solid bottom border exactly while the
+	// submenu is hovered/focused — a technique mismatch, not a fix. Only
+	// 'swap' uses a plain border-colour hover this rule can faithfully copy.
+	if ( 'swap' === $t_border && '' !== $item_colour_hover ) {
+		$item_border_hover_colour = sgs_colour_value( (string) ( $attributes['itemBorderColourHover'] ?? '' ) );
+		if ( '' !== $item_border_hover_colour ) {
+			$item_hover_decls['border'] = 'border-color:' . $item_border_hover_colour;
+		}
+	}
+
+	// Only emit FR-41-13 rules if there are hover declarations to paint.
+	if ( ! empty( $item_hover_decls ) ) {
+		// Mouse half — bar fork.
+		$bar_mouse_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link';
+		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
+			// Text only: emit unguarded.
+			$css .= $bar_mouse_sel . '{' . $item_hover_decls['text'] . ';}';
+		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			// Background only: use pseudo-element.
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $item_hover_decls['bg'] );
+		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			// Both text and bg: emit text via hover guard, bg via pseudo-element.
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel, $item_hover_decls['text'] );
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $item_hover_decls['bg'] );
+		}
+
+		// Mouse half — drawer fork.
+		$drawer_mouse_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:hover > .sgs-nav-menu__link';
+		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $item_hover_decls['text'] );
+		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel . '::before', $item_hover_decls['bg'] );
+		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $item_hover_decls['text'] );
+			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel . '::before', $item_hover_decls['bg'] );
+		}
+
+		// Keyboard half — bar fork.
+		$bar_keyboard_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
+		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
+			$css .= $bar_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
+		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= $bar_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= $bar_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
+			$css .= $bar_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		}
+
+		// Keyboard half — drawer fork.
+		$drawer_keyboard_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
+		if ( isset( $item_hover_decls['text'] ) && ! isset( $item_hover_decls['bg'] ) ) {
+			$css .= $drawer_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
+		} elseif ( ! isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= $drawer_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		} elseif ( isset( $item_hover_decls['text'] ) && isset( $item_hover_decls['bg'] ) ) {
+			$css .= $drawer_keyboard_sel . '{' . $item_hover_decls['text'] . ';}';
+			$css .= $drawer_keyboard_sel . '::before{' . $item_hover_decls['bg'] . ';}';
+		}
+	}
+
 		return $css;
 	}
 }

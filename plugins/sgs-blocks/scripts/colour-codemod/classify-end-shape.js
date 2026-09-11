@@ -45,6 +45,8 @@ const {
 	gradientExtensibility,
 	extractCallArgLists,
 	traceBoundVars,
+	resolveMapArgText,
+	findRequiredFiles,
 	GRADIENT_CAPABLE_HELPERS,
 	GRADIENT_ONLY_ARG_HELPERS,
 	COMPOSER_MAP_HELPERS,
@@ -394,7 +396,8 @@ function detectCurrentShape( php, attr, blockJson ) {
 	// 3 — composer-map helpers (sgs_fill_decls/sgs_fill_states_css/
 	//     sgs_text_decls/sgs_text_states_css/sgs_border_states_css).
 	for ( const helper of COMPOSER_MAP_HELPERS ) {
-		for ( const argsText of extractCallArgLists( php, helper ) ) {
+		for ( const rawArgsText of extractCallArgLists( php, helper ) ) {
+			const argsText = resolveMapArgText( php, rawArgsText );
 			const baseRe = new RegExp( '[\'"]base[\'"]\\s*=>\\s*[\'"]' + attr + '[\'"]' );
 			if ( baseRe.test( argsText ) ) {
 				const isText = helper.startsWith( 'sgs_text' );
@@ -664,7 +667,19 @@ function classifyAll() {
 		const renderFile = path.join( BLOCKS_DIR, dir, 'render.php' );
 		const blockJsonFile = path.join( BLOCKS_DIR, dir, 'block.json' );
 		const rawPhp = fs.existsSync( renderFile ) ? fs.readFileSync( renderFile, 'utf8' ) : '';
-		const php = stripComments( rawPhp );
+		// A block whose render.php is a thin dispatcher (nav-menu's 6-file
+		// split, so render.php stays under the 300-line project limit) has NO
+		// colour-emission code in render.php itself — every check below would
+		// see nothing to match. Follow require_once the same way
+		// classify-gradient-path-deferred.js already does, so the FULL render
+		// surface (dispatcher + every included module) is what gets tested,
+		// not just the dispatcher file's own text. Real case this fixed
+		// (2026-09-11): sgs/nav-menu.itemBorderColour's `sgs_border_states_css()`
+		// call lives in includes/nav-menu-css.php, never in render.php.
+		const requiredTexts = fs.existsSync( renderFile )
+			? findRequiredFiles( rawPhp, renderFile ).map( ( f ) => fs.readFileSync( f, 'utf8' ) )
+			: [];
+		const php = stripComments( [ rawPhp, ...requiredTexts ].join( '\n' ) );
 		const blockJson = fs.existsSync( blockJsonFile ) ? JSON.parse( fs.readFileSync( blockJsonFile, 'utf8' ) ) : null;
 		const styleCss = readStyleCss( dir );
 

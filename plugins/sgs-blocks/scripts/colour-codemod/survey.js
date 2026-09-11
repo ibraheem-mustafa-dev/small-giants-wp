@@ -245,12 +245,128 @@ function extractCallArgLists( php, calleeName ) {
 	return out;
 }
 
+/**
+ * Resolves a COMPOSER_MAP_HELPERS call's raw argument text to the text a
+ * bound map VARIABLE actually holds, when the call passes the map by
+ * reference (`sgs_border_states_css( $sel, $attributes, $item_border_map )`)
+ * rather than as an inline array literal. Without this, every detector that
+ * pattern-matches `argsText` for `'base'=>'attr'` silently misses any call
+ * site that builds its map ahead of time and passes it as a variable — a
+ * real false negative, not a hypothetical one: `nav-menu-css.php`'s
+ * `$item_border_map` (built once, reused for `sgs_border_states_css()`)
+ * produced exactly this miss on `itemBorderColour`, which genuinely already
+ * wires `base`/`hover`/`current`, both verified live 2026-09-11.
+ *
+ * Only resolves the LAST top-level comma-separated argument (the `$map`
+ * position in every COMPOSER_MAP_HELPERS signature) and only when it is a
+ * BARE variable reference — never attempts to resolve an inline literal
+ * (already handled by the caller) or a non-trivial expression.
+ */
+function resolveMapArgText( php, argsText ) {
+	// Split on top-level commas only (depth-tracked, so a nested array's own
+	// commas — e.g. `array('bottom'=>true)` inside `suppress_edges` — don't
+	// fragment the split).
+	const parts = [];
+	let depth = 0;
+	let start = 0;
+	for ( let i = 0; i < argsText.length; i++ ) {
+		const ch = argsText[ i ];
+		if ( ch === '(' || ch === '[' ) depth++;
+		else if ( ch === ')' || ch === ']' ) depth--;
+		else if ( ch === ',' && depth === 0 ) {
+			parts.push( argsText.slice( start, i ) );
+			start = i + 1;
+		}
+	}
+	parts.push( argsText.slice( start ) );
+	const last = ( parts[ parts.length - 1 ] || '' ).trim();
+
+	const varMatch = /^\$([A-Za-z_]\w*)$/.exec( last );
+	if ( ! varMatch ) return argsText;
+
+	const varName = varMatch[ 1 ];
+	// Find the MOST RECENT `$varName = array(...)` or `$varName = [...]`
+	// assignment BEFORE this call site would be more precise, but a single
+	// map variable built once and reused (the observed shape) makes "first
+	// definition found" safe in practice; a self-test negative control
+	// guards against a variable that's reassigned mid-file.
+	const defRe = new RegExp( '\\$' + varName + '\\s*=\\s*(array\\s*\\(|\\[)' );
+	const defMatch = defRe.exec( php );
+	if ( ! defMatch ) return argsText;
+
+	const openChar = defMatch[ 1 ].trim().startsWith( 'array' ) ? '(' : '[';
+	const closeChar = openChar === '(' ? ')' : ']';
+	let depth2 = 1;
+	let i = defMatch.index + defMatch[ 0 ].length;
+	const bodyStart = i;
+	while ( i < php.length && depth2 > 0 ) {
+		if ( php[ i ] === openChar ) depth2++;
+		else if ( php[ i ] === closeChar ) depth2--;
+		i++;
+	}
+	// Append the resolved literal text so callers that test the WHOLE
+	// argsText (base + gradient + hover + current keys) still see every key,
+	// even if some are added to the map via `unset()`/conditional mutation
+	// after the initial literal (a mutation the resolver deliberately does
+	// NOT try to follow — same refuse-rather-than-guess discipline as the
+	// rest of this file; a mutated-away key means the resolved text still
+	// shows the ORIGINAL declared shape, not the runtime-final one, and that
+	// is a known, disclosed limit, not a silent wrong answer).
+	return argsText + '\n/* resolved $' + varName + ' */\n' + php.slice( bodyStart, i - 1 );
+}
+
+/**
+ * require_once targets referenced from a PHP file's own text, resolved to
+ * absolute paths where the file actually exists on disk. Best-effort textual
+ * scan — only follows literal string paths, never a computed require.
+ *
+ * Copied from `classify-gradient-path-deferred.js` (2026-09-06, unchanged
+ * logic) rather than importing it, so that script's own working, tested copy
+ * stays untouched — this is a second call site for the same primitive, not a
+ * refactor of the original. Exported here so any detector reading a block's
+ * "render surface" can follow the same require_once chain a multi-module
+ * block splits its emission logic across (nav-menu-css.php,
+ * nav-menu-submenu-css.php, etc. — a block whose render.php is a thin
+ * dispatcher has NO colour-emission code in render.php itself, and a
+ * detector reading only render.php sees none of it).
+ */
+function findRequiredFiles( phpText, renderPhpPath ) {
+	const dir = path.dirname( renderPhpPath );
+	const out = new Set();
+	const re = /require(?:_once)?\s+([^;]+);/g;
+	let m;
+	while ( ( m = re.exec( phpText ) ) !== null ) {
+		const expr = m[ 1 ];
+		const relMatch = expr.match( /['"]([^'"]+\.php)['"]/ );
+		if ( ! relMatch ) continue;
+		const rel = relMatch[ 1 ];
+		const dirnameFileMatch = expr.match( /dirname\(\s*__FILE__\s*,\s*(\d+)\s*\)/ );
+		const dirnameDirMatch = expr.match( /dirname\(\s*__DIR__\s*,\s*(\d+)\s*\)/ );
+		let base = dir;
+		if ( dirnameFileMatch ) {
+			let up = parseInt( dirnameFileMatch[ 1 ], 10 );
+			base = renderPhpPath;
+			while ( up-- > 0 ) base = path.dirname( base );
+		} else if ( dirnameDirMatch ) {
+			let up = parseInt( dirnameDirMatch[ 1 ], 10 );
+			base = dir;
+			while ( up-- > 0 ) base = path.dirname( base );
+		} else if ( /__DIR__/.test( expr ) ) {
+			base = dir;
+		}
+		const resolved = path.resolve( base, rel.replace( /^\//, '' ) );
+		if ( fs.existsSync( resolved ) ) out.add( resolved );
+	}
+	return [ ...out ];
+}
+
 /** Bug 3(a) — a COMPOSER_MAP_HELPERS call whose map's 'base' is this attr AND
  * whose 'gradient' key is non-empty (proof the sibling is actually wired, not
  * merely that the composer ran for some OTHER row on the same file). */
 function composerMapExtensible( php, attr ) {
 	for ( const helper of COMPOSER_MAP_HELPERS ) {
-		for ( const argsText of extractCallArgLists( php, helper ) ) {
+		for ( const rawArgsText of extractCallArgLists( php, helper ) ) {
+			const argsText = resolveMapArgText( php, rawArgsText );
 			const baseRe = new RegExp( '[\'"]base[\'"]\\s*=>\\s*[\'"]' + attr + '[\'"]' );
 			const gradientRe = /['"]gradient['"]\s*=>\s*['"][^'"]+['"]/;
 			if ( baseRe.test( argsText ) && gradientRe.test( argsText ) ) {
@@ -856,6 +972,47 @@ function runSelfTest() {
 		};
 		assert( isGradientExempt( blockJson, 'text' ) === false, 'a too-short reason must not suppress the finding' );
 	} );
+
+	// ── resolveMapArgText — bound composer-map variable resolution (2026-09-11) ──
+	// Real case: nav-menu-css.php builds `$item_border_map` once, then passes
+	// it BY REFERENCE to sgs_border_states_css() — a shape composerMapExtensible()
+	// and classify-end-shape.js's own composer-map step both missed entirely
+	// before this fix, because they only pattern-matched the literal call-site
+	// argument text, never a variable pointing at an array built earlier.
+	check( 'resolveMapArgText follows a bound composer-map variable to its literal', () => {
+		const php =
+			"$item_border_map = array(\n" +
+			"\t'base'    => 'itemBorderColour',\n" +
+			"\t'hover'   => 'itemBorderColourHover',\n" +
+			"\t'current' => 'itemBorderColourCurrent',\n" +
+			');\n' +
+			'$css .= sgs_border_states_css( $link_sel, $attributes, $item_border_map );';
+		const rawArgs = extractCallArgLists( php, 'sgs_border_states_css' )[ 0 ];
+		assert( ! /base/.test( rawArgs ), 'sanity check: the raw call-site text must NOT already contain the map literal' );
+		const resolved = resolveMapArgText( php, rawArgs );
+		assert( /'base'\s*=>\s*'itemBorderColour'/.test( resolved ), "resolved text must reveal the bound map's 'base' key" );
+		assert( /'current'\s*=>\s*'itemBorderColourCurrent'/.test( resolved ), "resolved text must reveal the bound map's 'current' key" );
+	} );
+	check( 'composerMapExtensible finds a gradient sibling through a bound map variable', () => {
+		const php =
+			"$item_border_map = array(\n" +
+			"\t'base'     => 'itemBorderColour',\n" +
+			"\t'gradient' => 'itemBorderColourGradient',\n" +
+			');\n' +
+			'$css .= sgs_border_states_css( $link_sel, $attributes, $item_border_map );';
+		const result = composerMapExtensible( php, 'itemBorderColour' );
+		assert( result && result.extensible === true, 'expected the bound-variable map to be recognised as gradient-extensible' );
+	} );
+	check( 'NEGATIVE CONTROL — resolveMapArgText leaves an inline literal untouched', () => {
+		const php = "sgs_fill_decls( $attributes, array( 'base' => 'iconColour' ) );";
+		const rawArgs = extractCallArgLists( php, 'sgs_fill_decls' )[ 0 ];
+		assert( resolveMapArgText( php, rawArgs ) === rawArgs, 'an inline literal call is not a bare variable reference — must return the args text UNCHANGED, not attempt a lookup' );
+	} );
+	check( 'NEGATIVE CONTROL — resolveMapArgText refuses an undefined variable rather than guessing', () => {
+		const php = 'sgs_border_states_css( $link_sel, $attributes, $never_defined_map );';
+		const rawArgs = extractCallArgLists( php, 'sgs_border_states_css' )[ 0 ];
+		assert( resolveMapArgText( php, rawArgs ) === rawArgs, 'no matching assignment exists — must fall back to the original text, never fabricate a match' );
+	} );
 	check( 'NEGATIVE CONTROL — states exemption REFUSED when <attr>Hover exists', () => {
 		const blockJson = {
 			attributes: { colourTextHover: { type: 'string' } },
@@ -1203,6 +1360,8 @@ module.exports = {
 	gradientExtensibility,
 	extractCallArgLists,
 	traceBoundVars,
+	resolveMapArgText,
+	findRequiredFiles,
 	GRADIENT_CAPABLE_HELPERS,
 	GRADIENT_ONLY_ARG_HELPERS,
 	COMPOSER_MAP_HELPERS,

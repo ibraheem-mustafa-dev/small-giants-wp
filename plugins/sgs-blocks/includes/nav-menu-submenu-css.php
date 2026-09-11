@@ -235,7 +235,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$submenu_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
 		$submenu_wrap_top   = '' !== $submenu_top_offset ? 'calc(100% + ' . $submenu_top_offset . ')' : '100%';
 
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));box-shadow:var(--sgs-nm-submenu-shadow, var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1)));}';
+
 
 		/*
 		 * ⛔ A non-zero offset creates a hover DEAD STRIP, and that reintroduces the
@@ -380,8 +381,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			. 'border-width:var(--sgs-nm-submenu-border-width, 1px);'
 			. 'border-style:var(--sgs-nm-submenu-border-style, solid);'
 			. 'border-color:var(--wp--preset--color--border, transparent);'
-			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
-			. 'box-shadow:var(--sgs-nm-submenu-shadow, var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1)));}';
+			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));}';
 
 		// Normal-only, by FR-41-9: no `hover`, no `current`, and no `suppress_edges`
 		// key at all. Emits nothing when neither colour attribute is set, so the
