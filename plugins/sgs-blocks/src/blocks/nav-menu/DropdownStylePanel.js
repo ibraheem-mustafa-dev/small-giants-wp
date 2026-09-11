@@ -13,13 +13,11 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
  *
  * @param {Object}   root0                 Props.
  * @param {string}   root0.submenuMinWidth The block's `submenuMinWidth` attribute.
- * @param {string}   root0.submenuRadius   The block's `submenuRadius` attribute.
  * @param {Object}   root0.submenuPadding  The block's `submenuPadding` attribute.
  * @param {Function} root0.setAttributes   The block's attribute setter.
  */
 export default function DropdownStylePanel( {
 	submenuMinWidth,
-	submenuRadius,
 	submenuPadding,
 	setAttributes,
 } ) {
@@ -32,7 +30,6 @@ export default function DropdownStylePanel( {
 			resetAll={ () =>
 				setAttributes( {
 					submenuMinWidth: '',
-					submenuRadius: '',
 					submenuPadding: {},
 				} )
 			}
@@ -59,22 +56,6 @@ export default function DropdownStylePanel( {
 						'Stops a dropdown shrinking to the width of its shortest link.',
 						'sgs-blocks'
 					) }
-					presets={ false }
-				/>
-			</ToolsPanelItem>
-			<ToolsPanelItem
-				hasValue={ () => !! submenuRadius }
-				label={ __( 'Corner radius', 'sgs-blocks' ) }
-				onDeselect={ () =>
-					setAttributes( { submenuRadius: '' } )
-				}
-			>
-				<SgsLengthControl
-					label={ __( 'Corner radius', 'sgs-blocks' ) }
-					value={ submenuRadius }
-					onChange={ ( val ) =>
-						setAttributes( { submenuRadius: val || '' } )
-					}
 					presets={ false }
 				/>
 			</ToolsPanelItem>

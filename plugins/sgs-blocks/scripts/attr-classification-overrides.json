@@ -3271,6 +3271,61 @@
         "css_element": "entry-link"
       },
       "_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'description', $description_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColour",
+      "fields": {
+        "role": "color",
+        "css_property": "fill",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "collapsePoint",
+      "fields": {
+        "role": "styling",
+        "css_property": "max-width,min-width",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "featuredFontWeight",
+      "fields": {
+        "role": "typography",
+        "css_property": "font-weight",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "featuredItemIds",
+      "fields": {
+        "role": "styling",
+        "css_property": "display,max-width,min-width",
+        "css_element": "bar",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "featuredRadius",
+      "fields": {
+        "role": "visual",
+        "css_property": "border-radius",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemLetterSpacing",
+      "fields": {
+        "role": "typography",
+        "css_property": "letter-spacing",
+        "css_element": "link"
+      }
     }
   ]
 }

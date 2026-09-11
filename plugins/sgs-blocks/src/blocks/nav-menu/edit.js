@@ -13,8 +13,8 @@
  * this file under the project's 250-line JS budget — see the sibling files
  * in this directory (utils.js, useNavMenuSource.js, useDrawerNotice.js,
  * NavMenuNotices.js, SettingsPanels.js, BarPanel.js, DropdownStylePanel.js,
- * ItemsPanel.js, EffectsPanel.js, UnderlinePanel.js, FeaturedPanel.js,
- * BurgerPanel.js) and `.claude/verify/spec-41-reuse-ledger.md` for the
+ * ItemsPanel.js, FeaturedPanel.js, BurgerPanel.js) and
+ * `.claude/verify/spec-41-reuse-ledger.md` for the
  * per-file reuse record. `colourRows` stays here as a single literal
  * ArrayExpression, deliberately NOT extracted or rebuilt via a helper —
  * owner ruling 3 (the golden-colour-control detector, `scripts/
@@ -35,8 +35,6 @@ import DropdownSettingsPanel from './DropdownSettingsPanel';
 import BarPanel from './BarPanel';
 import DropdownStylePanel from './DropdownStylePanel';
 import ItemsPanel from './ItemsPanel';
-import EffectsPanel from './EffectsPanel';
-import UnderlinePanel from './UnderlinePanel';
 import FeaturedPanel from './FeaturedPanel';
 import BurgerPanel from './BurgerPanel';
 
@@ -59,13 +57,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemBgGradient,
 		itemColourHover,
 		itemBgHover,
-		itemRadius,
-		itemRadiusHover,
-		hoverStyle,
-		underlineColour,
-		underlineColourHover,
-		underlineThickness,
-		underlineOffset,
 		featuredColour,
 		featuredColourGradient,
 		featuredBg,
@@ -80,17 +71,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		burgerBg,
 		burgerHoverColour,
 		burgerSize,
-		indicatorStyle,
-		indicatorColour,
+		itemColourHoverTreatment,
+		itemBgHoverTreatment,
+		itemBorderHoverTreatment,
+		borderHoverAnimationDirection,
 		itemMagnetEnabled,
 		submenuAlign,
 		submenuCaret,
 		submenuCloseGrace,
 		submenuBg,
+		submenuBgGradient,
 		submenuColour,
 		submenuColourGradient,
 		submenuMinWidth,
-		submenuRadius,
 		submenuPadding,
 		navColourHover,
 		burgerColourHover,
@@ -115,7 +108,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// FIRST so it sits at the top of the Styles tab). Every state below carries
 	// `linked: true` (D619).
 	//
-	// itemColourHover/itemBgHover/itemRadiusHover: GROUND-TRUTH checked against
+	// itemColourHover/itemBgHover: GROUND-TRUTH checked against
 	// render.php (2026-08-15 rebuild) — `$hover_targets` (line ~953) is now
 	// `:hover,:focus-visible` ONLY. The current-page indicator was deliberately
 	// SEPARATED from hover (Bean, 2026-07-31 — see render.php's "CURRENT-PAGE
@@ -230,28 +223,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			],
 		},
-		'underline' === hoverStyle && {
-			key: 'underline',
-			label: __( 'Underline colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: underlineColour,
-					onChange: ( val ) => setAttributes( { underlineColour: val ?? '' } ),
-					gradientValue: attributes.underlineColourGradient,
-					onGradientChange: ( val ) => setAttributes( { underlineColourGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: underlineColourHover,
-					onChange: ( val ) => setAttributes( { underlineColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
 		{
 			key: 'featured-text',
 			label: __( 'Featured text colour', 'sgs-blocks' ),
@@ -344,21 +315,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			],
 		},
-		'pill' === indicatorStyle && {
-			key: 'indicator',
-			label: __( 'Indicator colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: indicatorColour,
-					onChange: ( val ) => setAttributes( { indicatorColour: val ?? '' } ),
-					gradientValue: attributes.indicatorColourGradient,
-					onGradientChange: ( val ) => setAttributes( { indicatorColourGradient: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
 		{
 			key: 'submenu-bg',
 			label: __( 'Dropdown background', 'sgs-blocks' ),
@@ -368,6 +324,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: submenuBg,
 					onChange: ( val ) => setAttributes( { submenuBg: val ?? '' } ),
+					gradientValue: submenuBgGradient,
+					onGradientChange: ( val ) => setAttributes( { submenuBgGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
@@ -449,7 +407,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				*/ }
 				<DropdownStylePanel
 					submenuMinWidth={ submenuMinWidth }
-					submenuRadius={ submenuRadius }
 					submenuPadding={ submenuPadding }
 					setAttributes={ setAttributes }
 				/>
@@ -466,26 +423,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				*/ }
 
 				<ItemsPanel
-					hoverStyle={ hoverStyle }
+					itemColourHoverTreatment={ itemColourHoverTreatment }
+					itemBgHoverTreatment={ itemBgHoverTreatment }
+					itemBorderHoverTreatment={ itemBorderHoverTreatment }
+					borderHoverAnimationDirection={ borderHoverAnimationDirection }
 					setAttributes={ setAttributes }
-					itemRadius={ itemRadius }
-					itemRadiusHover={ itemRadiusHover }
 					attributes={ attributes }
 					itemMagnetEnabled={ itemMagnetEnabled }
 				/>
-
-				<EffectsPanel
-					indicatorStyle={ indicatorStyle }
-					setAttributes={ setAttributes }
-				/>
-
-				{ 'underline' === hoverStyle && (
-					<UnderlinePanel
-						underlineThickness={ underlineThickness }
-						underlineOffset={ underlineOffset }
-						setAttributes={ setAttributes }
-					/>
-				) }
 
 				<FeaturedPanel
 					menuRef={ ref }

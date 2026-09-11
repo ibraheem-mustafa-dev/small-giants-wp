@@ -215,14 +215,28 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * writes no property at all, so the rule's own fallback applies rather than a
 		 * hardcoded value overriding it.
 		 */
+		/*
+		 * submenuBg/submenuBgGradient (2026-09-11, classify-end-shape closeout):
+		 * sgs_custom_property_gradient_decls() emits `--sgs-nm-submenu-bg` and,
+		 * only when set, a sibling `--sgs-nm-submenu-bg-gradient` — matching the
+		 * shared "fill-custom-property-gradient" end shape every other
+		 * background/border custom-property row in this codebase already uses.
+		 * No hover pair: submenu-bg is Normal-only by design (colourExemptions,
+		 * block.json — the panel is structurally unhoverable once open).
+		 */
+		$sgs_nm_submenu_bg_decls = sgs_custom_property_gradient_decls(
+			'sgs-nm-submenu-bg',
+			(string) ( $attributes['submenuBg'] ?? '' ),
+			(string) ( $attributes['submenuBgGradient'] ?? '' )
+		);
+
 		$sgs_nm_submenu_vars = '';
+		if ( ! empty( $sgs_nm_submenu_bg_decls ) ) {
+			$sgs_nm_submenu_vars .= implode( ';', $sgs_nm_submenu_bg_decls ) . ';';
+		}
 		foreach (
 			array(
-				'--sgs-nm-submenu-bg'        => '' !== (string) ( $attributes['submenuBg'] ?? '' )
-					? sgs_colour_value( (string) $attributes['submenuBg'] )
-					: '',
 				'--sgs-nm-submenu-min-width' => sgs_css_length_value( $attributes['submenuMinWidth'] ?? '' ),
-				'--sgs-nm-submenu-radius'    => sgs_css_length_value( $attributes['submenuRadius'] ?? '' ),
 			) as $sgs_nm_var => $sgs_nm_val
 		) {
 			if ( '' !== $sgs_nm_val ) {
@@ -295,7 +309,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 */
 		$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:8px 0;'
 			. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
-			. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
+			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
+			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);'
 			. 'border:1px solid var(--wp--preset--color--border, transparent);'
 			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
 			. 'box-shadow:var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1));}';

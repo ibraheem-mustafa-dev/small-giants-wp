@@ -262,6 +262,7 @@
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "submenuBg",
+						"css:background-image": "submenuBgGradient",
 						"css:border-color": "submenuBorderColour",
 						"css:border-color-gradient": "submenuBorderColourGradient",
 						"css:border-width": "submenuBorderWidth",
@@ -521,6 +522,10 @@
 			"default": 170
 		},
 		"submenuBg": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuBgGradient": {
 			"type": "string",
 			"default": ""
 		},
