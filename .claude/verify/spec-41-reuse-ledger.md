@@ -595,3 +595,16 @@ text" is **13 characters**, over Spec 35 Part O's 12-character bound for a 2–4
 remedy is to shorten the LABEL; ⛔ the stored VALUE stays `icon-and-text` to match the open
 side's `triggerMode`. The same shortening was applied to `sgs/nav-menu`'s own "Show as"
 control in step 14, so the two sides read alike.
+
+## FR-41-30(b) — sublink-marker colour (`de6db5893`, Wave C)
+
+`edit.js` grows **625 → 650 lines** (+25 net: +35/-10). Reuse lever: `textRow` (not `fillRow` —
+an icon paints via `color:`, matching this block's own `burger-icon` precedent, not a new
+pattern), gated inline in the `colourRows` array literal via D609 field 9c (`condition && {...}`,
+omitted-not-disabled) on a reveal condition (`sublinkMarkerIconIsCustom`) computed once above the
+array. No new shared helper needed — the six attributes (`sublinkMarkerColour` +
+Hover/Current/three Gradient siblings) ride the same `textRow` call shape already used for every
+other text-coloured element on this block. `render.php` gained ~110 lines using
+`sgs_icon_gradient_css()` (existing shared helper, source-aware) — no block-private colour logic
+invented. Scope confirmed drawer-only against FR-41-30(b)'s own title ("the submenu **drawer**
+sublink marker") before building, not after.
