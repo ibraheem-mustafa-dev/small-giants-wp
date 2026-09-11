@@ -1,0 +1,419 @@
+# Nav-menu visual review register — Bean's live review, 2026-09-12
+
+**Source:** Bean's direct review of the Spec 41 nav-menu rebuild (Steps 1-23 of
+`.claude/plans/phase-nav-menu-colour-state.md`), against the deployed canary and the
+Playwright verification scratch pages (3487, 3488, 3494). Restructured from Bean's own
+brain-dump message — every point preserved, grouped by shared root cause where the
+grouping is obvious from the description alone (not yet verified against code).
+
+**Process (Bean-directed):**
+1. Wave 1 — `/qc-council` root-cause investigation per group (this doc's groups below).
+2. Group findings that share one real root cause (may differ from this doc's initial grouping
+   once code is read).
+3. Wave 2 — `/qc-council` solution-design pass per confirmed group, proposal written into
+   this register.
+4. `/qc-inline` self-check on the proposals.
+5. Present the completed register to Bean before any implementation.
+
+**⛔ Nothing in this register is implemented yet. This is the intake + investigation
+register only.**
+
+---
+
+## Group A — Hover colour changes text but not background, illegible pairing
+
+Recurs across at least 3 separate live locations Bean checked — same symptom shape each time.
+
+- **A1 (item G13 scenario 4 fixture).** Base pairing: black text on pink fill. On hover,
+  text switches to "dark primary" (a slightly darker pink than primary) while the
+  background fill stays the same pink. Two near-identical pinks — illegible. Breaks Bean's
+  own minimum standard (explicitly more lenient than WCAG AA, but this fails even that).
+- **A2 (nav drawer item hover).** Same shape: hovering a drawer item does not change the
+  background/fill colour at all, so the same black-text-to-dark-pink-on-pink problem
+  recurs identically.
+- **A3 (G14 "G14 negative submenuLinkBg blocks sweep" fixture).** Submenu item text colour
+  is the exact same colour as its own background fill — invisible until hovered, at which
+  point it turns yellow.
+
+**Bean's standing rule these violate:** hover-state colour pairing must be at minimum
+*discernible* (his own bar, looser than WCAG AA) — never two near-identical shades of the
+same hue on both text and fill simultaneously.
+
+---
+
+## Group B — Burger menu colour: net regression, not improvement
+
+- **B1 (G14 "Burger Neg" fixture, icon mode).** No colour issue has improved; multiple have
+  gotten worse compared to before Step 1 of the 26-step plan started.
+- **B2.** No example anywhere shows the burger button with a background/fill colour set —
+  a real, testable configuration with zero coverage.
+
+---
+
+## Group C — Separators/dividers missing on vertical modes
+
+- **C1.** Bean's original requirement: all vertical-mode menus get a visible separator,
+  accent-coloured, by default on normal state. "Vertical modes" = the horizontal nav's own
+  **submenus** (dropdown panels), plus **both** the menu and submenu levels of the **nav
+  drawer**. Currently: completely invisible on normal state AND on hover, everywhere.
+
+---
+
+## Group D — Nav submenu items: zero visual response, wrong default colours
+
+- **D1.** Submenu items were supposed to be wired to theme global colours by default, but
+  they still show an unexplained "tinted pink" background — not a theme-token default.
+- **D2.** The chevron/marker icon to the left of each submenu item's text should default to
+  the SAME colour as that item's text — unless the shape has been swapped for a custom icon
+  from the 4 supported icon libraries via the icon picker.
+- **D3.** Submenu items show **zero** change on hover — no colour change, no movement,
+  nothing at all. Bean asks directly: is this simply not wired up, or does it need
+  rebuilding/migrating — possibly because the nav-drawer instance under test was built
+  before the CPT (custom-post-type?) work landed.
+- **D4 (drawer-specific caveat).** Bean flags that he's not sure the drawer submenu
+  chevron's "defaults to submenu item colour" wiring even works, because none of the
+  drawer submenu fixtures on the test page were given an explicit hover TEXT colour to
+  confirm against.
+
+---
+
+## Group E — Parent-item hover state lost when pointer enters its own submenu (regression) + missing state-hierarchy propagation
+
+- **E1. Regression, both bar and drawer forks.** Hovering a menu item's OWN submenu panel
+  causes the parent item to visually revert to its unhovered state — exactly the defect
+  this session's FR-41-13 rescue rule was supposed to have fixed (G7). Bean reports it is
+  **not** fixed and behaves like a regression from before this rebuild started. This needs
+  re-investigation against the live canary, not just the earlier scratch-page evidence.
+- **E2. New requirement, not previously specified this precisely: state hierarchy and
+  propagation.**
+  - Hover is dynamic and always wins outright — the top of the hierarchy.
+  - Current-page state sits below hover, and OVERRULES normal state.
+  - **Current state must propagate UP the tree**: if the page currently open lives inside a
+    submenu, the TOP-LEVEL parent item should visibly show a non-normal state too — so the
+    visitor can see, at a glance and without hovering anything, which top-level item's
+    submenu contains the page they're on.
+  - More generally: **a submenu having any item in a non-normal state (current, or — per
+    the hover rule above — actively hovered) should always be reflected visibly on that
+    submenu's own parent item**, so it's clear which menu's submenu is open/relevant.
+
+---
+
+## Group F — No opening animation anywhere
+
+- **F1.** None of the tested menus — horizontal bar dropdowns or the nav drawer's own
+  submenus — show ANY animation when a submenu opens. Every transition observed was an
+  instant, un-eased switch.
+- **F2 (submenu-specific timing complaint, G14 "G14 negative submenuLinkBg" fixture).** The
+  submenu's OPENING itself appears delayed until AFTER the underline hover-sweep effect on
+  the trigger has finished animating in — reads as laggy, poor UX, whether or not it is
+  literally sequenced that way in code.
+
+---
+
+## Group G — Missing test-fixture coverage (not necessarily bugs — gaps in what was tested)
+
+None of these configurations were represented anywhere on the verification scratch pages,
+so Bean could not review them and any defects in them are currently invisible to every gate
+that ran:
+
+- **G1.** Burger fully replaced by the literal text "MENU" (`triggerMode` text-only) — no
+  example at all.
+- **G2.** Icon-and-text burger — existing examples place them awkwardly side by side, icon
+  on the LEFT of "Menu". Bean has never seen this pairing convention in the wild; if it's
+  ever done, the icon belongs on the RIGHT (nearest the screen corner), not the left.
+- **G3.** A custom icon (not the default hamburger glyph) replacing the burger symbol — no
+  example.
+- **G4.** The burger→X "morph" animation (lines sliding/rotating into an X) on open — no
+  example anywhere; unclear if it exists at all currently.
+- **G5.** A custom icon (not the default chevron) replacing the drawer submenu's sublink
+  marker — no example, despite this being FR-41-30(b)'s whole feature.
+- **G6.** A mega-menu dropdown, on EITHER the horizontal bar or the nav-drawer vertical
+  form — zero examples of this interaction anywhere in the test set.
+
+---
+
+## Group H — Border-style double-line visual clash (G18 fixture)
+
+- **H1.** The G18 "border-style dashed emit" fixture renders TWO overlapping bottom lines
+  that visually fight on hover: a black dashed bottom border (the base border-style
+  control) sits static, and the ordinary pink underline/divider hover-sweep effect animates
+  in on top of it. Bean asks directly whether this combination was intended to look like
+  this, or whether the two mechanisms should not be allowed to stack like this.
+
+---
+
+## Group I — Submenu panel background has a mismatched "lip"
+
+- **I1.** The submenu panel's pink background has a visually distinct WHITE strip/lip along
+  its top and bottom edges that doesn't match the pink used everywhere else in the panel —
+  reads as an out-of-place seam, not a deliberate design choice.
+
+---
+
+## Group J — Burger button typography defaults are all wrong
+
+- **J1.** Burger label text renders SMALLER than both the default nav item text size and
+  ordinary paragraph body text, for no apparent reason.
+- **J2.** Burger label font-family renders as Arial — completely disconnected from the
+  canary's actual global type pair (Fraunces + Inter).
+- **J3.** Burger label renders lowercase. Bean's expectation/precedent from prior sites: a
+  burger's text label (when present) is conventionally ALL CAPS. Proposes defaulting to
+  uppercase — and notes the letter-case OPTION itself may only need to surface in the
+  Typography panel's target switcher once/if the burger's text mode is actually turned on
+  or a label is filled in, rather than always being a visible control.
+
+---
+
+## Group K — Drawer close scrolls the page (severe UX regression)
+
+- **K1.** Closing the nav drawer jumps the page to the very top, then auto-scrolls back down
+  to wherever the visitor actually was. Described as "genuinely very janky" — makes the
+  drawer feel broken and disorients the visitor mid-task. The page must never move at all
+  as a side effect of opening or closing the drawer.
+
+---
+
+## Group L — Burger fixes must mirror onto the nav-drawer's own close button
+
+- **L1. Cross-cutting instruction, not a separate defect:** whatever fixes land for ANY of
+  the burger-menu issues above (colour, typography, animation, icon behaviour) must be
+  mirrored onto the nav-drawer's own close (×) button, because — per Bean — that control's
+  functionality was built immediately after the burger's, using essentially the same
+  mechanism.
+
+---
+
+## Group M — Horizontal dropdown chevron: structurally disconnected from its menu item
+
+A cluster of distinct symptoms Bean attributes to one likely shared root cause: the chevron
+is not actually part of the parent menu item's own interactive/visual unit.
+
+- **M1.** The chevron currently behaves as an entirely separate, second hover-trigger for
+  showing/hiding its dropdown — completely disconnected visually and structurally from the
+  menu item it's supposed to belong to.
+- **M2.** Hovering the chevron opens the dropdown, but does NOT also trigger the parent menu
+  item's own hover visual state (colour/etc.) — the two don't act as one unit.
+- **M3.** Because the chevron is structurally separate, the dropdown PANEL itself is
+  positioned/centred relative to the chevron element, not to the actual parent (the menu
+  item) — a further symptom of the same disconnection.
+- **M4.** The chevron should be painted using the item's TEXT colour attribute (same
+  requirement applies identically to the nav-drawer's own version of this chevron).
+- **M5.** The chevron should flip upside-down while its dropdown is open, and flip back once
+  the hover state clears. Bean confirms this flip **already works correctly on the nav
+  drawer version** — it's missing/broken on the horizontal bar version specifically. Both
+  versions still need: (a) a subtle open animation on the dropdown/submenu itself (ties to
+  Group F), and (b) the chevron's flip-animation DURATION wired to match the dropdown's own
+  reveal-animation duration, rather than being an independent/arbitrary value.
+- **M6.** The chevron currently renders oversized relative to the menu item's own text.
+  Bean's proposed fix (pending investigation): once M1-M3 are resolved and the chevron is
+  properly incorporated into the item, wire its size to the item's own font-size attribute —
+  the same "inherit from the item" pattern proposed for colour (M4).
+- **Research pointer (Bean's own instruction):** this is a basic, well-established UI
+  pattern industry-wide — check `/library-docs` / `/research-check` for the standard
+  dropdown-chevron setup before attempting to patch the current one property-by-property;
+  it may be faster and more correct to rebuild to the standard shape directly.
+
+---
+
+## Open questions Bean asked directly (route to the council as forcing questions, not to be silently assumed)
+
+1. Group D3 — is the submenu's total lack of hover response an unwired control, or does it
+   need a structural rebuild/migration (possibly tied to work that predates the "CPT" pass)?
+2. Group H1 — was the dual dashed-border + pink-underline-sweep stacking on `.sgs-nav-menu__link`
+   actually intended, or should these two mechanisms be made mutually exclusive?
+3. Group D4 / M5 — for both the drawer submenu chevron colour default and the horizontal
+   chevron's flip animation, the test fixtures never actually exercised the relevant
+   attribute (no hover text colour set on drawer submenu fixtures) — so an apparent PASS or
+   FAIL from the existing scratch pages cannot be trusted without a fixture that actually
+   sets the value.
+
+---
+
+## Wave 1 findings (2026-09-12) — root-cause investigation, no fixes built
+
+Six parallel diagnostic agents investigated the groups above against real code + the live
+canary. Full per-cluster evidence: `.claude/verify/nav-review-wave1-cluster{1-6}-*.md`.
+Status per group below — **CONFIRMED** (real defect, root cause found), **REFUTED** (Bean's
+observation traces to something other than a product bug), **NOT REPRODUCED** (couldn't
+confirm on the config tested — doesn't mean it's wrong, means it needs a second look with
+Bean), or **UNCONFIRMED** (genuinely couldn't test within budget).
+
+### Group A — CONFIRMED (both mechanisms)
+- A1/A2: `nav-menu-css.php::sgs_nav_menu_item_state_css()` unconditionally suppresses the
+  per-item hover/current background fill whenever `itemBgHoverTreatment==="highlight"`,
+  with no guard against the resting fill and the Highlight pill resolving to the identical
+  colour. Same shared emitter on bar and drawer.
+- A3: submenu resting text colour defaults to the `primary` (pink) palette token
+  (`nav-menu-submenu-css.php` ~line 452, a deliberate earlier default), with no
+  text-vs-background collision guard — reproduced live.
+
+### Group B — REFUTED (test-fixture data bug, not a product regression)
+- B1/B2: the QC fixtures used colour slug `"secondary"`, which **does not exist** in Mama's
+  actual palette (`sites/mamas-munches/theme-snapshot.json`). `burgerBg:"secondary"` renders
+  transparent by design (unresolvable token); `burgerBg:"accent"` (a real token) renders
+  correctly. Bean's "genuinely worse than before Step 1" read is very likely explained by
+  the verification fixtures themselves being built with an invalid colour, not by any code
+  change this session made.
+
+### Group C — NOT A BUG (documented gap, already disclosed in spec)
+- C1: Spec 41 FR-41-36 explicitly locks the separator design intent but ALSO states it is
+  "not yet built." Confirmed zero border CSS emits for any untouched instance, matching
+  `block.json`'s empty defaults exactly — this is unbuilt scope, not broken code.
+
+### Group D — split verdicts
+- D1 (tinted-pink submenu bg): **UNCONFIRMED** — could not reproduce an actual
+  background-color; likely the SAME mechanism as A3 (pink resting TEXT) being visually
+  misread as a background tint, but not proven either way.
+- D2 (marker colour default): **CONFIRMED working as designed, but drawer-only** —
+  `render.php` scopes the marker mechanism to `.sgs-nav-drawer` and only wires it into
+  `sgs_nav_menu_render_items_drawer()`. The horizontal bar has no marker mechanism at all
+  (by original FR-41-30(b) scope — the drawer-only decision Bean confirmed earlier this
+  session).
+- D3 (submenu zero hover response): **REFUTED as "broken"** — an untouched instance
+  genuinely has NO hover CSS emitted at all (`nav-menu-submenu-css.php::sgs_nav_menu_submenu_css`
+  only emits `:hover` when `submenuColourHover`/`submenuLinkBgHover` are explicitly set).
+  Proven the mechanism itself works correctly once configured (live-tested, colour changes
+  on `:focus-visible`, which shares the rule with `:hover`). CPT-migration theory directly
+  refuted: the live drawer's actual stored content is a plain zero-attribute
+  `<!-- wp:sgs/nav-menu {"ref":0} -->`, rendering through the identical current code just
+  verified working. **This is a "no default hover signal on an untouched instance" design
+  question, not a broken/unmigrated mechanism.**
+- D4 (drawer marker hover colour): **UNCONFIRMED** — the 3-state colour mechanism is fully
+  built and the CSS-inheritance default is correct on paper, but the agent could not
+  synthetically fire a real hover/focus on the marker inside the Interactivity-API-gated
+  accordion in headless Playwright. Needs a real mouse/keyboard pass, not a synthetic one.
+
+### Group E — genuine conflict with Bean's live observation, escalating rather than resolving
+- E1 (parent-hover regression): **NOT REPRODUCED** for the bar fork under real mouse
+  testing (only a brief 2-frame flicker during the literal pointer-gap crossing, not a
+  persistent revert) — including the `highlight`/pill treatment case, which was
+  specifically checked as a risk and found to hold correctly. Confirmed no stale deploy
+  (md5-identical between repo and live). **The drawer fork remains genuinely untested — no
+  working burger+drawer+configured-hover fixture exists anywhere**, which is the same gap
+  the original G7 gate had. Alternative explanation flagged: if Bean tested via a real
+  phone tap, there is no true `:hover` state on touch to begin with — a different,
+  pre-existing UX question, not a regression of this session's fix. **This needs Bean's
+  input before Wave 2** — see below.
+- E2 (state-hierarchy propagation): scoped, not designed. Confirmed genuinely new scope
+  (FR-41-1 addresses a narrower, different question). Confirmed real prior art to extend
+  (FR-41-13's `:has(ul.sgs-nav-menu__submenu :focus-visible)` shape, swapping the trigger to
+  `[aria-current="page"]`). Confirmed the precondition already holds with zero markup
+  changes needed: `view.js::markCurrentPage` already stamps `aria-current="page"` on
+  submenu sublinks. Five open design questions enumerated in the cluster file (selector
+  shape, new visual language, hierarchy ordering, hovered-descendant variant, nesting depth)
+  — none decided yet.
+
+### Group F — mostly default-value questions, not broken mechanisms
+- F1 (no opening animation): **REFUTED as "broken"** — `submenuAnimation` defaults to
+  `'none'`; the fade/slide-down mechanism (with a correct reduced-motion companion) is fully
+  built and previously gate-verified. No test fixture anywhere set this attribute.
+- F2 (feels delayed behind the sweep): **CONFIRMED as coincidental, not sequenced** — two
+  genuinely independent 300ms mechanisms (JS hover-intent debounce in `mega-disclosure.js`;
+  CSS sweep transition in `nav-menu-treatments.php::sgs_nav_menu_text_sweep_css`) share the
+  same duration and the same trigger event, so they resolve together and READ as sequenced,
+  but there is no code dependency between them.
+
+### Group G — 6 missing fixtures built + observed
+- G1 (text-only "MENU"): renders correctly, no defect.
+- G2 (icon-and-text order): **CONFIRMED structural** — icon always renders left of text; no
+  code path exists to place it right (`nav-menu-markup.php::sgs_nav_menu_burger_toggle_markup()`,
+  no CSS `order` override anywhere).
+- G3 (custom trigger icon): renders correctly, no defect.
+- G4 (burger→X morph): **CONFIRMED does not exist at all** — no JS class toggle, no CSS rule
+  keyed on `aria-expanded` anywhere in the codebase.
+- G5 (custom sublink marker icon): works correctly, but only after a real, separate gap was
+  found: `sgs/nav-menu` must be nested as an InnerBlock INSIDE `sgs/nav-drawer` for the icon
+  picker to apply via block Context — a shared `drawerRef` STRING between sibling blocks
+  does NOT carry that relationship, only the open/close interactivity wiring. Two different
+  "linking" mechanisms, same apparent purpose, one fails silently.
+- G6 (mega-menu, both forms): bar form renders and opens correctly (live-verified). Drawer
+  form is **genuinely unreachable to test** — `drawerRef` defaults to the unscoped literal
+  `"sgs-nav-drawer"` in BOTH `nav-drawer/block.json` and `nav-menu/block.json`, so every
+  drawer instance without an explicit unique ref collides with the site's real global
+  header drawer. Confirmed live: the burger opens the WRONG drawer entirely. **This is a
+  new, real, separate architectural finding**, discovered as a side effect of trying to
+  test G6, not something Bean originally reported.
+
+### Group H — CONFIRMED real defect
+- H1: under `itemBorderHoverTreatment:'sweep'`, `itemBorderStyle` (dashed/dotted) has NO
+  effect on the swept edge — the visible line always comes from the `::after` sweep band (a
+  `linear-gradient` background, which can only ever render solid), never the real
+  `border-bottom` (correctly hidden via `border-bottom-color:transparent`). Nothing gates
+  `sweep` on `itemBorderStyle` at all — the clashing combination is fully reachable with no
+  warning anywhere. Traced to `nav-menu-css.php::sgs_nav_menu_item_state_css()`.
+
+### Group I — UNCONFIRMED
+- I1: could not get the submenu panel to render open live within the investigation's
+  budget. One partial lead surfaced (a real non-transparent 1px border token) but not
+  proven as the white-lip cause. Needs a second pass.
+
+### Group J — CONFIRMED, one root cause for all three symptoms
+- J1/J2/J3: the burger label has **zero typography wiring anywhere**.
+  `block.json`'s `burger` element only declares `css:width/height/color/color-gradient/`
+  `background-color/background-image` — no font attribute of any kind exists, and
+  `nav-menu-trigger-css.php::sgs_nav_menu_trigger_css` never emits font-size/font-family/
+  text-transform. Live-measured: burger text renders at `13.3333px` / `Arial` /
+  `text-transform:none` — this is literally Chrome's unstyled `<button>` default winning
+  uncontested, not a misconfigured theme token.
+
+### Group K — CONFIRMED, proven not inferred
+- K1: `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::unlockScroll` calls plain
+  `window.scrollTo(0, y)` with no `behavior` override, while the site's global
+  `core-blocks-critical.css` sets `html{scroll-behavior:smooth}`. Live frame-by-frame
+  polling during a real close action shows a clean ~350ms eased climb from 0 back up to the
+  pre-open scroll position, happening AFTER the drawer has already closed — exactly matching
+  "jumps to top, then scrolls back down." This exact CSS-driven `scrollTo` hazard is already
+  independently documented elsewhere in the codebase for other features, but this specific
+  call site was never guarded against it.
+
+### Group L — CONFIRMED partial, not full, sharing
+- L1: icon-glyph resolution and colour mechanisms genuinely share the same helper functions
+  between burger and close button (`sgs_nav_menu_icon_markup()`,
+  `sgs_resolve_text_colour_or_gradient()`, `sgs_hover_state_rules()`). Sizing and typography
+  are NOT shared — the close button already has its OWN separate hardcoded typography
+  (`14px`/`600`/`uppercase`/`0.05em`, `nav-drawer/style.css:355-380`), completely distinct
+  from the burger's total absence of typography styling. **A burger typography fix will
+  need a deliberate, separate edit to the close button — it will not propagate
+  automatically**, contrary to the assumption "fix one, both follow."
+
+### Group M — split into two real, separate clusters (not one)
+- **M1/M2/M4/M6 — one real shared root cause.** The link and caret are genuine DOM
+  siblings (`nav-menu-markup.php::sgs_nav_menu_render_items`). The JS open/close action is
+  ALREADY unified at the root (`data-wp-on--mouseenter` lives on
+  `.sgs-nav-menu__submenu-root`) — M1's "separate trigger" framing is about VISUAL state,
+  not the open/close mechanism, which already works. M2 (hover doesn't visually propagate)
+  is architecturally expected to already work via the existing FR-41-13 rescue rule, but is
+  **untestable as things stand** — zero fixtures anywhere set `itemColourHover` on a bar
+  dropdown. M4 (chevron should use item text colour): CONFIRMED real gap — `itemColour`
+  only ever emits onto `.sgs-nav-menu__link{color:...}`, which structurally cannot reach
+  the sibling caret; they currently match only by coincidence. M6 (oversized chevron):
+  CONFIRMED and quantified — 24×24px raw SVG vs 16px item text, a 1.5× ratio, no sizing
+  relationship exists.
+- **M3 — REFUTED.** The dropdown panel is NOT anchored to the caret. This was already fixed
+  2026-07-31 (`mega-disclosure.js::repositionPanel`, anchors on the item root's own bounding
+  rect) — live-measured on page 3487, the panel's left edge matches the item root, not the
+  caret. Recommend re-confirming with Bean exactly which page/case produced this
+  observation, since the code doesn't support it as currently deployed.
+- **M5 — a separate, independent, real gap**, not the same cause as the above. The
+  flip-on-open rotation rule is keyed to `.sgs-nav-menu__mega-trigger` (the MEGA-menu
+  trigger class) — `.sgs-nav-menu__subtoggle` (the plain dropdown trigger) has ZERO
+  matching selector anywhere in the codebase. Never built for this path; not a regression.
+  The duration-sync half is additionally blocked on Group F (no open animation exists yet
+  to sync against).
+
+## Investigation status
+
+**Wave 1 complete.** Before Wave 2 (solution design), Bean needs to weigh in on:
+1. **Group E1** — the parent-hover regression didn't reproduce under mouse testing on the
+   bar fork; the drawer fork is genuinely untested. Was your test on mouse or touch, bar or
+   drawer? This determines whether Wave 2 designs a fix or Wave 1 needs a second pass first.
+2. **Group M3** — the "panel anchored to chevron" observation contradicts a live-verified,
+   already-shipped fix from 2026-07-31. Which page/case were you looking at?
+3. **Group B1/B2** — the "burger colours got worse" read traces to an invalid test-fixture
+   colour slug, not a code regression. Worth confirming this lands as "no code regression
+   found" rather than something Wave 2 tries to fix.
+
+Once those are settled, Wave 2 will re-group the CONFIRMED findings by their REAL shared
+root cause (which differs from this document's initial grouping in at least two places —
+Group M split into two, and several groups collapsed into "no default hover signal exists"
+as one underlying design question spanning D3/F1/parts of A).
