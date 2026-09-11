@@ -79,21 +79,21 @@ prompt.
      detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
 
 **What's still genuinely open:**
-- **R8 (motion/animation cloning from raw CSS) — SHIPPED + council-fixed 2026-09-11.** All 14
-  steps + 4 QA gates of `plans/phase-r8-motion-recognition.md` executed, independently verified,
-  and closed (D1021) — then a 4-rater `/qc-council` sweep (D1022) found and fixed a BLOCKER that
-  would have made the whole phase a silent no-op (Tier 1/2/3 wrote their match into the wrong
-  attribute key, `fx` instead of `sgsAnimation`), plus 2 more blockers (comma-separated
-  multi-animation CSS corrupting attribution; a forgeable Tier 4a "confirmed" gate flag on
-  Tier 4c/4d) and 3 majors (cyclic comma-list duration bug, Tier 3 silently dropping Tier 2's
-  `fxTrigger`, `_decl()` dropping the last CSS declaration without a trailing `;`). All fixed,
-  independently re-verified by live execution, pushed. **Confirmed NOT fixed, a genuine scope
-  decision not a bug: none of R8's 8 modules are wired into `assembly.py`/the orchestrator yet —
-  every fix above is currently inert until that wiring lands. `assembly.py` is a
-  project-designated sensitive/shared file (CLAUDE.md rule 7) — wiring needs its own design-gate,
-  not folded into the council-fix pass.** Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix
-  rounds against a genuine 0/13 measurement — modest, not strong, and disclosed as such. Full
-  detail: `decisions.md` D1021 + D1022, `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
+- **R8 (motion/animation cloning from raw CSS) — SHIPPED, council-fixed, AND WIRED 2026-09-11.**
+  All 14 steps + 4 QA gates of `plans/phase-r8-motion-recognition.md` executed and closed (D1021)
+  — a 4-rater `/qc-council` sweep found and fixed a BLOCKER that would have made the whole phase
+  a silent no-op plus 5 more real bugs (D1022) — then a design `/qc-council` validated exactly
+  where to wire all 8 modules into the real pipeline, built both streams (each checked by its own
+  `/qc-inline` subagent reviewer before acceptance), and they are now LIVE in `assembly.py`
+  (Tier 1/2/3, new step 3a1b) and a new `stage_neg1_motion_probe()` pre-flight stage in
+  `sgs-clone-orchestrator.py` (Tier 4a/4c/4d) (D1023). **One real, disclosed, non-blocking gap
+  remains open:** `fxTrigger` can currently only resolve to `'load'` in the live pipeline — the
+  wiring's snippet-builder reuses an existing helper that deliberately excludes `:hover`-scoped
+  CSS, so Tier 2's hover/scroll branches are correct and tested in isolation but unreachable from
+  a real clone today. Fails safe (never fabricates a wrong trigger), not built this session —
+  needs its own scoped look. Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix rounds against
+  a genuine 0/13 measurement — modest, not strong, and disclosed as such. Full detail:
+  `decisions.md` D1021 + D1022 + D1023, `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
   `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
   One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
   of this phase's files (keyword collision), not a code defect.
