@@ -1123,3 +1123,14 @@ Task 1: complete (commits 63e4713e2..8dba3c694, review CHANGES REQUIRED then APP
 wave — C1 critical finding closed and re-verified by mutation testing, I1/M1 doc corrections
 applied, D1034+D1035 in decisions.md). Q1's "Tier 0" (wire lingua_franca's primary_sgs_bem into
 the non-BEM-halt gate) shipped, correctly scoped to genuine slot-map hits only.
+
+---
+
+# SDD progress — Q2 Tier 1 (sibling-repetition detector), 2026-09-11
+
+Base commit: de6db5893 (main, excluding one interleaved peer commit)
+Task 1: complete (commits e250ff6d9..663abd2ae, review CHANGES REQUIRED then APPROVED after fix
+wave — Critical sign-off-gate truthy-check bug closed and re-verified by an 8-value bypass sweep,
+secondary ShapeSignature child-proximity docking also fixed, D1037 in decisions.md). Q2's "Tier 1"
+(structural repeated-sibling detection, survey/fix/fix-apply/check triad mirroring
+migrate-tier-object.py) shipped, standalone CLI, not yet wired into the orchestrator.
