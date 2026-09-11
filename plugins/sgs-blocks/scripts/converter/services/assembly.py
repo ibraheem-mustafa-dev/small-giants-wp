@@ -263,7 +263,7 @@ def build_block_markup(
     # classifiers; D1022's council found + fixed 3 real bugs in them AND
     # flagged, as its own explicit "confirmed not yet fixed" scope decision,
     # that NONE of R8's 8 modules were ever called from assembly.py or any
-    # orchestrator stage — every fix in D1022 was therefore inert in
+    # pipeline stage — every fix in D1022 was therefore inert in
     # production until this wiring pass). `scoped_motion_css_text()`
     # (motion_shape.py) finds THIS node's own effective animation/transition
     # declaration (via the same `collect_css_decls_for_element` every other
