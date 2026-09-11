@@ -1,16 +1,18 @@
 <?php
 /**
- * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 2: submenu/dropdown, burger +
- * magnet, drawer fork, sliding indicator, root box.
+ * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 2: submenu/dropdown, drawer
+ * fork, sliding indicator, root box.
  *
- * Split out of render.php (Spec 41 step 8, pure refactor) — burger icon/
- * background/hover/size, the bar/burger collapse-point switch, mega-menu +
- * dropdown disclosure positioning, drawer-specific submenu/sublink/current-page
- * overrides, listColumns in-drawer grid, the sliding-indicator colour override,
- * the root box (native spacing + responsive padding tiers), and the free-text
- * custom-CSS escape hatch. Extracted verbatim: the function body below is a
- * byte-for-byte copy of render.php's own "4e." through "4h." CSS-assembly
- * sections, unwrapped from render.php's local scope into explicit parameters.
+ * Split out of render.php (Spec 41 step 8) — the bar/burger collapse-point
+ * switch, mega-menu + dropdown disclosure positioning, the submenu LINK's own
+ * three-state colour/fill family and its typography, drawer-specific
+ * submenu/sublink/current-page overrides, listColumns in-drawer grid, the
+ * sliding-indicator colour override, the root box (native spacing + responsive
+ * padding tiers), and the free-text custom-CSS escape hatch.
+ *
+ * ⚠ The MENU BUTTON's own CSS is NOT here — it moved to
+ * `includes/nav-menu-trigger-css.php` at step 15, because it is a separate
+ * element with its own inspector panel.
  *
  * ⚠ LOAD ORDER: NOT bootstrap-loaded — `require_once`'d per-instance from
  * render.php, matching product-card's pattern and this file's own sibling
@@ -36,6 +38,10 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 	 * @param array  $sgs_tor_padding_tiers  Normalised padding tier object (desktop/tablet/mobile).
 	 * @param array  $sgs_tor_padding_desktop Desktop-tier padding sides array.
 	 * @param array  $sgs_tor_margin_desktop  Desktop-tier margin sides array.
+	 * @param array  $treatments             RESOLVED hover treatments from
+	 *                                        `sgs_nav_menu_resolved_treatments()` —
+	 *                                        ⛔ never the stored attribute.
+	 * @param string $trigger_mode           Resolved `triggerMode` (icon|text|icon-and-text).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_menu_submenu_css(
@@ -46,48 +52,15 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		string $indicator_colour_gradient,
 		array $sgs_tor_padding_tiers,
 		array $sgs_tor_padding_desktop,
-		array $sgs_tor_margin_desktop
+		array $sgs_tor_margin_desktop,
+		array $treatments = array(),
+		string $trigger_mode = 'icon'
 	): string {
-		$css = '';
+		$css         = '';
+		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
+		$t_sub_text  = (string) ( $treatments['submenuColourHoverTreatment'] ?? 'swap' );
+		$t_sub_bg    = (string) ( $treatments['submenuLinkBgHoverTreatment'] ?? 'swap' );
 
-		// 4e. Burger colour / resting background / hover / size.
-		// D956 — burgerColourGradient is the gradient sibling (778879732 rollout,
-		// Phase 3); gradient wins when set+valid.
-		$burger_colour           = isset( $attributes['burgerColour'] ) ? (string) $attributes['burgerColour'] : '';
-		$burger_colour_gradient  = isset( $attributes['burgerColourGradient'] ) ? (string) $attributes['burgerColourGradient'] : '';
-		$burger_colour_effective = sgs_resolve_text_colour_or_gradient( $burger_colour, $burger_colour_gradient );
-		if ( '' !== $burger_colour_effective ) {
-			$burger_colour_decl = sgs_text_colour_decl( $burger_colour_effective );
-			if ( '' !== $burger_colour_decl ) {
-				$css .= $uid_sel . ' .sgs-nav-menu__burger{' . $burger_colour_decl . ';}';
-			}
-			$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__burger', $burger_colour_effective );
-		}
-		if ( '' !== ( $attributes['burgerColourHover'] ?? '' ) ) {
-			$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__burger", "color:" . sgs_colour_value( $attributes['burgerColourHover'] ), ':focus-visible' );
-		}
-		
-		/*
-		 * RESTING background — the base for burgerHoverColour's hover state (Spec 35
-		 * FR-35-5 STATE_WITHOUT_BASE). Before this, the burger's hover background had
-		 * no resting counterpart: a client could style the hover fill but never the
-		 * button's own resting fill. style.css's `background:none` stays the
-		 * byte-identical default when this is left unset.
-		 */
-		$burger_bg = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
-		$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
-		if ( '' !== $burger_bg ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
-		}
-		$burger_hover_slug = isset( $attributes['burgerHoverColour'] ) ? (string) $attributes['burgerHoverColour'] : '';
-		if ( '' !== $burger_hover_slug ) {
-			$css .= sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' );
-		}
-		$burger_size = sgs_css_length_value( $attributes['burgerSize'] ?? '44px' );
-		if ( '' !== $burger_size ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__burger{width:' . $burger_size . ';height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
-		}
-		
 		// 4f. Bar ↔ burger collapse-point switch. A LEGITIMATE non-device-tier
 		// breakpoint (the visual bar/burger swap) — deliberately NOT part of the
 		// 768/1024 device system (see the block build brief §"Responsive breakpoint
@@ -251,8 +224,38 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// Same vertical bound as the mega panel above, and for the same reason — see
 		// the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
 		// long, since it has no width:min() forcing a wide multi-column layout.
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
-		
+		/*
+		 * `submenuTopOffset` (FR-41-11) — emitted as `calc(100% + <offset>)` so the
+		 * `100%` anchor is preserved and only the GAP is operator-owned. Empty
+		 * renders today's output exactly.
+		 */
+		$submenu_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
+		$submenu_wrap_top   = '' !== $submenu_top_offset ? 'calc(100% + ' . $submenu_top_offset . ')' : '100%';
+
+		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+
+		/*
+		 * ⛔ A non-zero offset creates a hover DEAD STRIP, and that reintroduces the
+		 * exact bug FR-41-13 exists to fix: the gap belongs to neither element, so
+		 * as the pointer crosses it neither is hovered and the parent flickers back
+		 * to its resting paint mid-journey. The bridge is MANDATORY and ships in
+		 * the same change.
+		 *
+		 * ⛔ `submenuCloseGrace` does NOT cover this — it is a `setTimeout` on the
+		 * bridge element's `mouseleave` that defers `ctx.isOpen = false`. It governs
+		 * OPENNESS and never touches CSS `:hover`. The panel correctly stays open
+		 * across the gap today; the parent's PAINT does not.
+		 *
+		 * Safe by construction: `.sgs-nav-menu__submenu-wrap::before` is claimed by
+		 * nothing; the wrap is already `position:absolute`, so it is its own
+		 * containing block; and a `display:none` element has no pseudo-elements, so
+		 * the bridge exists only while the panel is open and can never sit
+		 * invisibly over the bar.
+		 */
+		if ( '' !== $submenu_top_offset ) {
+			$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:' . $submenu_top_offset . ';pointer-events:auto;}';
+		}
+
 		/*
 		 * LIFT THE WHOLE ITEM while its submenu is open (Bean, 2026-07-31 — live-caught:
 		 * the site logo painted OVER the open dropdown; hit-testing the panel's centre
@@ -417,21 +420,102 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// Phase 3); routed as a direct decl (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
 		// switch to `background-image` for a gradient.
+		$submenu_colour          = (string) ( $attributes['submenuColour'] ?? '' );
+		$submenu_colour_hover    = (string) ( $attributes['submenuColourHover'] ?? '' );
+		$submenu_colour_current  = (string) ( $attributes['submenuColourCurrent'] ?? '' );
 		$submenu_colour_effective = sgs_resolve_text_colour_or_gradient(
-			(string) ( $attributes['submenuColour'] ?? '' ),
+			$submenu_colour,
 			(string) ( $attributes['submenuColourGradient'] ?? '' )
 		);
-		if ( '' !== $submenu_colour_effective ) {
+
+		/*
+		 * ⚠ The sublink Sweep selector EXCLUDES featured sub-items. A featured
+		 * sub-item paints a real background directly on `.sgs-nav-menu__sublink`
+		 * (from `featuredBg`, republished as `--sgs-nm-featured-bg`), which
+		 * `background-clip:text` would clip to the glyph shapes. The predicate is
+		 * per-ROW and "featured" is a per-ITEM distinction, so adding `featuredBg`
+		 * to condition 1 would withdraw Sweep from EVERY sub-item whenever a
+		 * featured pill exists anywhere — punishing the ordinary rows for the
+		 * featured one. Scoping the selector is the narrow fix, and it matches how
+		 * the featured item is already treated as owning its own treatment.
+		 * ⛔ If this scoping is ever removed, `featuredBg` AND `featuredBgGradient`
+		 * MUST join the row's declared `blockingBackgroundAttrs` and Sweep must be
+		 * withdrawn from the whole row — those are the only two compliant outcomes.
+		 */
+		$sublink_sweep_sel = $uid_sel . ' .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink';
+		$sublink_sweep     = array(
+			'base'  => '',
+			'hover' => '',
+		);
+		$submenu_sweep_hover = '';
+		if ( 'sweep' === $t_sub_text && '' !== $submenu_colour_hover ) {
+			$submenu_sweep_hover = sgs_colour_value( $submenu_colour_hover );
+			$sublink_sweep       = sgs_nav_menu_text_sweep_css(
+				$sublink_sweep_sel,
+				'' !== $submenu_colour ? sgs_colour_value( $submenu_colour ) : '',
+				$submenu_sweep_hover
+			);
+		}
+
+		if ( '' !== $sublink_sweep['base'] ) {
+			$css .= $sublink_sweep['base'];
+		} elseif ( '' !== $submenu_colour_effective ) {
 			$submenu_colour_decl = sgs_text_colour_decl( $submenu_colour_effective );
 			if ( '' !== $submenu_colour_decl ) {
-				$css .= $uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl . ';}';
+				$css .= $sublink_sel . '{' . $submenu_colour_decl . ';}';
 			}
-			$css .= sgs_text_colour_gradient_fallback_rule( $uid_sel . ' .sgs-nav-menu__sublink', $submenu_colour_effective );
+			$css .= sgs_text_colour_gradient_fallback_rule( $sublink_sel, $submenu_colour_effective );
 		}
-		if ( '' !== ( $attributes['submenuColourHover'] ?? '' ) ) {
-			$css .= sgs_hover_state_rules( "{$uid_sel} .sgs-nav-menu__sublink", "color:" . sgs_colour_value( $attributes['submenuColourHover'] ), ':focus-visible' );
+
+		// Current BEFORE Hover, and never guarded (FR-41-3 binding rule 3).
+		if ( '' !== $submenu_colour_current ) {
+			$css .= $sublink_sel . '[aria-current="page"]{color:' . sgs_colour_value( $submenu_colour_current ) . ';}';
 		}
-		
+
+		if ( '' !== $sublink_sweep['hover'] ) {
+			$css .= $sublink_sweep['hover'];
+		} elseif ( 'none' !== $t_sub_text && '' !== $submenu_colour_hover ) {
+			$css .= sgs_hover_state_rules( $sublink_sel, 'color:' . sgs_colour_value( $submenu_colour_hover ), ':focus-visible' );
+		}
+
+		/*
+		 * ── SUBMENU LINK BACKGROUND — the genuinely hoverable surface (FR-41-9).
+		 *
+		 * The PANEL is Normal-only (it is never itself the hovered surface); the
+		 * LINK carries the full three-state fill family under its own attribute
+		 * names. ⛔ `submenuBg*` names are NOT reused here — two elements sharing
+		 * one attribute prefix is exactly the element-conflation this split ends.
+		 *
+		 * `submenuLinkBgHoverTreatment` is a TWO-option row (none|swap): the shared
+		 * sliding pill is an ITEM-row mechanism and a per-link sweep band on a
+		 * strictly vertical list has no precedent.
+		 */
+		$sublink_bg_normal  = sgs_background_paint_decl(
+			(string) ( $attributes['submenuLinkBg'] ?? '' ),
+			sgs_css_gradient_value( $attributes['submenuLinkBgGradient'] ?? '' )
+		);
+		$sublink_bg_hover   = 'none' === $t_sub_bg
+			? ''
+			: sgs_background_paint_decl( (string) ( $attributes['submenuLinkBgHover'] ?? '' ), '' );
+		$sublink_bg_current = sgs_background_paint_decl( (string) ( $attributes['submenuLinkBgCurrent'] ?? '' ), '' );
+
+		if ( '' !== $sublink_bg_normal ) {
+			$css .= $sublink_sel . '{' . $sublink_bg_normal . ';}';
+		}
+		if ( '' !== $sublink_bg_current ) {
+			$css .= $sublink_sel . '[aria-current="page"]{' . $sublink_bg_current . ';}';
+		}
+		if ( '' !== $sublink_bg_hover ) {
+			$css .= sgs_hover_state_rules( $sublink_sel, $sublink_bg_hover, ':focus-visible' );
+		}
+
+		// FR-41-22(b) — submenu typography. ⛔ Without this line every one of the
+		// `submenu*` typography attributes is a dead control and the build fails
+		// `check-dead-controls.js`. The hover trio has no branch in the shared
+		// helper at all, hence the block-private companion emitter beside it.
+		$css .= sgs_typography_css_rule( $attributes, 'submenu', $sublink_sel );
+		$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'submenu', $sublink_sel, $submenu_sweep_hover );
+
 		/*
 		 * Hover/focus read as DESIGN, not as a stray underline: a tinted row plus a
 		 * brand-coloured ring. `currentColor` was wrong here — it resolves to the near

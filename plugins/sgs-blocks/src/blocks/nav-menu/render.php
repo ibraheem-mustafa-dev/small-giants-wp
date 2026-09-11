@@ -60,17 +60,83 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-markup.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-trigger-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
-// FR-41-21 (step 15, owner ruling 2): sgs_nav_menu_typography_hover_rule()
-// lands here as a BLOCK-PRIVATE function inside its own function_exists()
-// guard, declared directly in THIS file -- NOT moved to includes/. Budget
-// ~30 code lines against this file's own limit when that step lands.
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
 // renders its root block-private since D539 (see §5). Re-adding the require
 // would reintroduce a dependency nothing uses.
+
+if ( ! function_exists( 'sgs_nav_menu_typography_hover_rule' ) ) {
+	/**
+	 * BLOCK-PRIVATE hover-typography emitter (Spec 41 FR-41-21, owner ruling 2).
+	 *
+	 * ⛔ Declared HERE, in this block's own render.php, NOT in `includes/` —
+	 * `includes/` is the SHARED folder even for a file only nav-menu requires,
+	 * and `TypographyControls`' `showHover` trio is block-private code. It is
+	 * wrapped in a `function_exists()` guard because a top-level function
+	 * declaration in a per-instance render.php fatals on the page's SECOND
+	 * instance, and this page has two (the header bar + the drawer's own copy).
+	 *
+	 * ⛔ The three allowlists are reproduced LITERALLY from
+	 * `includes/helpers-typography.php::sgs_typography_css_rule()` — they are
+	 * inline arrays inside that function with no exported constant to import.
+	 * Duplicating three lines is the accepted cost of NOT extending a shared
+	 * helper with callers across most of the block library (FR-41-21). If the
+	 * base path's allowlists ever change, this emitter changes in the same commit.
+	 *
+	 * ⛔ A value that is SET but NOT PERMITTED emits nothing — it never falls
+	 * back to the base value. Falling back would repaint the resting declaration
+	 * inside a `:hover` rule: invisible when it agrees with the base, a silent
+	 * override when it does not.
+	 *
+	 * @param array  $attributes         Block attributes.
+	 * @param string $prefix             Typography prefix ('item' | 'submenu').
+	 * @param string $selector           Base selector (no `:hover`).
+	 * @param string $sweep_hover_colour RESOLVED sweep hover colour, or '' when this
+	 *                                   prefix's resolved treatment is not 'sweep'.
+	 *                                   Spec 41 FR-41-26 "SWEEP + A HOVER
+	 *                                   TEXT-DECORATION": `text-decoration-color` is
+	 *                                   NOT governed by `-webkit-text-fill-color`, so
+	 *                                   without this the glyphs travel and the line
+	 *                                   under them stays at the resting colour.
+	 * @return string CSS, or '' when nothing permitted is set.
+	 */
+	function sgs_nav_menu_typography_hover_rule( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' ): string {
+		if ( '' === $selector ) {
+			return '';
+		}
+
+		$decls = array();
+
+		$decoration = (string) ( $attributes[ $prefix . 'TextDecorationHover' ] ?? '' );
+		if ( in_array( $decoration, array( 'none', 'underline', 'line-through', 'overline' ), true ) ) {
+			$decls[] = 'text-decoration:' . $decoration;
+			// Same call, so the line and the glyphs arrive together. ⛔ NO
+			// transition on it — two transitions at different rates on one
+			// element is the exact "looked broken" failure sgs/business-info hit.
+			if ( 'none' !== $decoration && '' !== $sweep_hover_colour ) {
+				$decls[] = 'text-decoration-color:' . $sweep_hover_colour;
+			}
+		}
+
+		$transform = (string) ( $attributes[ $prefix . 'TextTransformHover' ] ?? '' );
+		if ( in_array( $transform, array( 'none', 'uppercase', 'lowercase', 'capitalize' ), true ) ) {
+			$decls[] = 'text-transform:' . $transform;
+		}
+
+		$weight = preg_replace( '/[^a-z0-9]/i', '', (string) ( $attributes[ $prefix . 'FontWeightHover' ] ?? '' ) );
+		if ( '' !== (string) $weight ) {
+			$decls[] = 'font-weight:' . $weight;
+		}
+
+		return $decls ? sgs_hover_state_rules( $selector, implode( ';', $decls ), ':focus-visible' ) : '';
+	}
+}
 
 if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 	/**
@@ -366,9 +432,20 @@ $flat_items   = $bar_renderer->flatten( $menu_blocks );
  * (`render_items()`, unchanged, dropdowns/mega intact) stays the default for
  * every existing header/footer instance.
  */
+// FR-41-30(b): the drawer sub-item marker is operator-chosen, resolved through
+// the same source-aware resolver as the trigger icon. The stored default
+// (`lucide`/`chevron-right`) reproduces the previously-hardcoded glyph exactly.
+$sgs_nm_sublink_marker = sgs_nav_menu_icon_markup(
+	$attributes['sublinkMarkerIcon'] ?? null,
+	array(
+		'source' => 'lucide',
+		'name'   => 'chevron-right',
+	)
+);
+
 $submenu_model_ctx = $block->context['sgs/navDrawerSubmenuModel'] ?? null;
 if ( is_string( $submenu_model_ctx ) && in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
-	$items_html    = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids );
+	$items_html    = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker );
 	$sgs_nm_is_drawer_list = true;
 } else {
 	$items_html    = sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
@@ -403,7 +480,58 @@ if ( class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
 	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
 }
 
-$burger_icon = sgs_get_lucide_icon( 'menu' );
+/*
+ * ── Menu button: mode, label, icon, magnet (FR-41-12 / FR-41-30(a) / FR-41-31).
+ *
+ * `triggerMode` is PHP-validated, not a JSON enum — an out-of-enum stored value
+ * would otherwise coerce silently back to the block.json default, which bites
+ * hardest via a programmatic writer (the cloning converter, a theme pattern).
+ *
+ * ⚠ The `aria-label` is built as a VARIABLE and interpolated. It used to live
+ * inside the `sprintf()` FORMAT STRING, where the only way to "drop" it was to
+ * feed it '' — emitting `aria-label=""`, an EMPTY accessible name, strictly
+ * worse than the Label-in-Name mismatch it was meant to fix. Under `text` and
+ * `icon-and-text` the visible word IS the accessible name, so the attribute is
+ * omitted entirely; under `icon` it stays.
+ */
+$trigger_mode = in_array( $attributes['triggerMode'] ?? '', array( 'icon', 'text', 'icon-and-text' ), true )
+	? (string) $attributes['triggerMode']
+	: 'icon';
+
+$trigger_label = trim( (string) ( $attributes['triggerLabel'] ?? '' ) );
+if ( '' === $trigger_label ) {
+	$trigger_label = __( 'Menu', 'sgs-blocks' );
+}
+
+$burger_icon = 'text' === $trigger_mode
+	? ''
+	: sgs_nav_menu_icon_markup(
+		$attributes['triggerIcon'] ?? null,
+		array(
+			'source' => 'lucide',
+			'name'   => 'menu',
+		)
+	);
+
+$burger_aria_attr = 'icon' === $trigger_mode
+	? sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) )
+	: '';
+
+/*
+ * FR-41-31 — the magnet rides as three data attributes on the button and
+ * NOTHING else. The motion registry's enqueue is MARKUP-SNIFFED (it regexes the
+ * rendered HTML for `data-sgs-fx="…"`), so the shared fx-magnet module and its
+ * stylesheet are picked up automatically when the attribute is present and are
+ * not loaded at all when it is absent. ⛔ No view.js change and no enqueue code
+ * — that would be a second mechanism competing with a working one. When the
+ * toggle is off, NO attribute is emitted, so the markup is byte-identical.
+ */
+$burger_magnet_attrs = '';
+if ( ! empty( $attributes['triggerMagnetEnabled'] ) ) {
+	$burger_magnet_attrs = ' data-sgs-fx="magnet"'
+		. ' data-sgs-fx-magnet-radius="' . esc_attr( (string) absint( $attributes['triggerMagnetRadius'] ?? 120 ) ) . '"'
+		. ' data-sgs-fx-magnet-strength="' . esc_attr( (string) absint( $attributes['triggerMagnetStrength'] ?? 24 ) ) . '"';
+}
 
 // wp_interactivity_data_wp_context() is the WP-canonical compact single-quoted
 // emitter (avoids the &quot; bloat get_block_wrapper_attributes() would add) —
@@ -415,7 +543,15 @@ $burger_context_attr = wp_interactivity_data_wp_context(
 	)
 );
 
-$toggle_html = sgs_nav_menu_burger_toggle_markup( $burger_context_attr, $drawer_ref, $burger_icon );
+$toggle_html = sgs_nav_menu_burger_toggle_markup(
+	$burger_context_attr,
+	$drawer_ref,
+	$burger_icon,
+	$trigger_mode,
+	$trigger_label,
+	$burger_aria_attr,
+	$burger_magnet_attrs
+);
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
 // The landmark ITSELF is this block's root: the final `printf()` at the end of
@@ -508,9 +644,29 @@ $bar_html = sprintf(
 	esc_attr( $bar_class )
 );
 
+/*
+ * ── 3b. RESOLVE the hover treatments ONCE, server-side (FR-41-26). ───────────
+ *
+ * ⛔ The Sweep eligibility predicate is not a UI rule — it is the EMISSION rule,
+ * and the inspector merely reflects it. Its inputs are OTHER attributes, which
+ * the operator can change AFTER choosing Sweep, so a UI-only gate is not a gate
+ * at all. `sgs_nav_menu_resolved_treatments()` re-evaluates the SAME declared
+ * rows (`block.json::supports.sgs.sweepEligibility`) the inspector reads, and
+ * falls back to 'swap' when the predicate is false — regardless of the stored
+ * value, which is NOT cleared (it becomes valid again the moment the operator
+ * clears the blocking attribute).
+ *
+ * ⛔ Every downstream rule reads THIS variable, never the stored attribute
+ * again. The sweep-plus-text-decoration rule (FR-41-26) is the first consumer
+ * where that distinction bites: keyed on the stored value it would fire on a row
+ * that never swept.
+ */
+$sgs_nm_treatments = sgs_nav_menu_resolved_treatments( $attributes );
+
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 $css  = '';
-$css .= sgs_nav_menu_item_state_css( $attributes, $uid_sel );
+$css .= sgs_nav_menu_item_state_css( $attributes, $uid_sel, $sgs_nm_treatments );
+$css .= sgs_nav_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
 $css .= sgs_nav_menu_submenu_css(
 	$attributes,
 	$uid_sel,
@@ -519,7 +675,8 @@ $css .= sgs_nav_menu_submenu_css(
 	$indicator_colour_gradient,
 	$sgs_tor_padding_tiers,
 	$sgs_tor_padding_desktop,
-	$sgs_tor_margin_desktop
+	$sgs_tor_margin_desktop,
+	$sgs_nm_treatments
 );
 
 // ── 5. Assemble — BLOCK-PRIVATE root (D539, Bean-approved 2026-08-09).

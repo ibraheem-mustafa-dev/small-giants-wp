@@ -3,12 +3,16 @@
  * SGS Nav Menu (sgs/nav-menu) — scoped CSS, part 1: item/state colour, border,
  * treatments + featured sweep.
  *
- * Split out of render.php (Spec 41 step 8, pure refactor) — item typography,
- * nav container colour, item text/background colour (resting + pill/text/
- * underline hover treatments), and the featured-item sweep (normal + hover +
- * shape). Extracted verbatim: the function body below is a byte-for-byte copy
- * of render.php's own "4a." through "4d-ii." CSS-assembly sections, unwrapped
- * from render.php's local scope into explicit parameters.
+ * Split out of render.php (Spec 41 step 8) — item typography, nav container
+ * colour, the item text / background / border THREE-STATE emission (Normal,
+ * Hover, Current) with its paired hover treatments (None / Swap / Sweep /
+ * Highlight, Spec 41 FR-41-23), and the featured-item styling.
+ *
+ * ⚠ The Sweep eligibility predicate, the treatment resolution and the shared
+ * glyph-sweep emitter are NOT here — they live in
+ * `includes/nav-menu-treatments.php`, because the trigger and submenu modules
+ * consume them too. This module reads the RESOLVED treatment it is handed and
+ * never re-derives it.
  *
  * ⚠ LOAD ORDER: NOT bootstrap-loaded — `require_once`'d per-instance from
  * render.php, matching product-card's pattern. Its function is only in scope
@@ -26,16 +30,27 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 *
 	 * @param array  $attributes Block attributes (verbatim render.php param).
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
+	 * @param array  $treatments RESOLVED hover treatments from
+	 *                           `sgs_nav_menu_resolved_treatments()` — ⛔ never the
+	 *                           stored attribute, which can say 'sweep' on a row
+	 *                           whose eligibility predicate is false.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_item_state_css( array $attributes, string $uid_sel ): string {
+	function sgs_nav_menu_item_state_css( array $attributes, string $uid_sel, array $treatments = array() ): string {
 	$css      = '';
 	$link_sel = $uid_sel . ' .sgs-nav-menu__link';
-	
+
+	// ⛔ The RESOLVED treatment, never the stored attribute. render.php resolves
+	// it once (sgs_nav_menu_resolved_treatments()) immediately after the
+	// eligibility evaluation; every rule below reads THAT value.
+	$t_text   = (string) ( $treatments['itemColourHoverTreatment'] ?? 'swap' );
+	$t_bg     = (string) ( $treatments['itemBgHoverTreatment'] ?? 'swap' );
+	$t_border = (string) ( $treatments['itemBorderHoverTreatment'] ?? 'swap' );
+
 	// 4a. Item typography — flat scalar model, shared helper (matches
 	// TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
-	
+
 	/*
 	 * 4a-ii. Nav CONTAINER appearance.
 	 *
@@ -82,19 +97,23 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// state (Spec 35 element-first): the pre-2026-07-20 model paired resting TEXT
 	// against hover BACKGROUND in one toggle, so an operator could never set a
 	// hover text colour at all — it was auto-computed and unreachable.
+	$sgs_nm_hex  = static function ( $raw ): string {
+		$raw = (string) $raw;
+		return '' !== $raw ? (string) sgs_resolve_palette_hex( sanitize_html_class( $raw ), '' ) : '';
+	};
 	$item_colour = isset( $attributes['itemColour'] ) ? (string) $attributes['itemColour'] : '';
 	// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
 	// (below) paints on a `::before` layer, never $link_sel itself (D942 recipe
 	// item 1's own comment at the itemBg block explains why ::after was unusable
-	// here). Hover ($item_fg_hover) is NOT wired to gradient: 'pill' hoverStyle
-	// auto-computes the text colour for WCAG contrast against itemBgHover, which
-	// a client-chosen gradient can't meaningfully replace -- separate decision.
+	// here). The Hover text colour is NOT wired to a gradient sibling:
+	// `itemSmartContrast` resolves it for WCAG contrast against the Hover fill,
+	// which a client-chosen gradient cannot meaningfully replace -- and it is
+	// also condition 2's blocking input for the text Sweep (FR-41-26).
 	$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
 	$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
-	$item_bg          = isset( $attributes['itemBg'] ) ? sanitize_html_class( $attributes['itemBg'] ) : '';
-	$item_bg_hex      = '' !== $item_bg ? sgs_resolve_palette_hex( $item_bg, '' ) : '';
+	$item_bg_hex      = $sgs_nm_hex( $attributes['itemBg'] ?? '' );
 	$item_bg_gradient = sgs_css_gradient_value( $attributes['itemBgGradient'] ?? '' );
-	
+
 	/*
 	 * Shape + motion come from ATTRIBUTES and theme TOKENS, never literals. The
 	 * pre-2026-07-20 code hardcoded `border-radius:8px` on both pills, `font-weight:600`
@@ -106,19 +125,147 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 */
 	$transition_fast = 'var(--wp--custom--transition--fast, 150ms ease)';
 	
-	$item_radius       = isset( $attributes['itemRadius'] ) ? (float) $attributes['itemRadius'] : 8;
-	$item_radius_hover = isset( $attributes['itemRadiusHover'] ) && null !== $attributes['itemRadiusHover']
-		? (float) $attributes['itemRadiusHover']
-		: $item_radius;
-	
-	if ( '' !== $item_colour_effective ) {
+	/*
+	 * ── Item SHAPE — `itemBorderRadius` (FR-41-7 / FR-41-33). ────────────────
+	 *
+	 * A CORNER-keyed box object ({topLeft,topRight,bottomRight,bottomLeft}),
+	 * read through `sgs_corner_object_shorthand()` — NOT the side-keyed helper.
+	 * It replaces the retired flat `itemRadius`/`itemRadiusHover` scalars: radius
+	 * rides `SgsBorderControl`'s own radius pair, and there is no hover radius
+	 * (the control has no state axis for shape).
+	 */
+	$item_radius_shorthand = sgs_corner_object_shorthand( $attributes['itemBorderRadius'] ?? null );
+	if ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ) {
+		$css .= $link_sel . '{border-radius:' . $item_radius_shorthand . ';}';
+	}
+
+	/*
+	 * ── ITEM TEXT — three states (FR-41-3 / FR-41-23). ───────────────────────
+	 *
+	 * `itemSmartContrast` (FR-41-5) is the pill branch's one genuinely unique
+	 * behaviour, preserved as a toggle rather than a hardcoded side effect. When
+	 * ON and the operator has set a Hover or Current BACKGROUND, the matching
+	 * foreground resolves through the EXISTING shared WCAG helpers — the same two
+	 * the retired pill branch called, and the same two the featured pill and
+	 * sgs/nav-drawer already use. ⛔ No new contrast function is built.
+	 *
+	 * ⚠ Case two means an explicit colour does not always win: the operator's
+	 * choice is kept whenever it clears AA against the resolved fill, and falls
+	 * back to the guaranteed-safe binary only when it does not. That is the
+	 * shipped behaviour being preserved. An operator who wants their unreadable
+	 * colour rendered as-is switches the toggle off; that is what it is for.
+	 */
+	$item_bg_hover_hex        = $sgs_nm_hex( $attributes['itemBgHover'] ?? '' );
+	$item_bg_current_hex      = $sgs_nm_hex( $attributes['itemBgCurrent'] ?? '' );
+	$item_bg_hover_gradient   = sgs_css_gradient_value( $attributes['itemBgHoverGradient'] ?? '' );
+	$item_bg_current_gradient = sgs_css_gradient_value( $attributes['itemBgCurrentGradient'] ?? '' );
+
+	$item_colour_hover   = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
+	$item_colour_current = isset( $attributes['itemColourCurrent'] ) ? (string) $attributes['itemColourCurrent'] : '';
+
+	$smart_contrast = ! isset( $attributes['itemSmartContrast'] ) || (bool) $attributes['itemSmartContrast'];
+	if ( $smart_contrast ) {
+		$smart_fg = static function ( string $bg_hex, string $preferred ): string {
+			if ( '' === $bg_hex ) {
+				return $preferred;
+			}
+			$preferred_hex = '' !== $preferred ? (string) sgs_resolve_palette_hex( $preferred, '' ) : '';
+			return '' !== $preferred_hex
+				? (string) sgs_wcag_preferred_text_colour_for_bg( $bg_hex, $preferred_hex )
+				: (string) sgs_wcag_text_colour_for_bg( $bg_hex );
+		};
+		$item_colour_hover   = $smart_fg( $item_bg_hover_hex, $item_colour_hover );
+		$item_colour_current = $smart_fg( $item_bg_current_hex, $item_colour_current );
+	}
+
+	// Passed to the block-private typography-hover emitter so a hover
+	// text-decoration travels WITH the swept glyphs (FR-41-26) — '' on every
+	// non-sweep row, because on a resolved 'swap' `text-decoration-color`
+	// already follows the instant colour change for free through currentColor.
+	$item_sweep_hover = '';
+
+	$item_text_sweep = array(
+		'base'  => '',
+		'hover' => '',
+	);
+	if ( 'sweep' === $t_text && '' !== $item_colour_hover ) {
+		$item_sweep_hover = sgs_colour_value( $item_colour_hover );
+		$item_text_sweep  = sgs_nav_menu_text_sweep_css(
+			$link_sel,
+			'' !== $item_colour ? sgs_colour_value( $item_colour ) : '',
+			$item_sweep_hover
+		);
+	}
+
+	if ( '' !== $item_text_sweep['base'] ) {
+		$css .= $item_text_sweep['base'];
+	} elseif ( '' !== $item_colour_effective ) {
 		$item_colour_decl = sgs_text_colour_decl( $item_colour_effective );
 		if ( '' !== $item_colour_decl ) {
 			$css .= $link_sel . '{' . $item_colour_decl . ';}';
 		}
 		$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 	}
-	if ( '' !== $item_bg_hex || '' !== $item_bg_gradient ) {
+
+	// ⛔ Current BEFORE Hover, and never guarded — it is not pointer-dependent.
+	// Both states differ from the base by one single-specificity suffix, so the
+	// pair always ties and source order is the only tie-breaker: hover wins when
+	// you point at the item for the page you are already on.
+	if ( '' !== $item_colour_current ) {
+		$css .= $link_sel . '[aria-current="page"]{color:' . sgs_colour_value( $item_colour_current ) . ';}';
+	}
+
+	if ( '' !== $item_text_sweep['hover'] ) {
+		$css .= $item_text_sweep['hover'];
+	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover ) {
+		$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_colour_hover ), ':focus-visible' );
+	}
+
+	// FR-41-6 — the Current-state weight, under the NEVER-LIGHTER rule. An
+	// operator who bolds the whole menu would otherwise see the current page
+	// render LIGHTER than every other item: a signal pointing the wrong way. An
+	// empty itemFontWeight (the shipped default) casts to 0, so the default
+	// "600" always emits and today's output is preserved byte-for-byte.
+	$item_weight_current = (int) ( $attributes['itemFontWeightCurrent'] ?? 0 );
+	if ( $item_weight_current > (int) ( $attributes['itemFontWeight'] ?? 0 ) ) {
+		$css .= $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
+			. $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{font-weight:' . $item_weight_current . ';}';
+	}
+
+	$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'item', $link_sel, $item_sweep_hover );
+
+	/*
+	 * ── ITEM BACKGROUND — ALL THREE fills on `{link}::before` (FR-41-23). ────
+	 *
+	 * ⛔ No state's fill is emitted onto `.sgs-nav-menu__link` itself. The
+	 * retired `hoverStyle === 'pill'` branch painted `background-color` directly
+	 * on the link; if its replacement landed back there, the item TEXT row's
+	 * Sweep would clip the operator's hover fill to the shape of the letters —
+	 * the exact defect class FR-41-26's eligibility section exists to prevent,
+	 * arriving through the front door. `{link}::before` is contested by nothing:
+	 * the border-sweep band owns `::after`, and the text sweep claims no
+	 * pseudo-element at all.
+	 *
+	 * ⚠ `position:relative;isolation:isolate` is emitted whenever ANY of the
+	 * three fills is set, not only the resting one — a Hover-only fill would
+	 * otherwise get a `::before` with no positioned ancestor and no stacking
+	 * context.
+	 *
+	 * FR-41-14/FR-41-25: under `highlight` the shared sliding pill is the ONE
+	 * background shape for both non-resting states, so the per-item hover and
+	 * current fills are skipped. Per-STATE, never per-row — the Normal fill (the
+	 * pill does not replace it) and the Hover swatch (the pill is PAINTED in it)
+	 * both survive. The stored `itemBgCurrent` is not cleared.
+	 */
+	$item_bg_normal_decl  = sgs_background_paint_decl( $item_bg_hex, $item_bg_gradient );
+	$item_bg_hover_decl   = ( 'highlight' === $t_bg || 'none' === $t_bg )
+		? ''
+		: sgs_background_paint_decl( $item_bg_hover_hex, $item_bg_hover_gradient );
+	$item_bg_current_decl = 'highlight' === $t_bg
+		? ''
+		: sgs_background_paint_decl( $item_bg_current_hex, $item_bg_current_gradient );
+
+	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl ) {
 		/*
 		 * D942 recipe item 1 (`itemColour`): `itemColour`'s `color:` and
 		 * `itemBg`'s `background-color:` used to paint the SAME selector
@@ -127,132 +274,127 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		 * `background-clip:text` (it clips the element's whole background
 		 * paint area, not just this declaration). The usual fix is
 		 * `sgs_block_background_layer_css()`, which moves the paint onto a
-		 * `::after` layer, but `$link_sel` already legitimately owns
-		 * `::after` for the hoverStyle='underline' bar below — two
-		 * pseudo-elements cannot share one selector. `::before` is confirmed
-		 * unused anywhere else in this block's own CSS, so the background
-		 * moves there instead (same shape, hand-composed for the free slot).
-		 * Applies regardless of hoverStyle, same as the resting paint it
-		 * replaces. `itemBgGradient` (below) is the sibling gradient wired
-		 * 2026-09-04 — the second argument was previously a literal `null`
-		 * placeholder.
+		 * `::after` layer, but `::after` was taken at the time. `::before` was
+		 * free, so the background moved there instead (same shape,
+		 * hand-composed for the free slot). ⚠ `::after` is free again now that
+		 * the underline bar is retired — the background deliberately STAYS on
+		 * `::before` (moving it would be churn with no benefit), and the border
+		 * sweep band claims `::after` instead.
 		 */
-		$item_bg_before_decl = sgs_background_paint_decl( $item_bg_hex, $item_bg_gradient );
-		$css                .= $link_sel . '{position:relative;isolation:isolate;border-radius:' . esc_attr( (string) $item_radius ) . 'px;}';
-		$css                .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $item_bg_before_decl . ';}';
+		$css .= $link_sel . '{position:relative;isolation:isolate;}';
+		$css .= $link_sel . '::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;'
+			. $item_bg_normal_decl . ';}';
+		// Current before Hover, same tie-breaker rule as the text row above.
+		if ( '' !== $item_bg_current_decl ) {
+			$css .= $link_sel . '[aria-current="page"]::before{' . $item_bg_current_decl . ';}';
+		}
+		if ( '' !== $item_bg_hover_decl ) {
+			$css .= sgs_hover_state_rules( $link_sel, $item_bg_hover_decl, ':focus-visible', '::before' );
+		}
 	}
 	
-	// 4c. Hover / focus-visible / current-page state. [aria-current="page"] is set
-	// by view.js at mount (client-side), so the same treatment doubles as the
-	// current-page indicator — which is why an operator-chosen style matters.
-	
 	/*
-	 * CURRENT-PAGE IS NO LONGER IN THIS LIST (Bean, 2026-07-31 — he opened the drawer
-	 * and found "the menu item that matches the current page has the exact same
-	 * styling as the hover/click"). Reusing the hover treatment as the current-page
-	 * indicator was deliberate once, but it means a visitor cannot tell WHERE THEY
-	 * ARE from WHAT THEY ARE POINTING AT. Different questions, different answers.
-	 * Hover/focus keeps the operator's chosen style; current-page gets its own.
+	 * ── ITEM BORDER — three states + the directional Sweep band (FR-41-7/8). ─
+	 *
+	 * ONE border control, per-side by construction: a bottom border is the
+	 * drawer-style row separator, a right border is the flat bar's vertical
+	 * divider, all four is a boxed item. ⛔ There is no separate "Item Divider"
+	 * mechanism — two mechanisms answering one question is how the pre-existing
+	 * double-line bug happened.
+	 *
+	 * Width is BASE-ONLY by the control's own design: per-device border width was
+	 * cancelled framework-wide (Bean, 2026-08-29), not deferred.
 	 */
-	$hover_targets = array(
-		$link_sel . ':hover',
-		$link_sel . ':focus-visible',
+	$item_border_box   = is_array( $attributes['itemBorderWidth'] ?? null ) ? $attributes['itemBorderWidth'] : array();
+	$item_border_width = $item_border_box ? sgs_box_object_shorthand( $item_border_box ) : null;
+	$item_border_style = sgs_css_keyword_sanitise( $attributes['itemBorderStyle'] ?? '' );
+	if ( null !== $item_border_width && '' !== $item_border_width ) {
+		// A width with no style paints nothing at all, so `solid` is the shape
+		// the control's own storage implies rather than a design default — an
+		// operator who wants no border clears the WIDTH (or picks style `none`).
+		$css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'
+			. ( '' !== $item_border_style ? $item_border_style : 'solid' ) . ';}';
+	} elseif ( '' !== $item_border_style ) {
+		$css .= $link_sel . '{border-style:' . $item_border_style . ';}';
+	}
+
+	/*
+	 * ⛔ Under `sweep` the band OWNS every non-resting colour on the bottom edge.
+	 * Without the suppression the shared painter repaints a real border on the
+	 * BORDER box directly beneath the band on the PADDING box — two visible
+	 * horizontal lines, one un-asked-for. That is discharged by step 6a's
+	 * additive `suppress_edges` parameter on the shared helper, called ONCE and
+	 * normally. ⛔ No block-private `border-bottom-color` override sits alongside
+	 * it: two overlapping fixes are unfalsifiable, so neither could ever be
+	 * safely removed.
+	 *
+	 * ⛔ When the treatment is NOT `sweep`, NO `suppress_edges` key is passed at
+	 * all — not an empty array, not all-false. The absent key is what keeps the
+	 * emission byte-identical to the non-sweep case (the helper emits the flat
+	 * `border-color` shorthand, not per-edge longhands).
+	 */
+	$item_border_map = array(
+		'base'    => 'itemBorderColour',
+		'hover'   => 'itemBorderColourHover',
+		'current' => 'itemBorderColourCurrent',
 	);
-	$hover_sel     = implode( ',', $hover_targets );
-	
-	/*
-	 * hoverStyle is PHP-validated, NOT a JSON `enum` (block.json deliberately
-	 * declares none) — an out-of-enum JSON enum silently coerces the stored value
-	 * back to the block.json default with no error/warning, which bites hardest via
-	 * a programmatic writer (the cloning pipeline, pattern files) that sets the
-	 * attribute directly rather than through this block's inspector control. Mirrors
-	 * the indicatorStyle pattern (lines 387-390).
-	 */
-	$allowed_hover_styles = array( 'pill', 'underline', 'text' );
-	$hover_style          = isset( $attributes['hoverStyle'] ) && in_array( $attributes['hoverStyle'], $allowed_hover_styles, true )
-		? (string) $attributes['hoverStyle']
-		: 'pill';
-	$item_bg_hover     = isset( $attributes['itemBgHover'] ) ? sanitize_html_class( $attributes['itemBgHover'] ) : '';
-	$item_bg_hover_hex = '' !== $item_bg_hover ? sgs_resolve_palette_hex( $item_bg_hover, '' ) : '';
-	$item_fg_hover     = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
-	
-	/*
-	 * PILL — a filled background on hover. The foreground honours the operator's
-	 * chosen hover text colour when it clears AA against the resolved fill, and
-	 * falls back to the guaranteed-safe binary only when it would not (or when the
-	 * operator left it empty). Informational, never a gate: the operator's choice
-	 * wins whenever it is readable.
-	 */
-	if ( 'pill' === $hover_style && '' !== $item_bg_hover_hex ) {
-		$preferred = '' !== $item_fg_hover ? sgs_resolve_palette_hex( $item_fg_hover, '' ) : '';
-		$hover_fg  = '' !== $preferred
-			? sgs_wcag_preferred_text_colour_for_bg( $item_bg_hover_hex, $preferred )
-			: sgs_wcag_text_colour_for_bg( $item_bg_hover_hex );
-		$css      .= $hover_sel . '{background-color:' . esc_attr( $item_bg_hover_hex ) . ';color:' . esc_attr( $hover_fg ) . ';border-radius:' . esc_attr( (string) $item_radius_hover ) . 'px;transition:background-color ' . $transition_fast . ',color ' . $transition_fast . ',border-radius ' . $transition_fast . ';}';
-	} elseif ( 'text' === $hover_style && '' !== $item_fg_hover ) {
-		// TEXT — colour shift only, no fill, no bar.
-		$css .= $hover_sel . '{color:' . sgs_colour_value( $item_fg_hover ) . ';transition:color ' . $transition_fast . ';}';
-	} else {
-		/*
-		 * UNDERLINE — a real ::after bar, and the fallback for every other case so
-		 * there is never zero visible feedback (WCAG 1.4.1 / 2.4.7).
-		 *
-		 * NOT `text-decoration:underline`: that hugs the baseline, breaks around
-		 * descenders, spans only the glyphs (so every item's line is a different
-		 * length), and cannot animate. A positioned bar spans the link box
-		 * consistently and grows in from the left.
-		 */
-		$u_thickness = isset( $attributes['underlineThickness'] ) ? (float) $attributes['underlineThickness'] : 2;
-		$u_offset    = isset( $attributes['underlineOffset'] ) ? (float) $attributes['underlineOffset'] : 6;
-		$u_colour    = isset( $attributes['underlineColour'] ) && '' !== $attributes['underlineColour']
-			? sgs_colour_value( (string) $attributes['underlineColour'] )
-			: 'currentColor';
-		$u_colour_h  = isset( $attributes['underlineColourHover'] ) && '' !== $attributes['underlineColourHover']
-			? sgs_colour_value( (string) $attributes['underlineColourHover'] )
-			: $u_colour;
-	
-		/*
-		 * Gradient sibling (D948 rollout). The ::after bar is a standalone
-		 * decorative element — no other declaration paints this selector's
-		 * background — so this is a safe direct swap, no ::after-layer split
-		 * needed (contrast the itemBg/navBg cases where a text colour or a
-		 * second background shares the element). Non-empty underlineColourGradient
-		 * wins over the flat underlineColour; when both are empty the pre-existing
-		 * 'currentColor' fallback is preserved.
-		 */
-		$underline_colour_gradient = sgs_css_gradient_value( $attributes['underlineColourGradient'] ?? '' );
-		$u_paint_decl              = sgs_background_paint_decl( (string) ( $attributes['underlineColour'] ?? '' ), $underline_colour_gradient );
-		if ( '' === $u_paint_decl ) {
-			$u_paint_decl = 'background-color:' . $u_colour;
-		}
-	
-		/*
-		 * A pseudo-element suffix must be applied to EACH selector in the list, not
-		 * concatenated onto the imploded string — `'a,b,c' . '::after'` attaches
-		 * ::after to `c` alone, so the bar would animate on [aria-current] only and
-		 * never on :hover or :focus-visible. Caught by reading the emitted CSS live;
-		 * the build, every gate and the unit pass were all green with it broken.
-		 */
-		$hover_after_sel = implode(
-			',',
-			array_map(
-				static function ( $sel ) {
-					return $sel . '::after';
-				},
-				$hover_targets
-			)
-		);
-	
-		$css .= $link_sel . '{position:relative;}';
-		$css .= $link_sel . '::after{content:"";position:absolute;left:0;right:0;bottom:-' . esc_attr( (string) $u_offset ) . 'px;height:' . esc_attr( (string) $u_thickness ) . 'px;' . $u_paint_decl . ';transform:scaleX(0);transform-origin:left center;transition:transform ' . $transition_fast . ',background-color ' . $transition_fast . ';pointer-events:none;}';
-		$css .= sgs_hover_state_rules( $link_sel, 'transform:scaleX(1);background-color:' . $u_colour_h, ':focus-visible', '::after' );
-		if ( '' !== $item_fg_hover ) {
-			$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_fg_hover ), ':focus-visible' );
-		}
-		// Motion is decoration here — the bar's presence carries the meaning.
-		$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
+	if ( 'none' === $t_border ) {
+		unset( $item_border_map['hover'] );
 	}
-	
+	if ( 'sweep' === $t_border ) {
+		$item_border_map['suppress_edges'] = array( 'bottom' => true );
+	}
+	$css .= sgs_border_states_css( $link_sel, $attributes, $item_border_map );
+
+	if ( 'sweep' === $t_border ) {
+		$sweep_edge   = isset( $item_border_box['bottom'] ) ? sgs_css_length_value( (string) $item_border_box['bottom'] ) : '';
+		$sweep_hover  = sgs_colour_value( (string) ( $attributes['itemBorderColourHover'] ?? '' ) );
+		$sweep_normal = sgs_colour_value( (string) ( $attributes['itemBorderColour'] ?? '' ) );
+		if ( '' === $sweep_normal ) {
+			$sweep_normal = 'currentColor';
+		}
+		/*
+		 * ⚠ A sweep with no bottom border width emits NOTHING — there is no line
+		 * to sweep. Same for a sweep with no Hover colour: Sweep reuses the row's
+		 * own Hover swatch (§0's colour-reuse rule) and has no second colour of
+		 * its own, so an empty swatch means there is genuinely nothing to travel
+		 * to. ⛔ No colour is invented here — that would be a hardcoded render
+		 * default the operator could not clear.
+		 */
+		if ( '' !== $sweep_edge && '' !== $sweep_hover ) {
+			/*
+			 * `bottom:0` on an absolutely-positioned child resolves against the
+			 * containing block's PADDING box while a real border-bottom paints on
+			 * the BORDER box, so the band is offset outward by exactly the border
+			 * width to land on the strip the transparent border vacates. That, plus
+			 * `border-bottom-color:transparent`, is what makes ONE painted line
+			 * provably occupy where the border would have been.
+			 *
+			 * `position:relative` is emitted here too: the item-background branch
+			 * above only fires when a fill is set, so a sweep with no background
+			 * would otherwise have no positioned ancestor. When both fire the two
+			 * rules sit on the same selector with compatible declarations —
+			 * harmless duplication, not a conflict.
+			 */
+			$css .= $link_sel . '{position:relative;border-bottom-color:transparent;}';
+
+			$rtl        = 'right-to-left' === (string) ( $attributes['borderHoverAnimationDirection'] ?? 'left-to-right' );
+			$first_stop = $rtl ? $sweep_normal : $sweep_hover;
+			$last_stop  = $rtl ? $sweep_hover : $sweep_normal;
+			$rest_pos   = $rtl ? '0 0' : '100% 0';
+			$hover_pos  = $rtl ? '100% 0' : '0 0';
+
+			$css .= $link_sel . '::after{content:"";position:absolute;inset-inline:0;'
+				. 'bottom:calc(-1 * ' . $sweep_edge . ');height:' . $sweep_edge . ';'
+				. 'background-image:linear-gradient(to right,' . $first_stop . ' 50%,' . $last_stop . ' 50%);'
+				. 'background-size:200% 100%;background-position:' . $rest_pos . ';background-repeat:no-repeat;'
+				. 'transition:background-position 300ms ease;pointer-events:none;}';
+			$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $hover_pos, ':focus-visible', '::after' );
+			// MANDATORY companion: keep both end states, drop only the travel.
+			$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
+		}
+	}
+
 	/*
 	 * 4d. Featured items (FR-36-4). Two forms, both operator-set:
 	 *

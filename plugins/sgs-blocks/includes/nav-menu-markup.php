@@ -325,7 +325,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 		 * @param array  $featured_ids Featured item identifiers (was $this->featured_ids).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_menu_render_items_drawer( array $items, string $model, string $uid, array $featured_ids ): string {
+		function sgs_nav_menu_render_items_drawer( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '' ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
@@ -349,8 +349,12 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 					// in each sub-item's indent, matching the reference's convention of
 					// using the same caret family for both "this expands" (chevron-down,
 					// rotates on open) and "this is a leaf" (chevron-right, static).
-					$sub_marker = function_exists( 'sgs_get_lucide_icon' )
-						? '<span class="sgs-nav-menu__sublink-marker" aria-hidden="true">' . sgs_get_lucide_icon( 'chevron-right' ) . '</span>'
+					// FR-41-30(b): the glyph is now operator-chosen (`sublinkMarkerIcon`),
+					// resolved by render.php through the same source-aware resolver
+					// `sgs/icon` uses and handed in already-rendered. The stored default
+					// is lucide/chevron-right, so an untouched nav is byte-identical.
+					$sub_marker = '' !== $marker_icon
+						? '<span class="sgs-nav-menu__sublink-marker" aria-hidden="true">' . $marker_icon . '</span>'
 						: '';
 					$child_html = '';
 					foreach ( $children as $child ) {
@@ -451,18 +455,62 @@ if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
 	 * @param string $burger_context_attr Pre-built `data-wp-context` attribute string
 	 *                                     (from `wp_interactivity_data_wp_context()`).
 	 * @param string $drawer_ref          The drawer id this burger opens.
-	 * @param string $burger_icon         Pre-rendered burger SVG (from `sgs_get_lucide_icon()`).
+	 * @param string $burger_icon         Pre-rendered trigger glyph (FR-41-30(a)); '' under `text`.
+	 * @param string $trigger_mode        icon | text | icon-and-text (FR-41-12).
+	 * @param string $trigger_label       The visible word, used by `text`/`icon-and-text`.
+	 * @param string $aria_attr           Pre-built ` aria-label="…"` segment, or '' to omit it.
+	 * @param string $magnet_attrs        Pre-built ` data-sgs-fx…` segment, or '' (FR-41-31).
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon ): string {
+	function sgs_nav_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '' ): string {
+		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
+			$trigger_mode = 'icon';
+		}
+
+		/*
+		 * ⚠ The accessible name is an ATTRIBUTE SEGMENT built by the caller and
+		 * interpolated here, never a `%s` inside the format string — feeding ''
+		 * into an `aria-label="%s"` literal emits `aria-label=""`, an EMPTY
+		 * accessible name, strictly worse than the Label-in-Name mismatch the
+		 * omission exists to fix (Spec 41 FR-41-12). A caller that passes nothing
+		 * under `icon` mode still gets the label, so no route emits a nameless
+		 * icon-only button.
+		 */
+		if ( '' === $aria_attr && 'icon' === $trigger_mode ) {
+			$aria_attr = sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) );
+		}
+
+		$icon_html = '';
+		if ( 'text' !== $trigger_mode && '' !== $burger_icon ) {
+			// ⚠ Under `icon-and-text` a real visible word names the button, so the
+			// glyph is decorative — the same convention this file already applies
+			// to `.sgs-nav-menu__sublink-marker` and `.sgs-nav-menu__caret`. Under
+			// `icon` the SVG is the only content and the button's own aria-label
+			// names it, so it is emitted bare — byte-identical to pre-0.4.x output.
+			$icon_html = 'icon' === $trigger_mode
+				? $burger_icon
+				: '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
+		}
+
+		$text_html = 'icon' === $trigger_mode
+			? ''
+			: '<span class="sgs-nav-menu__burger-text">' . esc_html( $trigger_label ) . '</span>';
+
+		// No modifier class under `icon`: that mode must render today's markup
+		// byte-for-byte (FR-41-12), and a class nothing styles is not free.
+		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-menu__burger--' . $trigger_mode;
+
 		return sprintf(
-			'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %s data-wp-init="callbacks.pruneDanglingAriaControls">' .
-			'<button type="button" class="sgs-nav-menu__burger" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%s" aria-label="%s">%s</button>' .
+			'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
+			'<button type="button" class="sgs-nav-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s>%6$s%7$s</button>' .
 			'</div>',
 			$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
+			esc_attr( $mode_class ),
 			esc_attr( $drawer_ref ),
-			esc_attr__( 'Open menu', 'sgs-blocks' ),
-			$burger_icon // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
+			$aria_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from a fixed literal + esc_attr__() by this function or its caller.
+			$magnet_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from fixed literals + absint()+esc_attr() values in render.php.
+			$icon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_menu_icon_markup() (esc_attr/esc_html per source).
+			$text_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from an esc_html() label.
 		);
 	}
 }
