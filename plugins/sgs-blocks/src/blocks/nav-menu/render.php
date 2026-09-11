@@ -471,20 +471,21 @@ if ( '' === $nav_label ) {
  * default OFF, so an existing nav renders byte-identical until an operator
  * opts in via the Effects panel.
  *
- * `indicatorStyle` is PHP-validated, NOT a JSON `enum` (block.json
- * deliberately declares none) — an out-of-enum JSON enum silently coerces
- * the stored value back to the block.json default with no error/warning,
- * which bites hardest via a programmatic writer (the cloning pipeline,
- * pattern files) that sets the attribute directly rather than through this
- * block's inspector control. Mirrors `mega-panel/render.php`'s
- * `$allowed_variants`/`$allowed_styles` pattern.
+ * `indicatorStyle`/`indicatorColour`/`indicatorColourGradient` were deleted
+ * with no deprecation by the Spec 41 manifest rewrite (bb9df82dc, D270) and
+ * replaced by `itemBgHoverTreatment` (2026-09-11 fix): the sliding pill is
+ * now ONE of that mode-selector's three options ('highlight'), and it
+ * paints from the item Background row's OWN Hover swatch
+ * (`itemBgHover`/`itemBgHoverGradient`) rather than a colour of its own —
+ * "one picker, one property, three ways of applying it" (block.json's own
+ * `indicator` element note). `$indicator_style` is kept as a local 'none'/
+ * 'pill' value purely so the two call sites below (the `data-sgs-nav-
+ * indicator` flag and `nav_menu_submenu_css()`'s existing parameter) don't
+ * need their own signature/consumer changes.
  */
-$allowed_indicator_styles = array( 'none', 'pill' );
-$indicator_style          = isset( $attributes['indicatorStyle'] ) && in_array( $attributes['indicatorStyle'], $allowed_indicator_styles, true )
-	? (string) $attributes['indicatorStyle']
-	: 'none';
-$indicator_colour  = isset( $attributes['indicatorColour'] ) ? (string) $attributes['indicatorColour'] : '';
-$indicator_colour_gradient = sgs_css_gradient_value( $attributes['indicatorColourGradient'] ?? '' );
+$indicator_style           = 'highlight' === ( $attributes['itemBgHoverTreatment'] ?? 'swap' ) ? 'pill' : 'none';
+$indicator_colour          = isset( $attributes['itemBgHover'] ) ? (string) $attributes['itemBgHover'] : '';
+$indicator_colour_gradient = sgs_css_gradient_value( $attributes['itemBgHoverGradient'] ?? '' );
 $magnet_enabled    = ! empty( $attributes['itemMagnetEnabled'] );
 $bar_data_attrs    = '';
 $bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
