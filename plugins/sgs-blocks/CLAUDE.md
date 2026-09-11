@@ -858,6 +858,23 @@ inside the colour popover** (native `BorderBoxControl` opens both from one
 swatch), plus the SGS-wrapped native radius as the second control when the
 caller wires `onRadiusChange`.
 
+⚑ **`showColour` prop (additive, Spec 41 FR-41-33/FR-41-2b, 2026-09-11).** `true`
+(the default) is byte-identical to the control's pre-existing behaviour. Pass
+`showColour={false}` when a block wants border COLOUR to live in `SgsColourPanel`
+(via a `fillRow`/`textRow`-built row, see below) while border width/style/radius
+stay in the element's own settings panel. `false` OMITS the swatch
+(`GradientCapableColourControl`) entirely — not a disabled empty picker — and
+re-parents `BorderStyleControl` as `SgsBorderControl`'s own sibling (gated on
+`typeof onStyleChange === 'function'`, so a caller that never wired style gets no
+orphan control). Twelve props become INERT under `showColour={false}` — still
+accepted, but nothing reads them because `GradientCapableColourControl` is not
+mounted: `colourStates`, `colourValue`, `onColourChange`, `colourGradientValue`,
+`onColourGradientChange`, `colourLinked`, `colourLabel`, `clearable`,
+`enableAlpha`, `contrastAgainst`, `contrastLabel`, `contrastLargeText`. ⚠ The
+contrast trio is the dangerous one of the twelve — a caller can wire a full WCAG
+contrast check that then silently never runs. `borderStyle` is NOT on this list;
+it is re-parented, not dropped. Live example: `sgs/nav-menu`'s submenu border row.
+
 ⛔ **`linked` is load-bearing — never drop it when wiring a colour row.**
 `GradientCapableColourControl` reads it to decide whether a picked colour is
 stored as the palette token SLUG or a baked hex. Without it the client's colour
@@ -910,22 +927,117 @@ panel" placement language without a fresh decision superseding this one.
   literal (`showIconColourRow && { key: "icon", … }`). Reference implementation:
   `src/blocks/icon-list/edit.js` — read the comment above its `rows={[…]}` block, it cites
   D609 9c by name.
-- **Row helpers `fillRow`/`textRow`/`borderRow`** (`src/components/colour-variants/`) return
-  row DESCRIPTOR objects, not JSX — they build the `{ key, label, states, … }` shape
-  `SgsColourPanel` expects from an attrs+attributes+setAttributes triple. ⚠ **`borderRow` has
-  ZERO adopters tree-wide** (`grep -rl "borderRow" src/ --include=*.js` returns only its own
-  definition file and the `src/components/index.js` barrel export) — do not treat it as a
-  proven pattern; verify before adopting.
+- **Row helpers `fillRow`/`textRow`** (`src/components/colour-variants/`) return row
+  DESCRIPTOR objects, not JSX — they build the `{ key, label, states, … }` shape
+  `SgsColourPanel` expects from an attrs+attributes+setAttributes triple. ⚠ **There is no
+  `borderRow` helper** — `ls src/components/colour-variants/` returns only `fillRow.js` and
+  `textRow.js`; a border-row builder was deliberately deleted (commit `dd2989ec2`). Border
+  colour is owned by `SgsBorderControl` instead, which has its own built-in colour+gradient
+  picker — do not resurrect a `borderRow.js`.
+- **Third state — `attrs.current`/`attrs.currentGradient` (additive, Spec 41 FR-41-3/FR-41-2,
+  2026-09-11).** Both `fillRow` and `textRow` accept an optional `attrs.current` (and, on
+  `fillRow`, `attrs.currentGradient` — `textRow`'s sibling is `attrs.currentGradient` too,
+  feeding `gradientCapable` the same way `attrs.gradient`/`attrs.hoverGradient` already do),
+  appending a THIRD "Current" state entry after Normal/Hover. Purely additive — a caller
+  supplying no `attrs.current` gets a byte-identical descriptor to before; 64 existing blocks
+  depend on that. `attrs.current` REQUIRES `attrs.hover` (both helpers throw otherwise) —
+  Current is the third state of the three-state model, never a substitute for Hover. Every
+  state entry is a literal array element, never `.map()`-generated, because
+  `describeRow()` in `scripts/inspector-scan/core/golden.js` resolves a row's state count
+  STATICALLY; if either helper's states logic changes, that function must change in the same
+  commit. The `get`/`set` (non-top-level binding) path renders ONLY the Normal state and does
+  not accept a `current` param. Live example: `sgs/nav-menu`'s `item`/`sublink` colour rows
+  (Normal/Hover/Current, matching the block's `[aria-current="page"]` current-page state).
 - **Colour lives inside an ELEMENT's own panel only where a purpose-built paired composite
   exists** (colour + a non-colour control sharing one row — e.g. border colour sitting next
   to border style/width in `SgsBorderControl`). There is NO general mechanism for mounting a
   colour row inside an element's own panel, and none should be built without a design gate —
   `SgsColourPanel` hardcodes its own `InspectorControls`/`PanelBody`, and zero blocks render
   a colour control directly inside another panel today.
+- **Per-row `heading` and `after` (additive, Spec 41 §9.6 / FR-41-23 / FR-41-24, 2026-09-11).**
+  A row descriptor may carry `heading` (a string rendered as a non-interactive
+  `BaseControl.VisualLabel` immediately BEFORE the row's control — e.g. "Menu" / "Submenu" /
+  "Menu button" grouping headings inside one Colour panel) and/or `after` (an arbitrary React
+  node rendered immediately AFTER the row's control, inside the same row wrapper — e.g. a
+  hover-treatment `ToggleGroupControl` that must sit directly beneath a specific row's Hover
+  swatch). `after` is a SLOT, not a component — `SgsColourPanel` makes no assumption about
+  its content. Both are omitted entirely when absent, so an existing row is byte-identical to
+  before. Live example: `sgs/nav-menu`'s Colour panel groups rows under "Menu"/"Submenu"/
+  "Menu button" headings and hangs each hover-treatment picker off its own row via `after`.
+- **`contrastLargeText` now reaches the gradient-capable branch (fixed 2026-09-11, FR-41-33).**
+  `SgsColourPanel` forwards `contrastLargeText` alongside the existing `contrastAgainst`/
+  `contrastLabel` when a row is `gradientCapable`. Previously it was silently DROPPED — a row
+  passing `contrastAgainst` + `contrastLargeText: true` got the wrong 4.5:1 body-text threshold
+  instead of WCAG 1.4.11's 3:1 UI-component threshold. `SgsBorderControl` already forwarded it
+  correctly (its own `contrastLargeText = true` default); this closes the gap for a border
+  colour rendered as a `SgsColourPanel` row instead (i.e. paired with `SgsBorderControl`'s
+  `showColour={false}`, above). ⚠ The whole contrast trio reaches
+  `GradientCapableColourControl` ONLY — a non-`gradientCapable` row renders `DesignTokenPicker`,
+  which carries no contrast check at all, so the trio is inert there.
 - **Residual gap — 6 blocks still mount raw `<DesignTokenPicker>`** instead of routing through
   `SgsColourPanel`: `hero`, `info-box`, `mega-panel`, `multi-button`, `pricing-table`,
   `trust-bar` (verify: `grep -l "<DesignTokenPicker" src/blocks/*/edit.js`). `sgs/product-card`
   is the fully-standardised reference (1 `SgsColourPanel` mount, 0 raw pickers).
+
+### `supports.sgs.colourExemptions` — declaring a structurally Normal-only colour (Spec 41)
+
+A manifest escape hatch that tells the golden-colour-control detector (`inspector-scan` rule
+31) that a specific colour row is DELIBERATELY Normal-only (or otherwise short of the full
+Hover/Current family) for a structural reason, rather than an unmigrated gap. Shape, per
+element key: `{ "<element-or-row-key>": { "rule": "states", "reason": "<plain-English why>" } }`.
+Use it when a colour genuinely cannot carry a state the golden shape expects — e.g. the
+element is structurally unhoverable (`pointer-events:none`), or its hover-perceivable surface
+is a different, already-stated element. Do NOT use it to paper over a colour row that simply
+hasn't been built out yet — the reason must name a real structural constraint, not a TODO.
+
+Live example: `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.colourExemptions`
+declares three — `indicator` (the sliding pill is `pointer-events:none`, so it paints from the
+`item` element's own Hover swatch under `itemBgHoverTreatment === 'highlight'`, never its own
+pair), `submenu-bg` and `submenu-border` (the submenu panel's visibility is a binary open/closed
+disclosure — once open, the pointer is always over an interactive child link, so a pointer-driven
+change on the panel surface itself is never perceivable; the link's own three-state family is
+where a hover fill belongs instead).
+
+### Ungated paint detector — `scripts/check-ungated-paint-rules.py` (Spec 41 FR-41-35, 2026-09-11)
+
+Framework-wide, WARN-ONLY (for this build) static detector for a `background`/`border` CSS
+declaration — emitted in a block's `render.php` or authored in its `style.css` — that is
+ungated on any corresponding operator attribute. Built after three consecutive human reviews
+of `sgs/nav-menu` each under-counted the same defect class (an unconditional shorthand
+resetting `background-image` to `none`, silently erasing a text-sweep gradient on hover)
+because each review's search was one notch narrower than the defect. Modes:
+
+```bash
+python scripts/check-ungated-paint-rules.py --survey [--block sgs/x]   # three-bucket census
+python scripts/check-ungated-paint-rules.py --check [--block sgs/x]    # WARN-ONLY, always exit 0
+python scripts/check-ungated-paint-rules.py --self-test                # fixture round-trip
+```
+
+Wired into `gates.json` + `package.json`. Framework-wide by design — never a `sgs/nav-menu`
+lint: the classification input ("is this gated on an operator attribute?") is read from each
+file's own PHP/CSS structure (an enclosing `if`), never a block-name lookup. A block or
+selector name appearing in the script's own source (outside `--block`/fixtures) would BE a
+lint, not a gate.
+
+Three buckets, always all three, always printed with the script's own disclosed limits:
+**GATED** (wrapped in an `if` on an operator attribute), **DISMISSED** (ungated but
+structurally incapable of the defect — a `:where()` zero-specificity default, a
+`forced-colors`/`@supports` a11y rule, a wrapper-delegated paint, or an attribute-driven
+`var()` with a verified guarded writer), **CENSUSED** (real hardcoded/ungated paint — the
+thing to fix). Disclosed limits (always printed, never silent): NOT variable-aware (a
+declaration assembled into an intermediate PHP variable in one statement and appended to the
+CSS accumulator in a later, separate statement is invisible — `sgs/nav-menu`'s own
+`$sgs_nm_featured_vars` assembly is a live instance, harmless there only because those are
+custom-property assignments); the reset exemption is evaluated PER STATEMENT/RULE only, not
+against the whole file; the wrapper-delegated exemption fires on the `Container_Wrapper` name
+appearing in the text, without walking into that class's own source; the var()-writer
+exemption verifies the writer exists and is guarded, NOT that the reading statement is also
+conditional on the write having happened.
+
+`HARD_FAIL_BLOCKS` is a module constant, currently empty — `--check` always exits 0 for this
+build. A future phase flips it to hard-fail for a named block (reading the scope from
+`gates.json`'s own config for this gate, never hardcoded here, per R-31-1) once that block's
+tree is clean.
 
 ### Touch-safe HOVER helpers — `includes/helpers-hover-state.php` (2026-09-03)
 
@@ -1268,8 +1380,10 @@ Notifications: N8N webhooks (not wp_mail)
 - Every block reads colours/fonts from theme.json tokens — never hardcode
 - **THE DEFAULT-vs-HARDCODE TEST (Bean-locked, D338 2026-07-15).** The question is NOT *"is it a literal?"* — it is **"does it override a theme-wide default, or hinder the pipeline?"**
   - **A block literal that DUPLICATES a theme.json `styles.elements` default is a silent override that disables the theme** — not a "helpful default". **Check `theme/sgs-theme/theme.json` BEFORE adding any typography literal to a block.** Proven live: `sgs/heading` carried `fontSize default:28` + `font-size:28px` + `font-weight:700` + `line-height:1.2`, all beating theme.json at `(0,2,0)` vs `:root :where(h1..h6)` `(0,1,0)` — so an `<h1>` and an `<h6>` rendered **identically** on every client, through a green build, for months. theme.json already defined the whole scale (`elements.h1..h6` fontSize; `elements.heading` weight/lineHeight/family; h5/h6 per-tag overrides).
-  - **A component's OWN constant STAYS** — it overrides no theme-wide default and is overridable per instance: `sgs/label` `fontSize:12` (an eyebrow/kicker `<span>`, NOT an h-tag equivalent — an `<h5>` above an `<h2>` would fragment the heading outline), `sgs/business-info`'s `#d4a73c` credit hover colour (was `#e7d768` and a gradient
-    *sweep* until 2026-09-08; now an underline-grow — see Spec 02 §business-info),
+  - **A component's OWN constant STAYS** — it overrides no theme-wide default and is overridable per instance: `sgs/label` `fontSize:12` (an eyebrow/kicker `<span>`, NOT an h-tag equivalent — an `<h5>` above an `<h2>` would fragment the heading outline), `sgs/business-info`'s `#d4a73c` credit hover colour (was `#e7d768`; since 2026-09-08 the
+    hover effect ships BOTH a `background-clip:text` colour sweep AND a separate `::after`
+    underline growing in sync — added together because the two travelling at different
+    speeds looked broken — see Spec 02 §business-info),
     `SGS_ATTRIBUTION_URL/TEXT`. Sibling rule: a hardcoded CLIENT value is a bug (`framework-block-client-hardcode-is-a-bug-not-a-constant`); the component's own constant is not.
   - **`null` default = inherit** is the canonical pattern (`sgs/button`, `sgs/heading`, `sgs/product-card` `ctaFontSize`). The shared responsive emitter's contract is *"`''` when nothing is set"* (`helpers-responsive.php:67`), so a null default emits no rule and the theme wins.
   - Enforced by **F3b** in `check-hardcoded-render-defaults.js` (D338) — it reads theme.json `styles.elements` and flags a literal block.json `default` that flattens a theme-differentiated property. It fires ONLY on blocks declaring an enum of element keys (`sgs/heading` `level: h1..h6`), so a single-element block never trips it.
