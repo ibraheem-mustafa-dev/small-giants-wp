@@ -9,10 +9,9 @@ real gate is `scripts/gates.json`'s `pytest-oracle-converter`, which targets
 `python test_find_load_settle_candidates_fixtures.py`. Exits non-zero on any
 failed fixture.
 
-`_find_load_settle_candidates` lives in the hyphenated `sgs-clone-
-orchestrator.py`, so it is loaded via `importlib.util.spec_from_file_location`
--- the same pattern `scripts/tests/test_orchestrator_failed_status.py`
-already uses for the same reason.
+`_find_load_settle_candidates` lives in the hyphenated `sgs-clone-orchestrator.py`,
+so it is loaded via `importlib.util.spec_from_file_location` -- the same pattern
+`scripts/tests/test_orchestrator_failed_status.py` already uses for the same reason.
 
 ⚠ UNLIKE its siblings, this harness's own imports (importlib/sys/tempfile/
 types/pathlib) succeed cleanly under a bare `python -m pytest converter/`
