@@ -55,7 +55,7 @@ directory's covered files directly). Standalone: `test_orchestrator_non_bem_halt
 
 **Files:** `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (gate + class-injection),
 `plugins/sgs-blocks/scripts/tests/test_orchestrator_non_bem_halt.py` (tests + fixture helper).
-Commit: see git log for `D1034` in the same commit message.
+Commit: `63e4713e2`.
 
 ## D1033 [ROUTINE] — R1's 17-attribute worklist actually closed 2026-09-10, never got its own decision entry
 
