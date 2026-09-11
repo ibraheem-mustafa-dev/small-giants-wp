@@ -174,7 +174,7 @@ def cmd_fix(args: argparse.Namespace, apply: bool) -> int:
     applied = {"source": str(survey_path), "groups": []}
     refused = []
     for g in survey["groups"]:
-        if not g.get("signed_off", False):
+        if g.get("signed_off") is not True:
             refused.append(g["group_id"])
             continue
         conversion = convert_representative(g["representative_html"])
@@ -234,7 +234,7 @@ def cmd_check(args: argparse.Namespace) -> int:
             failures.append(f"{applied_path}: source survey {source} missing")
             continue
         survey = json.loads(source.read_text(encoding="utf-8"))
-        signed_off_ids = {g["group_id"] for g in survey["groups"] if g.get("signed_off")}
+        signed_off_ids = {g["group_id"] for g in survey["groups"] if g.get("signed_off") is True}
         for g in applied["groups"]:
             if g["group_id"] not in signed_off_ids:
                 failures.append(

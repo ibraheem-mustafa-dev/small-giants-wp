@@ -164,6 +164,24 @@ def test_similarity_score_empty_classes_both_sides_scores_high():
     assert similarity_score(a, b) == 1.0
 
 
+def test_similarity_score_against_shape_signature_does_not_dock_child_proximity():
+    """Task-review finding (secondary, non-blocking): comparing a real
+    element against a bare `ShapeSignature` (which carries no child data)
+    must not silently fabricate a 0-count on the signature's side and dock
+    the 0.10-weighted child-count-proximity term for what is really a
+    REPRESENTATION-TYPE difference, not a genuine structural one. A
+    same-tag, same-classes element with real children, scored against its
+    OWN shape signature, must still score the maximum (1.0) -- not
+    1.0 - 0.10 = 0.90."""
+    from converter.services import sibling_shape_prefilter as ssp
+
+    element = {"tag": "div", "classes": ["sgs-card"], "children": [{"tag": "span"}] * 4}
+    sig = ssp.shape_signature(element)
+
+    assert similarity_score(element, sig) == 1.0
+    assert similarity_score(sig, element) == 1.0
+
+
 # ---------------------------------------------------------------------------
 # emit_repeated_block -- output shape
 # ---------------------------------------------------------------------------

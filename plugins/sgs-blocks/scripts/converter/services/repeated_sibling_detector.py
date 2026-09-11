@@ -120,10 +120,18 @@ def similarity_score(a: Any, b: Any) -> float:
     structural = _jaccard(sig_a.base_classes, sig_b.base_classes)
     style = _jaccard(sig_a.classes, sig_b.classes)
 
-    child_a = len(_get_children(a)) if not isinstance(a, ssp.ShapeSignature) else 0
-    child_b = len(_get_children(b)) if not isinstance(b, ssp.ShapeSignature) else 0
-    denom = max(child_a, child_b, 1)
-    child_proximity = 1.0 - (abs(child_a - child_b) / denom)
+    if isinstance(a, ssp.ShapeSignature) or isinstance(b, ssp.ShapeSignature):
+        # A `ShapeSignature` carries no real child data (it's a tag+class
+        # identity only) -- forcing that side's count to 0 would silently
+        # dock this term for a REPRESENTATION-TYPE difference (Tag vs.
+        # ShapeSignature), not a genuine structural one. Treat it as
+        # unmeasurable and neutral rather than fabricating a 0-count.
+        child_proximity = 1.0
+    else:
+        child_a = len(_get_children(a))
+        child_b = len(_get_children(b))
+        denom = max(child_a, child_b, 1)
+        child_proximity = 1.0 - (abs(child_a - child_b) / denom)
 
     return (
         0.40 * 1.0          # tag match already verified above
