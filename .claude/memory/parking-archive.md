@@ -7,6 +7,54 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-11 — 1 entry RESOLVED: nav-drawer non-modal build, staleness sweep
+
+> ### P-NAV-DRAWER-NONMODAL-BUILD — move sgs/nav-drawer to a non-modal drawer (approved, unbuilt)
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-09
+>
+> Bean approved the modality direction at the 2026-09-09 design council (**D1011**); the build is not
+> started. Estimated ~3 hrs. The drawer must stop using `showModal()` — a top-layer dialog cannot be
+> overlaid by any z-index, so the header-above-panel arrangement 14 of 15 measured reference sites use
+> is structurally unavailable while it stays modal.
+>
+> Five work items:
+> 1. An operator **modality attribute** on `sgs/nav-drawer` (client-facing inspector control, per the
+>    block-customisation standard).
+> 2. The **`trapTab` / `freezeBackground` tab-ring fix** — see `STOP-DIALOG-NONMODAL-TAB-RING`. Without
+>    it the non-modal path yields visible, clickable, keyboard-unreachable header controls (SC 2.1.1,
+>    Level A).
+> 3. An explicit **z-index scale** placing the header above the drawer.
+> 4. **Move the ESC handler onto the primary path** — it is currently a `cancel` listener registered
+>    only inside the `showModal()` branch of
+>    `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::openDrawerFor`.
+> 5. A **scrim for the partial-width anchors only** — `store.js::resolveScrim` already queries
+>    `[data-sgs-nav-scrim="…"]` but no scrim element is rendered anywhere
+>    (`grep -rn "sgs-nav-scrim" --include=*.php --include=*.html .` → 0 hits; positive control
+>    `grep -rln "data-sgs-nav-drawer" --include=*.php . | wc -l` → 5 files).
+>
+> ⛔ **`aria-modal="true"` must never be added** — it tells assistive tech to ignore everything outside
+> the dialog, hiding the deliberately-live burger and destroying the affordance this change exists to
+> enable. FR-36-10 is not contradicted: its content is the disclosure-vs-dialog binary, and a `.show()`
+> drawer with inert background, focus-in, Escape and focus-return remains on the dialog side.
+>
+> **Trigger:** next `sgs/nav-drawer` build session — the two defects in items 2 and 5 are latent only
+> while the `.show()` branch stays unreachable (D1012), and go live with the first item.
+
+**RESOLVED, found already built 2026-09-10 (not this session's work) — archived 2026-09-11 during a
+full parking staleness sweep.** All five work items are live in code, all citing D1012/D1011 directly
+in their own comments (dated 2026-09-10): (1) `sgs/nav-drawer`'s `block.json` declares a `modality`
+attribute (`"modal (default) uses native showModal()... non-modal uses show() with
+freezeBackground()'s selective inert"`); (2) `store.js::openDrawerFor` now gates `trapTab` to the
+modal branch ONLY (comment: `"Tab-trap — MODAL PATH ONLY (D1012 fix, 2026-09-10)"`) and calls
+`freezeBackground()` on the non-modal `.show()` branch; (3) `nav-drawer/style.css` sets an explicit
+`z-index: 90` for the drawer with a comment documenting the scale against the header's `z-index:100`
+and page content's `z-index:1`; (4) the non-modal `.show()` branch now registers its own
+document-level `keydown` ESC handler (`"ESC is hand-rolled below (D1011 item 4)"`), functionally
+replacing the modal-only `cancel` listener for that path; (5) `render.php:814` now renders
+`<div class="sgs-nav-drawer__scrim" data-sgs-nav-scrim="…" aria-hidden="true">`, matching what
+`store.js::resolveScrim` already queried. `aria-modal="true"` is not present anywhere in the block.
+Nothing was built this session; only the doc was corrected.
+
 ## 2026-09-11 — 2 entries SUPERSEDED: no longer parked because the blocking assumption behind both was wrong, and the work is being actively picked up this session
 
 > ### P-NAV-INDUS-CUTOVER — Indus header re-authoring onto sgs/nav-menu + sgs/nav-drawer: branded content authoring now open

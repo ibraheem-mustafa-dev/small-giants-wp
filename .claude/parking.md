@@ -538,37 +538,6 @@ The mega-menu shipped a deliberately smallest CORE first after a 7-persona adver
 
 **Trigger:** sgs/modal's first deploy, or the next drawer-family scroll-lock rework.
 
-### P-NAV-DRAWER-NONMODAL-BUILD — move sgs/nav-drawer to a non-modal drawer (approved, unbuilt)
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-09
-
-Bean approved the modality direction at the 2026-09-09 design council (**D1011**); the build is not
-started. Estimated ~3 hrs. The drawer must stop using `showModal()` — a top-layer dialog cannot be
-overlaid by any z-index, so the header-above-panel arrangement 14 of 15 measured reference sites use
-is structurally unavailable while it stays modal.
-
-Five work items:
-1. An operator **modality attribute** on `sgs/nav-drawer` (client-facing inspector control, per the
-   block-customisation standard).
-2. The **`trapTab` / `freezeBackground` tab-ring fix** — see `STOP-DIALOG-NONMODAL-TAB-RING`. Without
-   it the non-modal path yields visible, clickable, keyboard-unreachable header controls (SC 2.1.1,
-   Level A).
-3. An explicit **z-index scale** placing the header above the drawer.
-4. **Move the ESC handler onto the primary path** — it is currently a `cancel` listener registered
-   only inside the `showModal()` branch of
-   `plugins/sgs-blocks/src/shared/nav-interactivity/store.js::openDrawerFor`.
-5. A **scrim for the partial-width anchors only** — `store.js::resolveScrim` already queries
-   `[data-sgs-nav-scrim="…"]` but no scrim element is rendered anywhere
-   (`grep -rn "sgs-nav-scrim" --include=*.php --include=*.html .` → 0 hits; positive control
-   `grep -rln "data-sgs-nav-drawer" --include=*.php . | wc -l` → 5 files).
-
-⛔ **`aria-modal="true"` must never be added** — it tells assistive tech to ignore everything outside
-the dialog, hiding the deliberately-live burger and destroying the affordance this change exists to
-enable. FR-36-10 is not contradicted: its content is the disclosure-vs-dialog binary, and a `.show()`
-drawer with inert background, focus-in, Escape and focus-return remains on the dialog side.
-
-**Trigger:** next `sgs/nav-drawer` build session — the two defects in items 2 and 5 are latent only
-while the `.show()` branch stays unreachable (D1012), and go live with the first item.
-
 ### P-NAV-FEATURED-HOVER-DRAFT-PARITY — featured nav item hover: two of three parts done, the inset accent bar is deliberately unfixed
 **Status:** BLOCKED (on header cloning being built) · **Bucket:** framework · **Parked:** 2026-07-20
 
