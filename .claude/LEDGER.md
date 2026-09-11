@@ -79,9 +79,15 @@ prompt.
      detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
 
 **What's still genuinely open:**
-- **R8 (motion/animation cloning from raw CSS) — the active front.** Brainstorming + `/qc-council`
-  + `/research-buddies` all done (see `plans/2026-09-10-r8-motion-recognition-brainstorm.md`);
-  build not yet started, `/phase-planner` next.
+- **R8 (motion/animation cloning from raw CSS) — SHIPPED 2026-09-11.** All 14 steps + 4 QA gates
+  of `plans/phase-r8-motion-recognition.md` executed, independently verified (commits/pushes/live
+  test output re-run, not agent self-report trusted), and closed. Tiers 1/2/3/4a/4c/4d all live on
+  `main`. Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix rounds against a genuine 0/13
+  measurement — modest, not strong, and disclosed as such. Full detail: `decisions.md` D1021,
+  `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
+  `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
+  One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
+  of this phase's files (keyword collision), not a code defect.
 - **R1 is NOT done** — corrected 2026-09-10 later same day (was miswritten as "done" here and in
   `decisions.md` D1018 in the same breath as listing its own open work; Bean caught it). Only
   R1's MEASUREMENT is done (96% already correct); the real remaining 17-attribute conversion has
@@ -103,22 +109,13 @@ prompt.
 
 ## THE FRONT — what to pick up next
 
-**R8 (motion cloning from raw CSS) is the active front as of today** — Bean directed work here
-ahead of header/footer, by-passing D1004's original ordering deliberately (not a reversion, a
-live re-prioritisation). **Design AND planning are both DONE — execution is the next step.**
-Full sequence completed: `/brainstorming` (ranked tier menu) → `/qc-council` (4 raters, real
-corrections: a genuine Spec 38 conflict caught, a feasibility gap found, a reuse claim corrected,
-a sequencing risk flagged) → `/research-buddies` (upgraded Tier 4a's feasibility materially —
-DOM-runtime signals beat bundle-parsing) → a Bean-directed addendum (Tier 4c/4d, WebGL
-style-approximation + operator-confirmed reference-pulling, D1019) → `/phase-planner` (14-step
-executable plan, Hidden Decisions pass complete, docscore A/95%). Design doc:
-`plans/2026-09-10-r8-motion-recognition-brainstorm.md`. **Execution plan (start here to build):
-`plans/phase-r8-motion-recognition.md`** — Step 1 is the SESSION-START entry point. R9 confirmed
-motion as the largest capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
-`@keyframes`/`animation`/`transition`) — a genuinely harder recognition problem than the R1/R9/R10
-shape-fixing work that preceded it (R9/R10 fully closed; R1 rescoped, its remaining 10-attribute
-native-support-retirement scope now mid-execution in a parallel task — see below — do NOT
-describe R1 as closed until that lands).
+**R8 (motion cloning from raw CSS) SHIPPED 2026-09-11 — header/footer is next.** Full sequence
+completed end to end: `/brainstorming` → `/qc-council` (4 raters) → `/research-buddies` →
+Bean-directed Tier 4c/4d addendum (D1019) → `/phase-planner` (14-step plan, docscore A/95%) →
+full execution (`/subagent-driven-development`-style dispatch, every step independently verified)
+→ closing `/qc` pass on the plan doc itself (3 accuracy fixes) → live TAG Heuer verification
+(Step 14). All commits on `main`, pushed. Design doc: `plans/2026-09-10-r8-motion-recognition-brainstorm.md`.
+Execution record: `plans/phase-r8-motion-recognition.md` + `decisions.md` D1021.
 
 **Header/footer implementation is paused, not dropped** — still next after R8. Read
 `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up — it has
