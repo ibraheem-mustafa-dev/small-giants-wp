@@ -1076,6 +1076,82 @@ def _extract_named_keyframes_block(css_text: str, name: str) -> "str | None":
     return f"@keyframes {name} {{{body}}}"
 
 
+_HOVER_FOCUS_PSEUDO = re.compile(r":(?:hover|focus(?:-visible|-within)?)\b")
+
+
+def _own_hover_scoped_decls(node: Any, css_rules: dict) -> "tuple[str, dict[str, str]] | None":
+    """Find a `:hover`/`:focus` rule whose selector is THIS element's own
+    class(es) plus a hover/focus pseudo (e.g. `.sgs-x__pill:hover`), and
+    return `(selector, decls)`.
+
+    Deliberately narrow — closes exactly the disclosed D1023 gap (a
+    `:hover`-scoped `animation`/`transition` declaration on the SAME
+    element `scoped_motion_css_text` is asked about), which
+    `collect_css_decls_for_element` structurally cannot see (its own
+    selector-matching loop keeps a ':' in the final compound token OUT of
+    its class-match branch — `styling_helpers.py`'s own comment there:
+    "a state/pseudo selector (`.a:hover`) keeps a ':' -> excluded (unchanged;
+    a static draft element has no live pseudo-state)" — correct for that
+    function's general "effective value" purpose, wrong only for THIS one
+    question). Does NOT resolve responsive tiers, cascade specificity
+    across multiple matching rules, or an ancestor-hover-triggers-descendant
+    shape (`.card:hover .card__img`) — those are a wider shape than the one
+    this fix closes; a compound selector containing a combinator/whitespace
+    is skipped outright, own-element only.
+    """
+    desc_classes = node.get("class", []) or []
+    if not desc_classes:
+        return None
+    for sel, decls in css_rules.items():
+        sel_part = sel.split(" :: ", 1)[-1].strip()
+        for individual_sel in sel_part.split(","):
+            individual_sel = re.sub(r"^\.page-id-\d+\s+", "", individual_sel.strip())
+            if not individual_sel or " " in individual_sel or ">" in individual_sel:
+                continue  # own-element shape only -- no ancestor combinator
+            m = _HOVER_FOCUS_PSEUDO.search(individual_sel)
+            if not m:
+                continue
+            classes = [c for c in individual_sel[: m.start()].split(".") if c]
+            if classes and all(c in desc_classes for c in classes):
+                return individual_sel, dict(decls)
+    return None
+
+
+def _animation_decl_lines(decls: dict) -> "tuple[str | None, list[str]]":
+    """Build the `animation*` snippet lines + resolved keyframes NAME from
+    an already-resolved declarations dict — shared by the base (own-element,
+    unconditional) and hover-scoped lookups in `scoped_motion_css_text` so
+    both stay behaviour-identical on the shorthand/longhand/delay parsing."""
+    animation_shorthand = decls.get("animation")
+    animation_name_longhand = decls.get("animation-name")
+    if not (animation_shorthand or animation_name_longhand):
+        return None, []
+
+    if animation_name_longhand:
+        # Longhand form: the name is the declared value itself (first
+        # comma-separated name for a scoped single-element snippet — see
+        # `_extract_animation_name_from_shorthand`'s own docstring for why
+        # only the first is considered here).
+        _names = _split_comma_top_level(animation_name_longhand)
+        name = _names[0] if _names else None
+        decl_lines = [f"animation-name: {animation_name_longhand};"]
+        duration_longhand = decls.get("animation-duration")
+        if duration_longhand:
+            decl_lines.append(f"animation-duration: {duration_longhand};")
+        easing_longhand = decls.get("animation-timing-function")
+        if easing_longhand:
+            decl_lines.append(f"animation-timing-function: {easing_longhand};")
+    else:
+        name = _extract_animation_name_from_shorthand(animation_shorthand)
+        decl_lines = [f"animation: {animation_shorthand};"]
+
+    delay_longhand = decls.get("animation-delay")
+    if delay_longhand:
+        decl_lines.append(f"animation-delay: {delay_longhand};")
+
+    return name, decl_lines
+
+
 def scoped_motion_css_text(node: Any, css_rules: dict, css_text: "str | None") -> "str | None":
     """Build a small, self-contained motion-CSS snippet for ONE element.
 
@@ -1096,21 +1172,26 @@ def scoped_motion_css_text(node: Any, css_rules: dict, css_text: "str | None") -
     all (nothing for a caller to classify — most elements on a real page
     carry no motion CSS, this is the expected common case, not an error).
 
-    KNOWN, ACCEPTED LIMITATION (do not attempt to fix in this pass — flagged
-    explicitly per this project's "no cheats" discipline rather than left
-    silent): `collect_css_decls_for_element` deliberately EXCLUDES
-    pseudo-class selectors (`:hover`/`:focus` — see
-    `styling_helpers.collect_css_decls_for_element`'s own selector-matching
-    loop, which keeps a ':' in the final compound selector token out of its
-    class-match branch) because a static draft element has no live
-    pseudo-state. This means a `:hover`-only `transition` declaration (the
-    exact shape `border-accent` uses) is invisible to THIS function's own
-    lookup. In practice this costs nothing today: Tier 1
-    (`match_motion_shape`) already declines to emit `border-accent` under
-    `sgsAnimation` regardless (no destination attribute exists for it —
-    always routed to `skipped`, see this module's own docstring), so the one
-    shape this limitation affects was never going to reach a real attribute
-    write either way.
+    HOVER-SCOPED FALLBACK (fix, 2026-09-11 — closes the D1023-disclosed
+    gap): when the base (own-element, unconditional) lookup finds nothing,
+    this function tries `_own_hover_scoped_decls()` — a narrow, same-element
+    `:hover`/`:focus` selector lookup `collect_css_decls_for_element`
+    structurally cannot do (its own selector-matching loop deliberately
+    keeps a ':' in the final compound token OUT of its class-match branch,
+    correct for that function's general "effective value" purpose, wrong
+    only for this one question — see `_own_hover_scoped_decls`'s own
+    docstring). The hover-matched declarations are wrapped in a real
+    `{selector} { ... }` block (not a bare declaration line, unlike the base
+    branch below) specifically so `motion_trigger.classify_trigger`'s own
+    backward-brace-walk (`_selector_owning_offset`) can find the owning
+    `:hover`/`:focus` selector and classify the trigger correctly, instead
+    of falling through to its 'load' default. A hover-scoped `transition`
+    (the `border-accent` shape) still round-trips through Tier 1 exactly as
+    before — `match_motion_shape` declines it regardless of trigger, since
+    no `sgsAnimation` destination exists for that preset — so this fallback
+    is a genuine detection widening for hover-gated KEYFRAMES animations
+    (e.g. `.x:hover{animation:pulse-scale .3s ease}`), not merely a trigger
+    relabel of something already detected.
     """
     if not css_text:
         return None
@@ -1119,52 +1200,38 @@ def scoped_motion_css_text(node: Any, css_rules: dict, css_text: "str | None") -
 
     base_decls, _bp_decls = collect_css_decls_for_element(node, css_rules)
 
-    animation_shorthand = base_decls.get("animation")
-    animation_name_longhand = base_decls.get("animation-name")
-
-    if animation_shorthand or animation_name_longhand:
-        if animation_name_longhand:
-            # Longhand form: the name is the declared value itself (first
-            # comma-separated name for a scoped single-element snippet — see
-            # `_extract_animation_name_from_shorthand`'s own docstring for
-            # why only the first is considered here).
-            _names = _split_comma_top_level(animation_name_longhand)
-            name = _names[0] if _names else None
-            decl_lines = [f"animation-name: {animation_name_longhand};"]
-            duration_longhand = base_decls.get("animation-duration")
-            if duration_longhand:
-                decl_lines.append(f"animation-duration: {duration_longhand};")
-            easing_longhand = base_decls.get("animation-timing-function")
-            if easing_longhand:
-                decl_lines.append(f"animation-timing-function: {easing_longhand};")
-        else:
-            name = _extract_animation_name_from_shorthand(animation_shorthand)
-            decl_lines = [f"animation: {animation_shorthand};"]
-
-        # `animation-delay` (Tier 3 stagger detection, Phase R8 Part 4) is
-        # ALWAYS a separate longhand declaration — never foldable into the
-        # `animation` shorthand's own name/duration/easing tokens this
-        # function already parses above (a delay token is indistinguishable
-        # from a duration token by shape alone once BOTH may appear, so this
-        # module has never attempted to read it out of the shorthand; it is
-        # read here exactly as `motion_stagger.extract_animation_delay_seconds`
-        # itself reads it — a plain `animation-delay: <value>;` longhand).
-        # Appended in EITHER branch above (shorthand or longhand base form)
-        # since a delay can accompany either.
-        delay_longhand = base_decls.get("animation-delay")
-        if delay_longhand:
-            decl_lines.append(f"animation-delay: {delay_longhand};")
-
-        if not name:
-            return None
-
+    name, decl_lines = _animation_decl_lines(base_decls)
+    if name:
         keyframes_block = _extract_named_keyframes_block(css_text, name)
         if keyframes_block is None:
             return None
         return keyframes_block + "\n" + "\n".join(decl_lines)
+    elif decl_lines:
+        # animation/animation-name present but no keyframes name resolved --
+        # same as the pre-fix behaviour, decline rather than guess.
+        return None
 
     transition_value = base_decls.get("transition")
     if transition_value:
         return f"transition: {transition_value};"
+
+    hover_match = _own_hover_scoped_decls(node, css_rules)
+    if hover_match is None:
+        return None
+    hover_selector, hover_decls = hover_match
+
+    hover_name, hover_decl_lines = _animation_decl_lines(hover_decls)
+    if hover_name:
+        keyframes_block = _extract_named_keyframes_block(css_text, hover_name)
+        if keyframes_block is None:
+            return None
+        wrapped = f"{hover_selector} {{ {' '.join(hover_decl_lines)} }}"
+        return keyframes_block + "\n" + wrapped
+    elif hover_decl_lines:
+        return None
+
+    hover_transition = hover_decls.get("transition")
+    if hover_transition:
+        return f"{hover_selector} {{ transition: {hover_transition}; }}"
 
     return None
