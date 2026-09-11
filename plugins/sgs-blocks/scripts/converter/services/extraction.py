@@ -214,6 +214,7 @@ def _child_content_for_node(
     child_slug: str,
     css_rules: dict | None = None,
     media_map: dict | None = None,
+    css_text: "str | None" = None,
 ) -> str:
     """Produce the FULL WP block markup for a resolved child node.
 
@@ -248,11 +249,14 @@ def _child_content_for_node(
     if child_rec.kind == "unrecognised" or child_rec.slug is None:
         return ""
     return build_block_markup(
-        child_rec, child_node, css_rules=css_rules, is_root=False, media_map=media_map
+        child_rec, child_node, css_rules=css_rules, is_root=False, media_map=media_map,
+        css_text=css_text,
     )
 
 
-def _emit_content_leaf(node: Any, css_rules: dict | None, media_map: dict | None) -> tuple[str | None, str]:
+def _emit_content_leaf(
+    node: Any, css_rules: dict | None, media_map: dict | None, css_text: "str | None" = None,
+) -> tuple[str | None, str]:
     """Emit a slug-None text-leaf as its ladder-target CONTENT block (FR-31-4.1 #5).
 
     A text-only sgs-classed node is CONTENT, never a `sgs/container` wrapping raw
@@ -305,13 +309,15 @@ def _emit_content_leaf(node: Any, css_rules: dict | None, media_map: dict | None
     if leaf_rec.slug is None or leaf_rec.kind == "unrecognised":
         return None, ""
     markup = build_block_markup(
-        leaf_rec, node, css_rules=css_rules, is_root=False, media_map=media_map
+        leaf_rec, node, css_rules=css_rules, is_root=False, media_map=media_map,
+        css_text=css_text,
     ) or ""
     return (target, markup) if markup else (None, "")
 
 
 def _route_container_child(
-    child: Any, results: list, css_rules: dict | None, media_map: dict | None
+    child: Any, results: list, css_rules: dict | None, media_map: dict | None,
+    css_text: "str | None" = None,
 ) -> None:
     """Route ONE direct child of a default `sgs/container` (Spec 31 §2.4/§2.5 + FR-31-4.1).
 
@@ -337,7 +343,7 @@ def _route_container_child(
     child_rec = recognise(child)
     if child_rec.slug is not None and child_rec.kind != "unrecognised":
         content = _child_content_for_node(
-            child, child_rec.slug, css_rules=css_rules, media_map=media_map
+            child, child_rec.slug, css_rules=css_rules, media_map=media_map, css_text=css_text,
         )
         if content:
             results.append(ChildBlock(slug=child_rec.slug, content=content))
@@ -351,7 +357,7 @@ def _route_container_child(
     csgs = [c for c in (child.get("class", []) or [])
             if isinstance(c, str) and c.startswith("sgs-")]
     if csgs and node_is_text_leaf(child):
-        tslug, markup = _emit_content_leaf(child, css_rules, media_map)
+        tslug, markup = _emit_content_leaf(child, css_rules, media_map, css_text=css_text)
         if markup:
             results.append(ChildBlock(slug=tslug, content=markup))
         else:
@@ -368,7 +374,7 @@ def _route_container_child(
             ))
             return
         content = _child_content_for_node(
-            child, default_slug, css_rules=css_rules, media_map=media_map
+            child, default_slug, css_rules=css_rules, media_map=media_map, css_text=css_text,
         )
         if content:
             results.append(ChildBlock(slug=default_slug, content=content))
@@ -427,8 +433,107 @@ def _bem_element_of(node: Any) -> str | None:
     return None
 
 
+def _detect_sibling_stagger(
+    element_children: list, css_rules: dict | None, css_text: "str | None",
+) -> "tuple[list, dict, list]":
+    """Phase R8 Part 4 (Tier 3 stagger, D1021/D1022 wiring) adapter.
+
+    `_descend_container_children` is the ONE place that already sees a
+    container's FULL set of direct-child Tag elements as a single list AND
+    (via `_child_result_index`, built by its own caller loop) can map each
+    back to the exact ChildBlock its own routing produced — which is what a
+    whole-GROUP stagger write needs to attach to. This function owns only
+    the ADAPTER shape: building the small `{"tag", "classes", "css_text"}`
+    dicts `sibling_shape_prefilter.filter_shape_alike_group` and
+    `motion_stagger.detect_stagger` already expect (never a second
+    shape-alike or timing implementation — both are imported, not
+    re-derived, per R-31-9).
+
+    Returns `(group, attrs, skipped)`: `group` is the ORIGINAL Tag subset
+    (not the wrapper dicts) Tier 3 accepted as one shape-alike staggered
+    group — `[]` when nothing qualifies (too few children, no shared shape,
+    no `animation-delay` evidence, a non-monotonic sequence, or no
+    `@keyframes`/`animation` CSS to resolve a base preset from — see
+    `detect_stagger`'s own docstring for the full reject-case list).
+    `attrs`/`skipped` are `detect_stagger`'s own return values, unchanged.
+
+    `filter_shape_alike_group` runs TWICE here (once to recover which
+    original Tags are in the winning group, once again inside
+    `detect_stagger` itself) — both calls are the same pure, side-effect-free
+    function; this is reuse, not a second implementation.
+    """
+    if not css_text or len(element_children) < 2:
+        return [], {}, []
+
+    from converter.resolvers.motion_shape import scoped_motion_css_text
+    from converter.resolvers.motion_stagger import detect_stagger
+    from converter.services.sibling_shape_prefilter import filter_shape_alike_group
+
+    wrapper_dicts = [
+        {
+            "tag": getattr(child, "name", "") or "",
+            "classes": child.get("class", []) or [] if hasattr(child, "get") else [],
+            "css_text": scoped_motion_css_text(child, css_rules or {}, css_text) or "",
+        }
+        for child in element_children
+    ]
+    index_by_wrapper_id = {id(d): idx for idx, d in enumerate(wrapper_dicts)}
+
+    winning_wrappers = filter_shape_alike_group(wrapper_dicts)
+    if not winning_wrappers:
+        return [], {}, []
+
+    attrs, skipped = detect_stagger(winning_wrappers)
+    if not attrs:
+        return [], {}, skipped
+
+    original_group = [
+        element_children[index_by_wrapper_id[id(w)]] for w in winning_wrappers
+    ]
+    return original_group, attrs, skipped
+
+
+def _merge_attrs_into_child_markup(markup: str, extra_attrs: dict) -> str:
+    """Re-serialise an already-emitted child block's OWN complete markup with
+    `extra_attrs` merged in (setdefault semantics — an attr the child's own
+    conversion already set wins). Phase R8 Part 4's only use: attaching a
+    whole-group Tier 3 stagger write onto a sibling ChildBlock this
+    function's caller already fully built via the normal per-child routing.
+
+    Never re-derives the block's own attrs from scratch — reads them back via
+    `parse_block_open_comment` (the SAME read-back mechanism
+    `assembly.build_block_markup`'s own step 4 variant-detection already
+    uses for exactly this "the attrs only exist in the serialised markup"
+    reason) and re-emits via `emit_block_markup`, so this is one shared
+    serialise/deserialise pair, not a bespoke string-splice. Returns `markup`
+    UNCHANGED if the opener is unparseable (never corrupts a block it cannot
+    safely re-serialise — Rule 4: fail visible, not silently wrong).
+    """
+    from converter.block_serialization import parse_block_open_comment
+    from converter.dispatch_spine import emit_block_markup
+
+    parsed = parse_block_open_comment(markup)
+    if parsed is None:
+        return markup
+    slug, attrs = parsed
+    merged = dict(attrs)
+    for key, value in extra_attrs.items():
+        merged.setdefault(key, value)
+
+    end = markup.find("-->")
+    if end == -1:
+        return markup
+    inner = markup[end + 3:]
+    closer = f"<!-- /wp:{slug} -->"
+    if inner.endswith(closer):
+        inner = inner[: -len(closer)]
+    inner = inner.strip("\n")
+    return emit_block_markup(slug, merged, inner)
+
+
 def _descend_container_children(
-    parent: Any, results: list, css_rules: dict | None, media_map: dict | None
+    parent: Any, results: list, css_rules: dict | None, media_map: dict | None,
+    css_text: "str | None" = None,
 ) -> None:
     """FR-31-4.1 / Spec 31 §2.4 recurse-descent for a default `sgs/container`.
 
@@ -486,10 +591,17 @@ def _descend_container_children(
                 ))
         for _attr, _val in _band.items():
             results.append(ScalarLift(attr=_attr, value=_val))
-        _descend_container_children(only, results, css_rules, media_map)
+        _descend_container_children(only, results, css_rules, media_map, css_text=css_text)
         return
 
     # ---- Route each direct child (§2.4 grid item / sibling'd recurse) -------------
+    # Phase R8 Part 4 (Tier 3 stagger, D1021/D1022 wiring): track WHICH results
+    # index each Tag child's own ChildBlock landed at, so a whole-group stagger
+    # write (below) can attach to the exact siblings Tier 3 accepted, rather
+    # than guessing by list position (a loose-text ContentGap interleaved among
+    # Tag children, or the rare 2+-results-per-child Branch-C expansion,
+    # would otherwise silently misattribute the merge).
+    _child_result_index: dict[int, int] = {}
     for child in parent.children:
         if not isinstance(child, Tag):
             # Loose (non-Tag) text directly under the container is real content —
@@ -501,7 +613,48 @@ def _descend_container_children(
                     "was not routed to a content block",
                 ))
             continue
-        _route_container_child(child, results, css_rules, media_map)
+        _before = len(results)
+        _route_container_child(child, results, css_rules, media_map, css_text=css_text)
+        # Only a clean 1-result-appended, ChildBlock-shaped outcome is a safe
+        # merge target (a ContentGap has no markup to merge into; a 2+-result
+        # Branch-C wrapper-dissolve expansion has no SINGLE block that
+        # represents "this child", so it is left out of the stagger group
+        # rather than guessed at).
+        if len(results) == _before + 1 and isinstance(results[_before], ChildBlock):
+            _child_result_index[id(child)] = _before
+
+    # ---- Tier 3 stagger (Phase R8 Part 4) -----------------------------------------
+    # Only meaningful among genuinely repeated GRID/FLEX items (the same gate
+    # the uniform grid-item fold below already uses) — a non-arranging
+    # container's children are unrelated siblings, not a repeater.
+    if parent_arranges and len(element_children) >= 2:
+        # `_detect_sibling_stagger`'s own `skipped` list is DELIBERATELY not
+        # surfaced as a ContentGap here (unlike step 3a1b's motion `skipped`,
+        # which reports a genuine recognised-but-unroutable case): the vast
+        # majority of ordinary grids carry no `animation-delay` at all, and
+        # `detect_stagger` reports THAT routine "nothing to see here" outcome
+        # via the same `skipped` channel as a genuine reversal/mismatch — so
+        # treating every element as a Rule-4 gap would flood content_gaps
+        # with noise on every plain, non-animated grid. Only a resolved,
+        # non-empty `attrs` is ever acted on.
+        _stagger_group, _stagger_attrs, _ = _detect_sibling_stagger(
+            element_children, css_rules, css_text,
+        )
+        if _stagger_attrs:
+            for _sib in _stagger_group:
+                _ridx = _child_result_index.get(id(_sib))
+                if _ridx is None:
+                    continue
+                _cb = results[_ridx]
+                _cb_slug = _cb.slug or ""
+                _cb_declared = db_lookup.block_attrs(_cb_slug)
+                _applicable = {k: v for k, v in _stagger_attrs.items() if k in _cb_declared}
+                if not _applicable:
+                    continue
+                results[_ridx] = ChildBlock(
+                    slug=_cb.slug,
+                    content=_merge_attrs_into_child_markup(_cb.content, _applicable),
+                )
 
     # ---- Uniform grid-item box-CSS fold -> gridItem* (§2.5) -----------------------
     # Only when THIS container arranges its direct children as grid/flex items.
@@ -515,7 +668,7 @@ def _descend_container_children(
 
 def run_container_default(
     rec: Recognition, section_root: Any, css_rules: dict | None = None,
-    media_map: dict | None = None
+    media_map: dict | None = None, css_text: "str | None" = None,
 ) -> list:
     """FR-31-4 default-container dispatch: recurse-descend a slug-None section's
     children into content blocks (the #1 unblock — 2/9 -> 9/9).
@@ -528,7 +681,7 @@ def run_container_default(
     bare `assert` (stripped by `python -O`).
     """
     results: list = []
-    _descend_container_children(section_root, results, css_rules, media_map)
+    _descend_container_children(section_root, results, css_rules, media_map, css_text=css_text)
     if not any(isinstance(r, (ChildBlock, ScalarLift)) for r in results):
         raise ContentConservationError(
             f"default sgs/container recursed to {len(results)} result(s) with ZERO "
@@ -541,6 +694,7 @@ def run_container_default(
 def run_mechanism_b(
     rec: Recognition, section_root: Any, css_rules: dict | None = None,
     media_map: dict | None = None, exclude_ids: frozenset[int] = frozenset(),
+    css_text: "str | None" = None,
 ) -> list:
     """Mechanism B: faithful port of _route_composite_interior + walk() child-resolution.
 
@@ -604,7 +758,9 @@ def run_mechanism_b(
     # DB is absent (container_default_slug() -> None ≠ rec.slug).
     # ------------------------------------------------------------------
     if rec.slug is not None and rec.slug == db_lookup.container_default_slug():
-        return run_container_default(rec, section_root, css_rules=css_rules, media_map=media_map)
+        return run_container_default(
+            rec, section_root, css_rules=css_rules, media_map=media_map, css_text=css_text,
+        )
 
     # ------------------------------------------------------------------
     # Build mobile-suffix set once per call (DB-driven, no hardcoded dict).
@@ -812,7 +968,8 @@ def run_mechanism_b(
                     # TEXT for scalar blocks (primary_content_attr set), inner WP markup
                     # for nested InnerBlocks parents (primary_content_attr None).
                     content = _child_content_for_node(
-                        child, child_slug, css_rules=css_rules, media_map=media_map
+                        child, child_slug, css_rules=css_rules, media_map=media_map,
+                        css_text=css_text,
                     )
                     col_results.append(ChildBlock(slug=child_slug, content=content))
 
@@ -832,7 +989,8 @@ def run_mechanism_b(
                         if gc_rec.slug is None:
                             return None
                         gc_content = _child_content_for_node(
-                            grandchild, gc_rec.slug, css_rules=css_rules, media_map=media_map
+                            grandchild, gc_rec.slug, css_rules=css_rules, media_map=media_map,
+                            css_text=css_text,
                         )
                         return [ChildBlock(slug=gc_rec.slug, content=gc_content)]
 
@@ -941,6 +1099,7 @@ def run_mechanism_b(
         try:
             results.extend(_route_generic_child(
                 child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+                css_text=css_text,
             ))
         except ContentConservationError:
             raise
@@ -1025,6 +1184,7 @@ def _try_route_generic_child_once(
     nested_filled: set[str],
     css_rules: dict | None,
     media_map: dict | None,
+    css_text: "str | None" = None,
 ) -> list | None:
     """Attempt to resolve ONE generic-composite child to content WITHOUT
     dissolving a transparent wrapper — that recursion lives one level up, in
@@ -1107,7 +1267,7 @@ def _try_route_generic_child_once(
 
     # Emit ChildBlock. _child_content_for_node picks TEXT or inner markup per block type.
     content = _child_content_for_node(
-        child, child_slug, css_rules=css_rules, media_map=media_map
+        child, child_slug, css_rules=css_rules, media_map=media_map, css_text=css_text,
     )
     out.append(ChildBlock(slug=child_slug, content=content))
     return out
@@ -1121,6 +1281,7 @@ def _route_generic_child(
     nested_filled: set[str],
     css_rules: dict | None,
     media_map: dict | None,
+    css_text: "str | None" = None,
 ) -> list:
     """Route ONE child of a GENERIC (non-class-section) InnerBlocks composite
     (accordion / tabs / form / quote …) and return its content results.
@@ -1137,6 +1298,7 @@ def _route_generic_child(
     """
     resolved = _try_route_generic_child_once(
         child, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+        css_text=css_text,
     )
     if resolved is not None:
         return resolved
@@ -1144,6 +1306,7 @@ def _route_generic_child(
     def _resolve_one(gc: Any) -> list | None:
         return _try_route_generic_child_once(
             gc, rec, allowed, exclude_ids, nested_filled, css_rules, media_map,
+            css_text=css_text,
         )
 
     out = _recurse_dissolved_children(
@@ -1452,6 +1615,7 @@ def extract_content(
     section_root: Any,
     media_map: dict | None = None,
     css_rules: dict | None = None,
+    css_text: "str | None" = None,
 ) -> list:
     """Dispatch content extraction for a recognised composite.
 
@@ -1486,5 +1650,5 @@ def extract_content(
     intercept, mirroring the assembly.py idiom.
     """
     from converter import walk as _walk
-    return _walk.walk_content(rec, section_root, media_map, css_rules)
+    return _walk.walk_content(rec, section_root, media_map, css_rules, css_text)
 

@@ -129,6 +129,7 @@ def build_block_markup(
     media_map: dict | None = None,
     css_rules: dict | None = None,
     is_root: bool = True,
+    css_text: "str | None" = None,
 ) -> str:
     """Assemble native WP block markup from extraction results.
 
@@ -158,6 +159,18 @@ def build_block_markup(
     that preserves the pre-existing content-only behaviour when no css_rules
     are provided.
 
+    ``css_text`` (Phase R8 wiring, D1021/D1022) is the WHOLE section's raw,
+    un-parsed CSS string — the same text ``entry.py`` passes to
+    ``parse_css()`` to build ``css_rules``. ``css_rules`` (a selector->decls
+    dict) has already thrown away `@keyframes` bodies and cascade/source-order
+    information that Tier 1/2's motion-shape classifier needs (it must find a
+    SPECIFIC element's own `@keyframes` block by name, not a decls dict keyed
+    by selector) — so the raw text travels alongside `css_rules` through the
+    SAME recursion this function's own child-content calls already use,
+    rather than being re-derived per node. Threaded through ``extract_content``
+    unconditionally (a safe no-op default of ``None`` when absent, e.g. every
+    pre-existing caller/test that never passed it).
+
     Design ref: `.claude/plans/2026-06-26-stage3-child-shape-fork-design.md` §1.
     No block or slot string literals (scanned by gates/no_slug_literal).
     """
@@ -172,7 +185,7 @@ def build_block_markup(
     css_attrs: dict = _ext._build_css_attrs(rec, section_root, _css_rules, is_root)
 
     # §3.B — Content pass: ScalarLifts + ChildBlocks + ContentGaps.
-    results = _ext.extract_content(rec, section_root, media_map, _css_rules)
+    results = _ext.extract_content(rec, section_root, media_map, _css_rules, css_text)
 
     # Assemble the final attr dict: variant → CSS → content (content wins collision).
     attrs: dict = dict(variant_attrs(rec))   # step 1: variant attrs
@@ -245,6 +258,55 @@ def build_block_markup(
                 ContentGap(where=_skip_where, detail=_skip_detail),
                 block_slug=rec.slug,
             )
+
+    # step 3a1b: Phase R8 Tier 1/2 CSS-motion lift (D1021 shipped the
+    # classifiers; D1022's council found + fixed 3 real bugs in them AND
+    # flagged, as its own explicit "confirmed not yet fixed" scope decision,
+    # that NONE of R8's 8 modules were ever called from assembly.py or any
+    # orchestrator stage — every fix in D1022 was therefore inert in
+    # production until this wiring pass). `scoped_motion_css_text()`
+    # (motion_shape.py) finds THIS node's own effective animation/transition
+    # declaration (via the same `collect_css_decls_for_element` every other
+    # step in this function already uses) plus the matching `@keyframes`
+    # block pulled from the section's raw, un-parsed `css_text` (threaded in
+    # via `build_block_markup`'s new `css_text` param — `_css_rules` alone
+    # has already discarded `@keyframes` bodies, which Tier 1 needs).
+    # `classify_css_motion_with_trigger` (Tier 1+2) resolves that snippet to
+    # the real `sgsAnimation`/`fxTrigger` attrs. Gated on the block actually
+    # DECLARING the attr (`db_lookup.block_attrs`) — the same "never write an
+    # attr the block doesn't declare" discipline every DB-gated step in this
+    # function already follows (step 3b's `_validate` call is the stricter
+    # sibling of this same idea) — so a block with no fx/animation support at
+    # all never receives a dead, unrendered attribute. setdefault: an
+    # explicit value from variant/CSS/content/step 3a1 wins (same precedence
+    # as every step here).
+    if rec.slug is not None and css_text:
+        from converter.resolvers.motion_shape import scoped_motion_css_text
+        from converter.resolvers.motion_trigger import classify_css_motion_with_trigger
+
+        _motion_snippet = scoped_motion_css_text(section_root, _css_rules, css_text)
+        if _motion_snippet:
+            _motion_attrs, _motion_skipped = classify_css_motion_with_trigger(_motion_snippet)
+            _declared_attrs = db_lookup.block_attrs(rec.slug)
+            for _mk, _mv in _motion_attrs.items():
+                if _mk not in _declared_attrs:
+                    _gap_collector.record_content_gap(
+                        ContentGap(
+                            where="motion_shape",
+                            detail=(
+                                f"resolved {_mk}={_mv!r} but {rec.slug} does not "
+                                f"declare {_mk} — gapped, never a dead attr write"
+                            ),
+                        ),
+                        block_slug=rec.slug,
+                    )
+                    continue
+                attrs.setdefault(_mk, _mv)
+            for _ms in _motion_skipped:
+                _gap_collector.record_content_gap(
+                    ContentGap(where="motion_shape", detail=str(_ms)),
+                    block_slug=rec.slug,
+                )
 
     # step 3a2: R-31-2 TAG-IDENTITY write (CG-2 fix, 2026-07-05 — the zero-h1
     # defect; shape-normalisation fix, 2026-08-17 — the h3-vs-numeric-enum

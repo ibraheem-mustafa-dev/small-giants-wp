@@ -116,10 +116,13 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from motion_trigger import classify_css_motion_with_trigger
+try:  # pragma: no cover - import shape depends on caller's sys.path setup
+    from converter.resolvers.motion_trigger import classify_css_motion_with_trigger
+except ImportError:  # pragma: no cover - fallback when run as a loose script
+    from motion_trigger import classify_css_motion_with_trigger  # type: ignore
 
 try:  # pragma: no cover - import shape depends on caller's sys.path setup
-    from services.sibling_shape_prefilter import filter_shape_alike_group
+    from converter.services.sibling_shape_prefilter import filter_shape_alike_group
 except ImportError:  # pragma: no cover - fallback when run as a loose script
     import os
     import sys

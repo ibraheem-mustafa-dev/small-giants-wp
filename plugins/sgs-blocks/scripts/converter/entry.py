@@ -329,7 +329,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         if not rec.slug or rec.kind == "unrecognised":
             failure_reason = f"recognise_section returned unrecognised (kind={rec.kind!r})"
         else:
-            block_markup = build_block_markup(rec, root, css_rules=css_rules, media_map=media_map or {})
+            block_markup = build_block_markup(
+                rec, root, css_rules=css_rules, media_map=media_map or {}, css_text=css,
+            )
             if not block_markup or "wp:" not in block_markup:
                 failure_reason = "build_block_markup returned empty/non-wp: markup"
     except Exception as exc:  # noqa: BLE001 — caught to attach failure_reason, re-raised as failed status (Rule 4: never silent)

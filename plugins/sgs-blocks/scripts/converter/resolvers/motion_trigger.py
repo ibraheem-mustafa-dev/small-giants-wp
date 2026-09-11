@@ -65,7 +65,10 @@ from __future__ import annotations
 
 import re
 
-from motion_shape import classify_css_motion
+try:  # pragma: no cover - import shape depends on caller's sys.path setup
+    from converter.resolvers.motion_shape import classify_css_motion
+except ImportError:  # pragma: no cover - fallback when run as a loose script
+    from motion_shape import classify_css_motion  # type: ignore
 
 # The exact 3-value enum `fxTrigger` already uses (Spec 38 §11.2,
 # `fx.js::FX_TRIGGER_LABELS`) — not invented here, reused verbatim so this

@@ -139,7 +139,13 @@ def signature_for(rec: Recognition) -> NodeSignature:
 
 # ---------------------------------------------------------------------------
 # Handlers — late-bound wrappers over the existing mechanism functions.
-# Uniform call shape (rec, node, media_map, css_rules) -> list.
+# Uniform call shape (rec, node, media_map, css_rules, css_text=None) -> list.
+# `css_text` (Phase R8 wiring, D1021/D1022) is the whole section's RAW CSS
+# string (pre-parse) — added so a handler that recurses into child block
+# markup can eventually reach `assembly.build_block_markup`'s Tier 1/2 motion
+# lift, which needs the raw `@keyframes` text `parse_css()` already discards.
+# Every handler must accept it even when it has no use for it (styling/array
+# below), to keep ONE uniform call shape across the registry.
 # ---------------------------------------------------------------------------
 
 def _ext():
@@ -149,15 +155,22 @@ def _ext():
     return ext
 
 
-def _run_container_default(rec, node, media_map, css_rules) -> list:
-    return _ext().run_container_default(rec, node, css_rules=css_rules, media_map=media_map)
+def _run_container_default(rec, node, media_map, css_rules, css_text=None) -> list:
+    return _ext().run_container_default(
+        rec, node, css_rules=css_rules, media_map=media_map, css_text=css_text,
+    )
 
 
-def _run_styling_content(rec, node, media_map, css_rules) -> list:
+def _run_styling_content(rec, node, media_map, css_rules, css_text=None) -> list:
+    # Styling (CSS-on-content) never recurses into child block markup, so it has
+    # no use for the raw motion CSS text — accepted only to satisfy the uniform
+    # 5-arg handler call shape (Phase R8 wiring, D1021/D1022).
     return _ext().run_mechanism_styling(rec, node, css_rules)
 
 
-def _run_array_content(rec, node, media_map, css_rules) -> list:
+def _run_array_content(rec, node, media_map, css_rules, css_text=None) -> list:
+    # Array/repeater lifts never recurse into child block markup either — same
+    # "accept, don't use" note as _run_styling_content above.
     return _ext().run_mechanism_array(rec, node, media_map)
 
 
@@ -169,7 +182,7 @@ def _run_array_content(rec, node, media_map, css_rules) -> list:
 # scalar-media art-direction), run_mechanism_leaf (element-self lift).
 # ---------------------------------------------------------------------------
 
-def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
+def run_universal_content_walk(rec, node, media_map, css_rules, css_text=None) -> list:
     """ONE walk for every typed composite, per-attr emit_shape-forked.
 
     Spec 31 §13.3 FR-31-2.6: per content routing unit — (1) IDENTITY
@@ -638,7 +651,7 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
     if rec.delegates_content == 1:
         results.extend(ext.run_mechanism_b(
             rec, node, css_rules=css_rules, media_map=media_map,
-            exclude_ids=frozenset(consumed_ids),
+            exclude_ids=frozenset(consumed_ids), css_text=css_text,
         ))
 
     # ---- LEAF fallback — element-self lift (icon-bearing gating retained) ----
@@ -664,8 +677,8 @@ def run_universal_content_walk(rec, node, media_map, css_rules) -> list:
     return results
 
 
-def _run_universal_walk(rec, node, media_map, css_rules) -> list:
-    return run_universal_content_walk(rec, node, media_map, css_rules)
+def _run_universal_walk(rec, node, media_map, css_rules, css_text=None) -> list:
+    return run_universal_content_walk(rec, node, media_map, css_rules, css_text)
 
 
 @dataclass(frozen=True)
@@ -729,6 +742,7 @@ def walk_content(
     node: Any,
     media_map: dict | None = None,
     css_rules: dict | None = None,
+    css_text: "str | None" = None,
 ) -> list:
     """The ONE content-dispatch entry (FR-31-2.8.1).
 
@@ -768,7 +782,7 @@ def walk_content(
 
     results: list = []
     for h in matched:
-        results.extend(h.run(rec, node, media_map, css_rules))
+        results.extend(h.run(rec, node, media_map, css_rules, css_text))
 
     # CONSERVATION FLOOR (Step 6, Rule 4 / R-31-9): the universal walk has no
     # capability gate, so a childless no-content leaf (e.g. a divider) walks
