@@ -40,6 +40,7 @@ import { __ } from '@wordpress/i18n';
 import { Flex, FlexItem } from '@wordpress/components';
 import ResponsiveBoxControl, { ResponsiveBorderRadiusControl } from './ResponsiveBoxControl';
 import GradientCapableColourControl from './GradientCapableColourControl';
+import BorderStyleControl from './BorderStyleControl';
 
 /**
  * @param {Object}   props
@@ -85,6 +86,41 @@ import GradientCapableColourControl from './GradientCapableColourControl';
  *                                               case (WCAG 1.4.11, 3:1), never body text —
  *                                               callers should not need to remember to flip
  *                                               this for the one shape this control ever draws.
+ * @param {boolean}  [props.showColour=true]     Additive (Spec 41 FR-41-33/FR-41-2b). `true`
+ *                                               (the default) is byte-identical to this
+ *                                               control's pre-existing behaviour. `false`
+ *                                               suppresses the `.sgs-border-control__colour`
+ *                                               `FlexItem` and its `GradientCapableColourControl`
+ *                                               entirely — NOT merely omitting the colour props,
+ *                                               which would render an empty picker. Because the
+ *                                               colour popover is where `styleValue`/
+ *                                               `onStyleChange` normally travel (nested inside
+ *                                               `GradientCapableColourControl` as `borderStyle`/
+ *                                               `onBorderStyleChange`), suppressing it re-parents
+ *                                               `BorderStyleControl` as this component's OWN
+ *                                               sibling in the same row instead, so border style
+ *                                               stays reachable when colour is hidden. Gated on
+ *                                               `typeof onStyleChange === 'function'`, mirroring
+ *                                               `GradientCapableColourControl`'s own gate — a
+ *                                               caller that never wired border style gets no
+ *                                               orphan control.
+ *
+ *                                               When `showColour={false}`, the following props
+ *                                               become INERT — still accepted, but never reach
+ *                                               any rendered control, because the only component
+ *                                               that reads them (`GradientCapableColourControl`)
+ *                                               is not mounted: `colourStates`, `colourValue`,
+ *                                               `onColourChange`, `colourGradientValue`,
+ *                                               `onColourGradientChange`, `colourLinked`,
+ *                                               `colourLabel`, `clearable`, `enableAlpha`, and the
+ *                                               contrast trio `contrastAgainst`/`contrastLabel`/
+ *                                               `contrastLargeText`. ⚠ The contrast trio is the
+ *                                               DANGEROUS one of the twelve: a caller can wire a
+ *                                               full WCAG contrast check that then silently never
+ *                                               runs, because the control performing it is not
+ *                                               rendered. `borderStyle` is NOT on this list — it
+ *                                               is re-parented to the sibling `BorderStyleControl`
+ *                                               above, not dropped.
  * @return {JSX.Element} The composed one-row control.
  */
 export default function SgsBorderControl( {
@@ -104,6 +140,7 @@ export default function SgsBorderControl( {
 	onRadiusChange,
 	radiusLabel,
 	showRadiusResponsive = true,
+	showColour = true,
 	colourLabel = __( 'Colour', 'sgs-blocks' ),
 	clearable = true,
 	enableAlpha = true,
@@ -132,24 +169,37 @@ export default function SgsBorderControl( {
 						presets={ widthPresets }
 					/>
 				</FlexItem>
-				<FlexItem className="sgs-border-control__colour" style={ { minWidth: 180 } }>
-					<GradientCapableColourControl
-						label={ colourLabel }
-						states={ colourStates }
-						value={ colourValue }
-						onChange={ onColourChange }
-						gradientValue={ colourGradientValue }
-						onGradientChange={ onColourGradientChange }
-						linked={ colourLinked }
-						borderStyle={ styleValue }
-						onBorderStyleChange={ onStyleChange }
-						clearable={ clearable }
-						enableAlpha={ enableAlpha }
-						contrastAgainst={ contrastAgainst }
-						contrastLabel={ contrastLabel }
-						contrastLargeText={ contrastLargeText }
-					/>
-				</FlexItem>
+				{ showColour && (
+					<FlexItem className="sgs-border-control__colour" style={ { minWidth: 180 } }>
+						<GradientCapableColourControl
+							label={ colourLabel }
+							states={ colourStates }
+							value={ colourValue }
+							onChange={ onColourChange }
+							gradientValue={ colourGradientValue }
+							onGradientChange={ onColourGradientChange }
+							linked={ colourLinked }
+							borderStyle={ styleValue }
+							onBorderStyleChange={ onStyleChange }
+							clearable={ clearable }
+							enableAlpha={ enableAlpha }
+							contrastAgainst={ contrastAgainst }
+							contrastLabel={ contrastLabel }
+							contrastLargeText={ contrastLargeText }
+						/>
+					</FlexItem>
+				) }
+				{ /* Colour suppressed (Spec 41 FR-41-33/FR-41-2b): border style re-parents here
+				     as SgsBorderControl's own sibling, matching GradientCapableColourControl's
+				     own gate so a caller that never wired border style gets no orphan control. */ }
+				{ ! showColour && typeof onStyleChange === 'function' && (
+					<FlexItem className="sgs-border-control__style" style={ { minWidth: 180 } }>
+						<BorderStyleControl
+							value={ styleValue }
+							onChange={ onStyleChange }
+						/>
+					</FlexItem>
+				) }
 			</Flex>
 			{ /* Second control of the pair (Bean, 2026-08-29): the SGS-wrapped
 			     NATIVE border radius belongs with the border, not in a separate
