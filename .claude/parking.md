@@ -261,20 +261,6 @@ matches.
 
 ## Framework: blocks, theme, specs
 
-### P-COLOUR-NAV-MENU-BURGER-GRADIENT — nav-menu's burger icon needs the SVG-gradient mechanism, not the text-gradient one
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
-
-`nav-menu.burgerColour` was one of D936's 9 background-collision rows and was found (D942) to be
-a miscategorisation, not a same-recipe fix: the burger's visible glyph is an inline SVG icon
-coloured via `currentColor`, not rendered text, so `background-clip:text` (the mechanism every
-other row in that batch used) has no defined effect on it. A working precedent already exists —
-`sgs_svg_stroke_gradient()` (`includes/helpers-svg-gradient.php`), which `sgs/icon` already uses
-for exactly this shape (an SVG `<linearGradient>` + `stroke:url(#id)`). Needs a new colour-gradient
-attribute wired onto `nav-menu`'s burger icon through that existing function — not built.
-
-**Trigger:** the colour track resuming general gradient rollout work, or an operator request for
-a gradient burger icon specifically.
-
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 
@@ -453,13 +439,6 @@ roster and the inspector surface is stable.
 this line no longer cites one.
 
 **Trigger:** After cloning pipeline Method-2 lands.
-
-### P-ARCHIVE-PRODUCT-WC-VALIDATION — archive-product template shows editor block-validation errors (frontend renders fine)
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
-
-The `archive-product` theme template shows "Block validation failed" in the editor on 4 `sgs/container` instances plus the WooCommerce product-filters subtree. Confirmed NOT caused by the stale-wrapper fix — the cause is that the stored WC-filter markup doesn't match the installed WooCommerce version's block save output (a WC-core version-drift problem). The frontend renders correctly (dynamic blocks regenerate regardless of editor validity), so this is editor-cosmetic, not a live break, but needs a dedicated WooCommerce-reconciliation fix rather than a blind "Attempt Block Recovery".
-
-**Trigger:** a session owning the WC shop layer (Spec 30); verify against the installed WC version first.
 
 ### P-BLOCK-DESIGN-POLISH — cta-section + notice-banner design upgrades
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-02

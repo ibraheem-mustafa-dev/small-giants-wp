@@ -7,6 +7,41 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-11 — 1 entry RESOLVED: archive-product WC block-validation, confirmed via live editor check
+
+> ### P-ARCHIVE-PRODUCT-WC-VALIDATION — archive-product template shows editor block-validation errors (frontend renders fine)
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
+>
+> The `archive-product` theme template shows "Block validation failed" in the editor on 4 `sgs/container` instances plus the WooCommerce product-filters subtree. Confirmed NOT caused by the stale-wrapper fix — the cause is that the stored WC-filter markup doesn't match the installed WooCommerce version's block save output (a WC-core version-drift problem). The frontend renders correctly (dynamic blocks regenerate regardless of editor validity), so this is editor-cosmetic, not a live break, but needs a dedicated WooCommerce-reconciliation fix rather than a blind "Attempt Block Recovery".
+>
+> **Trigger:** a session owning the WC shop layer (Spec 30); verify against the installed WC version first.
+
+**Resolution evidence, 2026-09-11:** opened `archive-product` live in the Site Editor
+(`sandybrown-nightingale-600381.hostingersite.com`) and took a full accessibility snapshot of the
+rendered canvas. Zero "Block validation failed" messages anywhere — not on any of the `sgs/container`
+instances, not on the Product Filters block (Price/Flavour/Size filter panels all render correctly).
+The described defect does not reproduce; presumably closed by an unlogged WooCommerce version
+update or a since-landed fix. A DIFFERENT, unrelated defect was found live on the same page during
+this check (3 `block-renderer` REST 500s on `sgs/business-info` ×2 / `sgs/product-card` ×1,
+surfacing as "Error loading block" on two footer elements) — not this entry's described problem,
+not archived here, flagged separately to the operator.
+
+## 2026-09-11 — 1 entry RESOLVED: nav-menu burger-icon SVG gradient (Bean-confirmed, resolved via nav-menu colour helper files under the active Spec 41 rebuild — not independently re-verified this session)
+
+> ### P-COLOUR-NAV-MENU-BURGER-GRADIENT — nav-menu's burger icon needs the SVG-gradient mechanism, not the text-gradient one
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-04
+>
+> `nav-menu.burgerColour` was one of D936's 9 background-collision rows and was found (D942) to be
+> a miscategorisation, not a same-recipe fix: the burger's visible glyph is an inline SVG icon
+> coloured via `currentColor`, not rendered text, so `background-clip:text` (the mechanism every
+> other row in that batch used) has no defined effect on it. A working precedent already exists —
+> `sgs_svg_stroke_gradient()` (`includes/helpers-svg-gradient.php`), which `sgs/icon` already uses
+> for exactly this shape (an SVG `<linearGradient>` + `stroke:url(#id)`). Needs a new colour-gradient
+> attribute wired onto `nav-menu`'s burger icon through that existing function — not built.
+>
+> **Trigger:** the colour track resuming general gradient rollout work, or an operator request for
+> a gradient burger icon specifically.
+
 ## 2026-09-11 — 1 entry RESOLVED: nav-drawer non-modal build, staleness sweep
 
 > ### P-NAV-DRAWER-NONMODAL-BUILD — move sgs/nav-drawer to a non-modal drawer (approved, unbuilt)
