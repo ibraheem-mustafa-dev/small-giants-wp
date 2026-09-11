@@ -43,8 +43,9 @@
       "slug": "sgs/accordion",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -1802,8 +1803,9 @@
       "slug": "sgs/container",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -2425,8 +2427,9 @@
       "slug": "sgs/cta-section",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -2730,8 +2733,9 @@
       "slug": "sgs/feature-grid",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -2909,8 +2913,9 @@
       "slug": "sgs/form",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -3432,9 +3437,9 @@
       "slug": "sgs/google-reviews",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -6763,8 +6768,9 @@
       "slug": "sgs/pricing-table",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -9343,8 +9349,9 @@
       "slug": "sgs/tabs",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "GRID",
+        "css_element": "inner"
       }
     },
     {
@@ -10167,8 +10174,9 @@
       "slug": "sgs/testimonial-slider",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -10828,8 +10836,9 @@
       "slug": "sgs/trust-bar",
       "attr": "columns",
       "fields": {
-        "css_property": "grid-template-columns",
-        "css_layer": "GRID"
+        "css_property": "grid-template-columns:count",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {

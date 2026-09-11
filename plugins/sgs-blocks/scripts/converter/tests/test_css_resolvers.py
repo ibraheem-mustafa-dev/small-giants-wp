@@ -224,31 +224,21 @@ def test_grid_explicit_tracks_no_count(conn):
     assert [(w.attr, w.value) for w in out] == [("gridTemplateColumns", {"desktop": "1fr 2fr"})]
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "NOT the original D554 ruling C debt (that part IS done, verified 2026-09-10 "
-    "per the R1 rescoped work-list, report 2026-09-10-r1-rescoped-worklist.md "
-    "Finding 1 — sgs/container.gridTemplateColumns/.columns are already migrated "
-    "tier-object attrs and the resolver already emits the object shape). This "
-    "test is blocked by a SEPARATE, newly-discovered live DB conflict found "
-    "2026-09-10 while rewriting this test: block_attributes now carries TWO "
-    "rows for (sgs/container, GRID, grid-template-columns) — attr_name='columns' "
-    "(css_element=NULL) and attr_name='gridTemplateColumns' (css_element='inner') "
-    "— and db_lookup.attr_for_property() picks the wrong one ('columns') for "
-    "BOTH the template-string Write and the count Write, so both writes land on "
-    "attr='columns' instead of splitting across 'gridTemplateColumns'/'columns'. "
-    "This also currently breaks 3 previously-passing sibling tests "
-    "(test_grid_template_plus_columns_count, test_grid_explicit_tracks_no_count, "
-    "test_grid_metamorphic_count_scales_with_repeat_n) — confirmed pre-existing, "
-    "not caused by this task's Task 1/2/3 work (git log shows no local commit "
-    "touched db_lookup.py, grid.py's routing, or this DB table), most likely a "
-    "concurrent session's block.json/DB reseed on sgs/container mid-session. Not "
-    "fixed here — editing the shared live sgs-framework.db while other concurrent "
-    "sessions may be mid-write on the SAME block is out of scope and too risky "
-    "for this task. The assertions below assert the CORRECT post-fix shape (the "
-    "same object-tier pattern already verified for fontSize/lineHeight/gap/"
-    "contentWidth above) so this test flips to a real pass the moment the DB "
-    "conflict is resolved."
-))
+# Was xfail(strict=True) — tracked a live DB conflict found 2026-09-10:
+# block_attributes carried TWO rows for (sgs/container, GRID, grid-template-columns)
+# — attr_name='columns' (css_element=NULL) and attr_name='gridTemplateColumns'
+# (css_element='inner') — and db_lookup.attr_for_property() picked the wrong one
+# ('columns') for BOTH the template-string Write and the count Write. Root cause:
+# `columns` is a derived COLUMN-COUNT attr (SGS_Container_Wrapper's repeat(N,1fr)
+# fallback, class-sgs-container-wrapper.php:393-410), not a second author of the
+# real `grid-template-columns` CSS property — it was mis-tagged with that property
+# name instead of the `grid-template-columns:count` pseudo-property the resolver's
+# own attr_for_grid_column_count() convention expects (mirrors sgs/nav-menu's
+# `"css:grid-template-columns:count": "listColumns"` attrMap entry). Fixed
+# 2026-09-11 by adding the same pseudo-property attrMap entry to the 10 affected
+# blocks' block.json (container/trust-bar/feature-grid/testimonial-slider/
+# accordion/cta-section/form/google-reviews/pricing-table/tabs) + reseeding Stage
+# 1. This test now asserts the CORRECT post-fix shape and passes for real.
 def test_grid_tier_suffix_on_both(conn):
     out = grid.resolve(Decl("grid-template-columns", "repeat(2, 1fr)", "Tablet"), _ctx(conn))
     pairs = [(w.attr, w.value) for w in out]

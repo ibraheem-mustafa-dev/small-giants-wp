@@ -49,6 +49,7 @@
 						"css:font-weight": "fontWeight",
 						"css:font-style": "fontStyle",
 						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-columns:count": "columns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
 						"css:flex-direction": "flexDirection",
