@@ -37,10 +37,14 @@
 }
 
 /*
- * Sliding nav indicator (Mega-Menu Build Spec §6 row 2, opt-in via
- * `indicatorStyle: 'pill'`). Structural shape/motion only. The fill colour
- * is attribute-driven (render.php's scoped <style>) with a token-based
- * default here so an unset `indicatorColour` still renders a sensible
+ * Sliding nav indicator — the Highlight pill (Mega-Menu Build Spec §6 row 2,
+ * opt-in via `itemBgHoverTreatment: 'highlight'`; the old standalone
+ * `indicatorStyle: 'pill'` attribute was folded into that selector and
+ * deleted outright by Spec 41 FR-41-25/FR-41-14 — this class name did not
+ * change). Structural shape/motion only. The fill colour is attribute-driven
+ * (render.php's scoped <style>, reading `itemBgHover`/`itemBgHoverGradient`
+ * — "one picker, one property, three ways of applying it", FR-41-25) with a
+ * token-based default here so an unset colour still renders a sensible
  * accent, never an invisible pill.
  *
  * DELIBERATE, TIGHTLY-SCOPED EXCEPTION to project rule 1 ("transition ONLY
@@ -193,6 +197,40 @@
 	width: 44px;
 }
 
+/*
+ * Magnetic-pull companion rule (Spec 41 FR-41-31). Required the moment
+ * `triggerMagnetEnabled` emits `data-sgs-fx="magnet"` on this element: the
+ * shared `fx-magnet` runtime's own stylesheet (`assets/css/fx-magnet.css`)
+ * declares `[data-sgs-fx="magnet"]{transition:var(--sgs-magnet-transition)}`
+ * at (0,1,0) — the SAME specificity as this block's own hover-background
+ * transition above — so without this rule, whichever stylesheet happens to
+ * enqueue last silently wins and the other transition is dropped; which one
+ * dies depends on enqueue order, so it would reproduce intermittently and
+ * look like a runtime fault. This selector's extra class raises it to
+ * (0,2,0), so BOTH transitions always survive, deterministically.
+ *
+ * The magnet half reads the shared custom property rather than retyping its
+ * literal — `--sgs-magnet-transition` is declared once, on the shared
+ * runtime's own selector, specifically so the number stays true in one
+ * place. The `var()` fallback repeats that literal only so this rule still
+ * resolves correctly if the property is ever absent.
+ *
+ * ⛔ NO `!important` here, ever. `--sgs-magnet-transition`'s OWN reduced-
+ * motion kill switch lives in `fx-magnet.css` at (0,1,0); this rule sits at
+ * (0,2,0) and would out-rank it if given one, reinstating the very
+ * transition reduced motion is asking to remove. The rescue that actually
+ * fires under `reduce` is the pre-existing four-selector `!important` rule
+ * below (naming this element among the four) — this rule's job is only to
+ * not fight that rescue, not to add a second one. Do NOT also wrap this
+ * rule in `@media not (prefers-reduced-motion: reduce)`: the existing
+ * rescue is the one mechanism, and a second one guaranteeing the same
+ * outcome would be unfalsifiable — neither could ever be safely removed.
+ */
+.sgs-nav-menu__burger[data-sgs-fx="magnet"] {
+	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
+		var(--sgs-magnet-transition, transform 180ms ease-out);
+}
+
 /* Burger ICON glyph size — distinct from `burgerSize`, which governs the 44px
    button touch-target (render.php scoped). Zero-specificity :where() marks it an
    overridable default so it never masks an attr-driven rule. */
@@ -225,6 +263,69 @@
 	}
 	.sgs-nav-menu :focus-visible {
 		outline-color: Highlight;
+	}
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * BAR/DROPDOWN FORK — submenu OPEN animation (Spec 41 FR-41-10,
+ * `submenuAnimation`: none|fade|slide-down). Structural shape only — the
+ * trigger is the existing binary display toggle
+ * (`{uid} [data-sgs-mega-trigger][aria-expanded="true"] ~
+ * .sgs-nav-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php),
+ * unchanged by this. Toggling an element's OWN `display` from `none` to
+ * `block` restarts any CSS animation declared on it, so a modifier class
+ * that is simply PRESENT on the wrap is enough to make each open animate —
+ * no JS replay logic needed. `none` (the default) renders today's output
+ * byte-identical: neither modifier class below is ever applied for it.
+ * Bar-only, correctly — the drawer fork's accordion is native `<details>`
+ * and never renders `.sgs-nav-menu__submenu-wrap` at all (FR-41-1), so it
+ * has no open animation and needs none.
+ */
+.sgs-nav-menu__submenu-wrap--fade {
+	animation: sgs-nav-menu-submenu-fade-in 0.18s ease-out;
+}
+
+.sgs-nav-menu__submenu-wrap--slide-down {
+	animation: sgs-nav-menu-submenu-slide-down-in 0.26s ease-out;
+}
+
+@keyframes sgs-nav-menu-submenu-fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes sgs-nav-menu-submenu-slide-down-in {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/*
+ * ⛔ Mandatory reduced-motion companion (FR-41-10): "the panel still opens,
+ * it just arrives whole. A panel that fails to open under reduced motion is
+ * a broken menu, not a calmer one." Collapsing `animation-duration` to
+ * near-zero — this file's own existing convention, see the four-selector
+ * rule further down — lands the animation on its `to` END STATE
+ * (opacity:1, transform:none) almost instantly, which is what keeps the
+ * panel opening. Removing the animation outright would instead strand the
+ * wrap at its `from` state (opacity:0) — invisible, not calmer.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__submenu-wrap--fade,
+	.sgs-nav-menu__submenu-wrap--slide-down {
+		animation-duration: 0.01ms !important;
 	}
 }
 
