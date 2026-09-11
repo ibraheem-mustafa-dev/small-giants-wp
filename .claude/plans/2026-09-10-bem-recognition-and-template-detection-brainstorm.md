@@ -153,7 +153,7 @@ Any detection signal that is itself platform- or client-specific — e.g. "if th
 
 ### Ranked menu
 
-**Tier 1 — structural repeated-sibling detection (recommended).**
+**Tier 1 — structural repeated-sibling detection (recommended). ✅ SHIPPED 2026-09-11 — D1037, commit `e250ff6d9`.**
 Detect, at boundary level, whether a container has N or more near-identical sibling children — same tag shape and near-identical class signature — above a tunable threshold. This reuses the same fingerprinting idea `/uimax-sgs-scrape-pattern` already computes for pattern dedup (`sha256(normalised_html + sorted_css_var_dump)`, per its Stage 3), applied sibling-to-sibling within one boundary instead of pattern-to-library. When it fires, convert **one** representative sibling fully, verify its fidelity, and apply the same converted structure as a loop (a native repeating block — Query Loop/Product Collection-equivalent for CPT archives, a repeated InnerBlocks template for a plain hand-authored card grid) instead of hand-converting every sibling individually.
 
 This also covers the "optional recurring sections" half of the question (e.g. "related products" present on some pages of a template family, absent on others): once a page is recognised as belonging to a repeating template family, diff its boundary set against sibling pages of the same family. A section present in every instance is core; a section present in only some becomes a conditionally-rendered optional slot (matching an existing role from the `roles`/`slot_synonyms` DB tables) instead of being treated as a fresh gap candidate every time it happens to be missing.
