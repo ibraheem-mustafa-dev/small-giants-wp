@@ -1800,6 +1800,14 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         # circuit cv2-eligible boundaries — they get a recovery path the
         # legacy world didn't have.
         _cv2_eligible = False
+        # Tier 0 (D1034, 2026-09-11) — True only when eligibility came from
+        # lingua_franca's computed primary_sgs_bem rather than an already-
+        # canonical raw class_signature. Consumed below to inject the
+        # converted class onto the actual HTML root element (see comment
+        # at _sec_el resolution) — without that injection the converter
+        # re-derives recognition straight from the HTML and would still
+        # find no `sgs-` root class.
+        _cv2_eligible_via_lingua_franca = False
         if getattr(args, "converter_v2", False):
             _class_sig = boundary.get("class_signature") or []
             try:
@@ -1808,6 +1816,46 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     _cv2_eligible = bool(_s1bh._is_sgs_bem_canonical(_class_sig))
             except Exception:  # noqa: BLE001
                 _cv2_eligible = False
+            # Tier 0 (D1034) — wire the already-computed primary_sgs_bem into
+            # this gate instead of discarding it. lingua_franca.py computes a
+            # real SGS-BEM equivalent for every class signature it recognises
+            # in a genuine-slot-map convention; stage1_boundary_hook.py wrote
+            # that value into voter.json's boundary['primary_sgs_bem'] at
+            # Stage 1, but until now nothing downstream consulted it — this
+            # gate checked ONLY the raw class_signature, so a boundary
+            # lingua_franca had already successfully converted still hard-
+            # halted with status 'unmatched-non-bem-compliant'.
+            #
+            # Scoped to the THREE conventions with real token->block
+            # slot-maps (lingua_franca.py's _BEM_BARE / _BOOTSTRAP /
+            # _KEBAB_SEMANTIC) — deliberately excludes Tailwind utility and
+            # shadcn/Radix, whose slot_map is empty and which therefore
+            # ALWAYS degrade to a generic sgs-container regardless of the
+            # section's real semantics (a hero/card/CTA all collapse to the
+            # same undifferentiated block). Letting one of those through
+            # would trade a clear, actionable halt for a silently generic —
+            # and potentially misleading — emit, with zero new information
+            # over what the halt already tells the operator. Fail-closed:
+            # a boundary whose primary_sgs_bem is None (lingua_franca could
+            # not recognise it at all) or whose source_convention is outside
+            # this set is UNCHANGED by this branch and falls through to the
+            # existing hard halt below, exactly as before Tier 0.
+            if (
+                not _cv2_eligible
+                and boundary.get("primary_sgs_bem")
+                and boundary.get("source_convention") in ("BEM", "Bootstrap 5", "kebab-semantic")
+            ):
+                _cv2_eligible = True
+                _cv2_eligible_via_lingua_franca = True
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_lingua_franca_gate",
+                    boundary_id=boundary_id,
+                    source_convention=boundary.get("source_convention"),
+                    primary_sgs_bem=boundary.get("primary_sgs_bem"),
+                    class_signature=_class_sig,
+                    reason="Tier 0 — non-canonical class_signature let through via primary_sgs_bem",
+                )
 
         # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
         # matched the candidate slug. Per the 2026-05-14 retirement of
@@ -1934,6 +1982,24 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     _tag = _sel_parts[0] if len(_sel_parts) > 1 else None
                     _cls = _sel_parts[1] if len(_sel_parts) > 1 else _sel_parts[0]
                     _sec_el = _soup.find(_tag, class_=_cls.split(".")[0]) if _tag else _soup.find(class_=_cls.split(".")[0])
+                # Tier 0 (D1034) — a boundary let through via primary_sgs_bem
+                # needs the converted BEM class actually PRESENT on the root
+                # element's `class` attribute in the HTML converter.entry
+                # parses. converter.recognition.recognise_section() re-derives
+                # block identity straight from the BS4 node's own class
+                # attribute (never from voter.json / boundary dict) — without
+                # this injection the walker would see only the ORIGINAL
+                # non-BEM class, find no `sgs-` root class, and the section
+                # would still fail (now as a loud converter 'failed', not the
+                # halt this tier exists to get past). APPEND, never replace:
+                # the original classes must survive so variation-CSS
+                # selector matching (which keys off the source class names)
+                # still finds this element.
+                if _cv2_eligible_via_lingua_franca and _sec_el is not None:
+                    _existing_classes = _sec_el.get("class") or []
+                    _primary_bem_cls = boundary.get("primary_sgs_bem")
+                    if _primary_bem_cls and _primary_bem_cls not in _existing_classes:
+                        _sec_el["class"] = _existing_classes + [_primary_bem_cls]
                 _section_html = str(_sec_el) if _sec_el is not None else ""
                 # Build media map dict from file if provided.
                 _media_map_obj: dict = {}

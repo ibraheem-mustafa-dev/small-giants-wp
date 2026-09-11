@@ -58,8 +58,10 @@ Read in full: `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`, its ca
 
 ### Ranked menu
 
-**Tier 0 — wire the existing output into the gate (recommended first step).**
+**Tier 0 — wire the existing output into the gate (recommended first step). ✅ SHIPPED 2026-09-11 — D1034, commit `<see git log D1034>`.**
 `lingua_franca.py` already computes a usable `primary_sgs_bem` for every Bootstrap-5, bare-BEM, and kebab-semantic class it recognises. Today that computation is discarded at `stage_4_5_6_7_8_extract`'s canonical-check gate. Making the gate consult `primary_sgs_bem` (or an "is convertible" flag derived from it) when the raw `class_signature` fails the canonical check would let already-recognised conventions through without writing a single new recognition rule.
+**Shipped as scoped: `stage_4_5_6_7_8_extract` now falls back to `boundary.get("primary_sgs_bem")`, gated to `source_convention in ("BEM", "Bootstrap 5", "kebab-semantic")` — Tailwind utility/shadcn excluded (empty slot_map, always degrades to generic `sgs-container`, no gain over the halt). A second wiring fix was needed beyond the gate itself: `converter/recognition.py::recognise_section` re-derives block identity from the HTML node's own `class` attribute, not from `voter.json`, so the converted class is now also appended (never replacing the original, which variation-CSS selector matching still needs) onto the root element in the parsed mockup HTML before `convert_section` runs. Fail-closed unchanged: no `primary_sgs_bem` still hard-halts. Full detail + test list: `.claude/decisions.md` D1034.**
+**Measurement against a real non-BEM source (the next step this tier was meant to enable) is NOT done in this pass — Tier 1 should not be started until that measurement exists, per the Recommendation below.**
 - *Cost:* smallest — no new heuristics, no new data, just reading a value that's already computed.
 - *Risk:* provably bounded — it can only affect boundaries that currently hard-halt anyway (`_is_sgs_bem_canonical` is unchanged for the canonical branch), so it cannot regress a boundary that passes today.
 - *Value:* immediate, and gives real measurement — running this against one real Bootstrap-ish or bare-BEM source tells you what fraction of non-BEM content the existing three real rules already rescue, before spending anything on Tier 2/3.

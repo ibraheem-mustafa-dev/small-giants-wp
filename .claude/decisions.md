@@ -1,3 +1,62 @@
+## D1034 [ROUTINE] — Tier 0: wire `primary_sgs_bem` into the non-BEM hard-halt gate
+
+**2026-09-11.** Q1 Tier 0 from `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
+(Ground Truth #6, Bean-decided "ship Tier 0 alone first and measure"). `lingua_franca.py::convert_class_signature`
+already computed a real, usable `primary_sgs_bem` for every class signature matching a
+genuine-slot-map convention (bare BEM, Bootstrap 5, kebab-semantic), and
+`stage1_boundary_hook.py::enrich_boundary` already wrote it into `voter.json` at Stage 1 — but
+`sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract`'s eligibility gate checked only the
+boundary's raw, unconverted `class_signature`, so the computed value was discarded and every
+non-canonical boundary hard-halted with `status: "unmatched-non-bem-compliant"` regardless of
+what `lingua_franca` had already resolved for it. Confirmed directly in the halt code path and
+in `test_orchestrator_non_bem_halt.py::TestNonBemHalt` before touching anything.
+
+**The fix, scoped exactly to wiring (no new recognition rules, no DOM-shape inference):**
+`stage_4_5_6_7_8_extract` now falls back to `boundary.get("primary_sgs_bem")` when the raw
+`class_signature` fails `_is_sgs_bem_canonical()`. `boundary` is read straight from `voter.json`
+(`boundaries_by_id`), which already carries `primary_sgs_bem` — no new parameter or lookup was
+needed, the value was simply sitting unread one dict access away.
+
+**Design question resolved — scope to 3 of the 6 conventions, not all 6.** Gated on
+`boundary.get("source_convention") in ("BEM", "Bootstrap 5", "kebab-semantic")` — the three
+`lingua_franca.py` rules with a real token→block `slot_map`. Tailwind utility and shadcn/Radix
+both declare `"slot_map": {}` and their `_try_rule()` path always falls through to
+`default_block: "container"`, so admitting them would swap a clear, actionable halt for a
+silently generic emit that collapses a hero/card/CTA into an undifferentiated `sgs/container`
+with zero real gain over the halt message — the exact "wrong/misleading conversion" risk the
+brief asked to weigh. **Fail-closed is automatic, not a separate branch:** a boundary whose
+`primary_sgs_bem` is `None` (lingua_franca couldn't recognise it) or whose convention sits
+outside the three simply never sets `_cv2_eligible = True` via this path and falls through to
+the pre-existing hard halt unchanged.
+
+**A second, non-obvious fix was required for Tier 0 to do anything at all, found by tracing the
+data flow rather than assuming the gate flip was sufficient.** `converter/recognition.py::recognise_section`
+re-derives block identity straight from the BS4 node's own `class` attribute in the parsed
+mockup HTML — never from `voter.json` or the boundary dict. Flipping only the gate would let a
+boundary through with its ORIGINAL non-BEM `class` still on the HTML element, `recognise()`
+would find no `sgs-` root class, and the section would still fail — now as a loud
+`converter status:'failed'` instead of the halt, a worse outcome with no benefit. The fix
+appends (never replaces) `primary_sgs_bem` onto the actual root element's `class` list on the
+parsed `BeautifulSoup` node, immediately before `_section_html = str(_sec_el)`, right where the
+element is resolved in the cv2 branch — preserving every original class so variation-CSS
+selector matching (which keys off the source class names) still finds the element.
+
+**Tests:** `plugins/sgs-blocks/scripts/tests/test_orchestrator_non_bem_halt.py` — new
+`TestTier0LinguaFrancaGate` (4 tests: a Bootstrap-5 boundary with `primary_sgs_bem` proceeds
+through cv2 rather than halting; the converted class is verifiably appended to the HTML alongside
+the original; a Tailwind-classified boundary with `primary_sgs_bem` set is still refused; a
+boundary with no `primary_sgs_bem` still hard-halts — the fail-closed negative control). All 4
+pre-existing tests in the file pass unchanged (no fixture needed `primary_sgs_bem`/
+`source_convention` set, proving backward compatibility). Full suite:
+`python -m pytest plugins/sgs-blocks/scripts/oracle/tests/ plugins/sgs-blocks/scripts/converter/tests/`
+— 1073 passed, 2 skipped, 1 xfailed, unchanged from baseline (this change touches neither
+directory's covered files directly). Standalone: `test_orchestrator_non_bem_halt.py` 12/12,
+`test_lingua_franca.py` + `test_stage1_boundary_hook.py` 16/16.
+
+**Files:** `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (gate + class-injection),
+`plugins/sgs-blocks/scripts/tests/test_orchestrator_non_bem_halt.py` (tests + fixture helper).
+Commit: see git log for `D1034` in the same commit message.
+
 ## D1033 [ROUTINE] — R1's 17-attribute worklist actually closed 2026-09-10, never got its own decision entry
 
 **2026-09-11, caught by Bean directly ("you literally already told me... we dealt with that work

@@ -42,6 +42,12 @@ _REPO_ROOT = Path(__file__).resolve().parents[4]          # small-giants-wp/
 _SCRIPTS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "scripts"
 _ORCHESTRATOR_PATH = _SCRIPTS_DIR / "sgs-clone-orchestrator.py"
 
+# Tier 0 tests (D1034) patch converter.entry.convert_section directly, which
+# requires the `converter` package to be importable -- the orchestrator only
+# inserts this path into sys.path at runtime, inside the function under test.
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
 # ---------------------------------------------------------------------------
 # Load orchestrator module via importlib (hyphen-free alias)
 # ---------------------------------------------------------------------------
@@ -115,17 +121,23 @@ def _make_voter_dict(
     boundary_id: str = "boundary-0",
     selector: str = ".sgs-hero",
     class_signature: list[str] | None = None,
+    primary_sgs_bem: str | None = None,
+    source_convention: str | None = None,
 ) -> dict:
-    return {
-        "boundaries": [
-            {
-                "boundary_id": boundary_id,
-                "selector": selector,
-                "class_signature": class_signature or [],
-                "section_id": "section-0",
-            }
-        ]
+    boundary: dict[str, Any] = {
+        "boundary_id": boundary_id,
+        "selector": selector,
+        "class_signature": class_signature or [],
+        "section_id": "section-0",
     }
+    # Tier 0 (D1034) fields -- only set when the caller supplies them, so
+    # existing callers (pre-Tier-0 tests) get boundaries with no
+    # primary_sgs_bem/source_convention at all, exactly as before.
+    if primary_sgs_bem is not None:
+        boundary["primary_sgs_bem"] = primary_sgs_bem
+    if source_convention is not None:
+        boundary["source_convention"] = source_convention
+    return {"boundaries": [boundary]}
 
 
 # ---------------------------------------------------------------------------
@@ -366,4 +378,223 @@ class TestConverterV2DefaultTrue:
         args = parser.parse_args(["--converter-v2"])
         assert args.converter_v2 is True, (
             "Explicitly passing --converter-v2 must still resolve to True."
+        )
+
+
+# ---------------------------------------------------------------------------
+# 5. Tier 0 (D1034) -- primary_sgs_bem wired into the gate
+# ---------------------------------------------------------------------------
+
+def _write_mockup_html(tmp_path: Path, class_name: str = "card", tag: str = "section") -> Path:
+    """A minimal real mockup HTML file with one non-BEM-classed root element."""
+    mockup_path = tmp_path / "mockup.html"
+    mockup_path.write_text(
+        f'<html><body><{tag} class="{class_name}"><p>Hi</p></{tag}></body></html>',
+        encoding="utf-8",
+    )
+    return mockup_path
+
+
+class TestTier0LinguaFrancaGate:
+    """
+    A boundary whose raw class_signature is NOT SGS-BEM canonical, but whose
+    stage1_boundary_hook-computed primary_sgs_bem IS set (a genuine
+    lingua_franca conversion), must proceed through cv2 instead of hard-
+    halting as 'unmatched-non-bem-compliant' -- provided its source
+    convention is one of the three with a real slot-map (bare BEM,
+    Bootstrap 5, kebab-semantic).
+    """
+
+    def test_bootstrap_boundary_with_primary_sgs_bem_does_not_hard_halt(
+        self, tmp_path: Path
+    ) -> None:
+        run_dir = tmp_path / "run-tier0-bootstrap"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path, class_name="card")
+
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    selector=".card",
+                    class_signature=["card"],
+                    primary_sgs_bem="sgs-card-grid",
+                    source_convention="Bootstrap 5",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        fake_convert = MagicMock(return_value={
+            "status": "complete",
+            "block_name": "sgs/card-grid",
+            "block_markup": "<!-- wp:sgs/card-grid /-->",
+            "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(
+                args, match_output, run_dir, _make_run_ctx()
+            )
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert len(per_section) == 1
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant", (
+            "A boundary with a genuine primary_sgs_bem conversion (Bootstrap 5) "
+            f"must not hard-halt. Got status={per_section[0]['status']!r}."
+        )
+        assert per_section[0]["block_markup"] == "<!-- wp:sgs/card-grid /-->"
+
+        # The converter must have been called at all -- proves the Tier 0
+        # branch actually let the boundary through into the cv2 dispatch.
+        fake_convert.assert_called_once()
+
+    def test_primary_sgs_bem_is_injected_onto_the_html_root_class(
+        self, tmp_path: Path
+    ) -> None:
+        """
+        converter.recognition.recognise_section() re-derives block identity
+        straight from the HTML element's own `class` attribute -- never from
+        voter.json. So merely flipping the gate is not enough: the converted
+        primary_sgs_bem class must actually be appended to the root
+        element's class list in the HTML handed to convert_section, with
+        the ORIGINAL class preserved (variation-CSS selector matching keys
+        off the source class name).
+        """
+        run_dir = tmp_path / "run-tier0-inject"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path, class_name="card")
+
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    selector=".card",
+                    class_signature=["card"],
+                    primary_sgs_bem="sgs-card-grid",
+                    source_convention="Bootstrap 5",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        fake_convert = MagicMock(return_value={
+            "status": "complete",
+            "block_name": "sgs/card-grid",
+            "block_markup": "<!-- wp:sgs/card-grid /-->",
+            "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert):
+            _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, _make_run_ctx())
+
+        fake_convert.assert_called_once()
+        _, call_kwargs = fake_convert.call_args
+        html_seen = call_kwargs.get("html", "")
+        assert "sgs-card-grid" in html_seen, (
+            f"Expected the converted class 'sgs-card-grid' injected onto the "
+            f"root element. Got html={html_seen!r}"
+        )
+        assert "card" in html_seen, (
+            "The ORIGINAL source class must survive alongside the converted "
+            "one -- variation-CSS selector matching keys off it."
+        )
+
+    def test_tailwind_convention_is_not_admitted_by_tier_0(
+        self, tmp_path: Path
+    ) -> None:
+        """
+        Design question 3: Tailwind/shadcn always degrade to a generic
+        sgs-container regardless of real semantics (empty slot_map), so
+        Tier 0 deliberately does NOT admit them -- a boundary classified as
+        'Tailwind utility' must still hard-halt even with a primary_sgs_bem
+        present.
+        """
+        run_dir = tmp_path / "run-tier0-tailwind-excluded"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=["flex-1"],
+                    primary_sgs_bem="sgs-container",
+                    source_convention="Tailwind utility",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(
+                args, match_output, run_dir, _make_run_ctx()
+            )
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "Tailwind utility must NOT be admitted by Tier 0 (empty slot_map, "
+            f"always degrades to a generic container). Got "
+            f"status={per_section[0]['status']!r}."
+        )
+
+    def test_no_primary_sgs_bem_still_hard_halts(self, tmp_path: Path) -> None:
+        """
+        Fail-closed negative control: a boundary lingua_franca could NOT
+        recognise at all (no primary_sgs_bem, even though source_convention
+        happens to be set) must hard-halt exactly as before Tier 0.
+        """
+        run_dir = tmp_path / "run-tier0-no-primary"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=["totally-unrecognised-xyz"],
+                    primary_sgs_bem=None,
+                    source_convention="Bootstrap 5",
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(
+                args, match_output, run_dir, _make_run_ctx()
+            )
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "A boundary with no primary_sgs_bem must still hard-halt "
+            f"(fail-closed). Got status={per_section[0]['status']!r}."
         )
