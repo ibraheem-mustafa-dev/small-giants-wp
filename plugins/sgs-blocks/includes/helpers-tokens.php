@@ -1372,13 +1372,42 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
  * @param string $selector      CSS selector for the element the hover state applies to (already scoped, e.g. "{$root_sel}" or "{$root_sel} .sgs-x__item").
  * @param array  $decls_normal  Complete CSS declaration strings for the resting state. Empty = no resting-state rule emitted.
  * @param array  $decls_hover   Complete CSS declaration strings for `:hover`/`:focus-visible`. Empty = no hover rule emitted.
- * @return string Scoped CSS (zero to two rules), or '' when there is nothing to paint.
+ * @param array  $extra_states  Optional. Map of `state_key => ['suffix' => string, 'decls' =>
+ *                               string[], 'guarded' => bool]`. Each entry emits
+ *                               `{$selector}{$suffix}{…$decls}`, routed through
+ *                               `sgs_hover_state_rules()`'s touch-safe guard pair when `guarded`
+ *                               is true (via `sgs_hover_guarded_rule()`) and emitted plainly when
+ *                               false. Emitted BEFORE `$decls_hover` — ordering is a property of
+ *                               this emitter, not of every call site (Spec 41 FR-41-3(a); on the
+ *                               nav-menu use case this means hover wins over Current when a
+ *                               visitor points at the item for the page they are already on).
+ *                               Default `[]` is the acceptance condition: every existing caller
+ *                               that omits this parameter emits byte-identical CSS.
+ * @return string Scoped CSS (zero or more rules), or '' when there is nothing to paint.
  */
-function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover ): string {
+function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover, array $extra_states = array() ): string {
 	$css = '';
 
 	if ( $decls_normal ) {
 		$css .= "{$selector}{" . implode( ';', $decls_normal ) . '}';
+	}
+
+	foreach ( $extra_states as $state ) {
+		$suffix  = (string) ( $state['suffix'] ?? '' );
+		$decls   = $state['decls'] ?? array();
+		$guarded = (bool) ( $state['guarded'] ?? false );
+
+		if ( '' === $suffix || ! $decls ) {
+			continue;
+		}
+
+		$decl_str = implode( ';', $decls );
+
+		if ( $guarded ) {
+			$css .= sgs_hover_guarded_rule( $selector . $suffix, $decl_str );
+		} else {
+			$css .= $selector . $suffix . '{' . $decl_str . '}';
+		}
 	}
 
 	if ( $decls_hover ) {
