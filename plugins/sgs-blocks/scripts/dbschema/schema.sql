@@ -1,5 +1,5 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-06
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-09-11
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
@@ -39,7 +39,7 @@ CREATE TABLE block_attributes (
         default_value TEXT,
         enum_values TEXT,
         description TEXT,
-        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT, tier_shape TEXT,
+        is_responsive INTEGER DEFAULT 0, canonical_slot TEXT, role TEXT, derived_selector TEXT, output_signature TEXT, equivalent_implementations TEXT, inspector_control_type TEXT, source TEXT NOT NULL DEFAULT 'sgs', emit_shape TEXT, alt_companion_attr TEXT, css_layer TEXT, css_property TEXT, box_family TEXT, css_element TEXT, css_state TEXT, css_tier TEXT, canonical_slot_aliases TEXT, "tier_shape" TEXT,
         FOREIGN KEY (block_slug) REFERENCES blocks(slug),
         UNIQUE(block_slug, attr_name)
     );
@@ -192,6 +192,20 @@ CREATE TABLE indexed_files (
             last_indexed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
+-- table: library_runtime_signals
+CREATE TABLE library_runtime_signals (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            library_name  TEXT NOT NULL,
+            signal_type   TEXT NOT NULL
+                CHECK(signal_type IN (
+                    'html_body_class', 'wrapper_class_prefix', 'canvas_attr_prefix'
+                )),
+            aliases       TEXT NOT NULL,
+            confirms      TEXT NOT NULL,
+            notes         TEXT,
+            created_at    TEXT DEFAULT (datetime('now'))
+        );
+
 -- table: markup_examples
 CREATE TABLE markup_examples (
     id               INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -213,6 +227,23 @@ CREATE TABLE modifier_suffixes (
                 kind TEXT NOT NULL,
                 notes TEXT
             );
+
+-- table: motion_shape_signatures
+CREATE TABLE motion_shape_signatures (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            preset_slug         TEXT NOT NULL,
+            tier                TEXT NOT NULL DEFAULT 'V'
+                CHECK(tier = 'V'),
+            animated_property   TEXT NOT NULL,
+            direction           TEXT NOT NULL
+                CHECK(direction IN ('up','down','left','right','scale-in','scale-out','rotate','none')),
+            magnitude_min       REAL NOT NULL,
+            magnitude_max       REAL NOT NULL,
+            duration_ms         INTEGER,
+            easing_curve        TEXT NOT NULL
+                CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
+            created_at          TEXT DEFAULT (datetime('now'))
+        );
 
 -- table: pattern_coverage
 CREATE TABLE pattern_coverage (
@@ -390,6 +421,12 @@ CREATE INDEX idx_hooks_source ON hooks(source);
 -- index: idx_hooks_type
 CREATE INDEX idx_hooks_type ON hooks(hook_type);
 
+-- index: idx_library_runtime_signals_library_name
+CREATE UNIQUE INDEX idx_library_runtime_signals_library_name ON library_runtime_signals(library_name);
+
+-- index: idx_motion_shape_signatures_preset_slug
+CREATE UNIQUE INDEX idx_motion_shape_signatures_preset_slug ON motion_shape_signatures(preset_slug);
+
 -- index: idx_pattern_coverage_industry
 CREATE INDEX idx_pattern_coverage_industry ON pattern_coverage(industry);
 
@@ -412,29 +449,3 @@ CREATE INDEX idx_patterns_mood          ON patterns(mood);
 
 -- index: idx_patterns_style
 CREATE INDEX idx_patterns_style         ON patterns(style);
-
--- Appended 2026-09-11, Phase R8 Step 1 (.claude/plans/phase-r8-motion-recognition.md).
--- Not re-sorted into the alphabetical dump above to keep this an append-only
--- diff — the generator that produces the rest of this file re-sorts on its
--- own next full regeneration.
-
--- table: motion_shape_signatures
-CREATE TABLE motion_shape_signatures (
-            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-            preset_slug         TEXT NOT NULL,
-            tier                TEXT NOT NULL DEFAULT 'V'
-                CHECK(tier = 'V'),
-            animated_property   TEXT NOT NULL,
-            direction           TEXT NOT NULL
-                CHECK(direction IN ('up','down','left','right','scale-in','scale-out','rotate','none')),
-            magnitude_min       REAL NOT NULL,
-            magnitude_max       REAL NOT NULL,
-            duration_ms         INTEGER,
-            easing_curve        TEXT NOT NULL
-                CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
-            created_at          TEXT DEFAULT (datetime('now'))
-        );
-
--- index: idx_motion_shape_signatures_preset_slug
-CREATE UNIQUE INDEX idx_motion_shape_signatures_preset_slug
-    ON motion_shape_signatures(preset_slug);
