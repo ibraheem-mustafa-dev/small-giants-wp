@@ -976,7 +976,8 @@ The orchestrator writes these per run at `pipeline-state/<client>-<page>-<YYYY-M
 
 | # | Stage name | Entry function/script | Owning FR / spec section |
 |---|---|---|---|
-| -1 | Draft global-styles extraction | `plugins/sgs-blocks/scripts/theme-extractor/extract.py` (standalone, runs before the orchestrator) | Spec 33, FR-33-12 |
+| -1 (Spec 33) | Draft global-styles extraction | `plugins/sgs-blocks/scripts/theme-extractor/extract.py` (standalone, runs before the orchestrator) | Spec 33, FR-33-12 |
+| -1 (R8) | Motion-library pre-flight probe (Tier 4a/4b/4c) | `sgs-clone-orchestrator.py::stage_neg1_motion_probe()` | §14.3, FR-31-25 |
 | 0 | Theme cache | inline in `sgs-clone-orchestrator.py:main()` | — |
 | 0.1 | BEM compliance lint | `stage_0_1_bem_lint()` → `lints/bem-lint.py` | Spec 00 §3.1 |
 | 0.5 | Token-usage lint | `stage_0_5_token_lint()` → `lints/token-lint.py` | Spec 31 §13.4-adjacent |
@@ -996,3 +997,112 @@ The orchestrator writes these per run at `pipeline-state/<client>-<page>-<YYYY-M
 | — | Final acceptance harness | `orchestrator/critical-fix-verification.py:run_harness()` | FR-21 |
 
 Retired stages (11 pixel-diff, 11.5 parity2) are not listed — both were removed 2026-07-04; see Spec 20 for why.
+
+## 14. Motion & animation recognition — the R1/R8/R9/R10 batch (D1017–D1032, FR-31-25)
+
+This section documents what the 2026-09-10/11 tier-migration work actually built, closing the gap
+`.claude/plans/cloning-pipeline-tier-migration-requirements.md` left undocumented at spec level
+(that file is INPUTS — captured evidence, not a spec — and decisions.md compresses over time).
+Full narrative: D1017–D1032. Archived execution plan:
+`.claude/plans/archive/phase-r8-motion-recognition.md`.
+
+### 14.1 R1, R9, R10 — shipped alongside R8, briefly
+
+**R2–R7** in the requirements doc were constraints and groundwork notes (the breakpoint
+vocabulary, the box/tier axis split, measurement traps), not implementation targets in their own
+right — nothing to document here as "built."
+
+**R1 — object-shape tier emission.** Rescoped, not completed. A DB-derived
+`block_attributes.tier_shape` column (`flat_sibling`/`tier_object`/`box_only`/NULL, recomputed
+every `/sgs-update` run) replaced a stale 2026-08-11 survey. Of 449 `tier_object` rows across 64
+blocks, 432 (96%) were already correctly converted; **17 attributes across 9 blocks remain flat**
+— see `reports/2026-09-10-r1-rescoped-worklist.md` for the exact list. Not yet built.
+
+**R9 — capability-coverage inventory.** Shipped in full. Generalised R8's own measurement method
+(declared attributes vs. converter writes) to every capability family, confirming motion as the
+largest gap and finding a second, smaller one (`align-content`/`justify-items`, 36 attrs/18
+blocks) — fixed same day in `converter/resolvers/grid.py`. Report:
+`reports/2026-09-10-capability-coverage-inventory.md`.
+
+**R10 — colour-resolution root cause.** Shipped in full. The "389/1,286 colour attrs unresolved"
+figure was a diagnostic blind spot, not a broken colour system — the classifier only read a
+block's own `render.php`, missing colours applied via shared files. Widened
+`extract_css_property_and_layer()` to also scan `class-sgs-container-wrapper.php` and two shared
+colour-composer calling conventions; unresolved count dropped 253 → 233 with zero regressions on
+previously-resolved rows. Report: `reports/2026-09-10-colour-resolution-root-cause.md`.
+
+### 14.2 R8 — motion recognition from raw CSS
+
+**The problem.** Every other extraction family in this pipeline reads a structural or textual
+signal (a BEM class, a CSS property value) and routes it to a block attribute. Motion is
+different: a draft site's `@keyframes` block or `transition` shorthand encodes an *intent* — fade,
+slide, reveal, stagger — that has to be recognised as a SHAPE, not read as a literal value, then
+matched to one of the framework's own named `fxPreset`/`sgsAnimation` slugs. R8 built that
+recognition layer. It reads a draft's real CSS and infers `sgsAnimation` + `fxTrigger` (+, for
+grouped siblings, `fxStagger`) — it never touches the `data-sgs-fx-*` authoring grammar Spec 38
+governs (see §14.2.4).
+
+**Architecture — four tiers, each a separate concern:**
+
+| Tier | What it recognises | Entry point |
+|---|---|---|
+| 1 | Shape — the CSS declares an unconditional or hover-scoped `@keyframes` animation, or a `transition` with a resolvable resting value | `motion_shape.py::classify_css_motion()` |
+| 2 | Trigger — WHEN the shape fires: `scroll` (CSS `animation-timeline: scroll()` or an IntersectionObserver JS signal) / `hover` (an owning `:hover`/`:focus` selector) / `load` (the documented fallback — never a silent guess) | `motion_trigger.py::classify_css_motion_with_trigger()` |
+| 3 | Stagger — a group of shape-alike siblings whose `animation-delay` values form a strictly monotonic sequence | `motion_stagger.py::detect_stagger()` |
+| 4a/4b/4c | Live-DOM signals static CSS reading cannot reach (library detection, page-load-settle sampling, WebGL draw-call probing) | `sgs-clone-orchestrator.py::stage_neg1_motion_probe()` |
+
+Tiers 1–3 run inline inside the converter (Stage 4, `assembly.py` step 3a1b / `extraction.py`'s
+sibling-stagger adapter). Tier 4 runs once per clone job, before Stage 0, because it needs a real
+browser (`source_url`), which the per-section converter pass does not have.
+
+### 14.3 Files and functions
+
+| Module | Role | Key functions |
+|---|---|---|
+| `converter/resolvers/motion_shape.py` | Tier 1 shape extraction + DB matching | `extract_shape_from_keyframes_css()` (own-element `@keyframes`), `extract_shape_from_transition()` (resting-value + `transition` shorthand, D1026), `_extract_transition_snippet_shape()` (routes a transition-only snippet), `_own_hover_scoped_decls()` (same-element `:hover`/`:focus` lookup, D1024), `scoped_motion_css_text()` (builds the per-element CSS snippet the classifiers consume), `match_motion_shape()` (DB query + decline-on-tie gate), `classify_css_motion()` (the Tier 1 entry point) |
+| `converter/resolvers/motion_trigger.py` | Tier 2 trigger classification | `classify_trigger()` (scroll/hover/load, always returns a value — never `None`), `detect_intersection_observer()`, `classify_css_motion_with_trigger()` (the Tier 1+2 combined entry point `assembly.py` actually calls) |
+| `converter/resolvers/motion_stagger.py` | Tier 3 stagger detection | `extract_animation_delay_seconds()`, `classify_delay_sequence()` (increasing/decreasing/reject-on-reversal), `detect_stagger()` (the entry point; emits `fxStagger`) |
+| `converter/services/sibling_shape_prefilter.py` | Groups shape-alike siblings before Tier 3 runs | `filter_shape_alike_group()` |
+| `converter/resolvers/motion_library_signals.py` | Tier 4a-static — recognises a known JS motion library from HTML markup alone | `detect_from_html_file()`, `find_non_threejs_canvases()`, `to_leftover_bucket_items()` |
+| `converter/webgl_draw_call_probe.py` | Tier 4a-dynamic — confirms a canvas is genuinely WebGL-driven | `probe()` (own Playwright lifecycle, dwell-then-check) |
+| `converter/resolvers/load_settle_probe.py` | Tier 4b — page-load-settle live sampling (D1032) | `probe()` (before/after `getComputedStyle()` snapshot), `build_transition_shape_from_probe_result()` (adapts a sampled diff into `extract_shape_from_transition()`'s input shape), `classify_load_settle_candidate()` |
+| `sgs-clone-orchestrator.py` | Wires Tiers 4a/4b/4c together at Stage -1 | `stage_neg1_motion_probe()`, `_find_load_settle_candidates()` (re-derives Tier 1/2's decline shape from the mockup, since no persisted decline list exists) |
+
+### 14.4 Database tables
+
+| Table | Rows (live) | Role |
+|---|---|---|
+| `motion_shape_signatures` | 18 | The Tier 1 match target. Columns: `preset_slug`, `tier` (CHECK-constrained to the literal `'V'` — see §14.2.4), `animated_property`, `direction`, `magnitude_min`/`magnitude_max`, `duration_ms`, `easing_curve`, `co_animates_opacity` (nullable INTEGER, D1025 — the discriminator that separates `fade-*` from `slide-*` presets sharing an identical transform band) |
+| `library_runtime_signals` | 3 | The Tier 4a-static match target. Columns: `library_name`, `signal_type` (`html_body_class`/`wrapper_class_prefix`/`canvas_attr_prefix`), `aliases`, `confirms` |
+
+Seeded by `plugins/sgs-blocks/scripts/dbschema/seed-motion-shape-signatures.py`, which parses the
+framework's own `extensions.css` — the 18 rows are real CSS, not hand-typed guesses.
+
+### 14.5 Routing mechanism, and why Spec 38's Tier G/H/W never enter it
+
+R8's output is a `sgsAnimation` preset slug plus an `fxTrigger`. **Every preset R8 can ever match
+is Tier V** — `motion_shape_signatures.tier` carries a hard `CHECK(tier = 'V')` constraint, so
+Tier G (GSAP)/Tier H (helper library)/Tier W (WebGL) are structurally unreachable from this
+mechanism, not merely unselected by convention. This is a deliberate, narrower scope than Spec
+38's full four-tier doctrine: Spec 38 §11.4 independently states "live-scrape ingestion NEVER
+emits fx attrs... an inferred effect is a guess, and guesses are banned" — that rule governs the
+`data-sgs-fx-*` AUTHORING grammar (a Bean-controlled draft declaring its own effect), a different
+vocabulary from `sgsAnimation` (a Tier V CSS preset R8 infers from real, present CSS declarations,
+never from JS behaviour). The two systems do not overlap: R8 never emits an `fx*` attribute, and
+the `data-sgs-fx-*` lift (`db_lookup.lift_behavioural_attrs()`, FR-38-22) never runs CSS shape
+inference. A cloned page therefore never silently acquires a GSAP or WebGL bundle it didn't
+already declare — R8 cannot select a tier capable of doing that.
+
+### 14.6 Known limits (real-world sample: 7/13, D1032)
+
+- **`%`-unit transform magnitudes** are not normalised against a reference viewport — the largest
+  remaining code-fixable gap, not yet scoped.
+- **Fade direction is not preserved** — `parse_opacity_change()` uses `abs()`, so a fade-OUT (the
+  actual shape of Locomotive's `.c-preloader`) resolves as `sgsAnimation: "fade-in"`. Pre-existing
+  extractor behaviour, not fixed as part of D1032 (see D1032's own text for the disclosure).
+- **JS-state/interaction-toggled effects with no timing signal** (a hover-triggered tooltip, a
+  scroll-triggered library widget with no `IntersectionObserver` call) are out of scope by design
+  — Tier 4b only watches for a load-timing diff; simulating an arbitrary interaction to probe for
+  one would mean guessing which interaction applies, which this system's whole discipline (decline
+  rather than guess) refuses to do. Two of the 13 real-world sample items fall here permanently
+  under the current architecture.
