@@ -236,6 +236,7 @@ first).
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | R8 motion-recognition design (settled, references only) | `plans/2026-09-10-r8-motion-recognition-brainstorm.md` |
 | **R8 execution plan (start here to build — Step 1 is SESSION-START)** | `plans/phase-r8-motion-recognition.md` |
+| **Spec 41 nav-menu colour/state — BUILD PLAN, ready to execute, blocked on 7 owner decisions (KJC-7 is a real spec-vs-code gap)** | `plans/phase-nav-menu-colour-state.md` (spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` v0.4.6) |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
