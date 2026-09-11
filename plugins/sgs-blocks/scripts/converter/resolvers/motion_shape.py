@@ -80,7 +80,41 @@ _NAMED_EASING_CURVES: dict[str, tuple[float, float, float, float]] = {
 }
 
 # Uniform +/-20% duration tolerance — the pinned matching rule's own figure.
+# Kept as the RELATIVE component of the tolerance window (Fix 3 below adds
+# an absolute floor/ceiling on top of it; it does not replace it).
 _DURATION_TOLERANCE = 0.20
+
+# Fix 3 (2026-09-11 coverage report, root cause #3 — the second-largest
+# real-world miss, independent of the name-order parsing bug). Every
+# seeded row's `duration_ms` reflects SGS's OWN internal preset default
+# (250ms/300ms), not a real-world convention — real sites measured across
+# all 3 live production pages used 250ms-900ms for the SAME shapes this
+# table already recognises (a confirmed Locomotive `scale-in`-shaped
+# preloader at 900ms; a `.c-preloader` fade at 900ms), with the report's
+# own 5000ms outlier example excluded here on separate grounds (declined
+# as multi-step by Fix 4). A tight +/-20% RELATIVE band around a single
+# internal default (240-360ms) rejects every one of those real,
+# legitimate durations outright before the DB match is even attempted.
+#
+# Fixed as an ABSOLUTE floor/ceiling unioned with the existing relative
+# band, in the tolerance CALCULATION (`_duration_within_tolerance` below)
+# — not by hand-editing each seeded row's `duration_ms` — so it applies
+# uniformly to every current and future row. The floor (200ms) sits just
+# below `border-accent`'s own 250ms native default (real hover/interaction
+# transitions commonly run a little faster than an entrance) while still
+# excluding sub-200ms decorative micro-flicker (Framer's 10ms cursor-blink,
+# explicitly noted in the report as "not genuinely Tier V motion content").
+# The ceiling (5000ms) is the report's own observed real-world upper bound
+# for a genuine (if ultimately declined) entrance/fade effect. Duration is
+# a comparatively weak identity signal once property + direction +
+# magnitude + easing already agree (the SAME visual shape is routinely
+# authored at very different tempos by different sites) — widening it this
+# far does not risk a false MATCH on its own, because a duration outside
+# every candidate's window still falls through to `({}, [])`, and two
+# candidates whose bands now both cover the same duration still resolve
+# via the existing tie-refusal rule, never a guess.
+_REAL_WORLD_DURATION_FLOOR_MS = 200.0
+_REAL_WORLD_DURATION_CEILING_MS = 5000.0
 
 
 def snap_easing(raw: str) -> str:
@@ -132,6 +166,38 @@ def parse_duration_ms(raw: str) -> "int | None":
 # AGAINST a band, not the thing defining one.
 # ---------------------------------------------------------------------------
 
+# Standard browser default root font-size, used ONLY to convert a `rem`
+# translate distance into the same px-equivalent magnitude-space every
+# seeded row is expressed in. There is no better signal resolvable from
+# static CSS text alone (no access to a real `<html>` element's computed
+# font-size) — documented assumption, Fix 2 (2026-09-11 coverage report,
+# root cause #2: TAG Heuer's `slideUp` used `translateY(10rem)`, silently
+# mis-shaped to a bare opacity change because `rem` wasn't recognised).
+_REM_TO_PX = 16.0
+
+
+def _parse_length_token(raw: str) -> "float | None":
+    """Parse a `px`/`%`/`rem` length/percentage token into a magnitude.
+
+    `rem` converts to a px-equivalent via `_REM_TO_PX` so it lands in the
+    same magnitude-space as every seeded (px) row. `%` is intentionally
+    NOT converted to px — a translate percentage is relative to the
+    element's own box size, which is not resolvable from static CSS text,
+    so it is returned as its literal percentage number unchanged. This
+    means a `%`-based shape is correctly EXTRACTED (Fix 2) instead of
+    silently dropped, but will only ever match a seeded row whose own band
+    happens to be expressed in the same percentage-scale numbers — it is
+    never coerced into false agreement with a px-scale band.
+    """
+    m = re.match(r"^(-?[\d.]+)(px|%|rem)$", raw.strip())
+    if not m:
+        return None
+    value, unit = float(m.group(1)), m.group(2)
+    if unit == "rem":
+        return value * _REM_TO_PX
+    return value
+
+
 def parse_transform_declaration(value: str) -> "tuple[str, str, float] | None":
     """Parse a `transform:` value into (property, direction, magnitude).
 
@@ -144,17 +210,19 @@ def parse_transform_declaration(value: str) -> "tuple[str, str, float] | None":
     if value == "none" or not value:
         return None
 
-    m = re.search(r"translateY\(\s*(-?[\d.]+)px\s*\)", value)
+    m = re.search(r"translateY\(\s*(-?[\d.]+(?:px|%|rem))\s*\)", value)
     if m:
-        v = float(m.group(1))
-        direction = "up" if v > 0 else "down"
-        return ("transform", direction, abs(v))
+        v = _parse_length_token(m.group(1))
+        if v is not None:
+            direction = "up" if v > 0 else "down"
+            return ("transform", direction, abs(v))
 
-    m = re.search(r"translateX\(\s*(-?[\d.]+)px\s*\)", value)
+    m = re.search(r"translateX\(\s*(-?[\d.]+(?:px|%|rem))\s*\)", value)
     if m:
-        v = float(m.group(1))
-        direction = "left" if v > 0 else "right"
-        return ("transform", direction, abs(v))
+        v = _parse_length_token(m.group(1))
+        if v is not None:
+            direction = "left" if v > 0 else "right"
+            return ("transform", direction, abs(v))
 
     m = re.search(r"scaleX?Y?\(\s*([\d.]+)\s*\)", value)
     if m:
@@ -273,23 +341,178 @@ def _shape_from_start_step(start_body: str) -> "tuple[str, str, float] | None":
     return None
 
 
-def _find_animation_shorthand(css_text: str, keyframes_name: str) -> "tuple[int, str] | None":
-    """Find an `animation: <name> <duration> <easing> ...;` declaration
-    referencing the given keyframes name anywhere in the text, returning
-    (duration_ms, snapped_easing_curve), or None if not found/parseable."""
-    pattern = (
-        r"animation\s*:\s*"
-        + re.escape(keyframes_name)
-        + r"\s+([\d.]+m?s)\s+([a-zA-Z0-9.,()\- ]+?)\s*(?:;|\})"
-    )
-    m = re.search(pattern, css_text)
-    if not m:
+# Fix 1 (2026-09-11 coverage report, root cause #1 — the single largest
+# real-world miss). The ORIGINAL implementation assumed the `animation`
+# shorthand is always authored `<name> <duration> <easing> ...` (name
+# first). Every real declaration read off a LIVE page's rendered CSSOM
+# across all 3 measured sites serialised the shorthand in the CSS spec's
+# own canonical order instead — `duration easing delay count direction
+# fill-mode play-state name` — with the name LAST, not first. This is
+# standard browser CSSOM serialisation, not a quirk of those 3 sites, so it
+# recurs on effectively any live page scraped the same way. Fixed by
+# parsing the individual LONGHAND properties first (`animation-name` /
+# `animation-duration` / `animation-timing-function` — unambiguous
+# regardless of shorthand order, and what `getComputedStyle` exposes
+# directly), then falling back to a shorthand reader that tokenises the
+# value and identifies duration/easing BY SHAPE (a `<time>` token, a known
+# easing keyword or `cubic-bezier(...)`/`steps(...)` token) rather than by
+# position — so both name-first (draft-authored) and name-last (live-CSSOM)
+# orders work identically.
+
+_EASING_KEYWORDS = {"linear", "ease", "ease-in", "ease-out", "ease-in-out", "step-start", "step-end"}
+_TIME_TOKEN_RE = re.compile(r"^-?[\d.]+m?s$")
+
+
+def _tokenize_shorthand_value(value: str) -> "list[str]":
+    """Split a shorthand value on top-level whitespace only — a
+    parenthesised function like `cubic-bezier(0.215, 0.61, 0.355, 1)`
+    contains internal spaces (after each comma) that must NOT be treated as
+    token boundaries, so depth-tracking is required rather than a plain
+    `.split()`."""
+    tokens: "list[str]" = []
+    buf = ""
+    depth = 0
+    for ch in value:
+        if ch == "(":
+            depth += 1
+            buf += ch
+        elif ch == ")":
+            depth -= 1
+            buf += ch
+        elif ch.isspace() and depth == 0:
+            if buf:
+                tokens.append(buf)
+                buf = ""
+        else:
+            buf += ch
+    if buf:
+        tokens.append(buf)
+    return tokens
+
+
+def _split_comma_top_level(value: str) -> "list[str]":
+    """Split a longhand property's value on top-level commas (multiple
+    simultaneous `animation-name`/`animation-duration`/
+    `animation-timing-function` values), respecting parenthesised
+    functions."""
+    parts: "list[str]" = []
+    buf = ""
+    depth = 0
+    for ch in value:
+        if ch == "(":
+            depth += 1
+            buf += ch
+        elif ch == ")":
+            depth -= 1
+            buf += ch
+        elif ch == "," and depth == 0:
+            parts.append(buf.strip())
+            buf = ""
+        else:
+            buf += ch
+    if buf.strip():
+        parts.append(buf.strip())
+    return parts
+
+
+def _find_animation_longhand(css_text: str, keyframes_name: str) -> "tuple[int, str] | None":
+    """Read `animation-name` + `animation-duration` +
+    `animation-timing-function` as separate longhand declarations —
+    unambiguous regardless of shorthand order, and the exact surface
+    `getComputedStyle` exposes directly. Returns (duration_ms,
+    snapped_easing_curve), or None if `animation-name` doesn't reference
+    `keyframes_name` at all, or duration is missing/unparseable.
+    `animation-timing-function` absent -> defaults to `ease` (the browser's
+    real default), matching Fix 5's same reasoning for `transition`.
+    """
+    name_m = re.search(r"animation-name\s*:\s*([^;]+);", css_text)
+    if not name_m:
         return None
-    duration_ms = parse_duration_ms(m.group(1))
+    names = _split_comma_top_level(name_m.group(1))
+    if keyframes_name not in names:
+        return None
+    idx = names.index(keyframes_name)
+
+    dur_m = re.search(r"animation-duration\s*:\s*([^;]+);", css_text)
+    if not dur_m:
+        return None
+    durations = _split_comma_top_level(dur_m.group(1))
+    duration_raw = durations[idx] if idx < len(durations) else durations[0]
+    duration_ms = parse_duration_ms(duration_raw)
     if duration_ms is None:
         return None
-    easing = snap_easing(m.group(2))
+
+    easing_m = re.search(r"animation-timing-function\s*:\s*([^;]+);", css_text)
+    if easing_m:
+        easings = _split_comma_top_level(easing_m.group(1))
+        easing_raw = easings[idx] if idx < len(easings) else easings[0]
+        easing = snap_easing(easing_raw)
+    else:
+        easing = "ease"
+
     return duration_ms, easing
+
+
+def _find_animation_shorthand(css_text: str, keyframes_name: str) -> "tuple[int, str] | None":
+    """Find an `animation:` shorthand declaration referencing the given
+    keyframes name anywhere in the text, returning (duration_ms,
+    snapped_easing_curve), or None if not found/parseable. Order-agnostic
+    (Fix 1): identifies the duration token as the first `<time>`-shaped
+    token, and the easing token as the first token matching a known easing
+    keyword or a `cubic-bezier(...)`/`steps(...)` function — wherever
+    either appears in the shorthand — rather than assuming a fixed
+    position. `animation-timing-function` omitted from the shorthand
+    -> defaults to `ease` (mirrors Fix 5's `transition` default)."""
+    for m in re.finditer(r"animation\s*:\s*([^;{}]+)[;}]", css_text):
+        value = m.group(1)
+        tokens = _tokenize_shorthand_value(value)
+        if keyframes_name not in tokens:
+            continue
+
+        time_tokens = [t for t in tokens if _TIME_TOKEN_RE.match(t)]
+        if not time_tokens:
+            continue
+        duration_ms = parse_duration_ms(time_tokens[0])
+        if duration_ms is None:
+            continue
+
+        easing = "ease"
+        for t in tokens:
+            if t in _EASING_KEYWORDS or t.startswith("cubic-bezier(") or t.startswith("steps("):
+                easing = snap_easing(t)
+                break
+
+        return duration_ms, easing
+    return None
+
+
+def _find_animation_timing(css_text: str, keyframes_name: str) -> "tuple[int, str] | None":
+    """Top-level timing lookup: longhand properties first (unambiguous),
+    falling back to the order-agnostic shorthand reader. Either path
+    returns (duration_ms, snapped_easing_curve), or None."""
+    result = _find_animation_longhand(css_text, keyframes_name)
+    if result is not None:
+        return result
+    return _find_animation_shorthand(css_text, keyframes_name)
+
+
+def _keyframes_step_percentages(body: str) -> "set[float]":
+    """Normalise every step-selector in a `@keyframes` body to a set of
+    percentages (0%/`from` -> 0.0, 100%/`to` -> 100.0, `N%` -> N), including
+    comma-grouped multi-selectors on one rule (`0%, 100% { ... }`)."""
+    steps: "set[float]" = set()
+    for m in re.finditer(
+        r"(?:\d+(?:\.\d+)?%|from\b|to\b)(?:\s*,\s*(?:\d+(?:\.\d+)?%|from\b|to\b))*\s*\{",
+        body,
+    ):
+        for token in re.findall(r"\d+(?:\.\d+)?%|from|to", m.group(0)):
+            if token == "from":
+                steps.add(0.0)
+            elif token == "to":
+                steps.add(100.0)
+            else:
+                steps.add(float(token.rstrip("%")))
+    return steps
 
 
 def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
@@ -300,13 +523,28 @@ def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
 
     Returns a dict `{animated_property, direction, magnitude, duration_ms,
     easing_curve}`, or None if the CSS carries no recognisable shape (no
-    `@keyframes` block, no parseable start-step declaration, or no
-    resolvable duration/easing).
+    `@keyframes` block, no parseable start-step declaration, no resolvable
+    duration/easing, or — Fix 4 — a genuinely multi-step, non-monotonic
+    keyframes body).
     """
     kf = _find_keyframes_block(css_text)
     if kf is None:
         return None
     name, body = kf
+
+    # Fix 4 (2026-09-11 coverage report, root cause #4). The ORIGINAL
+    # implementation only ever read the 0%/100% (or from/to) steps,
+    # silently REDUCING any intermediate step to nothing — this produced a
+    # confirmed MISCLASSIFY (an overshoot/bounce shape collapsed to a plain
+    # scale-in) and a confirmed degenerate read (an appear-THEN-disappear
+    # fade collapsed to a plain fade-in, when it actually starts AND ends
+    # at opacity 0). Per this project's "never guess" discipline, a
+    # keyframes body carrying any step OTHER than 0%/from/100%/to is
+    # DECLINED outright (no shape, no guess) rather than silently reduced —
+    # a declined match is safe; a wrong match is not.
+    step_percentages = _keyframes_step_percentages(body)
+    if step_percentages - {0.0, 100.0}:
+        return None
 
     start_body = _find_step_body(body, r"(?:0%|from)") or ""
     opacity_start_raw = _decl(start_body, "opacity")
@@ -328,7 +566,7 @@ def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
     if shape is None:
         return None
 
-    timing = _find_animation_shorthand(css_text, name)
+    timing = _find_animation_timing(css_text, name)
     if timing is None:
         return None
     duration_ms, easing_curve = timing
@@ -398,8 +636,16 @@ def extract_shape_from_transition(
     if shape is None:
         return None
 
+    # Fix 5 (2026-09-11 coverage report, root cause #5). Easing is a
+    # genuinely OPTIONAL token in the `transition` shorthand — the browser
+    # defaults to `ease` when it's omitted (Locomotive's real
+    # `.c-scrollbar { transition: transform 0.3s, opacity 0.3s; }`, no
+    # easing token at all). The ORIGINAL regex required an explicit easing
+    # token and returned None outright when absent, discarding a
+    # perfectly real, common shape. The easing group is now optional;
+    # absence defaults to `'ease'` rather than failing the whole match.
     m = re.match(
-        r"\s*[\w-]+\s+([\d.]+m?s)\s+([a-zA-Z0-9.,()\- ]+?)\s*$",
+        r"\s*[\w-]+\s+([\d.]+m?s)(?:\s+([a-zA-Z0-9.,()\- ]+?))?\s*$",
         transition_shorthand.strip().rstrip(";"),
     )
     if not m:
@@ -407,7 +653,8 @@ def extract_shape_from_transition(
     duration_ms = parse_duration_ms(m.group(1))
     if duration_ms is None:
         return None
-    easing_curve = snap_easing(m.group(2))
+    easing_raw = m.group(2)
+    easing_curve = snap_easing(easing_raw) if easing_raw else "ease"
 
     prop, direction, magnitude = shape
     return {
@@ -428,8 +675,15 @@ def _duration_within_tolerance(shape_ms: "int | None", row_ms: "int | None") -> 
         return shape_ms is None
     if shape_ms is None:
         return False
-    lo = row_ms * (1 - _DURATION_TOLERANCE)
-    hi = row_ms * (1 + _DURATION_TOLERANCE)
+    # Fix 3: relative +/-20% band around the row's own native default,
+    # UNIONED with the real-world absolute floor/ceiling — whichever is
+    # wider wins on each side. A slow-default row's own relative band can
+    # already exceed the absolute ceiling (e.g. a 3s preset's own +20% is
+    # 3.6s > the 5s ceiling would not apply there); a fast-default row's
+    # relative band is narrower than real-world territory, so the absolute
+    # floor/ceiling takes over.
+    lo = min(row_ms * (1 - _DURATION_TOLERANCE), _REAL_WORLD_DURATION_FLOOR_MS)
+    hi = max(row_ms * (1 + _DURATION_TOLERANCE), _REAL_WORLD_DURATION_CEILING_MS)
     return lo <= shape_ms <= hi
 
 

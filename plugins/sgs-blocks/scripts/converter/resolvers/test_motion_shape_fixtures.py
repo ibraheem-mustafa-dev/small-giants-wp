@@ -137,15 +137,30 @@ css_tie_up = """
 check("tie: fade-up/slide-up -> no match", classify_css_motion(css_tie_up), ({}, []))
 
 # ---------------------------------------------------------------------------
-# 9. NEGATIVE CONTROL — duration out of tolerance. Same scale-in shape as #1
-#    but 500ms (outside 300ms's +/-20% band of 240-360ms) -> no match.
+# 9. NEGATIVE CONTROL — duration out of tolerance. Same scale-in shape as #1.
+#
+#    RECALIBRATED 2026-09-11 (Fix 3, `.claude/reports/
+#    2026-09-11-r8-tier1-2-coverage-measurement.md`). The original version
+#    of this control used 500ms, on the premise that anything outside
+#    300ms's tight +/-20% band (240-360ms) should refuse to match. Real
+#    evidence measured directly against 3 live production sites disproved
+#    that premise: a genuine `scale-in`-shaped preloader legitimately runs
+#    at 900ms on a real site, so `_duration_within_tolerance` now unions
+#    the relative band with an absolute 200ms-5000ms real-world floor/
+#    ceiling — 500ms is now a CORRECT match, not a bug, and asserting
+#    otherwise would re-encode the disproven premise. This control is kept
+#    meaningful by moving to 50ms: a duration below even the widened
+#    200ms floor, in the same territory as Framer's real 10ms decorative
+#    cursor-blink (explicitly noted in the report as "not genuinely Tier V
+#    motion content") — i.e. still a genuine, evidenced non-match, not an
+#    arbitrarily narrowed band.
 # ---------------------------------------------------------------------------
 css_scale_in_wrong_duration = """
-@keyframes fx-scale-in-slow {
+@keyframes fx-scale-in-fast {
   0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1); }
 }
-.card2 { animation: fx-scale-in-slow 500ms ease-out; }
+.card2 { animation: fx-scale-in-fast 50ms ease-out; }
 """
 check(
     "duration out of tolerance -> no match",

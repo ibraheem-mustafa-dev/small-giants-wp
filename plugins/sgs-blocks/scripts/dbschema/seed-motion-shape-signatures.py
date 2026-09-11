@@ -135,6 +135,19 @@ _DURATION_TOKEN_MS: dict[str, int] = {
 # constant, so the seeded range is the parsed value +/-33%.
 _TOLERANCE = 0.33
 
+# Fix 3 (2026-09-11 coverage report, root cause #3). Real translate-based
+# entrance effects (`translateY`/`translateX`) measured across 3 live
+# production sites used distances from ~20px up to a confirmed 160px
+# (`10rem`) real-world case — the ORIGINAL +/-33% band around SGS's own
+# 30px preset constant (20.1-39.9px) rejects that whole real range. Scoped
+# to translate directions ONLY (up/down/left/right) — NOT scale/rotate/
+# opacity/filter, whose magnitudes are inherently bounded ratios/degrees
+# with a real semantic ceiling (a "scale" is never legitimately 6x) and
+# have no counter-evidence in the report justifying widening. This is a
+# calculation applied uniformly to every translate-direction row via
+# `_parse_transform_shape` below, not a per-row hand-edit.
+_REAL_WORLD_TRANSLATE_MAGNITUDE_RANGE_PX = (20.0, 200.0)
+
 
 def _snap_easing(raw: str) -> str:
     """Snap a raw CSS easing value to its nearest of the 5 named keywords.
@@ -206,6 +219,8 @@ def _parse_transform_shape(preset: str, value: str) -> tuple[str, str, float, fl
         # v > 0 (starts below) => moves UP into place; v < 0 => moves DOWN.
         direction = "up" if v > 0 else "down"
         lo, hi = _band(abs(v))
+        lo = min(lo, _REAL_WORLD_TRANSLATE_MAGNITUDE_RANGE_PX[0])
+        hi = max(hi, _REAL_WORLD_TRANSLATE_MAGNITUDE_RANGE_PX[1])
         return ("transform", direction, lo, hi)
 
     m = re.search(r"translateX\(\s*(-?[\d.]+)px\s*\)", value)
@@ -215,6 +230,8 @@ def _parse_transform_shape(preset: str, value: str) -> tuple[str, str, float, fl
         # v > 0 (starts right) => moves LEFT into place; v < 0 => moves RIGHT.
         direction = "left" if v > 0 else "right"
         lo, hi = _band(abs(v))
+        lo = min(lo, _REAL_WORLD_TRANSLATE_MAGNITUDE_RANGE_PX[0])
+        hi = max(hi, _REAL_WORLD_TRANSLATE_MAGNITUDE_RANGE_PX[1])
         return ("transform", direction, lo, hi)
 
     m = re.search(r"scale\(\s*([\d.]+)\s*\)", value)
