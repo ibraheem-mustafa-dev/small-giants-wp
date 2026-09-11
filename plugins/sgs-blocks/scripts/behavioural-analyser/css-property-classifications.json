@@ -12581,6 +12581,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -12786,6 +12794,14 @@
         "role": "color",
         "css_element": "icon",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
       }
     },
     {
@@ -13456,6 +13472,14 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/filter-search",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
       }
     },
     {
@@ -14782,6 +14806,14 @@
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
         "css_element": "wrapper"
       }
     },
@@ -19196,6 +19228,14 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
       }
     },
     {
