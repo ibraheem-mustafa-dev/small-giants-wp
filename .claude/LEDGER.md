@@ -21,6 +21,11 @@ is still open (see below) — it blocks a small piece of follow-up work, not the
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
 
+**A second, independent track also made real progress this session** — header/footer/mega-panel
+motion + Indus branded content — running in parallel with the nav-menu work above, not competing
+with it. See the Pointers table row below for the full detail; it does not change the nav-menu
+front described above.
+
 ## Prior work (closed) — clone-fidelity closeout + R8 motion recognition
 
 **What's shipped (full list, in order):**
@@ -87,8 +92,9 @@ below for the record; not the front any more.
 
 **What's still genuinely open:**
 - **R8 (motion/animation cloning from raw CSS) — SHIPPED, council-fixed, WIRED, AND the hover-trigger
-  gap CLOSED, all 2026-09-11.** All 14 steps + 4 QA gates of `plans/phase-r8-motion-recognition.md`
-  executed and closed (D1021) — a 4-rater `/qc-council` sweep found and fixed a BLOCKER that would
+  gap CLOSED, all 2026-09-11.** All 14 steps + 4 QA gates of
+  `plans/archive/phase-r8-motion-recognition.md` executed and closed (D1021) — a 4-rater
+  `/qc-council` sweep found and fixed a BLOCKER that would
   have made the whole phase a silent no-op plus 5 more real bugs (D1022) — then a design
   `/qc-council` validated exactly where to wire all 8 modules into the real pipeline, built both
   streams (each checked by its own `/qc-inline` subagent reviewer before acceptance), now LIVE in
@@ -286,7 +292,7 @@ read `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when p
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1030** — verify with
+- **D-ceiling:** **D1032** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -303,12 +309,12 @@ read `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when p
 
 | For | Read |
 |---|---|
-| **The front — header/footer implementation** | `.claude/prompts/2026-09-10-header-footer-implementation.md` |
+| **A separate, parallel track — header/footer/mega-panel motion + Indus branded content, updated 2026-09-11 (this is NOT the stale 2026-09-10 snapshot — re-read it fresh)** | `.claude/prompts/2026-09-10-header-footer-implementation.md` — motion capability (cursor-field/particle-trail/grid-dot/flowing-gradient/surface-treatment/scroll-reveal) shipped on `site-header-row`/`site-footer-row`/mega-panel; Indus Brands mega-menu content recovered into a real test post; two real bugs found+fixed en route (`sgs/card-grid` + `sgs/brand-strip` image-picker schema/UI mismatch silently wiping the live frontend list — D1027, D1031); confirmed no separate cloning pipeline or separate WP site is needed for per-client branded content — the shared canary hosts it directly via `push-theme-snapshot.py` + the active-header/footer option. A real path exists to build Indus's full header/footer/mega-panel next, no infrastructure blocker. |
 | Today's full fix detail (main closeout) | `decisions.md` D1015 (also D1013, D1014 for the measurement-tool repair that preceded it) |
 | Second-pass fixes (hover-zoom, trust-bar border, section-boundary detector, hero split-media) | commits `ae604c09a`, `56e51a7dd`, `d216ca7cd`, `4b6072757`, `ec3fcabfd` — no separate D-number, see this LEDGER's Human Summary |
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
-| R8 motion-recognition design (settled, references only) | `plans/2026-09-10-r8-motion-recognition-brainstorm.md` |
-| **R8 execution plan (start here to build — Step 1 is SESSION-START)** | `plans/phase-r8-motion-recognition.md` |
+| R8 motion-recognition design (settled, references only) | `plans/archive/2026-09-10-r8-motion-recognition-brainstorm.md` |
+| R8 execution plan (DONE, archived — reference only) | `plans/archive/phase-r8-motion-recognition.md` |
 | **Spec 41 nav-menu colour/state — THE FRONT, Waves A+B closed (17/27 steps)** | `plans/phase-nav-menu-colour-state.md` — read "Execution Progress Log" first (spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`) |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
