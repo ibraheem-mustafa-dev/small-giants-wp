@@ -19,6 +19,8 @@ these pure functions and needs no browser, real or mocked, to verify.
 """
 from __future__ import annotations
 
+import sys
+
 from load_settle_probe import (
     build_transition_shape_from_probe_result,
     classify_load_settle_candidate,
@@ -151,3 +153,4 @@ check(
 )
 
 print(f"\n{PASS} passed, {FAIL} failed")
+sys.exit(1 if FAIL else 0)

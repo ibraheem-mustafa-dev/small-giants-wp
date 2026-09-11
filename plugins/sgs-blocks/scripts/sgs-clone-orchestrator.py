@@ -118,10 +118,12 @@ def _load_lint_module(filename: str, attr_name: str):
 
 def _find_load_settle_candidates(mockup_path: Path) -> "list[dict]":
     """Tier 4b candidate-finder (D1032) -- statically re-derives Tier 1/2's
-    OWN "transition present, no reachable :hover/:focus counterpart" decline
+    OWN "transition present, no reachable :hover/:focus counterpart, AND no
+    resting value Tier 1/2 could already resolve a shape from" decline
     shape directly against the raw mockup file, reusing existing primitives
     (`collect_css_decls_for_element`, `motion_shape._own_hover_scoped_
-    decls`) rather than inventing a second CSS-reading implementation.
+    decls`, `motion_shape.extract_shape_from_transition`) rather than
+    inventing a second CSS-reading implementation.
 
     WHY THIS RUNS HERE, AT STAGE -1 (before the walker / Stage 0 exists at
     all): Tier 1/2's real per-element declination happens deep inside
@@ -140,16 +142,28 @@ def _find_load_settle_candidates(mockup_path: Path) -> "list[dict]":
     mockup's own HTML + CSS -- both genuinely available at Stage -1 via the
     pre-existing `_collect_mockup_css()` helper (Stage 0.7's own CSS
     harvester, already a standalone module-level function, callable here
-    unchanged) -- using the exact same two primitives Tier 1/2 itself uses
-    for this question.
+    unchanged) -- using the exact same primitives Tier 1/2 itself uses for
+    this question.
 
     Returns a list of `{"selector": str, "transition_declaration": str}` --
     one entry per element carrying its own `transition:` declaration with
     no `animation`/`animation-name` (the keyframes path is Tier 1/2's own,
-    unrelated territory) and no reachable `:hover`/`:focus` counterpart for
-    its own class(es). Soft-fails to `[]` on any error (mockup missing, CSS
-    unparseable, import failure) -- this is a pre-flight candidate finder,
-    never a reason to halt the clone.
+    unrelated territory), no reachable `:hover`/`:focus` counterpart for
+    its own class(es), AND no resting `transform`/`filter`/`clip-path`
+    value `extract_shape_from_transition()` could already resolve a shape
+    from statically (fixed 2026-09-11, F2 -- see below).
+
+    ERRORS PROPAGATE, ON PURPOSE (fixed 2026-09-11, F4). This function used
+    to swallow every exception -- including a broken import chain -- into a
+    silent `[]`, which is indistinguishable from "genuinely no candidates
+    on this page" (this project's own documented failure pattern: a rule
+    that loses is indistinguishable from one that is absent). The two
+    remaining early `[]` returns below (mockup missing, no CSS text) are
+    genuine zero-candidate OUTCOMES, not errors -- everything else (an
+    import failure, a parse exception) now raises, and the caller
+    (`stage_neg1_motion_probe()`'s own `try/except` around this call)
+    records it into `result["tier4b"]["error"]` rather than the exception
+    disappearing here first.
 
     Disclosed limitation: the selector is built from the element's own full
     class list, deduplicated -- two real elements sharing an identical
@@ -159,59 +173,94 @@ def _find_load_settle_candidates(mockup_path: Path) -> "list[dict]":
     preloader is a singleton element by construction on every real-world
     instance this phase has measured -- not assumed safe in general.
     """
-    candidates: "list[dict]" = []
-    try:
-        _scripts_dir = Path(__file__).resolve().parent
-        _converter_dir = _scripts_dir / "converter"
-        _services_dir = _converter_dir / "services"
-        _resolvers_dir = _converter_dir / "resolvers"
-        for _d in (_converter_dir, _services_dir, _resolvers_dir):
-            _d_str = str(_d)
-            if _d_str not in sys.path:
-                sys.path.insert(0, _d_str)
+    _scripts_dir = Path(__file__).resolve().parent
+    _converter_dir = _scripts_dir / "converter"
+    _services_dir = _converter_dir / "services"
+    _resolvers_dir = _converter_dir / "resolvers"
+    # `_scripts_dir` itself must be on sys.path too, not just its
+    # subdirectories -- `styling_helpers.py` (imported below) does a
+    # package-qualified `from converter.db import db_lookup`, which needs
+    # `converter`'s PARENT directory importable as the search root, not
+    # `converter/` itself. When this module is run directly
+    # (`python sgs-clone-orchestrator.py`) `sys.path[0]` already happens to
+    # be `_scripts_dir`, which is why this worked in that one invocation
+    # context and silently returned `[]` (via the old blanket except) under
+    # any other (e.g. a pytest run from a different cwd) -- the reviewer
+    # hit this directly running the fixture harness. Fixed by adding it
+    # explicitly rather than relying on caller cwd.
+    for _d in (_scripts_dir, _converter_dir, _services_dir, _resolvers_dir):
+        _d_str = str(_d)
+        if _d_str not in sys.path:
+            sys.path.insert(0, _d_str)
 
-        from bs4 import BeautifulSoup
-        from css_parse import parse_css  # type: ignore[import]
-        from motion_shape import _own_hover_scoped_decls  # type: ignore[import]
-        from styling_helpers import collect_css_decls_for_element  # type: ignore[import]
+    from bs4 import BeautifulSoup
+    from css_parse import parse_css  # type: ignore[import]
+    from motion_shape import (  # type: ignore[import]
+        _own_hover_scoped_decls,
+        extract_shape_from_transition,
+    )
+    from styling_helpers import collect_css_decls_for_element  # type: ignore[import]
 
-        mockup_path = Path(mockup_path)
-        if not mockup_path.exists():
-            return []
-
-        css_text, _sources, _warnings = _collect_mockup_css(mockup_path)
-        if not css_text.strip():
-            return []
-        css_rules = parse_css(css_text)
-
-        soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
-
-        seen_selectors: "set[str]" = set()
-        for node in soup.find_all(class_=True):
-            classes = node.get("class") or []
-            if not classes:
-                continue
-            selector = "." + ".".join(classes)
-            if selector in seen_selectors:
-                continue
-
-            base_decls, _bp_decls = collect_css_decls_for_element(node, css_rules)
-            transition_value = base_decls.get("transition")
-            if not transition_value:
-                continue
-            if base_decls.get("animation") or base_decls.get("animation-name"):
-                # keyframes-driven -- Tier 1/2's own, unrelated territory.
-                continue
-            if _own_hover_scoped_decls(node, css_rules) is not None:
-                # a reachable :hover/:focus counterpart exists -- Tier 1/2
-                # can already resolve (or correctly decline) this one
-                # statically; not this probe's target shape.
-                continue
-
-            seen_selectors.add(selector)
-            candidates.append({"selector": selector, "transition_declaration": transition_value})
-    except Exception:  # noqa: BLE001 - pre-flight candidate finder, never halts the clone
+    mockup_path = Path(mockup_path)
+    if not mockup_path.exists():
         return []
+
+    css_text, _sources, _warnings = _collect_mockup_css(mockup_path)
+    if not css_text.strip():
+        return []
+    css_rules = parse_css(css_text)
+
+    soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
+
+    candidates: "list[dict]" = []
+    seen_selectors: "set[str]" = set()
+    for node in soup.find_all(class_=True):
+        classes = node.get("class") or []
+        if not classes:
+            continue
+        selector = "." + ".".join(classes)
+        if selector in seen_selectors:
+            continue
+
+        base_decls, _bp_decls = collect_css_decls_for_element(node, css_rules)
+        transition_value = base_decls.get("transition")
+        if not transition_value:
+            continue
+        if base_decls.get("animation") or base_decls.get("animation-name"):
+            # keyframes-driven -- Tier 1/2's own, unrelated territory.
+            continue
+        if _own_hover_scoped_decls(node, css_rules) is not None:
+            # a reachable :hover/:focus counterpart exists -- Tier 1/2
+            # can already resolve (or correctly decline) this one
+            # statically; not this probe's target shape.
+            continue
+
+        # F2 fix (2026-09-11): a resting transform/filter/clip-path value
+        # is ALREADY resolvable by `extract_shape_from_transition()` with
+        # no hover counterpart at all (D1026's whole point -- a transform
+        # shape needs only its own resting value, "animates toward
+        # identity"; only an OPACITY shape needs a before/after pair, which
+        # is unavailable here without a hover target anyway, so it is
+        # correctly never offered to the extractor below). Re-running the
+        # SAME check the static extractor itself would run -- rather than
+        # guessing at a separate heuristic -- means this candidate list
+        # only ever contains elements Tier 1/2 genuinely cannot resolve,
+        # not ones it already owns. `opacity`/`opacity_to` are deliberately
+        # excluded from this probe check: there is no live-page counterpart
+        # sampled yet at this static-analysis point, so passing only
+        # `opacity` (with no `opacity_to`) here would always decline
+        # regardless, which is the same outcome as omitting it -- omitting
+        # it keeps the check honest about what it is actually testing.
+        resting_decls = {
+            k: v for k, v in base_decls.items() if k in ("transform", "filter", "clip-path")
+        }
+        if resting_decls and extract_shape_from_transition(resting_decls, transition_value) is not None:
+            # Tier 1/2 already resolves this one statically (or will, once
+            # step 3a1b runs) -- not a genuine Tier 4b gap.
+            continue
+
+        seen_selectors.add(selector)
+        candidates.append({"selector": selector, "transition_declaration": transition_value})
 
     return candidates
 
