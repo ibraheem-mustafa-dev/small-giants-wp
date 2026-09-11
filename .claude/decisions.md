@@ -927,6 +927,14 @@ skipping them, and emit the four named blocks into the header/footer CPTs.
 Motion is a research-grade problem behind an unbuilt classifier; the header/footer clone is a
 named, design-gated, dependency-complete piece of work whose absence Bean can see on every page.
 
+**⚠ Superseded in practice, 2026-09-11 (flagged by `/qc-council` doc audit).** D1015 flagged the
+same week that this ruling wasn't reflected in `cloning-pipeline-tier-migration-requirements.md`.
+D1018's fresh capability-coverage data (motion is the single largest gap: ~2,880 attrs across 32
+blocks, near-zero coverage) then re-prioritised motion, and D1020–D1032 built it out in full (R8,
+7/13 real-world coverage) while header/footer stayed parked (D1015: scoped out, blocked on Spec 37
+content authoring). No entry ever formally revisited this ruling or logged a fresh Bean sign-off
+on the reversal — treat this priority ordering as stale, not binding, for any future session.
+
 ## D1002 [INCIDENT] — a THIRD same-selector CSS collision (min-height); three width caps collapse to one; media inspector surface split by tab
 
 **2026-09-07.** Slices 2, 3, 5 and 6 of the media control-surface work, run as
