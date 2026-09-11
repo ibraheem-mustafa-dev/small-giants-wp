@@ -1,3 +1,33 @@
+## D1033 [ROUTINE] — R1's 17-attribute worklist actually closed 2026-09-10, never got its own decision entry
+
+**2026-09-11, caught by Bean directly ("you literally already told me... we dealt with that work
+before starting R8"), verified live before correcting — not taken on trust either direction.**
+D1018 (2026-09-10) rescoped R1 to 17 attributes/9 blocks genuinely flat and explicitly said "R1 is
+NOT closed." Three real commits closed it the same evening, before R8's phase plan started, but
+none carried its own D-number — so decisions.md never caught up, and this session repeated the
+stale "R1 still open" claim twice (Spec 31 §14.1, and in conversation) before Bean corrected it.
+
+**What actually shipped, all 2026-09-10:**
+- `80ca7b3c2` — Finding 1: 9 of 10 stale D554-ruling-C xfail tests flipped to real assertions
+  (confirms the converter already emitted the correct tier-object shape; only the tests' own
+  assertions were stale).
+- `5fdaafa52` — Finding 4: seeded 43 genuine `box_family` DB-seeding gaps + excluded 67 unrelated
+  RECORD/ASSET attrs from `tier_object_base()`'s over-match.
+- `a50d1ae23` — Finding 3, Task 3 (the 17th, anomalous row): `sgs/container.gridItemBorderRadius`'s
+  default fixed from `{}` to `{"desktop": {}}`, matching its sibling `gridItemPadding`. `/qc-council`
+  validated (2 raters, both confirmed via direct code read: a genuine block.json defect, not a
+  predicate bug).
+
+**Verified live, 2026-09-11 (not just re-reading the commits):** every one of the 17 originally-flagged
+rows — `sgs/whatsapp-cta.borderRadiusTablet/Mobile`, `sgs/buybox.marginTablet/Mobile`,
+`sgs/cart.marginTablet/Mobile`, `sgs/filter-search.marginTablet/Mobile`, `sgs/label.marginTablet/Mobile`,
+`sgs/site-footer-row.margin/padding`, `sgs/site-header-row.margin/padding`,
+`sgs/nav-drawer.drawerPaddingTablet/Mobile`, `sgs/nav-menu.submenuPaddingTablet/Mobile`,
+`sgs/container.gridItemBorderRadius` — now reads `tier_object` in the live `block_attributes.tier_shape`
+column, and the flat Tablet/Mobile sibling rows are gone from every affected block.json (spot-checked
+directly, not inferred). **R1 is fully closed.** Report `reports/2026-09-10-r1-rescoped-worklist.md`
+and Spec 31 §14.1 both need correcting to match — see the accompanying doc fix in this same session.
+
 ## D1032 [ROUTINE] — R8 Tier 4b "page-load-settle" live probe shipped, closing Locomotive's `.c-preloader` gap
 
 **2026-09-11.** D1026's honest ceiling check found 3 real-world sampled motion effects Tier 1/2 (static CSS classifiers) structurally cannot resolve, because the shape is only observable by watching the REAL rendered page: a Framer tooltip (`:hover`-triggered — already reachable via D1024/D1026's hover wiring, not this probe's target), Locomotive's `.c-scrollbar` (a scroll-state toggle), and Locomotive's `.c-preloader` (a "fade to black on page load complete" effect, JS-toggled once loading finishes — a TIMING trigger, not an interaction). Of the 3, only `.c-preloader` fires on a timing event rather than a user interaction, so it is the one case that needs no guess about which interaction to simulate — consistent with this project's "never guess between ties, decline rather than guess" discipline (`motion_shape.py`'s own module docstring).

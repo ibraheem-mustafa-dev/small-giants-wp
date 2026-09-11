@@ -1012,11 +1012,15 @@ Full narrative: D1017–D1032. Archived execution plan:
 vocabulary, the box/tier axis split, measurement traps), not implementation targets in their own
 right — nothing to document here as "built."
 
-**R1 — object-shape tier emission.** Rescoped, not completed. A DB-derived
-`block_attributes.tier_shape` column (`flat_sibling`/`tier_object`/`box_only`/NULL, recomputed
-every `/sgs-update` run) replaced a stale 2026-08-11 survey. Of 449 `tier_object` rows across 64
-blocks, 432 (96%) were already correctly converted; **17 attributes across 9 blocks remain flat**
-— see `reports/2026-09-10-r1-rescoped-worklist.md` for the exact list. Not yet built.
+**R1 — object-shape tier emission.** Shipped in full (D1033, corrected 2026-09-11 — the closure
+happened 2026-09-10 but never got its own decision entry, so this section briefly repeated the
+stale "still open" claim). A DB-derived `block_attributes.tier_shape` column
+(`flat_sibling`/`tier_object`/`box_only`/NULL, recomputed every `/sgs-update` run) replaced a stale
+2026-08-11 survey. Of 449 `tier_object` rows across 64 blocks, 432 (96%) were already correctly
+converted; the remaining **17 attributes across 9 blocks** were closed the same day across 3
+commits (`80ca7b3c2`, `5fdaafa52`, `a50d1ae23`) — verified live: every flagged row now reads
+`tier_object`. See `reports/2026-09-10-r1-rescoped-worklist.md` for the original work-list and
+D1033 for the closure evidence.
 
 **R9 — capability-coverage inventory.** Shipped in full. Generalised R8's own measurement method
 (declared attributes vs. converter writes) to every capability family, confirming motion as the
