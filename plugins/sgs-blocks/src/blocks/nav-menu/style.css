@@ -243,9 +243,21 @@
 	width: 100%;
 }
 
-.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer {
-	border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
-}
+/*
+ * ⛔ DELETED (Spec 41 FR-41-15 census #10). This was the STATIC TWIN of census
+ * #3 — a different selector, the same painted edge of the same drawer rows —
+ * so deleting #3 from the PHP emitter alone would have left the double-line bug
+ * FULLY INTACT through a fix that read as complete. FR-41-7 is explicit that
+ * the item border is the ONE separator mechanism ("there is no itemDivider
+ * toggle"), and an operator setting a bottom `itemBorderWidth` got their own
+ * line on the link's border box PLUS this one on the next <li>'s top edge.
+ * The two never compete on specificity; they simply both paint.
+ * ⚠ `style.css` is a genuinely separate surface — enqueued as an ordinary
+ * stylesheet, never passing through PHP — so a census of the emitter alone is
+ * structurally incapable of seeing it.
+ * ⚠ An untouched drawer now ships no separator: the accepted default-reduction
+ * FR-41-17a(a) records, closed by one `itemBorderWidth` entry.
+ */
 
 /*
  * Split parent-link from expander (FR-36-6): the link takes the full row

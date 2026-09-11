@@ -237,9 +237,8 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	/*
 	 * ── ITEM BACKGROUND — ALL THREE fills on `{link}::before` (FR-41-23). ────
 	 *
-	 * ⛔ No state's fill is emitted onto `.sgs-nav-menu__link` itself. The
-	 * retired `hoverStyle === 'pill'` branch painted `background-color` directly
-	 * on the link; if its replacement landed back there, the item TEXT row's
+	 * ⛔ No state's fill is emitted onto `.sgs-nav-menu__link` itself. If any of
+	 * them landed there, the item TEXT row's
 	 * Sweep would clip the operator's hover fill to the shape of the letters —
 	 * the exact defect class FR-41-26's eligibility section exists to prevent,
 	 * arriving through the front door. `{link}::before` is contested by nothing:
@@ -565,9 +564,17 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		$css .= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover ), ':focus-visible' );
 	}
 	
-	// The featured item owns its own treatment — suppress the generic item
-	// underline bar on it so the two never render on top of each other.
-	$css .= $featured_sel . '::after{content:none;}';
+	/*
+	 * ⛔ DELETED (FR-41-4 item 7). This emitted `{featured_sel}::after{content:none;}`
+	 * unconditionally, to stop the retired underline bar doubling up with the
+	 * featured treatment. That bar no longer exists, so it had nothing left to
+	 * suppress — and `$featured_sel` weighs (0,3,1) against the border sweep's
+	 * band at (0,2,1), so it WON and the sweep silently did not render on a
+	 * featured item. ⛔ Not kept "just in case": a kept suppression rule is
+	 * exactly the silent override `check-hardcoded-render-defaults.js` F3b exists
+	 * to catch, and deleting it makes the sweep apply to featured items too —
+	 * which is the universal answer (project rule 3, no carve-outs).
+	 */
 	
 		return $css;
 	}

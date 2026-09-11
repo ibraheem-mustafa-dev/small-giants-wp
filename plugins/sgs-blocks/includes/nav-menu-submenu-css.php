@@ -60,6 +60,9 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
 		$t_sub_text  = (string) ( $treatments['submenuColourHoverTreatment'] ?? 'swap' );
 		$t_sub_bg    = (string) ( $treatments['submenuLinkBgHoverTreatment'] ?? 'swap' );
+		// Read once: census #9 gates the panel's own border on it, and census #1
+		// gates the drawer's `border:0` SUPPRESSION on the same value.
+		$sgs_nm_submenu_border_box = is_array( $attributes['submenuBorderWidth'] ?? null ) ? $attributes['submenuBorderWidth'] : array();
 
 		// 4f. Bar ↔ burger collapse-point switch. A LEGITIMATE non-device-tier
 		// breakpoint (the visual bar/burger swap) — deliberately NOT part of the
@@ -310,13 +313,80 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * short literal after each token is a last-resort safety net for a theme that
 		 * defines no palette at all, NOT a design value.
 		 */
+		/*
+		 * CENSUS #9 — per-declaration, none handled "somewhere else":
+		 *
+		 *   background-color / background-image  NO CHANGE — `--sgs-nm-submenu-bg`
+		 *     has a real writer (`submenuBg`), emitted inside an empty-guard so an
+		 *     unset attribute writes no property at all and the chained
+		 *     surface-alt -> surface -> #fff fallback applies.
+		 *   min-width                            NO CHANGE — attribute-driven from
+		 *     `submenuMinWidth` through the same guarded block.
+		 *   border-radius                        NO CHANGE — see the ⚠ below.
+		 *   border                               CONVERT — the only `border`
+		 *     declaration on the rule with no attribute behind it. It now reads
+		 *     `submenuBorderWidth` / `submenuBorderStyle` through custom properties
+		 *     whose UNSET fallback is the previous literal, and its COLOUR through
+		 *     the shared `sgs_border_states_css()` (Normal-only, FR-41-9: a panel
+		 *     that cannot be hovered for one property cannot be hovered for another)
+		 *     appended after this rule, so a set colour wins on source order and an
+		 *     unset one leaves the token fallback below in place.
+		 *   box-shadow                           CONVERT — reads `submenuShadow` /
+		 *     `submenuShadowColour` via the shared `sgs_shadow_value_composed()`,
+		 *     same unset-fallback discipline.
+		 *
+		 * ⚠ `--sgs-nm-submenu-radius` is DEAD-BUT-FIRING as of the step-10 manifest
+		 * rewrite: it was written from `submenuRadius`, which that rewrite deleted in
+		 * favour of the object-typed `submenuBorderRadius`. FR-41-15's per-declaration
+		 * table still records this one as "NO CHANGE — attribute-driven, writer
+		 * verified", which is no longer true. That is a row that has MOVED since the
+		 * fate table was written, so it is reported rather than re-fated here; the
+		 * rendered output is unchanged either way (the fallback is the value an unset
+		 * radius produced before).
+		 */
+		$sgs_nm_submenu_border_style = sgs_css_keyword_sanitise( $attributes['submenuBorderStyle'] ?? '' );
+		$sgs_nm_submenu_border_w     = $sgs_nm_submenu_border_box ? sgs_box_object_shorthand( $sgs_nm_submenu_border_box ) : null;
+		$sgs_nm_submenu_shadow       = sgs_shadow_value_composed(
+			(string) ( $attributes['submenuShadow'] ?? '' ),
+			(string) ( $attributes['submenuShadowColour'] ?? '' )
+		);
+
+		$sgs_nm_panel_vars = '';
+		if ( null !== $sgs_nm_submenu_border_w && '' !== $sgs_nm_submenu_border_w ) {
+			$sgs_nm_panel_vars .= '--sgs-nm-submenu-border-width:' . $sgs_nm_submenu_border_w . ';';
+		}
+		if ( '' !== $sgs_nm_submenu_border_style ) {
+			$sgs_nm_panel_vars .= '--sgs-nm-submenu-border-style:' . $sgs_nm_submenu_border_style . ';';
+		}
+		if ( '' !== $sgs_nm_submenu_shadow ) {
+			$sgs_nm_panel_vars .= '--sgs-nm-submenu-shadow:' . $sgs_nm_submenu_shadow . ';';
+		}
+		if ( '' !== $sgs_nm_panel_vars ) {
+			$css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
+		}
+
 		$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:8px 0;'
 			. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);'
-			. 'border:1px solid var(--wp--preset--color--border, transparent);'
+			. 'border-width:var(--sgs-nm-submenu-border-width, 1px);'
+			. 'border-style:var(--sgs-nm-submenu-border-style, solid);'
+			. 'border-color:var(--wp--preset--color--border, transparent);'
 			. 'border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));'
-			. 'box-shadow:var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1));}';
+			. 'box-shadow:var(--sgs-nm-submenu-shadow, var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1)));}';
+
+		// Normal-only, by FR-41-9: no `hover`, no `current`, and no `suppress_edges`
+		// key at all. Emits nothing when neither colour attribute is set, so the
+		// token fallback in the rule above survives untouched.
+		$css .= sgs_border_states_css(
+			$uid_sel . ' .sgs-nav-menu__submenu',
+			$attributes,
+			array(
+				'base'     => 'submenuBorderColour',
+				'gradient' => 'submenuBorderColourGradient',
+				'width'    => ( null !== $sgs_nm_submenu_border_w && '' !== $sgs_nm_submenu_border_w ) ? $sgs_nm_submenu_border_w : '1px',
+			)
+		);
 		
 		/*
 		 * submenuPadding — object box model {desktop:{top,right,bottom,left},
@@ -467,9 +537,21 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			$css .= sgs_text_colour_gradient_fallback_rule( $sublink_sel, $submenu_colour_effective );
 		}
 
-		// Current BEFORE Hover, and never guarded (FR-41-3 binding rule 3).
+		/*
+		 * Current BEFORE Hover, and never guarded (FR-41-3 binding rule 3).
+		 *
+		 * FR-41-15 CONVERT: the Current colour is written as the custom property
+		 * the existing `[aria-current="page"]` rule below ALREADY consumes,
+		 * rather than as a second competing rule. `--sgs-nm-submenu-current-colour`
+		 * was dead-but-firing — declared in that rule's `var()` and written
+		 * NOWHERE in the tree, so it could only ever render its own hardcoded
+		 * fallback. Writing it from `submenuColourCurrent` makes the rule
+		 * attribute-driven and keeps `var(--wp--preset--color--primary-dark,
+		 * currentColor)` as the unset fallback, so an untouched nav renders
+		 * identically.
+		 */
 		if ( '' !== $submenu_colour_current ) {
-			$css .= $sublink_sel . '[aria-current="page"]{color:' . sgs_colour_value( $submenu_colour_current ) . ';}';
+			$css .= $uid_sel . '{--sgs-nm-submenu-current-colour:' . sgs_colour_value( $submenu_colour_current ) . ';}';
 		}
 
 		if ( '' !== $sublink_sweep['hover'] ) {
@@ -517,12 +599,24 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'submenu', $sublink_sel, $submenu_sweep_hover );
 
 		/*
-		 * Hover/focus read as DESIGN, not as a stray underline: a tinted row plus a
-		 * brand-coloured ring. `currentColor` was wrong here — it resolves to the near
-		 * black of body text, which is what Bean saw as a "black underline".
+		 * ⛔ FR-41-15 census #6 — DELETED. It emitted an unconditional
+		 * `background:var(--wp--preset--color--surface, …)` tint on
+		 * `.sgs-nav-menu__sublink:hover`, ungated on any attribute, through
+		 * `sgs_hover_guarded_rule()` (which is why two literal-string scans missed
+		 * it), scoped to `$uid_sel` so it fired on the bar's dropdown AND inside the
+		 * drawer. Three independent reasons, any one sufficient: (a) it painted a
+		 * tint the operator never asked for IN ADDITION to the `submenuLinkBgHover`
+		 * they did — the F3b silent-override class; (b) it is the `background`
+		 * SHORTHAND, so it reset `background-image` to `none` and DESTROYED the
+		 * sublink text Sweep in both forks while `-webkit-text-fill-color:transparent`
+		 * still applied, rendering the hovered word at ~4% opacity; (c) its own
+		 * comment recorded it as a 2026-07-31 design fix for a stray underline — a
+		 * problem the operator's own three-state fill now answers directly.
+		 * ⚠ An untouched sublink now shows no hover tint. Same accepted
+		 * default-reduction as census #4 and #8, closed the same way: one
+		 * `submenuLinkBgHover` entry.
 		 */
-		$css .= sgs_hover_guarded_rule( $uid_sel . ' .sgs-nav-menu__sublink:hover', 'background:var(--wp--preset--color--surface, rgba(0,0,0,.04))' );
-		
+
 		/*
 		 * CURRENT-PAGE and FEATURED states for submenu items (Bean, 2026-07-31).
 		 *
@@ -537,22 +631,56 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * identically to the drawer's own nav-menu instance — the burger menu holds a
 		 * second instance and must not need its own rules.
 		 */
+		// CONVERTED (census row 1 of the fate table): the colour now reads the
+		// `--sgs-nm-submenu-current-colour` this file WRITES from
+		// `submenuColourCurrent` (above) instead of a property with no writer
+		// anywhere in the tree; the token fallback is kept verbatim so an
+		// untouched nav renders identically. The `font-weight:600` half moved out
+		// with the bar's own current-page weight rule — it is now
+		// `itemFontWeightCurrent` under FR-41-6's never-lighter guard.
 		$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
-			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary-dark, currentColor));'
-			. 'font-weight:600;}';
-		$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
-			// Falls back to the operator's TOP-LEVEL featured colours before the token,
-			// so a featured child matches the featured bar item by default.
-			. 'color:var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor));'
-			. 'background:var(--sgs-nm-featured-bg, var(--wp--preset--color--primary, transparent));'
-			. 'font-weight:var(--sgs-nm-featured-weight, 600);'
-			. 'border-radius:var(--sgs-nm-featured-radius, 4px);'
-			. 'margin:4px 8px;}';
-		$css .= sgs_hover_guarded_rule(
-			$uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink:hover',
-			'color:var(--sgs-nm-featured-colour-hover, var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor)));'
-			. 'background:var(--sgs-nm-featured-bg-hover, var(--wp--preset--color--primary-dark, transparent))'
-		);
+			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary-dark, currentColor));}';
+
+		/*
+		 * CENSUS #7 — CONVERTED, not deleted. Unlike #4/#6/#8 the `var()` half here
+		 * is genuinely attribute-driven: `featuredBg` / `featuredColour` /
+		 * `featuredRadius` / `featuredFontWeight` are real attributes whose RESOLVED
+		 * values `nav-menu-css.php` republishes as `--sgs-nm-featured-*` on
+		 * `$uid_sel`, deliberately, so a featured SUB-item mirrors the featured BAR
+		 * item.
+		 *
+		 * ⛔ What went is the FALLBACK. The custom-property writer is conditional, so
+		 * with no featured colours set `--sgs-nm-featured-bg` was never written and
+		 * this rule fell through to `var(--wp--preset--color--primary, transparent)`
+		 * — painting every featured sub-item as a `primary` pill with inverse text
+		 * that nobody asked for. It is now emitted ONLY when that property is
+		 * actually written (the same gate that writes it), and `background:` became
+		 * `background-color:` so the shorthand can never reset a sweep's
+		 * `background-image` on this selector.
+		 */
+		$sgs_nm_featured_bg_written = '' !== (string) ( $attributes['featuredBg'] ?? '' )
+			|| '' !== (string) ( $attributes['featuredBgGradient'] ?? '' )
+			|| '' !== (string) ( $attributes['featuredColour'] ?? '' );
+		if ( $sgs_nm_featured_bg_written ) {
+			$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
+				. 'color:var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor));'
+				. 'background-color:var(--sgs-nm-featured-bg);'
+				. 'font-weight:var(--sgs-nm-featured-weight, 600);'
+				. 'border-radius:var(--sgs-nm-featured-radius, 4px);'
+				. 'margin:4px 8px;}';
+		}
+
+		/*
+		 * ⛔ FR-41-15 census #8 — DELETED. The third instance of one defect shape,
+		 * identical to #4 and #6 on every axis: unconditional, ungated, `background`
+		 * SHORTHAND, `:hover` state, emitted through `sgs_hover_guarded_rule()`,
+		 * `$uid_sel`-scoped so it fired in BOTH forks, destroying the sublink Sweep
+		 * by the same mechanism. ⚠ AND BOTH of its custom properties were DEAD:
+		 * `--sgs-nm-featured-bg-hover` and `--sgs-nm-featured-colour-hover` have no
+		 * writer anywhere in the tree, so the rule could only ever paint its own
+		 * hardcoded `primary-dark` fallback, on every render, in every install.
+		 * Superseded outright by the submenu link's own three-state fill.
+		 */
 		$css .= $uid_sel . ' .sgs-nav-menu__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
 		
 		/*
@@ -612,8 +740,23 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * live: both `rgb(230, 138, 149)` -- 1:1 contrast, invisible). Caught before
 		 * committing, not guessed at.
 		 */
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;border:0;min-width:0;'
+		/*
+		 * CENSUS #1 — CONVERTED. The `background` half was already attribute-driven
+		 * (`--sgs-nm-submenu-bg` HAS a real writer, from `submenuBg`), so it keeps
+		 * its `color-mix` fallback untouched. The `border:0` half was a hardcoded
+		 * SUPPRESSION: it may keep zeroing the bar's own panel border inside the
+		 * drawer, but it must NOT survive once `submenuBorderWidth` is set, or an
+		 * operator's drawer panel border silently renders nothing. It is now emitted
+		 * only while that attribute is empty.
+		 */
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;min-width:0;'
+			. ( $sgs_nm_submenu_border_box ? '' : 'border:0;' )
 			. 'background:var(--sgs-nm-submenu-bg, color-mix(in srgb, currentColor 6%, transparent));border-radius:0;padding:0;margin:0;}';
+		// CENSUS #2 — KEPT. This is the drawer's resting sub-item INDENT, not a
+		// stateful rule: the marker icon's 12px padding + 14px icon + 8px gap is
+		// measured against the 32px indent this border occupies (see the note
+		// directly below). Structural, so FR-41-7's one-border rule does not claim
+		// it and the double-line bug that condemns #3/#10 cannot occur here.
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{padding:0 16px 0 12px;gap:8px;'
 			. 'border-left:2px solid color-mix(in srgb, currentColor 25%, transparent);}';
 		// D1011-adjacent (Bean, 2026-09-10): the marker icon lives INSIDE the same
@@ -622,25 +765,42 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}';
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker svg{width:14px;height:14px;}';
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit;}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__item + .sgs-nav-menu__item,'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subitem'
-			. '{border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);}';
-		$css .= sgs_hover_guarded_rule(
-			'.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link:hover,.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink:hover',
-			'background:color-mix(in srgb, currentColor 12%, transparent)'
-		);
-		
 		/*
-		 * CURRENT-PAGE gets its OWN persistent treatment, distinct from hover — see the
-		 * $hover_targets note above. Weight plus a solid left rule reads as "you are
-		 * here" whether or not the pointer is near it.
+		 * ⛔ FR-41-15 census #3 — DELETED, and its STATIC TWIN in `style.css`
+		 * (`.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`, census #10)
+		 * with it. This was the drawer's hardcoded item separator, and FR-41-7 is
+		 * explicit that the item border is the ONE separator mechanism. Leaving it
+		 * meant an operator setting a bottom `itemBorderWidth` got TWO horizontal
+		 * lines between drawer rows — their own on the link's border box, this one
+		 * on the next `<li>`'s top edge — the double-line bug class this redesign
+		 * exists to remove, invisible to specificity reasoning because the two rules
+		 * sit on different elements and never compete; they simply both paint.
+		 * ⚠ Deleting ONE of the pair would have left the bug fully intact through a
+		 * fix that read as complete: the selectors differ, the painted edge does not.
+		 * ⚠ An untouched drawer now ships no separator — the accepted
+		 * default-reduction FR-41-17a(a) records, closed by one `itemBorderWidth`.
+		 *
+		 * ⛔ FR-41-15 census #4 — DELETED. The drawer's unconditional
+		 * `background:color-mix(…12%…)` hover tint on link AND sublink. Superseded by
+		 * `itemBgHover` / `submenuLinkBgHover`; and as the `background` SHORTHAND at
+		 * four classes plus `:hover` it out-ranked the Sweep's own base rule and reset
+		 * `background-image` to `none` while `-webkit-text-fill-color:transparent`
+		 * still applied — rendering the hovered word at ~12% opacity on every drawer
+		 * using Sweep, silently in both directions (a `getComputedStyle(el).color`
+		 * check still returns the operator's colour).
+		 *
+		 * ⛔ FR-41-15 census #5 — DELETED, both declarations. The `border-left:3px`
+		 * is superseded by the item border's own Current state (FR-41-7) and the
+		 * `background` tint by `itemBgCurrent` / `submenuLinkBgCurrent`. Leaving
+		 * either would paint IN ADDITION to the operator's choice — a tint they never
+		 * asked for on top of the colour they did.
+		 *
+		 * The bar's own `[aria-current="page"]{font-weight:600}` pair is CONVERTED,
+		 * not deleted: `nav-menu-css.php` now emits the same two selectors from
+		 * `itemFontWeightCurrent` under FR-41-6's never-lighter guard, which renders
+		 * byte-identically while `itemFontWeight` is unset (its shipped default).
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
-			. $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{font-weight:600;}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]'
-			. '{border-left:3px solid currentColor;background:color-mix(in srgb, currentColor 8%, transparent);}';
-		
+
 		/*
 		 * A mega-menu item degrades to a plain link inside the drawer
 		 * (render_items_drawer(), see its docblock) rather than rendering the mega
