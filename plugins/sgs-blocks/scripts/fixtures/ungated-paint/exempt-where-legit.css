@@ -1,0 +1,7 @@
+/**
+ * FIXTURE — legit instance of the ":where() zero-specificity default"
+ * exemption. Expected: 0 CENSUSED findings.
+ */
+:where(.fx-thing) {
+	background-color: red;
+}

@@ -1,0 +1,10 @@
+/**
+ * FIXTURE — trap for the "forced-colors / @supports" exemption: an ORDINARY
+ * `@media` query (not forced-colors, not @supports) wrapping the exact same
+ * declaration shape. Must NOT be exempted. Expected: >=1 CENSUSED finding.
+ */
+@media (min-width: 782px) {
+	.fx-thing {
+		border: 1px solid ButtonText;
+	}
+}

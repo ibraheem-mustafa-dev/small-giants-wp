@@ -1,0 +1,8 @@
+/**
+ * FIXTURE — trap for the ":where()" exemption: an ORDINARY selector with no
+ * zero-specificity wrapper at all. Must NOT be exempted. Expected: >=1
+ * CENSUSED finding.
+ */
+.fx-thing {
+	background-color: red;
+}

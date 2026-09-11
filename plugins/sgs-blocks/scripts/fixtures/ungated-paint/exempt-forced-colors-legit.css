@@ -1,0 +1,9 @@
+/**
+ * FIXTURE — legit instance of the "forced-colors / @supports a11y rule"
+ * exemption. Expected: 0 CENSUSED findings.
+ */
+@media (forced-colors: active) {
+	.fx-thing {
+		border: 1px solid ButtonText;
+	}
+}

@@ -956,5 +956,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 102
+  },
+  {
+    "id": "check-ungated-paint-rules",
+    "cmd": "python scripts/check-ungated-paint-rules.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 103
   }
 ]

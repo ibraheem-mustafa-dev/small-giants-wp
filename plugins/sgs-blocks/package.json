@@ -51,6 +51,7 @@
     "check:box-family": "python scripts/check-box-family-guard.py --check",
     "check:hover-state-classification": "python scripts/check-hover-state-classification.py --check",
     "check:dead-api-calls": "python scripts/check-dead-api-calls.py --check",
+    "check:ungated-paint-rules": "python scripts/check-ungated-paint-rules.py --check",
     "check:stranded-guards": "python scripts/no-inline/check-stranded-guards.py",
     "check:jsonld-flags": "python scripts/check-jsonld-flags.py --check",
     "check:cheats": "python scripts/cheat-gate/run.py --report",
