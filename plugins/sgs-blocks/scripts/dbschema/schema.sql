@@ -412,3 +412,29 @@ CREATE INDEX idx_patterns_mood          ON patterns(mood);
 
 -- index: idx_patterns_style
 CREATE INDEX idx_patterns_style         ON patterns(style);
+
+-- Appended 2026-09-11, Phase R8 Step 1 (.claude/plans/phase-r8-motion-recognition.md).
+-- Not re-sorted into the alphabetical dump above to keep this an append-only
+-- diff — the generator that produces the rest of this file re-sorts on its
+-- own next full regeneration.
+
+-- table: motion_shape_signatures
+CREATE TABLE motion_shape_signatures (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            preset_slug         TEXT NOT NULL,
+            tier                TEXT NOT NULL DEFAULT 'V'
+                CHECK(tier = 'V'),
+            animated_property   TEXT NOT NULL,
+            direction           TEXT NOT NULL
+                CHECK(direction IN ('up','down','left','right','scale-in','scale-out','rotate','none')),
+            magnitude_min       REAL NOT NULL,
+            magnitude_max       REAL NOT NULL,
+            duration_ms         INTEGER,
+            easing_curve        TEXT NOT NULL
+                CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
+            created_at          TEXT DEFAULT (datetime('now'))
+        );
+
+-- index: idx_motion_shape_signatures_preset_slug
+CREATE UNIQUE INDEX idx_motion_shape_signatures_preset_slug
+    ON motion_shape_signatures(preset_slug);
