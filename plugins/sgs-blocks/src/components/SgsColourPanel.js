@@ -105,6 +105,46 @@
  *                             `onGradientChange`.
  *                             Every existing row (no `gradientCapable`)
  *                             is unaffected.
+ *
+ *                             THREE MORE OPTIONAL PER-ROW KEYS, all additive
+ *                             (2026-09-11, Spec 41 §9.6 / FR-41-23 / FR-41-24 —
+ *                             the same shape and the same zero-blast-radius
+ *                             argument as `heading` above):
+ *
+ *                             · `heading` — a non-interactive sub-heading
+ *                               rendered immediately BEFORE the row's control
+ *                               (FR-41-16).
+ *                             · `after` — a React node rendered immediately
+ *                               AFTER the row's control, inside the same row
+ *                               wrapper. It exists because a hover TREATMENT
+ *                               selector and a cross-reference note have to sit
+ *                               with the swatch they qualify, in the same panel,
+ *                               or the operator meets the control and its
+ *                               consequence in two different places (FR-41-23:
+ *                               "directly beneath the Hover swatch"). ⛔ It is a
+ *                               SLOT, not a component — this panel makes no
+ *                               assumption about what goes in it, and a row that
+ *                               omits it renders byte-identically to before.
+ *                             · `contrastLargeText` — forwarded alongside
+ *                               `contrastAgainst`/`contrastLabel` on the
+ *                               gradient-capable branch. ⚠ Without this it was
+ *                               DROPPED: a caller could set
+ *                               `contrastAgainst` + `contrastLargeText: true` on
+ *                               a border row and silently get the 4.5:1 TEXT
+ *                               threshold instead of WCAG 1.4.11's 3:1
+ *                               UI-component threshold — a contrast check
+ *                               present in the source and wrong at runtime.
+ *                               `SgsBorderControl` already forwards it
+ *                               (its own `contrastLargeText = true` default);
+ *                               this closes the gap for a border colour rendered
+ *                               as a row here instead (FR-41-33).
+ *
+ *                             ⚠ The contrast trio still reaches
+ *                             `GradientCapableColourControl` ONLY. A row that is
+ *                             not `gradientCapable` renders `DesignTokenPicker`,
+ *                             which carries no contrast check at all — so the
+ *                             trio on such a row is inert. Stated here rather
+ *                             than left to be discovered.
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -146,9 +186,19 @@ export default function SgsColourPanel( { rows } ) {
 									? {
 											contrastAgainst: row.contrastAgainst,
 											contrastLabel: row.contrastLabel,
+										// Spread only when the row actually declares it, so a
+										// row that does not is byte-identical to before rather
+										// than merely behaviourally equivalent (`undefined`
+										// would hit the same default parameter, but "absent"
+										// and "explicitly undefined" are distinguishable and
+										// the proof should not have to argue the difference).
+										...( undefined !== row.contrastLargeText
+											? { contrastLargeText: row.contrastLargeText }
+											: {} ),
 									  }
 									: {} ) }
 							/>
+							{ row.after }
 						</div>
 					);
 				} ) }

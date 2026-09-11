@@ -304,3 +304,65 @@ docblock note that they are `require_once`'d PER-INSTANCE from `render.php`, NOT
 bootstrap-loaded like `helpers-tokens.php`/`helpers-hover-state.php`/
 `helpers-colour-variants.php` — their functions are only in scope after nav-menu's own
 `render.php` has run at least once on that page load. Matches the step's own required note.
+
+---
+
+## PLAN AMENDMENT (Lane 5, 2026-09-11) — `SgsColourPanel` gains a per-row `after` slot and forwards `contrastLargeText`
+
+**This is a plan amendment, not an implementation detail, and it is a FIFTH shared-component
+touch in this phase** — alongside the manifest rewrite, `SgsBorderControl`'s `showColour`,
+`fx-magnet.css`, and `SgsColourPanel`'s original `heading` addition (step 5). Recorded as its
+own row so it is disclosed individually rather than folded into a step.
+
+**Why it was needed.** Spec 41 §9.6 requires each stateful row's hover-treatment
+`ToggleGroupControl` and its two verbatim ⓘ cross-reference notes to render *with the swatch
+they qualify*, and FR-41-24 says they are "rendered inline directly beneath each row's `states`
+array in the literal `colourRows` object" — i.e. carried ON the row descriptor. §9.6 also
+requires both border-colour rows to carry `contrastAgainst` **with `contrastLargeText: true`**
+(WCAG 1.4.11's 3:1 UI-component threshold, not 4.5:1 body text).
+
+`SgsColourPanel.js::SgsColourPanel` read exactly `key`, `label`, `states`, `heading`,
+`gradientCapable`, `borderStyle`, `onBorderStyleChange` and — only on the gradient-capable
+branch — `contrastAgainst` / `contrastLabel`. It had no slot for a node after a row, and it
+**dropped `contrastLargeText` entirely**: a caller could set it and silently get the wrong WCAG
+threshold, a contrast check present in the source and wrong at runtime. Step 5 was scoped to
+`heading` ONLY; no step in the plan authorised either of these. §9.6 was therefore unbuildable
+inside Lane 5's declared writable set.
+
+**What changed** (`plugins/sgs-blocks/src/components/SgsColourPanel.js`, ~6 lines):
+1. `row.after` — an optional React node rendered immediately after that row's control, inside
+   the row's existing wrapper `<div>`. A SLOT, not a component: the panel makes no assumption
+   about its contents.
+2. `row.contrastLargeText` — forwarded alongside `contrastAgainst`/`contrastLabel`, and spread
+   only when the row actually declares it, so a row that does not is byte-identical rather than
+   merely behaviourally equivalent.
+3. The docblock records both, plus the standing ⚠ that the contrast trio reaches
+   `GradientCapableColourControl` ONLY — a non-`gradientCapable` row renders
+   `DesignTokenPicker`, which has no contrast check, so the trio is inert there.
+
+**Alternative considered and rejected:** a block-private colour panel for `sgs/nav-menu`. It
+would contradict §9.6's "ONE `SgsColourPanel`" and is a far larger divergence than a six-line
+additive slot.
+
+**Approved by** the coordinating session, 2026-09-11, as covered by the same design gate step 5
+already passed, extended in the same shape. Committed in isolation so it is independently
+revertible.
+
+**Proof (G1(a)-shaped — three existing callers, rendered and diffed, not argued):** the HEAD
+component and the working-tree component were both loaded, given the SAME real row descriptors
+from `sgs/info-box` (2 rows, one gradient-capable), `sgs/button` (a row carrying
+`contrastAgainst` + `contrastLabel`) and `sgs/container` (a `heading` row, a falsy row, and a
+`borderStyle` row), and their serialised element trees compared:
+
+```
+IDENTICAL  sgs/info-box  (1155 bytes)
+IDENTICAL  sgs/button    (876 bytes)
+IDENTICAL  sgs/container (1029 bytes)
+POSITIVE CONTROL  row.after renders           = true
+POSITIVE CONTROL  contrastLargeText forwarded = true
+NEGATIVE CONTROL  HEAD dropped it entirely    = true
+```
+
+The two positive controls prove the additions are live (not a no-op passing by absence); the
+negative control proves the `contrastLargeText` gap it closes was real on HEAD. Live caller
+roster at the time of the change: `grep -rln "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` → **61**.
