@@ -3326,6 +3326,38 @@
         "css_property": "letter-spacing",
         "css_element": "link"
       }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "overlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "overlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "overlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/cta-section",
+      "attr": "overlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
     }
   ]
 }
