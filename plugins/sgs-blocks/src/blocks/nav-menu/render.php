@@ -202,7 +202,8 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * @param array  $featured_ids Featured item identifiers.
 		 * @param string $uid          This block instance's uid (CSS scope + id namespace).
 		 * @param array  $submenu      Submenu settings: align (start|center|end),
-		 *                             caret (bool), close_grace (int ms).
+		 *                             caret (bool), close_grace (int ms),
+		 *                             animation (none|fade|slide-down).
 		 */
 		public function __construct( array $featured_ids, string $uid = '', array $submenu = array() ) {
 			$this->featured_ids = array_map( 'strval', $featured_ids );
@@ -224,6 +225,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				 * code rather than believed.
 				 */
 				'close_grace' => isset( $submenu['close_grace'] ) ? max( 0, (int) $submenu['close_grace'] ) : 170,
+
+				// PHP-validated, not a JSON enum (block.json::submenuAnimation is
+				// plain string) -- an out-of-list stored value coerces to the
+				// no-animation default rather than emitting an unstyled modifier
+				// class the CSS (style.css, Spec 41 step 17) never defined.
+				'animation'   => in_array( $submenu['animation'] ?? '', array( 'fade', 'slide-down' ), true )
+					? (string) $submenu['animation']
+					: 'none',
 			);
 		}
 
@@ -235,7 +244,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * ONLY new surface this split adds to the class; it exposes existing
 		 * validated state, it does not compute anything new.
 		 *
-		 * @return array{align: string, caret: bool, close_grace: int}
+		 * @return array{align: string, caret: bool, close_grace: int, animation: string}
 		 */
 		public function get_submenu(): array {
 			return $this->submenu;
@@ -410,6 +419,7 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 		'align'       => (string) ( $attributes['submenuAlign'] ?? 'start' ),
 		'caret'       => ! isset( $attributes['submenuCaret'] ) || (bool) $attributes['submenuCaret'],
 		'close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 ),
+		'animation'   => (string) ( $attributes['submenuAnimation'] ?? 'none' ),
 	)
 );
 $flat_items   = $bar_renderer->flatten( $menu_blocks );

@@ -255,6 +255,14 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 							);
 						}
 
+						// FR-41-10 (Spec 41 step 17 built the CSS; nothing applied the
+						// class until now). `$submenu['animation']` is already
+						// PHP-validated to one of none|fade|slide-down by the
+						// renderer's constructor — 'none' emits no modifier class,
+						// matching the pre-animation markup byte-for-byte.
+						$sub_wrap_class = 'sgs-nav-menu__submenu-wrap'
+							. ( 'none' !== $submenu['animation'] ? ' sgs-nav-menu__submenu-wrap--' . $submenu['animation'] : '' );
+
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-menu__item--has-submenu">'
 							. '<div class="sgs-nav-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
@@ -263,8 +271,8 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 							// above — see that note. A dropdown is the likelier of the two
 							// to overflow its bound, so it is the likelier to need a
 							// wheel-reachable scroll region.
-							. '<div id="%5$s" class="sgs-nav-menu__submenu-wrap" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">'
-							. '<ul class="sgs-nav-menu__submenu">%6$s</ul>'
+							. '<div id="%5$s" class="%6$s" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">'
+							. '<ul class="sgs-nav-menu__submenu">%7$s</ul>'
 							. '</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
@@ -272,6 +280,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 							$sub_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 							$trigger_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
 							esc_attr( $sub_dom_id ),
+							esc_attr( $sub_wrap_class ),
 							$child_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from esc_url/esc_attr/esc_html parts.
 						);
 						continue;
