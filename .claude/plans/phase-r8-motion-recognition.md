@@ -46,11 +46,12 @@ docscore_grade: "A (95%)"
 | Type | Name | Used in |
 |------|------|---------|
 | skill | /delegate | every dispatched step |
-| skill | /subagent-prompt | steps 1, 3, 5, 7, 9, 11, 13 |
-| mcp | playwright | steps 2, 6, 10, 12 (QA), 14 |
-| cli | sgs-db.py | steps 1, 5, 7, 9 (DB-seeded lookup tables) |
-| cli | wp-blocks.py | QA Gate 1, 3 (schema checks) |
-| external | TAG Heuer live page | QA Gate 1, 4 |
+| skill | /subagent-prompt | steps 1, 3, 5, 6, 7, 9, 10, 11, 13, 14 (every step with a pre-written `Prompt:` field) |
+| mcp | playwright | steps 6, 10, 11, 14, plus the QA gate after step 10 and step 12 |
+| cli | sgs-db.py | steps 1, 5, 7, 9, 10 (every step building or querying a DB-seeded lookup table) |
+| external | TAG Heuer live page | step 6, the QA gate after step 10, step 14 |
+
+*(Corrected 2026-09-11 via `/qc` — the original draft of this table both undercounted `/subagent-prompt`'s real usage and cited `wp-blocks.py`, which is not actually invoked anywhere in this plan; removed rather than left as a phantom entry.)*
 
 ---
 
@@ -58,7 +59,7 @@ docscore_grade: "A (95%)"
 
 Step 1 — Build the Tier V shape-matching lookup table (DB-first)
   Model:       sonnet
-  Action:      Design and seed a new DB table named `motion_shape_signatures` (mirroring `slot_synonyms`'s shape, per R-31-1) mapping known CSS animation shapes to existing Tier V preset slugs from the closed vocabulary named in the brainstorm doc §"Ground truth" item 2. Write the seeding script under `plugins/sgs-blocks/scripts/dbschema/`, following the same declarative pattern `fx_attr_roster()` uses (read from a maintained source file, never a hand-authored duplicate query).
+  Action:      Design and seed a new DB table named `motion_shape_signatures` (mirroring the `slots` table's `aliases` column (JSON array) — confirmed live via `PRAGMA table_info(slots)`, there is no separate `slot_synonyms` table, per R-31-1) mapping known CSS animation shapes to existing Tier V preset slugs from the closed vocabulary named in the brainstorm doc §"Ground truth" item 2. Write the seeding script under `plugins/sgs-blocks/scripts/dbschema/`, following the same declarative pattern `fx_attr_roster()` uses (read from a maintained source file, never a hand-authored duplicate query).
   **Pinned schema (resolved by the Hidden Decisions pass — do not re-derive):** columns `id, preset_slug (TEXT, the fx-preset value written in Step 3), tier (TEXT, always 'V' for this table), animated_property (TEXT, e.g. 'opacity'/'transform'), direction (TEXT enum: 'up'|'down'|'left'|'right'|'scale-in'|'scale-out'|'rotate'|'none'), magnitude_min (REAL), magnitude_max (REAL, both in px or unitless-scale-factor depending on animated_property — a translateY entry uses px, a scale entry uses the unitless factor), duration_ms (INTEGER), easing_curve (TEXT enum: 'linear'|'ease'|'ease-in'|'ease-out'|'ease-in-out' — a raw `cubic-bezier(...)` value gets snapped to its nearest of these 5 by control-point distance at seed time, not left as a raw bezier string).
   Files:       `plugins/sgs-blocks/scripts/dbschema/seed-motion-shape-signatures.py` (new), `plugins/sgs-blocks/scripts/dbschema/schema.sql` (new table `motion_shape_signatures`)
   Inputs:      Brainstorm doc Tier 1 section; existing Tier V preset catalogue (query live via `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT DISTINCT preset_slug FROM ..."` — confirm exact table name at build time, do not assume)
@@ -67,7 +68,7 @@ Step 1 — Build the Tier V shape-matching lookup table (DB-first)
   Deps:        none
   Marker:      SESSION-START
   Time:        25 min
-  Tooling:     sgs-db.py, /delegate
+  Tooling:     sgs-db.py, /delegate, /subagent-prompt
   On-Fail:     If the Tier V preset catalogue's "known shape" isn't cleanly expressible as a DB row (e.g. some presets have no clean CSS-property signature), narrow scope to the presets that DO have a clean signature and flag the rest as a documented gap — do not force an approximate signature into the table.
   Cold-Entry:  Brainstorm doc Tier 1 section; `.claude/specs/38-SGS-MOTION-SYSTEM.md` §3 (preset roster); `fx_attr_roster()` as the pattern to mirror.
   Prompt: |
@@ -91,9 +92,9 @@ Step 3 — Build the CSS declaration-shape classifier (Tier 1)
   Model:       sonnet
   Action:      Write the classifier that reads a draft element's `@keyframes` + `animation`/`transition` declarations, extracts the CSS-level facts (animated properties, direction/magnitude, duration/easing — encoded exactly per Step 1's pinned schema above: direction as one of the 8 named enum values, magnitude as a numeric min/max, easing snapped to the nearest of the 5 named keywords), and queries `motion_shape_signatures` (Step 1's table) to find a matching Tier V preset.
   **Matching rule (resolved by the Hidden Decisions pass — do not re-derive):** exact match required on `animated_property` and `direction`; `duration_ms` matches within ±20%; `easing_curve` must match the same snapped keyword exactly (no cross-keyword tolerance). If a candidate's `magnitude` falls within `[magnitude_min, magnitude_max]`, it's a match. Zero or 2+ equally-good candidates → no match, fall through cleanly (never guess between ties).
-  **`lift_behavioural_attrs()`, briefly (read the real function before calling — this is context, not a full spec):** it reads a draft element's `data-sgs-fx-*` marker attributes and writes each into the emitted WordPress block's own attributes, using the fx-attribute contract's naming (`fx`, `fxTrigger`, `fxStart`, etc. — the full roster is in `fx_attr_roster()`). This classifier reuses that SAME final write step — on a match, write `fx = <preset_slug from Step 1's table>` into the emitted block's attributes exactly the way `lift_behavioural_attrs()` already does for an SGS-authored `data-sgs-fx` marker, so the existing runtime consumes it identically. Do not build a second write path.
+  **`lift_behavioural_attrs()`, corrected (verified 2026-09-11 via `/qc` against the real function body — the earlier draft of this step overstated it as a "write mechanism" to reuse; it is not):** its real signature is `lift_behavioural_attrs(node, slug) -> (attrs, skipped)` — a PURE function that reads a draft element's `data-sgs-fx-*` marker attributes and RETURNS an `{attr_name: value}` dict (using the fx-attribute contract's naming — `fx`, `fxTrigger`, `fxStart`, etc., full roster in `fx_attr_roster()`); it does not itself write anything into the emitted block — its caller (`converter/services/assembly.py`, the step that invokes it) merges the returned dict into the block's final attributes. **This classifier must produce output in the SAME `{attr_name: value}` shape** (on a match, `{"fx": <preset_slug from Step 1's table>}`) so it can be merged by that same caller identically — do not invent a second merge/write path, and do not go looking for a "write mechanism" inside `lift_behavioural_attrs()` itself, there isn't one.
   Files:       `plugins/sgs-blocks/scripts/converter/resolvers/motion_shape.py` (new)
-  Inputs:      Step 1's DB table; `converter/db/db_lookup.py::lift_behavioural_attrs` as the write-mechanism precedent
+  Inputs:      Step 1's DB table; `converter/db/db_lookup.py::lift_behavioural_attrs` as the output-shape precedent (returns a dict, does not write directly — see correction below)
   Outcome:     Given a draft `<div>` with a real `@keyframes fadeInUp` + `animation: fadeInUp 0.6s ease-out`, the classifier correctly identifies and emits the matching Tier V entrance preset attribute.
   Exec:        SEQUENTIAL
   Deps:        step 2 (QA) passed
@@ -103,7 +104,7 @@ Step 3 — Build the CSS declaration-shape classifier (Tier 1)
   On-Fail:     If the classifier's match rate against a hand-built test fixture set is poor, do not lower the confidence bar to force more matches — narrow to only shapes with genuinely unambiguous signatures and document the rest as Tier 5 candidates (per the brainstorm doc's own "don't force a bad fit" discipline, mirrored from Tier 4c).
   Cold-Entry:  N/A (mid-stream step)
   Prompt: |
-    Project: small-giants-wp. Build the Tier 1 CSS declaration-shape classifier per `.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md` Tier 1 section. Read a draft element's `@keyframes`/`animation`/`transition` declarations, extract the CSS-level shape (animated properties, direction/magnitude, duration/easing), query the DB table built in the prior step, and on a match emit a write using the EXACT SAME mechanism `converter/db/db_lookup.py::lift_behavioural_attrs` already uses for SGS-authored motion — do not build a second, parallel write path. This is a STRUCTURAL constraint: a shape-match against the Tier V catalogue can only ever emit an existing Tier V preset — verify your implementation cannot emit anything else (this is what makes Tier 1 provably safe re: Spec 38's tier-ratchet doctrine). Build a small test fixture set (5-10 known CSS shapes with known expected presets) and verify against it before calling this done. Commit to `main`, explicit pathspec, integrate with origin after.
+    Project: small-giants-wp. Build the Tier 1 CSS declaration-shape classifier per `.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md` Tier 1 section. Read a draft element's `@keyframes`/`animation`/`transition` declarations, extract the CSS-level shape (animated properties, direction/magnitude, duration/easing), query the DB table built in the prior step, and on a match RETURN a `{"fx": <preset_slug>}` dict in the SAME output shape `converter/db/db_lookup.py::lift_behavioural_attrs` already returns for SGS-authored motion (that function is a pure lookup returning a dict — it does not write anywhere itself; its caller in `converter/services/assembly.py` does the actual merge into the block's attributes — your classifier's output must be mergeable by that same caller, not a second parallel write path). This is a STRUCTURAL constraint: a shape-match against the Tier V catalogue can only ever emit an existing Tier V preset — verify your implementation cannot emit anything else (this is what makes Tier 1 provably safe re: Spec 38's tier-ratchet doctrine). Build a small test fixture set (5-10 known CSS shapes with known expected presets) and verify against it before calling this done. Commit to `main`, explicit pathspec, integrate with origin after.
   Test:
     Happy:       A draft with `animation: fadeInUp 0.6s ease-out` on scroll-visible load → classifier emits the matching entrance preset attribute.
     Edge:        A CSS shape combining two properties (opacity + transform) with an unusual duration → classifier either matches the closest known signature or correctly declines rather than guessing.
@@ -129,7 +130,7 @@ Step 5 — Build trigger-mechanism classification (Tier 2)
   Deps:        step 4 (QA) passed
   Marker:      (none)
   Time:        30 min
-  Tooling:     /delegate, /subagent-prompt
+  Tooling:     sgs-db.py, /delegate, /subagent-prompt
   On-Fail:     A misclassified trigger is a safe failure mode per the brainstorm doc (working-but-wrong-timing, not broken) — if JS-based IntersectionObserver detection proves unreliable, narrow to the CSS-only trigger signals (`animation-timeline: scroll()`, `:hover`) and flag JS-observer detection as a documented gap rather than force an unreliable heuristic.
   Cold-Entry:  N/A (mid-stream step)
   Prompt: |
@@ -154,7 +155,7 @@ Step 6 — Measure Tier 1+2 coverage against TAG Heuer + 2 more real sites
   Deps:        step 5 complete
   Marker:      HANDOFF
   Time:        35 min
-  Tooling:     Playwright MCP, /delegate
+  Tooling:     Playwright MCP, /delegate, /subagent-prompt
   On-Fail:     If coverage is poor (a large fraction of real motion missed), STOP before building Tier 3/4a — return to Step 3/5 with the specific missed cases as new test fixtures, per this project's measure-before-escalating discipline. Do not proceed to Tier 3/4a on an unmeasured assumption.
   Cold-Entry:  This report file; the brainstorm doc's "Real-world test case" section; TAG Heuer URL.
   Prompt: |
@@ -180,7 +181,7 @@ Step 7 — Build the shared sibling shape-alike pre-filter (standalone module)
   Deps:        step 6 checkpoint passed with acceptable coverage
   Marker:      SESSION-START
   Time:        25 min
-  Tooling:     /delegate, /subagent-prompt
+  Tooling:     sgs-db.py, /delegate, /subagent-prompt
   On-Fail:     If scope creeps toward embedding timing logic in this module, stop and move it out — the whole point of Bean's day-1 decision was keeping this narrow and genuinely reusable.
   Cold-Entry:  Brainstorm doc Tier 3 section + "Build decision" note; `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` Q2 section (the future consumer, for interface-shape awareness only — do not build Q2 itself here).
   Prompt: |
@@ -211,7 +212,7 @@ Step 9 — Build stagger/repetition detection (Tier 3)
   Deps:        step 8 (QA) passed
   Marker:      (none)
   Time:        35 min
-  Tooling:     /delegate, /subagent-prompt
+  Tooling:     sgs-db.py, /delegate, /subagent-prompt
   On-Fail:     Per the brainstorm doc's own risk assessment: worst case is treating a genuine stagger as N separate simple entrances — a safe degradation, not a blocker. If timing-pattern detection proves unreliable on real sites, ship the safe degradation and document stagger detection as needing more real-world tuning, rather than block the phase on it.
   Cold-Entry:  N/A (mid-stream step)
   Prompt: |
@@ -226,7 +227,7 @@ Step 10 — Build DOM-runtime-signal detection for GSAP/Lenis/Three.js (Tier 4a)
   Model:       sonnet
   Action:      Build detection for the three durable DOM signals confirmed by research: Lenis's `.lenis`/`.lenis-smooth`/`.lenis-scrolling` body classes; GSAP ScrollTrigger's `.pin-spacer`/`.pin-spacer-*` wrapper div; Three.js's `data-engine="three.js r<version>"` canvas attribute. All three read from the pipeline's EXISTING DOM scrape.
   **The build-time check, made concrete (resolved by the Hidden Decisions pass — do not re-derive):** before writing detection logic, directly read whichever module performs the pipeline's Stage 0 boundary/DOM extraction (locate it via `git grep -n "class_signature" -- plugins/sgs-blocks/scripts/orchestrator/` — `stage1_boundary_hook.py` and `sgs-clone-orchestrator.py` are the known entry points from today's BEM-recognition work) and confirm it retains the FULL raw `class` attribute string and other HTML attributes for every element, not just BEM-recognised ones. If it doesn't, that's a separately-scoped fix to flag, not something to bolt a second scrape onto here.
-  Seed the signature patterns into a DB table (mirroring `slot_synonyms`), never a hardcoded dict. Build the one small new Playwright execution probe (`WebGLRenderingContext.prototype.drawArrays` monkey-patch via `addInitScript`) ONLY for the non-Three.js WebGL draw-call confirmation case.
+  Seed the signature patterns into a DB table (mirroring the `slots` table's `aliases` column, not a separate table), never a hardcoded dict. Build the one small new Playwright execution probe (`WebGLRenderingContext.prototype.drawArrays` monkey-patch via `addInitScript`) ONLY for the non-Three.js WebGL draw-call confirmation case.
   Files:       `plugins/sgs-blocks/scripts/converter/resolvers/motion_library_signals.py` (new), `plugins/sgs-blocks/scripts/dbschema/seed-library-signatures.py` (new), a new Playwright probe script under `plugins/sgs-blocks/scripts/converter/` (name at build time)
   Inputs:      `C:\Users\Bean\.claude\memory\research\2026-09-10-detecting-motion-libraries-in-bundled-js.md`; brainstorm doc Tier 4a section
   Outcome:     Given a source page using Lenis, GSAP ScrollTrigger with pinning, or Three.js, the detector correctly identifies which library is genuinely active (not just referenced) and emits a flag into the standard leftover-buckets/operator-review flow — never an auto-trigger to a heavier tier.
@@ -234,11 +235,11 @@ Step 10 — Build DOM-runtime-signal detection for GSAP/Lenis/Three.js (Tier 4a)
   Deps:        step 9 complete
   Marker:      (none)
   Time:        45 min
-  Tooling:     /delegate, /subagent-prompt, Playwright MCP
+  Tooling:     sgs-db.py, /delegate, /subagent-prompt, Playwright MCP
   On-Fail:     If the pipeline's existing DOM scrape does NOT already capture element classes/attributes as assumed (the brainstorm doc's flagged E13 verification), that's a bigger, separately-scoped fix — stop and report, do not silently bolt on a second scraping pass.
   Cold-Entry:  N/A (mid-stream step)
   Prompt: |
-    Project: small-giants-wp. Build Tier 4a (DOM-runtime-signal detection) per `.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md` Tier 4a section and the research at `C:\Users\Bean\.claude\memory\research\2026-09-10-detecting-motion-libraries-in-bundled-js.md`. Detect three signals from the pipeline's EXISTING DOM scrape (verify it captures element classes/attributes FIRST — this is a flagged build-time check, do not assume): Lenis's `.lenis`/`.lenis-smooth`/`.lenis-scrolling` body classes; GSAP ScrollTrigger's `.pin-spacer`/`.pin-spacer-*` wrapper div (confirms active pinning, not just script presence); Three.js's `data-engine="three.js r<version>"` canvas attribute. Seed the class/attribute signature patterns into a new DB table mirroring `slot_synonyms`'s shape — never a hardcoded Python dict (R-31-1). Build ONE new small Playwright execution probe (inject via `addInitScript` before page load, monkey-patch `WebGLRenderingContext.prototype.drawArrays` to set a flag) ONLY for confirming a non-Three.js canvas is genuinely drawing WebGL frames, not just present. CRITICAL CONSTRAINT: every detection here feeds the standard leftover-buckets/operator-review flag — NONE of it may auto-trigger a heavier motion tier on its own; that's the exact thing `/qc-council` flagged as a real risk in the original design. Verify this constraint by reading your own code's call sites before calling this done. Commit to `main`, explicit pathspec, integrate with origin after.
+    Project: small-giants-wp. Build Tier 4a (DOM-runtime-signal detection) per `.claude/plans/2026-09-10-r8-motion-recognition-brainstorm.md` Tier 4a section and the research at `C:\Users\Bean\.claude\memory\research\2026-09-10-detecting-motion-libraries-in-bundled-js.md`. Detect three signals from the pipeline's EXISTING DOM scrape (verify it captures element classes/attributes FIRST — this is a flagged build-time check, do not assume): Lenis's `.lenis`/`.lenis-smooth`/`.lenis-scrolling` body classes; GSAP ScrollTrigger's `.pin-spacer`/`.pin-spacer-*` wrapper div (confirms active pinning, not just script presence); Three.js's `data-engine="three.js r<version>"` canvas attribute. Seed the class/attribute signature patterns into a new DB table mirroring the `slots` table's `aliases` column (JSON array) — confirmed live via `PRAGMA table_info(slots)`, there is no separate `slot_synonyms` table — never a hardcoded Python dict (R-31-1). Build ONE new small Playwright execution probe (inject via `addInitScript` before page load, monkey-patch `WebGLRenderingContext.prototype.drawArrays` to set a flag) ONLY for confirming a non-Three.js canvas is genuinely drawing WebGL frames, not just present. CRITICAL CONSTRAINT: every detection here feeds the standard leftover-buckets/operator-review flag — NONE of it may auto-trigger a heavier motion tier on its own; that's the exact thing `/qc-council` flagged as a real risk in the original design. Verify this constraint by reading your own code's call sites before calling this done. Commit to `main`, explicit pathspec, integrate with origin after.
   Test:
     Happy:       A source page with Lenis active → `.lenis` class detected on `<body>`, correctly flagged.
     Edge:        A source page that loads GSAP's script but only uses a trivial `.to()` fade (no pinning) → `.pin-spacer` correctly ABSENT, so no false "heavy pinning" flag fires.
@@ -323,7 +324,7 @@ Step 14 — Final live verification: TAG Heuer full clone, all tiers together
   Deps:        step 13 complete
   Marker:      HANDOFF
   Time:        30 min
-  Tooling:     Playwright MCP, /delegate
+  Tooling:     Playwright MCP, /delegate, /subagent-prompt
   On-Fail:     Any unmet success criterion is reported honestly in the final report — this is the phase's closing verification, not a step to rush past on partial evidence.
   Cold-Entry:  N/A (final step)
   Prompt: |
