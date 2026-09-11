@@ -178,7 +178,16 @@ ALL_LIMITS = (
 # ---------------------------------------------------------------------------
 # Regexes
 # ---------------------------------------------------------------------------
-DECL_RE = re.compile(r"\b(background|border)(-[a-zA-Z]+)*\s*:", re.IGNORECASE)
+# (?<!-) refuses a match where `background`/`border` is itself a hyphenated
+# SEGMENT of a longer identifier — the concrete case is a CSS custom-property
+# NAME like `--sgs-btn-border:`, which is a variable WRITE, not a border paint
+# declaration. Without the lookbehind, \b still matches at the `-`/`b` boundary
+# inside `-btn-border`, so the scan miscounted 17+ real custom-property writers
+# across other blocks' style.css files as CENSUSED paint (found by adversarial
+# review, 2026-09-11). A genuine declaration is never preceded by a bare `-`
+# (it follows `{`, `;`, whitespace, or the string start), so this costs nothing
+# on the real defect shape.
+DECL_RE = re.compile(r"(?<!-)\b(background|border)(-[a-zA-Z]+)*\s*:", re.IGNORECASE)
 PROP_VALUE_RE = re.compile(r"^\s*([a-zA-Z-]+)\s*:\s*(.*)$", re.DOTALL)
 IF_HEADER_RE = re.compile(r"^\s*(else\s*)?if\s*\(", re.IGNORECASE)
 RESET_VALUE_RE = re.compile(r"^(none|0|transparent)$", re.IGNORECASE)
