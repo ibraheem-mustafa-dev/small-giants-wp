@@ -1600,6 +1600,13 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
                it (see step 7's ⚠ block for the verified corpus limitation and its commands). If
                QA-1 question (b) proved the detector DOES follow a block-folder sibling, this step
                may use one — and the atomicity rule still binds in full.
+               **Plus `plugins/sgs-blocks/src/components/colour-variants/fillRow.js` and `::textRow.js`
+               (owner directive, 2026-09-11)** — additive `current`/`currentGradient` support, so
+               every row in `edit.js` can be built via the helper rather than hand-assembled. This
+               is the fix for edit.js landing at 510 lines after step 7's split (the reuse lever was
+               real but correctly deferred past a pure-refactor step; this REBUILD step is where it
+               lands). Verify byte-identical output for the other 64 blocks' existing calls (no
+               `current` key supplied → unchanged behaviour).
   Inputs:      Spec 41 §9.6 table, FR-41-2, FR-41-14, FR-41-16, FR-41-23, FR-41-25, FR-41-26,
                FR-41-33; the frozen `block.json` from step 9; owner ruling 3
   Outcome:     The Colour panel renders the §9.6 table exactly — three groupings via FR-41-16
@@ -1655,6 +1662,39 @@ QA Gate — zero blast radius on shared code, and the two splits changed nothing
 > not the treatments**.* It already implements exactly what every hover-treatment selector in §9.6
 > needs — icon options, a `''`-is-None option, and sub-controls appearing per selection — so ⛔ do
 > not invent this pattern from prose.
+>
+> **⛔ BUILD EVERY FILL/TEXT ROW VIA `fillRow`/`textRow` — this is a hard requirement, not a
+> nice-to-have (owner directive, 2026-09-11, closing out Step 7's deferred item).** Step 7's split
+> left the OLD `colourRows` literal hand-assembled (258 lines) rather than adopted onto
+> `plugins/sgs-blocks/src/components/index.js::fillRow` / `::textRow`, because normalising the old
+> item-bg row's asymmetric gradient shape (Normal has `itemBgGradient`, Hover has none) onto a helper
+> mid-PURE-REFACTOR would have been a real behaviour change disguised as a reformat — correctly
+> deferred, not skipped. **This step is a REBUILD, not a refactor, so the reason to defer no longer
+> applies: build every row here directly via `fillRow( { key, label, attrs: { base, hover, current,
+> gradient, hoverGradient, currentGradient }, attributes, setAttributes } )` / `textRow( {...} )` from
+> the start, on the NEW post-manifest attribute names.**
+> ⛔ **Verified — this does NOT blind rule 31.** Read
+> `plugins/sgs-blocks/scripts/inspector-scan/rules/31-golden-colour-control.js` yourself
+> (`d.viaHelper` / `resolveRowDescriptorFromStatesExpr`, ~line 706 and ~line 1253): the detector
+> ALREADY resolves a `fillRow(...)`/`textRow(...)` call expression natively — no manual
+> `statesCountOverride` wiring by the caller is needed, that machinery is the DETECTOR'S own
+> resolution path, not something this step configures. The thing that stays banned is moving the
+> `colourRows` ARRAY itself (or any row's `states` array) out of `edit.js` into an imported module —
+> that is the corpus limit (owner ruling 3), a completely different constraint from which function
+> builds an individual row's object. Confirm by running
+> `node plugins/sgs-blocks/scripts/inspector-scan/run.js --check` after the rebuild and pasting the
+> per-row state counts — they must be ≥2 per stateful row, matching §9.6's table, not zero.
+> ⚠ **Verified — `fillRow`/`textRow` do NOT accept a `current` key today** (read the file: `attrs`
+> destructures only `{ base, hover, gradient, hoverGradient }`, and the returned `states` array is
+> `hover ? [normal, hoverState] : [normal]` — there is no third branch). Since every stateful row in
+> §9.6 needs a Current state, **this step MUST extend `fillRow`/`textRow` additively first** —
+> mirroring step 6's own shape for `sgs_fill_decls`/`sgs_text_decls`: add optional `attrs.current` /
+> `attrs.currentGradient`, and an optional `currentState` entry appended to the returned `states`
+> array only when `current` is supplied (absent → byte-identical to today, so the other 64 blocks
+> already calling `fillRow`/`textRow` are unaffected — prove this with a before/after call using one
+> of their real `attrs` shapes and diffing the returned object). This is the SAME additive-extension
+> discipline as steps 6/6a on the PHP side, applied to the JS side of the same family. Report the
+> extension explicitly in this step's output — it is expected work, not scope creep.
 >
 > **⛔ FIVE RULES THAT ARE INVISIBLE IF YOU BREAK THEM:**
 > 1. **State entries are LITERAL array entries, never `.map()`/`.filter()`-generated.**
