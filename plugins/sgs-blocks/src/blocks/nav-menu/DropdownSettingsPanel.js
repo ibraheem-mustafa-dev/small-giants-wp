@@ -27,6 +27,7 @@ import {
  */
 export default function DropdownSettingsPanel( {
 	navLabel,
+	itemSmartContrast,
 	setAttributes,
 	drawerRef,
 	submenuAlign,
@@ -52,6 +53,27 @@ export default function DropdownSettingsPanel( {
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+
+				{ /* RELOCATED here in step 14 (Spec 41 §9.5 / FR-41-27) from the old
+				   Design-tab colour/state area. The toggle, its default and its
+				   two-case contrast resolution are UNCHANGED; only its home moved.
+				   It sits beside the navigation label because both answer "does this
+				   menu behave safely for every visitor", which is what a General-tab
+				   Accessibility panel is for. The Colour panel's Item text and Item
+				   background rows each carry a rendered note pointing here, so the
+				   control does not read as having been dropped.
+				   ⛔ No "WCAG", no "contrast ratio", no "AA" in any client-visible
+				   string on this block (FR-41-5). */ }
+				<ToggleControl
+					label={ __( 'Keep text readable automatically', 'sgs-blocks' ) }
+					checked={ itemSmartContrast !== false }
+					onChange={ ( val ) => setAttributes( { itemSmartContrast: val } ) }
+					help={ __(
+						'When you set a background, we check your text colour stays readable against it and swap in a readable one if it doesn’t. Switch this off to always use exactly the colour you picked.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
 				/>
 			</PanelBody>
 

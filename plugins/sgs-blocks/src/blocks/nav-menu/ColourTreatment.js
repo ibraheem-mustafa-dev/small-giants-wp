@@ -146,12 +146,3 @@ export function CrossRefNote( { children } ) {
 		</p>
 	);
 }
-
-/** Shared option fragments — translated once, reused by every selector below. */
-export const TREATMENT_NONE = { value: 'none', label: __( 'None', 'sgs-blocks' ) };
-export const TREATMENT_SWAP = { value: 'swap', label: __( 'Swap', 'sgs-blocks' ) };
-export const TREATMENT_SWEEP = { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) };
-export const TREATMENT_HIGHLIGHT = {
-	value: 'highlight',
-	label: __( 'Highlight', 'sgs-blocks' ),
-};

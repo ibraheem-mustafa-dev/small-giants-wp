@@ -30,33 +30,32 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
-import { SgsColourPanel, fillRow, textRow } from '../../components';
-// Read-only static import of this block's own manifest — the SAME thing
-// `index.js` already does, and the ONE declared source for the Sweep-eligibility
-// predicate (FR-41-26). It does not modify the frozen block.json.
-import metadata from './block.json';
+import { SgsColourPanel, TypographyControls, fillRow, textRow } from '../../components';
 import {
-	sweepEligible,
-	TreatmentSelect,
-	CrossRefNote,
-	TREATMENT_NONE,
-	TREATMENT_SWAP,
-	TREATMENT_SWEEP,
-	TREATMENT_HIGHLIGHT,
-} from './ColourTreatment';
+	ItemTextTreatment,
+	ItemBgTreatment,
+	ItemBorderTreatment,
+	SubmenuTextTreatment,
+	SubmenuLinkBgTreatment,
+	BurgerIconTreatment,
+	BurgerBgTreatment,
+} from './ColourRowExtras';
+import { InspectorControls } from '@wordpress/block-editor';
 import useNavMenuSource from './useNavMenuSource';
 import useDrawerNotice from './useDrawerNotice';
 import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
+import BurgerPanel from './BurgerPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
 import BarPanel from './BarPanel';
-import DropdownStylePanel from './DropdownStylePanel';
+import TypographyPanel from './TypographyPanel';
 import ItemsPanel from './ItemsPanel';
+import SubmenuItemsPanel from './SubmenuItemsPanel';
+import DropdownStylePanel from './DropdownStylePanel';
+import EffectsPanel from './EffectsPanel';
 import FeaturedPanel from './FeaturedPanel';
-import BurgerPanel from './BurgerPanel';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -64,6 +63,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		collapsePoint,
 		drawerRef,
 		navLabel,
+		itemSmartContrast,
 		featuredItemIds,
 		gap,
 		listColumns,
@@ -74,30 +74,48 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemBgGradient,
 		itemBgHover,
 		itemBgHoverGradient,
-		itemBorderColour,
-		itemBorderColourCurrent,
-		itemBorderColourHover,
-		submenuBorderColour,
-		submenuBorderColourGradient,
-		featuredRadius,
-		featuredRadiusHover,
-		featuredFontWeight,
-		featuredFontWeightHover,
-		burgerSize,
-		itemColourHoverTreatment,
 		itemBgHoverTreatment,
+		itemColourHoverTreatment,
 		itemBorderHoverTreatment,
 		borderHoverAnimationDirection,
 		submenuColourHoverTreatment,
 		submenuLinkBgHoverTreatment,
 		burgerColourHoverTreatment,
 		burgerBgHoverTreatment,
+		itemBorderColour,
+		itemBorderColourCurrent,
+		itemBorderColourHover,
+		itemBorderWidth,
+		itemBorderStyle,
+		itemBorderRadius,
+		itemFontWeightCurrent,
 		itemMagnetEnabled,
+		submenuBorderColour,
+		submenuBorderColourGradient,
+		sublinkMarkerIcon,
+		burgerSize,
+		triggerMode,
+		triggerLabel,
+		triggerIcon,
+		triggerMagnetEnabled,
+		triggerMagnetRadius,
+		triggerMagnetStrength,
 		submenuAlign,
 		submenuCaret,
 		submenuCloseGrace,
+		submenuAnimation,
+		submenuTopOffset,
 		submenuMinWidth,
 		submenuPadding,
+		submenuBorderWidth,
+		submenuBorderStyle,
+		submenuBorderRadius,
+		submenuShadow,
+		submenuShadowColour,
+		featuredRadius,
+		featuredRadiusHover,
+		featuredFontWeight,
+		featuredFontWeightHover,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
@@ -139,16 +157,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// ⚠ `burgerColourHover` and `burgerHoverColour` are DIFFERENT attributes
 	// (§8.1). The first is the button's icon/text COLOUR on hover; the second is
 	// its BACKGROUND on hover. They are anagram-close and are kept apart here.
-	const sweepRules = metadata?.supports?.sgs?.sweepEligibility;
-
 	// The background actually rendered behind a menu item, for the border rows'
 	// WCAG 1.4.11 check. Unset on both → no background is known, so no check.
 	const itemSurface = itemBg || navBg || '';
-
-	const smartContrastNote = __(
-		'Automatic readable-text checking for these colours is switched on under General → Accessibility.',
-		'sgs-blocks'
-	);
 
 	const colourRows = [
 		fillRow( {
@@ -182,31 +193,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 			after: (
-				<>
-					<TreatmentSelect
-						label={ __( 'Text on hover', 'sgs-blocks' ) }
-						value={ itemColourHoverTreatment }
-						onChange={ ( val ) =>
-							setAttributes( { itemColourHoverTreatment: val } )
-						}
-						options={ [
-							TREATMENT_NONE,
-							TREATMENT_SWAP,
-							...( sweepEligible(
-								sweepRules,
-								'itemColourHoverTreatment',
-								attributes
-							)
-								? [ TREATMENT_SWEEP ]
-								: [] ),
-						] }
-						help={ __(
-							'Sweep travels the Hover colour across the word instead of switching to it instantly.',
-							'sgs-blocks'
-						) }
-					/>
-					<CrossRefNote>{ smartContrastNote }</CrossRefNote>
-				</>
+				<ItemTextTreatment
+					value={ itemColourHoverTreatment }
+					onChange={ ( val ) => setAttributes( { itemColourHoverTreatment: val } ) }
+					attributes={ attributes }
+				/>
 			),
 		} ),
 		// ⛔ HAND-WRITTEN LITERAL, DELIBERATELY — the one fill row that does not
@@ -261,19 +252,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					: [] ),
 			],
 			after: (
-				<>
-					<TreatmentSelect
-						label={ __( 'Background on hover', 'sgs-blocks' ) }
-						value={ itemBgHoverTreatment }
-						onChange={ ( val ) => setAttributes( { itemBgHoverTreatment: val } ) }
-						options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_HIGHLIGHT ] }
-						help={ __(
-							'Highlight paints one shape that slides between items, using the Hover colour you picked above. It replaces each item’s own current-page background, so that swatch is hidden while it’s selected.',
-							'sgs-blocks'
-						) }
-					/>
-					<CrossRefNote>{ smartContrastNote }</CrossRefNote>
-				</>
+				<ItemBgTreatment
+					value={ itemBgHoverTreatment }
+					onChange={ ( val ) => setAttributes( { itemBgHoverTreatment: val } ) }
+				/>
 			),
 		},
 		// ⛔ HAND-WRITTEN LITERAL, second and last. The item border declares NO
@@ -318,43 +300,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				},
 			],
 			after: (
-				<>
-					<TreatmentSelect
-						label={ __( 'Border on hover', 'sgs-blocks' ) }
-						value={ itemBorderHoverTreatment }
-						onChange={ ( val ) =>
-							setAttributes( { itemBorderHoverTreatment: val } )
-						}
-						options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_SWEEP ] }
-					/>
-					{ 'sweep' === itemBorderHoverTreatment && (
-						<SelectControl
-							label={ __( 'Sweep direction', 'sgs-blocks' ) }
-							value={ borderHoverAnimationDirection || 'left-to-right' }
-							options={ [
-								{
-									label: __( 'Left to right', 'sgs-blocks' ),
-									value: 'left-to-right',
-								},
-								{
-									label: __( 'Right to left', 'sgs-blocks' ),
-									value: 'right-to-left',
-								},
-							] }
-							onChange={ ( val ) =>
-								setAttributes( { borderHoverAnimationDirection: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-					<CrossRefNote>
-						{ __(
-							'This changes the line around the item. To underline the menu word itself instead, use Decoration (hover) under Typography — they’re separate settings and don’t do the same thing.',
-							'sgs-blocks'
-						) }
-					</CrossRefNote>
-				</>
+				<ItemBorderTreatment
+					value={ itemBorderHoverTreatment }
+					onChange={ ( val ) => setAttributes( { itemBorderHoverTreatment: val } ) }
+					direction={ borderHoverAnimationDirection }
+					onDirectionChange={ ( val ) =>
+						setAttributes( { borderHoverAnimationDirection: val } )
+					}
+				/>
 			),
 		},
 		fillRow( {
@@ -404,23 +357,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 			after: (
-				<TreatmentSelect
-					label={ __( 'Link text on hover', 'sgs-blocks' ) }
+				<SubmenuTextTreatment
 					value={ submenuColourHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { submenuColourHoverTreatment: val } )
-					}
-					options={ [
-						TREATMENT_NONE,
-						TREATMENT_SWAP,
-						...( sweepEligible(
-							sweepRules,
-							'submenuColourHoverTreatment',
-							attributes
-						)
-							? [ TREATMENT_SWEEP ]
-							: [] ),
-					] }
+					onChange={ ( val ) => setAttributes( { submenuColourHoverTreatment: val } ) }
+					attributes={ attributes }
 				/>
 			),
 		} ),
@@ -436,13 +376,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 			after: (
-				<TreatmentSelect
-					label={ __( 'Link background on hover', 'sgs-blocks' ) }
+				<SubmenuLinkBgTreatment
 					value={ submenuLinkBgHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { submenuLinkBgHoverTreatment: val } )
-					}
-					options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
+					onChange={ ( val ) => setAttributes( { submenuLinkBgHoverTreatment: val } ) }
 				/>
 			),
 		} ),
@@ -468,23 +404,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 			after: (
-				<TreatmentSelect
-					label={ __( 'Icon on hover', 'sgs-blocks' ) }
+				<BurgerIconTreatment
 					value={ burgerColourHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { burgerColourHoverTreatment: val } )
-					}
-					options={ [
-						TREATMENT_NONE,
-						TREATMENT_SWAP,
-						...( sweepEligible(
-							sweepRules,
-							'burgerColourHoverTreatment',
-							attributes
-						)
-							? [ TREATMENT_SWEEP ]
-							: [] ),
-					] }
+					onChange={ ( val ) => setAttributes( { burgerColourHoverTreatment: val } ) }
+					attributes={ attributes }
 				/>
 			),
 		} ),
@@ -499,13 +422,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			attributes,
 			setAttributes,
 			after: (
-				<TreatmentSelect
-					label={ __( 'Button background on hover', 'sgs-blocks' ) }
+				<BurgerBgTreatment
 					value={ burgerBgHoverTreatment }
-					onChange={ ( val ) =>
-						setAttributes( { burgerBgHoverTreatment: val } )
-					}
-					options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
+					onChange={ ( val ) => setAttributes( { burgerBgHoverTreatment: val } ) }
 				/>
 			),
 		} ),
@@ -537,8 +456,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			{ /* ⛔ FIRST among same-group Fills — WordPress concatenates them in mount
+			   order, so the Colour panel must render ahead of the `group="styles"`
+			   tree below to sit at the top of the Styles tab. */ }
 			<SgsColourPanel rows={ colourRows } />
-			{ /* ── Settings tab (default InspectorControls group) ──────────── */ }
+
+			{ /* ── General tab (default InspectorControls group) ───────────── */ }
 			<InspectorControls>
 				<NavMenuNotices
 					showDrawerNotice={ showDrawerNotice }
@@ -559,8 +482,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					collapsePoint={ collapsePoint }
 				/>
 
+				<BurgerPanel
+					burgerSize={ burgerSize }
+					triggerMode={ triggerMode }
+					triggerLabel={ triggerLabel }
+					triggerIcon={ triggerIcon }
+					triggerMagnetEnabled={ triggerMagnetEnabled }
+					triggerMagnetRadius={ triggerMagnetRadius }
+					triggerMagnetStrength={ triggerMagnetStrength }
+					setAttributes={ setAttributes }
+				/>
+
 				<DropdownSettingsPanel
 					navLabel={ navLabel }
+					itemSmartContrast={ itemSmartContrast }
 					setAttributes={ setAttributes }
 					drawerRef={ drawerRef }
 					submenuAlign={ submenuAlign }
@@ -569,7 +504,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 
-			{ /* ── Styles tab ─────────────────────────────────────────────── */ }
+			{ /* ── Styles tab, in §9's order: Colour (above), Typography, Menu item,
+			   Submenu — Items, Submenu — Container, Effects, Featured.
+			   ⛔ Every panel is mounted HERE, directly, and not behind a wrapper
+			   component. Measured 2026-09-11: routing them through one extra
+			   `<NavMenuPanels>` hop took inspector-scan rule 21 from 21 findings to
+			   48 — its control corpus is this file plus the components this file's
+			   OWN JSX renders, so a second hop makes every panel's controls
+			   structurally invisible while the editor renders perfectly. That is the
+			   D738 "the code improved and the gate went blind" shape, and it outranks
+			   this file's line budget. ─────────────────────────────────────────── */ }
 			<InspectorControls group="styles">
 				<BarPanel
 					gap={ gap }
@@ -578,38 +522,86 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 
-				{ /*
-				   Dropdown appearance. Every control is unset by default, so a
-				   menu with no nested items — and any existing nav — renders
-				   exactly as before. Unset writes NO custom property at all, so
-				   the stylesheet's own fallback applies rather than a value
-				   silently overriding the theme.
-				*/ }
-				<DropdownStylePanel
-					submenuMinWidth={ submenuMinWidth }
-					submenuPadding={ submenuPadding }
+				{ /* ⛔ FR-41-22's VERBATIM `targets` mount, and it lives HERE rather
+				   than inside TypographyPanel.js for a measured reason — see that
+				   file's docblock. Every per-field flag, all nine `show*` plus
+				   `showHover`, is on EACH TARGET ENTRY: in `targets` mode
+				   TypographyControls discards `singleProps` entirely, so a flag left
+				   on the outer element silently deletes nine working controls with
+				   every gate green. */ }
+				<TypographyPanel
+					itemFontWeightCurrent={ itemFontWeightCurrent }
+					setAttributes={ setAttributes }
+				>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						targets={ [
+							{
+								key: 'item',
+								label: __( 'Menu', 'sgs-blocks' ),
+								prefix: 'item',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+								showHover: true,
+							},
+							{
+								key: 'submenu',
+								label: __( 'Submenu', 'sgs-blocks' ),
+								prefix: 'submenu',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextColumns: true,
+								showTextIndent: true,
+								showWritingMode: true,
+								showHover: true,
+							},
+						] }
+					/>
+				</TypographyPanel>
+
+				<ItemsPanel
+					itemBorderWidth={ itemBorderWidth }
+					itemBorderStyle={ itemBorderStyle }
+					itemBorderRadius={ itemBorderRadius }
 					setAttributes={ setAttributes }
 				/>
 
-				{ /*
-				   Nav CONTAINER appearance — colours moved to the top-level
-				   SgsColourPanel (D618/D609, 2026-08-15). This panel used to
-				   hold ONLY navBg/navBgHover/navColour, so nothing is left
-				   here; it is intentionally removed rather than left as an
-				   empty shell. The drawer styling note still applies: the
-				   drawer holds its own sgs/nav-menu instance, so setting the
-				   colour panel's Nav background/text on the nav INSIDE the
-				   drawer styles the drawer only.
-				*/ }
-
-				<ItemsPanel
-					itemColourHoverTreatment={ itemColourHoverTreatment }
-					itemBgHoverTreatment={ itemBgHoverTreatment }
-					itemBorderHoverTreatment={ itemBorderHoverTreatment }
-					borderHoverAnimationDirection={ borderHoverAnimationDirection }
+				<SubmenuItemsPanel
+					sublinkMarkerIcon={ sublinkMarkerIcon }
 					setAttributes={ setAttributes }
+				/>
+
+				<DropdownStylePanel
+					submenuAnimation={ submenuAnimation }
+					submenuTopOffset={ submenuTopOffset }
+					submenuMinWidth={ submenuMinWidth }
+					submenuPadding={ submenuPadding }
+					submenuBorderWidth={ submenuBorderWidth }
+					submenuBorderStyle={ submenuBorderStyle }
+					submenuBorderRadius={ submenuBorderRadius }
+					submenuShadow={ submenuShadow }
+					submenuShadowColour={ submenuShadowColour }
 					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+
+				<EffectsPanel
 					itemMagnetEnabled={ itemMagnetEnabled }
+					setAttributes={ setAttributes }
 				/>
 
 				<FeaturedPanel
@@ -623,8 +615,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					featuredFontWeight={ featuredFontWeight }
 					featuredFontWeightHover={ featuredFontWeightHover }
 				/>
-
-				<BurgerPanel burgerSize={ burgerSize } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>

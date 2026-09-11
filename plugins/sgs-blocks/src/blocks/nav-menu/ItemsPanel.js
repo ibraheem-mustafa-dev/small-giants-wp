@@ -1,138 +1,63 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { TypographyControls } from '../../components';
+import { PanelBody } from '@wordpress/components';
+import { SgsBorderControl } from '../../components';
 
 /**
- * SGS Nav Menu (sgs/nav-menu) — Styles tab: "Items" PanelBody (per-property
- * hover treatments, item typography, magnetic hover pull).
+ * SGS Nav Menu (sgs/nav-menu) — Styles tab: the "Menu item" panel (Spec 41 §9.7).
  *
- * Split out of edit.js (Spec 41 step 7, pure refactor) to keep the file under
- * the project's 250-line JS budget. Colours (text/background, Normal + Hover)
- * live in the top-level SgsColourPanel (D618/D609), unchanged and untouched
- * by this split.
+ * ⚠ WHAT LEFT THIS PANEL IN STEP 14, each to a NAMED new home — nothing was
+ * dropped:
+ *   · the three hover-treatment selectors  -> the Colour panel, each directly
+ *     beneath its own row's Hover swatch (§9.6 / FR-41-23). Keeping a second copy
+ *     here would be a duplicate live writer per attribute, which
+ *     `check-duplicate-controls.js` bans.
+ *   · `TypographyControls`                 -> the restored "Typography" panel with
+ *     its Menu/Submenu target switcher (§9.10 / FR-41-22).
+ *   · the magnetic-hover toggle            -> the "Effects" panel (§9.11).
  *
- * 2026-09-11: the old single `hoverStyle` picker (pill / underline / text)
- * and the `itemRadius`/`itemRadiusHover` controls were deleted with no
- * deprecation as part of the Spec 41 manifest rewrite (bb9df82dc, D270) —
- * replaced by three independent per-property mode-selectors
- * (itemColourHoverTreatment/itemBgHoverTreatment/itemBorderHoverTreatment),
- * each PHP-validated against a closed enum (none/swap/sweep, or
- * none/swap/highlight for background). That rewrite shipped the render-side
- * mechanism and the block.json declarations but never built the matching
- * editor controls, leaving the whole 3-state hover system unreachable by any
- * client — this panel closes that gap rather than leaving it a silent no-op.
+ * ⛔ BORDER SHAPE ONLY. `showColour={ false }` suppresses `SgsBorderControl`'s own
+ * swatch because border COLOUR is a three-state row in the Colour panel now
+ * (FR-41-33). The split is EXCLUSIVE — exactly one live control writes each
+ * attribute — so the swatch is NOT left here "for convenience".
  *
- * @param {Object}   root0                          Props.
- * @param {string}   root0.itemColourHoverTreatment  The block's `itemColourHoverTreatment` attribute.
- * @param {string}   root0.itemBgHoverTreatment      The block's `itemBgHoverTreatment` attribute.
- * @param {string}   root0.itemBorderHoverTreatment  The block's `itemBorderHoverTreatment` attribute.
- * @param {string}   root0.borderHoverAnimationDirection The block's `borderHoverAnimationDirection` attribute.
- * @param {Function} root0.setAttributes             The block's attribute setter.
- * @param {Object}   root0.attributes                The block's full attributes object
- *                                                     (TypographyControls reads/writes
- *                                                     the `item*` prefixed keys itself).
- * @param {boolean}  root0.itemMagnetEnabled         The block's `itemMagnetEnabled` attribute.
+ * ⚠ `showColour={ false }` makes ten of the control's props inert (its own docblock
+ * carries the list), the contrast trio among them. This mount passes none of them:
+ * the contrast check lives on the Colour-panel row, where the control that performs
+ * it is actually rendered.
+ *
+ * ⚠ `showRadiusResponsive={ false }` — the item radius is base-only on this block.
+ *
+ * @param {Object}   root0                  Props.
+ * @param {Object}   root0.itemBorderWidth  `itemBorderWidth`  — box object, base only.
+ * @param {string}   root0.itemBorderStyle  `itemBorderStyle`  — solid | dashed | dotted | ''.
+ * @param {Object}   root0.itemBorderRadius `itemBorderRadius`.
+ * @param {Function} root0.setAttributes    The block's attribute setter.
  */
 export default function ItemsPanel( {
-	itemColourHoverTreatment,
-	itemBgHoverTreatment,
-	itemBorderHoverTreatment,
-	borderHoverAnimationDirection,
+	itemBorderWidth,
+	itemBorderStyle,
+	itemBorderRadius,
 	setAttributes,
-	attributes,
-	itemMagnetEnabled,
 } ) {
 	return (
-		<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
-			<SelectControl
-				label={ __( 'Text colour on hover', 'sgs-blocks' ) }
-				value={ itemColourHoverTreatment || 'swap' }
-				options={ [
-					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-					{ label: __( 'Swap colour', 'sgs-blocks' ), value: 'swap' },
-					{ label: __( 'Sweep', 'sgs-blocks' ), value: 'sweep' },
-				] }
-				onChange={ ( val ) =>
-					setAttributes( { itemColourHoverTreatment: val } )
-				}
-				help={ __(
-					'How the item TEXT colour changes on hover. Sweep is only offered/applied when it can be painted cleanly against this item’s current colours.',
+		<PanelBody title={ __( 'Menu item', 'sgs-blocks' ) } initialOpen={ false }>
+			<SgsBorderControl
+				label={ __( 'Border', 'sgs-blocks' ) }
+				showColour={ false }
+				showRadiusResponsive={ false }
+				widthValues={ itemBorderWidth || {} }
+				onWidthChange={ ( next ) => setAttributes( { itemBorderWidth: next || {} } ) }
+				styleValue={ itemBorderStyle }
+				onStyleChange={ ( next ) => setAttributes( { itemBorderStyle: next || '' } ) }
+				radiusValues={ itemBorderRadius || {} }
+				onRadiusChange={ ( next ) => setAttributes( { itemBorderRadius: next || {} } ) }
+			/>
+			<p className="components-base-control__help">
+				{ __(
+					'The colour of this border — resting, on hover and on the current page — is in the Colour panel above, so you can match it against the item’s text and background.',
 					'sgs-blocks'
 				) }
-				__next40pxDefaultSize
-			/>
-
-			<SelectControl
-				label={ __( 'Background on hover', 'sgs-blocks' ) }
-				value={ itemBgHoverTreatment || 'swap' }
-				options={ [
-					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-					{ label: __( 'Swap colour', 'sgs-blocks' ), value: 'swap' },
-					{ label: __( 'Sliding pill', 'sgs-blocks' ), value: 'highlight' },
-				] }
-				onChange={ ( val ) =>
-					setAttributes( { itemBgHoverTreatment: val } )
-				}
-				help={ __(
-					'Sliding pill paints from this item’s own Background Hover colour and animates behind the hovered/current item.',
-					'sgs-blocks'
-				) }
-				__next40pxDefaultSize
-			/>
-
-			<SelectControl
-				label={ __( 'Border on hover', 'sgs-blocks' ) }
-				value={ itemBorderHoverTreatment || 'swap' }
-				options={ [
-					{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-					{ label: __( 'Swap colour', 'sgs-blocks' ), value: 'swap' },
-					{ label: __( 'Sweep', 'sgs-blocks' ), value: 'sweep' },
-				] }
-				onChange={ ( val ) =>
-					setAttributes( { itemBorderHoverTreatment: val } )
-				}
-				__next40pxDefaultSize
-			/>
-
-			{ 'sweep' === itemBorderHoverTreatment && (
-				<SelectControl
-					label={ __( 'Sweep direction', 'sgs-blocks' ) }
-					value={ borderHoverAnimationDirection || 'left-to-right' }
-					options={ [
-						{
-							label: __( 'Left to right', 'sgs-blocks' ),
-							value: 'left-to-right',
-						},
-						{
-							label: __( 'Right to left', 'sgs-blocks' ),
-							value: 'right-to-left',
-						},
-					] }
-					onChange={ ( val ) =>
-						setAttributes( { borderHoverAnimationDirection: val } )
-					}
-					__next40pxDefaultSize
-				/>
-			) }
-
-			<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextColumns showTextIndent showWritingMode
-				prefix="item"
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-			/>
-
-			<ToggleControl
-				label={ __( 'Magnetic hover pull', 'sgs-blocks' ) }
-				checked={ !! itemMagnetEnabled }
-				onChange={ ( val ) =>
-					setAttributes( { itemMagnetEnabled: val } )
-				}
-				help={ __(
-					'Nudges each item label a few pixels toward the cursor on hover. Off automatically when the visitor is using touch, and when reduced motion is requested.',
-					'sgs-blocks'
-				) }
-				__nextHasNoMarginBottom
-			/>
+			</p>
 		</PanelBody>
 	);
 }

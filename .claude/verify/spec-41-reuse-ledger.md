@@ -424,3 +424,84 @@ nav-menu findings): **3 → 1**. The three `below-min-states` findings on `item-
 and `submenu-text` — each "carries 2 states, below the required 3" — are gone. That is the
 positive control for the `describeRow()` change: without it, helper-built rows would still have
 counted 2 and all three findings would have survived.
+
+---
+
+## Step 14 — the panel rebuild across General + Design (§9.1–§9.12)
+
+| File | Lines | Shared components leaned on | Hand-rolled — and what was checked first |
+|---|---|---|---|
+| `BurgerPanel.js` ("Menu Button") | 151 | `IconPicker`, `ToggleGroupControl`/`Option` (primitives), `SgsLengthControl`, native `TextControl`/`ToggleControl`/`RangeControl` | Nothing. `IconPicker` mount copied from `src/blocks/icon/edit.js`; `SgsFreeTextField` checked and rejected — zero adopters on this block, and §9.3 names a native `TextControl`. |
+| `ItemsPanel.js` ("Menu item") | 63 | `SgsBorderControl` with `showColour={ false }` | Nothing. The colour swatch is NOT left here: the split is exclusive, one live writer per attribute. |
+| `TypographyPanel.js` | 97 | `SGS_FONT_WEIGHT_OPTIONS` from the barrel | Nothing. Current-page weight is a `SelectControl` fed the shared options array — the block's own `featuredFontWeight` (number-typed, hand-rolled 4-option array) is the anti-pattern checked and deliberately not repeated. |
+| `SubmenuItemsPanel.js` | 61 | `IconPicker` | Nothing. Colour and typography are CROSS-REFERENCED, not duplicated. The Spacing slot is a NAMED gap — no submenu-LINK padding attribute exists, and one was not fabricated. |
+| `DropdownStylePanel.js` ("Submenu — Container") | 232 | `ToolsPanel`/`ToolsPanelItem`, `ToggleGroupControl`, `SgsLengthControl`, `ResponsiveBoxControl`, `SgsBorderControl` (`showColour={ false }`), `ShadowControl` + `shadowAttrKeys( 'submenuShadow' )` | Nothing. `shadowAttrKeys` called with NO options, returning exactly `{ base, colour }` — the same no-options call the PHP twin `sgs_shadow_attr_map( 'submenuShadow' )` takes. Both sides must carry the same opt-in or the editor silently discards every write (D338). |
+| `EffectsPanel.js` | 36 | native `ToggleControl` | Nothing. |
+| `DropdownSettingsPanel.js` (Accessibility) | 190 | native `ToggleControl` | Nothing. `itemSmartContrast` relocated verbatim; no "WCAG", "contrast ratio" or "AA" in any client-visible string. |
+| `ColourRowExtras.js` | 248 | `ToggleGroupControl` via `ColourTreatment.js` | Block-private per FR-41-24 — no second adopter exists tree-wide. |
+| `edit.js` | **625** | `SgsColourPanel`, `TypographyControls` (`targets` mount), `fillRow`/`textRow` | **OVER THE 250-LINE BUDGET — reported, not shipped silently (PD-6).** See below. |
+
+### ⚠ `edit.js` is 625 lines. Reported to Bean rather than "fixed" by hiding the problem.
+
+PD-6 authorises further modules to reach 250 and says: if genuine reuse still does not
+get there, **report the measured count rather than shipping the violation silently**. Two
+of this file's contents cannot leave it without breaking a gate, and both were MEASURED,
+not assumed:
+
+1. **`colourRows` (~330 lines).** Owner ruling 3 — rule 31 resolves a row's state count
+   only from a shape it can see in this block's own `edit.js` or in `src/components/`.
+2. **Every panel mount, and the `<TypographyControls>` mount in particular.** Routing the
+   panels through one extra `<NavMenuPanels>` wrapper was BUILT and MEASURED: it took
+   `inspector-scan` rule 21 from 21 findings to **48**. Rule 21's control corpus is this
+   file plus the components THIS file's JSX renders, so a second hop makes every panel's
+   controls structurally invisible — the editor renders perfectly and the gate goes blind
+   (D738). The wrapper was deleted.
+
+**Reuse was pulled first, and it moved real numbers** — rule 21 went **48 → 10 → 1** as
+each blind spot was closed by giving components explicit, named props instead of passing
+`attributes` wholesale (the treatment components, then the shadow pair). `1` is `margin`
+alone, below the rule's declared backlog of 5 and inherited from before this phase.
+
+**Bean's call, not mine:** live with a 625-line `edit.js`, or lower the budget's priority
+below detector visibility for this one file and record that.
+
+### §9 panel roster, ticked off
+
+| §9 panel | Fate | Now lives in |
+|---|---|---|
+| 9.1 Menu source | unchanged | `MenuSettingsPanel.js::MenuSettingsPanel` |
+| 9.2 Layout | unchanged (see residual below) | `BarPanel.js` + `MenuSettingsPanel.js` |
+| 9.3 **Menu Button** | RENAMED from "Burger" (label only, no attribute renamed) + IconPicker + `triggerMode`/`triggerLabel` + the magnet trio; moved to the General tab | `BurgerPanel.js::BurgerPanel` |
+| 9.4 Submenu behaviour | unchanged | `DropdownSettingsPanel.js` |
+| 9.5 **Accessibility** | GAINS the relocated `itemSmartContrast` beside `navLabel` | `DropdownSettingsPanel.js` |
+| 9.6 Colour | step 13 | `edit.js::colourRows` + `ColourRowExtras.js` |
+| 9.7 **Menu item** | Border SUBSECTION only, `showColour={ false }`; colour moved to §9.6 | `ItemsPanel.js::ItemsPanel` |
+| 9.8 **Submenu — Items** | NEW | `SubmenuItemsPanel.js::SubmenuItemsPanel` |
+| 9.9 **Submenu — Container** | RENAMED from "Dropdown …" + animation / top offset / border / shadow rows added | `DropdownStylePanel.js::DropdownStylePanel` |
+| 9.10 **Typography** | RESTORED — `targets` switcher + Current-page weight | `TypographyPanel.js` + the mount in `edit.js` |
+| 9.11 **Effects** | promoted out of the old "Items" panel to its own panel | `EffectsPanel.js::EffectsPanel` |
+| 9.12 Featured | unchanged, out of scope | `FeaturedPanel.js` |
+| *(old)* Indicator | DELETED — folded into the Item background row's Highlight treatment | — |
+| *(old)* Menu item — state signals | DELETED — hover trio → §9.10, `itemFontWeightCurrent` → §9.10, `itemSmartContrast` → §9.5 | — |
+| *(old)* `hoverStyle` dropdown, "Underline" PanelBody | DELETED with the underline mechanism (FR-41-4) | — |
+
+⚠ **Three of those four "deleted" panels had already gone** — the step 9 manifest rewrite
+removed their attributes and step 7's split carried forward only what still had a live
+attribute. What DID exist and is removed here: the three stopgap treatment
+`SelectControl`s in the old "Items" panel, which step 13 moved into the Colour panel. Two
+live writers per attribute is what `check-duplicate-controls.js` bans.
+
+### Two residuals, named rather than silently absorbed
+
+1. **§9.2 "Layout" is not assembled as §9 draws it.** §9 puts Item spacing, Items per row
+   and Collapse-to-burger in one General-tab "Layout" panel. Today the first two (plus
+   `padding`, which §9 does not list anywhere) are in the Styles-tab "Bar" panel and the
+   third is in the General-tab "Burger Menu" panel. The plan's own step-14 Action field
+   does not name this move, and §9's roster table does not list a "Bar" fate, so it was
+   left alone rather than guessed at — moving it would strand `padding` with no home.
+2. **The "Show as" third option is labelled "Both", not "Icon and text".** §9.3's prose
+   names the latter; measured it is **13 characters**, over Spec 35 Part O's 12-character
+   bound for a 2–4 option `ToggleGroupControl` (a bound derived from
+   `nav-drawer.closeStyle`'s own `burger-morph`). Per Part O the fix is to shorten the
+   LABEL, never the stored value — `triggerMode`'s value is untouched. `check-enum-control-shape.py --check`
+   passes: `588 enums, 486 skipped (blind spot), 29 violations (29 baselined, 0 new)`.
