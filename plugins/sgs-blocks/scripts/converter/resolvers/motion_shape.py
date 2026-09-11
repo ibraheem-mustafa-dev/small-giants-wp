@@ -81,6 +81,18 @@ from __future__ import annotations
 import os
 import re
 import sqlite3
+from typing import Any
+
+try:  # pragma: no cover - import shape depends on caller's sys.path setup
+    from converter.db import db_lookup
+except ImportError:  # pragma: no cover - fallback when run as a loose script
+    import sys
+
+    sys.path.insert(
+        0,
+        os.path.join(os.path.dirname(__file__), "..", "db"),
+    )
+    import db_lookup  # type: ignore
 
 TABLE = "motion_shape_signatures"
 
@@ -871,8 +883,7 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
     constraint is missing/relaxed) rather than depending entirely on a
     constraint defined elsewhere.
     """
-    path = db_path or DB_PATH
-    conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    conn = db_lookup.get_connection(db_path or DB_PATH)
     try:
         conn.row_factory = sqlite3.Row
         cur = conn.execute(
@@ -985,3 +996,175 @@ def classify_css_motion(css_text: "str | None", db_path: "str | None" = None) ->
     if shape is None:
         return {}, []
     return match_motion_shape(shape, db_path)
+
+
+# ---------------------------------------------------------------------------
+# Element-scoped snippet extraction — Phase R8 wiring (D1021/D1022 council
+# fixes made Tier 1/2/3 correct; NONE of it was reachable from the real
+# pipeline until this wiring pass). `classify_css_motion()` above is NOT
+# element-aware: `_find_keyframes_block` grabs the FIRST `@keyframes` rule
+# anywhere in whatever text it is handed, which is wrong once the caller is
+# `assembly.build_block_markup` walking a real section with many elements
+# and many unrelated `@keyframes` rules. `scoped_motion_css_text()` below is
+# the missing element-aware step: given ONE node, find only THAT node's own
+# `animation`/`transition` declaration and the ONE `@keyframes` block it
+# actually references, and hand back a small, self-contained snippet
+# `classify_css_motion`/`classify_css_motion_with_trigger` can classify.
+# ---------------------------------------------------------------------------
+
+# Shorthand tokens that are never the `@keyframes` NAME — the animation
+# shorthand's other 6 longhand components (duration/easing already covered by
+# `_EASING_KEYWORDS`/`_TIME_TOKEN_RE`; these are iteration-count keyword,
+# direction, fill-mode and play-state). A bare integer iteration-count
+# ("infinite" is a keyword, a plain "3" is not) is excluded separately via
+# `_NUMBER_TOKEN_RE` below, per the CSS spec's own component list — never a
+# hardcoded preset/name dict (R-31-1); this is the shorthand GRAMMAR, not a
+# lookup table of animation names.
+_ANIMATION_SHORTHAND_NON_NAME_KEYWORDS = _EASING_KEYWORDS | {
+    "infinite", "normal", "reverse", "alternate", "alternate-reverse",
+    "none", "forwards", "backwards", "both", "running", "paused",
+}
+_NUMBER_TOKEN_RE = re.compile(r"^-?[\d.]+$")
+
+
+def _extract_animation_name_from_shorthand(value: str) -> "str | None":
+    """Extract the `@keyframes` NAME out of an `animation:` shorthand value.
+
+    Inverts `_find_animation_shorthand`'s own tokenizer (that function is
+    handed a KNOWN keyframes name and checks whether it appears among the
+    shorthand's tokens; this walks the same token stream the OTHER way,
+    picking out whichever token is neither a duration, an easing
+    keyword/function, an iteration-count/direction/fill-mode/play-state
+    keyword, nor a bare number). Order-agnostic by construction (Fix 1's own
+    "name may be first or last" finding applies here identically) — reuses
+    the SAME `_tokenize_shorthand_value`/`_split_comma_top_level` helpers,
+    never a second tokenizer. Only the FIRST comma-separated animation in a
+    multi-animation shorthand is considered (a scoped single-element snippet
+    only needs one representative shape to classify — Part 3's caller passes
+    one node's own declaration, not a whole stylesheet).
+    """
+    segments = _split_comma_top_level(value)
+    if not segments:
+        return None
+    for token in _tokenize_shorthand_value(segments[0]):
+        if _TIME_TOKEN_RE.match(token):
+            continue
+        if token in _ANIMATION_SHORTHAND_NON_NAME_KEYWORDS:
+            continue
+        if token.startswith("cubic-bezier(") or token.startswith("steps("):
+            continue
+        if _NUMBER_TOKEN_RE.match(token):
+            continue
+        return token
+    return None
+
+
+def _extract_named_keyframes_block(css_text: str, name: str) -> "str | None":
+    """Find and return the literal `@keyframes <name> { ... }` text for ONE
+    specific name, brace-balanced (reuses `_extract_braced_block`, never a
+    second brace-matching implementation) — unlike `_find_keyframes_block`,
+    which is unscoped and returns whichever `@keyframes` rule appears FIRST
+    in the text regardless of name. Returns None when no rule with this
+    exact name exists in `css_text`."""
+    m = re.search(r"@keyframes\s+" + re.escape(name) + r"\s*(\{)", css_text)
+    if m is None:
+        return None
+    extracted = _extract_braced_block(css_text, m.start(1))
+    if extracted is None:
+        return None
+    body, _ = extracted
+    return f"@keyframes {name} {{{body}}}"
+
+
+def scoped_motion_css_text(node: Any, css_rules: dict, css_text: "str | None") -> "str | None":
+    """Build a small, self-contained motion-CSS snippet for ONE element.
+
+    Reads `node`'s own EFFECTIVE `animation`/`animation-name`/`transition`
+    declaration via `collect_css_decls_for_element()` (already correct and
+    already used everywhere else in this pipeline for exactly this
+    "what CSS actually applies to this element" question — never
+    reimplemented here) and, for an animation, pulls out JUST that element's
+    own `@keyframes` block from the raw `css_text` (via
+    `_extract_named_keyframes_block`) rather than handing the classifier the
+    whole section's CSS text (which would let `classify_css_motion`'s
+    unscoped `_find_keyframes_block` pick up an unrelated element's
+    `@keyframes` rule).
+
+    Returns a snippet string `classify_css_motion`/
+    `classify_css_motion_with_trigger` can classify directly, or `None` when
+    the element carries no recognisable animation/transition declaration at
+    all (nothing for a caller to classify — most elements on a real page
+    carry no motion CSS, this is the expected common case, not an error).
+
+    KNOWN, ACCEPTED LIMITATION (do not attempt to fix in this pass — flagged
+    explicitly per this project's "no cheats" discipline rather than left
+    silent): `collect_css_decls_for_element` deliberately EXCLUDES
+    pseudo-class selectors (`:hover`/`:focus` — see
+    `styling_helpers.collect_css_decls_for_element`'s own selector-matching
+    loop, which keeps a ':' in the final compound selector token out of its
+    class-match branch) because a static draft element has no live
+    pseudo-state. This means a `:hover`-only `transition` declaration (the
+    exact shape `border-accent` uses) is invisible to THIS function's own
+    lookup. In practice this costs nothing today: Tier 1
+    (`match_motion_shape`) already declines to emit `border-accent` under
+    `sgsAnimation` regardless (no destination attribute exists for it —
+    always routed to `skipped`, see this module's own docstring), so the one
+    shape this limitation affects was never going to reach a real attribute
+    write either way.
+    """
+    if not css_text:
+        return None
+
+    from converter.services.styling_helpers import collect_css_decls_for_element
+
+    base_decls, _bp_decls = collect_css_decls_for_element(node, css_rules)
+
+    animation_shorthand = base_decls.get("animation")
+    animation_name_longhand = base_decls.get("animation-name")
+
+    if animation_shorthand or animation_name_longhand:
+        if animation_name_longhand:
+            # Longhand form: the name is the declared value itself (first
+            # comma-separated name for a scoped single-element snippet — see
+            # `_extract_animation_name_from_shorthand`'s own docstring for
+            # why only the first is considered here).
+            _names = _split_comma_top_level(animation_name_longhand)
+            name = _names[0] if _names else None
+            decl_lines = [f"animation-name: {animation_name_longhand};"]
+            duration_longhand = base_decls.get("animation-duration")
+            if duration_longhand:
+                decl_lines.append(f"animation-duration: {duration_longhand};")
+            easing_longhand = base_decls.get("animation-timing-function")
+            if easing_longhand:
+                decl_lines.append(f"animation-timing-function: {easing_longhand};")
+        else:
+            name = _extract_animation_name_from_shorthand(animation_shorthand)
+            decl_lines = [f"animation: {animation_shorthand};"]
+
+        # `animation-delay` (Tier 3 stagger detection, Phase R8 Part 4) is
+        # ALWAYS a separate longhand declaration — never foldable into the
+        # `animation` shorthand's own name/duration/easing tokens this
+        # function already parses above (a delay token is indistinguishable
+        # from a duration token by shape alone once BOTH may appear, so this
+        # module has never attempted to read it out of the shorthand; it is
+        # read here exactly as `motion_stagger.extract_animation_delay_seconds`
+        # itself reads it — a plain `animation-delay: <value>;` longhand).
+        # Appended in EITHER branch above (shorthand or longhand base form)
+        # since a delay can accompany either.
+        delay_longhand = base_decls.get("animation-delay")
+        if delay_longhand:
+            decl_lines.append(f"animation-delay: {delay_longhand};")
+
+        if not name:
+            return None
+
+        keyframes_block = _extract_named_keyframes_block(css_text, name)
+        if keyframes_block is None:
+            return None
+        return keyframes_block + "\n" + "\n".join(decl_lines)
+
+    transition_value = base_decls.get("transition")
+    if transition_value:
+        return f"transition: {transition_value};"
+
+    return None

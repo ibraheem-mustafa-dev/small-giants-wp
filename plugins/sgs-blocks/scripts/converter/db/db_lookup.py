@@ -93,7 +93,7 @@ if not UIMAX_DB.exists():
 _SGS_DB_PRESENT_AT_IMPORT = SGS_DB.exists()
 
 
-def get_connection() -> sqlite3.Connection:
+def get_connection(db_path: "str | None" = None) -> sqlite3.Connection:
     """Open a fresh, caller-owned connection to the SGS DB (``check_same_thread=False``).
 
     FR-31-8 (2026-07-05): the sole legitimate accessor for call sites that need
@@ -109,8 +109,16 @@ def get_connection() -> sqlite3.Connection:
     ``converter/services/fold_helpers.py`` — both open-per-call,
     close-in-``finally``). Caching the connection itself would break that
     lifecycle (a cached connection closed by one caller would break the next).
+
+    ``db_path`` (2026-09-11, `check_raw_sqlite.py` gate fix): optional override
+    for a call site that needs an isolated/test DB file rather than the real
+    ``SGS_DB`` — added so `converter/resolvers/motion_shape.py` and
+    `motion_library_signals.py` could route their existing (previously
+    unenforced) db-path-override parameter through this ONE accessor instead
+    of opening their own raw ``sqlite3.connect()``. Every existing caller
+    passes no argument and is unaffected.
     """
-    return sqlite3.connect(SGS_DB, check_same_thread=False)
+    return sqlite3.connect(db_path or SGS_DB, check_same_thread=False)
 
 
 # ----------------------------------------------------------------------------

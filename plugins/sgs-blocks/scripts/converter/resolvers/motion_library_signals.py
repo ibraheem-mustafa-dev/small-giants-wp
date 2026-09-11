@@ -67,9 +67,19 @@ from __future__ import annotations
 
 import json
 import os
-import sqlite3
 from pathlib import Path
 from typing import Any, Callable
+
+try:  # pragma: no cover - import shape depends on caller's sys.path setup
+    from converter.db import db_lookup
+except ImportError:  # pragma: no cover - fallback when run as a loose script
+    import sys
+
+    sys.path.insert(
+        0,
+        os.path.join(os.path.dirname(__file__), "..", "db"),
+    )
+    import db_lookup  # type: ignore
 
 # Same resolution convention as dbschema/seed-library-signatures.py and
 # ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py.
@@ -81,8 +91,7 @@ def load_signals(db_path: str | None = None) -> list[dict]:
     """Read every seeded library-signal row from the DB (read-only connection --
     this module never writes to `library_runtime_signals`; only the seeder does).
     """
-    resolved = db_path or DB_PATH
-    conn = sqlite3.connect(f"file:{resolved}?mode=ro", uri=True)
+    conn = db_lookup.get_connection(db_path or DB_PATH)
     try:
         cur = conn.execute(
             f"SELECT library_name, signal_type, aliases, confirms FROM {TABLE}"
