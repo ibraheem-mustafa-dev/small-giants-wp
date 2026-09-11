@@ -355,13 +355,6 @@ When a block emits both a root residual (D289) and a per-area residual (D290), `
 
 **Trigger:** a per-element-extraction refinement pass. Low priority.
 
-### P-MEGA-BLOCKS-MISSING-FROM-CONTAINER-ROSTER — three mega blocks absent from the container-wrapping roster
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-07-28
-
-`/sgs-update` Stage 11 (`sync-container-wrapping-blocks.py`) WARNS: detection finds `sgs/mega-panel` (section-kind) plus `sgs/mega-aside` and `sgs/mega-group` (content-kind) as container-wrapping blocks, but they are absent from the script's expected ground-truth roster, so the sync fails closed before `--apply` (correct behaviour; diffs at `pipeline-state/container-inheritance-sync/2026-07-28/`). Declaring them is a composite-mirror scope statement (D152 lineage), not a mechanical edit — which is why it is parked rather than patched.
-
-**Trigger:** next Spec-36 session or the next full `/sgs-update` — confirm each mega block's KIND, add to the expected roster, re-run Stage 11 clean. Owned by Track 2.
-
 ### P-PAGE8-DISCREPANCY-REGISTER / P-PAGE8-QC-BATCH-9 — page-8 clone-fidelity visual defect registers
 **Status:** PARTIAL · **Bucket:** pipeline · **Parked:** 2026-07-06 / 2026-07-11
 **Also known as:** P-PAGE8-QC-BATCH-9
@@ -585,14 +578,14 @@ The generic-underline clash and the featured-item hover controls are both built 
 
 **Trigger:** header-clone pipeline exists and has been run against this item.
 
-### P-NAV-INDUS-CUTOVER — Indus header re-authoring onto sgs/nav-menu + sgs/nav-drawer: branded content remains
+### P-NAV-INDUS-CUTOVER — Indus header re-authoring onto sgs/nav-menu + sgs/nav-drawer: branded content authoring now open
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
 
-The cutover MECHANISM is proven (a generic proof header on the new blocks passes all gates) and the framework de-client work is done, including the deletion of `sgs/adaptive-nav`. What remains is authoring the actual BRANDED Indus header content — which is a Spec 33 Part 2 cloning job, not a manual re-author, so this now depends on that pipeline rather than being independently actionable.
+The cutover MECHANISM is proven (a generic proof header on the new blocks passes all gates) and the framework de-client work is done, including the deletion of `sgs/adaptive-nav`. What remains is authoring the actual BRANDED Indus header content — which is **directly actionable NOW via the CPT editor on the shared canary**, not blocked on any pipeline. This session proved the capability by porting Indus's real Brands mega-menu CONTENT into a working test post (ID 3482).
 
-**Cross-checked 2026-09-10** against a fresh 3-viewport visual comparison of Mama's Munches (a different client, same root cause): the live header shows extra chrome (phone/email/social icons, a dropdown) not in that client's draft, and a "Send to Ward" CTA lost its pill styling — same "mechanism proven, branded content never authored" gap, confirming this is a live, visible symptom right now, not just a theoretical residual. Handoff for picking this up: `.claude/prompts/2026-09-10-header-footer-implementation.md`.
+**Cross-checked 2026-09-10** against a fresh 3-viewport visual comparison of Mama's Munches (a different client, same root cause): the live header shows extra chrome (phone/email/social icons, a dropdown) not in that client's draft, and a "Send to Ward" CTA lost its pill styling — same "mechanism proven, branded content never authored" gap, confirming this is a live, visible symptom right now, not just a theoretical residual.
 
-**Trigger:** after `P-SPEC37-PER-SITE-DECLIENT` closes, and once Spec 33 Part 2 (header/footer cloning) exists.
+**Trigger:** next session on Indus branded header authoring — the mechanism and canary are ready; it is independently actionable.
 
 ### P-NAV-ITEM-SEPARATORS — nav-menu has no divider/separator capability between items
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-20
@@ -688,15 +681,14 @@ Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regr
 
 **Trigger:** alongside the FR-37-31 retirement work.
 
-### P-SPEC37-PER-SITE-DECLIENT — per-site header/footer content authoring (framework de-client complete; real branded content pending)
+### P-SPEC37-PER-SITE-DECLIENT — per-site header/footer content authoring (framework de-client complete; branded content independently actionable)
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-22
 
-The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on both live sites with generic proof content. What's left is authoring the REAL branded per-site content, which is deferred to the Spec 33 Part 2 cloning pipeline rather than being hand-built.
+The framework carries no client data any more (the client-named pattern file was deleted) and the mechanism for authoring each site's header/footer as CPT posts is proven on the live canary with generic proof content. **What's left is authoring the REAL branded per-site content, which is directly actionable NOW via the CPT editor on sandybrown-nightingale-600381.hostingersite.com** — no pipeline dependency. A client's colour palette pushes via `push-theme-snapshot.py --client <slug>`; different clients' CPT content coexists on one install; which content is "live" is switchable via a WordPress option.
 
-**Cross-checked 2026-09-10:** confirmed live and visible right now on Mama's Munches — the footer renders `theme/sgs-theme/patterns/framework-footer-default.php` (generic) instead of the draft's actual columns (Shop/Information), WhatsApp button, and white logo filter; also collapses to single-column a breakpoint too early at 768px. Handoff for picking this up:
-`.claude/prompts/2026-09-10-header-footer-implementation.md`.
+**Cross-checked 2026-09-10:** confirmed live and visible right now on Mama's Munches — the footer renders `theme/sgs-theme/patterns/framework-footer-default.php` (generic) instead of the draft's actual columns (Shop/Information), WhatsApp button, and white logo filter; also collapses to single-column a breakpoint too early at 768px. This session also proved Indus's Brands mega-menu CONTENT in a working test post (ID 3482), confirming the hand-authoring path is open.
 
-**Trigger:** next session Task 1; blocks full FR-37-6 closure and the Indus deploy.
+**Trigger:** next session on Mama's/Indus branded header/footer content — both are independently actionable now.
 
 ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-15

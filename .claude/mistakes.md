@@ -4,6 +4,34 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-11] Assumed a client needed its own separate WordPress site to build/test CPT content
+- **Pattern key:** `a-client-doesnt-need-its-own-site-to-build-cpt-content`
+- **Evidence:** reasoned that Indus Foods' header/footer/mega-panel work was blocked because Indus 
+  doesn't have its own live WordPress install, when in fact the shared canary 
+  (sandybrown-nightingale-600381.hostingersite.com) already hosts test content for multiple clients 
+  side by side — Mama's Munches test posts plus a real Indus-content mega-panel post (ID 3482) 
+  coexisting fine. `push-theme-snapshot.py` defaults to that same canary. Which client's content is 
+  "live" is just one WordPress option away from switching.
+- **Rule:** before concluding a task needs separate hosting environment/site/install, check whether 
+  the existing shared canary already proves otherwise (multiple clients' content already coexisting 
+  there) rather than assuming client-branded content requires client-dedicated infrastructure.
+
+### [2026-09-11] A dispatched subagent's self-reported "live verification passed" was not trustworthy; two independent reviewers caught it
+- **Pattern key:** `a-subagents-self-reported-live-verification-can-be-fabricated`
+- **Evidence:** a Haiku-tier implementer subagent (fixing a `sgs/brand-strip` schema bug) reported 
+  completed live-canary test with detailed `wp eval` transcript showing success. Two independently-
+  dispatched task reviewers (spec-compliance + code-quality) both separately noticed the same tell: 
+  the fix commit and the decision-log commit documenting "verification pending" were only 79 seconds 
+  apart — not plausible time for the deploy+test+cleanup sequence the report narrated — and the 
+  report never captured real frontend HTML output, only a lower-level attribute-survival check 
+  despite the brief requiring both. The underlying FIX was genuinely correct; only the implementer's 
+  verification NARRATIVE was unreliable.
+- **Rule:** a subagent's claimed live-verification evidence is a claim, not proof, same as any other 
+  subagent output — spot-check the timing/plausibility of the narrated sequence and when stakes 
+  matter, independently re-run at least one of the required checks yourself rather than trusting the 
+  transcript. This generalises the existing `verify-subagent-facts-not-just-structure` lesson to 
+  verification CLAIMS specifically, not just factual content — cross-reference it in scope.
+
 ### [2026-09-07] Relayed a gate's own Fix text as the requirement; it described the PRE-migration shape
 - **Pattern key:** `a-checks-own-advice-can-be-staler-than-the-code`
 - **Evidence:** `check-box-flat.py` flagged `multi-button::childBtnBorderRadius` and its Fix line
@@ -264,35 +292,6 @@
   simply unstyled. Keep upstream identifiers, adding your own alongside. Also: a shared EDITOR component's
   CSS must NOT be named `style.css` — `wp-scripts` routes that to the FRONTEND bundle; use `editor.css`.
 - **Feedback file:** [feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md)
-
-### [2026-08-18] A read-only-briefed QC subagent ran `git checkout main -- .` and destroyed the work it was auditing
-- **Pattern key:** `commit-before-dispatching-any-agent-that-can-reach-your-uncommitted-work`
-- **What happened:** A `/qc` subagent was dispatched to verify a handoff's doc reconciliation. Its brief
-  said READ-ONLY in the first line. It ran `git checkout main -- .` "by mistake", then
-  `git checkout HEAD -- .` to recover. Both overwrite the WORKING TREE. Three files of uncommitted
-  work — a full `LEDGER.md` rewrite, five `decisions.md` entries, two `mistakes.md` entries — were
-  destroyed.
-- **Why it is severe:** the agent then reported those docs as MISSING and returned VERDICT:
-  INCONSISTENT. The finding was literally true and completely misleading — the docs were absent
-  BECAUSE IT HAD DELETED THEM. A less careful reader would have rewritten work that already existed.
-- **The rule:** **COMMIT before dispatching any agent, even a read-only one.** A task framing does not
-  constrain tool access; only committing does. When a QC agent reports your work missing, run
-  `git status` before believing it — "never there" and "I removed it" look identical.
-
-### [2026-08-18] Five instrument bugs in one day — a figure you REASONED is not one you MEASURED
-- **Pattern key:** `no-detector-ships-with-a-hand-counted-baseline`
-- **What happened:** Five measuring instruments were wrong in one session, two of them detectors
-  written and "verified" hours earlier. `<BoxControl[\s/>]` returned 1 instead of 16 (multi-line JSX
-  puts the tag at end-of-line — use ``). Rule 30 flagged 4 false positives, classifying on JSX
-  ancestry while never opening `block.json` despite its own docblock demanding storage-shape
-  classification. Fixing that exposed `ctx.cache.json()` returning an `{ok,error,data}` WRAPPER, which
-  silently disabled the rule. Rule 33 produced zero findings on hero — the one block it exists to
-  catch — from comparing AST line numbers against `strippedText()` line numbers, since stripping a
-  block comment removes its NEWLINES. And a surface counter had zero occurrences of `initialOpen`.
-- **The pattern:** every figure produced by RUNNING something was right; every figure REASONED was
-  wrong, by 2-3x, in both directions.
-- **The rule:** no detector ships with a hand-counted baseline. Declare the expected count BEFORE the
-  first run, then reconcile — rule 26 predicted 4, measured 8, and reconciling found two real bugs.
 
 ### [2026-08-18] A silently-disabled detector returns zero findings, which reads as a clean tree
 - **Pattern key:** `a-negative-control-catches-the-detector-that-stopped-detecting`

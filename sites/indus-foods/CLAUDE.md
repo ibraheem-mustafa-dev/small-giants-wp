@@ -7,7 +7,7 @@
 ## Live Sites
 
 - **Test site:** https://lightsalmon-tarsier-683012.hostingersite.com/ — DO NOT modify, client-facing
-- **Dev site:** palestine-lives.org — safe for testing and deployment
+- **Build/test site:** sandybrown-nightingale-600381.hostingersite.com (shared SGS canary) — safe for testing and deployment. Push client colours via `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73`
 
 ## Design Reference
 
@@ -57,18 +57,20 @@ Shared sections (trust bar, heritage strip, process, delivery, brands, certifica
 
 ## Deploy
 
-Use the tar method from the framework CLAUDE.md — `scp -r` creates nested directories on Hostinger.
+Deploy to **sandybrown-nightingale-600381.hostingersite.com** (shared SGS canary) via `build-deploy.py`:
 
 ```bash
-# Build blocks plugin first
-cd plugins/sgs-blocks && npm run build && cd ../..
-
-# Deploy via tar (from repo root — see framework CLAUDE.md for full sequence)
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' theme/sgs-theme plugins/sgs-blocks
-# ... rest of tar/scp/ssh sequence in framework CLAUDE.md Deploy Commands section
+cd /c/Users/Bean/Projects/small-giants-wp
+python plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown
 ```
 
 **DO NOT deploy to lightsalmon-tarsier-683012.hostingersite.com** — that's the client-facing test site.
+
+After deployment, push Indus Foods colours onto the canary:
+
+```bash
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73
+```
 
 ## Page Build Status
 

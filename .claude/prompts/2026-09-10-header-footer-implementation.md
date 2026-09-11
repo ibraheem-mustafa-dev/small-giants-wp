@@ -50,14 +50,22 @@ Both symptoms trace to the same root cause, and it's already tracked:
 
 - **Footer**: `.claude/parking.md` entry `P-SPEC37-PER-SITE-DECLIENT`
   (status PARTIAL) — the CPT/"Set as active" mechanism is proven with
-  generic proof content; authoring the real branded content per site was
-  deliberately deferred to a cloning pipeline that doesn't exist yet
-  ("Spec 33 Part 2").
+  generic proof content; authoring the real branded content per site
+  hasn't happened yet.
 - **Header**: `.claude/parking.md` entry `P-NAV-INDUS-CUTOVER` (status
   PARTIAL) — same shape: cutover mechanism proven, branded content never
   authored. A related entry, `P-NAV-FEATURED-HOVER-DRAFT-PARITY`, records
   that the "Send to Ward" styling gap was left in deliberately, as a test
   fixture for this exact future work.
+
+**Correction (2026-09-11 — this was wrong in the original write-up of this
+section):** the two parking entries above previously framed the missing
+content as deferred to an unbuilt "Spec 33 Part 2" cloning pipeline. That
+framing was never actually true and has been corrected this session — see
+"Where Spec 37 actually stands" below. There is no pipeline dependency:
+the CPT editor, `push-theme-snapshot.py`, and the active-CPT WordPress
+option are all built and already proven to support multiple clients on
+the one shared canary at once.
 
 `.claude/decisions.md` D360 confirms the canary is running "generic proof
 CPTs #1570/#1571 left active" — this has been the known state for a while.
@@ -74,7 +82,21 @@ preview-before-active flow.
 
 **Genuinely open (re-verified against code 2026-09-11 — this section was previously
 wrong on 3 of 5 items; don't trust old copies of this prompt):**
-- Per-site branded content authoring (the actual blocker above).
+- Per-site branded content authoring — **not blocked on anything, just not
+  yet done.** Confirmed this session by reading `push-theme-snapshot.py`:
+  it defaults `DEFAULT_TARGET_DOMAIN` to
+  `sandybrown-nightingale-600381.hostingersite.com` — the same single
+  shared canary Mama's Munches runs on — so any client's real palette can
+  be pushed straight onto it, no separate install needed. Also confirmed
+  by direct action: a real-content Indus Brands mega-panel CPT post (ID
+  3482) was created and sits on the canary right now alongside Mama's
+  Munches' own test header/footer posts, proving the CPT model already
+  supports multiple clients' real content side by side. Which content is
+  "live" for a given request is just the `sgs_active_header_cpt_id` /
+  `sgs_active_footer_cpt_id` WordPress option pointing at a post ID —
+  flippable instantly, no redeploy. The only real work left is authoring
+  Mama's Munches' (and Indus's) actual header/footer content through the
+  existing editor and pointing the option at it.
 - The visual column-shape picker (FR-37-42) — code rollout DONE on all three
   consumers since 2026-08-27 (`71a5d4d42`, `e90a1b313`). Only live-canary
   deployment + eye-verification remain.
@@ -113,17 +135,76 @@ Bean can see on every page," versus motion being "a research-grade problem
 behind an unbuilt classifier." This session's work (starting here) is that
 ruling being acted on.
 
+## Done since this prompt was written (2026-09-11 session)
+
+A related but separate track ran alongside this file's own scope,
+covering Spec 38 motion capability for header/footer/mega-panel plus the
+Indus Foods branded-content gap this file already names above (via
+`P-NAV-INDUS-CUTOVER` / `P-SPEC37-PER-SITE-DECLIENT`). All of the
+following is now shipped and live-verified — treat it as done, not as
+remaining scope:
+
+- **Motion capability** on `sgs/site-header-row`, `sgs/site-footer-row`,
+  and `sgs/mega-panel`: cursor-reactive field, particle trail, grid-dot
+  field, and CSS-only flowing gradient — all four offered as one shared
+  effect dropdown — plus a scroll-scrubbed staggered reveal on
+  footer-row only. Surface treatment (grain/halftone/duotone) via the
+  shared `BackgroundPanel` also now reaches `sgs/container`, `sgs/hero`,
+  `sgs/cta-section`, `sgs/trust-bar`, `sgs/multi-button`,
+  `sgs/site-header`, and `sgs/site-footer`. Live-verified in the block
+  editor, zero console errors. Commits `a9d808166`, `e8f20637f`,
+  `2e590df08`, `ab3970a9e`, `e572d1f2b`.
+- **FR-37-20** (rules engine can't target a CPT post) — checked Indus's
+  real nav structure (`sites/indus-foods/extraction/homepage-nav-structure.json`);
+  it has no per-page-type header need, so this correctly stays open/deferred
+  — confirmed not a blocker for anything currently planned, not a new gap.
+- **Mega-panel container roster** — checked the `block_composition` DB
+  table directly: `sgs/mega-panel`, `sgs/mega-aside`, `sgs/mega-group` are
+  already correctly registered with `container_kind` populated. Nothing
+  needed here; a previously-suspected gap turned out not to exist.
+- **FR-36-12** heading-less mega-panel a11y notice — built and shipped
+  (informational only, never a build-blocking gate). Commit `e7f83b8fa`.
+- **Indus Brands mega-menu content recovered and ported** — the
+  historical `mega-menu-brands.html` content (Sanam / Lemon Tree / Green
+  Leaf / Shan Foods / Indus Foods brand logos + an "Own Brands" side
+  panel) was recovered from git history and rebuilt as a real test post
+  (ID 3482, "Indus Brands Panel (Phase 2 port)") on the `sgs/mega-panel`
+  block. Live-verified on the canary. This is the direct proof-of-concept
+  for the "per-site branded content authoring" item above — it's the same
+  mechanism Mama's Munches' header/footer still needs.
+- **Two real bugs found and fixed while porting that content** — worth a
+  permanent record, not just a footnote: `sgs/card-grid`'s and
+  `sgs/brand-strip`'s image-picker attributes were declared in
+  `block.json` with a narrower type than what their own editor picker UI
+  actually writes. `WP_Block_Type::prepare_attributes_for_render()`
+  silently wipes the ENTIRE repeater array (not just the one mismatched
+  item) whenever that happens — meaning any real editor-authored
+  card-grid or brand-strip content was rendering completely blank on the
+  live frontend, with no error anywhere to catch it. Both attributes were
+  widened to a proper `anyOf` schema and live-verified fixed. Documented
+  as `.claude/decisions.md` D1027 and D1031. Commits `6a37490e1`,
+  `c6a0338e6`, plus a follow-up correction `198c197b8`.
+
 ## Recommended first action (small, per ADHD Rule 2)
 
 Read `.claude/specs/37-HEADER-FOOTER-BUILDER.md` in full before touching
 anything — this project's standing rule for any cloning/header-footer
-session. Then confirm with Bean: are we authoring Mama's Munches' branded
-header/footer by hand through the CPT editor now (fastest path to closing
-the two parking items), or are we building the "Spec 33 Part 2" clone
-pipeline first so this becomes repeatable for every future client? Both
-are legitimate — the parking entries assume the pipeline is the endpoint,
-but hand-authoring one client's content is a same-day close if that's
-what's wanted instead. Don't assume; ask.
+session. The either/or question this section used to pose ("hand-author
+now, or build the Spec 33 Part 2 pipeline first?") is resolved: hand-
+authoring through the existing CPT editor is confirmed the right
+mechanism, proven working this session on a second client (Indus) on the
+same shared canary — there is no pipeline to build first. The open
+question is sequencing only. Recommended next action: author Mama's
+Munches' real `sgs_header` / `sgs_footer` CPT posts by hand (matching the
+draft evidence at the top of this file), set them active, and re-run the
+three-viewport comparison to confirm the fix. If Indus is the priority
+instead, the same steps apply to Indus: author its real
+`sgs_header` / `sgs_footer` CPT posts, attach the already-built Indus
+Brands mega-panel content (post 3482) into the header's mega-menu slot,
+push Indus's palette via `push-theme-snapshot.py --client indus-foods`
+(its `sites/indus-foods/theme-snapshot.json` already exists), and run the
+FR-37-12 never-overflow sweep for real against Indus's own pages on the
+canary. Ask Bean which client to close first — don't assume.
 
 ## Pointers
 
@@ -136,3 +217,9 @@ what's wanted instead. Don't assume; ask.
 | Priority ruling | `.claude/decisions.md` → D360, D419, D1004 |
 | Draft to match | `sites/mamas-munches/mockups/homepage/index.html` (nav + footer markup/CSS) |
 | Live canary | sandybrown-nightingale-600381.hostingersite.com, page 3448 (test clone) and 2742 (production homepage) |
+| Per-client theme push | `plugins/sgs-blocks/scripts/push-theme-snapshot.py` (defaults to the shared canary — `DEFAULT_TARGET_DOMAIN`) |
+| Indus palette snapshot | `sites/indus-foods/theme-snapshot.json` |
+| Indus Brands content proof (mega-panel) | Canary post ID 3482, "Indus Brands Panel (Phase 2 port)"; source recovered from git history, `mega-menu-brands.html` |
+| Image-picker repeater-wipe bug + fix | `.claude/decisions.md` → D1027, D1031; commits `6a37490e1`, `c6a0338e6`, `198c197b8` |
+| Motion-capability shipment (header-row/footer-row/mega-panel + BackgroundPanel) | Commits `a9d808166`, `e8f20637f`, `2e590df08`, `ab3970a9e`, `e572d1f2b` |
+| Heading-less mega-panel a11y notice (FR-36-12) | Commit `e7f83b8fa` |

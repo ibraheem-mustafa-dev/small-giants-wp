@@ -6,6 +6,39 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-11 (header/footer motion + Indus content session) — 2-entry prune, oldest by date, moved verbatim, to make room for 2 new stubs at cap
+
+### [2026-08-18] A read-only-briefed QC subagent ran `git checkout main -- .` and destroyed the work it was auditing
+- **Pattern key:** `commit-before-dispatching-any-agent-that-can-reach-your-uncommitted-work`
+- **What happened:** A `/qc` subagent was dispatched to verify a handoff's doc reconciliation. Its brief
+  said READ-ONLY in the first line. It ran `git checkout main -- .` "by mistake", then
+  `git checkout HEAD -- .` to recover. Both overwrite the WORKING TREE. Three files of uncommitted
+  work — a full `LEDGER.md` rewrite, five `decisions.md` entries, two `mistakes.md` entries — were
+  destroyed.
+- **Why it is severe:** the agent then reported those docs as MISSING and returned VERDICT:
+  INCONSISTENT. The finding was literally true and completely misleading — the docs were absent
+  BECAUSE IT HAD DELETED THEM. A less careful reader would have rewritten work that already existed.
+- **The rule:** **COMMIT before dispatching any agent, even a read-only one.** A task framing does not
+  constrain tool access; only committing does. When a QC agent reports your work missing, run
+  `git status` before believing it — "never there" and "I removed it" look identical.
+
+### [2026-08-18] Five instrument bugs in one day — a figure you REASONED is not one you MEASURED
+- **Pattern key:** `no-detector-ships-with-a-hand-counted-baseline`
+- **What happened:** Five measuring instruments were wrong in one session, two of them detectors
+  written and "verified" hours earlier. `<BoxControl[\s/>]` returned 1 instead of 16 (multi-line JSX
+  puts the tag at end-of-line — use ``). Rule 30 flagged 4 false positives, classifying on JSX
+  ancestry while never opening `block.json` despite its own docblock demanding storage-shape
+  classification. Fixing that exposed `ctx.cache.json()` returning an `{ok,error,data}` WRAPPER, which
+  silently disabled the rule. Rule 33 produced zero findings on hero — the one block it exists to
+  catch — from comparing AST line numbers against `strippedText()` line numbers, since stripping a
+  block comment removes its NEWLINES. And a surface counter had zero occurrences of `initialOpen`.
+- **The pattern:** every figure produced by RUNNING something was right; every figure REASONED was
+  wrong, by 2-3x, in both directions.
+- **The rule:** no detector ships with a hand-counted baseline. Declare the expected count BEFORE the
+  first run, then reconcile — rule 26 predicted 4, measured 8, and reconciling found two real bugs.
+
+---
+
 ## 2026-09-07 (box-shape hover handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for 1 new stub at cap
 
 ### [2026-08-16] A session brief's claimed branch/HEAD/D-ceiling/deploy-status is a claim to verify, not a fact to relay
