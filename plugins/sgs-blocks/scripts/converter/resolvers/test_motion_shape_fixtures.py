@@ -46,7 +46,7 @@ css_scale_in = """
 }
 .card { animation: fx-scale-in 300ms ease-out; }
 """
-check("scale-in (unique)", classify_css_motion(css_scale_in), ({"fx": "scale-in"}, []))
+check("scale-in (unique)", classify_css_motion(css_scale_in), ({"sgsAnimation": "scale-in"}, []))
 
 # ---------------------------------------------------------------------------
 # 2. rotate-in — unique (rotate/6.7-13.3/300/ease-out, disjoint from flip-in)
@@ -58,7 +58,7 @@ css_rotate_in = """
 }
 .badge { animation: fx-rotate-in 300ms ease-out; }
 """
-check("rotate-in (unique)", classify_css_motion(css_rotate_in), ({"fx": "rotate-in"}, []))
+check("rotate-in (unique)", classify_css_motion(css_rotate_in), ({"sgsAnimation": "rotate-in"}, []))
 
 # ---------------------------------------------------------------------------
 # 3. flip-in — unique (rotate/20.1-39.9/300/ease-out, disjoint from rotate-in)
@@ -70,7 +70,7 @@ css_flip_in = """
 }
 .tile { animation: fx-flip-in 300ms ease-out; }
 """
-check("flip-in (unique)", classify_css_motion(css_flip_in), ({"fx": "flip-in"}, []))
+check("flip-in (unique)", classify_css_motion(css_flip_in), ({"sgsAnimation": "flip-in"}, []))
 
 # ---------------------------------------------------------------------------
 # 4. blur-in — unique (only filter row)
@@ -82,7 +82,7 @@ css_blur_in = """
 }
 .hero-title { animation: fx-blur-in 300ms ease-out; }
 """
-check("blur-in (unique)", classify_css_motion(css_blur_in), ({"fx": "blur-in"}, []))
+check("blur-in (unique)", classify_css_motion(css_blur_in), ({"sgsAnimation": "blur-in"}, []))
 
 # ---------------------------------------------------------------------------
 # 5. fade-in — unique (only opacity row, transform:none)
@@ -94,7 +94,7 @@ css_fade_in = """
 }
 .panel { animation: fx-fade-in 300ms ease-out; }
 """
-check("fade-in (unique)", classify_css_motion(css_fade_in), ({"fx": "fade-in"}, []))
+check("fade-in (unique)", classify_css_motion(css_fade_in), ({"sgsAnimation": "fade-in"}, []))
 
 # ---------------------------------------------------------------------------
 # 6. reveal-up — unique (only clip-path row)
@@ -106,19 +106,34 @@ css_reveal_up = """
 }
 .strip { animation: fx-reveal-up 300ms ease-out; }
 """
-check("reveal-up (unique)", classify_css_motion(css_reveal_up), ({"fx": "reveal-up"}, []))
+check("reveal-up (unique)", classify_css_motion(css_reveal_up), ({"sgsAnimation": "reveal-up"}, []))
 
 # ---------------------------------------------------------------------------
-# 7. border-accent — unique (transition-only shape, scale-in/0.67-1.33/250/ease,
-#    disjoint from bounce-in's 0.201-0.399 band at the same easing/duration axis)
+# 7. border-accent — unique CSS-shape match (transition-only shape,
+#    scale-in/0.67-1.33/250/ease, disjoint from bounce-in's 0.201-0.399 band
+#    at the same easing/duration axis) but NOT part of sgsAnimation's real
+#    vocabulary (Fix 1, 2026-09-11 QC council review — `ANIMATION_LABELS`
+#    has no `border-accent` entry). The classifier still recognises the real
+#    Tier V shape; it now reports it via `skipped` instead of force-emitting
+#    it under the wrong attribute.
 # ---------------------------------------------------------------------------
 shape_border_accent = extract_shape_from_transition(
     {"transform": "scaleX(0)"}, "transform 250ms ease"
 )
 check(
-    "border-accent (transition, unique)",
+    "border-accent (transition, matched shape, no sgsAnimation destination)",
     match_motion_shape(shape_border_accent) if shape_border_accent else (None, None),
-    ({"fx": "border-accent"}, []),
+    (
+        {},
+        [
+            {
+                "preset_slug": "border-accent",
+                "reason": "matched a real Tier V shape, but this preset has no "
+                "sgsAnimation destination attribute (ANIMATION_LABELS carries no "
+                "entry for it)",
+            }
+        ],
+    ),
 )
 
 # ---------------------------------------------------------------------------
@@ -184,6 +199,88 @@ check(
     "wrong easing keyword -> no match",
     classify_css_motion(css_scale_in_wrong_easing),
     ({}, []),
+)
+
+# ---------------------------------------------------------------------------
+# 11. NEW (Fix 2) — comma-separated multi-animation shorthand. Two
+#     simultaneous animations on one element; the SECOND one's easing
+#     (`linear`) must not leak onto the FIRST one's keyframes name. The
+#     `@keyframes` block found is `fx-scale-in` (first one in the CSS text
+#     per `_find_keyframes_block`'s "first block" contract), so the shorthand
+#     match must resolve `fx-scale-in`'s OWN segment (300ms, ease-out) —
+#     if Fix 2 were absent, the flattened un-segmented token list would let
+#     the trailing comma corrupt the exact-easing-keyword check for the
+#     `ease-out,` token, or a naive positional read could attribute the
+#     second animation's `linear`/900ms to the first name instead.
+# ---------------------------------------------------------------------------
+css_comma_separated = """
+@keyframes fx-scale-in {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes fx-glow {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+.hero { animation: fx-scale-in 300ms ease-out, fx-glow 900ms linear; }
+"""
+check(
+    "Fix 2: comma-separated multi-animation -> correct per-segment attribution",
+    classify_css_motion(css_comma_separated),
+    ({"sgsAnimation": "scale-in"}, []),
+)
+
+# ---------------------------------------------------------------------------
+# 12. NEW (Fix 3) — cyclic duration-list indexing. `animation-name` lists 4
+#     names; `animation-duration`/`animation-timing-function` list only 2
+#     values each — per the CSS spec, a shorter list repeats CYCLICALLY, so
+#     name index 3 (`fx-scale-in`, the LAST name) reuses slot `3 % 2 = 1`:
+#     `durations[1]` = 300ms, `easings[1]` = ease-out — scale-in's real
+#     seeded row. The ORIGINAL clamp-to-index-0 code
+#     (`durations[idx] if idx < len(durations) else durations[0]`) would
+#     instead read `durations[0]` = 50ms / `easings[0]` = linear at idx=3
+#     (3 is not < 2), which does not match scale-in's row at all (300ms
+#     falls outside 50ms's tolerance band, and linear != ease-out's family)
+#     -> a real cyclic CSS declaration would silently fail to match under
+#     the old code, but must resolve correctly under the fix.
+# ---------------------------------------------------------------------------
+css_cyclic_duration = """
+@keyframes fx-scale-in {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.multi {
+  animation-name: fx-a, fx-a, fx-a, fx-scale-in;
+  animation-duration: 50ms, 300ms;
+  animation-timing-function: linear, ease-out;
+}
+"""
+check(
+    "Fix 3: cyclic (modulo) longhand indexing -> correct duration/easing at idx 3",
+    classify_css_motion(css_cyclic_duration),
+    ({"sgsAnimation": "scale-in"}, []),
+)
+
+# ---------------------------------------------------------------------------
+# 13. NEW (Fix 4) — no trailing semicolon before the closing brace on the
+#     LAST declaration in a keyframe step. `_decl()` previously required a
+#     `;` terminator and silently returned None for `transform:
+#     scale(0.85)` here (no semicolon before `}`), which would have made
+#     `_shape_from_start_step` fall through with no transform shape at all
+#     (and no opacity fallback either, since opacity IS terminated
+#     correctly) -> no shape extracted -> no match.
+# ---------------------------------------------------------------------------
+css_no_trailing_semicolon = """
+@keyframes fx-scale-in {
+  0% { opacity: 0; transform: scale(0.85) }
+  100% { opacity: 1; transform: scale(1) }
+}
+.card4 { animation: fx-scale-in 300ms ease-out; }
+"""
+check(
+    "Fix 4: no trailing semicolon on last declaration -> still extracted",
+    classify_css_motion(css_no_trailing_semicolon),
+    ({"sgsAnimation": "scale-in"}, []),
 )
 
 print(f"\n{PASS} passed, {FAIL} failed")

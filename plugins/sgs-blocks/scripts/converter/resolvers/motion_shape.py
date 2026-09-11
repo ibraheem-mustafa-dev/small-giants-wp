@@ -22,34 +22,52 @@ matches within a tolerance band (Fix 3). `easing_curve` matches by FAMILY
 (`ease`/`ease-in`/`ease-out`/`ease-in-out` pooled as one family; `linear`
 stays strict/ungrouped) for every preset EXCEPT `scale-in`/`border-accent`,
 which keep exact-keyword matching — that pair is the one case in the seeded
-table where easing is the ONLY axis telling two overlapping rows apart, and
-pooling them destroys a currently-correct match (see `_easing_matches` +
-Fix 6 comment in the DB-matching section). A candidate matches on magnitude
+table where easing is the ONLY axis telling two overlapping-magnitude rows
+apart, and pooling them destroys a currently-correct match (see
+`_easing_matches` + the Fix 6 comment in the DB-matching section for the
+full axis-sharing picture, including the rows that share an axis but do NOT
+need this exemption). A candidate matches on magnitude
 when the shape's parsed
 magnitude falls within `[magnitude_min, magnitude_max]`. Zero or 2+ equally
 good candidates => no match, fall through cleanly — never guess between
 ties. (Several seeded rows are genuinely IDENTICAL signatures under
 different preset names — e.g. `fade-up`/`slide-up` share
-transform/up/20.1-39.9/300/ease-out outright, per the seed script's own
+transform/up/20.0-200.0/300/ease-out outright, per the seed script's own
 documented quirk. A generic "translateY(30px)->0, 300ms ease-out" draft
 shape is a real, structural tie, not a classifier bug — see
-`test_motion_shape.py`'s `test_tie_fade_up_slide_up_no_match`.)
+`test_motion_shape_fixtures.py`'s `"tie: fade-up/slide-up -> no match"` case.)
 
-OUTPUT SHAPE (pinned in Step 3 — do not redesign)
+OUTPUT SHAPE (CORRECTED — see Fix 1, 2026-09-11 QC council review)
 ----------------------------------------------------
-On a match: a plain dict `{"fx": <preset_slug>}` — the SAME shape
-`converter/db/db_lookup.py::lift_behavioural_attrs` already returns as its
-`attrs` half of a `(attrs, skipped)` tuple. That function is a pure lookup;
-it does not write anywhere itself — its caller in
-`converter/services/assembly.py` (step 3a1, `attrs.setdefault(...)` per
-key) does the actual merge into the block's final attributes. This module
-mirrors that exact contract (`classify_css_motion()` returns `(attrs,
-skipped)`) so it is mergeable by the SAME caller loop, with no second
-write/merge path invented here. `skipped` is always `[]` today — this
-classifier recognises a shape or it doesn't; there is no "recognised but
-unroutable" case at Tier 1 (unlike the fx-attribute-lift skip case, a shape
-match has exactly one destination attr, `fx`, which every fx-capable block
-already declares).
+On a match: a plain dict `{"sgsAnimation": <preset_slug>}` — `sgsAnimation`
+is the REAL attribute this classifier feeds (`plugins/sgs-blocks/src/
+blocks/extensions/animation.js`, `ANIMATION_LABELS`), a closed vocabulary of
+16 Tier V CSS entrance presets (`fade-up`, `fade-down`, `fade-in`,
+`fade-left`, `fade-right`, `slide-up`, `slide-down`, `slide-left`,
+`slide-right`, `scale-in`, `scale-out`, `rotate-in`, `flip-in`, `blur-in`,
+`bounce-in`, `reveal-up`) that lines up exactly with 16 of the 18 seeded
+`motion_shape_signatures` preset slugs. This module previously claimed to
+return `{"fx": <preset_slug>}`, mirroring `converter/db/db_lookup.py::
+lift_behavioural_attrs`'s `attrs` shape — that framing was never correct:
+`fx` is a completely different closed vocabulary (`fx_effects.effect` —
+pin-scrub, scrub, magnet, particles, wave-gradient, etc., 21 GSAP/WebGL
+Tier G/H/W runtime effects) with zero overlap with these Tier V preset
+names. The general CONTRACT still holds — `classify_css_motion()` returns a
+`(attrs, skipped)` tuple, mergeable by `assembly.py`'s
+`attrs.setdefault(...)` loop with no second write/merge path invented here
+— only the destination KEY inside `attrs` was wrong.
+
+Two of the 18 seeded rows — `border-accent` (a hover/focus transition
+effect) and `parallax-element` (a continuous scroll-linked effect) — have
+NO entry in `ANIMATION_LABELS` at all: they are real Tier V presets but not
+part of `sgsAnimation`'s scroll-reveal-entrance vocabulary, and belong to a
+different (not-yet-built) destination attribute. Emitting them under
+`sgsAnimation` would silently write an unrecognised value the editor can't
+render a label for. Per this project's "no cheats, never guess" discipline
+this module now DECLINES to emit them as `attrs` and instead reports them
+via `skipped` (see `_ROUTABLE_ANIMATION_PRESETS` + `match_motion_shape()`
+below) — `skipped` is no longer unconditionally `[]`; it is non-empty
+exactly when a shape resolves to one of these two off-vocabulary presets.
 
 NOT THIS MODULE'S JOB
 ----------------------------------------------------
@@ -137,25 +155,48 @@ _REAL_WORLD_DURATION_CEILING_MS = 5000.0
 #
 # BUT pooling those 4 keywords is NOT safe as a blanket rule. Ground-truthed
 # directly against the seeded `motion_shape_signatures` table (18 rows,
-# `sgs-framework.db`): `scale-in` (transform/scale-in/0.603-1.197/300ms/
-# `ease-out`) and `border-accent` (transform/scale-in/0.67-1.33/250ms/
-# `ease`) are the ONE pair in the whole table sharing the same
-# `animated_property` + `direction`, with duration bands that both collapse
-# into the same real-world 200-5000ms window (Fix 3), AND overlapping
-# magnitude bands (0.67-1.197 overlap) — the ONLY axis still telling them
-# apart is the exact easing keyword. Locomotive's own real `preloaderAppear`
-# (keyframes scale(.9)->scale(1), 900ms, `cubic-bezier(...)` snapping to
-# `'ease'`) sits exactly in that overlap and is CORRECTLY resolved today to
-# `border-accent` (exact `'ease'` match, `scale-in` needs exact `'ease-out'`
-# and is excluded) — pooling the family here would make BOTH rows match
-# (scale-in via family, border-accent via its own exact keyword), producing
-# an unresolvable tie and destroying a currently-correct match. That is a
-# real regression, not a hypothetical one — verified directly by re-running
-# `preloaderAppear` through this module with a naive pooled-family query.
+# `sgs-framework.db`) — CORRECTED 2026-09-11 (QC council review, Fix 7b):
+# the earlier version of this comment claimed `scale-in`/`border-accent` are
+# "the ONE pair in the whole table sharing the same `animated_property` +
+# `direction`". That is FALSE — verified live via `SELECT preset_slug,
+# magnitude_min, magnitude_max, easing_curve FROM motion_shape_signatures
+# WHERE animated_property='transform' AND direction='scale-in'`, which
+# returns THREE rows sharing that exact axis:
+#   - `scale-in`        magnitude 0.603-1.197  duration 300ms  easing ease-out
+#   - `bounce-in`        magnitude 0.201-0.399  duration 300ms  easing ease
+#   - `border-accent`    magnitude 0.67-1.33    duration 250ms  easing ease
+# `(transform, rotate)` is a second axis with the same shape:
+#   - `rotate-in`        magnitude 6.7-13.3     duration 300ms  easing ease-out
+#   - `flip-in`          magnitude 20.1-39.9    duration 300ms  easing ease-out
+#
+# What actually keeps every one of these safe is MAGNITUDE, not easing, in
+# the general case: `scale-in` (0.603-1.197) and `border-accent`
+# (0.67-1.33) genuinely OVERLAP (0.67-1.197) — that pair is the real
+# collision, and duration bands for both collapse into the same real-world
+# 200-5000ms window (Fix 3) too, so the ONLY axis still telling THEM apart
+# is the exact easing keyword. `bounce-in` (0.201-0.399) sits on the SAME
+# axis but its magnitude band does NOT overlap either neighbour (0.399 <
+# 0.603), so it needs no easing exemption — family-pooled easing is safe
+# for it. Likewise `rotate-in` (6.7-13.3) and `flip-in` (20.1-39.9) share
+# `(transform, rotate)` but their magnitude bands are disjoint, so neither
+# needs an exemption. Locomotive's own real `preloaderAppear` (keyframes
+# scale(.9)->scale(1), 900ms, `cubic-bezier(...)` snapping to `'ease'`) sits
+# exactly in the scale-in/border-accent overlap and is CORRECTLY resolved
+# today to `border-accent` (exact `'ease'` match, `scale-in` needs exact
+# `'ease-out'` and is excluded) — pooling the family here would make BOTH
+# rows match (scale-in via family, border-accent via its own exact
+# keyword), producing an unresolvable tie and destroying a
+# currently-correct match. That is a real regression, not a hypothetical
+# one — verified directly by re-running `preloaderAppear` through this
+# module with a naive pooled-family query.
 #
 # Fixed narrowly: family-tolerant easing applies to every row EXCEPT the
 # `scale-in`/`border-accent` pair, which keeps exact-keyword matching (their
-# own DB `easing_curve` value, unchanged). Do NOT simplify this back into a
+# own DB `easing_curve` value, unchanged). `bounce-in`, `rotate-in` and
+# `flip-in` do not need the exemption because their magnitude bands don't
+# overlap anything sharing their axis — do NOT add them to the exemption
+# set; doing so would just make an already-safe row stricter than it needs
+# to be for no benefit. Do NOT simplify the existing exemption back into a
 # blanket pooled comparison — that reintroduces the exact regression this
 # comment documents. If a future seed-table change removes the
 # scale-in/border-accent magnitude-band overlap (or the pair is retired),
@@ -383,7 +424,26 @@ def _find_step_body(keyframes_body: str, step_pattern: str) -> "str | None":
 
 
 def _decl(body: str, prop: str) -> "str | None":
-    m = re.search(re.escape(prop) + r"\s*:\s*([^;]+);", body)
+    """Read a single declaration's value out of a CSS block body.
+
+    Fix 4 (2026-09-11 QC council review): valid CSS does not require a
+    trailing `;` before a closing `}` — real minified/hand-authored CSS
+    commonly omits it on the LAST declaration in a block (e.g.
+    `{ opacity: 0; transform: scale(0.9) }`, no semicolon after the
+    transform). The original regex required `;` as the sole terminator,
+    silently dropping (returning None for) exactly that last declaration.
+
+    `body` here is normally the ALREADY-EXTRACTED interior of a `{...}`
+    block (`_extract_braced_block` strips the braces themselves before this
+    function ever sees the text), so a declaration lacking a trailing `;`
+    has no `;` AND no literal `}` left in `body` to terminate on — the
+    terminator must also accept END-OF-STRING. The terminator is now `;`,
+    OR a literal `}` (covers a raw, not-yet-brace-stripped body, if this
+    helper is ever called on one directly), OR end of string; the value
+    character class excludes `;`/`}` so it still stops at the correct
+    boundary in every case.
+    """
+    m = re.search(re.escape(prop) + r"\s*:\s*([^;}]+?)\s*(?:[;}]|$)", body)
     return m.group(1).strip() if m else None
 
 
@@ -484,6 +544,24 @@ def _split_comma_top_level(value: str) -> "list[str]":
     return parts
 
 
+def _cyclic_index(items: "list[str]", idx: int) -> str:
+    """CSS-spec cyclic indexing for a comma-separated longhand list (Fix 3).
+
+    Per the CSS Animations spec, when a longhand list (`animation-duration`,
+    `animation-timing-function`, etc.) is SHORTER than `animation-name`'s
+    list, the shorter list's values repeat CYCLICALLY — `items[idx %
+    len(items)]` — not clamped to index 0. The original code did
+    `items[idx] if idx < len(items) else items[0]`, which is only correct
+    for idx==1 (the 2nd name repeating a 1-item list); for idx>=2 against a
+    2+ item list it silently misattributes a LATER animation's timing to an
+    EARLIER `@keyframes` name. Applies identically to any longhand comma-list
+    this module reads (today: duration, timing-function; the same helper is
+    correct for delay/iteration-count/direction/fill-mode if a future change
+    starts reading those too).
+    """
+    return items[idx % len(items)]
+
+
 def _find_animation_longhand(css_text: str, keyframes_name: str) -> "tuple[int, str] | None":
     """Read `animation-name` + `animation-duration` +
     `animation-timing-function` as separate longhand declarations —
@@ -506,7 +584,7 @@ def _find_animation_longhand(css_text: str, keyframes_name: str) -> "tuple[int, 
     if not dur_m:
         return None
     durations = _split_comma_top_level(dur_m.group(1))
-    duration_raw = durations[idx] if idx < len(durations) else durations[0]
+    duration_raw = _cyclic_index(durations, idx)
     duration_ms = parse_duration_ms(duration_raw)
     if duration_ms is None:
         return None
@@ -514,7 +592,7 @@ def _find_animation_longhand(css_text: str, keyframes_name: str) -> "tuple[int, 
     easing_m = re.search(r"animation-timing-function\s*:\s*([^;]+);", css_text)
     if easing_m:
         easings = _split_comma_top_level(easing_m.group(1))
-        easing_raw = easings[idx] if idx < len(easings) else easings[0]
+        easing_raw = _cyclic_index(easings, idx)
         easing = snap_easing(easing_raw)
     else:
         easing = "ease"
@@ -531,27 +609,45 @@ def _find_animation_shorthand(css_text: str, keyframes_name: str) -> "tuple[int,
     keyword or a `cubic-bezier(...)`/`steps(...)` function — wherever
     either appears in the shorthand — rather than assuming a fixed
     position. `animation-timing-function` omitted from the shorthand
-    -> defaults to `ease` (mirrors Fix 5's `transition` default)."""
+    -> defaults to `ease` (mirrors Fix 5's `transition` default).
+
+    Fix 2 (2026-09-11 QC council review): `animation:` legitimately runs
+    MULTIPLE simultaneous animations as a top-level comma-separated list
+    (`animation: fade 300ms ease-out, glow 900ms linear;` is normal CSS).
+    The original tokenizer split the whole declaration value on whitespace
+    only, with no comma-awareness — a trailing comma stuck to whichever
+    token preceded it (e.g. `ease-out,` never matches `_EASING_KEYWORDS`
+    exactly), and a name/duration/easing token belonging to the SECOND
+    animation in the list could be picked up as the timing for the FIRST
+    keyframes name (or vice versa) once `keyframes_name in tokens` matched
+    against the flattened, un-segmented token list. Fixed by splitting the
+    value on TOP-LEVEL commas first (`_split_comma_top_level`, which
+    already respects parenthesised functions like `cubic-bezier(...)`),
+    then tokenizing and matching `keyframes_name` PER SEGMENT — so a
+    segment's duration/easing can only ever be attributed to the
+    `@keyframes` name that segment itself references.
+    """
     for m in re.finditer(r"animation\s*:\s*([^;{}]+)[;}]", css_text):
         value = m.group(1)
-        tokens = _tokenize_shorthand_value(value)
-        if keyframes_name not in tokens:
-            continue
+        for segment in _split_comma_top_level(value):
+            tokens = _tokenize_shorthand_value(segment)
+            if keyframes_name not in tokens:
+                continue
 
-        time_tokens = [t for t in tokens if _TIME_TOKEN_RE.match(t)]
-        if not time_tokens:
-            continue
-        duration_ms = parse_duration_ms(time_tokens[0])
-        if duration_ms is None:
-            continue
+            time_tokens = [t for t in tokens if _TIME_TOKEN_RE.match(t)]
+            if not time_tokens:
+                continue
+            duration_ms = parse_duration_ms(time_tokens[0])
+            if duration_ms is None:
+                continue
 
-        easing = "ease"
-        for t in tokens:
-            if t in _EASING_KEYWORDS or t.startswith("cubic-bezier(") or t.startswith("steps("):
-                easing = snap_easing(t)
-                break
+            easing = "ease"
+            for t in tokens:
+                if t in _EASING_KEYWORDS or t.startswith("cubic-bezier(") or t.startswith("steps("):
+                    easing = snap_easing(t)
+                    break
 
-        return duration_ms, easing
+            return duration_ms, easing
     return None
 
 
@@ -762,7 +858,19 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
     NOT filtered in SQL (Fix 6): it needs per-row exempt-vs-pooled logic
     (`_easing_matches`) that SQL can't express cleanly, so it is filtered in
     Python alongside duration (tolerance band) and magnitude (range
-    containment) in `match_motion_shape()`."""
+    containment) in `match_motion_shape()`.
+
+    `AND tier = 'V'` (QC council review, 2026-09-11, defence-in-depth):
+    this module's docstring claims it is "structurally incapable of
+    emitting anything but a Tier V preset slug" — that guarantee previously
+    relied SOLELY on `motion_shape_signatures.tier` carrying a DB-level
+    `CHECK(tier = 'V')` constraint in the production schema; the SQL itself
+    never filtered on it. Filtering explicitly here means the guarantee
+    holds even if this function is ever pointed at an unexpected DB file
+    (e.g. a future `--db-path` override, or a schema drift where the CHECK
+    constraint is missing/relaxed) rather than depending entirely on a
+    constraint defined elsewhere.
+    """
     path = db_path or DB_PATH
     conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     try:
@@ -774,6 +882,7 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
             FROM {TABLE}
             WHERE animated_property = ?
               AND direction = ?
+              AND tier = 'V'
             """,
             (shape["animated_property"], shape["direction"]),
         )
@@ -782,24 +891,54 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
         conn.close()
 
 
+# Fix 1 (2026-09-11 QC council review). The real destination attribute for
+# a Tier V CSS motion-shape match is `sgsAnimation`
+# (`plugins/sgs-blocks/src/blocks/extensions/animation.js`,
+# `ANIMATION_LABELS`) — NOT `fx`, which is a completely different closed
+# vocabulary (`fx_effects.effect`: pin-scrub, scrub, magnet, particles,
+# wave-gradient, etc. — 21 GSAP/WebGL Tier G/H/W runtime effects, zero
+# overlap with these preset names). `ANIMATION_LABELS` lists exactly these
+# 16 of the 18 seeded `motion_shape_signatures` preset slugs; `border-accent`
+# (a hover/focus TRANSITION effect) and `parallax-element` (a continuous
+# scroll-linked effect) have no `sgsAnimation` entry — they are real Tier V
+# presets but belong to a different, not-yet-built destination attribute.
+_ROUTABLE_ANIMATION_PRESETS = frozenset(
+    {
+        "fade-up", "fade-down", "fade-in", "fade-left", "fade-right",
+        "slide-up", "slide-down", "slide-left", "slide-right",
+        "scale-in", "scale-out", "rotate-in", "flip-in", "blur-in",
+        "bounce-in", "reveal-up",
+    }
+)
+
+
 def match_motion_shape(shape: dict, db_path: "str | None" = None) -> "tuple[dict, list]":
     """Match an extracted CSS shape against `motion_shape_signatures`.
 
-    Returns `(attrs, skipped)` — the SAME shape as
-    `db_lookup.lift_behavioural_attrs()` — so the SAME caller merge loop in
+    Returns `(attrs, skipped)` — the SAME `(attrs, skipped)` shape as
+    `db_lookup.lift_behavioural_attrs()`, so the SAME caller merge loop in
     `assembly.py` (step 3a1's `attrs.setdefault(...)` over `.items()`) can
-    consume it with no second write/merge path. `attrs` is `{"fx":
-    preset_slug}` on exactly one matching candidate, `{}` on zero or 2+
-    (an ambiguous tie is refused, never guessed at — per the pinned
-    matching rule). `skipped` is always `[]`: there is no
-    "recognised-but-unroutable" case at this tier, unlike the fx-attribute
-    lift's `data-sgs-fx-*` skip case.
+    consume it with no second write/merge path. On exactly one matching
+    candidate whose `preset_slug` is in `sgsAnimation`'s real vocabulary
+    (`_ROUTABLE_ANIMATION_PRESETS`), `attrs` is `{"sgsAnimation":
+    preset_slug}`. On zero or 2+ matches, `attrs` is `{}` (an ambiguous tie
+    is refused, never guessed at — per the pinned matching rule).
 
-    Every value this function can possibly return under `attrs["fx"]` is a
-    `preset_slug` read directly off a `motion_shape_signatures` row, and
-    that table's own `tier` column carries a DB-level
-    `CHECK(tier = 'V')` constraint — so this function is structurally
-    incapable of emitting anything but a Tier V preset slug.
+    `skipped` (Fix 1, CORRECTED — previously always `[]`): a single match
+    whose `preset_slug` is NOT in `_ROUTABLE_ANIMATION_PRESETS`
+    (`border-accent`/`parallax-element` today) is a real, recognised Tier V
+    shape with no `sgsAnimation` destination — per this project's "no
+    cheats, never silently emit an unrecognised value" discipline, that
+    case reports via `skipped` (a list of `{"preset_slug", "reason"}`
+    dicts) instead of being force-emitted under the wrong attribute or
+    silently dropped.
+
+    Every value this function can possibly return under `attrs["sgsAnimation"]`
+    is a `preset_slug` read directly off a `motion_shape_signatures` row
+    that is both DB-level `CHECK(tier = 'V')`-constrained AND explicitly
+    `tier = 'V'`-filtered in `_query_candidate_rows` (Fix 6) AND a member of
+    `_ROUTABLE_ANIMATION_PRESETS` — so this function is structurally
+    incapable of emitting anything but a real `sgsAnimation` preset value.
     """
     candidates = _query_candidate_rows(shape, db_path)
     matches = [
@@ -809,17 +948,39 @@ def match_motion_shape(shape: dict, db_path: "str | None" = None) -> "tuple[dict
         and _duration_within_tolerance(shape.get("duration_ms"), row["duration_ms"])
         and row["magnitude_min"] <= shape["magnitude"] <= row["magnitude_max"]
     ]
-    if len(matches) == 1:
-        return {"fx": matches[0]["preset_slug"]}, []
-    return {}, []
+    if len(matches) != 1:
+        return {}, []
+    preset_slug = matches[0]["preset_slug"]
+    if preset_slug not in _ROUTABLE_ANIMATION_PRESETS:
+        return {}, [
+            {
+                "preset_slug": preset_slug,
+                "reason": "matched a real Tier V shape, but this preset has no "
+                "sgsAnimation destination attribute (ANIMATION_LABELS carries no "
+                "entry for it)",
+            }
+        ]
+    return {"sgsAnimation": preset_slug}, []
 
 
-def classify_css_motion(css_text: str, db_path: "str | None" = None) -> "tuple[dict, list]":
+def classify_css_motion(css_text: "str | None", db_path: "str | None" = None) -> "tuple[dict, list]":
     """Top-level entry point: extract a shape from raw `@keyframes`/
     `animation` CSS text and match it against Tier V. Returns `(attrs,
     skipped)` per `match_motion_shape()`'s contract. `({}, [])` when the
     CSS carries no recognisable `@keyframes` shape at all (not an error —
-    most CSS on a page isn't motion CSS)."""
+    most CSS on a page isn't motion CSS).
+
+    Fix 5 (2026-09-11 QC council review): `css_text=None` (absent CSS —
+    e.g. an element with no motion declarations at all) previously crashed
+    with an unhandled `TypeError` the first time `None` reached a `re`
+    call inside `extract_shape_from_keyframes_css`. Per this project's fail
+    -closed discipline (never crash the pipeline on absent input), `None`
+    now short-circuits to the same `({}, [])` "no recognisable shape"
+    result as any other non-matching input, rather than propagating an
+    exception up through the whole conversion pipeline.
+    """
+    if css_text is None:
+        return {}, []
     shape = extract_shape_from_keyframes_css(css_text)
     if shape is None:
         return {}, []
