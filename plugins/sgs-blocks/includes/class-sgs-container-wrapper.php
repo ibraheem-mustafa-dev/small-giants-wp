@@ -1298,6 +1298,45 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
+			// Surface treatment (Spec 38 §1.2b, D479) — addendum 2026-09-11. Reached via
+			// `BackgroundPanel.js` for blocks outside the shared fx ToolsPanel roster
+			// (`sgs/site-header`, `sgs/site-footer`, `sgs/container`, `sgs/multi-button`),
+			// stamped ONCE here in the shared wrapper rather than per-block, so every
+			// current and future consumer gets it for free. `includes/fx-surface-
+			// treatment.php` already does the actual colour resolution + scoped <style> —
+			// it is a global `render_block` filter keyed on `data-sgs-fx="surface-
+			// treatment"` in the rendered markup, not on the fx-panel roster, so raw
+			// values are all this wrapper needs to stamp.
+			//
+			// Gated on the SAME condition `SurfaceTreatmentPanel.js`'s
+			// `isSimpleBackgroundImage()` mirrors: the runtime needs a real nested
+			// `<img>` to repaint (`fx-surface-treatment.js`'s own docblock) — a CSS
+			// `background-image` on `::before` has no pixel source for the shader to
+			// read, so this can ONLY reach the `<img>` fast path above, never the
+			// `::before` path (parallax/fixed-attachment/per-tier images).
+			if ( $has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple && ! empty( $attributes['fxTreatment'] ) ) {
+				$opt_extra_attrs['data-sgs-fx']           = 'surface-treatment';
+				$opt_extra_attrs['data-sgs-fx-treatment'] = (string) $attributes['fxTreatment'];
+				if ( ! empty( $attributes['fxTreatmentTint'] ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-tint'] = (string) $attributes['fxTreatmentTint'];
+				}
+				if ( ! empty( $attributes['fxTreatmentInk'] ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-ink'] = (string) $attributes['fxTreatmentInk'];
+				}
+				if ( ! empty( $attributes['fxTreatmentShadow'] ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-shadow'] = (string) $attributes['fxTreatmentShadow'];
+				}
+				if ( ! empty( $attributes['fxTreatmentHighlight'] ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-highlight'] = (string) $attributes['fxTreatmentHighlight'];
+				}
+				if ( isset( $attributes['fxTreatmentIntensity'] ) && is_numeric( $attributes['fxTreatmentIntensity'] ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-intensity'] = (string) $attributes['fxTreatmentIntensity'];
+				}
+				if ( 'off' === ( $attributes['fxTreatmentReveal'] ?? '' ) ) {
+					$opt_extra_attrs['data-sgs-fx-treatment-reveal'] = 'off';
+				}
+			}
+
 			// object-fit/object-position for the <img> path above — built here
 			// (where $bg_size/$bg_position are in scope) but EMITTED with the
 			// other scoped rules further down, same reason as $sgs_media_layer_decls

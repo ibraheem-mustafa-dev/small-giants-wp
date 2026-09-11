@@ -29,8 +29,21 @@ import {
 	SgsLengthControl,
 	MediaElementPanel,
 } from '../../../components';
+import { SurfaceTreatmentPanel, isSimpleBackgroundImage } from '../../../components/SurfaceTreatmentPanel';
 import { isExtensionEnabled } from '../../extensions/hide-extensions';
+import qualifyingBlocks from '../../extensions/generated-fx-qualifying-blocks.json';
 import { LENGTH_UNITS } from './_shared';
+
+/*
+ * Blocks that already offer `surface-treatment` via the shared fx ToolsPanel
+ * (Spec 38 §1.2b) — read from the same generated roster `fx.js` reads, never a
+ * hardcoded list (R-31-1), so this stays correct automatically if that roster
+ * changes. Mounting the control again here for one of these would be a second,
+ * duplicate place to set the identical `fxTreatment*` attributes.
+ */
+function alreadyOffersSurfaceTreatmentViaFxPanel( name ) {
+	return !! qualifyingBlocks[ name ]?.includes( 'surface-treatment' );
+}
 
 const BG_SIZE_OPTIONS = [
 	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
@@ -370,6 +383,32 @@ export function BackgroundPanel( { attributes, setAttributes, name } ) {
 											__next40pxDefaultSize
 										/>
 									</>
+								) }
+
+								{ /* Surface treatment (grain/halftone/duotone) — Spec 38 §1.2b, D479,
+								     addendum 2026-09-11. Gated on: (a) a background image actually SET
+								     (not just structurally eligible — Bean's explicit ask); (b) the
+								     image config being one the wrapper's <img> fast path can express
+								     (isSimpleBackgroundImage — the runtime needs a real nested <img> to
+								     repaint; a CSS background-image on ::before has no pixel source for
+								     it); (c) not already offered via the shared fx ToolsPanel on this
+								     block (hero/cta-section/trust-bar already have it there — checked
+								     against the same generated roster, never hardcoded). */ }
+								{ hasBgImage && isSimpleBackgroundImage( attributes ) &&
+									! alreadyOffersSurfaceTreatmentViaFxPanel( name ) && (
+									<SurfaceTreatmentPanel
+										attributes={ attributes }
+										setAttributes={ setAttributes }
+									/>
+								) }
+								{ hasBgImage && ! isSimpleBackgroundImage( attributes ) &&
+									! alreadyOffersSurfaceTreatmentViaFxPanel( name ) && (
+									<p className="components-base-control__help" style={ { fontStyle: 'italic' } }>
+										{ __(
+											'Surface treatment (grain, halftone, duotone) is not available with parallax, fixed attachment, or a different image per device — turn those off to use it.',
+											'sgs-blocks'
+										) }
+									</p>
 								) }
 							</>
 						);

@@ -809,6 +809,33 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"fxTreatment": {
+			"type": "string",
+			"default": ""
+		},
+		"fxTreatmentShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"fxTreatmentHighlight": {
+			"type": "string",
+			"default": ""
+		},
+		"fxTreatmentTint": {
+			"type": "string",
+			"default": ""
+		},
+		"fxTreatmentInk": {
+			"type": "string",
+			"default": ""
+		},
+		"fxTreatmentIntensity": {
+			"type": "number"
+		},
+		"fxTreatmentReveal": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"providesContext": {
