@@ -10,11 +10,13 @@
  * ── Colour architecture (D621/D622, 2026-08-15) ─────────────────────────
  * Colour is now EXTERNALLY managed by the caller — this control stores
  * SHAPE ONLY (offset-x, offset-y, blur, spread, inset), never a colour. The
- * caller owns the sibling `{name}Colour` attribute (rendered as a row in the
- * block's `SgsColourPanel`, states-aware for a base+hover pair) and passes
- * its current value + setter in via the `colour`/`onColourChange` props,
- * which this control renders as one more field in the same builder — same
- * position as the old internal `DesignTokenPicker`, just externally driven.
+ * caller owns the sibling `{name}Colour` attribute (states-aware for a
+ * base+hover pair) and passes its current value + setter in via the
+ * `colour`/`onColourChange` props. THIS control still renders the actual
+ * colour picker itself, inside `ShadowStateBuilder` — externalised is the
+ * ATTRIBUTE OWNERSHIP, not the rendering; the picker does not move into the
+ * caller's `SgsColourPanel`. Same position as the old internal
+ * `DesignTokenPicker`, just externally driven.
  * PHP composes shape + colour back into a final `box-shadow` value at render
  * time via `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`).
  *
