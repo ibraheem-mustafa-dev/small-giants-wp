@@ -250,12 +250,31 @@ def _parse_transform_shape(preset: str, value: str) -> tuple[str, str, float, fl
     raise ValueError(f"Unparseable transform shape for preset '{preset}': {value!r}")
 
 
+def _co_animates_opacity(preset: str, body: str) -> int:
+    """Whether this preset transitions opacity ALONGSIDE its own shape —
+    the real, AOS-precedented (github.com/michalsnik/aos) axis that
+    distinguishes `fade-*` (opacity + transform together) from `slide-*`
+    (transform only, stays fully visible) — derived from the real CSS, not
+    hand-typed. Every entrance preset fades via the SHARED base rule
+    (`.sgs-js [data-sgs-animation]{opacity:0;...}`) UNLESS its own block
+    explicitly opts out with `opacity: 1;` — the exact technique `reveal-up`
+    already uses (clip-path handles its reveal) and `slide-*` now also uses
+    (a large transform move is the sole effect). A preset whose OWN shape
+    already comes from a pure opacity change (`fade-in`) trivially co-
+    animates opacity by construction, independent of any override.
+    """
+    if re.search(r"opacity:\s*1\s*;", body):
+        return 0
+    return 1
+
+
 def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> list[dict]:
     """Regex-extract the 16 real `[data-sgs-animation="..."]` shapes."""
     text = EXTENSIONS_CSS.read_text(encoding="utf-8")
 
     # Merge every declaration block keyed by preset name (blur-in has two
-    # separate rule blocks in the source file — both get merged here).
+    # separate rule blocks in the source file, slide-* now four — all
+    # merged here).
     blocks: dict[str, str] = {}
     for m in re.finditer(r'\[data-sgs-animation="([\w-]+)"\]\s*\{([^}]*)\}', text, re.DOTALL):
         preset, body = m.group(1), m.group(2)
@@ -270,6 +289,7 @@ def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> lis
 
         easing_raw = easing_override_m.group(1) if easing_override_m else default_easing
         easing_curve = _snap_easing(easing_raw)
+        co_animates_opacity = _co_animates_opacity(preset, body)
 
         shape = None
         if transform_m:
@@ -288,6 +308,7 @@ def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> lis
             # transform: none with no filter/clip-path -> pure opacity fade
             # (fade-in is the only preset with this exact shape).
             shape = ("opacity", "none", 0.0, 1.0)
+            co_animates_opacity = 1  # trivially true -- opacity IS the shape
 
         prop, direction, mag_min, mag_max = shape
         rows.append(
@@ -300,6 +321,7 @@ def _extract_entrance_rows(default_duration_ms: int, default_easing: str) -> lis
                 "magnitude_max": mag_max,
                 "duration_ms": default_duration_ms,
                 "easing_curve": easing_curve,
+                "co_animates_opacity": co_animates_opacity,
             }
         )
 
@@ -344,6 +366,9 @@ def _extract_border_accent_row() -> dict:
         "magnitude_max": hi,
         "duration_ms": duration_ms,
         "easing_curve": easing_curve,
+        # Derived, not hand-typed: `.sgs-has-border-accent::before`'s real
+        # rule (`body`, read above) carries no `opacity` declaration at all.
+        "co_animates_opacity": 1 if "opacity" in body else 0,
     }
 
 
@@ -371,6 +396,9 @@ def _extract_parallax_row() -> dict:
         "magnitude_max": round(magnitude, 3),
         "duration_ms": None,  # scroll-linked (animation-timeline: scroll), no fixed wall-clock duration
         "easing_curve": easing_curve,
+        # Derived, not hand-typed: `@keyframes sgs-parallax-element`'s real
+        # body (read above) carries no `opacity` declaration at all.
+        "co_animates_opacity": 1 if "opacity" in body else 0,
     }
 
 
@@ -398,7 +426,9 @@ def ensure_table(conn: sqlite3.Connection) -> None:
             duration_ms         INTEGER,
             easing_curve        TEXT NOT NULL
                 CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
-            created_at          TEXT DEFAULT (datetime('now'))
+            created_at          TEXT DEFAULT (datetime('now')),
+            co_animates_opacity INTEGER
+                CHECK(co_animates_opacity IN (0,1) OR co_animates_opacity IS NULL)
         )
         """
     )
@@ -414,10 +444,12 @@ def seed(conn: sqlite3.Connection, rows: list[dict]) -> int:
         f"""
         INSERT INTO {TABLE}
             (preset_slug, tier, animated_property, direction,
-             magnitude_min, magnitude_max, duration_ms, easing_curve)
+             magnitude_min, magnitude_max, duration_ms, easing_curve,
+             co_animates_opacity)
         VALUES
             (:preset_slug, :tier, :animated_property, :direction,
-             :magnitude_min, :magnitude_max, :duration_ms, :easing_curve)
+             :magnitude_min, :magnitude_max, :duration_ms, :easing_curve,
+             :co_animates_opacity)
         """,
         rows,
     )

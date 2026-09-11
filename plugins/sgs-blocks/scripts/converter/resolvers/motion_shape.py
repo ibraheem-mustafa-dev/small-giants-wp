@@ -699,10 +699,24 @@ def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
     what we're trying to resolve).
 
     Returns a dict `{animated_property, direction, magnitude, duration_ms,
-    easing_curve}`, or None if the CSS carries no recognisable shape (no
-    `@keyframes` block, no parseable start-step declaration, no resolvable
-    duration/easing, or — Fix 4 — a genuinely multi-step, non-monotonic
-    keyframes body).
+    easing_curve, co_animates_opacity}`, or None if the CSS carries no
+    recognisable shape (no `@keyframes` block, no parseable start-step
+    declaration, no resolvable duration/easing, or — Fix 4 — a genuinely
+    multi-step, non-monotonic keyframes body).
+
+    `co_animates_opacity` (fix, 2026-09-11 — closes the `fade-up`/`slide-up`
+    structural tie): whether opacity ALSO changes across the keyframe steps,
+    alongside whatever shape the transform/filter/clip-path carries. Always
+    a real `True`/`False` here (never `None`) — this extractor always has
+    both step bodies to compare, unlike the transition-driven sibling
+    extractor. Computed once and reused for both branches below: for the
+    pure-opacity-fade branch it is trivially `True` (a real opacity change is
+    the very condition that reaches that branch); for a transform/filter/
+    clip-path shape it reports whether a SEPARATE opacity change also
+    accompanies it. Compares parsed FLOATS, not raw strings — `"0"` and
+    `"0.0"` are the same value but would false-positive as "opacity changed"
+    under a naive string compare, and real CSS (hand-authored vs
+    CSSOM-serialised) genuinely varies in this formatting.
     """
     kf = _find_keyframes_block(css_text)
     if kf is None:
@@ -730,6 +744,13 @@ def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
     if end_body is not None:
         opacity_end_raw = _decl(end_body, "opacity")
 
+    co_animates_opacity = False
+    if opacity_start_raw is not None and opacity_end_raw is not None:
+        try:
+            co_animates_opacity = float(opacity_start_raw) != float(opacity_end_raw)
+        except ValueError:
+            co_animates_opacity = False
+
     shape = _shape_from_start_step(start_body) if start_body else None
 
     # Pure opacity fade: transform:none (or absent) at the start step, but a
@@ -755,6 +776,7 @@ def extract_shape_from_keyframes_css(css_text: str) -> "dict | None":
         "magnitude": magnitude,
         "duration_ms": duration_ms,
         "easing_curve": easing_curve,
+        "co_animates_opacity": co_animates_opacity,
     }
 
 
@@ -889,7 +911,8 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
         cur = conn.execute(
             f"""
             SELECT preset_slug, animated_property, direction,
-                   magnitude_min, magnitude_max, duration_ms, easing_curve
+                   magnitude_min, magnitude_max, duration_ms, easing_curve,
+                   co_animates_opacity
             FROM {TABLE}
             WHERE animated_property = ?
               AND direction = ?
@@ -952,12 +975,24 @@ def match_motion_shape(shape: dict, db_path: "str | None" = None) -> "tuple[dict
     incapable of emitting anything but a real `sgsAnimation` preset value.
     """
     candidates = _query_candidate_rows(shape, db_path)
+    # `co_animates_opacity` (fix, 2026-09-11 -- closes the `fade-up`/
+    # `slide-up` structural tie): filtered only when the shape's OWN value
+    # is a real True/False. `extract_shape_from_keyframes_css` always
+    # produces one, but a future/other caller may not be able to determine
+    # this axis at all -- per this function's own "never guess" rule, an
+    # undeterminable shape value means the axis is DROPPED from
+    # consideration (not wildcarded per-row, not defaulted to False), so it
+    # can never silently manufacture a match a determinable shape wouldn't
+    # get. If dropping the axis still leaves 2+ candidates, the len(matches)
+    # != 1 tie-gate below still declines rather than guesses.
+    shape_opacity = shape.get("co_animates_opacity")
     matches = [
         row
         for row in candidates
         if _easing_matches(shape["easing_curve"], row["easing_curve"], row["preset_slug"])
         and _duration_within_tolerance(shape.get("duration_ms"), row["duration_ms"])
         and row["magnitude_min"] <= shape["magnitude"] <= row["magnitude_max"]
+        and (shape_opacity is None or bool(row["co_animates_opacity"]) == shape_opacity)
     ]
     if len(matches) != 1:
         return {}, []

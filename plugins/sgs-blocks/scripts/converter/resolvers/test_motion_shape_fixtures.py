@@ -7,9 +7,13 @@ requested "actual test output, verbatim" for evidence.
 
 Every fixture's expected preset is checked against a REAL seeded row in
 `motion_shape_signatures` (read live at the top of this file), not a
-hand-typed guess — including the two structural-tie negative controls,
-which are ties because two real rows are byte-identical on every matched
-axis (the seed script's own documented fade/slide quirk).
+hand-typed guess. Fixtures 8/8b (2026-09-11 fix) were previously a single
+structural-tie negative control — `fade-up`/`slide-up` were byte-identical
+on every axis this module could see, a real ambiguity the classifier
+correctly refused to guess between. The new `co_animates_opacity` axis
+(closes D1024/coverage-report follow-up) makes them genuinely
+distinguishable, so 8/8b are now a resolved-match PAIR proving the axis
+discriminates both directions, not a tie control any more.
 """
 from __future__ import annotations
 
@@ -137,19 +141,50 @@ check(
 )
 
 # ---------------------------------------------------------------------------
-# 8. NEGATIVE CONTROL — structural tie: fade-up and slide-up are BYTE-IDENTICAL
-#    seeded rows (transform/up/20.1-39.9/300/ease-out both) per the seed
-#    script's own documented quirk. A generic "translateY(30px)->0" shape at
-#    that duration/easing MUST refuse to guess between them.
+# 8. fade-up/slide-up tie -- RESOLVED (fix, 2026-09-11). `fade-up` and
+#    `slide-up` used to be BYTE-IDENTICAL seeded rows on every axis this
+#    module could see (transform/up/20-200/300/ease-out both), a real
+#    structural tie the classifier correctly refused to guess between. The
+#    new `co_animates_opacity` axis (AOS's real fade-vs-slide convention --
+#    fade transitions opacity+transform together, slide is transform-only)
+#    makes them genuinely distinguishable. This declaration co-animates
+#    opacity (0->1) ALONGSIDE the transform -- that is `fade-up`'s real
+#    shape, not `slide-up`'s (`co_animates_opacity=0`), so it now correctly
+#    resolves rather than ties. Was the tie's own negative control; is now
+#    the fix's positive control -- same CSS, corrected expectation.
 # ---------------------------------------------------------------------------
-css_tie_up = """
+css_fade_up_with_opacity = """
 @keyframes fx-generic-up {
   0% { opacity: 0; transform: translateY(30px); }
   100% { opacity: 1; transform: translateY(0px); }
 }
 .item { animation: fx-generic-up 300ms ease-out; }
 """
-check("tie: fade-up/slide-up -> no match", classify_css_motion(css_tie_up), ({}, []))
+check(
+    "fade-up (opacity co-animates the transform) -> resolves, no longer a tie",
+    classify_css_motion(css_fade_up_with_opacity),
+    ({"sgsAnimation": "fade-up"}, []),
+)
+
+# ---------------------------------------------------------------------------
+# 8b. slide-up's own side of the same fix: the IDENTICAL transform shape,
+#    but with NO opacity change at all (the element stays fully visible) --
+#    `slide-up`'s real shape (`co_animates_opacity=0`), must resolve to
+#    `slide-up`, not `fade-up`, proving the new axis discriminates BOTH
+#    directions rather than just happening to favour one preset.
+# ---------------------------------------------------------------------------
+css_slide_up_no_opacity = """
+@keyframes fx-generic-slide-up {
+  0% { transform: translateY(100px); }
+  100% { transform: translateY(0px); }
+}
+.item { animation: fx-generic-slide-up 300ms ease-out; }
+"""
+check(
+    "slide-up (no opacity change) -> resolves to slide-up, not fade-up",
+    classify_css_motion(css_slide_up_no_opacity),
+    ({"sgsAnimation": "slide-up"}, []),
+)
 
 # ---------------------------------------------------------------------------
 # 9. NEGATIVE CONTROL — duration out of tolerance. Same scale-in shape as #1.
