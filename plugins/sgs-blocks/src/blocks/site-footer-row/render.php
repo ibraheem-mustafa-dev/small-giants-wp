@@ -225,6 +225,114 @@ if ( ! empty( $sfr_shrink_tiers ) ) {
 	}
 }
 
+// ── Motion (2026-09-11 addendum) — block-private escape hatch, NOT the shared
+// fx ToolsPanel roster (fx.js / generated-fx-qualifying-blocks.json /
+// check-fx-list-drift.py are untouched by this block; it declares no `fx`
+// attribute and must never join that roster). `fxEffect` is this block's OWN
+// selector attribute, PHP-whitelist-validated below; the four options each
+// reuse an existing shared runtime unmodified (fx-cursor-field.php /
+// fx-particles.js / fx-grid-dots.js / the wave-gradient CSS+runtime), driven
+// by the SAME data-attribute contract `includes/fx-attributes.php`'s
+// FX_ATTR_MAP already documents — confirmed against that file before writing
+// this mapping. Only a key whose source attribute is genuinely set is
+// emitted (a numeric 0 must survive; `isset()`/`'' !== `, never `empty()`,
+// which would drop a deliberate 0). ──
+$sfr_allowed_fx_effects = array( '', 'cursor-field', 'particles', 'grid-dots', 'wave-gradient' );
+$sfr_fx_effect          = isset( $attributes['fxEffect'] ) ? (string) $attributes['fxEffect'] : '';
+if ( ! in_array( $sfr_fx_effect, $sfr_allowed_fx_effects, true ) ) {
+	$sfr_fx_effect = '';
+}
+
+if ( '' !== $sfr_fx_effect ) {
+	$sfr_extra_attrs['data-sgs-fx'] = $sfr_fx_effect;
+
+	// Per-effect attribute => data-attr map, confirmed against
+	// includes/fx-attributes.php's FX_ATTR_MAP (read-only reference for this
+	// block) rather than guessed.
+	$sfr_fx_param_map = array(
+		'cursor-field'  => array(
+			'fxFieldType'   => 'data-sgs-fx-field',
+			'fxFieldColour' => 'data-sgs-fx-field-colour',
+			'fxFieldRadius' => 'data-sgs-fx-field-radius',
+			'fxFieldShape'  => 'data-sgs-fx-field-shape',
+			'fxFieldBlend'  => 'data-sgs-fx-field-blend',
+			'fxFieldTrail'  => 'data-sgs-fx-field-trail',
+		),
+		'particles'     => array(
+			'fxParticlePreset'  => 'data-sgs-fx-particle-preset',
+			'fxParticleDensity' => 'data-sgs-fx-particle-density',
+			'fxParticleSize'    => 'data-sgs-fx-particle-size',
+			'fxParticleColour'  => 'data-sgs-fx-particle-colour',
+		),
+		'grid-dots'     => array(
+			'fxGridDotColour'      => 'data-sgs-fx-grid-colour',
+			'fxGridDotHoverColour' => 'data-sgs-fx-grid-colour-hover',
+			'fxGridDotShape'       => 'data-sgs-fx-grid-shape',
+			'fxGridCell'           => 'data-sgs-fx-grid-cell',
+			'fxGridDotSize'        => 'data-sgs-fx-grid-dot',
+			'fxGridRadius'         => 'data-sgs-fx-grid-radius',
+			'fxGridLean'           => 'data-sgs-fx-grid-lean',
+			'fxGridEase'           => 'data-sgs-fx-grid-ease',
+		),
+		'wave-gradient' => array(
+			'fxWaveVariant'   => 'data-sgs-fx-wave-variant',
+			'fxWaveBase'      => 'data-sgs-fx-wave-base',
+			'fxWave1'         => 'data-sgs-fx-wave-1',
+			'fxWave2'         => 'data-sgs-fx-wave-2',
+			'fxWave3'         => 'data-sgs-fx-wave-3',
+			'fxWaveSpeed'     => 'data-sgs-fx-wave-speed',
+			'fxWaveAmplitude' => 'data-sgs-fx-wave-amplitude',
+		),
+	);
+
+	foreach ( $sfr_fx_param_map[ $sfr_fx_effect ] as $sfr_fx_src_attr => $sfr_fx_data_attr ) {
+		if ( ! isset( $attributes[ $sfr_fx_src_attr ] ) ) {
+			continue;
+		}
+		$sfr_fx_value = $attributes[ $sfr_fx_src_attr ];
+		// A genuinely unset string reads as '' -- skip it so the runtime's own
+		// default applies, but a numeric 0 (e.g. fxWaveSpeed/fxGridLean at
+		// their floor) must still be emitted.
+		if ( is_string( $sfr_fx_value ) && '' === $sfr_fx_value ) {
+			continue;
+		}
+		if ( is_numeric( $sfr_fx_value ) ) {
+			$sfr_extra_attrs[ $sfr_fx_data_attr ] = (string) $sfr_fx_value;
+		} elseif ( is_string( $sfr_fx_value ) ) {
+			$sfr_extra_attrs[ $sfr_fx_data_attr ] = $sfr_fx_value;
+		}
+	}
+}
+
+// ── Footer-row-ONLY scroll-scrubbed reveal (2026-09-11 addendum) — NOT shared
+// with any other block, and NOT gated by $sfr_fx_effect above (a reveal
+// TIMING, not a paint effect, so it can combine with any of the four or with
+// none). Reuses Spec 38 FR-38-7's `scrub` runtime UNMODIFIED
+// (src/shared/effects/gsap/fx-scrub.js, bootEffect('scrub', initScrub) does
+// document.querySelectorAll('[data-sgs-fx="scrub"]') and tweens each matched
+// element's own opacity/transform against its own scroll progress -- read in
+// full before writing this). `sgs_fx_effect_param_scope()`'s 'scrub' row
+// carries no per-child stagger param, so this is scoped to a single
+// row-level reveal (the row fades/slides in as a whole) rather than
+// mutating already-rendered nested InnerBlocks HTML to stagger individual
+// children -- that would need either fragile HTML surgery with no
+// precedent/tooling in this codebase, or extending the shared runtime to
+// accept multiple internal targets, both out of scope for a block-private
+// escape hatch. `data-sgs-fx` was already claimed above by $sfr_fx_effect
+// when one is set; 'scrub' does not conflict with any of the four paint
+// effects (they use their own runtimes/selectors) but the attribute can
+// only carry one value, so when a paint effect is also active this reveal
+// still stamps its own start/end/ease keys -- the paint effect's runtime
+// reads `data-sgs-fx` for ITS OWN selector match, and mixing a paint effect
+// with the scrub reveal on the same node is not a combination this control
+// offers; the toggle is honoured on its own.
+$sfr_footer_stagger = ! empty( $attributes['fxFooterStagger'] );
+if ( $sfr_footer_stagger && '' === $sfr_fx_effect ) {
+	$sfr_extra_attrs['data-sgs-fx']       = 'scrub';
+	$sfr_extra_attrs['data-sgs-fx-start'] = 'top 90%';
+	$sfr_extra_attrs['data-sgs-fx-end']   = 'top 55%';
+	$sfr_extra_attrs['data-sgs-fx-ease']  = 'power2.out';
+}
 
 // ── Block-private border: width / style / colour (Shape B). ──
 // Migrated from WP-native supports by scripts/migrate-border-shape-b.js.

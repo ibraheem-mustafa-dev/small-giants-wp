@@ -292,6 +292,48 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"fxEffect": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"cursor-field",
+				"particles",
+				"grid-dots",
+				"wave-gradient"
+			],
+			"_comment": "BLOCK-PRIVATE effect selector (2026-09-11 addendum) — deliberately NOT the shared fx ToolsPanel's `fx` attribute. This block must never declare `fx` or join the fx-qualifying-block roster (fx.js/generated-fx-qualifying-blocks.json are read-only reference here). PHP-whitelist-validated in render.php; an unrecognised value resolves to ''."
+		},
+		"fxFieldType": { "type": "string", "default": "" },
+		"fxFieldColour": { "type": "string", "default": "" },
+		"fxFieldRadius": { "type": "number" },
+		"fxFieldShape": { "type": "string", "default": "" },
+		"fxFieldBlend": { "type": "number" },
+		"fxFieldTrail": { "type": "number" },
+		"fxParticlePreset": { "type": "string", "default": "" },
+		"fxParticleDensity": { "type": "number" },
+		"fxParticleSize": { "type": "number" },
+		"fxParticleColour": { "type": "string", "default": "" },
+		"fxGridDotColour": { "type": "string", "default": "" },
+		"fxGridDotHoverColour": { "type": "string", "default": "" },
+		"fxGridDotShape": { "type": "string", "default": "" },
+		"fxGridCell": { "type": "number" },
+		"fxGridDotSize": { "type": "number" },
+		"fxGridRadius": { "type": "number" },
+		"fxGridLean": { "type": "number" },
+		"fxGridEase": { "type": "number" },
+		"fxWaveVariant": { "type": "string", "default": "pastel" },
+		"fxWaveBase": { "type": "string", "default": "" },
+		"fxWave1": { "type": "string", "default": "" },
+		"fxWave2": { "type": "string", "default": "" },
+		"fxWave3": { "type": "string", "default": "" },
+		"fxWaveSpeed": { "type": "number" },
+		"fxWaveAmplitude": { "type": "number" },
+		"fxFooterStagger": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "Footer-row-ONLY (not shared with any other block) scroll-scrubbed reveal. Reuses the Spec 38 FR-38-7 `scrub` runtime UNMODIFIED (src/shared/effects/gsap/fx-scrub.js, bootEffect('scrub', initScrub) does document.querySelectorAll('[data-sgs-fx=\"scrub\"]') and tweens each matched element's own opacity/transform against its own scroll progress) — render.php stamps `data-sgs-fx=\"scrub\"` on this row's ROOT via extra_attrs. Deliberately scoped to a single row-level reveal, not per-child: `sgs_fx_effect_param_scope()`'s 'scrub' row carries no stagger param, and per-child staggering would need either mutating already-rendered nested InnerBlocks HTML (no precedent/tooling in this codebase) or extending the shared runtime to accept multiple internal targets (out of scope for a block-private escape hatch — flagged for a future Spec 38 FR, not built here)."
 		}
 	},
 	"render": "file:./render.php",
