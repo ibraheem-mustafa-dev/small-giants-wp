@@ -105,6 +105,11 @@ const END_SHAPES = {
 		helper: 'sgs_svg_stroke_gradient() + sgs_svg_inject_defs()',
 		doc: 'CLAUDE.md "Known precedent-function registry" — SVG paint gradient row',
 	},
+	ICON_SOURCE_AWARE_GRADIENT: {
+		key: 'icon-source-aware-gradient',
+		helper: 'sgs_icon_gradient_css()',
+		doc: 'CLAUDE.md "Known precedent-function registry" — icon gradient (source-varies) row; picks SVG-stroke for lucide/wp-icon, the text-gradient trio for dashicon/emoji',
+	},
 	PER_ITEM_LOOP: {
 		key: 'per-item-loop',
 		helper: ':nth-child(N)-scoped rule per iteration',
@@ -437,6 +442,37 @@ function detectCurrentShape( php, attr, blockJson ) {
 			if ( new RegExp( helper + '\\([^)]*\\$' + v + '\\b' ).test( php ) ) {
 				return { shape: END_SHAPES.SVG_PAINT_GRADIENT.key, evidence: helper + '(...$' + v + '...)', complete: true };
 			}
+		}
+	}
+
+	// 5b — sgs_icon_gradient_css( $iconSource, $gradientArg, $uid, $selector ) —
+	// an icon whose SOURCE varies (lucide/wp-icon render <svg>, dashicon/emoji
+	// render <span> and paint via color: like any other text node). The
+	// gradient value is ALWAYS the 2nd positional argument, and every real
+	// call site binds it to a local var first (icon/render.php's
+	// $icon_colour_gradient / $icon_colour_hover_gradient) rather than
+	// passing attributes['xGradient'] inline — trace bound vars the same way
+	// step 5 already does for sgs_svg_stroke_gradient(), rather than requiring
+	// an inline literal this helper's own real callers never use.
+	for ( const argsText of extractCallArgLists( php, 'sgs_icon_gradient_css' ) ) {
+		const positional = argsText.split( ',' );
+		const secondArg = ( positional[ 1 ] || '' ).trim();
+		const varMatch = /^\$([A-Za-z_]\w*)$/.exec( secondArg );
+		if ( varMatch && gradBoundVars.includes( varMatch[ 1 ] ) ) {
+			return {
+				shape: END_SHAPES.ICON_SOURCE_AWARE_GRADIENT.key,
+				evidence: 'sgs_icon_gradient_css(...,$' + varMatch[ 1 ] + ',...)',
+				complete: true,
+			};
+		}
+		// Direct-arg form (no bound local) — the literal attribute access
+		// appears inline as the 2nd argument.
+		if ( new RegExp( 'attributes\\[\\s*[\'"]' + gradAttr + '[\'"]' ).test( secondArg ) ) {
+			return {
+				shape: END_SHAPES.ICON_SOURCE_AWARE_GRADIENT.key,
+				evidence: "sgs_icon_gradient_css(...,attributes['" + gradAttr + "'],...)",
+				complete: true,
+			};
 		}
 	}
 
