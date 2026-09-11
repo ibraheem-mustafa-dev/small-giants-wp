@@ -179,9 +179,9 @@ landed; the step bodies further down are the original plan text and are not upda
   (`070fbc9a8`), FR-41-15 fate table executed both surfaces (`61a141fbf`), `style.css`
   finishing touches + a found-and-fixed dead `submenuAnimation` render consumer (`3fec38190`,
   `c2ecf8b84`).
-- **Wave C (steps 18-27, NOT STARTED):** behaviour fixes (FR-41-13), migration notice
-  (FR-41-34), static gate sweep (QA-6), build+deploy, two Playwright verification lanes,
-  stored-content migration, Bean's visual sign-off, detector WARN→HARD, living-docs update.
+- **Wave C (steps 18-27, NOT STARTED):** behaviour fixes (FR-41-13), static gate sweep (QA-6),
+  build+deploy, two Playwright verification lanes, Bean's visual sign-off, detector WARN→HARD,
+  living-docs update. ⛔ Steps 19/24 (migration notice FR-41-34; G5a) WITHDRAWN (D1036) — won't run.
 
 **One open design question — blocks only its own follow-up work, NOT the rest of Wave C:**
 the `sublink-marker` colour row. Originally planned as a Normal-only exemption; **Bean's actual

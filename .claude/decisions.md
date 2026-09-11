@@ -1,3 +1,48 @@
+## D1036 [ROUTINE] — Withdraw three pre-production-inappropriate mechanisms: WC compat-check, FR-41-34, G5a
+
+**2026-09-11, owner decision.** Three mechanisms across two tracks share one root cause and are
+withdrawn together — deliberately not built, not deferred: this framework is pre-production, with
+no live client site and no stored content anywhere (including the sandybrown canary) that needs
+migrating or a version-compatibility warning. Each mechanism exists to protect *existing content or
+an existing live install* from a change; with neither in existence, each one is pure overhead —
+the same reasoning this project already applies to D270 (no block deprecations pre-production) and
+the standing rule "never weigh what this would change on the canary's current content, there is
+nothing to protect."
+
+1. **WooCommerce compat-check (Spec 30 FR-30-0(a)/(b)).** `class-wc-compat-check.php` (the
+   version-band runtime self-check that showed a dismissible admin notice on a WC mismatch) was
+   at `plugins/sgs-blocks/includes/class-wc-compat-check.php` and is DELETED, along with its
+   registration in `plugins/sgs-blocks/sgs-blocks.php` and the manifest it referenced,
+   `WC-DEPENDENCY-MANIFEST.md`. With no live client site, the notice this self-check would raise
+   only ever fired on the dev canary — where every session already reviews before shipping by
+   default, making the mechanism redundant with existing practice rather than protective.
+
+2. **Spec 41 FR-41-34 — the nav-menu migration notice.** A post-meta + dismissible editor `Notice`
+   telling an operator when a legacy `indicatorStyle:'pill'` attribute was auto-converted to the
+   new colour-state shape. Drafted but NEVER COMMITTED — caught and reverted before landing. No
+   live content anywhere uses the pre-3-state colour shapes it would have migrated, so there was
+   nothing for an operator to be notified about.
+
+3. **Spec 41 G5a — the underlying stored-content carry-forward logic.** The migration mechanism
+   FR-41-34's notice sat on top of (`indicatorStyle` → `itemBgHoverTreatment` + colour
+   carry-across). Withdrawn one level up from FR-41-34, same reasoning: there is no stored content
+   using the old attribute shapes to carry forward at all.
+
+**Not parking-eligible.** This is a decision NOT to build something, not deferred work — per this
+project's own rule, nothing was added to `.claude/parking.md`.
+
+**Docs updated:** `.claude/specs/01-SGS-THEME.md` ("Compatibility check" section + WordPress
+Requirements list), `.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md` (FR-30-0(a)/(b) + FR-30-5's
+maintenance-gate line), `.claude/specs/go-live-checklist.md` (FL-1 rewritten to drop the dead
+notice/manifest dependency), `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` (FR-41-34's own
+section, the G5a/G20b rows in §11, the §0a index tables, revision history bumped to 0.4.9),
+`.claude/plans/phase-nav-menu-colour-state.md` (steps 19 and 24 marked WITHDRAWN, their
+downstream `Deps:` on steps 20/25 voided, the gate→step map and acceptance-gates count corrected
+from 23 to 21 gates), `.claude/LEDGER.md` (Wave C summary). Original text kept as history
+throughout, per this project's doc convention — nothing deleted, only annotated.
+
+---
+
 ## D1035 [ROUTINE] — Tier 0 C1 fix: gate keys on a genuine slot-map hit, not the convention name
 
 **2026-09-11, same session as D1034, caught by task review (Opus, executed the code rather

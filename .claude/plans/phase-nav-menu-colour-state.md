@@ -93,7 +93,7 @@ beneath its ⚠ OPEN note, kept as history) and §12 item 8. **Still needs to be
 
 ### Wave C — NOT STARTED (steps 18-27)
 
-Steps 18 (behaviour fixes, FR-41-13), 19 (migration notice, FR-41-34), 20 (QA-6 static gate sweep), 21 (build+deploy), 22-23 (Playwright verification), 24 (G5a stored-content migration), 25 (Bean's visual sign-off), 26 (detector WARN→HARD), 27 (living-docs update) are all untouched. Step 27 itself will supersede parts of this progress log once it runs.
+Steps 18 (behaviour fixes, FR-41-13), 19 (⛔ **WITHDRAWN 2026-09-11 — migration notice, FR-41-34; will not run**), 20 (QA-6 static gate sweep), 21 (build+deploy), 22-23 (Playwright verification), 24 (⛔ **WITHDRAWN 2026-09-11 — G5a stored-content migration; will not run**), 25 (Bean's visual sign-off), 26 (detector WARN→HARD), 27 (living-docs update) are all untouched — steps 19 and 24 are withdrawn, not "untouched", and are skipped when Wave C resumes; downstream `Deps:` are voided per those steps' own WITHDRAWN boxes. Step 27 itself will supersede parts of this progress log once it runs.
 
 
 # Phase — Spec 41 `sgs/nav-menu` colour, state + control system
@@ -168,7 +168,7 @@ defaults calibrated against this project's comparable plans
 
 - [ ] `git grep -nE "hoverStyle|underlineColour|underlineThickness|underlineOffset|itemRadius|submenuRadius|indicatorStyle|indicatorColour" plugins/sgs-blocks/src plugins/sgs-blocks/scripts theme/` returns nothing
 - [ ] `python plugins/sgs-blocks/scripts/run-gates.py --tier all` exits 0
-- [ ] All **23 acceptance gates** (G1, G2, G3, G4, G5, G5a, G6–G19, G20, G20b, G20c) pass, each with its evidence recorded in `.claude/verify/spec-41-gates.md` — **assembled at step 25** by merging step 22's `spec-41-gates-mechanism.md` and step 23's `spec-41-gates-interaction.md` into the file step 24 seeds. ⛔ The two Playwright lanes write SEPARATE files (MUST-FIX 3): they run concurrently, and one evidence file plus one browser context between them is a shared-mutable-resource collision, not a coordination problem
+- [ ] All **21 acceptance gates** (G1, G2, G3, G4, G5, G6–G19, G20, G20c — **G5a and G20b WITHDRAWN 2026-09-11, no longer tracked; see step 19/24's WITHDRAWN boxes and `.claude/decisions.md` D1036**) pass, each with its evidence recorded in `.claude/verify/spec-41-gates.md` — **assembled at step 25** by merging step 22's `spec-41-gates-mechanism.md` and step 23's `spec-41-gates-interaction.md` (step 24 no longer seeds this file — it is withdrawn). ⛔ The two Playwright lanes write SEPARATE files (MUST-FIX 3): they run concurrently, and one evidence file plus one browser context between them is a shared-mutable-resource collision, not a coordination problem
 - [ ] `plugins/sgs-blocks/src/blocks/nav-menu/edit.js` ≤ 250 lines (**≥ 7 JS files**) and `render.php` ≤ 300 **CODE** lines (**exactly 4 PHP files**), with every extracted module under the same limits (project CLAUDE.md file-length rule). **Each split sub-file carries its own size assertion in its step's `Test:` block — the limit is asserted per file, not eyeballed on a total** (owner ruling 7). ⛔ **PHP is measured on CODE LINES ONLY, not raw `wc -l`** — Bean's decision 2026-09-11, consistent with his own D722 which already rejected a raw-line gate on this exact file (48% comments then, 52% now). JS is measured on raw `wc -l` (`edit.js` is only 11% comments, so its bulk is real)
 - [ ] `.claude/verify/spec-41-reuse-ledger.md` records, per split sub-file, which existing SGS atom / shared helper / injector-extension it reuses instead of new block-private code — or names why none applies (owner ruling 7: a split must reduce bulk through reuse, not relocate it)
 - [ ] `python plugins/sgs-blocks/scripts/check-ungated-paint-rules.py --check` exits 0 **and** appears in `npm run gate:list`
@@ -2602,6 +2602,16 @@ bounded degradation is exactly why the two halves are split rather than written 
 
 ### Step 19 — FR-41-34: the migration notice (`register_post_meta` + write + dismissible `Notice`)
 
+⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** Deliberately not built, not
+deferred: no live content anywhere (including the canary) uses the pre-3-state colour shapes this
+notice would migrate, so there is nothing for an operator to be notified about. Same reasoning as
+D270 (no block deprecations pre-production) and the "no content to protect on the canary" rule.
+No code was ever committed for this step. Recorded once: `.claude/decisions.md` D1036; spec-side:
+`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` FR-41-34's WITHDRAWN box. **Any step whose
+`Deps:` names step 19 (Step 20 below) has that dependency VOIDED, not blocked** — step 19 will
+never run, so downstream steps proceed without waiting on it. The step body below is kept as
+history, not as a queued task.
+
 ```
   Model:       sonnet
   Action:      Register `_sgs_nav_menu_migration_notice` on `post` AND `page`; write one record per
@@ -2723,6 +2733,8 @@ QA Gate — every static gate passes on the built tree, before anything is deplo
            so a dropped 14a fails none of the 23 tracked gates — the canary could be built and
            deployed with the `sgs/nav-drawer` close-button work missing and nothing downstream would
            notice. This `Deps:` line is the only thing that catches it.
+           ⛔ **Step 19's dependency is VOID, 2026-09-11 — step 19 is WITHDRAWN and will never run.**
+           This step proceeds once steps 13-18 are complete; do not wait on step 19.
   Check:   cd plugins/sgs-blocks
            npm run build                                              # exits 0
            node scripts/hover-guard/check.js                          # G2
@@ -2945,6 +2957,17 @@ one would be asserting a capability the spec deliberately does not claim.
 
 ### Step 24 — G5a: the stored-content migration on the canary, + G20b
 
+⛔ **WITHDRAWN 2026-09-11 (owner) — DO NOT DISPATCH THIS STEP.** G5a itself (the underlying
+stored-content carry-forward logic this step would run) is withdrawn, one level up from FR-41-34:
+there is no stored content anywhere using the old `indicatorStyle`/`indicator*` shapes to carry
+forward. G20b (the notice-appears-correctly gate, owned by this step) is withdrawn with it — it
+has nothing to assert once no migration runs. **G13 scenario 3, also owned by this step because it
+"straddles the migration", is likewise moot** — it exists only to assert the migration preserves
+rendered colour, and there is no migration to run the assertion against; G13's other three
+scenarios (owned by steps 22/24 per the gate→step map) are unaffected. Same reasoning + D-number
+as step 19 above: `.claude/decisions.md` D1036. **Any step whose `Deps:` names step 24 (Step 25
+below) has that dependency VOIDED, not blocked.** The step body below is kept as history.
+
 > ✅ **Owner ruling 5 (2026-09-11) — RUN IT DIRECTLY AGAINST THE CANARY'S CURRENT CONTENT. The
 > duplicate-the-pages-first step is REMOVED, not deferred.** The canary is pre-production; there is
 > no client content to protect, so duplication hedges a risk that does not exist. The real safety net
@@ -3035,8 +3058,10 @@ one would be asserting a capability the spec deliberately does not claim.
                sign-off record**: `.claude/verify/spec-41-gates-mechanism.md` (step 22) +
                `.claude/verify/spec-41-gates-interaction.md` (step 23) → merged INTO
                `.claude/verify/spec-41-gates.md`, which is what the phase success criteria name.
-               ⛔ **Step 24 has ALREADY seeded that file** with its G5a / G20b / G13-scenario-3
-               evidence — merge into it, never overwrite it. ⛔ Check every one of the 23 gates
+               ⛔ **Step 24 is WITHDRAWN (2026-09-11) and will NOT seed this file** — do not wait
+               for or expect G5a / G20b / G13-scenario-3 evidence from it; the merged file legitimately
+               has **21** gates (23 minus G5a and G20b), not 23. Merge steps 22 and 23's evidence only.
+               ⛔ Check every one of the remaining 21 gates
                appears exactly once in the merged
                file — a gate present in neither lane's file is an unrun gate, not a formatting
                problem. Then present the canary at 375 / 768 / 1440 px with the new controls
@@ -3045,10 +3070,11 @@ one would be asserting a capability the spec deliberately does not claim.
   Files:       .claude/verify/spec-41-gates.md (the merged sign-off record — WRITTEN HERE)
                (read-only) .claude/verify/spec-41-gates-mechanism.md ·
                .claude/verify/spec-41-gates-interaction.md
-  Inputs:      steps 22-24's evidence logs
+  Inputs:      steps 22-23's evidence logs (step 24's are withdrawn, not merely absent — see step 24)
   Outcome:     Bean has looked at it and said yes, or named what to change.
   Exec:        SEQUENTIAL
-  Deps:        step 24
+  Deps:        steps 22, 23 — ⛔ **step 24's dependency is VOID, 2026-09-11 (step 24 is WITHDRAWN
+               and will never run)**; this step no longer waits on it
   Marker:      HANDOFF
   Time:        20 min (Bean's time: ~10 min)
   Tooling:     design-reviewer agent, Playwright, /visual-qa
@@ -3406,7 +3432,7 @@ emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may 
 
 ---
 
-## Gate → step map (all 23 acceptance gates, none unowned)
+## Gate → step map (21 acceptance gates, none unowned — G5a and G20b WITHDRAWN 2026-09-11, struck below)
 
 | Gate | Owned by | Kind |
 |---|---|---|
@@ -3415,7 +3441,7 @@ emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may 
 | G3 | Step 20 (QA-6) | static |
 | G4 | Step 10 (QA-5) | DB negative control |
 | G5 | Step 20 (QA-6) | static, 3 search scopes |
-| G5a | Step 24 | stored content, live |
+| ~~G5a~~ | ~~Step 24~~ | ⛔ **WITHDRAWN 2026-09-11** — no stored content exists to migrate; see step 24's WITHDRAWN box and `.claude/decisions.md` D1036 |
 | G6 | Step 22 | live mechanism — now also the end-to-end proof of step 6a's `suppress_edges` |
 | G7 | Step 23 | live, both forks + Bean's eye |
 | G8 | Step 23 | touch emulation |
@@ -3423,7 +3449,7 @@ emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may 
 | G10 (a)(b) | Step 23 | renders, not just computes |
 | G11 | Step 10 (QA-5) | reseed |
 | G12 | Step 10 (QA-5) + step 20 | manifest conformance |
-| G13 (4 scenarios) | **Step 22 (1, 2, 4) + Step 24 (3 — straddles the G5a migration)** | byte-identity + input-mapped |
+| G13 (**3 scenarios — scenario 3 WITHDRAWN 2026-09-11 with G5a, moot with no migration to test**) | **Step 22 (1, 2, 4)** — ~~Step 24 (3)~~ dropped | byte-identity + input-mapped |
 | G14 (a)-(g) | Step 22 | cross-mechanism, 5 paths on (f) |
 | G15 | Step 22 | icon default byte-identity |
 | G16 (a)(b)(c) | Step 23 | relocated control still ACTS |
@@ -3431,7 +3457,7 @@ emitter stays block-private in `render.php`), PD-6 (a `colourRows` GROUPING may 
 | G18 (a)(b)(c) | Step 22 (+ static half at step 20) | RENDERS / WRITES / EMITS |
 | G19 (a)-(e) | Step 23 | trio renders, emits, is not the default |
 | G20 (a)(b)(c) | Step 23 | tiers persist + render, both prefixes |
-| G20b (a)-(e) | Step 24 | notice appears ONLY on a real change |
+| ~~G20b (a)-(e)~~ | ~~Step 24~~ | ⛔ **WITHDRAWN 2026-09-11** — no notice mechanism exists to gate; see FR-41-34's WITHDRAWN box and `.claude/decisions.md` D1036 |
 | G20c (a)-(e) | Step 26 | detector exists, reachable, can still fail — **plus its own scope negative control** (owner ruling 4): hard-fails on `sgs/nav-menu`, warns-and-passes elsewhere |
 
 ⚠ **Two steps carry acceptance criteria that are NOT one of the spec's 23 gates, deliberately.**

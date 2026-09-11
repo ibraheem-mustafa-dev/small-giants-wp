@@ -89,13 +89,27 @@ The Mama's Munches product-page draft is a WooCommerce page TYPE (6-persona coun
 
 ## Functional Requirements
 
-### FR-30-0 — WooCommerce dependency contract — **SHIPPED** (D210, 2026-06-11)
+### FR-30-0 — WooCommerce dependency contract — **SHIPPED** (D210, 2026-06-11); **(a) and (b) below WITHDRAWN 2026-09-11**
 The build rests on two **Beta** core blocks (Product Gallery; Add-to-Cart+Options variation selectors) whose markup/attribute contracts can change between WC minors. Before P1 build starts:
-(a) **Version band** — declare a tested WC floor + ceiling (floor ≥9.9 for the variation-aware gallery); a runtime self-check on admin load asserts the relied-on core blocks are registered AND the installed WC is inside the band, surfacing a dashboard notice ("SGS: WooCommerce X is newer than tested — product pages may need review") when outside it. Silent rot is fatal for a QC-only owner.
-(b) **Dependency manifest** — one file lists the EXACT core block names + `/sgs/v1` + Store-API read surfaces relied on, so upgrades reconcile against a written contract.
+(a) **Version band** ⛔ **WITHDRAWN 2026-09-11 (owner) — the runtime self-check was built as
+`class-wc-compat-check.php` and has now been DELETED** (registration in `sgs-blocks.php` removed
+too). Reasoning: this framework has no live client site yet, so the notice this self-check would
+raise fires only on the sandybrown dev canary — where every session already reviews before
+shipping by default — making the mechanism pure overhead, not protection. Same root cause as
+FR-41-34/G5a's withdrawal on the nav-menu spec. Recorded once: `.claude/decisions.md` D1036. Text
+below describes the withdrawn design as specified, kept as history: declare a tested WC floor +
+ceiling (floor ≥9.9 for the variation-aware gallery); a runtime self-check on admin load would
+assert the relied-on core blocks are registered AND the installed WC is inside the band, surfacing
+a dashboard notice ("SGS: WooCommerce X is newer than tested — product pages may need review")
+when outside it.
+(b) **Dependency manifest** ⛔ **WITHDRAWN 2026-09-11 (owner) — `WC-DEPENDENCY-MANIFEST.md` has been
+DELETED alongside (a); same reasoning, one level up: a manifest exists to reconcile a LIVE site's
+relied-on surfaces against upgrades, and there is no live site to reconcile.** Text below describes
+the withdrawn mechanism, kept as history: one file would list the EXACT core block names + `/sgs/v1`
++ Store-API read surfaces relied on, so upgrades reconcile against a written contract.
 (c) **Gateway pre-flight (was Open Question 3 — now a P1 entry gate, 5 council voices)** — verify the client's payment gateway plugins (Stripe/PayPal/express) declare Cart/Checkout BLOCK support at their installed versions BEFORE composing block checkout. Fallback branch if not: classic-checkout template + documented consequences (noindex story unchanged; Mini-Cart drawer unaffected).
 (d) **Fallback plans written down** — Beta gallery regression → core classic gallery via the `wc-product-gallery-*` supports (declared in FR-30-1); rollback escape hatch = remove the theme template overrides so WC's injected defaults render.
-**Model:** opus (contract) + sonnet (self-check code). **Done when:** the self-check renders the notice on a deliberately out-of-band WC version; the dependency manifest file exists and names every relied-on block; the gateway matrix for the first client is verified with a recorded result; template override is confirmed to win over WC's injected default on the canary's WC version.
+**Model:** opus (contract) + sonnet (self-check code). **Done when (historical — (a) and (b) withdrawn 2026-09-11, see above):** ~~the self-check renders the notice on a deliberately out-of-band WC version; the dependency manifest file exists and names every relied-on block;~~ the gateway matrix for the first client is verified with a recorded result; template override is confirmed to win over WC's injected default on the canary's WC version.
 
 ### FR-30-1 — Theme support + template scaffolding — **SHIPPED** (D210, 2026-06-11)
 Declare `add_theme_support('woocommerce')` + `wc-product-gallery-zoom` / `-lightbox` / `-slider` in `theme/sgs-theme/functions.php`, landing in the SAME commit as the first template (declaring alone half-breaks WC fallback rendering). Ship Site-Editor-editable overrides `single-product.html` and `archive-product.html`, **decomposed into template parts** (`sgs-pdp-gallery`, `sgs-pdp-buybox`, `sgs-pdp-content`, `sgs-archive-toolbar` …) so a WC upstream change reconciles in one part, not a whole-file diff. Cart/Checkout use core templates unless composition demands an override.
@@ -124,7 +138,7 @@ A live/keyword product-search block. **This is the spec's largest net-new build 
 - **Server hardening (red-team must-fixes):** the REST handler enforces server-side rate limiting (≤30 req/IP/min via transient/object-cache counter — client debounce is UX only, not protection); rejects queries <2 chars; sanitises the query (`sanitize_text_field` + `wc_clean`) before any query arg; constrains results to `post_status='publish'` AND `catalog_visibility IN ('visible','search')` — never draft/private/password-protected/hidden (this codebase shipped exactly this leak class before — merchant feed, fixed with the visibility filter); response schema is fixed at the endpoint (ID, title, permalink, thumbnail — NO price fields, NO meta, NO variation data); responses via `WP_REST_Response` (correct headers); suggestion titles enter the DOM via `textContent`, never `innerHTML` (XSS via product titles).
 - **A11y:** the full combobox pattern — `<form role="search">` landmark → input `role="combobox"` + `aria-autocomplete="list"` + `aria-controls` → suggestions `role="listbox"`/`role="option"`; keyboard navigable; 44px targets. (Not a naked `role="searchbox"`.)
 - **Quality floor:** prefix + in-title matching minimum, with relevance ordering (exact-prefix before substring); suggestion response <150ms server-side on a 500-product fixture; executed-JS weight measured and recorded against the budget.
-- **Maintenance gate:** the dependency manifest (FR-30-0b) names the query API this block relies on; a regression check (scripted, wired to something that runs — `dont-claim-a-guard-is-enforced-unless-wired-to-something-that-runs`) re-runs the search fixture on every WC band bump.
+- **Maintenance gate:** ⛔ **FR-30-0b's dependency manifest is WITHDRAWN (2026-09-11, D1036) — `WC-DEPENDENCY-MANIFEST.md` no longer exists, so it no longer names this block's query API.** A regression check (scripted, wired to something that runs — `dont-claim-a-guard-is-enforced-unless-wired-to-something-that-runs`) should still re-run the search fixture on every WC band bump; it just can't cite the manifest as its source of the relied-on API until/unless a live client site makes rebuilding it worthwhile.
 **Model:** opus design-gate + sonnet build. **Done when:** typing ≥2 chars surfaces matching products on the canary ordered prefix-first; a draft product's title NEVER appears in suggestions (live-probed); curl-hammering the endpoint past the rate limit returns 429; Enter with JS disabled lands on a product-scoped results URL; a product titled `<img src=x onerror=alert(1)>` renders inertly in the dropdown; axe 0 violations; registered via `/sgs-update`.
 
 ### FR-30-6 — SGS searchable attribute filter — **SHIPPED** (D214, 2026-06-12)

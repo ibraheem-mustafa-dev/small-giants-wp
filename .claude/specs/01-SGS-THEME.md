@@ -539,7 +539,18 @@ Operator SEO copy with accessible read-more. Full text is always server-side-ren
 
 ### Compatibility check
 
-`class-wc-compat-check.php` performs a lazy, version-keyed runtime self-check on `woocommerce_loaded`. On a version mismatch it shows a dismissible admin notice. The ceiling uses integer arithmetic to avoid float-comparison errors (e.g. WC 10.10 was previously mis-passed under a 10.8 ceiling — fixed D210). The `WC-DEPENDENCY-MANIFEST.md` records the relied-upon core WC blocks and the gateway record per site.
+⛔ **WITHDRAWN 2026-09-11 (owner).** Deliberately not built — not deferred. `class-wc-compat-check.php`
+(FR-30-0a — the version-band runtime self-check) has been DELETED, along with its registration in
+`plugins/sgs-blocks/sgs-blocks.php` and the manifest it referenced (`WC-DEPENDENCY-MANIFEST.md`,
+FR-30-0b — also deleted). Reasoning: this mechanism exists to protect a LIVE client site from an
+unexpected WooCommerce upgrade breaking their pages; with no live client site running this
+framework yet, it fires only on the sandybrown dev canary, where "review before it ships" is what
+every session already does by default — making the mechanism pure overhead. Same root cause as
+FR-41-34/G5a's withdrawal (nav-menu spec): pre-production, nothing to protect. Recorded once:
+`.claude/decisions.md` D1036. The paragraph below describes the withdrawn mechanism as it was
+specified — kept as history, not a live requirement.
+
+*(Was) `class-wc-compat-check.php`::init* performed a lazy, version-keyed runtime self-check on `woocommerce_loaded`. On a version mismatch it showed a dismissible admin notice. The ceiling used integer arithmetic to avoid float-comparison errors (e.g. WC 10.10 was previously mis-passed under a 10.8 ceiling — fixed D210). `WC-DEPENDENCY-MANIFEST.md` recorded the relied-upon core WC blocks and the gateway record per site.
 
 ---
 
@@ -618,7 +629,7 @@ The `sgs_typography_css_rule()` PHP helper (auto-loaded via `render-helpers.php`
 
 - WordPress 7.0+ recommended (canary/sandybrown runs WP 7.0); 6.7+ minimum (block theme features, theme.json v3)
 - PHP 8.0+
-- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30, D210). The theme detects the WC version via `class-wc-compat-check.php` and shows a dismissible admin notice if the requirement is unmet. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
+- WooCommerce 9.9+ — **required** for shop/PDP templates (Spec 30, D210). ⛔ **The runtime version-check + admin notice described in earlier revisions is WITHDRAWN (2026-09-11, D1036)** — `class-wc-compat-check.php` no longer exists; see "Compatibility check" above. Verify the WC version manually (`wp plugin get woocommerce --field=version`) before a build touches shop/PDP templates. The theme still activates cleanly on non-WC installs — WC template parts simply go unused.
 - No page builder plugin dependency
 
 **theme.json v3 note:** Version 3 was introduced in WordPress 6.6 (August 2024) and should be supported on WP 6.9.1. Verify on the development site before committing. If the dev site runs an older WP version, use v2 instead (the schema is largely compatible, but v3 adds `defaultFontSizes` control and other refinements).
