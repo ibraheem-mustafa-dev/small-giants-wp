@@ -83,25 +83,37 @@ def test_hero_background_color_resolves_without_crashing():
 
 def test_hero_background_image_does_not_misroute_to_overlay_child_attr():
     """sgs/hero + 'background-image': the pair this fix was originally built
-    and tested against. A root-level declaration for a property with NO
-    root-domain destination must gap (None), never resolve to a child-scoped
-    attr just because that child attr happens to be tagged css_layer='OUTER'.
+    and tested against. A root-level declaration must never resolve to a
+    child-scoped attr (e.g. 'overlayGradient', css_element='overlay') just
+    because that child attr happens to be tagged css_layer='OUTER'.
 
-    sgs/hero's only 'background-image' destinations are all child-scoped
-    (overlay/media/content) — none is root/self/wrapper. The OUTER-layer
-    resolver already gets this right (proves the correct answer); the
-    column-first path attr_for_property uses did not, before this fix.
+    CORRECTED 2026-09-11 (mirrors test_hero_background_color_resolves_
+    without_crashing immediately above, same file): the original assertion
+    here required a hard gap (None), on the premise that sgs/hero has NO
+    root-domain 'background-image' destination at all. That premise was
+    wrong — sgs/hero.backgroundImage IS a genuine, always-existing root
+    attribute (css_element=None, paints the block's own CSS background —
+    confirmed live in render.php, same shape as the analogous
+    backgroundColour case the sibling test above already accepts as
+    correct), not a child-scoped one. The real guarantee this test protects
+    — a child element's attr never masquerading as the root's — is
+    expressed the same way its sibling does: assert the genuine root attr
+    wins, not that nothing does.
     """
-    assert db_lookup.attr_for_layer_property("sgs/hero", "OUTER", "background-image") is None, (
-        "sanity check: the correctly-guarded OUTER-layer resolver must also see "
-        "no root-domain destination for this property"
+    resolved_layer = db_lookup.attr_for_layer_property("sgs/hero", "OUTER", "background-image")
+    assert resolved_layer == "backgroundImage", (
+        f"attr_for_layer_property('sgs/hero','OUTER','background-image') resolved to "
+        f"{resolved_layer!r}, expected the block's own genuine root attr 'backgroundImage' "
+        "(not a child-scoped attr such as 'overlayGradient', css_element='overlay')"
     )
     resolved = db_lookup.attr_for_property("sgs/hero", "background-image")
-    assert resolved is None, (
-        f"attr_for_property('sgs/hero', 'background-image') resolved to {resolved!r} — "
-        "it must return None (honest gap), not a child-scoped attr such as "
-        "'overlayGradient' (css_element='overlay'). A block-root declaration must "
-        "never land on a CHILD element's attribute."
+    assert resolved is not None, "sgs/hero background-image unexpectedly gapped"
+    _writer_path, attr_name, _kind = resolved
+    assert attr_name == "backgroundImage", (
+        f"attr_for_property('sgs/hero', 'background-image') resolved to {attr_name!r}, "
+        "expected the block's own root attr 'backgroundImage' (not a child-scoped attr "
+        "such as 'overlayGradient', css_element='overlay'). A block-root declaration "
+        "must never land on a CHILD element's attribute."
     )
 
 
