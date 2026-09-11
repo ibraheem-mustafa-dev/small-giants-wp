@@ -229,7 +229,8 @@
 						"css:text-decoration": "submenuTextDecoration",
 						"css:text-transform": "submenuTextTransform",
 						"css:letter-spacing": "submenuLetterSpacing",
-						"css:text-align": "submenuTextAlign"
+						"css:text-align": "submenuTextAlign",
+						"css:fill": "sublinkMarkerColour"
 					},
 					"states": {
 						"hover": {
@@ -262,6 +263,7 @@
 					"attrMap": {
 						"css:background-color": "submenuBg",
 						"css:border-color": "submenuBorderColour",
+						"css:border-color-gradient": "submenuBorderColourGradient",
 						"css:border-width": "submenuBorderWidth",
 						"css:border-style": "submenuBorderStyle",
 						"css:border-radius": "submenuBorderRadius",
