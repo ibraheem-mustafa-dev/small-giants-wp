@@ -161,6 +161,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// WCAG 1.4.11 check. Unset on both → no background is known, so no check.
 	const itemSurface = itemBg || navBg || '';
 
+	// FR-41-30(b) RESOLVED 2026-09-11 — the sublink-marker colour row is
+	// revealed only once the operator picks a DIFFERENT icon than the
+	// declared default (chevron-right). Keyed on the ICON CHOICE, never on
+	// whether a colour has been set — an unset `sublinkMarkerColour` is
+	// indistinguishable from "never touched" under this block's own
+	// `""`-means-unset convention, so gating on it would never reveal the
+	// row for a client who cleared a colour back to blank.
+	const SGS_NM_SUBLINK_MARKER_ICON_DEFAULT = { source: 'lucide', name: 'chevron-right' };
+	const sublinkMarkerIconIsCustom =
+		( sublinkMarkerIcon?.source ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ) !==
+			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.source ||
+		( sublinkMarkerIcon?.name ?? SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name ) !==
+			SGS_NM_SUBLINK_MARKER_ICON_DEFAULT.name;
+
 	const colourRows = [
 		fillRow( {
 			key: 'nav-bg',
@@ -382,16 +396,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		} ),
-		// Normal-only by design (FR-41-30b): the marker is aria-hidden decoration
-		// beside the sublink's own text, and an unset value inherits currentColor
-		// from that text — so it already follows Hover and Current for free.
-		textRow( {
-			key: 'sublink-marker',
-			label: __( 'Sublink marker colour', 'sgs-blocks' ),
-			attrs: { base: 'sublinkMarkerColour' },
-			attributes,
-			setAttributes,
-		} ),
+		// FR-41-30(b) RESOLVED 2026-09-11: OMITTED (not disabled, D609 9c) unless
+		// `sublinkMarkerIcon` differs from its declared chevron-right default —
+		// an untouched marker keeps inheriting currentColor from the sublink's
+		// own text with no row shown at all. Once revealed it gets the full
+		// Normal/Hover/Current + gradient treatment like every other icon-colour
+		// row (`sgs_icon_gradient_css()` render-side — see render.php).
+		sublinkMarkerIconIsCustom &&
+			textRow( {
+				key: 'sublink-marker',
+				label: __( 'Sublink marker colour', 'sgs-blocks' ),
+				attrs: {
+					base: 'sublinkMarkerColour',
+					hover: 'sublinkMarkerColourHover',
+					current: 'sublinkMarkerColourCurrent',
+					gradient: 'sublinkMarkerColourGradient',
+					hoverGradient: 'sublinkMarkerColourHoverGradient',
+					currentGradient: 'sublinkMarkerColourCurrentGradient',
+				},
+				attributes,
+				setAttributes,
+			} ),
 		textRow( {
 			key: 'burger-icon',
 			heading: __( 'Menu button', 'sgs-blocks' ),

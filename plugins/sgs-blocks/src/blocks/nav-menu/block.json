@@ -230,7 +230,8 @@
 						"css:text-transform": "submenuTextTransform",
 						"css:letter-spacing": "submenuLetterSpacing",
 						"css:text-align": "submenuTextAlign",
-						"css:fill": "sublinkMarkerColour"
+						"css:fill": "sublinkMarkerColour",
+						"css:fill-gradient": "sublinkMarkerColourGradient"
 					},
 					"states": {
 						"hover": {
@@ -239,13 +240,17 @@
 								"css:background-color": "submenuLinkBgHover",
 								"css:font-weight": "submenuFontWeightHover",
 								"css:text-decoration": "submenuTextDecorationHover",
-								"css:text-transform": "submenuTextTransformHover"
+								"css:text-transform": "submenuTextTransformHover",
+								"css:fill": "sublinkMarkerColourHover",
+								"css:fill-gradient": "sublinkMarkerColourHoverGradient"
 							}
 						},
 						"current": {
 							"attrMap": {
 								"css:color": "submenuColourCurrent",
-								"css:background-color": "submenuLinkBgCurrent"
+								"css:background-color": "submenuLinkBgCurrent",
+								"css:fill": "sublinkMarkerColourCurrent",
+								"css:fill-gradient": "sublinkMarkerColourCurrentGradient"
 							}
 						}
 					},
@@ -888,7 +893,27 @@
 		"sublinkMarkerColour": {
 			"type": "string",
 			"default": "",
-			"description": "Normal-only, with no Hover or Current sibling. The marker is aria-hidden decoration beside the sublink's own text; unset, it inherits currentColor from that text, which already carries the full three-state colour, so it changes with Hover and Current for free."
+			"description": "FR-41-30(b) RESOLVED 2026-09-11: unset, the marker inherits currentColor from the sublink's own text. The inspector shows this row (and its Hover/Current/gradient siblings below) only once sublinkMarkerIcon differs from its declared default -- render.php itself carries no such gate, since an unset value already paints nothing."
+		},
+		"sublinkMarkerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkMarkerColourCurrent": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkMarkerColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkMarkerColourHoverGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkMarkerColourCurrentGradient": {
+			"type": "string",
+			"default": ""
 		},
 		"triggerMode": {
 			"type": "string",

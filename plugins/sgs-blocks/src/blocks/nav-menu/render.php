@@ -50,8 +50,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -453,12 +453,122 @@ $sgs_nm_sublink_marker = sgs_nav_menu_icon_markup(
 	)
 );
 
+/*
+ * FR-41-30(b) RESOLVED 2026-09-11: full Hover/Current + gradient states for
+ * the marker colour, reusing `sgs/icon`'s own SOURCE-AWARE gradient
+ * mechanism (`sgs_icon_gradient_css()`) rather than `sgs_svg_stroke_gradient()`
+ * directly — the latter silently no-ops when the operator picks a
+ * dashicon/emoji marker, since neither source renders an `<svg>` to target.
+ * The inspector reveals this colour row only once `sublinkMarkerIcon` differs
+ * from its declared default (edit.js's reveal condition) — render.php carries
+ * no matching gate because an UNSET colour value already paints nothing here
+ * regardless of which icon is showing, so the reveal is purely an inspector
+ * affordance, never a render-time branch.
+ *
+ * `defs` (the lucide/wp-icon `<linearGradient>`) is injected into the
+ * marker's OWN `<svg>` markup, never into `$css` — `wp_strip_all_tags()` on
+ * the block's `<style>` assembly (§5 below) would destroy it on sight.
+ * dashicon/emoji sources always return an empty `defs`, so injection is a
+ * safe no-op there.
+ */
+// Validated the same way sgs/icon validates its own iconSource — an invalid
+// stored value would otherwise pass a source `sgs_icon_gradient_css()`
+// doesn't recognise while `sgs_nav_menu_icon_markup()` (above) has already
+// silently fallen back to lucide/chevron-right for the MARKUP; keeping the
+// two in lockstep avoids a flat-colour-works/gradient-silently-empty split.
+$sgs_nm_marker_source = (string) ( $attributes['sublinkMarkerIcon']['source'] ?? 'lucide' );
+if ( ! in_array( $sgs_nm_marker_source, array( 'lucide', 'wp-icon', 'dashicon', 'emoji' ), true ) ) {
+	$sgs_nm_marker_source = 'lucide';
+}
+$sgs_nm_marker_sel  = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker';
+$sgs_nm_sublink_sel = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink';
+
+$sgs_nm_marker_colour                  = (string) ( $attributes['sublinkMarkerColour'] ?? '' );
+$sgs_nm_marker_colour_hover            = (string) ( $attributes['sublinkMarkerColourHover'] ?? '' );
+$sgs_nm_marker_colour_current          = (string) ( $attributes['sublinkMarkerColourCurrent'] ?? '' );
+$sgs_nm_marker_colour_gradient         = (string) ( $attributes['sublinkMarkerColourGradient'] ?? '' );
+$sgs_nm_marker_colour_hover_gradient   = (string) ( $attributes['sublinkMarkerColourHoverGradient'] ?? '' );
+$sgs_nm_marker_colour_current_gradient = (string) ( $attributes['sublinkMarkerColourCurrentGradient'] ?? '' );
+
+$sgs_nm_marker_css = '';
+
+// Flat colour is source-agnostic: lucide/wp-icon SVGs paint via
+// `stroke="currentColor"`, dashicon/emoji are text nodes that paint via
+// `color:` directly — both follow a plain `color:` declaration on the
+// marker's own wrapper, exactly like sgs/icon's own `$root_decls` colour line.
+if ( '' !== $sgs_nm_marker_colour ) {
+	$sgs_nm_marker_css .= $sgs_nm_marker_sel . '{color:' . sgs_colour_value( $sgs_nm_marker_colour ) . ';}';
+}
+if ( '' !== $sgs_nm_marker_colour_current ) {
+	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker{color:'
+		. sgs_colour_value( $sgs_nm_marker_colour_current ) . ';}';
+}
+if ( '' !== $sgs_nm_marker_colour_hover ) {
+	$sgs_nm_marker_css .= sgs_hover_state_rules(
+		$sgs_nm_sublink_sel,
+		'color:' . sgs_colour_value( $sgs_nm_marker_colour_hover ),
+		':focus-visible',
+		' .sgs-nav-menu__sublink-marker'
+	);
+}
+
+// Gradient — resting.
+$sgs_nm_marker_grad    = sgs_icon_gradient_css(
+	$sgs_nm_marker_source,
+	$sgs_nm_marker_colour_gradient,
+	$uid . '-smk',
+	$sgs_nm_marker_sel
+);
+$sgs_nm_sublink_marker = sgs_svg_inject_defs( $sgs_nm_sublink_marker, $sgs_nm_marker_grad['defs'] );
+if ( '' !== $sgs_nm_marker_grad['css'] ) {
+	$sgs_nm_marker_css .= $sgs_nm_marker_sel . '{' . $sgs_nm_marker_grad['css'] . ';}';
+}
+if ( '' !== $sgs_nm_marker_grad['fallback_rule'] ) {
+	$sgs_nm_marker_css .= $sgs_nm_marker_grad['fallback_rule'];
+}
+
+// Gradient — hover (touch-guarded, matches every other hover rule on this block).
+$sgs_nm_marker_grad_hover = sgs_icon_gradient_css(
+	$sgs_nm_marker_source,
+	$sgs_nm_marker_colour_hover_gradient,
+	$uid . '-smkh',
+	$sgs_nm_sublink_sel . ':hover .sgs-nav-menu__sublink-marker'
+);
+$sgs_nm_sublink_marker    = sgs_svg_inject_defs( $sgs_nm_sublink_marker, $sgs_nm_marker_grad_hover['defs'] );
+if ( '' !== $sgs_nm_marker_grad_hover['css'] ) {
+	$sgs_nm_marker_css .= sgs_hover_state_rules(
+		$sgs_nm_sublink_sel,
+		$sgs_nm_marker_grad_hover['css'],
+		':focus-visible',
+		' .sgs-nav-menu__sublink-marker'
+	);
+}
+if ( '' !== $sgs_nm_marker_grad_hover['fallback_rule'] ) {
+	$sgs_nm_marker_css .= $sgs_nm_marker_grad_hover['fallback_rule'];
+}
+
+// Gradient — current page (never guarded, matches FR-41-3 binding rule 3).
+$sgs_nm_marker_grad_current = sgs_icon_gradient_css(
+	$sgs_nm_marker_source,
+	$sgs_nm_marker_colour_current_gradient,
+	$uid . '-smkc',
+	$sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker'
+);
+$sgs_nm_sublink_marker      = sgs_svg_inject_defs( $sgs_nm_sublink_marker, $sgs_nm_marker_grad_current['defs'] );
+if ( '' !== $sgs_nm_marker_grad_current['css'] ) {
+	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker{'
+		. $sgs_nm_marker_grad_current['css'] . ';}';
+}
+if ( '' !== $sgs_nm_marker_grad_current['fallback_rule'] ) {
+	$sgs_nm_marker_css .= $sgs_nm_marker_grad_current['fallback_rule'];
+}
+
 $submenu_model_ctx = $block->context['sgs/navDrawerSubmenuModel'] ?? null;
 if ( is_string( $submenu_model_ctx ) && in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
-	$items_html    = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker );
+	$items_html            = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker );
 	$sgs_nm_is_drawer_list = true;
 } else {
-	$items_html    = sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
+	$items_html            = sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
 	$sgs_nm_is_drawer_list = false;
 	$submenu_model_ctx     = '';
 }
@@ -632,10 +742,10 @@ if ( '' === $nav_label ) {
 $indicator_style           = 'highlight' === ( $attributes['itemBgHoverTreatment'] ?? 'swap' ) ? 'pill' : 'none';
 $indicator_colour          = isset( $attributes['itemBgHover'] ) ? (string) $attributes['itemBgHover'] : '';
 $indicator_colour_gradient = sgs_css_gradient_value( $attributes['itemBgHoverGradient'] ?? '' );
-$magnet_enabled    = ! empty( $attributes['itemMagnetEnabled'] );
-$bar_data_attrs    = '';
-$bar_data_attrs   .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
-$bar_data_attrs   .= $magnet_enabled ? ' data-magnet' : '';
+$magnet_enabled            = ! empty( $attributes['itemMagnetEnabled'] );
+$bar_data_attrs            = '';
+$bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
+$bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 
 // In-drawer nested list (FR-36-6): a distinct BEM modifier class + the
 // resolved submenu model as a data attribute — style.css's structural
@@ -643,8 +753,8 @@ $bar_data_attrs   .= $magnet_enabled ? ' data-magnet' : '';
 // reads the data attribute to decide whether to enhance at all.
 $bar_class = 'sgs-nav-menu__bar';
 if ( $sgs_nm_is_drawer_list ) {
-	$bar_class       .= ' sgs-nav-menu__bar--drawer';
-	$bar_data_attrs  .= ' data-sgs-nav-submenu-model="' . esc_attr( $submenu_model_ctx ) . '"';
+	$bar_class      .= ' sgs-nav-menu__bar--drawer';
+	$bar_data_attrs .= ' data-sgs-nav-submenu-model="' . esc_attr( $submenu_model_ctx ) . '"';
 }
 
 $bar_html = sprintf(
@@ -688,6 +798,11 @@ $css .= sgs_nav_menu_submenu_css(
 	$sgs_tor_margin_desktop,
 	$sgs_nm_treatments
 );
+// FR-41-30(b): sublink-marker colour CSS, built above alongside the marker's
+// own SVG defs injection (§ before line 456) — kept as a plain string here
+// rather than threading extra params through sgs_nav_menu_submenu_css()'s
+// signature.
+$css .= $sgs_nm_marker_css;
 
 // ── 5. Assemble — BLOCK-PRIVATE root (D539, Bean-approved 2026-08-09).
 //
