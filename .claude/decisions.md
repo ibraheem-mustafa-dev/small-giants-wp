@@ -1,3 +1,86 @@
+## D1037 [ROUTINE] — Q2 Tier 1 structural repeated-sibling detector shipped (BEM/template-detection brainstorm)
+
+**2026-09-11, subagent-driven-development implementer.** Ships the Bean-approved Tier 1 from
+`.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` "Question 2 —
+detecting template-shaped pages": structural detection of N-or-more near-identical repeated
+sibling children within a boundary, generalising Spec 30 FR-30-3's shipped WooCommerce
+Product Collection routing to ANY repeating content (never keyed on WC/URL — the trigger is
+purely structural, per CLAUDE.md Rule 3).
+
+**Built:**
+- `plugins/sgs-blocks/scripts/converter/services/repeated_sibling_detector.py` — the core
+  detection library. Imports (does not re-derive) `sibling_shape_prefilter.py`'s
+  `shape_signature`/`class_signature` primitives — that module was built standalone precisely
+  so this consumer could import it unmodified (R8 motion-recognition phase plan Step 7). Adds
+  `similarity_score()`, a blended structural+style score (tag match hard-veto 0.40 + BEM
+  modifier-stripped class Jaccard 0.35 + raw class Jaccard 0.15 + child-count proximity 0.10)
+  answering the design doc's own addendum (`html-similarity`/`niteru`-style blended score,
+  rather than a hand-picked sibling-count cutoff). `detect_repeater_groups()` partitions a
+  boundary's direct children into qualifying `RepeaterGroup`s, transitively vs. each group's
+  first (anchor/representative) member. `convert_representative()` and `_serialise_representative()`
+  delegate to the REAL converter — `converter.recognition.recognise`/`recognise_section` (Stage 2)
+  and `converter.block_serialization.serialize_block_attributes` (Stage 7's own escaping) — never
+  a reinvented mini-converter. `emit_repeated_block()` emits either a `core/query`+
+  `core/post-template` Query-Loop-equivalent (the real WP mechanism WooCommerce's own Product
+  Collection is built on) or a repeated-InnerBlocks-template (literal repetition of the
+  representative's converted markup) for a plain hand-authored grid.
+- `plugins/sgs-blocks/scripts/detect-repeated-siblings.py` — the operator-facing triad CLI,
+  mirroring `migrate-tier-object.py`'s `--survey`/`--fix`/`--fix --apply`/`--check`/`--self-test`
+  shape per `plugins/sgs-blocks/CLAUDE.md`'s "Tier-object migration triad" section (explicitly
+  the pattern this task was told to mirror, not invent a new confirmation mechanism). `--survey`
+  censuses a boundary's HTML and writes detected groups with `"signed_off": false`. `--fix`
+  converts each group's representative through the real converter and writes a preview —
+  **never** sets sign-off itself. `--fix --apply` REFUSES (writes nothing, non-zero exit) any
+  group not explicitly `"signed_off": true` in the survey file — this is where R-31-13's
+  "Bean's eye is co-authoritative on fidelity" sign-off surfaces: a human reads the fix preview
+  and consciously flips the flag before a bulk apply can happen; a gate-only refusal without
+  requiring a positive written confirmation was rejected as too easy to bypass by accident,
+  given this triad's apply step has a bigger blast radius than `migrate-tier-object.py`'s own
+  (it replaces N individually-converted siblings with ONE bulk-stamped structure). `--check`
+  gates every `*.applied.json` against its source survey's sign-off flags, catching a
+  hand-crafted bypass. Live-verified end-to-end (survey → fix preview → refused pre-sign-off →
+  applied post-sign-off → check PASS → check FAIL on a simulated bypass).
+- `plugins/sgs-blocks/scripts/converter/tests/test_repeated_sibling_detector.py` — 12 tests:
+  the three required cases (fires + representative conversion + stop-for-confirmation;
+  coincidentally-similar-but-different columns does not fire; below-`REPEATER_MIN_GROUP_SIZE`
+  does not fire) plus tag-veto, scoring-unit, and `emit_repeated_block` output-shape coverage.
+  `convert_representative()` is exercised against the REAL `sgs-framework.db` (same convention
+  as `test_container_default.py`), not mocked.
+
+**Threshold — disclosed as UNMEASURED, per this project's decline-rather-than-guess discipline.**
+`REPEATER_SIMILARITY_THRESHOLD = 0.82` and `REPEATER_MIN_GROUP_SIZE = 3` are named, documented,
+independently tunable starting constants (never hardcoded inline in `detect_repeater_groups`'s
+body — both are caller-overridable parameters, proven by `test_min_group_size_is_tunable_not_hardcoded_in_logic`).
+The design doc's own open question 2 ("is 3+ the right cutoff, or does Bean have a number in
+mind") was left unresolved on purpose rather than answered by guessing — both constants need
+tuning against a real repeating draft page once one is run through `--survey` and compared
+against Bean's own eye call on what should have fired. No such page has been measured yet.
+
+**Deliberately deferred (named, not silently dropped):**
+1. **Q2 Tier 2** (an explicit `--force-template-mode`-style operator override flag) — separate,
+   smaller, not requested this round.
+2. **The "optional recurring sections" half of Tier 1's design-doc description** — diffing a
+   boundary set across sibling pages of a template family to distinguish core vs.
+   conditionally-rendered sections (e.g. "related products" present on some pages, absent on
+   others). A distinct sub-feature layered on top of this detector, not built here.
+3. **MDR-style pure DOM-depth repetition** (`extract-repetitions`-style, no class signature
+   needed) as a FALLBACK for classless/Claude-Design-flavoured sources where
+   `similarity_score`'s class-Jaccard terms have nothing to compare. Named in the design doc's
+   own addendum as a fallback, not a replacement — not built in this pass.
+4. **Orchestrator wiring** — this detector + triad is shipped standalone (same precedent as
+   `sibling_shape_prefilter.py` itself, and `stage1_boundary_hook.py`'s own pluggable-classifier
+   default) and is runnable today via the CLI against any boundary's HTML. Automatic invocation
+   from `sgs-clone-orchestrator.py`'s stage sequence (so it fires without an operator manually
+   running `--survey`) is real integration work for a follow-up session, not attempted here —
+   the 3815-line orchestrator's stage-sequencing internals were out of scope for a same-session
+   read-and-wire without their own design gate.
+
+**Test suite:** `python -m pytest scripts/oracle/tests/ scripts/converter/tests/` from
+`plugins/sgs-blocks` — 1085 passed, 2 skipped, 1 xfailed (baseline 1073 passed + this session's
+12 new tests, 0 regressions).
+
+---
+
 ## D1036 [ROUTINE] — Withdraw three pre-production-inappropriate mechanisms: WC compat-check, FR-41-34, G5a
 
 **2026-09-11, owner decision.** Three mechanisms across two tracks share one root cause and are
