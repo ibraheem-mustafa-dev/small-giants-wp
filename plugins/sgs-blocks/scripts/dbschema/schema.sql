@@ -243,7 +243,7 @@ CREATE TABLE motion_shape_signatures (
             easing_curve        TEXT NOT NULL
                 CHECK(easing_curve IN ('linear','ease','ease-in','ease-out','ease-in-out')),
             created_at          TEXT DEFAULT (datetime('now'))
-        );
+        , "co_animates_opacity" INTEGER CHECK (co_animates_opacity IN (0, 1) OR co_animates_opacity IS NULL));
 
 -- table: pattern_coverage
 CREATE TABLE pattern_coverage (
