@@ -865,6 +865,70 @@ def extract_shape_from_transition(
     }
 
 
+# Matches a `{selector} { decl; decl; }`-shaped block in a small internal
+# snippet (never real page CSS at this point -- always something THIS
+# module's own `scoped_motion_css_text()` built). Deliberately reuses
+# `_extract_braced_block`'s brace-counting discipline via a simple
+# non-nested regex, since these synthetic snippets never nest braces.
+_SNIPPET_BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]*)\}")
+
+
+def _extract_transition_snippet_shape(css_text: str) -> "dict | None":
+    """Route a transition-driven (no `@keyframes`) snippet from
+    `scoped_motion_css_text()` to `extract_shape_from_transition()`.
+
+    Fix, 2026-09-11 (closes a dead-code gap a design-review agent found
+    while building D1025): `scoped_motion_css_text()` used to build a BARE
+    `"transition: <value>;"` string for the branch below with no selector,
+    no resting-state declarations, and no `@keyframes` -- a snippet
+    `extract_shape_from_keyframes_css()` always declined immediately (no
+    `@keyframes` block at all) and `extract_shape_from_transition()` was
+    never called from anywhere in the real pipeline, only from this
+    module's own test fixture. `border-accent`'s real shape
+    (`.sgs-has-border-accent::before { transform: scaleX(0); transition:
+    transform 250ms ease; }`) was therefore structurally unreachable end to
+    end despite Tier 1 correctly recognising it in isolation.
+
+    Expects ONE OR TWO `{selector} { decls }` blocks: the FIRST is always
+    the element's own RESTING declarations (built by
+    `scoped_motion_css_text` from `collect_css_decls_for_element`'s
+    `base_decls` -- always present, this function is only ever called when
+    the caller found a `transition:` declaration there) plus its
+    `transition:` shorthand. An OPTIONAL SECOND block is the matching
+    `:hover`/`:focus` counterpart (via `_own_hover_scoped_decls`), needed
+    only to resolve an OPACITY shape (which -- unlike `transform`'s
+    single-value "animates toward identity" convention -- genuinely needs
+    both the resting AND the target value; see
+    `extract_shape_from_transition`'s own `opacity`/`opacity_to` contract).
+    A single hover-only block with no resting counterpart (the OTHER,
+    already-existing fallback shape below in `scoped_motion_css_text`) has
+    no resting value to offer here either and correctly resolves nothing.
+    """
+    blocks = _SNIPPET_BLOCK_RE.findall(css_text)
+    if not blocks:
+        return None
+
+    resting_body = blocks[0][1]
+    transition_m = re.search(r"transition\s*:\s*([^;]+);", resting_body)
+    if transition_m is None:
+        return None
+    transition_value = transition_m.group(1)
+
+    from_declarations: dict[str, str] = {}
+    for prop in ("transform", "opacity", "filter", "clip-path"):
+        v = _decl(resting_body, prop)
+        if v is not None:
+            from_declarations[prop] = v
+
+    if len(blocks) > 1:
+        hover_body = blocks[1][1]
+        hover_opacity = _decl(hover_body, "opacity")
+        if hover_opacity is not None:
+            from_declarations["opacity_to"] = hover_opacity
+
+    return extract_shape_from_transition(from_declarations, transition_value)
+
+
 # ---------------------------------------------------------------------------
 # DB matching
 # ---------------------------------------------------------------------------
@@ -1024,10 +1088,20 @@ def classify_css_motion(css_text: "str | None", db_path: "str | None" = None) ->
     now short-circuits to the same `({}, [])` "no recognisable shape"
     result as any other non-matching input, rather than propagating an
     exception up through the whole conversion pipeline.
+
+    Fix, 2026-09-11 (closes a dead-code gap found while building D1025):
+    when no `@keyframes`-shaped animation is found, this also tries
+    `_extract_transition_snippet_shape()` — a transition-driven shape (e.g.
+    `border-accent`'s real `transform: scaleX(0); transition: transform
+    250ms ease;`) was previously structurally unreachable from here at all,
+    since `extract_shape_from_transition()` had no caller anywhere in the
+    real pipeline.
     """
     if css_text is None:
         return {}, []
     shape = extract_shape_from_keyframes_css(css_text)
+    if shape is None:
+        shape = _extract_transition_snippet_shape(css_text)
     if shape is None:
         return {}, []
     return match_motion_shape(shape, db_path)
@@ -1248,7 +1322,41 @@ def scoped_motion_css_text(node: Any, css_rules: dict, css_text: "str | None") -
 
     transition_value = base_decls.get("transition")
     if transition_value:
-        return f"transition: {transition_value};"
+        # Fix, 2026-09-11 (closes a dead-code gap found while building
+        # D1025): used to return a BARE "transition: X;" string with no
+        # selector and no resting declarations -- `classify_css_motion`
+        # could never resolve a shape from that (it had no `@keyframes`
+        # AND no caller ever routed a bare transition string to
+        # `extract_shape_from_transition`). Now builds a small two-block
+        # snippet `_extract_transition_snippet_shape` can actually read:
+        # this element's own resting shape-relevant declarations + its
+        # `transition:` shorthand (block 1, always present — this branch
+        # only fires when `transition_value` was found), plus a matching
+        # `:hover`/`:focus` counterpart when one exists (block 2, needed
+        # only to resolve an opacity shape's TARGET value — a transform
+        # shape needs only its own resting value, per this module's
+        # existing "animates toward identity" convention). The real
+        # `:hover`/`:focus` selector text, when block 2 is present, is
+        # also what lets `motion_trigger.classify_trigger`'s EXISTING
+        # no-keyframes hover signal fire correctly for this shape — no
+        # change needed there.
+        resting_lines = "".join(
+            f"{prop}: {v}; "
+            for prop in ("transform", "opacity", "filter", "clip-path")
+            if (v := base_decls.get(prop)) is not None
+        )
+        snippet = [f".sgs-motion-resting {{ {resting_lines}transition: {transition_value}; }}"]
+        hover_match_for_transition = _own_hover_scoped_decls(node, css_rules)
+        if hover_match_for_transition is not None:
+            t_hover_selector, t_hover_decls = hover_match_for_transition
+            t_hover_lines = "".join(
+                f"{prop}: {v}; "
+                for prop in ("transform", "opacity", "filter", "clip-path")
+                if (v := t_hover_decls.get(prop)) is not None
+            )
+            if t_hover_lines:
+                snippet.append(f"{t_hover_selector} {{ {t_hover_lines}}}")
+        return "\n".join(snippet)
 
     hover_match = _own_hover_scoped_decls(node, css_rules)
     if hover_match is None:
