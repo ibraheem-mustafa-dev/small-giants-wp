@@ -1106,3 +1106,10 @@ FINAL WHOLE-BRANCH REVIEW (opus): CHANGES REQUIRED -> now RESOLVED, committed 62
   Converter suite now 819 passed / 0 failed.
 STATUS: all five slices COMPLETE and reviewed. Commits f009f1b54, 7c357db70, 2e05db28b,
 41ac811e5, 621482e0e — all pushed.
+
+---
+
+# SDD progress — R8 Tier 4b load-settle probe, 2026-09-11
+
+Base commit: 9799729cd (main)
+Task 1: complete (commits 49f201848..329478b7c, review CHANGES REQUIRED then APPROVED after fix wave — F1/F2/F4 blocking findings closed and independently re-verified by re-review, F3 test coverage added, F5 disclosed in D1032). R8 real-world coverage now 7/13.
