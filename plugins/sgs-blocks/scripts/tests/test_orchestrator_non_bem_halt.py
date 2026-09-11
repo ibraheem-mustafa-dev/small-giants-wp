@@ -123,6 +123,7 @@ def _make_voter_dict(
     class_signature: list[str] | None = None,
     primary_sgs_bem: str | None = None,
     source_convention: str | None = None,
+    primary_is_slot_map_hit: bool | None = None,
 ) -> dict:
     boundary: dict[str, Any] = {
         "boundary_id": boundary_id,
@@ -137,6 +138,10 @@ def _make_voter_dict(
         boundary["primary_sgs_bem"] = primary_sgs_bem
     if source_convention is not None:
         boundary["source_convention"] = source_convention
+    # C1 fix (2026-09-11) -- the real discriminator the gate now keys on.
+    # Only set when the caller supplies it, matching the pattern above.
+    if primary_is_slot_map_hit is not None:
+        boundary["primary_is_slot_map_hit"] = primary_is_slot_map_hit
     return {"boundaries": [boundary]}
 
 
@@ -400,9 +405,10 @@ class TestTier0LinguaFrancaGate:
     A boundary whose raw class_signature is NOT SGS-BEM canonical, but whose
     stage1_boundary_hook-computed primary_sgs_bem IS set (a genuine
     lingua_franca conversion), must proceed through cv2 instead of hard-
-    halting as 'unmatched-non-bem-compliant' -- provided its source
-    convention is one of the three with a real slot-map (bare BEM,
-    Bootstrap 5, kebab-semantic).
+    halting as 'unmatched-non-bem-compliant' -- provided primary_is_slot_map_hit
+    is True, i.e. the class actually matched a real slot_map entry rather
+    than merely matching one of the three conventions' regex shape and
+    falling through to default_block (C1 fix, 2026-09-11).
     """
 
     def test_bootstrap_boundary_with_primary_sgs_bem_does_not_hard_halt(
@@ -420,6 +426,7 @@ class TestTier0LinguaFrancaGate:
                     class_signature=["card"],
                     primary_sgs_bem="sgs-card-grid",
                     source_convention="Bootstrap 5",
+                    primary_is_slot_map_hit=True,  # "card" is a real Bootstrap slot_map entry
                 )
             ),
             encoding="utf-8",
@@ -449,8 +456,9 @@ class TestTier0LinguaFrancaGate:
         per_section = result.get("per_section_results", [])
         assert len(per_section) == 1
         assert per_section[0]["status"] != "unmatched-non-bem-compliant", (
-            "A boundary with a genuine primary_sgs_bem conversion (Bootstrap 5) "
-            f"must not hard-halt. Got status={per_section[0]['status']!r}."
+            "A boundary with a genuine primary_sgs_bem conversion (Bootstrap 5, "
+            "real slot_map hit) must not hard-halt. "
+            f"Got status={per_section[0]['status']!r}."
         )
         assert per_section[0]["block_markup"] == "<!-- wp:sgs/card-grid /-->"
 
@@ -482,6 +490,7 @@ class TestTier0LinguaFrancaGate:
                     class_signature=["card"],
                     primary_sgs_bem="sgs-card-grid",
                     source_convention="Bootstrap 5",
+                    primary_is_slot_map_hit=True,  # "card" is a real Bootstrap slot_map entry
                 )
             ),
             encoding="utf-8",
@@ -535,6 +544,7 @@ class TestTier0LinguaFrancaGate:
                     class_signature=["flex-1"],
                     primary_sgs_bem="sgs-container",
                     source_convention="Tailwind utility",
+                    primary_is_slot_map_hit=False,  # Tailwind's slot_map is always empty
                 )
             ),
             encoding="utf-8",
@@ -597,4 +607,99 @@ class TestTier0LinguaFrancaGate:
         assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
             "A boundary with no primary_sgs_bem must still hard-halt "
             f"(fail-closed). Got status={per_section[0]['status']!r}."
+        )
+
+    def test_source_convention_none_still_hard_halts(self, tmp_path: Path) -> None:
+        """
+        Real fail-closed negative control (reviewer finding: the previous
+        "primary_sgs_bem is None still halts" test only exercised the
+        near-unreachable empty-class_signature case). This is the reviewer's
+        own proof case: a class like 'jumbotron' that NONE of
+        lingua_franca's rules recognise at all -- heuristic_classify returns
+        None (no convention matched), and primary_sgs_bem is also None. Such
+        a boundary must still hard-halt, both before and after the C1 fix.
+        """
+        run_dir = tmp_path / "run-tier0-source-convention-none"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=["jumbotron"],
+                    primary_sgs_bem=None,
+                    source_convention=None,
+                    primary_is_slot_map_hit=None,
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(
+                args, match_output, run_dir, _make_run_ctx()
+            )
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "A boundary lingua_franca could not recognise at all "
+            "(source_convention is None, primary_sgs_bem is None) must "
+            f"still hard-halt. Got status={per_section[0]['status']!r}."
+        )
+
+    def test_slot_map_miss_under_safe_convention_now_hard_halts(
+        self, tmp_path: Path
+    ) -> None:
+        """
+        C1 fix regression control (reviewer's own proof case): a class that
+        matches a "safe" convention's regex SHAPE but MISSES its real
+        slot_map -- e.g. 'promo-banner' under kebab-semantic, which matches
+        the convention's lowercase-hyphen pattern but is not one of the 6
+        real slot_map entries, so it fell through to default_block and
+        produced primary_sgs_bem='sgs-container'. Before the C1 fix this
+        boundary was WRONGLY admitted (gate keyed on source_convention name
+        alone). After the fix it must hard-halt, because
+        primary_is_slot_map_hit is False.
+        """
+        run_dir = tmp_path / "run-tier0-slot-map-miss"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=["promo-banner"],
+                    primary_sgs_bem="sgs-container",
+                    source_convention="kebab-semantic",
+                    primary_is_slot_map_hit=False,
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(converter_v2=True)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(
+                args, match_output, run_dir, _make_run_ctx()
+            )
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "A boundary whose class matched a 'safe' convention's regex "
+            "shape but missed its real slot_map (default_block fallback) "
+            "must hard-halt, not be silently admitted as a generic "
+            f"container. Got status={per_section[0]['status']!r}."
         )

@@ -1826,24 +1826,50 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             # lingua_franca had already successfully converted still hard-
             # halted with status 'unmatched-non-bem-compliant'.
             #
-            # Scoped to the THREE conventions with real token->block
-            # slot-maps (lingua_franca.py's _BEM_BARE / _BOOTSTRAP /
-            # _KEBAB_SEMANTIC) — deliberately excludes Tailwind utility and
-            # shadcn/Radix, whose slot_map is empty and which therefore
-            # ALWAYS degrade to a generic sgs-container regardless of the
-            # section's real semantics (a hero/card/CTA all collapse to the
-            # same undifferentiated block). Letting one of those through
-            # would trade a clear, actionable halt for a silently generic —
-            # and potentially misleading — emit, with zero new information
-            # over what the halt already tells the operator. Fail-closed:
+            # C1 fix (2026-09-11, post-review of D1034): keying this gate on
+            # the CONVENTION NAME was proven wrong by execution, not just by
+            # inspection — every one of the 3 "safe" conventions (bare BEM /
+            # Bootstrap 5 / kebab-semantic) ALSO carries its own
+            # `default_block: "container"` fallback, so a class whose regex
+            # matches the convention's shape but MISSES every real slot_map
+            # entry still returns a truthy primary_sgs_bem of
+            # "sgs-container" -- indistinguishable downstream from a
+            # genuine hit. Proven live: ['promo-banner'] and
+            # ['services-grid'] both classify as kebab-semantic and both
+            # produce primary_sgs_bem='sgs-container' via default_block,
+            # with zero slot_map entries matched. kebab-semantic's pattern
+            # matches almost any lowercase-hyphen class against a slot_map
+            # of only 6 real entries, so that "safe" outcome was in fact
+            # the MAJORITY outcome for admitted boundaries under the old
+            # convention-name guard -- exactly the "everything becomes an
+            # undifferentiated container" hazard this gate exists to
+            # exclude.
+            #
+            # Fixed to key on lingua_franca's own
+            # primary_is_slot_map_hit discriminator (added alongside this
+            # fix — see lingua_franca.py::ConversionResult.is_slot_map_hit)
+            # instead of the convention name. True ONLY when the winning
+            # class actually matched a real slot_map entry (or was already
+            # SGS-BEM canonical); False when the rule's regex matched
+            # syntactically but the block token fell through to
+            # default_block. This is a STRICT SUPERSET of the old
+            # exclusion: Tailwind utility / shadcn Radix still can never
+            # pass (their slot_map is permanently empty, so
+            # is_slot_map_hit is always False for them), and every
+            # previously-admitted genuine hit under the 3 named
+            # conventions is still admitted -- but a matched-pattern/
+            # missed-slot-map boundary (like the two proof cases above)
+            # now correctly falls through to the hard halt instead of
+            # being silently admitted as a generic container. Fail-closed:
             # a boundary whose primary_sgs_bem is None (lingua_franca could
-            # not recognise it at all) or whose source_convention is outside
-            # this set is UNCHANGED by this branch and falls through to the
-            # existing hard halt below, exactly as before Tier 0.
+            # not recognise it at all — source_convention is also None in
+            # this case) or whose primary_is_slot_map_hit is False is
+            # UNCHANGED by this branch and falls through to the existing
+            # hard halt below, exactly as before Tier 0.
             if (
                 not _cv2_eligible
                 and boundary.get("primary_sgs_bem")
-                and boundary.get("source_convention") in ("BEM", "Bootstrap 5", "kebab-semantic")
+                and boundary.get("primary_is_slot_map_hit")
             ):
                 _cv2_eligible = True
                 _cv2_eligible_via_lingua_franca = True

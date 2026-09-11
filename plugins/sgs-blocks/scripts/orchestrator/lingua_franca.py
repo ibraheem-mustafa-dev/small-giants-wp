@@ -180,6 +180,19 @@ class ConversionResult:
     source_convention: str | None = None
     is_canonical_for_drafts: bool = False
     is_gap_candidate: bool = False       # set when no rule matches
+    # Tier 0 C1 fix (2026-09-11): True ONLY when this result came from a
+    # GENUINE recognition -- either the class was already SGS-BEM canonical
+    # (identity match) or the source block token was an explicit hit in the
+    # matching rule's `slot_map`. False when the rule's regex matched
+    # syntactically but the block token fell through to `default_block`
+    # (e.g. kebab-semantic's near-universal lowercase-hyphen pattern
+    # matching almost any class, then landing on "container" because the
+    # 6-entry slot_map didn't recognise it). This is the discriminator that
+    # distinguishes a real semantic hit from the "everything becomes an
+    # undifferentiated container" hazard the Tier 0 convention-scoping
+    # guard was built to exclude -- see sgs-clone-orchestrator.py's
+    # stage_4_lingua_franca_gate / D1034.
+    is_slot_map_hit: bool = False
     notes: str = ""
 
     def to_dict(self) -> dict:
@@ -192,6 +205,7 @@ class ConversionResult:
             "source_convention":       self.source_convention,
             "is_canonical_for_drafts": self.is_canonical_for_drafts,
             "is_gap_candidate":        self.is_gap_candidate,
+            "is_slot_map_hit":         self.is_slot_map_hit,
             "notes":                   self.notes,
         }
 
@@ -231,6 +245,7 @@ def _try_rule(token: str, rule: dict) -> ConversionResult | None:
             element=groups.get("element"), modifier=groups.get("modifier"),
             source_class=token, source_convention=rule["convention"],
             is_canonical_for_drafts=True,
+            is_slot_map_hit=True,          # identity match is a genuine hit
             notes="canonical SGS-BEM, no conversion",
         )
     src_block_token = groups.get("block") or groups.get("property") or ""
@@ -239,12 +254,14 @@ def _try_rule(token: str, rule: dict) -> ConversionResult | None:
         return None
     element = groups.get("element")
     modifier = groups.get("modifier") or groups.get("variant") or groups.get("scale")
+    _is_slot_map_hit = src_block_token in rule["slot_map"]
     return ConversionResult(
         sgs_bem_class=_build_sgs_bem(mapped_block, element, modifier),
         block=mapped_block, element=element, modifier=modifier,
         source_class=token, source_convention=rule["convention"],
         is_canonical_for_drafts=False,
-        notes=f"mapped via {rule['convention']} slot_map" if src_block_token in rule["slot_map"]
+        is_slot_map_hit=_is_slot_map_hit,
+        notes=f"mapped via {rule['convention']} slot_map" if _is_slot_map_hit
               else f"mapped to default_block via {rule['convention']}",
     )
 
@@ -310,6 +327,12 @@ def convert_class_signature(
     return {
         "primary_sgs_bem":           primary.sgs_bem_class if primary else None,
         "primary_block":             primary.block if primary else None,
+        # Tier 0 C1 fix (2026-09-11) -- the discriminator the orchestrator's
+        # stage_4_lingua_franca_gate must key on instead of source_convention
+        # name. True only when `primary` came from a genuine slot-map hit
+        # (or canonical identity match), never from a rule regex matching
+        # syntactically and falling through to `default_block`.
+        "primary_is_slot_map_hit":   bool(primary.is_slot_map_hit) if primary else False,
         "equivalent_implementations":equiv,
         "per_class":                 [r.to_dict() for r in per_class],
         "gap_candidate_classes":     gaps,

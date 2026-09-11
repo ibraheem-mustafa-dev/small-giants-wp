@@ -1,3 +1,53 @@
+## D1035 [ROUTINE] — Tier 0 C1 fix: gate keys on a genuine slot-map hit, not the convention name
+
+**2026-09-11, same session as D1034, caught by task review (Opus, executed the code rather
+than just reading it).** D1034's convention-scoping guard ("only admit BEM/Bootstrap-5/
+kebab-semantic — Tailwind/shadcn always degrade to a generic container") didn't enforce what
+it claimed. All three "safe" conventions ALSO carry their own `"default_block": "container"`
+fallback in `lingua_franca.py`, so a class whose regex matches the convention's SHAPE but
+misses every real `slot_map` entry still returned a truthy `primary_sgs_bem` of
+`sgs-container` — indistinguishable downstream from a genuine hit. Proven live by the
+reviewer: `['promo-banner']` and `['services-grid']` both classify as `kebab-semantic` and
+both resolve to `primary_sgs_bem='sgs-container'` via `default_block`, zero `slot_map` entries
+matched. `kebab-semantic`'s pattern (`^[a-z]+(-[a-z]+)+$`) matches almost any lowercase-hyphen
+class against a slot_map of only 6 real entries, so that "safe" outcome was in fact the
+MAJORITY outcome for admitted boundaries under D1034's gate — exactly the "everything becomes
+an undifferentiated container" hazard the guard was built to exclude, now happening to the
+supposedly-safe conventions instead of only Tailwind/shadcn.
+
+**Fix:** `lingua_franca.py::ConversionResult` gained `is_slot_map_hit: bool` — True only for a
+genuine slot_map hit or a canonical SGS-BEM identity match, False when a rule's regex matched
+but the block token fell through to `default_block`. `convert_class_signature()` propagates it
+as `primary_is_slot_map_hit` for the winning result; `stage1_boundary_hook.py::enrich_boundary`
+writes it into the boundary dict (both the canonical fast-path — always True — and the heavy
+lingua_franca path). `sgs-clone-orchestrator.py`'s `stage_4_lingua_franca_gate` now checks
+`boundary.get("primary_is_slot_map_hit")` instead of `boundary.get("source_convention") in
+(...)`. This is a STRICT SUPERSET of the old exclusion: Tailwind/shadcn still can never pass
+(permanently empty slot_map → `is_slot_map_hit` always False), every previously-admitted
+genuine hit is still admitted, and a matched-pattern/missed-slot-map boundary now correctly
+hard-halts instead of being silently admitted as a generic container.
+
+**Tests:** `test_orchestrator_non_bem_halt.py::TestTier0LinguaFrancaGate` — the two existing
+admission tests updated to set `primary_is_slot_map_hit=True` (their `"card"` fixture is a
+genuine Bootstrap-5 slot_map entry, so behaviour is unchanged); Tailwind exclusion test updated
+to set `primary_is_slot_map_hit=False` explicitly; two NEW tests added —
+`test_source_convention_none_still_hard_halts` (the real fail-closed control: a class like
+`jumbotron` that no rule recognises at all, `source_convention` genuinely `None`) and
+`test_slot_map_miss_under_safe_convention_now_hard_halts` (the reviewer's own proof case,
+`promo-banner` under `kebab-semantic`, now correctly hard-halts post-fix). All 14 tests in the
+file pass. Full suite unchanged from baseline: `python -m pytest
+plugins/sgs-blocks/scripts/oracle/tests/ plugins/sgs-blocks/scripts/converter/tests/` — 1073
+passed, 2 skipped, 1 xfailed.
+
+**Files:** `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py` (discriminator field +
+propagation), `plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py` (boundary
+enrichment), `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (gate condition),
+`plugins/sgs-blocks/scripts/tests/test_orchestrator_non_bem_halt.py` (fixture + tests),
+`.claude/decisions.md` D1034 (corrected rationale + I1 scope note),
+`.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` (Tier 0 SHIPPED
+marker corrected). Supersedes D1034's convention-name gate mechanism; D1034's wiring work
+(fallback to `primary_sgs_bem`, HTML root-class injection) is unchanged and still correct.
+
 ## D1034 [ROUTINE] — Tier 0: wire `primary_sgs_bem` into the non-BEM hard-halt gate
 
 **2026-09-11.** Q1 Tier 0 from `.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
@@ -17,17 +67,29 @@ in `test_orchestrator_non_bem_halt.py::TestNonBemHalt` before touching anything.
 (`boundaries_by_id`), which already carries `primary_sgs_bem` — no new parameter or lookup was
 needed, the value was simply sitting unread one dict access away.
 
-**Design question resolved — scope to 3 of the 6 conventions, not all 6.** Gated on
+**Design question resolved — scope to a genuine slot-map hit, not merely 3 of the 6 conventions
+(CORRECTED by D1035 — the original wording below described the gate's INTENT, not its actual
+mechanism; kept for narrative continuity, see D1035 for the fix).** Originally gated on
 `boundary.get("source_convention") in ("BEM", "Bootstrap 5", "kebab-semantic")` — the three
 `lingua_franca.py` rules with a real token→block `slot_map`. Tailwind utility and shadcn/Radix
 both declare `"slot_map": {}` and their `_try_rule()` path always falls through to
 `default_block: "container"`, so admitting them would swap a clear, actionable halt for a
 silently generic emit that collapses a hero/card/CTA into an undifferentiated `sgs/container`
 with zero real gain over the halt message — the exact "wrong/misleading conversion" risk the
-brief asked to weigh. **Fail-closed is automatic, not a separate branch:** a boundary whose
-`primary_sgs_bem` is `None` (lingua_franca couldn't recognise it) or whose convention sits
-outside the three simply never sets `_cv2_eligible = True` via this path and falls through to
-the pre-existing hard halt unchanged.
+brief asked to weigh. **The gate now keys on `lingua_franca`'s own `primary_is_slot_map_hit`
+discriminator instead of the convention name** (D1035): all three "safe" conventions ALSO carry
+their own `default_block: "container"` fallback, so a class that merely matches a convention's
+regex SHAPE but misses its real slot_map entries produced the identical "wrong/misleading"
+hazard this design question already flagged for Tailwind/shadcn — the original wording didn't
+go far enough. Fail-closed is automatic, not a separate branch: a boundary whose `primary_sgs_bem`
+is `None`, or whose `primary_is_slot_map_hit` is `False`, simply never sets `_cv2_eligible = True`
+via this path and falls through to the pre-existing hard halt unchanged.
+
+**Scope note (I1, added post-review 2026-09-11):** the class-injection this Tier only touches the
+boundary's ROOT element. Per R-31-2 (BEM is the only recognition signal), descendant/child
+elements inside an admitted boundary keep their original non-BEM classes and stay unrecognised —
+an admitted section is not expected to convert as richly as a native BEM section until Tier 2
+(DOM-shape inference) exists. Do not read "SHIPPED" as "non-BEM drafts now convert fully."
 
 **A second, non-obvious fix was required for Tier 0 to do anything at all, found by tracing the
 data flow rather than assuming the gate flip was sufficient.** `converter/recognition.py::recognise_section`

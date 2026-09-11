@@ -13,6 +13,13 @@ boundary surfaced by the boundary-voter, this hook:
   3. Enriches the boundary in place with:
         - source_convention:        classified convention name
         - primary_sgs_bem:          canonical SGS-BEM block class
+        - primary_is_slot_map_hit:  True only when primary_sgs_bem came
+                                    from a genuine slot-map hit (or a
+                                    canonical identity match) -- False
+                                    when the convention's regex matched
+                                    syntactically but fell through to
+                                    default_block (Tier 0 C1 fix,
+                                    2026-09-11; see decisions.md D1034)
         - equivalent_implementations: {source -> sgs-bem}
         - gap_candidate_classes:    classes that fell through
         - lingua_franca_skipped:    True when the boundary was already
@@ -137,6 +144,9 @@ def enrich_boundary(
     if _is_sgs_bem_canonical(classes):
         enriched["source_convention"] = "SGS WordPress"
         enriched["primary_sgs_bem"] = classes[0]
+        # Tier 0 C1 fix -- a canonical fast-path boundary is a genuine
+        # identity match by definition, never a default_block fallback.
+        enriched["primary_is_slot_map_hit"] = True
         enriched["equivalent_implementations"] = {c: c for c in classes}
         enriched["gap_candidate_classes"] = []
         enriched["lingua_franca_skipped"] = True
@@ -161,6 +171,7 @@ def enrich_boundary(
     result = _lf.convert_class_signature(classes, source_convention_hint=convention)
     enriched["source_convention"] = convention
     enriched["primary_sgs_bem"] = result["primary_sgs_bem"]
+    enriched["primary_is_slot_map_hit"] = result["primary_is_slot_map_hit"]
     enriched["equivalent_implementations"] = result["equivalent_implementations"]
     enriched["gap_candidate_classes"] = result["gap_candidate_classes"]
     enriched["lingua_franca_skipped"] = False
