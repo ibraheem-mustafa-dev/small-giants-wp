@@ -13,6 +13,7 @@ import {
 	RangeControl,
 	TextControl,
 	BoxControl,
+	Notice,
 } from '@wordpress/components';
 import {
 	ColumnShapePicker,
@@ -27,6 +28,14 @@ import {
 	DesignTokenPicker,
 	GradientCapableColourControl,
 } from '../../components';
+// Not re-exported from '../../components' (the shared index) — importing
+// directly avoids touching that shared file, which two sibling sessions are
+// wiring the same four components into for site-footer-row/mega-panel in
+// parallel on this shared worktree.
+import { CursorFieldRowControls } from '../../components/CursorFieldRowControls';
+import { ParticleTrailRowControls } from '../../components/ParticleTrailRowControls';
+import { GridDotFieldRowControls } from '../../components/GridDotFieldRowControls';
+import { FlowingGradientRowControls } from '../../components/FlowingGradientRowControls';
 import { ToolsPanel, ToolsPanelItem, UnitControl } from '../../components/primitives';
 import { resolveResponsiveTier, boxShorthand, resolveContentWidthPreview, contentBandPreview } from '../../utils';
 
@@ -134,6 +143,19 @@ const DISTRIBUTION_OPTIONS = [
 	{ label: __( 'Spread apart', 'sgs-blocks' ), value: 'space-between' },
 ];
 
+// Block-private motion-effect picker (2026-09-11). This row is deliberately
+// NOT on the shared fx ToolsPanel roster (see fx.js's own docblock +
+// generated-fx-qualifying-blocks.json) — `fxEffect` is a block-private
+// selector, never the shared `fx` attribute, so this row can never be pulled
+// onto that roster by accident.
+const FX_EFFECT_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Cursor field', 'sgs-blocks' ), value: 'cursor-field' },
+	{ label: __( 'Particle trail', 'sgs-blocks' ), value: 'particles' },
+	{ label: __( 'Grid dots', 'sgs-blocks' ), value: 'grid-dots' },
+	{ label: __( 'Flowing gradient', 'sgs-blocks' ), value: 'wave-gradient' },
+];
+
 const ROW_LABELS = {
 	top: __(
 		'Top row — utility strip (contact, search, social)',
@@ -222,9 +244,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		margin,
 		maxWidth,
 		contentWidth,
+		fxEffect,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
+
+	// Motion-effect reachability flags (2026-09-11) — each names the SINGLE
+	// selected effect so the "not available in editor" Notice below and the
+	// matching *RowControls panel gate on the same condition. The editor
+	// canvas is static and cannot follow a pointer, animate particles, tick a
+	// lattice, or scroll a gradient, so none of these four effects can be
+	// shown live in the block preview — only the current settings can be
+	// summarised. Mirrors sgs/media/edit.js's `isVideo`-style reachability
+	// flag + fallback `<Notice>` (Signal 3, check-editor-render-parity.js).
+	const isFxCursorField = 'cursor-field' === fxEffect;
+	const isFxParticleTrail = 'particles' === fxEffect;
+	const isFxGridDotField = 'grid-dots' === fxEffect;
+	const isFxWaveGradient = 'wave-gradient' === fxEffect;
 
 	// Editor-preview only: "Show me the shrunk size" (Row behaviour panel).
 	// Local UI state — never persisted, never rendered on the front end.
@@ -915,6 +951,172 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+				</PanelBody>
+
+				{ /* Motion — block-private escape-hatch effect picker (2026-09-11).
+				   `fxEffect` is NEVER the shared fx ToolsPanel's `fx` attribute;
+				   this row and its render.php companion emit the same
+				   `data-sgs-fx*` markup contract by hand. Only one effect's
+				   controls render at a time, matched to the current picker
+				   value. */ }
+				<PanelBody title={ __( 'Motion', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label={ __( 'Effect', 'sgs-blocks' ) }
+						value={ fxEffect || '' }
+						options={ FX_EFFECT_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( { fxEffect: value } )
+						}
+						help={ __(
+							'A block-private motion effect for this row, rendered on the live site only.',
+							'sgs-blocks'
+						) }
+					/>
+					{ isFxCursorField && (
+						<>
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
+									'sgs-blocks'
+								) }
+								{ ' ' }
+								{ __( 'Current settings:', 'sgs-blocks' ) }
+								{ ' ' }
+								{ [
+									attributes.fxFieldType ||
+										__( 'glow', 'sgs-blocks' ),
+									attributes.fxFieldColour ||
+										__( 'default colour', 'sgs-blocks' ),
+									attributes.fxFieldShape ||
+										__( 'circle', 'sgs-blocks' ),
+									attributes.fxFieldRadius
+										? `${ attributes.fxFieldRadius }px`
+										: '',
+									attributes.fxFieldBlend
+										? `${ attributes.fxFieldBlend }% blend`
+										: '',
+									attributes.fxFieldTrail
+										? `${ attributes.fxFieldTrail }% drag`
+										: '',
+								]
+									.filter( Boolean )
+									.join( ', ' ) }
+							</Notice>
+							<CursorFieldRowControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
+						</>
+					) }
+					{ isFxParticleTrail && (
+						<>
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
+									'sgs-blocks'
+								) }
+								{ ' ' }
+								{ __( 'Current settings:', 'sgs-blocks' ) }
+								{ ' ' }
+								{ [
+									attributes.fxParticlePreset ||
+										__( 'sparks', 'sgs-blocks' ),
+									attributes.fxParticleColour ||
+										__( 'default colour', 'sgs-blocks' ),
+									attributes.fxParticleDensity
+										? `${ attributes.fxParticleDensity } density`
+										: '',
+									attributes.fxParticleSize
+										? `${ attributes.fxParticleSize }px size`
+										: '',
+								]
+									.filter( Boolean )
+									.join( ', ' ) }
+							</Notice>
+							<ParticleTrailRowControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
+						</>
+					) }
+					{ isFxGridDotField && (
+						<>
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
+									'sgs-blocks'
+								) }
+								{ ' ' }
+								{ __( 'Current settings:', 'sgs-blocks' ) }
+								{ ' ' }
+								{ [
+									attributes.fxGridDotColour ||
+										__( 'default colour', 'sgs-blocks' ),
+									attributes.fxGridDotHoverColour ||
+										__( 'default hover colour', 'sgs-blocks' ),
+									attributes.fxGridDotShape ||
+										__( 'circle', 'sgs-blocks' ),
+									attributes.fxGridCell
+										? `${ attributes.fxGridCell }px cell`
+										: '',
+									attributes.fxGridDotSize
+										? `${ attributes.fxGridDotSize }px dots`
+										: '',
+									attributes.fxGridRadius
+										? `${ attributes.fxGridRadius }px radius`
+										: '',
+									attributes.fxGridLean
+										? `${ attributes.fxGridLean }deg lean`
+										: '',
+									attributes.fxGridEase
+										? `${ attributes.fxGridEase }ms ease`
+										: '',
+								]
+									.filter( Boolean )
+									.join( ', ' ) }
+							</Notice>
+							<GridDotFieldRowControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
+						</>
+					) }
+					{ isFxWaveGradient && (
+						<>
+							<Notice status="info" isDismissible={ false }>
+								{ __(
+									'This effect is not available to preview in the editor — it renders on the live site, handled by the server.',
+									'sgs-blocks'
+								) }
+								{ ' ' }
+								{ __( 'Current settings:', 'sgs-blocks' ) }
+								{ ' ' }
+								{ [
+									attributes.fxWaveVariant ||
+										__( 'pastel', 'sgs-blocks' ),
+									attributes.fxWaveBase ||
+										__( 'default base colour', 'sgs-blocks' ),
+									attributes.fxWave1 || '',
+									attributes.fxWave2 || '',
+									attributes.fxWave3 || '',
+									attributes.fxWaveSpeed
+										? `${ attributes.fxWaveSpeed }s speed`
+										: '',
+									attributes.fxWaveAmplitude
+										? `${ attributes.fxWaveAmplitude }% amplitude`
+										: '',
+								]
+									.filter( Boolean )
+									.join( ', ' ) }
+							</Notice>
+							<FlowingGradientRowControls
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				{ /* Alignment & grid, padding/margin/max-width, and Border now live

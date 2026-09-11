@@ -315,6 +315,134 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	}
 }
 
+// ── Block-private motion effect (2026-09-11). `fxEffect` is a BLOCK-PRIVATE
+// selector, never the shared fx ToolsPanel's `fx` attribute -- this block
+// deliberately never declares `fx`, so the shared roster's ToolsPanel can
+// never claim it by accident. PHP-whitelist validated (project convention),
+// not a JSON enum. Mirrors the `fxTreatment` surface-treatment precedent in
+// class-sgs-container-wrapper.php: build a small local data-attrs array and
+// merge it into $shr_extra_attrs rather than emitting a second wrapper call.
+$shr_allowed_fx_effects = array( '', 'cursor-field', 'particles', 'grid-dots', 'wave-gradient' );
+$shr_fx_effect_raw      = isset( $attributes['fxEffect'] ) ? (string) $attributes['fxEffect'] : '';
+$shr_fx_effect          = in_array( $shr_fx_effect_raw, $shr_allowed_fx_effects, true ) ? $shr_fx_effect_raw : '';
+
+/**
+ * Whether a raw attribute value counts as "genuinely set" for fx data-attr
+ * emission -- non-empty-string and non-null, but a numeric 0 MUST survive
+ * (e.g. fxFieldBlend/fxGridLean at their floor). `'' !== $v` alone would
+ * wrongly keep an empty string; `null !== $v` alone would wrongly drop
+ * nothing extra -- both checks are needed together.
+ *
+ * @param mixed $value Raw attribute value.
+ * @return bool True when the value should be emitted.
+ */
+$shr_fx_is_set = static function ( $value ): bool {
+	return null !== $value && '' !== $value;
+};
+
+if ( '' !== $shr_fx_effect ) {
+	$shr_extra_attrs['data-sgs-fx'] = $shr_fx_effect;
+
+	if ( 'cursor-field' === $shr_fx_effect ) {
+		$shr_fx_field_type = isset( $attributes['fxFieldType'] ) ? (string) $attributes['fxFieldType'] : '';
+		if ( $shr_fx_is_set( $shr_fx_field_type ) ) {
+			$shr_extra_attrs['data-sgs-fx-field'] = sanitize_html_class( $shr_fx_field_type );
+		}
+		$shr_fx_field_colour = isset( $attributes['fxFieldColour'] ) ? (string) $attributes['fxFieldColour'] : '';
+		if ( $shr_fx_is_set( $shr_fx_field_colour ) ) {
+			$shr_extra_attrs['data-sgs-fx-field-colour'] = sgs_colour_value( $shr_fx_field_colour );
+		}
+		if ( $shr_fx_is_set( $attributes['fxFieldRadius'] ?? null ) && is_numeric( $attributes['fxFieldRadius'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-field-radius'] = (string) $attributes['fxFieldRadius'];
+		}
+		$shr_fx_field_shape = isset( $attributes['fxFieldShape'] ) ? (string) $attributes['fxFieldShape'] : '';
+		if ( $shr_fx_is_set( $shr_fx_field_shape ) ) {
+			$shr_extra_attrs['data-sgs-fx-field-shape'] = sanitize_html_class( $shr_fx_field_shape );
+		}
+		if ( $shr_fx_is_set( $attributes['fxFieldBlend'] ?? null ) && is_numeric( $attributes['fxFieldBlend'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-field-blend'] = (string) $attributes['fxFieldBlend'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxFieldTrail'] ?? null ) && is_numeric( $attributes['fxFieldTrail'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-field-trail'] = (string) $attributes['fxFieldTrail'];
+		}
+	} elseif ( 'particles' === $shr_fx_effect ) {
+		$shr_fx_particle_preset = isset( $attributes['fxParticlePreset'] ) ? (string) $attributes['fxParticlePreset'] : '';
+		if ( $shr_fx_is_set( $shr_fx_particle_preset ) ) {
+			$shr_extra_attrs['data-sgs-fx-particle-preset'] = sanitize_html_class( $shr_fx_particle_preset );
+		}
+		if ( $shr_fx_is_set( $attributes['fxParticleDensity'] ?? null ) && is_numeric( $attributes['fxParticleDensity'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-particle-density'] = (string) $attributes['fxParticleDensity'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxParticleSize'] ?? null ) && is_numeric( $attributes['fxParticleSize'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-particle-size'] = (string) $attributes['fxParticleSize'];
+		}
+		$shr_fx_particle_colour = isset( $attributes['fxParticleColour'] ) ? (string) $attributes['fxParticleColour'] : '';
+		if ( $shr_fx_is_set( $shr_fx_particle_colour ) ) {
+			$shr_extra_attrs['data-sgs-fx-particle-colour'] = sgs_colour_value( $shr_fx_particle_colour );
+		}
+	} elseif ( 'grid-dots' === $shr_fx_effect ) {
+		$shr_fx_grid_colour = isset( $attributes['fxGridDotColour'] ) ? (string) $attributes['fxGridDotColour'] : '';
+		if ( $shr_fx_is_set( $shr_fx_grid_colour ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-colour'] = sgs_colour_value( $shr_fx_grid_colour );
+		}
+		$shr_fx_grid_colour_hover = isset( $attributes['fxGridDotHoverColour'] ) ? (string) $attributes['fxGridDotHoverColour'] : '';
+		if ( $shr_fx_is_set( $shr_fx_grid_colour_hover ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-colour-hover'] = sgs_colour_value( $shr_fx_grid_colour_hover );
+		}
+		$shr_fx_grid_shape = isset( $attributes['fxGridDotShape'] ) ? (string) $attributes['fxGridDotShape'] : '';
+		if ( $shr_fx_is_set( $shr_fx_grid_shape ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-shape'] = sanitize_html_class( $shr_fx_grid_shape );
+		}
+		if ( $shr_fx_is_set( $attributes['fxGridCell'] ?? null ) && is_numeric( $attributes['fxGridCell'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-cell'] = (string) $attributes['fxGridCell'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxGridDotSize'] ?? null ) && is_numeric( $attributes['fxGridDotSize'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-dot'] = (string) $attributes['fxGridDotSize'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxGridRadius'] ?? null ) && is_numeric( $attributes['fxGridRadius'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-radius'] = (string) $attributes['fxGridRadius'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxGridLean'] ?? null ) && is_numeric( $attributes['fxGridLean'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-lean'] = (string) $attributes['fxGridLean'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxGridEase'] ?? null ) && is_numeric( $attributes['fxGridEase'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-grid-ease'] = (string) $attributes['fxGridEase'];
+		}
+	} elseif ( 'wave-gradient' === $shr_fx_effect ) {
+		// Only the 4 CSS-only variants are legal here (FlowingGradientRowControls
+		// excludes the WebGL-backed 'aurora'/'ink' outright) -- re-validate
+		// server-side against a hand-edited/stale stored value rather than
+		// trusting the editor's own guard.
+		$shr_allowed_wave_variants = array( 'pastel', 'horizon', 'ribbon', 'veil' );
+		$shr_fx_wave_variant       = isset( $attributes['fxWaveVariant'] ) ? (string) $attributes['fxWaveVariant'] : '';
+		if ( in_array( $shr_fx_wave_variant, $shr_allowed_wave_variants, true ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-variant'] = $shr_fx_wave_variant;
+		}
+		$shr_fx_wave_base = isset( $attributes['fxWaveBase'] ) ? (string) $attributes['fxWaveBase'] : '';
+		if ( $shr_fx_is_set( $shr_fx_wave_base ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-base'] = sgs_colour_value( $shr_fx_wave_base );
+		}
+		$shr_fx_wave_1 = isset( $attributes['fxWave1'] ) ? (string) $attributes['fxWave1'] : '';
+		if ( $shr_fx_is_set( $shr_fx_wave_1 ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-1'] = sgs_colour_value( $shr_fx_wave_1 );
+		}
+		$shr_fx_wave_2 = isset( $attributes['fxWave2'] ) ? (string) $attributes['fxWave2'] : '';
+		if ( $shr_fx_is_set( $shr_fx_wave_2 ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-2'] = sgs_colour_value( $shr_fx_wave_2 );
+		}
+		$shr_fx_wave_3 = isset( $attributes['fxWave3'] ) ? (string) $attributes['fxWave3'] : '';
+		if ( $shr_fx_is_set( $shr_fx_wave_3 ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-3'] = sgs_colour_value( $shr_fx_wave_3 );
+		}
+		if ( $shr_fx_is_set( $attributes['fxWaveSpeed'] ?? null ) && is_numeric( $attributes['fxWaveSpeed'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-speed'] = (string) $attributes['fxWaveSpeed'];
+		}
+		if ( $shr_fx_is_set( $attributes['fxWaveAmplitude'] ?? null ) && is_numeric( $attributes['fxWaveAmplitude'] ) ) {
+			$shr_extra_attrs['data-sgs-fx-wave-amplitude'] = (string) $attributes['fxWaveAmplitude'];
+		}
+	}
+}
+
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied; $css built from pre-sanitised values only (wp_style_engine_get_styles()).
 	printf( '<style id="%s">%s</style>', esc_attr( $uid . '-style' ), wp_strip_all_tags( $css ) );

@@ -292,7 +292,37 @@
 			"default": {
 				"desktop": {}
 			}
-		}
+		},
+		"fxEffect": {
+			"type": "string",
+			"default": "",
+			"_comment": "Block-private motion-effect selector (2026-09-11). NOT the shared fx ToolsPanel's `fx` attribute — this block deliberately never declares `fx`, so it can never be pulled onto that roster by accident. PHP-validated whitelist (render.php), not a JSON enum, per project convention: '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient'."
+		},
+		"fxFieldType": { "type": "string", "default": "" },
+		"fxFieldColour": { "type": "string", "default": "" },
+		"fxFieldRadius": { "type": "number" },
+		"fxFieldShape": { "type": "string", "default": "" },
+		"fxFieldBlend": { "type": "number" },
+		"fxFieldTrail": { "type": "number" },
+		"fxParticlePreset": { "type": "string", "default": "" },
+		"fxParticleDensity": { "type": "number" },
+		"fxParticleSize": { "type": "number" },
+		"fxParticleColour": { "type": "string", "default": "" },
+		"fxGridDotColour": { "type": "string", "default": "" },
+		"fxGridDotHoverColour": { "type": "string", "default": "" },
+		"fxGridDotShape": { "type": "string", "default": "" },
+		"fxGridCell": { "type": "number" },
+		"fxGridDotSize": { "type": "number" },
+		"fxGridRadius": { "type": "number" },
+		"fxGridLean": { "type": "number" },
+		"fxGridEase": { "type": "number" },
+		"fxWaveVariant": { "type": "string" },
+		"fxWaveBase": { "type": "string", "default": "" },
+		"fxWave1": { "type": "string", "default": "" },
+		"fxWave2": { "type": "string", "default": "" },
+		"fxWave3": { "type": "string", "default": "" },
+		"fxWaveSpeed": { "type": "number" },
+		"fxWaveAmplitude": { "type": "number" }
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
