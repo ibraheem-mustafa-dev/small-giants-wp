@@ -9,8 +9,66 @@ mode: ad-hoc phase (standalone spec, no parent strategic-plan)
 date: 2026-09-11
 cost_estimate: "~$39 (≈2.7M in / ≈0.60M out across 30 steps, 5 of them QA gates)"
 docscore_grade: A- (94.3% — docscore.py, archived-plan template; the only failure is the 3,000-line doc-shape cap, disclosed and deliberately not chased — see §Docscore)
-status: READY-TO-EXECUTE — all 7 Key Judgement Calls RULED by the owner 2026-09-11 (see §Resolved judgement calls). No step is blocked on a decision. FINAL edition: a full /qc pass (partial, 78/100) plus a /qc-council validation on 2 judgement-call fixes are folded in — all 7 MUST-FIXes + S1–S13 (see §QC + council closure).
+status: IN EXECUTION — Waves A and B complete and pushed to main (steps 1-17 + step 16a's QA-7 council, all GO). Wave C (steps 18-27) not yet started. See §Execution Progress Log immediately below for the authoritative per-step state — read it before resuming, do not assume the step bodies further down reflect final committed reality (several steps landed with disclosed deviations from their original text).
 ---
+
+## Execution Progress Log (updated 2026-09-11 — read this before resuming any step)
+
+**This section is the single source of truth for what has actually landed.** The step bodies
+further down in this file are the ORIGINAL plan text and are NOT updated in place — several
+steps shipped with real, disclosed deviations (file counts, module names, extra fixes found
+along the way). Where this log and a step body disagree, THIS LOG WINS.
+
+### Wave A — CLOSED (steps 1-12)
+
+| Step | Status | Commit(s) | One-line outcome |
+|---|---|---|---|
+| 1 | ✅ Done | (no commit — read-only baseline) | Census re-verified: 18 statements, all match spec exactly, no rows moved |
+| 2 (QA-1) | ✅ GO | `.claude/verify/spec-41-qc-council-1.md` | Council validated steps 3-19's fix-shapes; no plan revision needed |
+| 3 | ✅ Done | `3f87e559e` | `SgsBorderControl` gains additive `showColour`; 55+ mounts unaffected |
+| 4 | ✅ Done | `fe70cd052` | `fx-magnet.css` exposes `--sgs-magnet-transition` |
+| 5 | ✅ Done | `fc7934180` (corrupted — see below), `d00039862` (real fix) | `SgsColourPanel` gains optional row `heading`. **The first commit was byte-identical to step 4's diff — a shared-worktree commit corruption, found by adversarial review; the real code sat uncommitted until `d00039862` re-landed it.** |
+| 6, 6a | ✅ Done | `b61b4d19e` | PHP colour emitters gain optional Current state + `suppress_edges`, byte-identity proven |
+| 7 | ✅ Done | `614c97751` | `edit.js` split into 13 files. **`edit.js` itself did not reach ≤250 lines (landed ~510, later ~625 after Wave B) — `colourRows` and panel mounts cannot leave the file (detector + mount-order constraints); disclosed, not silently shipped. Step 13 was later amended to require `fillRow`/`textRow` adoption as the real fix for this, not a further split.** |
+| 8 | ✅ Done | `f4e38d429` | `render.php` split into 4 PHP files, byte-identity proven. (Later grew to **6 files** — see step 15/16 note.) |
+| 9 | ✅ Done | `bb9df82dc` | Manifest rewrite, 79→132 attributes (78→130 real attrs excl. `_note` keys). Highest-blast-radius step in the phase |
+| 10 (QA-5) | ✅ GO | `.claude/verify/spec-41-qc-council-2.md`, fix `b2174ada1` | Council found + fixed a real attrMap gap (`submenuBorderColourGradient`, `sublinkMarkerColour`); confirmed `indicator` element handling correct |
+| 11 | ✅ Done | `19ba2e4b7`, regex-bug fix `58075feb6` | `check-ungated-paint-rules.py` built WARN-ONLY. A `DECL_RE` false-positive (matched CSS custom-*property names* like `--sgs-btn-border:`) found by adversarial review and fixed |
+| 12 (QA-3) | ✅ Done | `.claude/verify/spec-41-qa3-wave-a-close.md` | Wave A closed clean; re-verified after a **parallel peer session** independently fixed a real deploy-blocking regression Step 9 left (dead controls, dead indicator render, missing `submenuBgGradient`) — see that session's commits `5b638a231`/`8d3978d0f`, verified not assumed |
+
+**Also landed in Wave A's window (housekeeping, not numbered plan steps):**
+- `14b807364` — fixed `--sgs-nm-submenu-radius` reading the deleted `submenuRadius` instead of the new `submenuBorderRadius` (found during Step 16, disclosed rather than silently re-fated, fixed same session)
+- `ed42ac4e6` — DB classification follow-up for `submenuBgGradient` (peer session's F6 rogue-seed cleanup)
+
+### Wave B — CLOSED (steps 13-17)
+
+Ran as two parallel subagent lanes per owner ruling 7: **Lane 5** (13→14→14a, `edit.js`/panels/`nav-drawer`) and **Lane 6** (15→16→16a→17, PHP CSS-emission + `style.css`).
+
+| Step | Status | Commit(s) | One-line outcome |
+|---|---|---|---|
+| 13 | ✅ Done | `fc74f179d` (plan amendment — `SgsColourPanel` `after` slot + `contrastLargeText`, the 5th shared-component touch, Bean-approved), `76e0cfa11` | `colourRows` rebuilt 3-state, hover-treatment selectors, Sweep gating, via `fillRow`/`textRow` (additively extended with a `current` key) |
+| 14 | ✅ Done | `b8229503f` | Full panel rebuild across General + Design per §9. Advisory findings 102→36 |
+| 14a | ✅ Done | `8c9330716` | `sgs/nav-drawer` close button mirrors the Menu Button (`closeLabel`/`closeIcon`, `closeStyle` gains `icon-and-text`); DB reseeded. **"Icon and text" label shortened to "Both"** — Part O's 12-char `ToggleGroupControl` bound, stored value unchanged |
+| 15 | ✅ Done | `070fbc9a8` | Full CSS-emission rewrite: 3-state colour/border, sweep predicate re-evaluated server-side, `suppress_edges` consumed, typography-hover emitter, burger modes, magnet data-attrs |
+| 16 | ✅ Done | `61a141fbf` | FR-41-15 fate table executed: 6 DELETE / 3 CONVERT / 2 KEEP, both surfaces (PHP + `style.css`) closed — the census #3/#10 double-line trap closed on both sides |
+| 16a (QA-7) | ✅ GO | `.claude/verify/spec-41-qc-council-3.md` (`46aa6da42`) | Independent re-verification (council dispatch unavailable, ran the equivalent investigation directly); confirmed zero rows from the census re-run, `submenuBorderRadius` fix genuinely byte-identical |
+| 17 | ✅ Done | `3fec38190` | `style.css`: Highlight-pill doc fix, magnet companion transition (no `!important`, doesn't fight the reduced-motion rescue), submenu open-animation keyframes + reduced-motion companion. **Found `submenuAnimation` had a working editor control but NO render consumer — fixed separately, see below** |
+
+**Also landed in Wave B's window:**
+- `c2ecf8b84` — wired `submenuAnimation` through `SGS_Nav_Menu_Bar_Renderer`'s `$submenu` settings into the actual `sgs-nav-menu__submenu-wrap--*` modifier class (Step 17 built the CSS, nothing applied it until this fix); byte-identical for the `'none'` default, verified with an isolated harness
+
+**Deviations from the original plan text, all disclosed at the point they happened:**
+- `render.php`'s PHP module count is **6 files**, not the 4 from Step 8 — Steps 15/16 added genuinely new logic (not refactor) that needed two more modules (`nav-menu-treatments.php`, `nav-menu-trigger-css.php`) to stay under the 300-code-line cap. This is expected growth from real new work, not a cap violation.
+- `edit.js` is **625 lines**, not ≤250 — `colourRows` (detector constraint, owner ruling 3) and the panel mounts cannot leave the file. Bean asked (2026-09-11) for research into whether other blocks with colour rows have a pattern nav-menu is missing — **research dispatched, result pending, no further action taken yet.**
+
+### Open thread — NOT YET RESOLVED, holds the manifest
+
+**`sublink-marker` colour row.** Originally exempted from the Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was under revision when superseded). **Bean's actual direction (2026-09-11, superseding the exemption approach):** the sublink marker should get full Hover/Current states + gradient toggle, like every other row — but the colour picker should stay HIDDEN by default (silently inheriting the sublink text's own colour) and only become visible once an operator has actually overridden it with a custom value. This is a real `fillRow`/row-descriptor behaviour change (conditional visibility keyed on whether a value has been set), not the one-line manifest exemption originally planned. **Do not add a `colourExemptions.sublink-marker` entry — that direction is superseded.** Needs to be built as part of Step 13's territory (or a small follow-up to it) once Bean confirms the exact mechanism.
+
+### Wave C — NOT STARTED (steps 18-27)
+
+Steps 18 (behaviour fixes, FR-41-13), 19 (migration notice, FR-41-34), 20 (QA-6 static gate sweep), 21 (build+deploy), 22-23 (Playwright verification), 24 (G5a stored-content migration), 25 (Bean's visual sign-off), 26 (detector WARN→HARD), 27 (living-docs update) are all untouched. Step 27 itself will supersede parts of this progress log once it runs.
+
 
 # Phase — Spec 41 `sgs/nav-menu` colour, state + control system
 
