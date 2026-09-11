@@ -3358,6 +3358,15 @@
         "css_property": "background-image",
         "css_element": "overlay"
       }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuBgGradient",
+      "fields": {
+        "role": "colour-gradient",
+        "css_property": "background-image",
+        "css_element": "submenu-panel"
+      }
     }
   ]
 }
