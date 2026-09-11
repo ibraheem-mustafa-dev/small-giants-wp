@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 41
-spec_version: 0.4.7
+spec_version: 0.4.8
 status: draft
 owner: framework
 date: 2026-09-11
@@ -233,11 +233,47 @@ FR-41-30 · FR-41-31 · FR-41-33 · FR-41-35
 | **FR-41-35's WARN → HARD flip (G20c(f))** | the detector ships WARN-ONLY until the flip step runs |
 | **FR-41-18** | explicitly non-blocking follow-up — unchanged, still not built |
 | **FR-41-20** (active-trail) | out of scope by design — unchanged, still not built |
+| **FR-41-36** — the locked default colour scheme (item/submenu/drawer states) | design decision only, ruled 2026-09-11; `grep -rn "accent-light" plugins/sgs-blocks/src/blocks/nav-menu/block.json` returns nothing yet |
 
-⚠ **One design question inside a BUILT FR is now OPEN again, and must not be read as settled:** the
-**sublink marker colour row** (FR-41-30(b) / §9.8). It is BUILT Normal-only, exactly as specified;
-the owner's 2026-09-11 direction supersedes that design and is not yet built. See FR-41-30(b)'s
-⚠ OPEN note and §12 item 8.
+✅ **One design question inside a BUILT FR was OPEN and is now RESOLVED (2026-09-11, same day):**
+the **sublink marker colour row** (FR-41-30(b) / §9.8). It is still BUILT Normal-only in the tree —
+the owner's newer direction (reveal keyed on the icon choice, not the colour value; full
+Hover/Current + gradient once revealed) is ruled and recorded, but **not yet built**. See
+FR-41-30(b)'s ✅ RESOLVED block (beneath its ⚠ OPEN note, kept as history) and §12 item 8.
+
+### 0a.4 Adversarial council review (2026-09-11) — verdict: GO, conditional
+
+**Five personas** (design-systems architect, accessibility, Gutenberg internals, maintainability /
+blast-radius, CSS-pattern cynic) reviewed the spec as built. Per-persona grades: design-systems
+architect **B+**, accessibility **C-**, Gutenberg internals **B+**, maintainability/blast-radius
+**A-**, CSS-pattern cynic **B-**.
+
+**Verdict: GO, conditional on two fixes landing before anything ships to a real client site** — not
+before Wave C work starts (`.claude/plans/phase-nav-menu-colour-state.md`'s Wave C, steps 18-27, may
+proceed unblocked):
+
+**(a) The submenu panel's `box-shadow` is clipped invisible.** Census #9
+(§8's fate table, `{uid} .sgs-nav-menu__submenu{…box-shadow…}`) emits a real, attribute-driven
+shadow — but the panel selector it paints (`.sgs-nav-menu__submenu`) sits *inside*
+`.sgs-nav-menu__submenu-wrap` (FR-41-1's DOM table), and that wrapper carries `overflow-y:auto`, which
+clips any shadow the inner element casts. **Needs the shadow moved to the non-clipping wrapper
+element, or an inner-scroller/outer-shadow-box split, before deploy.** Not yet fixed — a Wave C /
+pre-deploy item, not a design question.
+
+**(b) CONFIRMED CORRECT, no action needed — recorded so it is not re-litigated:** the previously
+suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked directly against
+the real files by two independent council reviewers. **FR-41-2(a) already ships the additive
+`current`/`currentGradient` extension on the existing `fillRow`/`textRow`, exactly as the spec
+states — no parallel builder family exists.**
+
+**Also confirmed by the council, no fixes needed:**
+- All three `colourExemptions` entries in `block.json` are currently accurate.
+- The `hideExtensions` claim (§1.2) is confirmed accurate.
+- The §12 "border-row-helper" tension is resolved: no `borderRow.js` exists, and per this project's
+  own CLAUDE.md rule, none should be built.
+- **FR-41-13** (the parent-stays-hovered fix) is **reconfirmed genuinely unbuilt** by live grep — it
+  is already correctly scheduled as a Wave C item (§0a.3). No plan change needed; this is the council
+  independently re-verifying the same finding, not a new one.
 
 ---
 
@@ -356,6 +392,50 @@ Three facts that follow, all load-bearing:
 - **`.sgs-nav-menu__submenu-wrap` is BAR-ONLY.** The drawer has no element with that class at all.
 - **`ul.sgs-nav-menu__submenu` is the ONE class present in both forks**, which is why every rule
   that needs to say "inside the open panel" keys on it.
+
+### FR-41-36 — Locked default colour scheme for item/submenu/drawer states (2026-09-11, owner-ruled)
+
+**Design-council-researched, evidence-based, owner-approved 2026-09-11.** This is the "what are the
+actual default token values" decision for FR-41-1/FR-41-3 — it was not fully pinned down before this
+ruling; this FR is genuinely new content, not a restatement.
+
+Uses the real `theme.json` palette tokens: `primary` (#1F7A7A), `primary-dark`, `accent` (#F59E0B),
+`accent-light`, `accent-text`, `surface` (#FAF9F6, page bg), `surface-alt` (#F1F0EC, raised bg),
+`text`, `border-light`.
+
+| Context | Normal | Hover | Current |
+|---|---|---|---|
+| **Top bar** (horizontal, desktop) | text=`primary`, bg=none, item-divider (FR-41-8)=`border-light` | text=`accent`, bg=`accent-light` (soft tint, **not** a solid fill — research found no mainstream WP theme defaults hover to a bold solid-colour fill), item-divider=`accent` | text=`accent`, bg=none (restrained — matches Astra's real shipped default of text-colour-only for active state, verified against Astra's own customiser docs), item-divider=`accent` (same colour as Hover; the **absence** of a bg fill is what visually distinguishes Current from Hover) |
+| **Desktop submenu** (dropdown panel) | bg=`surface-alt` (a raised/distinct neutral, not matching the top bar), text=`primary` | hover row=`accent-light` tint, submenu-item divider=`accent` | *(inherits the row treatment above; no separate Current row colour specified beyond the shared item-divider language)* |
+| **Drawer top-level** (burger/off-canvas menu) | bg=`surface-alt`, text=`primary`, item divider=`accent` | hover row=`accent-light` tint | active row=`accent-light` tint |
+| **Drawer nested submenu** (accordion-expanded items) | bg=`surface`, text=`primary`, item divider=`accent` | — | — |
+
+⛔ **The drawer explicitly does NOT default to a brand/primary-colour-filled whole panel.** Research
+confirmed none of Kadence/Astra/GeneratePress/Divi default their drawer to a brand-coloured fill; all
+four default to a neutral background (white or near-black) with brand colour reserved for accents
+only. **This corrects an earlier working assumption** ("drawers usually use the brand colour as the
+fill") that was checked and found not to match real shipped defaults.
+
+**Drawer nested submenu is deliberately a lighter/more neutral shade than the drawer's own top-level
+rows** (`surface` vs `surface-alt`) — real precedent exists in Foundation's accordion menu framework
+(separate top-level vs nested-item background variables) and NN/g's mobile subnavigation research
+(visual differentiation between hierarchy levels is a recommended pattern, not decoration).
+
+**Governing principle — a structural pairing, preserve it if either scheme is revisited later:** the
+**top bar** and the **drawer's nested submenu** share the same "plain" tier (bg=`surface`/none,
+text=`primary`) — they are a matched PAIR. The **desktop submenu panel** and the **drawer's
+top-level menu** share the same "distinct" tier (bg=`surface-alt`) — they are the OTHER matched pair.
+This pairing is deliberate. Don't let one pair drift independently of the other.
+
+**Universal divider rule:** every context (top bar, desktop submenu, drawer top-level, drawer nested
+submenu) gets an always-visible item divider whose COLOUR changes consistently with state
+(`border-light` at rest, `accent` on hover/current) — the single consistent visual language across
+the whole component that tells a user which state an item is in, independent of which context they
+are looking at.
+
+⚠ **This is a locked design decision, not yet built.** No attribute defaults, `block.json` values or
+`render.php` fallbacks have been changed to match this table — that is separate future implementation
+work.
 
 ### FR-41-2 — No new shared JS component is built. None is needed.
 
@@ -1939,7 +2019,7 @@ slide BETWEEN — nothing else on this block has that shape.
 | Nav bar background / text (`navBg*`/`navColour*`) | The bar is one element, not a repeated interactive target — neither a directional sweep nor a between-siblings highlight has a referent on a single static wrapper. Stays a plain 2-state Swap-only row, unchanged from v0.3.0. ⚠ **Built as a 2-state row with no `after` node** — verified in `edit.js`'s `colourRows`. |
 | Item / submenu-link Current-state swatches | Hover-treatment governs the Normal↔Hover TRANSITION specifically (something a pointer moves across). Current is not pointer-driven — FR-41-3's "Current is emitted first, is never guarded" rule already establishes it has no touch/hover lifecycle to animate. The Current swatch stays a plain third colour, unaffected by whichever treatment the Hover row picked. |
 | Submenu panel background/border colour (Normal-only, FR-41-9) | No Hover state exists on these rows at all — nothing to pair a treatment control under. |
-| Sublink marker colour, shadow colour | Single-state rows with no Hover swatch of their own (FR-41-30(b) / §9.9). ⚠ **The sublink marker half of this row is OPEN as of 2026-09-11** — the owner's newer direction gives it Hover/Current states and a gradient toggle, which would change whether it belongs in this table at all. Built as stated; see FR-41-30(b)'s ⚠ OPEN note and §12 item 8. The shadow-colour half is unaffected and stays. |
+| Sublink marker colour, shadow colour | Single-state rows with no Hover swatch of their own (FR-41-30(b) / §9.9). ✅ **The sublink marker half of this row was OPEN, RESOLVED 2026-09-11** — the owner's ruled direction gives it Hover/Current states and a gradient toggle once built, which will move it out of this table. Still BUILT Normal-only in the tree today; see FR-41-30(b)'s ✅ RESOLVED block and §12 item 8. The shadow-colour half is unaffected and stays. |
 
 #### ⛔ THE ITEM BACKGROUND ROW PAINTS ALL THREE STATES ON `{link}::before` (0.4.4)
 
@@ -2545,6 +2625,38 @@ system on the decoration itself would be a redundant control, not a richer one. 
 >
 > ⛔ **Until the owner rules, the built Normal-only row STANDS.** Do not add the states
 > speculatively, and do not remove the row. Tracked as **§12 item 8**.
+
+> ✅ **RESOLVED 2026-09-11 (owner ruling, same day as the OPEN note above — this supersedes it).**
+> The block immediately above records the question as open; it is kept verbatim because it is a
+> real record of what was undecided and why. **The owner has now ruled, and the built Normal-only
+> row is SUPERSEDED, not confirmed.**
+>
+> **The mechanism, as ruled:**
+>
+> - The sublink marker defaults to **inheriting the sublink text's own colour**, with **no colour
+>   picker shown in the inspector at all** by default.
+> - The picker is **revealed only when the operator picks a DIFFERENT icon than the default
+>   chevron/arrow** for the marker. ⛔ **The reveal condition is keyed on `sublinkMarkerIcon`'s
+>   value being non-default — NOT on whether `sublinkMarkerColour` has been set.** This directly
+>   answers sub-question (a) above: `block.json`'s `""`-means-unset convention already distinguishes
+>   "unset" from "set" everywhere else on this block, but for *this* control the trigger is simpler
+>   — it is the icon choice, not the colour value, that gates the reveal. Confirmed buildable by an
+>   adversarial-council reviewer on 2026-09-11 (§0a.4).
+> - Once revealed, the picker gets the **full 2-state+gradient treatment matching `sgs/button`'s
+>   icon-colour control** as precedent — SVG-stroke gradient for lucide/wp-icon sources, text-gradient
+>   for dashicon/emoji sources, via the existing `sgs_icon_gradient_css()` helper. **This dual-render
+>   behaviour is ALREADY BUILT and reusable — it is not new work.**
+> - This needs **ONE new additive `SgsColourPanel` row-descriptor key** for the conditional-reveal
+>   behaviour (exact shape TBD at build time, per sub-question (b) above). It is **NOT** a new
+>   duplicate helper file, and it is **NOT** a `fillRow3`/`textRow3`-style fork (FR-41-2 stays
+>   correct — see §0a.4).
+> - This ruling **supersedes** the earlier "Normal-only, exempt from states" draft language for the
+>   sublink marker recorded above — that language stays on the record as history, not as the current
+>   design.
+>
+> **Still not built** — this is a design decision, not a build. The mechanism above is what will be
+> built; §12 item 8 is updated to reflect that the design question is closed and only the build
+> remains.
 
 ---
 
@@ -3334,7 +3446,7 @@ explicit here rather than left in prose.
 | | **Panel border colour** **(MOVED HERE, FR-41-33)** | Normal only | `submenuBorderColour` (+ `submenuBorderColourGradient`) | — (Normal-only surface, FR-41-9) |
 | | Link text | Normal, Hover, **Current** | `submenuColour` / `submenuColourHover` / `submenuColourCurrent` (+ `submenuColourGradient`) | None / Swap / **Sweep** — `submenuColourHoverTreatment`. Sweep OMITTED when the link paints its own background **in ANY of its three states** (0.4.4) or carries its own text gradient (FR-41-26) |
 | | Link background | Normal, Hover, **Current** | `submenuLinkBg` / `…Hover` / `…Current` (+ `submenuLinkBgGradient`) | None / **Swap only** — `submenuLinkBgHoverTreatment` (2-option row, FR-41-23) |
-| | Sublink marker colour *(FR-41-30b)* — ⚠ **OPEN, direction changed 2026-09-11; BUILT as Normal-only, see FR-41-30(b)'s ⚠ OPEN note** | Normal only *(as built)* | `sublinkMarkerColour` **(NEW)** | — |
+| | Sublink marker colour *(FR-41-30b)* — ✅ **RESOLVED 2026-09-11 (reveal keyed on icon choice, full states once built); BUILT as Normal-only today, see FR-41-30(b)'s ✅ RESOLVED block** | Normal only *(as built)* | `sublinkMarkerColour` **(NEW)** | — |
 | **Menu button** | Icon colour | Normal, Hover | `burgerColour` / `burgerColourHover` (+ `burgerColourGradient`) | None / Swap / **Sweep** — `burgerColourHoverTreatment`. Sweep OMITTED under `triggerMode:'icon'`, or when the button paints its own background **in EITHER state — `burgerBg` resting or `burgerHoverColour` on hover** (0.4.4) — or carries its own icon gradient (FR-41-26) |
 | | Button background | Normal, Hover | `burgerBg` / `burgerHoverColour` (+ `burgerBgGradient`) | None / **Swap only** — `burgerBgHoverTreatment` (2-option row) |
 | **Featured** | *(unchanged — out of scope, §1.2)* | | | |
@@ -3414,7 +3526,7 @@ border colour.
 
 | Subsection | Control | Component | Attribute | Default |
 |---|---|---|---|---|
-| Colour | *(see §9.6 "Submenu" grouping — link text, link background, hover treatments, sublink marker colour, and the panel's own border colour)*. ⚠ **The sublink marker colour row's state model is OPEN as of 2026-09-11** — built Normal-only per FR-41-30(b), with a superseding owner direction not yet built. See FR-41-30(b)'s ⚠ OPEN note and §12 item 8; do not resolve it either way here | — | — | — |
+| Colour | *(see §9.6 "Submenu" grouping — link text, link background, hover treatments, sublink marker colour, and the panel's own border colour)*. ✅ **The sublink marker colour row's state model was OPEN as of 2026-09-11 and is now RESOLVED** — built Normal-only per FR-41-30(b) today; the owner-ruled direction (icon-keyed reveal, full states once built) is recorded but not yet built. See FR-41-30(b)'s ✅ RESOLVED block and §12 item 8 | — | — | — |
 | Marker icon | Icon | `IconPicker` **(NEW, FR-41-30b)** | `sublinkMarkerIcon` | `{"source":"lucide","name":"chevron-right"}` |
 | Typography | *(see the Typography panel's "Submenu" target, §9.10 / FR-41-22)* | — | — | — |
 | Spacing | *(no distinct submenu-LINK padding attribute exists today — `submenuPadding` belongs to the PANEL, §9.9. Named as a gap, not fabricated: see §12.)* | — | — | — |
@@ -4259,20 +4371,30 @@ a question — if one needs changing, change the requirement.
     true when written and was falsified by a decision elsewhere in the same document, with nothing
     re-checking a row marked NO CHANGE. It was caught during execution, not by a gate.
 
-8. ⚠ **(2026-09-11, LIVE AND UNRESOLVED — the one genuinely open DESIGN question left) The sublink
-    marker colour row's state model.** It is BUILT Normal-only, exactly as FR-41-30(b) specifies;
-    the owner's newer direction gives it full Hover and Current states plus a gradient toggle,
-    **with the colour picker hidden by default** (silently inheriting the sublink text's own colour)
-    and revealed only once an operator has actually overridden it with a custom value. ⛔ **Neither
-    design is settled and neither may be deleted from this spec**: the original Normal-only
-    reasoning is a real argument and is what the shipped code implements, and the new direction
-    supersedes it only once built. Three sub-questions are undesigned — what "has overridden it"
-    means as a stored state (an empty string is currently indistinguishable from "never touched"),
-    how a progressively-revealed picker is expressed inside `SgsColourPanel`'s row contract, and
-    whether the reveal affordance needs a FOURTH additive row key (which would be another
-    design-gated shared-component change, project rule 7). Full detail and the
+8. ~~⚠ **(2026-09-11, LIVE AND UNRESOLVED — the one genuinely open DESIGN question left) The
+    sublink marker colour row's state model.** It is BUILT Normal-only, exactly as FR-41-30(b)
+    specifies; the owner's newer direction gives it full Hover and Current states plus a gradient
+    toggle, **with the colour picker hidden by default** (silently inheriting the sublink text's own
+    colour) and revealed only once an operator has actually overridden it with a custom value. ⛔
+    **Neither design is settled and neither may be deleted from this spec**: the original
+    Normal-only reasoning is a real argument and is what the shipped code implements, and the new
+    direction supersedes it only once built. Three sub-questions are undesigned — what "has
+    overridden it" means as a stored state (an empty string is currently indistinguishable from
+    "never touched"), how a progressively-revealed picker is expressed inside `SgsColourPanel`'s row
+    contract, and whether the reveal affordance needs a FOURTH additive row key (which would be
+    another design-gated shared-component change, project rule 7). Full detail and the
     do-not-resolve-either-way rule: FR-41-30(b)'s ⚠ OPEN note. **Owner call required before
-    anything is built.**
+    anything is built.**~~
+    ✅ **RESOLVED 2026-09-11 (owner ruled the same day).** The reveal trigger is **the icon choice**
+    (`sublinkMarkerIcon` non-default), **not** the colour value — closing sub-question (a) outright.
+    Once revealed, the row gets the full 2-state+gradient treatment matching `sgs/button`'s
+    icon-colour control (already-built `sgs_icon_gradient_css()` dual-render path, reused not
+    rebuilt) — closing sub-question (b)'s shape question in outline, though the exact
+    `SgsColourPanel` row-descriptor key is still TBD at build time. It needs **one new additive row
+    key**, not a fourth-key explosion and not a `fillRow3`/`textRow3` fork — closing sub-question
+    (c). Full mechanism recorded at FR-41-30(b)'s **new** ✅ RESOLVED block (immediately below its
+    ⚠ OPEN note, which stays as history). Build itself is still pending — this closes the DESIGN
+    question only. Confirmed buildable by the 2026-09-11 adversarial council (§0a.4).
 
 9. ✅ **(2026-09-11, CLOSED — kept so it is not re-opened) The hardcoded-rule census had no
     detector.** Retired §12 item 13 recorded that FR-41-15's census was found incomplete on three
@@ -4286,6 +4408,38 @@ a question — if one needs changing, change the requirement.
 ---
 
 ## Revision history
+
+**0.4.8 (2026-09-11)** — twelfth revision, a **same-day owner decision pass** recording three
+finalised design decisions on top of the mid-build accuracy pass below. `spec_version` bumps because
+this pass adds a genuinely new FR and resolves a live open question, unlike the accuracy pass (which
+deliberately did not bump).
+
+1. **FR-41-30(b)'s open note is RESOLVED.** The owner ruled: the sublink-marker colour picker stays
+   hidden until the operator picks a non-default `sublinkMarkerIcon`, not until a colour value is
+   set; once revealed it gets `sgs/button`'s existing 2-state+gradient icon-colour treatment; one new
+   additive `SgsColourPanel` row-descriptor key is needed, not a `fillRow3`/`textRow3` fork. Recorded
+   as a new ✅ RESOLVED block directly beneath FR-41-30(b)'s ⚠ OPEN note (kept as history, not
+   deleted), with pointer updates at §12 item 8, §0a.3, and the three table rows that referenced the
+   OPEN state (the hover-treatment-selector table, §9.6, §9.8).
+2. **NEW §0a.4 — adversarial council review (2026-09-11), verdict GO conditional.** Five personas
+   (design-systems architect B+, accessibility C-, Gutenberg internals B+, maintainability/blast-radius
+   A-, CSS-pattern cynic B-). Two conditions before real-client deploy: (a) the submenu panel's
+   `box-shadow` is clipped invisible by `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — not yet
+   fixed; (b) the suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked
+   and does NOT exist — FR-41-2(a)'s additive extension is confirmed correct, no action needed. Also
+   confirmed accurate with no fixes needed: all three `colourExemptions` entries, the `hideExtensions`
+   claim, and the §12 "border-row-helper" tension (already resolved, no `borderRow.js`, none should be
+   built). FR-41-13 reconfirmed genuinely unbuilt, already correctly scheduled as a Wave C item — no
+   plan change.
+3. **NEW FR-41-36 — locked default colour scheme for item/submenu/drawer states.** Design-council-
+   researched, owner-approved. Pins the actual default token values (`primary`/`accent`/`surface`/
+   `surface-alt`/`border-light` family) across top bar, desktop submenu, drawer top-level and drawer
+   nested submenu, states Normal/Hover/Current. Records the "top bar + drawer nested submenu" /
+   "desktop submenu + drawer top-level" matched-pair structural principle, corrects an earlier
+   working assumption that drawers default to a brand-coloured fill (checked against Kadence/Astra/
+   GeneratePress/Divi — none do), and states the universal item-divider colour rule. Design decision
+   only — not yet built. Placed after FR-41-1 as the natural home for the block's colour-model
+   defaults.
 
 **MID-BUILD ACCURACY PASS (2026-09-11) — ⛔ deliberately NOT a version bump.** `spec_version` stays
 at **0.4.7**. This pass introduces no new FR, reverses no decision, renumbers nothing and changes no

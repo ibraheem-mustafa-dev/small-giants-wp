@@ -4,7 +4,7 @@ plan_id: phase-nav-menu-colour-state
 phase_name: Spec 41 — sgs/nav-menu colour, state + control system (build)
 project: small-giants-wp
 spec: .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md
-spec_version: 0.4.7
+spec_version: 0.4.8
 mode: ad-hoc phase (standalone spec, no parent strategic-plan)
 date: 2026-09-11
 cost_estimate: "~$39 (≈2.7M in / ≈0.60M out across 30 steps, 5 of them QA gates)"
@@ -61,9 +61,35 @@ Ran as two parallel subagent lanes per owner ruling 7: **Lane 5** (13→14→14a
 - `render.php`'s PHP module count is **6 files**, not the 4 from Step 8 — Steps 15/16 added genuinely new logic (not refactor) that needed two more modules (`nav-menu-treatments.php`, `nav-menu-trigger-css.php`) to stay under the 300-code-line cap. This is expected growth from real new work, not a cap violation.
 - `edit.js` is **625 lines**, not ≤250 — `colourRows` (detector constraint, owner ruling 3) and the panel mounts cannot leave the file. Bean asked (2026-09-11) for research into whether other blocks with colour rows have a pattern nav-menu is missing — **research dispatched, result pending, no further action taken yet.**
 
-### Open thread — NOT YET RESOLVED, holds the manifest
+### Open thread — RESOLVED 2026-09-11 (design only; build still pending)
 
-**`sublink-marker` colour row.** Originally exempted from the Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was under revision when superseded). **Bean's actual direction (2026-09-11, superseding the exemption approach):** the sublink marker should get full Hover/Current states + gradient toggle, like every other row — but the colour picker should stay HIDDEN by default (silently inheriting the sublink text's own colour) and only become visible once an operator has actually overridden it with a custom value. This is a real `fillRow`/row-descriptor behaviour change (conditional visibility keyed on whether a value has been set), not the one-line manifest exemption originally planned. **Do not add a `colourExemptions.sublink-marker` entry — that direction is superseded.** Needs to be built as part of Step 13's territory (or a small follow-up to it) once Bean confirms the exact mechanism.
+**`sublink-marker` colour row — design question CLOSED, owner ruled.** Originally exempted from the
+Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was
+under revision when superseded). Bean's superseding direction (2026-09-11) is now the ruled design:
+the sublink marker gets full Hover/Current states + a gradient toggle, like every other row — but the
+colour picker stays HIDDEN by default (silently inheriting the sublink text's own colour) and is
+revealed **only when the operator picks a non-default `sublinkMarkerIcon`** — the reveal is keyed on
+the ICON choice, not on whether a colour value has been set. Once revealed, the row gets `sgs/button`'s
+existing 2-state+gradient icon-colour treatment (`sgs_icon_gradient_css()`, already built, reused not
+rebuilt). It needs **one new additive `SgsColourPanel` row-descriptor key** for the conditional
+reveal — not a `fillRow3`/`textRow3` fork. Confirmed buildable by the 2026-09-11 adversarial council.
+**Do not add a `colourExemptions.sublink-marker` entry — that approach is superseded.** Full mechanism
+recorded at Spec 41's FR-41-30(b) ✅ RESOLVED block (`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`,
+beneath its ⚠ OPEN note, kept as history) and §12 item 8. **Still needs to be BUILT** as part of Step
+13's territory (or a small follow-up to it) — this closes the design question, not the implementation.
+
+**Also recorded in Spec 41 today (2026-09-11), not otherwise tracked in this plan:**
+- **§0a.4 — adversarial council review, verdict GO conditional.** Two pre-real-client-deploy fixes
+  named: (a) the submenu panel's `box-shadow` is clipped invisible by
+  `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — a Wave C / pre-deploy fix, not yet done; (b) the
+  suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked and confirmed NOT
+  to exist — FR-41-2(a)'s additive extension is the real, correct architecture, no action needed. Also
+  confirmed accurate: all three `colourExemptions` entries, the `hideExtensions` claim, and the §12
+  "border-row-helper" tension (already resolved). FR-41-13 reconfirmed genuinely unbuilt — already
+  correctly scheduled as this plan's Wave C (step 18), no plan change.
+- **FR-41-36 — locked default colour scheme** for item/submenu/drawer states across Normal/Hover/
+  Current, using the real `theme.json` tokens. Design decision only, not yet built; see Spec 41 for
+  the full table and the matched-pair structural principle.
 
 ### Wave C — NOT STARTED (steps 18-27)
 
