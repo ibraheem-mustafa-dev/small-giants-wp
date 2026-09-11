@@ -215,8 +215,24 @@
 				"type": "object",
 				"properties": {
 					"media": {
-						"type": "object",
-						"role": "image-object"
+						"anyOf": [
+							{ "type": "string" },
+							{ "type": "null" },
+							{
+								"type": "object",
+								"properties": {
+									"url": { "type": "string" },
+									"type": { "type": "string" },
+									"id": { "type": "number" },
+									"alt": { "type": "string" },
+									"mime": { "type": "string" },
+									"width": { "type": "number" },
+									"height": { "type": "number" }
+								}
+							}
+						],
+						"role": "image-object",
+						"_note": "D-pending (2026-09-11) — THREE real shapes are accepted and all render: the object form { url, type, id, alt, mime, width, height } written by MediaPicker, a bare URL STRING (for back-compat with starter patterns, though brand-strip doesn't currently use any such patterns), and null (the empty state from addLogo()/Remove in edit.js). Before this fix `media` was declared bare {\"type\":\"object\"} — WordPress's own WP_Block_Type::prepare_attributes_for_render() validates the WHOLE `logos` array against this schema on every server render (rest_validate_array_value_from_schema loops each item and returns the FIRST WP_Error it finds, wiping the array back to its `[]` default), so ANY item whose media was the actual object shape (every item added through the editor picker) silently blanked the ENTIRE logos array, not just that item, on the frontend. This is a sibling fix to D1027 (sgs/card-grid, same mechanism). Do not narrow this back to a single `type` -- object/null/string must all keep validating, or the array-wipe regresses. The object branch declares real `properties` (not a bare `{\"type\":\"object\"}`) so this stays scoped to the SGS media shape rather than accepting arbitrary object junk."
 					},
 					"alt": {
 						"type": "string"
