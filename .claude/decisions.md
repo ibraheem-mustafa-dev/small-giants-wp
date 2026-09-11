@@ -1,3 +1,21 @@
+## D1020 [ROUTINE] — R8 executable phase plan produced, design phase formally closed
+
+**2026-09-11.** `/phase-planner` run against the fully-settled R8 design
+(`plans/2026-09-10-r8-motion-recognition-brainstorm.md`) produced a 14-step executable plan:
+`plans/phase-r8-motion-recognition.md`. Covers the base phase (Tiers 1/2 + measurement
+checkpoint against TAG Heuer's page + 2 more real sites, then 3/4a) and the fast-follow (Tiers
+4c/4d, gated on Tier 4a being live). Mandatory Hidden Decisions pass (2 cold reviewers — Sonnet
+skeptical-implementer, Haiku junior-dev persona) both independently converged on the same gap:
+the plan cited the design doc for its data model/algorithms instead of pinning them inline for a
+cold executor. Fixed directly rather than left as prose: Step 1's DB schema is now fully
+specified (columns, enums, units); Step 3's matching rule, `lift_behavioural_attrs()` write
+shape, and emitted attribute name are spelled out; Step 7's "class-signature" and Step 9's
+stagger-acceptance rule are both defined with explicit tolerances; Step 10 names the exact files
+to read for its build-time DOM-scrape check. Docscore: A (95%) against the archived-plan
+template shape. Tier 4d's step carries the D1019 legal framing as a hard, non-softenable
+requirement (flagged explicitly in its own On-Fail field). No design decisions were reopened —
+this is execution detail only.
+
 ## D1019 [ROUTINE] — R8's WebGL reference-file pulling admitted as a per-source, Bean-owned risk decision — NOT a legal clearance
 
 **2026-09-10.** Extends D880 (the Stripe shader-porting precedent, 2026-08-28) from a one-off

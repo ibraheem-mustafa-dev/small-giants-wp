@@ -105,17 +105,20 @@ prompt.
 
 **R8 (motion cloning from raw CSS) is the active front as of today** — Bean directed work here
 ahead of header/footer, by-passing D1004's original ordering deliberately (not a reversion, a
-live re-prioritisation). **Design work is DONE — `/phase-planner` is the next step, not another
-brainstorm.** Full sequence completed: `/brainstorming` (ranked tier menu) →
-`/qc-council` (4 raters, real corrections: a genuine Spec 38 conflict caught, a feasibility
-gap found, a reuse claim corrected, a sequencing risk flagged) → `/research-buddies` (upgraded
-Tier 4a's feasibility materially — DOM-runtime signals beat bundle-parsing) → a Bean-directed
-addendum (Tier 4c, WebGL style-approximation). Full doc:
-`plans/2026-09-10-r8-motion-recognition-brainstorm.md`. R9 confirmed motion as the largest
-capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
+live re-prioritisation). **Design AND planning are both DONE — execution is the next step.**
+Full sequence completed: `/brainstorming` (ranked tier menu) → `/qc-council` (4 raters, real
+corrections: a genuine Spec 38 conflict caught, a feasibility gap found, a reuse claim corrected,
+a sequencing risk flagged) → `/research-buddies` (upgraded Tier 4a's feasibility materially —
+DOM-runtime signals beat bundle-parsing) → a Bean-directed addendum (Tier 4c/4d, WebGL
+style-approximation + operator-confirmed reference-pulling, D1019) → `/phase-planner` (14-step
+executable plan, Hidden Decisions pass complete, docscore A/95%). Design doc:
+`plans/2026-09-10-r8-motion-recognition-brainstorm.md`. **Execution plan (start here to build):
+`plans/phase-r8-motion-recognition.md`** — Step 1 is the SESSION-START entry point. R9 confirmed
+motion as the largest capability gap (2,880 declared fx attrs, ~0 converter coverage for raw CSS
 `@keyframes`/`animation`/`transition`) — a genuinely harder recognition problem than the R1/R9/R10
-shape-fixing work that preceded it (R9/R10 fully closed; R1 rescoped with 17 attrs still open,
-see below — do NOT describe R1 as closed, corrected 2026-09-10).
+shape-fixing work that preceded it (R9/R10 fully closed; R1 rescoped, its remaining 10-attribute
+native-support-retirement scope now mid-execution in a parallel task — see below — do NOT
+describe R1 as closed until that lands).
 
 **Header/footer implementation is paused, not dropped** — still next after R8. Read
 `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up — it has
@@ -210,7 +213,7 @@ first).
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1018** — verify with
+- **D-ceiling:** **D1020** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -231,6 +234,8 @@ first).
 | Today's full fix detail (main closeout) | `decisions.md` D1015 (also D1013, D1014 for the measurement-tool repair that preceded it) |
 | Second-pass fixes (hover-zoom, trust-bar border, section-boundary detector, hero split-media) | commits `ae604c09a`, `56e51a7dd`, `d216ca7cd`, `4b6072757`, `ec3fcabfd` — no separate D-number, see this LEDGER's Human Summary |
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
+| R8 motion-recognition design (settled, references only) | `plans/2026-09-10-r8-motion-recognition-brainstorm.md` |
+| **R8 execution plan (start here to build — Step 1 is SESSION-START)** | `plans/phase-r8-motion-recognition.md` |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
