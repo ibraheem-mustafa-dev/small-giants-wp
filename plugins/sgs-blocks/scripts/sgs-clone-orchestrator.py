@@ -116,6 +116,213 @@ def _load_lint_module(filename: str, attr_name: str):
     return module
 
 
+def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir: Path) -> dict:
+    """Stage -1 -- Phase R8 Tier 4a/4c motion-library pre-flight probe.
+
+    Runs once per clone job, BEFORE Stage 0. Wires the four R8 modules
+    (`.claude/decisions.md` D1021/D1022) into the real pipeline for the
+    first time -- confirmed live by grep before this function existed that
+    none of them had an external importer besides their own test fixtures.
+
+    ONLY orchestration here -- none of the four modules' internal logic is
+    touched. This function:
+      1. Tier 4a-static (always, zero browser cost) -- re-parses the
+         already-downloaded mockup file for GSAP/Lenis/Three.js DOM signals.
+      2. Tier 4a-dynamic (conditional) -- a live Playwright draw-call probe
+         against `source_url`, ONLY when a genuine non-Three.js `<canvas>`
+         candidate exists AND a source URL was supplied. No `source_url` ->
+         honestly skipped and recorded, never silently absent, never run
+         against the static mockup (which may not preserve the source's
+         bundled JS verbatim -- a false-negative risk).
+      3. Tier 4c (conditional) -- only when Tier 4a's REAL evidence-carrying
+         gate (`webgl_style_classifier.py::check_tier4a_confirmed_webgl()`)
+         confirms genuine WebGL. `webgl_draw_call_probe.py::probe()` opens
+         and closes its own Playwright browser internally and returns only a
+         plain dict (confirmed by direct read) -- it exposes no reusable
+         page handle, so Tier 4c captures its own screenshot independently
+         via `capture_canvas_screenshot_standalone()` rather than inventing a
+         session-sharing mechanism that doesn't exist yet.
+      4. Tier 4d -- NEVER auto-fires here. This stage only records whether
+         Tier 4c reported "no match" (so a LATER, separate operator-facing
+         step could offer the Tier 4d pull); no confirmation UI is built in
+         this function.
+      5. Writes findings, shaped by
+         `motion_library_signals.py::to_leftover_bucket_items()`, to a
+         sidecar `stage--1-motion-signals.json` in `run_dir`. Stage 9's
+         `leftover-bucket-router.py` reads this sidecar (new `--motion-
+         signals` arg -- confirmed by reading `route()`'s real signature
+         first: it had no such extensibility point, so this stage's sidecar
+         would otherwise be written for nothing to read) and folds it into
+         the existing `animation_unclassified` bucket an operator already
+         reviews.
+
+    Every step soft-fails to a recorded skip/error rather than raising --
+    this is a pre-flight probe, never a reason to halt the clone.
+    """
+    started = now_iso()
+    result: dict = {
+        "started": started,
+        "finished": None,
+        "source_url": source_url,
+        "tier4a_static": {"ran": False, "found_signals": [], "canvas_candidates": [], "error": None},
+        "tier4a_dynamic": {"attempted": False, "ran": False, "probe_result": None, "skipped_reason": None},
+        "tier4c": {"ran": False, "gate": None, "suggestion": None, "skipped_reason": None, "error": None},
+        "tier4d": {
+            "auto_fired": False,
+            "no_match_recorded": False,
+            "note": "Tier 4d never auto-fires from this stage; a later, separate "
+                    "operator-facing step may offer it when no_match_recorded is true.",
+        },
+    }
+
+    # Same sys.path convention this file already uses elsewhere (e.g. the
+    # `converter.db.db_lookup` / `converter.entry` imports above) -- but the
+    # R8 modules under converter/services/ use BARE sibling imports internally
+    # (`webgl_style_classifier.py::from tier4a_gate_verification import
+    # reverify_gate` -- confirmed by direct read), matching how their own test
+    # fixtures import them (`test_tier4a_gate_hardening_fixtures.py::from
+    # tier4a_gate_verification import reverify_gate`). Importing
+    # `converter.services.webgl_style_classifier` as a package submodule would
+    # break that internal bare import, so converter/services/ and
+    # converter/resolvers/ are added to sys.path directly and every R8 module
+    # is imported bare, exactly as its own tests already do.
+    _scripts_dir = Path(__file__).resolve().parent
+    _converter_dir = _scripts_dir / "converter"
+    _resolvers_dir = _converter_dir / "resolvers"
+    _services_dir = _converter_dir / "services"
+    for _d in (_converter_dir, _resolvers_dir, _services_dir):
+        _d_str = str(_d)
+        if _d_str not in sys.path:
+            sys.path.insert(0, _d_str)
+
+    # --- Tier 4a-static -----------------------------------------------
+    found_signals: list[dict] = []
+    canvas_candidates: list[dict] = []
+    leftover_items: list[dict] = []
+    try:
+        from motion_library_signals import (  # type: ignore[import]
+            detect_from_html_file,
+            find_non_threejs_canvases,
+            to_leftover_bucket_items,
+        )
+        from bs4 import BeautifulSoup  # already a pipeline dependency elsewhere
+
+        found_signals = detect_from_html_file(mockup_path)
+        result["tier4a_static"]["ran"] = True
+        result["tier4a_static"]["found_signals"] = found_signals
+        leftover_items.extend(to_leftover_bucket_items(found_signals))
+
+        mockup_path = Path(mockup_path)
+        if mockup_path.exists():
+            soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
+            canvas_candidates = find_non_threejs_canvases(soup)
+        result["tier4a_static"]["canvas_candidates"] = canvas_candidates
+    except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
+        result["tier4a_static"]["error"] = str(exc)
+
+    # --- Tier 4a-dynamic (conditional on a real canvas candidate + a URL) --
+    draw_call_result: dict | None = None
+    if canvas_candidates and source_url:
+        result["tier4a_dynamic"]["attempted"] = True
+        try:
+            try:
+                from webgl_draw_call_probe import probe as _webgl_probe  # type: ignore[import]
+            except SystemExit as exc:
+                # webgl_draw_call_probe.py sys.exit()s at IMPORT time when
+                # playwright isn't installed (confirmed by direct read) --
+                # SystemExit is not an Exception subclass, so it must be
+                # caught explicitly here or it would kill the whole
+                # orchestrator process on a machine without playwright.
+                raise RuntimeError(f"playwright unavailable for Tier 4a-dynamic: {exc}") from exc
+            draw_call_result = _webgl_probe(url=source_url)
+            result["tier4a_dynamic"]["ran"] = True
+            result["tier4a_dynamic"]["probe_result"] = draw_call_result
+        except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
+            result["tier4a_dynamic"]["skipped_reason"] = f"probe failed: {exc}"
+    elif canvas_candidates and not source_url:
+        result["tier4a_dynamic"]["skipped_reason"] = (
+            f"{len(canvas_candidates)} non-Three.js canvas candidate(s) found, but no "
+            "--source-url was supplied. Skipped honestly rather than probing the static "
+            "mockup file -- the mockup may not preserve the source's original bundled JS "
+            "verbatim, which risks a false negative."
+        )
+        leftover_items.append({
+            "selector": "canvas",
+            "reason": "webgl-canvas-candidate-unprobed-no-source-url",
+            "confirms": None,
+            "evidence": {"canvas_candidates": canvas_candidates},
+            "confidence": 1.0,
+        })
+    else:
+        result["tier4a_dynamic"]["skipped_reason"] = "no non-Three.js canvas candidates found"
+
+    # --- Tier 4c (conditional on Tier 4a's real evidence-carrying gate) ---
+    try:
+        from webgl_style_classifier import (  # type: ignore[import]
+            check_tier4a_confirmed_webgl,
+            build_operator_suggestion,
+            capture_canvas_screenshot_standalone,
+        )
+
+        gate = check_tier4a_confirmed_webgl(found_signals, draw_call_result)
+        result["tier4c"]["gate"] = gate
+
+        if not gate.get("confirmed"):
+            result["tier4c"]["skipped_reason"] = gate.get("reason")
+        elif not source_url:
+            result["tier4c"]["skipped_reason"] = (
+                "Tier 4a confirmed genuine WebGL presence, but no --source-url was "
+                "supplied to screenshot the canvas -- Tier 4c needs a live page capture."
+            )
+        else:
+            screenshot_path = run_dir / "tier4c-canvas-screenshot.png"
+            capture = capture_canvas_screenshot_standalone(source_url, screenshot_path)
+            if capture.get("error") or not capture.get("path"):
+                result["tier4c"]["skipped_reason"] = f"screenshot capture failed: {capture.get('error')}"
+            else:
+                suggestion = build_operator_suggestion(capture["path"], gate)
+                result["tier4c"]["ran"] = True
+                result["tier4c"]["suggestion"] = suggestion
+                if suggestion.get("matched_effect") is None:
+                    result["tier4d"]["no_match_recorded"] = True
+                    leftover_items.append({
+                        "selector": "canvas",
+                        "reason": "webgl-tier4c-no-shipped-effect-match",
+                        "confirms": gate.get("source"),
+                        "evidence": {"tier4c_suggestion": suggestion},
+                        "confidence": 1.0,
+                    })
+    except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
+        result["tier4c"]["error"] = str(exc)
+
+    # --- Sidecar write (Stage 9's leftover-bucket-router.py reads this) ---
+    sidecar_path = run_dir / "stage--1-motion-signals.json"
+    sidecar_path.write_text(
+        json.dumps({"items": leftover_items}, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    result["sidecar_path"] = str(sidecar_path)
+    result["finished"] = now_iso()
+
+    _emit(
+        _trace_for(run_dir), stage="stage_neg1_motion_probe",
+        tier4a_static_ran=result["tier4a_static"]["ran"],
+        tier4a_dynamic_ran=result["tier4a_dynamic"]["ran"],
+        tier4c_ran=result["tier4c"]["ran"],
+        leftover_item_count=len(leftover_items),
+    )
+
+    trace_path = run_dir / "stage--1.json"
+    trace_path.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(
+        f"[stage--1] motion-probe: tier4a_static={result['tier4a_static']['ran']} "
+        f"found_signals={len(found_signals)} canvas_candidates={len(canvas_candidates)} "
+        f"tier4a_dynamic={result['tier4a_dynamic']['ran']} tier4c={result['tier4c']['ran']} "
+        f"leftover_items={len(leftover_items)}"
+    )
+    return result
+
+
 def stage_0_1_bem_lint(mockup: Path, mode: str, run_dir: Path) -> dict:
     """Stage 0.1 — SGS-BEM compliance lint on the draft HTML.
 
@@ -2059,6 +2266,13 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "--extract", str(extract_copy),
         "--out", str(buckets_path),
     ]
+    # Phase R8 wiring -- fold Stage -1's motion-library pre-flight findings
+    # (sgs-clone-orchestrator.py::stage_neg1_motion_probe) into the same
+    # leftover-buckets output, via the router's own --motion-signals arg.
+    # Optional: the sidecar only exists on runs where Stage -1 wrote findings.
+    motion_signals_path = run_dir / "stage--1-motion-signals.json"
+    if motion_signals_path.exists():
+        cmd_router += ["--motion-signals", str(motion_signals_path)]
     proc = subprocess.run(cmd_router, capture_output=True, text=True, encoding="utf-8")
     buckets_output: dict = {"leftover_buckets": {}, "totals": {}, "total_count": 0}
     if proc.returncode != 0:
@@ -2370,6 +2584,14 @@ def main():
              "Stage 10 (style activation) fires only when the client slug is known.",
     )
     parser.add_argument("--page", type=str, required=True)
+    parser.add_argument(
+        "--source-url", type=str, default=None,
+        help="Live source URL for Stage -1's Phase R8 motion-library pre-flight "
+             "probe (Tier 4a-dynamic draw-call probe + Tier 4c screenshot capture). "
+             "Omit to run Tier 4a-static only (DOM-signal detection against the "
+             "already-downloaded mockup file) -- Tier 4a-dynamic/4c are then "
+             "honestly skipped and recorded, never run against the static mockup.",
+    )
     parser.add_argument("--media-map", type=Path, default=None)
     parser.add_argument("--viewport", type=int, default=1440)
     parser.add_argument("--no-playwright", action="store_true")
@@ -2594,6 +2816,11 @@ def main():
             print(f"[stage-0] variation parse error: {exc}; using base theme only", file=sys.stderr)
     run_ctx: dict = {"theme_json": _theme_json}
     print(f"[stage-0] theme cache: {len(_theme_json.get('settings', {}).get('color', {}).get('palette', []))} palette tokens loaded")
+
+    # Stage -1 -- Phase R8 motion-library pre-flight probe (D1021/D1022 first
+    # real wiring into the pipeline). Runs BEFORE Stage 0 per the validated
+    # design; soft-fails internally and never halts the clone.
+    stage_neg1_motion_probe(args.mockup, args.source_url, run_dir)
 
     stage_0_1_bem_lint(args.mockup, args.mode, run_dir)
     stage_0_5_token_lint(args.mockup, args.mode, run_dir, client=args.client)

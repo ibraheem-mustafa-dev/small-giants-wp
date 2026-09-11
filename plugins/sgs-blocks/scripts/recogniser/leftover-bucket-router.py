@@ -1074,11 +1074,37 @@ def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[
             }, bucket))
 
 
+def route_motion_library_signals(motion_signals: list[dict] | None, buckets: dict[str, list]) -> None:
+    """Phase R8 wiring (D1021/D1022) -- fold Stage -1's motion-library
+    pre-flight findings into the SAME bucket shape this router already
+    produces, rather than inventing a second review-queue schema.
+
+    `motion_signals` is the `items` list from
+    `sgs-clone-orchestrator.py::stage_neg1_motion_probe`'s sidecar
+    (`stage--1-motion-signals.json`), itself shaped by
+    `converter/resolvers/motion_library_signals.py::to_leftover_bucket_items()`
+    (a `selector` + a confirms/evidence/confidence-bearing reason).
+
+    Routed to `animation_unclassified`: a detected motion library
+    (GSAP/Lenis/Three.js), an unconfirmed WebGL canvas, or a Tier 4c
+    no-shipped-effect-match is a BEHAVIOUR this pipeline doesn't yet
+    convert -- matching this bucket's existing severity floor ("behaviour
+    passes silently if dropped"), the correct fit for a pre-flight
+    motion/WebGL signal (not a structural or attribute-extraction gap).
+    """
+    bucket = "animation_unclassified"
+    for item in motion_signals or []:
+        if not isinstance(item, dict):
+            continue
+        buckets[bucket].append(_enrich_item(dict(item), bucket))
+
+
 def route(
     boundary: dict | None,
     match: dict | None,
     slot_list: dict | None,
     extract: dict | None,
+    motion_signals: list[dict] | None = None,
 ) -> dict:
     """Top-level routing entry point. Returns full buckets + totals dict."""
     buckets = _empty_buckets()
@@ -1091,6 +1117,7 @@ def route(
     route_unrecognised_section(matches, extract_dict, buckets)
     route_extraction_failed(slot_lists, extract_dict, buckets)
     route_animation_unclassified(extract_dict, buckets)
+    route_motion_library_signals(motion_signals, buckets)  # Phase R8 wiring
     route_structural_mismatch(matches, extract_dict, buckets)
     route_wrong_block_type(matches, boundaries, extract_dict, buckets)
     route_leaf_block_with_complex_subtree(matches, extract_dict, buckets)  # P-PHASE8-14
@@ -1132,14 +1159,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--match", type=Path, default=None)
     parser.add_argument("--slot-list", type=Path, default=None)
     parser.add_argument("--extract", type=Path, default=None)
+    parser.add_argument(
+        "--motion-signals", type=Path, default=None,
+        help="Optional path to a JSON file of Phase R8 Stage -1 motion-library "
+             "pre-flight signal items (sgs-clone-orchestrator.py::"
+             "stage_neg1_motion_probe's sidecar, shaped by "
+             "motion_library_signals.py::to_leftover_bucket_items()) -- either a "
+             "plain list, or a dict with an 'items' key. Folded into "
+             "animation_unclassified alongside this router's own findings.",
+    )
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args(argv)
+
+    motion_signals: list[dict] | None = None
+    if args.motion_signals:
+        motion_loaded = _load_json(args.motion_signals)
+        motion_signals = (
+            motion_loaded.get("items") if isinstance(motion_loaded, dict) else motion_loaded
+        )
 
     result = route(
         boundary=_load_json(args.boundary),
         match=_load_json(args.match),
         slot_list=_load_json(args.slot_list),
         extract=_load_json(args.extract),
+        motion_signals=motion_signals,
     )
 
     payload = json.dumps(result, indent=2, ensure_ascii=False)
