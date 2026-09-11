@@ -720,12 +720,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 
 					{ 'columns' === style && (
-						<ToggleControl
-							label={ __( 'Show group headings', 'sgs-blocks' ) }
-							checked={ headings !== false }
-							onChange={ ( value ) => setAttributes( { headings: value } ) }
-							__nextHasNoMarginBottom
-						/>
+						<>
+							<ToggleControl
+								label={ __( 'Show group headings', 'sgs-blocks' ) }
+								checked={ headings !== false }
+								onChange={ ( value ) => setAttributes( { headings: value } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ false === headings && (
+								<Notice status="info" isDismissible={ false }>
+									{ __(
+										'Hiding group headings is a known mega-menu accessibility pitfall — without a heading, screen reader users and quick visual scanners have no way to tell what each column of links is about. Consider leaving headings on, or switching to Minimal layout instead.',
+										'sgs-blocks'
+									) }
+								</Notice>
+							) }
+						</>
 					) }
 
 					<ToggleGroupControl
