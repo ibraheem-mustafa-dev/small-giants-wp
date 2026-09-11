@@ -112,7 +112,7 @@ below for the record; not the front any more.
   `co_animates_opacity` DB axis (AOS's real fade-vs-slide convention, fetched from source) makes
   them genuinely distinguishable — `slide-*` now opts out of the shared opacity fade + moves a
   genuinely larger 100px. Design-reviewed by 2 parallel agents against the live code before
-  building. Real-world Tier 1+2 coverage: **6/13 (~46%)**, up from 5/13, after 2 genuine new
+  building. Real-world Tier 1+2 (static-CSS) coverage: **6/13 (~46%)**, up from 5/13, after 2 genuine new
   real-world matches (TAG Heuer's `slideUp`, `dy_appear_from_bottom`) traded against one coincidental
   cross-shape match that never wrote a real attribute anyway (`preloaderAppear`↔`border-accent`).
   **The transition-extractor dead-code gap (found during D1025's build) is ALSO now fixed same day
@@ -131,6 +131,12 @@ below for the record; not the front any more.
   `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
   One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
   of this phase's files (keyword collision), not a code defect.
+  **Tier 4b "page-load-settle" live probe SHIPPED same day (D1032):** closes 1 of the 3
+  transition-based gaps D1026 disclosed as needing live DOM/JS-state observation — Locomotive's
+  `.c-preloader` (timing-triggered, not `:hover`/scroll). New `converter/resolvers/
+  load_settle_probe.py`, wired into `stage_neg1_motion_probe()` via a candidate-finder that
+  re-derives Tier 1/2's own "transition, no reachable hover" decline shape from the mockup
+  directly (no new CSS-reading logic). Combined real-world coverage: **7/13**. Detail: D1032.
 - **R1 is NOT done** — corrected 2026-09-10 later same day (was miswritten as "done" here and in
   `decisions.md` D1018 in the same breath as listing its own open work; Bean caught it). Only
   R1's MEASUREMENT is done (96% already correct); the real remaining 17-attribute conversion has

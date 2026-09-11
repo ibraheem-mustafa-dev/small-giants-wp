@@ -116,6 +116,106 @@ def _load_lint_module(filename: str, attr_name: str):
     return module
 
 
+def _find_load_settle_candidates(mockup_path: Path) -> "list[dict]":
+    """Tier 4b candidate-finder (D1032) -- statically re-derives Tier 1/2's
+    OWN "transition present, no reachable :hover/:focus counterpart" decline
+    shape directly against the raw mockup file, reusing existing primitives
+    (`collect_css_decls_for_element`, `motion_shape._own_hover_scoped_
+    decls`) rather than inventing a second CSS-reading implementation.
+
+    WHY THIS RUNS HERE, AT STAGE -1 (before the walker / Stage 0 exists at
+    all): Tier 1/2's real per-element declination happens deep inside
+    `converter/services/assembly.py::build_block_markup` (step 3a1b),
+    during Stage 0+ per-section conversion -- and even there, a genuine
+    "shape extraction failed" decline produces NO recorded signal at all
+    (`motion_shape.classify_css_motion()` returns `({}, [])`, completely
+    silent; a ContentGap is only recorded for the DIFFERENT
+    off-vocabulary-preset skip case, per that module's own docstring). So
+    there is no existing sidecar/leftover-bucket this stage could read a
+    declined-candidate list FROM -- confirmed by reading `assembly.py`'s
+    step 3a1b directly before writing this function, not assumed. Rather
+    than restructure Stage ordering or add new declined-candidate
+    persistence to a sensitive shared file (`assembly.py`) just for this
+    probe, this function re-derives the SAME shape directly from the
+    mockup's own HTML + CSS -- both genuinely available at Stage -1 via the
+    pre-existing `_collect_mockup_css()` helper (Stage 0.7's own CSS
+    harvester, already a standalone module-level function, callable here
+    unchanged) -- using the exact same two primitives Tier 1/2 itself uses
+    for this question.
+
+    Returns a list of `{"selector": str, "transition_declaration": str}` --
+    one entry per element carrying its own `transition:` declaration with
+    no `animation`/`animation-name` (the keyframes path is Tier 1/2's own,
+    unrelated territory) and no reachable `:hover`/`:focus` counterpart for
+    its own class(es). Soft-fails to `[]` on any error (mockup missing, CSS
+    unparseable, import failure) -- this is a pre-flight candidate finder,
+    never a reason to halt the clone.
+
+    Disclosed limitation: the selector is built from the element's own full
+    class list, deduplicated -- two real elements sharing an identical
+    class list are not disambiguated (both collapse to one selector, and
+    the live probe will only ever see whichever one `querySelector` returns
+    first). Accepted for this probe's target shape -- a page-load overlay/
+    preloader is a singleton element by construction on every real-world
+    instance this phase has measured -- not assumed safe in general.
+    """
+    candidates: "list[dict]" = []
+    try:
+        _scripts_dir = Path(__file__).resolve().parent
+        _converter_dir = _scripts_dir / "converter"
+        _services_dir = _converter_dir / "services"
+        _resolvers_dir = _converter_dir / "resolvers"
+        for _d in (_converter_dir, _services_dir, _resolvers_dir):
+            _d_str = str(_d)
+            if _d_str not in sys.path:
+                sys.path.insert(0, _d_str)
+
+        from bs4 import BeautifulSoup
+        from css_parse import parse_css  # type: ignore[import]
+        from motion_shape import _own_hover_scoped_decls  # type: ignore[import]
+        from styling_helpers import collect_css_decls_for_element  # type: ignore[import]
+
+        mockup_path = Path(mockup_path)
+        if not mockup_path.exists():
+            return []
+
+        css_text, _sources, _warnings = _collect_mockup_css(mockup_path)
+        if not css_text.strip():
+            return []
+        css_rules = parse_css(css_text)
+
+        soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
+
+        seen_selectors: "set[str]" = set()
+        for node in soup.find_all(class_=True):
+            classes = node.get("class") or []
+            if not classes:
+                continue
+            selector = "." + ".".join(classes)
+            if selector in seen_selectors:
+                continue
+
+            base_decls, _bp_decls = collect_css_decls_for_element(node, css_rules)
+            transition_value = base_decls.get("transition")
+            if not transition_value:
+                continue
+            if base_decls.get("animation") or base_decls.get("animation-name"):
+                # keyframes-driven -- Tier 1/2's own, unrelated territory.
+                continue
+            if _own_hover_scoped_decls(node, css_rules) is not None:
+                # a reachable :hover/:focus counterpart exists -- Tier 1/2
+                # can already resolve (or correctly decline) this one
+                # statically; not this probe's target shape.
+                continue
+
+            seen_selectors.add(selector)
+            candidates.append({"selector": selector, "transition_declaration": transition_value})
+    except Exception:  # noqa: BLE001 - pre-flight candidate finder, never halts the clone
+        return []
+
+    return candidates
+
+
 def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir: Path) -> dict:
     """Stage -1 -- Phase R8 Tier 4a/4c motion-library pre-flight probe.
 
@@ -166,6 +266,10 @@ def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir
         "source_url": source_url,
         "tier4a_static": {"ran": False, "found_signals": [], "canvas_candidates": [], "error": None},
         "tier4a_dynamic": {"attempted": False, "ran": False, "probe_result": None, "skipped_reason": None},
+        "tier4b": {
+            "candidates_found": 0, "attempted": False, "ran": False,
+            "probe_result": None, "matches": [], "skipped_reason": None, "error": None,
+        },
         "tier4c": {"ran": False, "gate": None, "suggestion": None, "skipped_reason": None, "error": None},
         "tier4d": {
             "auto_fired": False,
@@ -295,6 +399,80 @@ def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir
     except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
         result["tier4c"]["error"] = str(exc)
 
+    # --- Tier 4b (D1032) -- conditional on a real source_url AND at least
+    # one Tier 1/2-declined "transition, no reachable :hover/:focus
+    # counterpart" candidate (`_find_load_settle_candidates`, above). See
+    # that function's own docstring for why the candidate list is
+    # re-derived directly from the mockup here rather than read from a
+    # walker-produced declined-candidates list -- no such list exists
+    # anywhere in the pipeline today (confirmed by reading `assembly.py`
+    # step 3a1b directly), so this is the correct place to compute it, not
+    # a workaround for a missing one.
+    try:
+        load_settle_candidates = _find_load_settle_candidates(mockup_path)
+    except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
+        load_settle_candidates = []
+        result["tier4b"]["error"] = str(exc)
+    result["tier4b"]["candidates_found"] = len(load_settle_candidates)
+
+    if load_settle_candidates and source_url:
+        result["tier4b"]["attempted"] = True
+        try:
+            try:
+                from load_settle_probe import (  # type: ignore[import]
+                    classify_load_settle_candidate,
+                    probe as _load_settle_probe,
+                )
+            except SystemExit as exc:
+                # load_settle_probe.py sys.exit()s at IMPORT time when
+                # playwright isn't installed (mirrors webgl_draw_call_probe.py
+                # -- SystemExit is not an Exception subclass, so it must be
+                # caught explicitly here or it would kill the whole
+                # orchestrator process on a machine without playwright.
+                raise RuntimeError(f"playwright unavailable for Tier 4b: {exc}") from exc
+
+            probe_candidates = [{"selector": c["selector"]} for c in load_settle_candidates]
+            probe_result = _load_settle_probe(source_url, probe_candidates)
+            result["tier4b"]["ran"] = True
+            result["tier4b"]["probe_result"] = probe_result
+
+            decl_by_selector = {c["selector"]: c["transition_declaration"] for c in load_settle_candidates}
+            for candidate_entry in probe_result.get("candidates", []):
+                selector = candidate_entry.get("selector")
+                transition_decl = decl_by_selector.get(selector)
+                if not transition_decl:
+                    continue
+                match_attrs, match_skipped = classify_load_settle_candidate(
+                    candidate_entry, transition_decl
+                )
+                if match_attrs:
+                    result["tier4b"]["matches"].append({"selector": selector, "attrs": match_attrs})
+                    leftover_items.append({
+                        "selector": selector,
+                        "reason": "tier4b-load-settle-match",
+                        "confirms": "page-load-settle transition (Tier 4b live probe)",
+                        "evidence": {"attrs": match_attrs, "probe_candidate": candidate_entry},
+                        "confidence": 1.0,
+                    })
+                for skip_detail in match_skipped:
+                    leftover_items.append({
+                        "selector": selector,
+                        "reason": "tier4b-load-settle-skipped",
+                        "confirms": None,
+                        "evidence": {"detail": skip_detail, "probe_candidate": candidate_entry},
+                        "confidence": 1.0,
+                    })
+        except Exception as exc:  # noqa: BLE001 - pre-flight probe, never halts the clone
+            result["tier4b"]["skipped_reason"] = f"probe failed: {exc}"
+    elif load_settle_candidates and not source_url:
+        result["tier4b"]["skipped_reason"] = (
+            f"{len(load_settle_candidates)} candidate(s) found (own transition property, "
+            "no reachable :hover/:focus counterpart), but no --source-url was supplied -- "
+            "Tier 4b needs a live page to sample before/after computed styles."
+        )
+    else:
+        result["tier4b"]["skipped_reason"] = "no Tier 1/2-declined load-settle candidates found"
+
     # --- Sidecar write (Stage 9's leftover-bucket-router.py reads this) ---
     sidecar_path = run_dir / "stage--1-motion-signals.json"
     sidecar_path.write_text(
@@ -308,6 +486,7 @@ def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir
         _trace_for(run_dir), stage="stage_neg1_motion_probe",
         tier4a_static_ran=result["tier4a_static"]["ran"],
         tier4a_dynamic_ran=result["tier4a_dynamic"]["ran"],
+        tier4b_ran=result["tier4b"]["ran"],
         tier4c_ran=result["tier4c"]["ran"],
         leftover_item_count=len(leftover_items),
     )
@@ -317,7 +496,9 @@ def stage_neg1_motion_probe(mockup_path: Path, source_url: "str | None", run_dir
     print(
         f"[stage--1] motion-probe: tier4a_static={result['tier4a_static']['ran']} "
         f"found_signals={len(found_signals)} canvas_candidates={len(canvas_candidates)} "
-        f"tier4a_dynamic={result['tier4a_dynamic']['ran']} tier4c={result['tier4c']['ran']} "
+        f"tier4a_dynamic={result['tier4a_dynamic']['ran']} "
+        f"tier4b={result['tier4b']['ran']} tier4b_candidates={result['tier4b']['candidates_found']} "
+        f"tier4c={result['tier4c']['ran']} "
         f"leftover_items={len(leftover_items)}"
     )
     return result
