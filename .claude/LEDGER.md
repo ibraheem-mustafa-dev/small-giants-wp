@@ -79,21 +79,29 @@ prompt.
      detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
 
 **What's still genuinely open:**
-- **R8 (motion/animation cloning from raw CSS) — SHIPPED, council-fixed, AND WIRED 2026-09-11.**
-  All 14 steps + 4 QA gates of `plans/phase-r8-motion-recognition.md` executed and closed (D1021)
-  — a 4-rater `/qc-council` sweep found and fixed a BLOCKER that would have made the whole phase
-  a silent no-op plus 5 more real bugs (D1022) — then a design `/qc-council` validated exactly
-  where to wire all 8 modules into the real pipeline, built both streams (each checked by its own
-  `/qc-inline` subagent reviewer before acceptance), and they are now LIVE in `assembly.py`
-  (Tier 1/2/3, new step 3a1b) and a new `stage_neg1_motion_probe()` pre-flight stage in
-  `sgs-clone-orchestrator.py` (Tier 4a/4c/4d) (D1023). **One real, disclosed, non-blocking gap
-  remains open:** `fxTrigger` can currently only resolve to `'load'` in the live pipeline — the
-  wiring's snippet-builder reuses an existing helper that deliberately excludes `:hover`-scoped
-  CSS, so Tier 2's hover/scroll branches are correct and tested in isolation but unreachable from
-  a real clone today. Fails safe (never fabricates a wrong trigger), not built this session —
-  needs its own scoped look. Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix rounds against
-  a genuine 0/13 measurement — modest, not strong, and disclosed as such. Full detail:
-  `decisions.md` D1021 + D1022 + D1023, `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
+- **R8 (motion/animation cloning from raw CSS) — SHIPPED, council-fixed, WIRED, AND the hover-trigger
+  gap CLOSED, all 2026-09-11.** All 14 steps + 4 QA gates of `plans/phase-r8-motion-recognition.md`
+  executed and closed (D1021) — a 4-rater `/qc-council` sweep found and fixed a BLOCKER that would
+  have made the whole phase a silent no-op plus 5 more real bugs (D1022) — then a design
+  `/qc-council` validated exactly where to wire all 8 modules into the real pipeline, built both
+  streams (each checked by its own `/qc-inline` subagent reviewer before acceptance), now LIVE in
+  `assembly.py` (Tier 1/2/3, step 3a1b) and `stage_neg1_motion_probe()` in
+  `sgs-clone-orchestrator.py` (Tier 4a/4c/4d) (D1023). **The one disclosed gap from D1023 is now
+  fixed (`b47705354`):** `scoped_motion_css_text()` only ever read an element's UNCONDITIONAL CSS,
+  so a `.x:hover{animation:...}` shape was entirely invisible to Tier 1/2, not merely mis-tagged as
+  load-triggered — a narrower/worse problem than D1023 originally scoped. Fix adds a narrow,
+  same-element-only `:hover`/`:focus` selector fallback (`_own_hover_scoped_decls`), tried only
+  when the unconditional lookup finds nothing, wrapped in a real selector block so
+  `classify_trigger`'s brace-walk correctly resolves `fxTrigger='hover'`. Deliberately still out of
+  scope: ancestor-hover-triggers-descendant (`.card:hover .card__img`), responsive tiering of hover
+  rules, multi-rule cascade specificity — none of those were part of the disclosed gap. Verified:
+  all 13 motion_shape + 5 motion_trigger fixtures pass unchanged, full converter pytest suite 828
+  passed/1 skipped/1 xfailed/0 failures, plus dedicated scratch fixtures proving the hover case now
+  resolves `sgsAnimation` + `fxTrigger='hover'` and the ancestor-hover shape correctly stays
+  undetected. Real-world Tier 1+2 coverage: 5/13 (~38%) after 2 fix rounds against a genuine 0/13
+  measurement — modest, not strong, and disclosed as such (this hover fix widens DETECTION scope,
+  not the measured real-world sample). Full detail: `decisions.md` D1021 + D1022 + D1023,
+  `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
   `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
   One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
   of this phase's files (keyword collision), not a code defect.
