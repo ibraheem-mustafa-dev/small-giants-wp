@@ -321,7 +321,7 @@ read `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when p
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |
-| Tier-migration requirements (R1/R8/R9/R10 all shipped — D1018/D1032/D1033; kept live as INPUTS, not a plan — see its own status header) | `plans/cloning-pipeline-tier-migration-requirements.md` |
+| Tier-migration requirements (DONE, archived — R1/R8/R9/R10 all shipped, D1018/D1032/D1033; nothing load-bearing left uncaptured — verified against Spec 31 before archiving) | `plans/archive/cloning-pipeline-tier-migration-requirements.md` |
 | BEM layer-aware matching design (DONE, verified + archived — D1017) | `plans/archive/2026-09-08-parity-tool-bem-layer-aware-matching-design.md` |
 | Measurement-integrity phase (DONE, archived — D1016) | `plans/archive/phase-measurement-integrity.md` |
 | Styling/token contract | `specs/32-COMPONENT-STYLING-TOKEN-CONTRACT.md` |
