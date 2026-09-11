@@ -335,18 +335,23 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 *     `submenuShadowColour` via the shared `sgs_shadow_value_composed()`,
 		 *     same unset-fallback discipline.
 		 *
-		 * ⚠ `--sgs-nm-submenu-radius` is DEAD-BUT-FIRING as of the step-10 manifest
-		 * rewrite: it was written from `submenuRadius`, which that rewrite deleted in
-		 * favour of the object-typed `submenuBorderRadius`. FR-41-15's per-declaration
-		 * table still records this one as "NO CHANGE — attribute-driven, writer
-		 * verified", which is no longer true. That is a row that has MOVED since the
-		 * fate table was written, so it is reported rather than re-fated here; the
-		 * rendered output is unchanged either way (the fallback is the value an unset
-		 * radius produced before).
+		 * `--sgs-nm-submenu-radius` was CONVERTED here (found dead-but-firing after
+		 * step 10's manifest rewrite deleted `submenuRadius` in favour of the
+		 * object-typed `submenuBorderRadius` — FR-41-15's per-declaration table still
+		 * said "NO CHANGE" against the pre-rewrite attribute name, which had gone
+		 * stale; found and fixed during step 16, same CONVERT shape as census #7 and
+		 * the submenu current-colour row: keep the `var()`, rewire the writer to the
+		 * real attribute, keep the unset fallback so an untouched nav is unchanged).
+		 * `submenuBorderRadius` is a FLAT corner object, read through
+		 * `sgs_corner_object_shorthand()` — NOT the side-keyed box helper — matching
+		 * `itemBorderRadius`'s own precedent above in nav-menu-css.php. Its declared
+		 * default is `{}` (empty), so an untouched panel writes no property at all and
+		 * the chained token fallback below applies exactly as before.
 		 */
-		$sgs_nm_submenu_border_style = sgs_css_keyword_sanitise( $attributes['submenuBorderStyle'] ?? '' );
-		$sgs_nm_submenu_border_w     = $sgs_nm_submenu_border_box ? sgs_box_object_shorthand( $sgs_nm_submenu_border_box ) : null;
-		$sgs_nm_submenu_shadow       = sgs_shadow_value_composed(
+		$sgs_nm_submenu_border_style  = sgs_css_keyword_sanitise( $attributes['submenuBorderStyle'] ?? '' );
+		$sgs_nm_submenu_border_w      = $sgs_nm_submenu_border_box ? sgs_box_object_shorthand( $sgs_nm_submenu_border_box ) : null;
+		$sgs_nm_submenu_radius_shorthand = sgs_corner_object_shorthand( $attributes['submenuBorderRadius'] ?? null );
+		$sgs_nm_submenu_shadow        = sgs_shadow_value_composed(
 			(string) ( $attributes['submenuShadow'] ?? '' ),
 			(string) ( $attributes['submenuShadowColour'] ?? '' )
 		);
@@ -357,6 +362,9 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		}
 		if ( '' !== $sgs_nm_submenu_border_style ) {
 			$sgs_nm_panel_vars .= '--sgs-nm-submenu-border-style:' . $sgs_nm_submenu_border_style . ';';
+		}
+		if ( null !== $sgs_nm_submenu_radius_shorthand && '' !== $sgs_nm_submenu_radius_shorthand ) {
+			$sgs_nm_panel_vars .= '--sgs-nm-submenu-radius:' . $sgs_nm_submenu_radius_shorthand . ';';
 		}
 		if ( '' !== $sgs_nm_submenu_shadow ) {
 			$sgs_nm_panel_vars .= '--sgs-nm-submenu-shadow:' . $sgs_nm_submenu_shadow . ';';
