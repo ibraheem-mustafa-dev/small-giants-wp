@@ -3,8 +3,11 @@
 3 required fixtures (load / hover / scroll), same underlying CSS shape
 (scale-in — a unique, unambiguous Tier V signature per
 motion_shape_signatures: transform/scale-in/0.603-1.197/300/ease-out), each
-producing the SAME preset (fx=scale-in) but a DIFFERENT fxTrigger value.
-Plus 2 bonus edge fixtures (JS-observer scroll signal; total-fallback).
+producing the SAME preset (sgsAnimation=scale-in — Fix 1, 2026-09-11 QC
+council review: `motion_shape.py` was corrected to emit the REAL
+`sgsAnimation` destination attribute instead of the wrong `fx` key) but a
+DIFFERENT fxTrigger value. Plus 2 bonus edge fixtures (JS-observer scroll
+signal; total-fallback).
 """
 import sys
 from motion_trigger import classify_css_motion_with_trigger, classify_trigger
@@ -37,7 +40,7 @@ css_load = """
 check(
     "load-triggered scale-in",
     classify_css_motion_with_trigger(css_load),
-    ({"fx": "scale-in", "fxTrigger": "load"}, []),
+    ({"sgsAnimation": "scale-in", "fxTrigger": "load"}, []),
 )
 
 # ---------------------------------------------------------------------------
@@ -54,7 +57,7 @@ css_hover = """
 check(
     "hover-triggered scale-in",
     classify_css_motion_with_trigger(css_hover),
-    ({"fx": "scale-in", "fxTrigger": "hover"}, []),
+    ({"sgsAnimation": "scale-in", "fxTrigger": "hover"}, []),
 )
 
 # ---------------------------------------------------------------------------
@@ -72,7 +75,7 @@ css_scroll = """
 check(
     "scroll-triggered scale-in (CSS-native)",
     classify_css_motion_with_trigger(css_scroll),
-    ({"fx": "scale-in"}, []),
+    ({"sgsAnimation": "scale-in"}, []),
 )
 
 # ---------------------------------------------------------------------------
@@ -95,7 +98,7 @@ document.querySelectorAll('.card').forEach((el) => io.observe(el));
 check(
     "JS IntersectionObserver -> scroll (bonus edge)",
     classify_css_motion_with_trigger(css_no_native_scroll_signal, js_observer),
-    ({"fx": "scale-in"}, []),
+    ({"sgsAnimation": "scale-in"}, []),
 )
 
 # ---------------------------------------------------------------------------

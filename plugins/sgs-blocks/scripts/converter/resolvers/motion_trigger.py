@@ -47,15 +47,18 @@ of this codebase's real motion attribute surfaces:
      unbuilt future "Wave C item", i.e. the two systems are not unified yet.
 
 Per Step 3's own pinned contract (`motion_shape.py::classify_css_motion`
-returns `{"fx": <preset_slug>}` in the SAME `{attr_name: value}` shape
-`db_lookup.py::lift_behavioural_attrs()` already returns, using that
-function's `fx_attr_roster()` naming convention — `fx`, `fxTrigger`,
-`fxStart`, ...), this module's correct, grounded output is to attach the
-REAL `fxTrigger` attribute name to that same dict alongside the (unchanged)
-shape-derived `fx` preset slug — never a different preset_slug per trigger,
-since no such per-trigger preset exists to select. This is the one addition
-that is both real (an attribute name and enum that genuinely exist) and
-non-destructive (Tier 1's shape-matching logic is untouched).
+returns `{"sgsAnimation": <preset_slug>}` — the REAL Tier V destination
+attribute, `plugins/sgs-blocks/src/blocks/extensions/animation.js`'s
+`ANIMATION_LABELS`; see Fix 1, 2026-09-11 QC council review, in that
+module's own docstring for why this is NOT the `fx` vocabulary), this
+module's correct, grounded output is to attach the REAL `fxTrigger`
+attribute name (a genuinely separate, correctly-named attribute — Tier G's
+own `load | scroll | hover` enum, see point 2 above) to that same dict
+alongside the (unchanged) shape-derived `sgsAnimation` preset slug — never a
+different preset_slug per trigger, since no such per-trigger preset exists
+to select. This is the one addition that is both real (an attribute name
+and enum that genuinely exist) and non-destructive (Tier 1's shape-matching
+logic is untouched).
 """
 
 from __future__ import annotations

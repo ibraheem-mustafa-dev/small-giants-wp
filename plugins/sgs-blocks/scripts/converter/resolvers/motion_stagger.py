@@ -40,11 +40,15 @@ separate per-element writes) on:
 GROUND-TRUTHED OUTPUT SHAPE (read before touching this file — do not
 invent a new attribute)
 ----------------------------------------------------
-`motion_shape.py` (Tier 1) returns `{"fx": preset_slug}` on a match — the
-convention `converter/db/db_lookup.py::lift_behavioural_attrs` already
-uses, mergeable by `assembly.py`'s existing `attrs.setdefault(...)` loop
-with no second write path. There is NO dedicated Tier V "staggered-reveal"
-preset in the seeded `motion_shape_signatures` table (checked directly,
+`motion_shape.py` (Tier 1) returns `{"sgsAnimation": preset_slug}` on a
+match — the REAL Tier V destination attribute
+(`plugins/sgs-blocks/src/blocks/extensions/animation.js`'s
+`ANIMATION_LABELS`; see Fix 1, 2026-09-11 QC council review, in that
+module's own docstring — it previously, incorrectly, claimed `{"fx":
+preset_slug}`, a completely different closed vocabulary with zero overlap),
+mergeable by `assembly.py`'s existing `attrs.setdefault(...)` loop with no
+second write path. There is NO dedicated Tier V "staggered-reveal" preset
+in the seeded `motion_shape_signatures` table (checked directly,
 2026-09-11: 18 seeded rows, none named anything resembling a stagger
 variant — every row is a single-element entrance shape). So the correct
 emission is the SAME base entrance preset `motion_shape.py` already
@@ -63,9 +67,13 @@ a third):
    roster generically (33 `block_attributes` rows spanning `sgs/hero`,
    `sgs/container`, `sgs/gallery`, `sgs/testimonial`, etc. per
    `sgs-db.py sql "SELECT block_slug FROM block_attributes WHERE
-   attr_name='fxStagger'"`) — the SAME universal fx system Tier 1's own
-   `fx` attribute belongs to, so `{"fx": ..., "fxStagger": ...}` merges
-   through the identical `attrs.setdefault()` loop with zero new plumbing.
+   attr_name='fxStagger'"`) — a REAL, already-declared attribute regardless
+   of which system emits alongside it. It merges through the identical
+   `attrs.setdefault()` loop as Tier 1's OWN output key (Fix 1, 2026-09-11
+   QC council review, corrected `motion_shape.py` to `sgsAnimation` —
+   NOT the `fx` roster this attribute is declared on; `fxStagger` and
+   `sgsAnimation` are simply two independently real attributes this module
+   emits side by side in the SAME dict) with zero new plumbing either way.
    Its current EDITOR gating (`isSplit &&` in `fx.js`) only shows the
    control for text-split effects today; the attribute itself carries no
    such restriction at the data layer, and this converter-side emission
@@ -81,7 +89,7 @@ a third):
    universal one), and it belongs to a parallel attribute system this
    module has no business writing into on this composite's behalf.
 
-This module therefore emits `{"fx": <preset_slug>, "fxStagger":
+This module therefore emits `{"sgsAnimation": <preset_slug>, "fxStagger":
 <offset_seconds>}` on an accepted stagger, matching Tier 1's own return
 contract exactly (`(attrs, skipped)`, `skipped` always `[]` — same
 reasoning as `motion_shape.classify_css_motion`: a recognised stagger has
@@ -108,7 +116,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from motion_shape import classify_css_motion
+from motion_trigger import classify_css_motion_with_trigger
 
 try:  # pragma: no cover - import shape depends on caller's sys.path setup
     from services.sibling_shape_prefilter import filter_shape_alike_group
@@ -257,6 +265,7 @@ def detect_stagger(
     elements: "list[Any]",
     *,
     shape_css_text: "str | None" = None,
+    shape_js_text: "str | None" = None,
     min_group_size: int = 2,
     db_path: "str | None" = None,
 ) -> "tuple[dict, list]":
@@ -271,17 +280,29 @@ def detect_stagger(
     `shape_css_text` -- the representative `@keyframes`/`animation` CSS
     text shared by the shape-alike group (by construction, shape-alike
     siblings share one entrance shape; only their delay differs — this is
-    the ONE CSS fragment `motion_shape.classify_css_motion` needs to
-    resolve the base Tier V preset). If omitted, the first shape-alike
-    sibling exposing a `css_text` field is used automatically.
+    the ONE CSS fragment `motion_trigger.classify_css_motion_with_trigger`
+    needs to resolve the base Tier V preset AND (Fix 3, 2026-09-11 QC
+    council review) the Tier 2 trigger classification. If omitted, the
+    first shape-alike sibling exposing a `css_text` field is used
+    automatically.
+
+    `shape_js_text` -- optional adjacent JS text (e.g. an IntersectionObserver
+    constructor call) for the SAME Tier 2 trigger classification — the JS-side
+    scroll signal `motion_trigger.classify_trigger` also consults. Never
+    pre-filtered per-sibling; this is the one shared fragment for the whole
+    group, same as `shape_css_text`.
 
     Returns `(attrs, skipped)` -- the SAME shape `motion_shape.py` and
     `db_lookup.lift_behavioural_attrs` already return, mergeable by
     `assembly.py`'s existing loop with no second write path.
 
-    `attrs` is `{"fx": preset_slug, "fxStagger": offset_seconds}` on an
-    accepted stagger. `attrs` is `{}` (with an explanatory `skipped` entry)
-    on:
+    `attrs` is `{"sgsAnimation": preset_slug, "fxStagger": offset_seconds}`
+    on an accepted stagger, PLUS `fxTrigger` (Fix 3) when Tier 1+2's own
+    combined classifier resolves a non-default (non-'scroll') trigger for
+    the shape-alike group — e.g. a hover- or explicitly load-triggered
+    staggered group correctly carries `fxTrigger` through instead of
+    silently losing it to Tier 3's own bare Tier-1-only shape lookup.
+    `attrs` is `{}` (with an explanatory `skipped` entry) on:
       - fewer than `min_group_size` shape-alike siblings found at all,
       - fewer than `min_group_size` of those siblings carrying resolvable
         delay evidence,
@@ -361,8 +382,10 @@ def detect_stagger(
             }
         ]
 
-    shape_attrs, shape_skipped = classify_css_motion(css_text, db_path=db_path)
-    preset_slug = shape_attrs.get("fx")
+    shape_attrs, shape_skipped = classify_css_motion_with_trigger(
+        css_text, shape_js_text, db_path=db_path
+    )
+    preset_slug = shape_attrs.get("sgsAnimation")
     if not preset_slug:
         return {}, [
             {
@@ -394,7 +417,11 @@ def detect_stagger(
             }
         )
 
-    return {"fx": preset_slug, "fxStagger": offset_seconds}, skipped
+    attrs: "dict[str, Any]" = {"sgsAnimation": preset_slug, "fxStagger": offset_seconds}
+    fx_trigger = shape_attrs.get("fxTrigger")
+    if fx_trigger is not None:
+        attrs["fxTrigger"] = fx_trigger
+    return attrs, skipped
 
 
 # ---------------------------------------------------------------------------
@@ -451,6 +478,46 @@ def _demo() -> None:
     attrs_3, skipped_3 = detect_stagger(fixture_3)
     print(f"  attrs={attrs_3!r}")
     print(f"  skipped={skipped_3!r}")
+
+    # -------------------------------------------------------------------
+    # Fixture 4 (Fix 3, 2026-09-11 QC council review) -- a HOVER-triggered
+    # staggered group. Proves `detect_stagger()` now composes Tier 2's own
+    # trigger classification instead of silently dropping it: the SAME
+    # shape-alike siblings as Fixture 1, but the shared `animation`
+    # declaration lives inside a `:hover` selector, so Tier 1+2 alone
+    # (`motion_trigger.classify_css_motion_with_trigger`) resolves
+    # `fxTrigger='hover'` for a single representative sibling -- and Tier 3
+    # must carry that SAME `fxTrigger` through its own staggered-group
+    # output rather than defaulting to the omitted-scroll case.
+    # -------------------------------------------------------------------
+    hover_css = """
+    @keyframes fx-scale-in {
+      0% { opacity: 0; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .card:hover { animation: fx-scale-in 300ms ease-out; }
+    """
+
+    def hover_card(delay_ms: float) -> dict:
+        return {
+            "tag": "div",
+            "classes": ["card"],
+            "animation_delay_ms": delay_ms,
+            "css_text": hover_css,
+        }
+
+    print()
+    print("Fixture 4 -- 5 hover-triggered siblings, uniform 0.1s increments:")
+    fixture_4 = [hover_card(ms) for ms in (100, 200, 300, 400, 500)]
+    attrs_4, skipped_4 = detect_stagger(fixture_4)
+    print(f"  attrs={attrs_4!r}")
+    print(f"  skipped={skipped_4!r}")
+
+    ok = attrs_4.get("fxTrigger") == "hover" and attrs_4.get("sgsAnimation") == "scale-in"
+    status = "PASS" if ok else "FAIL"
+    print(f"  [{status}] fxTrigger survives Tier 3 composition (Fix 3)")
+    if not ok:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
