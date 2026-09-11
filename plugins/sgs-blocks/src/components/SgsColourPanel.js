@@ -108,7 +108,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { BaseControl, PanelBody } from '@wordpress/components';
 import DesignTokenPicker from './DesignTokenPicker';
 import GradientCapableColourControl from './GradientCapableColourControl';
 
@@ -131,19 +131,25 @@ export default function SgsColourPanel( { rows } ) {
 						? GradientCapableColourControl
 						: DesignTokenPicker;
 					return (
-						<Control
-							key={ row.key }
-							label={ row.label }
-							states={ row.states }
-								borderStyle={ row.borderStyle }
-								onBorderStyleChange={ row.onBorderStyleChange }
-							{ ...( row.gradientCapable
-								? {
-										contrastAgainst: row.contrastAgainst,
-										contrastLabel: row.contrastLabel,
-								  }
-								: {} ) }
-						/>
+						<div key={ row.key }>
+							{ row.heading && (
+								<BaseControl.VisualLabel>
+									{ row.heading }
+								</BaseControl.VisualLabel>
+							) }
+							<Control
+								label={ row.label }
+								states={ row.states }
+									borderStyle={ row.borderStyle }
+									onBorderStyleChange={ row.onBorderStyleChange }
+								{ ...( row.gradientCapable
+									? {
+											contrastAgainst: row.contrastAgainst,
+											contrastLabel: row.contrastLabel,
+									  }
+									: {} ) }
+							/>
+						</div>
 					);
 				} ) }
 			</PanelBody>
