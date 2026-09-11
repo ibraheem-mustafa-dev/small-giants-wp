@@ -627,13 +627,24 @@ function describeRow( node ) {
 		};
 		const base = nameOf( 'base' );
 		const hover = nameOf( 'hover' );
+		const current = nameOf( 'current' );
 		const gradient = nameOf( 'gradient' );
 		const hoverGradient = nameOf( 'hoverGradient' );
+		const currentGradient = nameOf( 'currentGradient' );
 		return {
 			rowKey: stringLiteralValue( objProp( arg, 'key' ) ) || null,
 			statesArray: null, // generated inside the helper — never a literal here
-			statesCount: base ? 1 + ( hover ? 1 : 0 ) : 0,
-			hasGradient: !! ( gradient || hoverGradient ),
+			// `current` added 2026-09-11 in the SAME COMMIT as fillRow/textRow's own
+			// third state (Spec 41 FR-41-3), per the coupling this function's header
+			// states. Mirrors the helpers' `hover ? ( current ? 3 : 2 ) : 1` exactly —
+			// a `current` without a `hover` throws inside the helper, so the shapes
+			// cannot disagree. ⚠ `nameOf` resolves a STRING LITERAL only: a caller
+			// passing `current: cond ? 'x' : undefined` resolves to null here and the
+			// row scores 2, which is why a row needing a CONDITIONALLY omitted Current
+			// state (FR-41-14's Highlight case) must stay a literal `states` array with
+			// a spread-of-ternary rather than adopt the helper.
+			statesCount: base ? 1 + ( hover ? 1 : 0 ) + ( current ? 1 : 0 ) : 0,
+			hasGradient: !! ( gradient || hoverGradient || currentGradient ),
 			// WHICH gradient SHAPE the helper emits, not merely whether it emits one.
 			// textRow alone returns `gradientCapable: true` (its own line 78, set ONLY
 			// when a gradient attr was supplied); fillRow and borderRow deliberately
@@ -643,7 +654,8 @@ function describeRow( node ) {
 			// bearing textRow as a mechanism-mismatch. That false positive was live
 			// and invisible: the sole adopter (sgs/nav-drawer) has an unresolved
 			// css_property, so the mechanism check never ran on it.
-			gradientCapable: helper.helper === 'textRow' && !! ( gradient || hoverGradient ),
+			gradientCapable:
+				helper.helper === 'textRow' && !! ( gradient || hoverGradient || currentGradient ),
 			attrName: base || null,
 			gradientAttrName: gradient || hoverGradient || null,
 			viaHelper: helper.helper,

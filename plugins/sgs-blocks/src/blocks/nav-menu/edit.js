@@ -15,18 +15,38 @@
  * NavMenuNotices.js, SettingsPanels.js, BarPanel.js, DropdownStylePanel.js,
  * ItemsPanel.js, FeaturedPanel.js, BurgerPanel.js) and
  * `.claude/verify/spec-41-reuse-ledger.md` for the
- * per-file reuse record. `colourRows` stays here as a single literal
- * ArrayExpression, deliberately NOT extracted or rebuilt via a helper —
- * owner ruling 3 (the golden-colour-control detector, `scripts/
- * inspector-scan/rules/31-golden-colour-control.js`, resolves a row's state
- * count only from a literal it can see in THIS file or `src/components/`).
+ * per-file reuse record.
+ *
+ * `colourRows` STAYS HERE (owner ruling 3) — as a single literal
+ * ArrayExpression whose entries are either row literals or `fillRow()`/
+ * `textRow()` calls. `scripts/inspector-scan/rules/31-golden-colour-control.js`
+ * resolves a row's state count only from a shape it can see in THIS file or in
+ * `src/components/`, so the array and every `states` array inside it must never
+ * move to a block-folder sibling. ⚠ Rebuilt onto the shared row helpers
+ * 2026-09-11 (Spec 41 step 13): the detector resolves a `fillRow`/`textRow` CALL
+ * natively via `describeRow()`, which is a different question from the corpus
+ * limit above — the call site is what has to stay here, not the builder.
  *
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import { SelectControl } from '@wordpress/components';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
-import { SgsColourPanel } from '../../components';
+import { SgsColourPanel, fillRow, textRow } from '../../components';
+// Read-only static import of this block's own manifest — the SAME thing
+// `index.js` already does, and the ONE declared source for the Sweep-eligibility
+// predicate (FR-41-26). It does not modify the frozen block.json.
+import metadata from './block.json';
+import {
+	sweepEligible,
+	TreatmentSelect,
+	CrossRefNote,
+	TREATMENT_NONE,
+	TREATMENT_SWAP,
+	TREATMENT_SWEEP,
+	TREATMENT_HIGHLIGHT,
+} from './ColourTreatment';
 import useNavMenuSource from './useNavMenuSource';
 import useDrawerNotice from './useDrawerNotice';
 import NavMenuNotices from './NavMenuNotices';
@@ -48,46 +68,36 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		gap,
 		listColumns,
 		navBg,
-		navColour,
-		navColourGradient,
-		navBgHover,
-		itemColour,
-		itemColourGradient,
 		itemBg,
+		itemBgCurrent,
+		itemBgCurrentGradient,
 		itemBgGradient,
-		itemColourHover,
 		itemBgHover,
-		featuredColour,
-		featuredColourGradient,
-		featuredBg,
-		featuredColourHover,
-		featuredBgHover,
+		itemBgHoverGradient,
+		itemBorderColour,
+		itemBorderColourCurrent,
+		itemBorderColourHover,
+		submenuBorderColour,
+		submenuBorderColourGradient,
 		featuredRadius,
 		featuredRadiusHover,
 		featuredFontWeight,
 		featuredFontWeightHover,
-		burgerColour,
-		burgerColourGradient,
-		burgerBg,
-		burgerHoverColour,
 		burgerSize,
 		itemColourHoverTreatment,
 		itemBgHoverTreatment,
 		itemBorderHoverTreatment,
 		borderHoverAnimationDirection,
+		submenuColourHoverTreatment,
+		submenuLinkBgHoverTreatment,
+		burgerColourHoverTreatment,
+		burgerBgHoverTreatment,
 		itemMagnetEnabled,
 		submenuAlign,
 		submenuCaret,
 		submenuCloseGrace,
-		submenuBg,
-		submenuBgGradient,
-		submenuColour,
-		submenuColourGradient,
 		submenuMinWidth,
 		submenuPadding,
-		navColourHover,
-		burgerColourHover,
-		submenuColourHover,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
@@ -104,255 +114,425 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const blockProps = useBlockProps();
 
+	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────
+	//
 	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
-	// FIRST so it sits at the top of the Styles tab). Every state below carries
-	// `linked: true` (D619).
+	// FIRST so it sits at the top of the Styles tab; WordPress concatenates
+	// same-group Fills in mount order). Sub-groupings come from FR-41-16's
+	// optional per-row `heading`, so this stays ONE panel.
 	//
-	// itemColourHover/itemBgHover: GROUND-TRUTH checked against
-	// render.php (2026-08-15 rebuild) — `$hover_targets` (line ~953) is now
-	// `:hover,:focus-visible` ONLY. The current-page indicator was deliberately
-	// SEPARATED from hover (Bean, 2026-07-31 — see render.php's "CURRENT-PAGE
-	// IS NO LONGER IN THIS LIST" comment) and now gets its own font-weight/
-	// border-left treatment with no colour attribute of its own. The
-	// block.json element manifest's `item.states.selected` entry (which still
-	// shows the same attrMap as `hover`) is STALE documentation left over from
-	// before that fix — do not wire a "Selected" state from it.
+	// ⛔ THIS ARRAY, AND EVERY `states` ARRAY INSIDE IT, STAYS IN THIS FILE
+	// (owner ruling 3). `scripts/inspector-scan/rules/31-golden-colour-control.js`
+	// resolves a row's state count only from a literal ArrayExpression — or a
+	// `fillRow()`/`textRow()` call — it can see in THIS block's own edit.js or in
+	// `src/components/`. A row moved to a block-folder sibling resolves to zero
+	// states while the editor renders perfectly (D738). Never `.map()`-ed, never
+	// `.filter()`-ed, never spread from a variable. Conditionality happens at
+	// ARRAY level, as a spread of a TERNARY — never of a boolean-`&&`, which
+	// throws (`false is not iterable`).
 	//
-	// submenuBg/submenuColour: `css=None` in the DB, but render.php confirms a
-	// real property each — submenuBg feeds `--sgs-nm-submenu-bg` into
-	// `.sgs-nav-menu__submenu`'s `background` (~line 1347); submenuColour feeds
-	// `--sgs-nm-submenu-colour` into `.sgs-nav-menu__sublink`'s `color`
-	// (~line 1383). Neither has a hover sibling attribute, so each is a
-	// single-state row.
+	// ⛔ `linked: true` on every state, unconditionally — it makes
+	// `DesignTokenPicker` store the palette SLUG rather than a baked hex, so a
+	// client's brand token survives a re-skin (D717/D740). The row helpers set it
+	// on every state they build; the two hand-written rows below set it inline.
 	//
-	// navBg/submenuBg: checked against nav-drawer/render.php (own `drawerBg`
-	// attribute, styles the `<dialog>` root) and site-header (inserts
-	// sgs/nav-menu as a plain child, no shared background attribute) — neither
-	// competes with this block's own navBg/submenuBg. The drawer holds its OWN
-	// sgs/nav-menu instance (own uid), so setting navBg/submenuBg there styles
-	// only that copy. Single source of truth confirmed; wired directly.
+	// ⚠ `burgerColourHover` and `burgerHoverColour` are DIFFERENT attributes
+	// (§8.1). The first is the button's icon/text COLOUR on hover; the second is
+	// its BACKGROUND on hover. They are anagram-close and are kept apart here.
+	const sweepRules = metadata?.supports?.sgs?.sweepEligibility;
+
+	// The background actually rendered behind a menu item, for the border rows'
+	// WCAG 1.4.11 check. Unset on both → no background is known, so no check.
+	const itemSurface = itemBg || navBg || '';
+
+	const smartContrastNote = __(
+		'Automatic readable-text checking for these colours is switched on under General → Accessibility.',
+		'sgs-blocks'
+	);
+
 	const colourRows = [
-		{
+		fillRow( {
 			key: 'nav-bg',
+			heading: __( 'Menu', 'sgs-blocks' ),
 			label: __( 'Nav background', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: navBg,
-					onChange: ( val ) => setAttributes( { navBg: val ?? '' } ),
-					gradientValue: attributes.navBgGradient,
-					onGradientChange: ( val ) => setAttributes( { navBgGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: navBgHover,
-					onChange: ( val ) => setAttributes( { navBgHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
+			attrs: { base: 'navBg', hover: 'navBgHover', gradient: 'navBgGradient' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'nav-text',
-			label: __( 'Nav text colour', 'sgs-blocks' ),
-			gradientCapable: true,
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: navColour,
-					onChange: ( val ) => setAttributes( { navColour: val ?? '' } ),
-					linked: true,
-					gradientValue: navColourGradient,
-					onGradientChange: ( val ) => setAttributes( { navColourGradient: val ?? '' } ),
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: navColourHover,
-					onChange: ( val ) => setAttributes( { navColourHover: val ?? '' } ),
-					linked: true,
-					},
-			],
-		},
-		{
+			label: __( 'Nav text', 'sgs-blocks' ),
+			attrs: {
+				base: 'navColour',
+				hover: 'navColourHover',
+				gradient: 'navColourGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'item-text',
-			label: __( 'Item text colour', 'sgs-blocks' ),
-			gradientCapable: true,
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: itemColour,
-					onChange: ( val ) => setAttributes( { itemColour: val ?? '' } ),
-					linked: true,
-					gradientValue: itemColourGradient,
-					onGradientChange: ( val ) => setAttributes( { itemColourGradient: val ?? '' } ),
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: itemColourHover,
-					onChange: ( val ) => setAttributes( { itemColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
+			label: __( 'Item text', 'sgs-blocks' ),
+			attrs: {
+				base: 'itemColour',
+				hover: 'itemColourHover',
+				current: 'itemColourCurrent',
+				gradient: 'itemColourGradient',
+			},
+			attributes,
+			setAttributes,
+			after: (
+				<>
+					<TreatmentSelect
+						label={ __( 'Text on hover', 'sgs-blocks' ) }
+						value={ itemColourHoverTreatment }
+						onChange={ ( val ) =>
+							setAttributes( { itemColourHoverTreatment: val } )
+						}
+						options={ [
+							TREATMENT_NONE,
+							TREATMENT_SWAP,
+							...( sweepEligible(
+								sweepRules,
+								'itemColourHoverTreatment',
+								attributes
+							)
+								? [ TREATMENT_SWEEP ]
+								: [] ),
+						] }
+						help={ __(
+							'Sweep travels the Hover colour across the word instead of switching to it instantly.',
+							'sgs-blocks'
+						) }
+					/>
+					<CrossRefNote>{ smartContrastNote }</CrossRefNote>
+				</>
+			),
+		} ),
+		// ⛔ HAND-WRITTEN LITERAL, DELIBERATELY — the one fill row that does not
+		// adopt `fillRow()`. FR-41-14 requires the CURRENT state to be omitted
+		// per-STATE (never per-ROW) while the Highlight treatment is active, and a
+		// conditional attribute name passed to the helper (`current: cond ? 'x' :
+		// undefined`) is not a string literal, so `describeRow()` would resolve
+		// this row as 2 states rather than 3 — the gate going blind while the code
+		// renders correctly (D738). A spread-of-ternary inside a literal `states`
+		// array stays statically countable in BOTH branches, which is why FR-41-14
+		// writes it exactly this way.
 		{
 			key: 'item-bg',
 			label: __( 'Item background', 'sgs-blocks' ),
-			gradientCapable: true,
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: itemBg,
 					onChange: ( val ) => setAttributes( { itemBg: val ?? '' } ),
-					linked: true,
 					gradientValue: itemBgGradient,
-					onGradientChange: ( val ) => setAttributes( { itemBgGradient: val ?? '' } ),
+					onGradientChange: ( val ) =>
+						setAttributes( { itemBgGradient: val ?? '' } ),
+					linked: true,
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
 					value: itemBgHover,
 					onChange: ( val ) => setAttributes( { itemBgHover: val ?? '' } ),
+					gradientValue: itemBgHoverGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { itemBgHoverGradient: val ?? '' } ),
 					linked: true,
 				},
+				...( 'highlight' !== itemBgHoverTreatment
+					? [
+							{
+								key: 'current',
+								label: __( 'Current', 'sgs-blocks' ),
+								value: itemBgCurrent,
+								onChange: ( val ) =>
+									setAttributes( { itemBgCurrent: val ?? '' } ),
+								gradientValue: itemBgCurrentGradient,
+								onGradientChange: ( val ) =>
+									setAttributes( {
+										itemBgCurrentGradient: val ?? '',
+									} ),
+								linked: true,
+							},
+					  ]
+					: [] ),
 			],
+			after: (
+				<>
+					<TreatmentSelect
+						label={ __( 'Background on hover', 'sgs-blocks' ) }
+						value={ itemBgHoverTreatment }
+						onChange={ ( val ) => setAttributes( { itemBgHoverTreatment: val } ) }
+						options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_HIGHLIGHT ] }
+						help={ __(
+							'Highlight paints one shape that slides between items, using the Hover colour you picked above. It replaces each item’s own current-page background, so that swatch is hidden while it’s selected.',
+							'sgs-blocks'
+						) }
+					/>
+					<CrossRefNote>{ smartContrastNote }</CrossRefNote>
+				</>
+			),
 		},
+		// ⛔ HAND-WRITTEN LITERAL, second and last. The item border declares NO
+		// gradient attribute at all (FR-41-7 / §1.2 — the masked ring would collide
+		// with the item background layer that already owns `{link}::before`), so
+		// this row cannot legitimately be `gradientCapable`: that flag renders a
+		// per-state Solid/Gradient toggle whose gradient has nowhere to be stored
+		// and is discarded on save. ⚠ CONSEQUENCE, STATED NOT HIDDEN: a row that is
+		// not `gradientCapable` renders `DesignTokenPicker`, which carries no
+		// contrast check — so the `contrastAgainst`/`contrastLargeText` pair below
+		// is DECLARED per §9.6 and is currently INERT on this row. The submenu
+		// border row beneath is gradient-capable and its check does run.
 		{
-			key: 'featured-text',
-			label: __( 'Featured text colour', 'sgs-blocks' ),
-			gradientCapable: true,
+			key: 'item-border',
+			label: __( 'Item border colour', 'sgs-blocks' ),
+			...( itemSurface
+				? { contrastAgainst: itemSurface, contrastLargeText: true }
+				: {} ),
 			states: [
 				{
 					key: 'normal',
 					label: __( 'Normal', 'sgs-blocks' ),
-					value: featuredColour,
-					onChange: ( val ) => setAttributes( { featuredColour: val ?? '' } ),
-					gradientValue: featuredColourGradient,
-					onGradientChange: ( val ) => setAttributes( { featuredColourGradient: val ?? '' } ),
+					value: itemBorderColour,
+					onChange: ( val ) => setAttributes( { itemBorderColour: val ?? '' } ),
 					linked: true,
 				},
 				{
 					key: 'hover',
 					label: __( 'Hover', 'sgs-blocks' ),
-					value: featuredColourHover,
-					onChange: ( val ) => setAttributes( { featuredColourHover: val ?? '' } ),
+					value: itemBorderColourHover,
+					onChange: ( val ) =>
+						setAttributes( { itemBorderColourHover: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'current',
+					label: __( 'Current', 'sgs-blocks' ),
+					value: itemBorderColourCurrent,
+					onChange: ( val ) =>
+						setAttributes( { itemBorderColourCurrent: val ?? '' } ),
+					linked: true,
+				},
+			],
+			after: (
+				<>
+					<TreatmentSelect
+						label={ __( 'Border on hover', 'sgs-blocks' ) }
+						value={ itemBorderHoverTreatment }
+						onChange={ ( val ) =>
+							setAttributes( { itemBorderHoverTreatment: val } )
+						}
+						options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_SWEEP ] }
+					/>
+					{ 'sweep' === itemBorderHoverTreatment && (
+						<SelectControl
+							label={ __( 'Sweep direction', 'sgs-blocks' ) }
+							value={ borderHoverAnimationDirection || 'left-to-right' }
+							options={ [
+								{
+									label: __( 'Left to right', 'sgs-blocks' ),
+									value: 'left-to-right',
+								},
+								{
+									label: __( 'Right to left', 'sgs-blocks' ),
+									value: 'right-to-left',
+								},
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { borderHoverAnimationDirection: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+					<CrossRefNote>
+						{ __(
+							'This changes the line around the item. To underline the menu word itself instead, use Decoration (hover) under Typography — they’re separate settings and don’t do the same thing.',
+							'sgs-blocks'
+						) }
+					</CrossRefNote>
+				</>
+			),
+		},
+		fillRow( {
+			key: 'submenu-bg',
+			heading: __( 'Submenu', 'sgs-blocks' ),
+			label: __( 'Panel background', 'sgs-blocks' ),
+			attrs: { base: 'submenuBg', gradient: 'submenuBgGradient' },
+			attributes,
+			setAttributes,
+		} ),
+		// Normal-only, per FR-41-9 — the panel's visibility is a binary open/closed
+		// disclosure, so there is no hover moment on the panel itself. Declared as
+		// such in block.json::supports.sgs.colourExemptions["submenu-border"].
+		// `gradientCapable` here is real: the block declares
+		// submenuBorderColourGradient, so the ring path and the contrast check both
+		// have somewhere to live.
+		{
+			key: 'submenu-border',
+			label: __( 'Panel border colour', 'sgs-blocks' ),
+			gradientCapable: true,
+			...( itemSurface
+				? { contrastAgainst: itemSurface, contrastLargeText: true }
+				: {} ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: submenuBorderColour,
+					onChange: ( val ) =>
+						setAttributes( { submenuBorderColour: val ?? '' } ),
+					gradientValue: submenuBorderColourGradient,
+					onGradientChange: ( val ) =>
+						setAttributes( { submenuBorderColourGradient: val ?? '' } ),
 					linked: true,
 				},
 			],
 		},
-		{
+		textRow( {
+			key: 'submenu-text',
+			label: __( 'Link text', 'sgs-blocks' ),
+			attrs: {
+				base: 'submenuColour',
+				hover: 'submenuColourHover',
+				current: 'submenuColourCurrent',
+				gradient: 'submenuColourGradient',
+			},
+			attributes,
+			setAttributes,
+			after: (
+				<TreatmentSelect
+					label={ __( 'Link text on hover', 'sgs-blocks' ) }
+					value={ submenuColourHoverTreatment }
+					onChange={ ( val ) =>
+						setAttributes( { submenuColourHoverTreatment: val } )
+					}
+					options={ [
+						TREATMENT_NONE,
+						TREATMENT_SWAP,
+						...( sweepEligible(
+							sweepRules,
+							'submenuColourHoverTreatment',
+							attributes
+						)
+							? [ TREATMENT_SWEEP ]
+							: [] ),
+					] }
+				/>
+			),
+		} ),
+		fillRow( {
+			key: 'submenu-link-bg',
+			label: __( 'Link background', 'sgs-blocks' ),
+			attrs: {
+				base: 'submenuLinkBg',
+				hover: 'submenuLinkBgHover',
+				current: 'submenuLinkBgCurrent',
+				gradient: 'submenuLinkBgGradient',
+			},
+			attributes,
+			setAttributes,
+			after: (
+				<TreatmentSelect
+					label={ __( 'Link background on hover', 'sgs-blocks' ) }
+					value={ submenuLinkBgHoverTreatment }
+					onChange={ ( val ) =>
+						setAttributes( { submenuLinkBgHoverTreatment: val } )
+					}
+					options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
+				/>
+			),
+		} ),
+		// Normal-only by design (FR-41-30b): the marker is aria-hidden decoration
+		// beside the sublink's own text, and an unset value inherits currentColor
+		// from that text — so it already follows Hover and Current for free.
+		textRow( {
+			key: 'sublink-marker',
+			label: __( 'Sublink marker colour', 'sgs-blocks' ),
+			attrs: { base: 'sublinkMarkerColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'burger-icon',
+			heading: __( 'Menu button', 'sgs-blocks' ),
+			label: __( 'Icon colour', 'sgs-blocks' ),
+			attrs: {
+				base: 'burgerColour',
+				hover: 'burgerColourHover',
+				gradient: 'burgerColourGradient',
+			},
+			attributes,
+			setAttributes,
+			after: (
+				<TreatmentSelect
+					label={ __( 'Icon on hover', 'sgs-blocks' ) }
+					value={ burgerColourHoverTreatment }
+					onChange={ ( val ) =>
+						setAttributes( { burgerColourHoverTreatment: val } )
+					}
+					options={ [
+						TREATMENT_NONE,
+						TREATMENT_SWAP,
+						...( sweepEligible(
+							sweepRules,
+							'burgerColourHoverTreatment',
+							attributes
+						)
+							? [ TREATMENT_SWEEP ]
+							: [] ),
+					] }
+				/>
+			),
+		} ),
+		fillRow( {
+			key: 'burger-bg',
+			label: __( 'Button background', 'sgs-blocks' ),
+			attrs: {
+				base: 'burgerBg',
+				hover: 'burgerHoverColour',
+				gradient: 'burgerBgGradient',
+			},
+			attributes,
+			setAttributes,
+			after: (
+				<TreatmentSelect
+					label={ __( 'Button background on hover', 'sgs-blocks' ) }
+					value={ burgerBgHoverTreatment }
+					onChange={ ( val ) =>
+						setAttributes( { burgerBgHoverTreatment: val } )
+					}
+					options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
+				/>
+			),
+		} ),
+		textRow( {
+			key: 'featured-text',
+			heading: __( 'Featured', 'sgs-blocks' ),
+			label: __( 'Featured text colour', 'sgs-blocks' ),
+			attrs: {
+				base: 'featuredColour',
+				hover: 'featuredColourHover',
+				gradient: 'featuredColourGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
 			key: 'featured-bg',
 			label: __( 'Featured background', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: featuredBg,
-					onChange: ( val ) => setAttributes( { featuredBg: val ?? '' } ),
-					gradientValue: attributes.featuredBgGradient,
-					onGradientChange: ( val ) => setAttributes( { featuredBgGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: featuredBgHover,
-					onChange: ( val ) => setAttributes( { featuredBgHover: val ?? '' } ),
-					gradientValue: attributes.featuredBgHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { featuredBgHoverGradient: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
-			key: 'burger-icon',
-			label: __( 'Burger icon colour', 'sgs-blocks' ),
-			gradientCapable: true,
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: burgerColour,
-					onChange: ( val ) => setAttributes( { burgerColour: val ?? '' } ),
-					gradientValue: burgerColourGradient,
-					onGradientChange: ( val ) => setAttributes( { burgerColourGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: burgerColourHover,
-					onChange: ( val ) => setAttributes( { burgerColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
-			key: 'burger-bg',
-			label: __( 'Burger background', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: burgerBg,
-					onChange: ( val ) => setAttributes( { burgerBg: val ?? '' } ),
-					gradientValue: attributes.burgerBgGradient,
-					onGradientChange: ( val ) => setAttributes( { burgerBgGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: burgerHoverColour,
-					onChange: ( val ) => setAttributes( { burgerHoverColour: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
-			key: 'submenu-bg',
-			label: __( 'Dropdown background', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: submenuBg,
-					onChange: ( val ) => setAttributes( { submenuBg: val ?? '' } ),
-					gradientValue: submenuBgGradient,
-					onGradientChange: ( val ) => setAttributes( { submenuBgGradient: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
-		{
-			key: 'submenu-text',
-			label: __( 'Dropdown link colour', 'sgs-blocks' ),
-			gradientCapable: true,
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: submenuColour,
-					onChange: ( val ) => setAttributes( { submenuColour: val ?? '' } ),
-					gradientValue: submenuColourGradient,
-					onGradientChange: ( val ) => setAttributes( { submenuColourGradient: val ?? '' } ),
-					linked: true,
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: submenuColourHover,
-					onChange: ( val ) => setAttributes( { submenuColourHover: val ?? '' } ),
-					linked: true,
-				},
-			],
-		},
+			attrs: {
+				base: 'featuredBg',
+				hover: 'featuredBgHover',
+				gradient: 'featuredBgGradient',
+				hoverGradient: 'featuredBgHoverGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
 	];
 
 	return (

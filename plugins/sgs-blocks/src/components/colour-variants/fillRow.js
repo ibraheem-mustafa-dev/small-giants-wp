@@ -56,12 +56,30 @@ import { __ } from '@wordpress/i18n';
  *   linked — unconditional on both paths; it is a property of DesignTokenPicker, not
  *   of how the value is read/written, so the get/set path carries it identically.
  *
+ * THIRD STATE (`current`, added 2026-09-11, Spec 41 FR-41-3 / FR-41-2). Purely
+ * ADDITIVE, and shaped deliberately to mirror the PHP side's own third-state
+ * extension (`sgs_fill_decls()`'s optional `current` key) rather than inventing a
+ * second vocabulary for the same idea. A caller that supplies no `attrs.current`
+ * gets a byte-identical descriptor to the pre-change helper — that is the
+ * acceptance condition, not a convenience, because 64 blocks already call this.
+ *   ⛔ `describeRow()` in `scripts/inspector-scan/core/golden.js` ENCODES this
+ *   helper's contract and computes a row's state count from the `attrs` keys it can
+ *   see statically. Its own header says so: if this helper gains a third state, that
+ *   function MUST change in the SAME commit or the census silently misreports (a row
+ *   that renders three states while the gate counts two — D738 in the other
+ *   direction). It was changed in the same commit that added this paragraph.
+ *   ⚠ A `current` state is appended only when `hover` is also supplied. A
+ *   Current-without-Hover row has no caller in this tree and no meaning in the
+ *   three-state model (Spec 41 §1.3: Current is the third state, not a substitute
+ *   for the second), so it is refused loudly rather than half-wired.
+ *
  * @param {Object}   o
  * @param {string}   o.key            Row key, stable — used by rule 31 and by
  *                                    supports.sgs.colourExemptions lookups.
  * @param {string}   o.label          Already translated by the caller.
  * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
- *                                    { base, hover?, gradient?, hoverGradient? }.
+ *                                    { base, hover?, current?, gradient?,
+ *                                    hoverGradient?, currentGradient? }.
  *                                    Mutually exclusive with o.get/o.set — see below.
  * @param {Object}   [o.attributes]   The block's attributes object. Required when
  *                                    o.attrs is used; ignored (and not required) on
@@ -84,7 +102,17 @@ import { __ } from '@wordpress/i18n';
  *                                    `( val ) => setAttributes( { asideSeparator: { ...asideSeparator, colour: val ?? '' } } )`.
  * @return {Object} A row descriptor: { key, label, states }.
  */
-export default function fillRow( { key, label, attrs, attributes, setAttributes, get, set } ) {
+export default function fillRow( {
+	key,
+	label,
+	attrs,
+	attributes,
+	setAttributes,
+	get,
+	set,
+	heading,
+	after,
+} ) {
 	// PRECEDENCE RULE (2026-08-30): attrs and get/set are MUTUALLY EXCLUSIVE, checked
 	// before anything else runs. Supplying both is refused loudly — a caller who wires
 	// attrs.base AND get/set almost certainly means the get/set is the real binding and
@@ -132,15 +160,26 @@ export default function fillRow( { key, label, attrs, attributes, setAttributes,
 			key,
 			label,
 			states: [ normal ],
+			...( heading ? { heading } : {} ),
+			...( after ? { after } : {} ),
 		};
 	}
 
-	const { base, hover, gradient, hoverGradient } = attrs || {};
+	const { base, hover, current, gradient, hoverGradient, currentGradient } = attrs || {};
 
 	if ( ! base ) {
 		throw new Error(
 			`fillRow( "${ key }" ): attrs.base is required — it names the block's own ` +
 				'resting colour attribute. A row with no base attribute cannot round-trip.'
+		);
+	}
+
+	if ( current && ! hover ) {
+		throw new Error(
+			`fillRow( "${ key }" ): attrs.current requires attrs.hover — Current is the ` +
+				'THIRD state of the three-state model (Spec 41 §1.3), never a substitute ' +
+				'for Hover. A row with Normal + Current and no Hover has no meaning in ' +
+				'this framework and would silently score as a 2-state row.'
 		);
 	}
 
@@ -182,9 +221,40 @@ export default function fillRow( { key, label, attrs, attributes, setAttributes,
 			: {} ),
 	};
 
+	// Spec 41 FR-41-3: the THIRD state. Built as its own literal entry and appended
+	// at ARRAY level below, exactly like `hoverState` — never generated, never
+	// `.map()`-ed, for the same D738 reason recorded above.
+	const currentState = {
+		key: 'current',
+		label: __( 'Current', 'sgs-blocks' ),
+		value: attributes[ current ],
+		onChange: ( val ) => setAttributes( { [ current ]: val ?? '' } ),
+		linked: true,
+		...( currentGradient
+			? {
+					gradientValue: attributes[ currentGradient ],
+					onGradientChange: ( val ) =>
+						setAttributes( { [ currentGradient ]: val ?? '' } ),
+			  }
+			: {} ),
+	};
+
 	return {
 		key,
 		label,
-		states: hover ? [ normal, hoverState ] : [ normal ],
+		states: hover
+			? current
+				? [ normal, hoverState, currentState ]
+				: [ normal, hoverState ]
+			: [ normal ],
+		// Pass-throughs onto the descriptor, both consumed by SgsColourPanel and both
+		// omitted entirely when absent — so an existing caller's descriptor is
+		// byte-identical. They exist on the HELPER rather than being spread on at the
+		// call site (`{ ...fillRow( … ), after: … }`) for a static-analysis reason, not
+		// a stylistic one: a spread turns the row element into an ObjectExpression with
+		// no literal `states`, which `describeRow()` scores as ONE state. Passing them
+		// in keeps the row a clean helper CallExpression the census can resolve.
+		...( heading ? { heading } : {} ),
+		...( after ? { after } : {} ),
 	};
 }

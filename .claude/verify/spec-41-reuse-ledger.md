@@ -366,3 +366,61 @@ NEGATIVE CONTROL  HEAD dropped it entirely    = true
 The two positive controls prove the additions are live (not a no-op passing by absence); the
 negative control proves the `contrastLargeText` gap it closes was real on HEAD. Live caller
 roster at the time of the change: `grep -rln "<SgsColourPanel" plugins/sgs-blocks/src/blocks/*/edit.js | wc -l` → **61**.
+
+---
+
+## Step 13 — `edit.js` colour rows, 3-state, hover-treatment selectors
+
+| File | Lines | Shared components / helpers leaned on | Hand-rolled — and what was checked first |
+|---|---|---|---|
+| `src/components/colour-variants/fillRow.js` | 234 | — (this IS the shared helper) | Extended, not forked. `attrs.current` / `attrs.currentGradient` + an optional third state, mirroring step 6's own additive third state on the PHP side (`sgs_fill_decls()`). No `fillRow3`. |
+| `src/components/colour-variants/textRow.js` | 196 | — (this IS the shared helper) | Same extension, plus `contrastLargeText` / `heading` / `after` pass-throughs. |
+| `scripts/inspector-scan/core/golden.js` | (1 function) | — | `describeRow()` MUST change in the same commit as the helper — its own header says so. Not optional: it is what counts a helper-built row's states. |
+| `src/blocks/nav-menu/edit.js` | 629 | `fillRow` / `textRow` (10 of 12 rows), `SgsColourPanel`, `ToggleGroupControl` via `ColourTreatment.js` | 2 rows stay literal, each for a stated static-analysis reason (below). Over 250 lines — step 14 owns the split. |
+| `src/blocks/nav-menu/ColourTreatment.js` | 156 | `ToggleGroupControl` / `ToggleGroupControlOption` from `src/components/primitives`; shape copied from `src/components/SurfaceTreatmentPanel.js` | Block-private per FR-41-24 (no second adopter exists, so a shared `<HoverTreatmentControl>` would be an abstraction from a sample of one). |
+
+**The reuse lever step 7 deferred is now pulled.** Ten of the twelve rows are built by
+`fillRow`/`textRow` instead of hand-assembled. The old literal was 222 lines for 11 rows; the
+new one covers 12 rows, three groupings, five hover-treatment selectors, three ⓘ notes and a
+conditional sweep-direction control.
+
+**The two rows that deliberately do NOT adopt the helper, and why each is a real constraint
+rather than a preference:**
+
+1. **`item-bg`.** FR-41-14 requires the CURRENT state to be omitted **per-STATE** while the
+   Highlight treatment is active. Passing a conditional attribute name to the helper
+   (`current: cond ? 'itemBgCurrent' : undefined`) is not a string literal, so `describeRow()`
+   resolves the row as 2 states while it renders 3 — the gate going blind while the code is
+   correct (D738). A spread-of-ternary inside a literal `states` array stays statically
+   countable in BOTH branches, which is exactly why FR-41-14 writes it that way.
+2. **`item-border`.** The item border declares no gradient attribute at all (FR-41-7 / §1.2),
+   so the row cannot legitimately be `gradientCapable` — that flag renders a per-state
+   Solid/Gradient toggle whose value has nowhere to be stored and is discarded on save.
+   ⚠ **Consequence, stated not hidden:** a non-`gradientCapable` row renders
+   `DesignTokenPicker`, which carries no contrast check, so §9.6's required
+   `contrastAgainst` + `contrastLargeText: true` pair is DECLARED on this row and is currently
+   **inert**. The `submenu-border` row IS gradient-capable (`submenuBorderColourGradient` is a
+   real declared attribute) and its check does run.
+
+**Proof that the helper extension is byte-identical for the other 64 blocks** — five real call
+shapes taken from live callers, run against HEAD's helper and this one, functions normalised to
+their source text and deep-compared:
+
+```
+IDENTICAL  fillRow sgs/info-box   :: card-bg
+IDENTICAL  textRow sgs/info-box   :: heading
+IDENTICAL  fillRow sgs/nav-drawer :: drawer-bg
+IDENTICAL  textRow sgs/button     :: label
+IDENTICAL  fillRow sgs/icon       :: icon-fill      (the get/set binding path)
+POSITIVE CONTROL  states=3 keys=normal/hover/current linkedOnAll=true gradientCapable=true
+NEGATIVE CONTROL  current-without-hover throws = true
+```
+
+Neither `after` nor `heading` nor `contrastLargeText` leaks onto a descriptor that did not ask
+for it — asserted per case, not inferred.
+
+**Proof that the third state is REAL and the census sees it** (`inspector-scan` rule 31,
+nav-menu findings): **3 → 1**. The three `below-min-states` findings on `item-text`, `item-bg`
+and `submenu-text` — each "carries 2 states, below the required 3" — are gone. That is the
+positive control for the `describeRow()` change: without it, helper-built rows would still have
+counted 2 and all three findings would have survived.

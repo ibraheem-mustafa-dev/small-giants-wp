@@ -29,11 +29,19 @@ import { __ } from '@wordpress/i18n';
  * or a gradient toggle bound to nowhere is refused rather than silently half-wired.
  * `linked` is unconditional on both paths.
  *
+ * THIRD STATE (`current`, added 2026-09-11, Spec 41 FR-41-3 / FR-41-2) — identical
+ * contract to fillRow's; see that file's header for the full rationale, the
+ * byte-identity acceptance condition, and the `describeRow()` same-commit coupling.
+ * `attrs.currentGradient` also feeds `gradientCapable`, for the same reason
+ * `attrs.gradient`/`attrs.hoverGradient` already do: a stored gradient with no
+ * gradient-capable control is a value nothing can author.
+ *
  * @param {Object}   o
  * @param {string}   o.key            Row key, stable.
  * @param {string}   o.label          Already translated by the caller.
  * @param {Object}   [o.attrs]        The BLOCK'S OWN top-level attribute names:
- *                                    { base, hover?, gradient?, hoverGradient? }.
+ *                                    { base, hover?, current?, gradient?,
+ *                                    hoverGradient?, currentGradient? }.
  *                                    Mutually exclusive with o.get/o.set.
  * @param {Object}   [o.attributes]   The block's attributes object. Required with
  *                                    o.attrs; ignored on the o.get/o.set path.
@@ -67,6 +75,9 @@ export default function textRow( {
 	set,
 	contrastAgainst,
 	contrastLabel,
+	contrastLargeText,
+	heading,
+	after,
 } ) {
 	if ( ( get || set ) && attrs ) {
 		throw new Error(
@@ -97,15 +108,26 @@ export default function textRow( {
 			key,
 			label,
 			states: [ normalGetSet ],
+			...( heading ? { heading } : {} ),
+			...( after ? { after } : {} ),
 		};
 	}
 
-	const { base, hover, gradient, hoverGradient } = attrs || {};
+	const { base, hover, current, gradient, hoverGradient, currentGradient } = attrs || {};
 
 	if ( ! base ) {
 		throw new Error(
 			`textRow( "${ key }" ): attrs.base is required — it names the block's own ` +
 				'resting colour attribute. A row with no base attribute cannot round-trip.'
+		);
+	}
+
+	if ( current && ! hover ) {
+		throw new Error(
+			`textRow( "${ key }" ): attrs.current requires attrs.hover — Current is the ` +
+				'THIRD state of the three-state model (Spec 41 §1.3), never a substitute ' +
+				'for Hover. A row with Normal + Current and no Hover has no meaning in ' +
+				'this framework and would silently score as a 2-state row.'
 		);
 	}
 
@@ -140,12 +162,38 @@ export default function textRow( {
 			: {} ),
 	};
 
+	// Spec 41 FR-41-3's THIRD state — a literal entry appended at ARRAY level, the
+	// same D738-safe shape as `hoverState`. Mirrors fillRow exactly.
+	const currentState = {
+		key: 'current',
+		label: __( 'Current', 'sgs-blocks' ),
+		value: attributes[ current ],
+		onChange: ( val ) => setAttributes( { [ current ]: val ?? '' } ),
+		linked: true,
+		...( currentGradient
+			? {
+					gradientValue: attributes[ currentGradient ],
+					onGradientChange: ( val ) =>
+						setAttributes( { [ currentGradient ]: val ?? '' } ),
+			  }
+			: {} ),
+	};
+
 	return {
 		key,
 		label,
-		states: hover ? [ normal, hoverState ] : [ normal ],
-		...( gradient || hoverGradient ? { gradientCapable: true } : {} ),
+		states: hover
+			? current
+				? [ normal, hoverState, currentState ]
+				: [ normal, hoverState ]
+			: [ normal ],
+		...( gradient || hoverGradient || currentGradient ? { gradientCapable: true } : {} ),
 		...( contrastAgainst ? { contrastAgainst } : {} ),
 		...( contrastLabel ? { contrastLabel } : {} ),
+		...( contrastLargeText ? { contrastLargeText } : {} ),
+		// See fillRow's note on why these are helper parameters rather than a spread
+		// at the call site — a spread scores the row as one state in `describeRow()`.
+		...( heading ? { heading } : {} ),
+		...( after ? { after } : {} ),
 	};
 }
