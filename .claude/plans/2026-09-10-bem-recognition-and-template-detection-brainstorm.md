@@ -65,16 +65,34 @@ Read in full: `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`, its ca
 - *Value:* immediate, and gives real measurement — running this against one real Bootstrap-ish or bare-BEM source tells you what fraction of non-BEM content the existing three real rules already rescue, before spending anything on Tier 2/3.
 - *Not this brainstorm's job:* the wiring fix itself is implementation, not design — flagged here only so it's visible as the obvious first rung, not designed in detail.
 
-**Tier 1 — fill in the two weak rules (still string-only, no new capability class).**
-Two concrete, bounded gaps in the existing architecture, each a data addition not a new mechanism:
+**Tier 1 — fill in the weak rules (still string-only, no new capability class).**
+Concrete, bounded gaps in the existing architecture, each a data addition not a new mechanism:
 - Populate `_TAILWIND_UTILITY`'s and `_SHADCN`'s slot-maps with real component-name tokens (Tailwind component libraries and shadcn primitives do carry recognisable names even inside utility soup — `card`, `dialog`, `badge`, etc. — they're just not captured yet).
 - Wire the `data_slot_attrs` flag that `_SHADCN` already declares: read `data-slot="..."` attributes (shadcn's real identity signal, per its own convention) instead of relying on class names for that convention alone.
-- *Cost:* low — data-table growth plus one small new attribute read, no architectural change.
+- **Two new conventions, added 2026-09-11 (Bean-directed research pass) — both have a genuinely distinct, predictable class-name signature, same cost shape as the Tailwind/shadcn fill-in:**
+  - **Webflow** — every generated class carries a `w-`-prefixed utility class alongside an auto-generated `w-node-...` element ID. Common scrape target.
+  - **Elementor / Divi (WordPress page builders)** — Elementor prefixes `elementor-widget-*`, Divi prefixes `et_pb_*`. Both predictable, both common scrape targets.
+  - *Not added, deliberately:* Material UI (`MuiButton-root`) — lower priority, mostly seen on admin dashboards rather than typical clone targets. Skip unless it's actually hit in practice.
+- *Cost:* low — data-table growth plus (for shadcn) one small new attribute read, no architectural change. The two new conventions are pure slot-map additions, identical cost to the existing Tailwind/shadcn entries.
 - *Risk:* none for BEM drafts (same untouched fast path); low elsewhere since it only adds recognition where there is currently none.
-- *Value:* directly targets the two conventions AI-builder output and scraped competitor pages are most likely to use.
+- *Value:* directly targets the conventions AI-builder output and scraped competitor pages are most likely to use — see the source-priority table added below for which sources actually matter most for THIS pipeline's real inputs.
 
 **Tier 2 — heuristic tag-role inference by DOM shape.**
 A genuinely new recognition path: infer block identity from structural signal instead of class name — heading level and position → hero/section-header candidate; `<button>`/anchor-styled-as-button → CTA; N near-identical sibling `<article>`/`<div>` nodes under one parent → card-grid; landmark tags (`<nav>`, `<header>`, `<footer>`) → header/footer, extending the walker's existing `SKIP_TOP_LEVEL_TAGS` precedent (R-31-3's permitted "atomic-tag swap" exception) rather than inventing a fourth kind of exception.
+
+**Why Tier 2 matters more than Tier 0/1 for Claude-Code-authored sources specifically (added 2026-09-11).**
+Two real, common sources carry ZERO usable signal in the class string at all — Tier 0/1's whole
+model (recognise a convention from the class name) cannot reach them, only DOM shape can:
+- **CSS Modules** — classes compile to hashed names (`Button_primary__x7f2a`) that change every
+  build. No token in the string is stable.
+- **styled-components / Emotion** (CSS-in-JS) — classes compile to opaque generated strings
+  (`sc-bdVaJa`) with no semantic content whatsoever.
+
+Both are common output shapes from Claude Code's own React/Next.js scaffolding — arguably a
+higher-priority real-world source for this pipeline than scraped competitor sites, since it's
+the tool actively generating drafts today. This is the concrete evidence Tier 2 needs eventually,
+not speculative — it just doesn't change the ranked order (Tier 0/1 still ship first and cheapest;
+Tier 2 is still not started until they're measured).
 - *Cost:* moderate — new classifier logic, needs its own test suite against real (not synthetic) non-BEM fixtures.
 - *Risk:* **must feed the pipeline's existing gap-candidate / operator-review flow** (`leftover-buckets.json`, bucket-c classifier) rather than silently asserting a block identity — a shape guess is lower-confidence than an authored class and should be treated that way. **Hard constraint for whenever this is built:** DOM-shape inference must never be consulted when an element's `class_signature` is already SGS-BEM canonical, even partially — otherwise a Bean draft mixing one authored BEM class with one incidental utility class on the same element could have its role silently overridden by a shape guess instead of respecting the authored identity. This is a design constraint to carry into the eventual build, not something to resolve now.
 - *Value:* the only option here that helps genuinely classless plain-HTML sources, which Tier 0/1 cannot touch at all.
@@ -85,9 +103,33 @@ Render candidate elements (via Playwright) and cluster by rendered box size, pos
 - *Risk:* unproven need — nothing measured so far shows Tier 2 is insufficient, because Tier 2 doesn't exist yet to measure against.
 - *Value:* speculative until Tier 2 is shipped and shown to still miss real cases.
 
-### Recommendation
+### Real-world source priority (added 2026-09-11, Bean-directed research pass)
 
-Ship Tier 0, then Tier 1, in that order — both are near-free and either could turn out to close most of the real gap once measured against an actual non-BEM source (nobody has measured this yet; that's a finding in itself). Only invest in Tier 2 if, after Tier 0+1 ship and get run against a real scraped page or two, a meaningful fraction of boundaries still hard-halt. Do not start Tier 3 without first shipping and measuring Tier 2 — there is currently zero evidence it's needed.
+Ranked by how often this pipeline will actually hit each source — Claude-Code-authored drafts
+are the highest-priority non-BEM input, not scraped sites, since it's the tool actively
+generating drafts today:
+
+| Source | Convention | Tier that reaches it |
+|---|---|---|
+| Claude Code scaffolding | React/Next.js + Tailwind utility classes | 0/1 (existing Tailwind rule) |
+| Claude Code scaffolding | CSS Modules (hashed classes) | **2 only** — no class-string signal exists |
+| Claude Code scaffolding | styled-components/Emotion (generated classes) | **2 only** — same reason |
+| Claude Artifacts / claude.ai output | Hand-rolled semantic kebab-case | 0/1 (existing kebab-semantic rule) |
+| Scraped sites | Webflow | 1 (new, added above) |
+| Scraped sites | Elementor / Divi | 1 (new, added above) |
+| Scraped sites | Material UI | Not planned — low priority, skip unless hit in practice |
+
+### Recommendation — Bean-decided 2026-09-11: Tier 0 first
+
+Ship Tier 0 alone, measure against a real non-BEM source, THEN decide on Tier 1 — not bundled.
+Tier 0 is near-free and the only step that also produces a real number (what fraction of the
+gap the existing rules already rescue), so it's the right first rung even before Tier 1's own
+low cost is weighed. Tier 1 (now including Webflow/Elementor/Divi above) follows once Tier 0's
+measurement is in. Only invest in Tier 2 if, after Tier 0+1 ship and get run against a real
+scraped page or two, a meaningful fraction of boundaries still hard-halt — though the CSS
+Modules/styled-components finding above means Tier 2 has a concrete, real motivating case
+already, not just a speculative one. Do not start Tier 3 without first shipping and measuring
+Tier 2 — there is currently zero evidence it's needed.
 
 ### Explicit non-choice, for completeness
 
@@ -122,6 +164,11 @@ Let Bean force template-mode on or off at clone time for edge cases the structur
 - *Cost:* trivial — one CLI flag.
 - *Risk:* none; it's a safety valve, not the detector.
 - *Value:* cheap insurance, but adds no automation on its own — per CLAUDE.md's "AI independence" philosophy (get it right first time, need less manual intervention over time), this should sit alongside Tier 1, not replace it.
+
+**Bean-decided 2026-09-11: Tier 1 approved.** Note logged for future reference: `/uimax-sgs-scrape-pattern`
+(the manual harvester Tier 1's fingerprinting technique reuses) has seen near-zero operational use
+since it was built, beyond initial testing — this doesn't block Tier 1 (only the technique's code
+is reused, not the skill as a live workflow), but is worth a fresh look separately at some point.
 
 ### Addendum (2026-09-10, research-buddies) — two concrete tools for Tier 1's build
 
