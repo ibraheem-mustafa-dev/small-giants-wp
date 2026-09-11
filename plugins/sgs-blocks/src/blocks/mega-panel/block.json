@@ -314,6 +314,102 @@
 			"default": "auto",
 			"enum": [ "auto", "none", "bottom-left", "bottom-right" ],
 			"_note": "Where the menu item's own destination link (\"View all X\") sits INSIDE this panel. CF-15 requires that link to exist somewhere reachable — the trigger is a <button>, so without it the item's page is unreachable from the nav and invisible to crawlers — but WHERE it sits is an operator choice, never hard-wired (Bean 2026-07-28). `auto` = show it only when this panel has no CTA button of its own (so a panel whose aside already links there stays clean); `none` = never; `bottom-left`/`bottom-right` = always, in that corner of the panel's footer row. ENUM DECLARED 2026-08-06 (Spec 35 A2), REVERSING this note's previous 'NO JSON enum — PHP-validated (blockjson-enum-coerces-invalid-to-default)' clause. That reasoning does not hold for THIS attribute, measured: block.json default is 'auto', render.php:534's in_array fallback is ALSO 'auto', and the allow-list at :532 is these same four values — so WP's out-of-enum coercion and the PHP fallback produce an IDENTICAL result for every possible stored value. The declaration is therefore behaviour-neutral, and buys three things: the row classifies via the existing tested TIER 3.5 to role `enum-mode`, WP validates the value, and the client gets a real select control instead of a free-text box (Spec 35 Part B). Same argument D456 used to ADD an enum to sgs/site-header-row.layout, treating coercion as a safety net rather than a hazard. RESIDUAL RISK, named rather than hidden: if the PHP allow-list at :532 ever gains a value and this enum is not updated in the same commit, WP will silently coerce the new value to 'auto'. That is a DRIFT hazard, not a coercion hazard — the inverse of what Detector 8 already checks (it finds PHP allow-lists with NO block.json enum)."
+		},
+		"fxEffect": {
+			"type": "string",
+			"default": "",
+			"_note": "BLOCK-PRIVATE motion-effect selector (2026-09-11, Spec 38 addendum) — NOT the shared fx ToolsPanel roster's `fx` attribute (this block declares `hideExtensions:[\"fx\"]` above and stays off that roster). PHP-validated in render.php against a fixed allow-list of '' | 'cursor-field' | 'particles' | 'grid-dots' | 'wave-gradient', following this block's own existing pattern for `variant`/`style`/`colourScheme` (no JSON enum, to avoid the blockjson-enum-coerces-invalid-to-default gotcha). Deliberately separate from the pre-existing, always-on `.sgs-mega-aside` cursor spotlight (view.js `initSpotlight`) — that effect is scoped to the aside CTA column only and uses its own accentBackgroundImage-derived colour; this attribute governs an ADDITIVE effect scoped to the whole panel root, sharing the render-layer `data-sgs-fx*` contract (`includes/fx-attributes.php` FX_ATTR_MAP) so the same frontend runtime/stylesheets the shared fx roster uses apply here with zero new JS/CSS."
+		},
+		"fxFieldType": {
+			"type": "string",
+			"default": "",
+			"description": "Cursor-field style (FR-38-25) — byte-identical attribute name/type/default to `fx.js`'s own declaration, so the shared `data-sgs-fx-field` render-layer contract and `fx-cursor-field.css` apply unmodified."
+		},
+		"fxFieldColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fxFieldRadius": {
+			"type": "number"
+		},
+		"fxFieldShape": {
+			"type": "string",
+			"default": ""
+		},
+		"fxFieldBlend": {
+			"type": "number"
+		},
+		"fxFieldTrail": {
+			"type": "number"
+		},
+		"fxParticlePreset": {
+			"type": "string",
+			"default": "",
+			"description": "Particle-trail preset (FR-38-32) — byte-identical shape to `fx.js`'s own declaration."
+		},
+		"fxParticleDensity": {
+			"type": "number"
+		},
+		"fxParticleSize": {
+			"type": "number"
+		},
+		"fxParticleColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fxGridDotColour": {
+			"type": "string",
+			"default": "",
+			"description": "Grid-dot field (FR-38-33) — byte-identical shape to `fx.js`'s own declaration."
+		},
+		"fxGridDotHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"fxGridDotShape": {
+			"type": "string",
+			"default": ""
+		},
+		"fxGridCell": {
+			"type": "number"
+		},
+		"fxGridDotSize": {
+			"type": "number"
+		},
+		"fxGridRadius": {
+			"type": "number"
+		},
+		"fxGridLean": {
+			"type": "number"
+		},
+		"fxGridEase": {
+			"type": "number"
+		},
+		"fxWaveVariant": {
+			"type": "string",
+			"description": "Flowing-gradient (wave-gradient) style — byte-identical shape to `fx.js`'s own declaration (no default). RESTRICTED to the four CSS-only variants (`pastel`/`horizon`/`ribbon`/`veil`) by `FlowingGradientRowControls.js`'s own `isCssOnlyFlowingGradientVariant()` guard AND, independently, by render.php's own PHP whitelist — `aurora`/`ink` (WebGL-backed) can never reach this block."
+		},
+		"fxWaveBase": {
+			"type": "string",
+			"default": ""
+		},
+		"fxWave1": {
+			"type": "string",
+			"default": ""
+		},
+		"fxWave2": {
+			"type": "string",
+			"default": ""
+		},
+		"fxWave3": {
+			"type": "string",
+			"default": ""
+		},
+		"fxWaveSpeed": {
+			"type": "number"
+		},
+		"fxWaveAmplitude": {
+			"type": "number"
 		}
 	},
 	"render": "file:./render.php",

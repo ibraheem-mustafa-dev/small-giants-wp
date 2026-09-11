@@ -210,6 +210,115 @@ $brands_eyebrow  = isset( $attributes['brandsEyebrow'] ) ? (string) $attributes[
 $stagger_on_open = ! empty( $attributes['staggerOnOpen'] );
 
 // ---------------------------------------------------------------------------
+// 0b. Block-private motion effect (2026-09-11, Spec 38 addendum). `fxEffect`
+// is NOT the shared fx ToolsPanel roster's `fx` attribute — this block
+// declares `hideExtensions:["fx"]` and stays off that roster, so
+// `includes/fx-attributes.php`'s `render_block` filter never fires for it
+// (it gates its whole loop on `$block['attrs']['fx']`, which this block never
+// declares). Whitelist-validated the same way `variant`/`style`/
+// `colourScheme` already are above (no JSON enum — blockjson-enum-coerces-
+// invalid-to-default). The resulting `data-sgs-fx*` markup below reuses the
+// SAME grammar `FX_ATTR_MAP` documents, so `SGS_Motion_Registry`'s p99 sniff
+// enqueues the identical shared runtime/stylesheet a fx-roster block would
+// get, with zero new PHP of this block's own beyond building the array.
+// ---------------------------------------------------------------------------
+
+$allowed_fx_effects = array( '', 'cursor-field', 'particles', 'grid-dots', 'wave-gradient' );
+$fx_effect          = isset( $attributes['fxEffect'] ) && in_array( $attributes['fxEffect'], $allowed_fx_effects, true )
+	? (string) $attributes['fxEffect']
+	: '';
+
+/**
+ * Add a fx data-attribute only when its source value is genuinely present —
+ * mirrors `sgs_fx_data_attr_string()`'s own rule (`includes/fx-attributes.php`):
+ * skip only `''`/`null`, so a legitimate numeric `0` (e.g. `fxFieldBlend => 0`)
+ * survives instead of being dropped as if it were absent.
+ *
+ * @param array  $target Attribute array to add to, by reference.
+ * @param string $key    Data-attribute name (already includes `data-` prefix).
+ * @param mixed  $value  Source value, or null/absent.
+ * @return void
+ */
+$sgs_mega_panel_add_fx_attr = static function ( array &$target, string $key, $value ): void {
+	if ( null === $value || '' === $value ) {
+		return;
+	}
+	$target[ $key ] = $value;
+};
+
+$fx_wrapper_attrs = array();
+if ( '' !== $fx_effect ) {
+	$fx_wrapper_attrs['data-sgs-fx'] = $fx_effect;
+
+	if ( 'cursor-field' === $fx_effect ) {
+		$allowed_fx_field_types  = array( '', 'spotlight-mask', 'hue-shift', 'parallax-pattern', 'brick-reveal' );
+		$allowed_fx_field_shapes = array( '', 'wide', 'tall' );
+		$fx_field_type           = isset( $attributes['fxFieldType'] ) && in_array( $attributes['fxFieldType'], $allowed_fx_field_types, true )
+			? (string) $attributes['fxFieldType']
+			: '';
+		$fx_field_shape          = isset( $attributes['fxFieldShape'] ) && in_array( $attributes['fxFieldShape'], $allowed_fx_field_shapes, true )
+			? (string) $attributes['fxFieldShape']
+			: '';
+		$fx_field_colour_raw     = isset( $attributes['fxFieldColour'] ) ? (string) $attributes['fxFieldColour'] : '';
+
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field', $fx_field_type );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field-colour', '' !== $fx_field_colour_raw ? sgs_colour_value( $fx_field_colour_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field-radius', is_numeric( $attributes['fxFieldRadius'] ?? null ) ? (float) $attributes['fxFieldRadius'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field-shape', $fx_field_shape );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field-blend', is_numeric( $attributes['fxFieldBlend'] ?? null ) ? (float) $attributes['fxFieldBlend'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-field-trail', is_numeric( $attributes['fxFieldTrail'] ?? null ) ? (float) $attributes['fxFieldTrail'] : null );
+	} elseif ( 'particles' === $fx_effect ) {
+		$allowed_fx_particle_presets = array( '', 'sparks', 'gravity-dots', 'ripple' );
+		$fx_particle_preset          = isset( $attributes['fxParticlePreset'] ) && in_array( $attributes['fxParticlePreset'], $allowed_fx_particle_presets, true )
+			? (string) $attributes['fxParticlePreset']
+			: '';
+		$fx_particle_colour_raw      = isset( $attributes['fxParticleColour'] ) ? (string) $attributes['fxParticleColour'] : '';
+
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-particle-preset', $fx_particle_preset );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-particle-density', is_numeric( $attributes['fxParticleDensity'] ?? null ) ? (float) $attributes['fxParticleDensity'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-particle-size', is_numeric( $attributes['fxParticleSize'] ?? null ) ? (float) $attributes['fxParticleSize'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-particle-colour', '' !== $fx_particle_colour_raw ? sgs_colour_value( $fx_particle_colour_raw ) : '' );
+	} elseif ( 'grid-dots' === $fx_effect ) {
+		$allowed_fx_grid_shapes  = array( '', 'circle', 'line', 'square', 'triangle', 'cross' );
+		$fx_grid_shape           = isset( $attributes['fxGridDotShape'] ) && in_array( $attributes['fxGridDotShape'], $allowed_fx_grid_shapes, true )
+			? (string) $attributes['fxGridDotShape']
+			: '';
+		$fx_grid_colour_raw      = isset( $attributes['fxGridDotColour'] ) ? (string) $attributes['fxGridDotColour'] : '';
+		$fx_grid_hover_colour_raw = isset( $attributes['fxGridDotHoverColour'] ) ? (string) $attributes['fxGridDotHoverColour'] : '';
+
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-colour', '' !== $fx_grid_colour_raw ? sgs_colour_value( $fx_grid_colour_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-colour-hover', '' !== $fx_grid_hover_colour_raw ? sgs_colour_value( $fx_grid_hover_colour_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-shape', $fx_grid_shape );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-cell', is_numeric( $attributes['fxGridCell'] ?? null ) ? (float) $attributes['fxGridCell'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-dot', is_numeric( $attributes['fxGridDotSize'] ?? null ) ? (float) $attributes['fxGridDotSize'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-radius', is_numeric( $attributes['fxGridRadius'] ?? null ) ? (float) $attributes['fxGridRadius'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-lean', is_numeric( $attributes['fxGridLean'] ?? null ) ? (float) $attributes['fxGridLean'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-grid-ease', is_numeric( $attributes['fxGridEase'] ?? null ) ? (float) $attributes['fxGridEase'] : null );
+	} elseif ( 'wave-gradient' === $fx_effect ) {
+		// Restricted to the four CSS-only variants (aurora/ink are WebGL-backed
+		// and are excluded outright by FlowingGradientRowControls.js's own
+		// isCssOnlyFlowingGradientVariant() guard — mirrored here independently
+		// so a hand-authored/legacy value can never reach this block either).
+		$allowed_fx_wave_variants = array( 'pastel', 'horizon', 'ribbon', 'veil' );
+		$fx_wave_variant          = isset( $attributes['fxWaveVariant'] ) && in_array( $attributes['fxWaveVariant'], $allowed_fx_wave_variants, true )
+			? (string) $attributes['fxWaveVariant']
+			: 'pastel';
+		$fx_wave_base_raw = isset( $attributes['fxWaveBase'] ) ? (string) $attributes['fxWaveBase'] : '';
+		$fx_wave_1_raw    = isset( $attributes['fxWave1'] ) ? (string) $attributes['fxWave1'] : '';
+		$fx_wave_2_raw    = isset( $attributes['fxWave2'] ) ? (string) $attributes['fxWave2'] : '';
+		$fx_wave_3_raw    = isset( $attributes['fxWave3'] ) ? (string) $attributes['fxWave3'] : '';
+
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-variant', $fx_wave_variant );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-base', '' !== $fx_wave_base_raw ? sgs_colour_value( $fx_wave_base_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-1', '' !== $fx_wave_1_raw ? sgs_colour_value( $fx_wave_1_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-2', '' !== $fx_wave_2_raw ? sgs_colour_value( $fx_wave_2_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-3', '' !== $fx_wave_3_raw ? sgs_colour_value( $fx_wave_3_raw ) : '' );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-speed', is_numeric( $attributes['fxWaveSpeed'] ?? null ) ? (float) $attributes['fxWaveSpeed'] : null );
+		$sgs_mega_panel_add_fx_attr( $fx_wrapper_attrs, 'data-sgs-fx-wave-amplitude', is_numeric( $attributes['fxWaveAmplitude'] ?? null ) ? (float) $attributes['fxWaveAmplitude'] : null );
+	}
+}
+
+// ---------------------------------------------------------------------------
 // 1. Content-addressed uid + selectors (STOP-NO-KSORT: $attributes hashed
 // verbatim, never reordered).
 // ---------------------------------------------------------------------------
@@ -784,6 +893,11 @@ if ( $stagger_on_open ) {
 	// watches for — an opt-in per panel, never forced on.
 	$wrapper_args['data-stagger'] = 'true';
 }
+// Block-private fx effect (§0b above) — merged in without overwriting any of
+// the keys already set (class/data-mega-*/data-stagger); $fx_wrapper_attrs is
+// an empty array when fxEffect is '', so this is a no-op for every existing
+// instance that has never set one.
+$wrapper_args        = array_merge( $wrapper_args, $fx_wrapper_attrs );
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 // Eyebrow markup — brands variant only, and only when the operator has set
