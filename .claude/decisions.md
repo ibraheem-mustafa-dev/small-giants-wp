@@ -1,3 +1,40 @@
+## D1038 [ROUTINE] — Spec 41 Step 22/23 live-verification gate sweep found + fixed 4 real nav-menu defects
+
+**2026-09-11.** Two parallel Playwright agents asserted Spec 41's acceptance gates (G6-G20)
+against the deployed canary — the first live end-to-end verification of the whole nav-menu
+colour/state rebuild. 22/26 mechanism sub-checks and 15/22 interaction sub-checks passed; the
+FAILs were root-caused (not just reported) and fixed same-session, commit `bdd80254e`:
+
+1. **G13 scenario 2** — `nav-menu-submenu-css.php`'s Highlight-pill guard checked only the
+   solid `itemBgHover` colour, so a gradient-only hover fill rendered nothing.
+2. **G13 scenario 4 negative** — `itemBorderRadius`'s 8px default emitted unconditionally
+   instead of only when a background is present (FR-41-7/§8.4's explicit wording).
+3. **New finding, not on the gate list** — item background colours were resolved to a literal
+   hex via `sgs_resolve_palette_hex()` before painting, baking a theme slug into a frozen
+   value instead of a live `var()` reference — the "tokens not literals" rule this file's own
+   docblock states. This was ALSO G16(c)'s actual root cause: the same slug-only resolver fed
+   the WCAG smart-contrast maths, so a client-chosen custom hex colour silently produced no
+   contrast computation at all (empty bg/fg hex → toggle did nothing).
+4. **G7** — the FR-41-13 parent-stays-hovered rescue rule (built earlier this same session,
+   commit `99aa0aae0`) had two compounding bugs for a border-only hover config: the guard
+   checked the wrong attribute (`$item_colour_hover` instead of the border's own colour), and
+   the emission loop's if/elseif chain never had a branch for a lone `'border'` entry.
+
+**G19(b)'s reported FAIL was investigated and found NOT to be a real defect** — the correctly
+guarded `:hover` rule was already present in the live-deployed stylesheet; recorded as a
+verification-agent artifact (stale cache or timing), not fixed because nothing was broken.
+
+Full gate:all (99/99) re-run clean after the fix; all four fixes re-verified directly against
+live CSS on the existing scratch fixtures (pages 3487/3488) post-redeploy, not just re-trusted
+from the gate output. Evidence: `.claude/verify/spec-41-gates-mechanism.md` +
+`.claude/verify/spec-41-gates-interaction.md`. Residual INCONCLUSIVE items (editor-UI checks
+that needed the shared Playwright browser, which was contended between the two parallel
+lanes all session) remain open for a follow-up pass, not blocking: G7 BAR/DRAWER independence,
+G9's disable-and-revert mechanical proof, G14(g)'s UI-half, G18(a)/(b), G20(a)'s editor
+round-trip persistence.
+
+---
+
 ## D1037 [ROUTINE] — Q2 Tier 1 structural repeated-sibling detector shipped (BEM/template-detection brainstorm)
 
 **2026-09-11, subagent-driven-development implementer.** Ships the Bean-approved Tier 1 from
