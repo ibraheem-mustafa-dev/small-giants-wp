@@ -204,3 +204,59 @@ flaw in the underlying approach. But building Tier 3 (which depends on Tier 1's 
 firing correctly across a group of siblings) or Tier 4a on top of a 0% real-world match rate
 would very likely just compound an unmeasured problem, exactly as the checkpoint was designed
 to catch.
+
+---
+
+## Addendum — 2026-09-11, Fix 6 (easing family-tolerance, path-safe)
+
+**After Fixes 1-5** (name-order shorthand parsing, `rem` unit support, the duration
+floor/ceiling union, declining non-monotonic keyframes, optional transition easing — all
+landed in `motion_shape.py`, verified via this file's own re-run of the 12 testable real
+declarations, item #13 — the Swiper carousel — remains genuinely out of Tier 1/2's scope, a
+DOM-runtime signal, not a CSS declaration), real-world coverage stood at a re-measured
+**2/13** baseline: `Framer #1` (tooltip fade, 400ms `ease-out`) matched `fade-in` exactly, and
+`Locomotive #1` (`preloaderAppear`) already matched `border-accent`. Three further real,
+evidenced misses remained, all sharing one root cause: `easing_curve` required an EXACT
+snapped-keyword match against the seeded row, but each of these declarations legitimately
+snaps to a *different* member of the same visual "ease it" family than the seeded `fade-in`
+row's `ease-out` —
+
+- TAG Heuer `onetrust-fade-in` (longhand `animation-timing-function: ease-in-out`)
+- Locomotive `.c-preloader` fade (`cubic-bezier(0.215, 0.61, 0.355, 1)`, snaps to `ease`)
+- Locomotive `.c-scrollbar` (`transition: opacity 0.3s` — no easing token; browser default
+  `ease`)
+
+**Fix applied.** `linear`/`ease`/`ease-in`/`ease-out`/`ease-in-out` were pooled into two
+families — `{ease, ease-in, ease-out, ease-in-out}` (visually interchangeable "ease it"
+intent) and `{linear}` (visually distinct constant velocity, kept strict) — with easing
+matched by family instead of exact keyword for every seeded preset **except** `scale-in` and
+`border-accent`. Ground-truthing the 18-row seed table directly (not inferring) found this
+pair is the ONE case sharing `animated_property`/`direction` (`transform`/`scale-in`) with
+overlapping magnitude bands (0.603-1.197 vs 0.67-1.33, overlap 0.67-1.197) AND duration bands
+that both collapse into the same real-world 200-5000ms window (Fix 3) — the exact easing
+keyword is the only remaining axis telling them apart. Locomotive's real `preloaderAppear`
+(keyframes `scale(.9)`->`scale(1)`, 900ms, `cubic-bezier(...)` snapping to `ease`) sits
+exactly in that overlap; a naive blanket family-pool was verified directly to turn its
+currently-correct `border-accent` match into an unresolvable tie (`scale-in` would newly
+qualify via family, `border-accent` still qualifies on its own exact keyword). So the family
+tolerance is applied per-candidate-row (`motion_shape.py::_easing_matches`), gated by an
+explicit exemption set (`_EXACT_EASING_ONLY_PRESETS = {"scale-in", "border-accent"}`), not a
+blanket rule — see the Fix 6 code comment block in `motion_shape.py` for the full reasoning,
+written specifically so a future reader doesn't "simplify" it back to a naive pool.
+
+**Result: 5/13 (up from 2/13), zero regressions.**
+
+| Case | Before | After |
+|---|---|---|
+| TAG Heuer `onetrust-fade-in` (400ms `ease-in-out`) | MISS | **MATCH → `fade-in`** |
+| Locomotive `.c-preloader` fade (`cubic-bezier`→`ease`, 900ms) | MISS | **MATCH → `fade-in`** |
+| Locomotive `.c-scrollbar` (no easing→`ease`, 300ms) | MISS | **MATCH → `fade-in`** |
+| Framer tooltip fade (400ms `ease-out`) | MATCH → `fade-in` | MATCH → `fade-in` (unchanged) |
+| Locomotive `preloaderAppear` (900ms, `ease`, scale 0.9) | MATCH → `border-accent` | **MATCH → `border-accent` (regression-checked, unchanged)** |
+
+Both fixture suites (`test_motion_shape_fixtures.py` — 10/10 pass, including the
+`scale-in`/wrong-easing-keyword negative control which still correctly refuses a `linear`
+mismatch; `test_motion_trigger_fixtures.py` — 5/5 pass) show zero regressions after this
+change. The remaining 8/13 misses are unrelated to easing (unmodelled property, `%`-unit
+transform, non-monotonic multi-step declined-by-design, decorative sub-200ms blink, and the
+out-of-scope Swiper carousel) and are out of this fix's scope.

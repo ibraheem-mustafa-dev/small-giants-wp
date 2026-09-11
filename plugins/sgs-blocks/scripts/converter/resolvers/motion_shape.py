@@ -14,13 +14,18 @@ resolves `preset_slug` from a row already present in `motion_shape_signatures`
 (`tier='V'` is a DB-level CHECK constraint on that table) — there is no path
 in this module that can emit a Tier G/H/W value.
 
-MATCHING RULE (pinned in Step 3 — do not redesign)
+MATCHING RULE (pinned in Step 3, AMENDED by Fix 6 — see that comment block
+before touching easing logic)
 ----------------------------------------------------
 Exact match required on `animated_property` and `direction`. `duration_ms`
-matches within +/-20%. `easing_curve` must match the same SNAPPED keyword
-exactly (no cross-keyword tolerance — snap the draft's own easing via the
-same 5-keyword control-point-distance rule the seed script uses before
-comparing). A candidate matches on magnitude when the shape's parsed
+matches within a tolerance band (Fix 3). `easing_curve` matches by FAMILY
+(`ease`/`ease-in`/`ease-out`/`ease-in-out` pooled as one family; `linear`
+stays strict/ungrouped) for every preset EXCEPT `scale-in`/`border-accent`,
+which keep exact-keyword matching — that pair is the one case in the seeded
+table where easing is the ONLY axis telling two overlapping rows apart, and
+pooling them destroys a currently-correct match (see `_easing_matches` +
+Fix 6 comment in the DB-matching section). A candidate matches on magnitude
+when the shape's parsed
 magnitude falls within `[magnitude_min, magnitude_max]`. Zero or 2+ equally
 good candidates => no match, fall through cleanly — never guess between
 ties. (Several seeded rows are genuinely IDENTICAL signatures under
@@ -115,6 +120,70 @@ _DURATION_TOLERANCE = 0.20
 # via the existing tie-refusal rule, never a guess.
 _REAL_WORLD_DURATION_FLOOR_MS = 200.0
 _REAL_WORLD_DURATION_CEILING_MS = 5000.0
+
+# Fix 6 (2026-09-11 real-world re-measurement, post Fix 1-5). `easing_curve`
+# was pinned as an EXACT snapped-keyword match (module docstring's "MATCHING
+# RULE"). Real-world evidence disproves that as a blanket rule for the same
+# reason Fix 3 disproved a tight duration band: 3 confirmed real declarations
+# (TAG Heuer's `onetrust-fade-in` longhand `ease-in-out`, Locomotive's
+# `.c-preloader` fade defaulting a `cubic-bezier(...)` to snapped `'ease'`,
+# Locomotive's `.c-scrollbar` omitting easing entirely and defaulting to
+# `'ease'`) are all genuine `fade-in` shapes (opacity/none/300ms-band) that
+# only fail to match because their easing keyword isn't the DB row's exact
+# `'ease-out'` — visually, `ease`/`ease-in`/`ease-out`/`ease-in-out` are
+# close enough to be the same authored INTENT ("ease it"), unlike `linear`,
+# which is visually distinct (constant velocity, no acceleration curve) and
+# stays a strict, ungrouped keyword.
+#
+# BUT pooling those 4 keywords is NOT safe as a blanket rule. Ground-truthed
+# directly against the seeded `motion_shape_signatures` table (18 rows,
+# `sgs-framework.db`): `scale-in` (transform/scale-in/0.603-1.197/300ms/
+# `ease-out`) and `border-accent` (transform/scale-in/0.67-1.33/250ms/
+# `ease`) are the ONE pair in the whole table sharing the same
+# `animated_property` + `direction`, with duration bands that both collapse
+# into the same real-world 200-5000ms window (Fix 3), AND overlapping
+# magnitude bands (0.67-1.197 overlap) — the ONLY axis still telling them
+# apart is the exact easing keyword. Locomotive's own real `preloaderAppear`
+# (keyframes scale(.9)->scale(1), 900ms, `cubic-bezier(...)` snapping to
+# `'ease'`) sits exactly in that overlap and is CORRECTLY resolved today to
+# `border-accent` (exact `'ease'` match, `scale-in` needs exact `'ease-out'`
+# and is excluded) — pooling the family here would make BOTH rows match
+# (scale-in via family, border-accent via its own exact keyword), producing
+# an unresolvable tie and destroying a currently-correct match. That is a
+# real regression, not a hypothetical one — verified directly by re-running
+# `preloaderAppear` through this module with a naive pooled-family query.
+#
+# Fixed narrowly: family-tolerant easing applies to every row EXCEPT the
+# `scale-in`/`border-accent` pair, which keeps exact-keyword matching (their
+# own DB `easing_curve` value, unchanged). Do NOT simplify this back into a
+# blanket pooled comparison — that reintroduces the exact regression this
+# comment documents. If a future seed-table change removes the
+# scale-in/border-accent magnitude-band overlap (or the pair is retired),
+# revisit whether this exemption is still needed.
+_EASING_FAMILIES: "tuple[frozenset[str], ...]" = (
+    frozenset({"ease", "ease-in", "ease-out", "ease-in-out"}),
+    frozenset({"linear"}),
+)
+
+# The one pair distinguished solely by exact easing keyword (see Fix 6
+# above) — these preset slugs are matched on their own exact `easing_curve`
+# value regardless of family, never pooled.
+_EXACT_EASING_ONLY_PRESETS = frozenset({"scale-in", "border-accent"})
+
+
+def _easing_family(curve: str) -> "frozenset[str]":
+    for family in _EASING_FAMILIES:
+        if curve in family:
+            return family
+    return frozenset({curve})
+
+
+def _easing_matches(shape_easing: str, row_easing: str, preset_slug: str) -> bool:
+    """True if a shape's snapped easing is compatible with a candidate row's
+    seeded easing, per the exemption documented in Fix 6 above."""
+    if preset_slug in _EXACT_EASING_ONLY_PRESETS:
+        return shape_easing == row_easing
+    return _easing_family(shape_easing) == _easing_family(row_easing)
 
 
 def snap_easing(raw: str) -> str:
@@ -689,11 +758,11 @@ def _duration_within_tolerance(shape_ms: "int | None", row_ms: "int | None") -> 
 
 def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[dict]":
     """Read-only query for every seeded row sharing the shape's
-    `animated_property` + `direction` + snapped `easing_curve` — the two
-    exact-match axes plus the exact-keyword easing axis. Duration and
-    magnitude are filtered in Python (duration needs a tolerance band;
-    magnitude needs a range containment check) after the SQL narrows the
-    candidate set."""
+    `animated_property` + `direction` — the two exact-match axes. Easing is
+    NOT filtered in SQL (Fix 6): it needs per-row exempt-vs-pooled logic
+    (`_easing_matches`) that SQL can't express cleanly, so it is filtered in
+    Python alongside duration (tolerance band) and magnitude (range
+    containment) in `match_motion_shape()`."""
     path = db_path or DB_PATH
     conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     try:
@@ -705,9 +774,8 @@ def _query_candidate_rows(shape: dict, db_path: "str | None" = None) -> "list[di
             FROM {TABLE}
             WHERE animated_property = ?
               AND direction = ?
-              AND easing_curve = ?
             """,
-            (shape["animated_property"], shape["direction"], shape["easing_curve"]),
+            (shape["animated_property"], shape["direction"]),
         )
         return [dict(row) for row in cur.fetchall()]
     finally:
@@ -737,7 +805,8 @@ def match_motion_shape(shape: dict, db_path: "str | None" = None) -> "tuple[dict
     matches = [
         row
         for row in candidates
-        if _duration_within_tolerance(shape.get("duration_ms"), row["duration_ms"])
+        if _easing_matches(shape["easing_curve"], row["easing_curve"], row["preset_slug"])
+        and _duration_within_tolerance(shape.get("duration_ms"), row["duration_ms"])
         and row["magnitude_min"] <= shape["magnitude"] <= row["magnitude_max"]
     ]
     if len(matches) == 1:
