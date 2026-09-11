@@ -505,3 +505,93 @@ live writers per attribute is what `check-duplicate-controls.js` bans.
    `nav-drawer.closeStyle`'s own `burger-morph`). Per Part O the fix is to shorten the
    LABEL, never the stored value — `triggerMode`'s value is untouched. `check-enum-control-shape.py --check`
    passes: `588 enums, 486 skipped (blind spot), 29 violations (29 baselined, 0 new)`.
+
+---
+
+## Step 14a — `sgs/nav-drawer` close button mirrors the Menu Button (FR-41-12)
+
+| File | Lines | Shared components / helpers leaned on | Hand-rolled — and what was checked first |
+|---|---|---|---|
+| `src/blocks/nav-drawer/block.json` | 416 | — | Four values on `closeStyle` now, `closeLabel` + `closeIcon` added. Neither new attribute gets a JSON enum or a `supports.sgs.elements` member — they route no CSS property, so an element entry would be a phantom routing slot. |
+| `src/blocks/nav-drawer/render.php` | 870 | `sgs_nav_menu_icon_markup()` — the SAME source-aware resolver `sgs/icon` and `sgs/nav-menu`'s trigger both use | Nothing. ⛔ No bespoke lookup and no second hand-parsed `sgs_get_lucide_icon()` call. |
+| `src/blocks/nav-drawer/edit.js` | 879 | `IconPicker`, `ToggleGroupControl`/`Option`, `ToolsPanel`/`ToolsPanelItem`, native `TextControl` | Nothing. `SgsFreeTextField` checked and rejected — the open side's Label is a native `TextControl` and this mirrors it. **⚠ 879 lines, over the 250 budget — but it was 787 before this step: a pre-existing overage this step extends by 92 rather than creates. Not split here; splitting another block's editor is outside this step's one writable directory.** |
+| `src/blocks/nav-drawer/style.css` | 432 | — | One rule needed, and it was CHECKED not assumed — see below. |
+
+### The mirror is PARTIAL, and the divergence is the point
+
+`closeStyle` was NOT renamed or re-valued onto `triggerMode`. `separate-x` and `text-swap`
+ARE the same icon/text display axis, but **`burger-morph` is a GLYPH choice** — a CSS-drawn
+two-bar `<span>` reading as an ×, no icon and no text. A naive one-to-one rename would have
+**silently deleted a shipped look**. So the enum gained a FOURTH value, `icon-and-text`, in
+`block.json` and in `render.php::$sgs_nd_allowed_close_styles` **in the same commit** — one
+without the other coerces the stored value away with no error on either side.
+
+### The accessible name
+
+Under `text-swap` and `icon-and-text` the visible word IS the accessible name, so the
+`aria-label` is built as a VARIABLE and interpolated, mirroring the open side's
+`$burger_aria_attr`. ⛔ **When the operator's label resolves EMPTY the hardcoded
+`aria-label="Close menu"` survives** — `aria-label=""` is an empty accessible name, strictly
+worse than a mismatch, and it passes any check that only asks whether the attribute exists.
+Asserted in the code, not reasoned about: the two glyph-only styles and the empty-label case
+all keep the generic name.
+
+### `style.css` — checked before writing, and a rule WAS needed
+
+The existing `.sgs-nav-drawer--close-*` classes do not cover this. Base
+`.sgs-nav-drawer__close` is a 44px-min, zero-padding, centred inline-flex box **with no
+`gap`**, so the glyph and the word would sit flush inside a button too narrow for both.
+`--close-text-swap` supplies the width/padding but no gap, and is a DIFFERENT modifier class
+that never applies here. One rule added (width/padding/gap), plus a glyph wrapper and a 20px
+SVG size — 28px towers over 14px text and reads as an icon with a caption rather than one
+control.
+
+### Proofs
+
+```
+python -m json.tool block.json          -> exit 0
+block.json closeStyle.enum              -> ['separate-x','text-swap','burger-morph','icon-and-text']
+render.php $sgs_nd_allowed_close_styles -> array( 'separate-x', 'text-swap', 'burger-morph', 'icon-and-text' )
+php -l src/blocks/nav-drawer/render.php -> No syntax errors detected
+npx wp-scripts build                    -> compiled successfully
+check-dead-controls / check-duplicate-controls / audit-inline-styling /
+check-empty-inspector-containers / check-control-ux / inspector-scan  -> all RC=0
+check-enum-control-shape.py --check     -> PASS (588 enums, 29 violations, 29 baselined, 0 new)
+```
+
+**Byte-identity with `closeIcon` unset (the G15 shape), with a live negative control:**
+
+```
+BEFORE (hardcoded sgs_get_lucide_icon('x')) : 305 bytes
+AFTER  (resolver, closeIcon unset/default)  : 305 bytes
+md5 before = 222266f56aa158db7c3e46e9bfea410f
+md5 after  = 222266f56aa158db7c3e46e9bfea410f
+BYTE-IDENTICAL: YES
+NEGATIVE CONTROL (name:'menu' differs): YES (differs)
+```
+
+**`toggleCloseColour*` UNTOUCHED:** `git diff -- src/blocks/nav-drawer/` matches that family
+on exactly one line, and it is prose inside a new `_comment_` key. No attribute declaration,
+no `$close_colour_*` emission line and no control in it changed.
+
+**DB reseed (this is a SECOND block's manifest; step 10's reseed predates it):**
+`python plugins/sgs-blocks/scripts/sgs-update-v2.py` exit 0, then
+
+```
+attr_name   attr_type  default_value
+closeIcon   object     {"source": "lucide", "name": "x"}
+closeLabel  string     "Close"
+closeStyle  string     "separate-x"
+```
+
+No DB row was patched by hand. Also verified the two `_comment_*` manifest keys did NOT seed
+as attributes.
+
+### One residual, named
+
+The fourth option's LABEL ships as **"Both"**, not §9.3's "Icon and text". Measured: "Icon and
+text" is **13 characters**, over Spec 35 Part O's 12-character bound for a 2–4 option
+`ToggleGroupControl` — a bound derived from `burger-morph` on this very attribute. Part O's
+remedy is to shorten the LABEL; ⛔ the stored VALUE stays `icon-and-text` to match the open
+side's `triggerMode`. The same shortening was applied to `sgs/nav-menu`'s own "Show as"
+control in step 14, so the two sides read alike.

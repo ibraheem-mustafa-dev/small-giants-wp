@@ -362,6 +362,37 @@
 	letter-spacing: 0.05em;
 }
 
+/* ── `icon-and-text` (Spec 41 FR-41-12 / step 14a). CHECKED BEFORE WRITING: the
+   existing `--close-*` classes do NOT cover this. The base `.sgs-nav-drawer__close`
+   is a 44px-min, zero-padding, centred inline-flex box with no `gap`, so the glyph
+   and the word would sit flush against each other inside a button too narrow for
+   both. `--close-text-swap` sets the width/padding this needs but no gap, and it is
+   a DIFFERENT modifier class, so it never applies here. Hence one rule, sharing
+   text-swap's width/padding and adding the gap. ── */
+.sgs-nav-drawer--close-icon-and-text .sgs-nav-drawer__close {
+	width: auto;
+	min-width: 44px;
+	gap: 8px;
+	padding: 0 12px;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+}
+
+/* The glyph half. `display:flex` keeps the SVG optically centred against the word's
+   cap height rather than sitting on its baseline. */
+.sgs-nav-drawer--close-icon-and-text .sgs-nav-drawer__close-glyph {
+	display: flex;
+	align-items: center;
+}
+
+/* ⚠ 20px, not the base rule's 28px. At 28px the icon towers over 14px text and the
+   pair reads as an icon with a caption rather than one control. */
+.sgs-nav-drawer--close-icon-and-text .sgs-nav-drawer__close svg {
+	width: 20px;
+	height: 20px;
+}
+
 .sgs-nav-drawer--close-burger-morph .sgs-nav-drawer__close-bars {
 	position: relative;
 	display: block;

@@ -72,7 +72,7 @@ const BG_ATTACHMENT_OPTIONS = [
 ];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl,
+	SgsBorderControl, IconPicker,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle } from '../../utils';
@@ -136,6 +136,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		surfaceOpacity,
 		surfaceBlur,
 		closeStyle,
+		closeLabel,
+		closeIcon,
 		animateFrom,
 		modality,
 		drawerBg,
@@ -323,7 +325,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							anchor: {},
 							panelSize: {},
 							animateFrom: 'auto',
-							closeStyle: 'separate-x',
 							submenuModel: 'accordion',
 							modality: 'modal',
 						} )
@@ -474,29 +475,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-					</ToolsPanelItem>
-
-					<ToolsPanelItem
-						label={ __( 'Close button style', 'sgs-blocks' ) }
-						hasValue={ () => closeStyle !== 'separate-x' }
-						onDeselect={ () => setAttributes( { closeStyle: 'separate-x' } ) }
-					>
-						<ToggleGroupControl
-							label={ __( 'Close button style', 'sgs-blocks' ) }
-							help={ __(
-								'How the always-present close control is drawn. The close button itself can never be deleted.',
-								'sgs-blocks'
-							) }
-							value={ closeStyle }
-							onChange={ ( value ) => setAttributes( { closeStyle: value || 'separate-x' } ) }
-							isBlock
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						>
-							<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
-							<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
-						</ToggleGroupControl>
 					</ToolsPanelItem>
 
 					<ToolsPanelItem
@@ -735,15 +713,119 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				<PanelBody title={ __( 'Close button', 'sgs-blocks' ) } initialOpen={ false }>
-					{ /* Close icon colour moved to the top-level SgsColourPanel (D618/D621). */ }
+				{ /* Spec 41 FR-41-12 / step 14a — the close button now offers the same
+				   three things the OPEN side does: a chosen icon, a chosen word, and
+				   both together. Converted from a plain PanelBody to a ToolsPanel so
+				   the `closeStyle` row keeps the hasValue/onDeselect idiom it had in
+				   "Drawer Settings", which is where it used to live — it moves here so
+				   the trio sits together, in §9.3's order, rather than one control
+				   being two panels away from the other two.
+				   ⛔ Close icon COLOUR is not here: it is a row in the top-level
+				   SgsColourPanel (D618/D621), and is untouched by this step. */ }
+				<ToolsPanel
+					label={ __( 'Close button', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							closeStyle: 'separate-x',
+							closeLabel: 'Close',
+							closeIcon: { source: 'lucide', name: 'x' },
+						} )
+					}
+				>
+					{ /* ⛔ OMIT, never disable (D609 field 9c). Under `text-swap` there is
+					   no icon and under `burger-morph` the glyph is a CSS-drawn two-bar
+					   span, not an icon at all — so the picker is ABSENT in both, never
+					   greyed out. */ }
+					{ ( 'separate-x' === ( closeStyle || 'separate-x' ) ||
+						'icon-and-text' === closeStyle ) && (
+						<ToolsPanelItem
+							label={ __( 'Icon', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! closeIcon &&
+								( closeIcon.source !== 'lucide' || closeIcon.name !== 'x' )
+							}
+							onDeselect={ () =>
+								setAttributes( { closeIcon: { source: 'lucide', name: 'x' } } )
+							}
+						>
+							<IconPicker
+								label={ __( 'Icon', 'sgs-blocks' ) }
+								value={ closeIcon || { source: 'lucide', name: 'x' } }
+								onChange={ ( next ) => setAttributes( { closeIcon: next } ) }
+							/>
+						</ToolsPanelItem>
+					) }
+
+					<ToolsPanelItem
+						label={ __( 'Show as', 'sgs-blocks' ) }
+						hasValue={ () => closeStyle !== 'separate-x' }
+						onDeselect={ () => setAttributes( { closeStyle: 'separate-x' } ) }
+					>
+						{ /* ⚠ FOUR values, and `burger-morph` is NOT a display mode — it is
+						   a GLYPH choice (a CSS-drawn two-bar span, no icon and no text).
+						   That is why this enum was EXTENDED rather than re-valued onto
+						   sgs/nav-menu's three-value triggerMode: a naive one-to-one
+						   rename would silently delete a shipped look.
+						   ⚠ The fourth LABEL is "Both", not "Icon and text". Measured:
+						   "Icon and text" is 13 characters, over Spec 35 Part O's
+						   12-character bound for a 2-4 option ToggleGroupControl (a bound
+						   derived from `burger-morph` on this very attribute). Part O's
+						   remedy is to shorten the LABEL — ⛔ never the stored VALUE, which
+						   stays `icon-and-text` to match the open side's triggerMode. */ }
+						<ToggleGroupControl
+							label={ __( 'Show as', 'sgs-blocks' ) }
+							help={ __(
+								'How the always-present close control is drawn. The close button itself can never be deleted.',
+								'sgs-blocks'
+							) }
+							value={ closeStyle }
+							onChange={ ( value ) =>
+								setAttributes( { closeStyle: value || 'separate-x' } )
+							}
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption value="separate-x" label={ __( '× icon', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="text-swap" label={ __( '“Close” text', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="burger-morph" label={ __( 'Morphed icon', 'sgs-blocks' ) } />
+							<ToggleGroupControlOption value="icon-and-text" label={ __( 'Both', 'sgs-blocks' ) } />
+						</ToggleGroupControl>
+					</ToolsPanelItem>
+
+					{ ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) && (
+						<ToolsPanelItem
+							label={ __( 'Label', 'sgs-blocks' ) }
+							hasValue={ () => 'Close' !== ( closeLabel ?? 'Close' ) }
+							onDeselect={ () => setAttributes( { closeLabel: 'Close' } ) }
+						>
+							{ /* ⛔ A native TextControl, not SgsFreeTextField — matching the
+							   open side's Label field. ⚠ Clearing this does NOT leave the
+							   button nameless: render.php keeps the generic "Close menu"
+							   accessible name when the word is empty, because an
+							   aria-label="" is an EMPTY accessible name, which is strictly
+							   worse than a mismatched one. */ }
+							<TextControl
+								label={ __( 'Label', 'sgs-blocks' ) }
+								value={ closeLabel ?? 'Close' }
+								onChange={ ( value ) => setAttributes( { closeLabel: value } ) }
+								help={ __(
+									'The word shown on the button. It is also what a screen reader announces — leave it empty and the button falls back to “Close menu”.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+					) }
+
 					<p style={ { fontSize: '12px', color: '#757575', margin: '4px 0 0' } }>
 						{ __(
-							'Leave empty to match the drawer’s text colour automatically. The × is always present — it cannot be deleted.',
+							'Its colour is in the Colour panel above — leave that empty to match the drawer’s text colour automatically. The close button is always present; it cannot be deleted.',
 							'sgs-blocks'
 						) }
 					</p>
-				</PanelBody>
+				</ToolsPanel>
 
 				<PanelBody title={ __( 'Content', 'sgs-blocks' ) } initialOpen={ false }>
 					<p style={ { fontSize: '12px', color: '#757575', margin: 0 } }>
@@ -767,7 +849,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				>
 					{ closeStyle === 'text-swap' && (
 						<span className="sgs-nav-drawer__close-text">
-							{ __( 'Close', 'sgs-blocks' ) }
+							{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 						</span>
 					) }
 					{ closeStyle === 'burger-morph' && (
@@ -775,6 +857,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							<span></span>
 							<span></span>
 						</span>
+					) }
+					{ closeStyle === 'icon-and-text' && (
+						<>
+							<span className="sgs-nav-drawer__close-glyph">
+								<Icon icon={ close } />
+							</span>
+							<span className="sgs-nav-drawer__close-text">
+								{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
+							</span>
+						</>
 					) }
 					{ ( ! closeStyle || closeStyle === 'separate-x' ) && (
 						<Icon icon={ close } />

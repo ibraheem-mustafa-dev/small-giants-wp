@@ -44,6 +44,14 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-wcag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+// ⚠ The source-aware icon resolver sgs/icon and sgs/nav-menu's trigger both use.
+// It lives in includes/nav-menu-treatments.php, which is require_once'd PER-INSTANCE
+// from sgs/nav-menu's own render.php rather than at plugin bootstrap -- so its
+// functions are NOT in scope just because that block exists on the page, and a drawer
+// can render on a page with no nav-menu at all. Requiring it here is what stops this
+// call fatalling for a reason nobody would find; the file's own function_exists()
+// guards make the double require_once free.
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (for free-text keyword attrs
 // concatenated into raw CSS inside the scoped <style>). Mirrors sgs/hero.
@@ -659,7 +667,11 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 // block; nothing in this file depends on the answer.
 //
 // The × button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
-$sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph' );
+// Spec 41 FR-41-12 / step 14a: `icon-and-text` is the FOURTH value.
+// ⛔ THIS LIST AND block.json::attributes.closeStyle.enum MUST AGREE, ALWAYS.
+// A value one side accepts and the other rejects coerces the stored value away
+// with NO error on either side, so the operator's choice vanishes silently.
+$sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph', 'icon-and-text' );
 $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-x', $sgs_nd_allowed_close_styles, true )
 	? (string) $attributes['closeStyle']
 	: 'separate-x';
@@ -714,17 +726,70 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 // construction. data-sgs-nav-close is wired imperatively by the store on open.
 // 44px target + accessible name + visible focus (style.css). It is DOM-first so
 // the store's focus-into lands on a reliable close affordance.
+// ⚠ The operator's word, trimmed. An empty value is NOT an empty label -- see
+// the aria-label note below, which is the whole reason this is resolved first.
+$sgs_nd_close_label = trim( (string) ( $attributes['closeLabel'] ?? '' ) );
+
+// ⛔ Resolved through the SAME source-aware resolver sgs/icon and sgs/nav-menu's
+// trigger both use -- never a bespoke lookup, and never a second hand-parsed call
+// to sgs_get_lucide_icon(). The declared default { lucide, x } therefore renders
+// byte-identically to the hardcoded sgs_get_lucide_icon( 'x' ) this replaces.
+$sgs_nd_close_icon = sgs_nav_menu_icon_markup(
+	$attributes['closeIcon'] ?? null,
+	array(
+		'source' => 'lucide',
+		'name'   => 'x',
+	)
+);
+
+$sgs_nd_close_text = sprintf(
+	'<span class="sgs-nav-drawer__close-text">%s</span>',
+	'' !== $sgs_nd_close_label
+		? esc_html( $sgs_nd_close_label )
+		: esc_html__( 'Close', 'sgs-blocks' )
+);
+
 if ( 'text-swap' === $sgs_nd_close_style ) {
-	$sgs_nd_close_inner = '<span class="sgs-nav-drawer__close-text">' . esc_html__( 'Close', 'sgs-blocks' ) . '</span>';
+	$sgs_nd_close_inner = $sgs_nd_close_text;
 } elseif ( 'burger-morph' === $sgs_nd_close_style ) {
 	$sgs_nd_close_inner = '<span class="sgs-nav-drawer__close-bars" aria-hidden="true"><span></span><span></span></span>';
+} elseif ( 'icon-and-text' === $sgs_nd_close_style ) {
+	// Icon first, then the word -- matching the open side. The glyph is
+	// aria-hidden because the word beside it already carries the accessible name;
+	// announcing both would read the button twice.
+	$sgs_nd_close_inner = sprintf(
+		'<span class="sgs-nav-drawer__close-glyph" aria-hidden="true">%s</span>%s',
+		$sgs_nd_close_icon,
+		$sgs_nd_close_text
+	);
 } else {
-	$sgs_nd_close_inner = sgs_get_lucide_icon( 'x' ); // Trusted Lucide SVG markup.
+	$sgs_nd_close_inner = $sgs_nd_close_icon; // Trusted resolver markup.
 }
+
+/*
+ * The accessible name. Under `text-swap` and `icon-and-text` the VISIBLE word IS
+ * the accessible name, so an aria-label saying something else breaks WCAG SC 2.5.3
+ * Label in Name -- a voice-control user says what they can see and nothing happens.
+ * The attribute is therefore built as a VARIABLE and interpolated, exactly as the
+ * open side's $burger_aria_attr does.
+ *
+ * ⛔ BUT WHEN THE OPERATOR'S LABEL IS EMPTY, THE HARDCODED aria-label SURVIVES.
+ * Emitting aria-label="" is an EMPTY ACCESSIBLE NAME -- strictly worse than a
+ * mismatch, and it passes any check that only asks whether the attribute exists.
+ * This is asserted, not reasoned about: the two glyph-only styles and the
+ * empty-label case all keep the generic name.
+ */
+$sgs_nd_close_visible_word = in_array( $sgs_nd_close_style, array( 'text-swap', 'icon-and-text' ), true )
+	? $sgs_nd_close_label
+	: '';
+$sgs_nd_close_aria_attr    = '' !== $sgs_nd_close_visible_word
+	? sprintf( ' aria-label="%s"', esc_attr( $sgs_nd_close_visible_word ) )
+	: sprintf( ' aria-label="%s"', esc_attr__( 'Close menu', 'sgs-blocks' ) );
+
 $close_html = sprintf(
-	'<button type="button" class="sgs-nav-drawer__close" data-sgs-nav-close aria-label="%s">%s</button>',
-	esc_attr__( 'Close menu', 'sgs-blocks' ),
-	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text-swap) or trusted static markup (burger-morph spans / Lucide SVG).
+	'<button type="button" class="sgs-nav-drawer__close" data-sgs-nav-close%s>%s</button>',
+	$sgs_nd_close_aria_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr()/esc_attr__() applied when the segment was built.
+	$sgs_nd_close_inner // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() applied above (text paths) or trusted static markup (burger-morph spans / resolver SVG).
 );
 
 // Spec 35 item 18 — the visually-hidden note the aria-describedby above

@@ -202,14 +202,28 @@
 			"type": "string",
 			"default": ""
 		},
+		"_comment_closeStyle": "Spec 41 FR-41-12 / step 14a: `icon-and-text` is a FOURTH value, ADDED rather than a rename. `separate-x` and `text-swap` are the icon/text DISPLAY axis and do mirror sgs/nav-menu's triggerMode, but `burger-morph` is a GLYPH choice (a CSS-drawn two-bar span, no icon and no text), so re-valuing this enum onto triggerMode's three values would silently delete a shipped look. This enum is REAL and pre-existing; it stays. Its PHP twin is render.php::$sgs_nd_allowed_close_styles and BOTH lists must carry all four values -- a value one side accepts and the other rejects coerces silently, with no error on either side.",
 		"closeStyle": {
 			"type": "string",
 			"default": "separate-x",
 			"enum": [
 				"separate-x",
 				"text-swap",
-				"burger-morph"
+				"burger-morph",
+				"icon-and-text"
 			]
+		},
+		"_comment_closeLabel_closeIcon": "Spec 41 FR-41-12 / step 14a -- the close button's word and glyph, mirroring sgs/nav-menu's triggerLabel / triggerIcon. NEITHER gets a JSON enum (closeLabel is free text; closeIcon is an object), and NEITHER gets a supports.sgs.elements member: they route no CSS property, so an element entry would be a phantom routing slot -- the same ruling Spec 41 section 8.6(e) makes for triggerMode/triggerLabel. The close button's COLOUR is already wired via toggleCloseColour / toggleCloseColourHover / toggleCloseColourGradient on the `close` element and is untouched by this step.",
+		"closeLabel": {
+			"type": "string",
+			"default": "Close"
+		},
+		"closeIcon": {
+			"type": "object",
+			"default": {
+				"source": "lucide",
+				"name": "x"
+			}
 		},
 		"animateFrom": {
 			"type": "string",
