@@ -70,6 +70,7 @@
 					"attrMap": {
 						"css:gap": "gap",
 						"css:grid-template-columns": "gridTemplateColumns",
+						"css:grid-template-columns:count": "columns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
 						"css:align-items": "alignItems",
