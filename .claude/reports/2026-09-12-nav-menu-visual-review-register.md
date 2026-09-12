@@ -549,7 +549,47 @@ committed to `main`:
 - **L1** — mirror the now-complete burger typography onto the nav-drawer close button. Proposal exists (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`), not yet dispatched (ran out of session context). Low-risk, same mechanical pattern as the burger fix — safe to pick up first next session.
 - **G6 (drawerRef collision)** — real architectural gap, proposal exists in cluster5's doc, needs Bean's sign-off on the collision-detection approach before building (touches block editor uid-generation patterns).
 - **Orphaned palette slug** — framework-wide (335 call sites, 73 files), needs Bean's sign-off on the fallback approach before touching `sgs_colour_value()`.
-- **E2 (state-hierarchy propagation)** — genuinely new feature, needs Bean's decision on the propagated-state visual treatment before any code is written.
+
+## E1 (drawer symptoms 2/3) + E2 — SHIPPED (2026-09-12, commit `daa87be8d`)
+
+Following the `.claude/verify/nav-review-e1-drawer-submenu-investigation.md` root-cause pass
+(three E1-drawer symptoms) and Bean's simplified E2 design (reuse the LITERAL existing
+Current-page declarations on the ancestor, no new visual language):
+
+- **E1 Symptom 1 (submenu hover has no default text-colour)** — investigated and NOT
+  implemented as originally briefed. FR-41-36 (owner-ruled, locked 2026-09-11) explicitly
+  states the desktop submenu's Hover state is bg-tint-only (`accent-light`), with text
+  colour staying at its Normal default — confirmed independently by `block.json`'s own
+  comment on `submenuLinkBgHover`. Mirroring the item family's `accent` hover-text default
+  onto the submenu would have directly violated that locked decision. Flagged back to the
+  coordinator rather than shipped; needs Bean's explicit call if the locked scheme itself is
+  to change.
+- **E1 Symptom 2 (current beats hover on submenu rows, backwards from the item family)** —
+  FIXED. The `[aria-current="page"]` colour rule now emits before the Hover rule in
+  `nav-menu-submenu-css.php`, matching `nav-menu-css.php`'s own documented tie-break order.
+- **E1 Symptom 3 (drawer submenu colour defaults predate this session's decisions)** —
+  PARTIALLY addressed. The panel's own background fallback now resolves to the FR-41-36
+  `surface` token instead of an ad-hoc `color-mix` tint. The sublink text `color:inherit`
+  override was investigated and deliberately KEPT (not changed): it already matches the
+  bar's own item-text default (both currently rely on ambient inheritance, not an explicit
+  token), and this file has no access to the drawer's own `drawerBg` attribute to safely
+  resolve a literal token instead — implementing FR-41-36's full `primary` token everywhere
+  is separate, larger, cross-file future work the spec itself marks "not yet built."
+- **E2 (state-hierarchy propagation)** — SHIPPED, per Bean's simplified design (no new
+  visual language). A parent nav item now shows the literal existing Current-page
+  declarations (text colour / background / border-colour / font-weight) when its own
+  submenu contains the current page, via a `:has()` selector extending the FR-41-13
+  pattern, guarded with `:not(:hover):not(:focus-visible)` so a direct hover on the parent
+  always wins (verified by specificity: the propagation selector out-specifies plain
+  `:hover`, so the guard — not source order — is what makes hover win). The submenu
+  current-colour fallback token was also softened from `primary-dark` to `primary` (not
+  FR-41-36-locked) so propagation doesn't paint a heavier-than-normal colour in more places.
+
+Not live-verified this pass: `run-gates.py --tier fast` was blocked by unrelated,
+genuinely in-progress uncommitted work on `sgs/nav-drawer` (another session's WIP — see
+`C:/Users/Bean/.claude/memory/learning/2026-09-12-payload-must-not-bundle-a-siblings-unsigned-off-work.md`
+for the standing rule this follows). Source changes are `php -l` syntax-clean and committed
+to `main`, but not yet built/deployed/screenshot-verified on the live canary.
 
 **Left running in the background at session end, status unknown:** none — all 6 Wave 2 implementation agents either completed and committed, or (L1) were never dispatched. Nothing is mid-flight.
 
