@@ -77,7 +77,7 @@ import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourP
 	SgsBorderControl, IconPicker, TypographyControls,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { resolveTextColourPreviewStyle } from '../../utils';
+import { resolveTextColourPreviewStyle, typographyPreviewStyle } from '../../utils';
 
 /**
  * Content template: menu + (optional) logo + (optional) CTA. templateLock:false.
@@ -309,6 +309,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		backgroundImage?.url && ! ( backgroundImageDecorative ?? true ) && backgroundImage.alt
 			? { 'aria-describedby': `${ drawerRef || 'sgs-nav-drawer' }-bg-note` }
 			: {};
+
+	// Close-LABEL typography canvas mirror (2026-09-13). The close-text span
+	// below is hand-authored JSX, not a render.php-rendered node (this block
+	// hosts editable InnerBlocks so cannot use <ServerSideRender> for its whole
+	// canvas — see the module docstring), so render.php's scoped closeFontSize/
+	// closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing
+	// <style> never reaches it; the canvas showed the browser default
+	// regardless of what the Typography panel had set.
+	//
+	// closeTextTransform's untouched DEFAULT differs by closeStyle
+	// (text-swap: uppercase; icon-and-text: none) — resolved here exactly as
+	// render.php:719-720 resolves it, so an untouched instance's canvas
+	// matches the untouched instance's frontend, not just an edited one.
+	const closeTypographyAttrs = attributes.closeTextTransform
+		? attributes
+		: {
+				...attributes,
+				closeTextTransform: 'text-swap' === closeStyle ? 'uppercase' : '',
+		  };
+	const closeLabelStyle = typographyPreviewStyle( closeTypographyAttrs, 'close' );
 
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php:456 -- without it,
@@ -989,7 +1009,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					} }
 				>
 					{ closeStyle === 'text-swap' && (
-						<span className="sgs-nav-drawer__close-text">
+						<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
 							{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 						</span>
 					) }
@@ -1004,7 +1024,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<span className="sgs-nav-drawer__close-glyph">
 								<Icon icon={ close } />
 							</span>
-							<span className="sgs-nav-drawer__close-text">
+							<span className="sgs-nav-drawer__close-text" style={ closeLabelStyle }>
 								{ closeLabel ?? __( 'Close', 'sgs-blocks' ) }
 							</span>
 						</>

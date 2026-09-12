@@ -12,6 +12,7 @@ export * from './grid-layout-preview';
 export * from './wcag-contrast';
 export * from './generateItemKey';
 export * from './patch-tier';
+export * from './typography-preview';
 
 // Editor SVG sanitiser - mirrors the server's wp_kses() allowlist so
 // operator-supplied SVG is never mounted raw in the editor.
