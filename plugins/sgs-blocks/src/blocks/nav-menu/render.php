@@ -633,6 +633,15 @@ $burger_icon = 'text' === $trigger_mode
 		)
 	);
 
+/*
+ * G4 — is the resolved glyph the UNMODIFIED default ({source:lucide,name:menu})?
+ * Gates the burger↔X morph markup in sgs_nav_menu_burger_toggle_markup(): a
+ * custom triggerIcon (G3) can be any glyph shape with no guaranteed 3-line
+ * structure, so it must keep rendering its own resolved markup untouched.
+ */
+$burger_icon_is_default = 'lucide' === (string) ( $attributes['triggerIcon']['source'] ?? 'lucide' )
+	&& 'menu' === (string) ( $attributes['triggerIcon']['name'] ?? 'menu' );
+
 $burger_aria_attr = 'icon' === $trigger_mode
 	? sprintf( ' aria-label="%s"', esc_attr__( 'Open menu', 'sgs-blocks' ) )
 	: '';
@@ -670,7 +679,8 @@ $toggle_html = sgs_nav_menu_burger_toggle_markup(
 	$trigger_mode,
 	$trigger_label,
 	$burger_aria_attr,
-	$burger_magnet_attrs
+	$burger_magnet_attrs,
+	$burger_icon_is_default
 );
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────

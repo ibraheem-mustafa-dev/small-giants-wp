@@ -469,9 +469,14 @@ if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
 	 * @param string $trigger_label       The visible word, used by `text`/`icon-and-text`.
 	 * @param string $aria_attr           Pre-built ` aria-label="…"` segment, or '' to omit it.
 	 * @param string $magnet_attrs        Pre-built ` data-sgs-fx…` segment, or '' (FR-41-31).
+	 * @param bool   $is_default_icon     True when `triggerIcon` is unset/the stored default
+	 *                                     (`{source:lucide,name:menu}`) — gates the G4 burger↔X
+	 *                                     morph markup. A custom `triggerIcon` (G3) keeps
+	 *                                     rendering `$burger_icon` untouched (no morph, since a
+	 *                                     morph has no well-defined shape for an arbitrary glyph).
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '' ): string {
+	function sgs_nav_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -491,14 +496,28 @@ if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
 
 		$icon_html = '';
 		if ( 'text' !== $trigger_mode && '' !== $burger_icon ) {
-			// ⚠ Under `icon-and-text` a real visible word names the button, so the
-			// glyph is decorative — the same convention this file already applies
-			// to `.sgs-nav-menu__sublink-marker` and `.sgs-nav-menu__caret`. Under
-			// `icon` the SVG is the only content and the button's own aria-label
-			// names it, so it is emitted bare — byte-identical to pre-0.4.x output.
-			$icon_html = 'icon' === $trigger_mode
-				? $burger_icon
-				: '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
+			if ( $is_default_icon ) {
+				// G4 — the unmodified default glyph is restructured into three real
+				// `<span>` bars (not the resolved SVG's `<path>` elements) so the
+				// CSS-only burger↔X morph in style.css has genuine independently-
+				// animatable structure to work with. Always wrapped (both `icon`
+				// and `icon-and-text`) — unlike the custom-icon branch below, this
+				// is new-feature markup, not a byte-identical-preservation case.
+				$icon_html = '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">'
+					. str_repeat( '<span class="sgs-nav-menu__burger-bar"></span>', 3 )
+					. '</span>';
+			} else {
+				// ⚠ Under `icon-and-text` a real visible word names the button, so the
+				// glyph is decorative — the same convention this file already applies
+				// to `.sgs-nav-menu__sublink-marker` and `.sgs-nav-menu__caret`. Under
+				// `icon` the SVG is the only content and the button's own aria-label
+				// names it, so it is emitted bare — byte-identical to pre-0.4.x output.
+				// A custom `triggerIcon` (G3) never morphs — an arbitrary glyph has no
+				// well-defined 3-bar shape (Spec 41 G4 scope boundary, disclosed).
+				$icon_html = 'icon' === $trigger_mode
+					? $burger_icon
+					: '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
+			}
 		}
 
 		$text_html = 'icon' === $trigger_mode

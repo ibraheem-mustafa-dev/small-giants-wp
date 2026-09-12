@@ -239,6 +239,76 @@
 	width: 24px;
 }
 
+/*
+ * G2 — `icon-and-text` mode: the icon belongs on the RIGHT of the label, not
+ * the left (Bean: no convention in the wild puts it left). `.sgs-nav-menu__burger`
+ * is already `display:flex` (above) with no `flex-direction`/`order` override,
+ * so DOM order alone was deciding visual order — this is a pure visual reorder
+ * via `order`, DOM order (and therefore reading/tab order) is unchanged.
+ */
+.sgs-nav-menu__burger--icon-and-text .sgs-nav-menu__burger-icon {
+	order: 2;
+}
+
+.sgs-nav-menu__burger--icon-and-text .sgs-nav-menu__burger-text {
+	order: 1;
+}
+
+/*
+ * G4 — burger↔X morph. Only the DEFAULT (unmodified) trigger glyph is
+ * restructured into three real `<span>` bars by
+ * `sgs_nav_menu_burger_toggle_markup()` (nav-menu-markup.php) — a custom
+ * `triggerIcon` (G3) keeps rendering its own resolved SVG/glyph untouched, with
+ * no morph, since a morph has no well-defined shape for an arbitrary glyph.
+ * `currentColor` inherits the existing `burgerColour` mechanism for free; no
+ * new attribute needed. Driven entirely by the EXISTING
+ * `data-wp-bind--aria-expanded="state.isOpen"` binding — zero new JS.
+ */
+.sgs-nav-menu__burger-icon:has(.sgs-nav-menu__burger-bar) {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+/* Zero-specificity overridable defaults — mirrors
+   `:where(.sgs-nav-menu__burger svg)` above (glyph size is not `burgerSize`,
+   which governs the 44px touch-target; :where() means it never masks a future
+   attr-driven rule for this element). */
+:where(.sgs-nav-menu__burger-icon:has(.sgs-nav-menu__burger-bar)) {
+	width: 24px;
+	height: 18px;
+}
+
+.sgs-nav-menu__burger-bar {
+	display: block;
+	width: 100%;
+	background: currentColor;
+	border-radius: 1px;
+	transition: transform 200ms ease, opacity 200ms ease;
+}
+
+:where(.sgs-nav-menu__burger-bar) {
+	height: 2px;
+}
+
+.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(1) {
+	transform: translateY(8px) rotate(45deg);
+}
+
+.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(2) {
+	opacity: 0;
+}
+
+.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(3) {
+	transform: translateY(-8px) rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__burger-bar {
+		transition-duration: 0.01ms;
+	}
+}
+
 @supports not (background-color: color-mix(in srgb, currentColor 8%, transparent)) {
 	.sgs-nav-menu__burger:hover,
 	.sgs-nav-menu__burger:focus-visible {
