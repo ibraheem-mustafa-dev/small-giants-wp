@@ -542,13 +542,15 @@ committed to `main`:
 | `8f9b25c1d` | H1 sweep/dashed-border eligibility gate, J1-J3 burger typography wiring, D3/F1 sensible defaults, C1 item-border defaults |
 | `154ef2f54` | Burger font-size/font-family inheritance companion fix (a gap `8f9b25c1d` disclosed rather than silently claimed fixed) |
 | `e73c91dff` | K1 drawer-close scroll-jank fix |
+| `74121a5f1` | G6 (drawerRef collision) — see below; note the commit MESSAGE covers a different, concurrently-landed feature (close-button typography/size controls) because both changes reached the same file (`nav-drawer/edit.js`) before either was committed on this shared worktree, and this code got swept in under that commit rather than its own. Content verified intact (`git show 74121a5f1 -- plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`). |
 
 **M3 — corrected to NOT A BUG** after three investigation passes (see above); no fix shipped, none needed.
 
+**G6 (drawerRef collision) — SHIPPED (2026-09-12, commit `74121a5f1`, live-verified).** Per Bean's approval of "auto-rename silently on detected collision" (cluster5 architecture doc): `nav-drawer/edit.js` now runs a `useEffect`/`useSelect` on mount that detects (a) another `sgs/nav-drawer` block in the SAME post already resolving to this block's effective ref (renames only the later of the pair, so a header pattern's original zero-config drawer is never rewritten), and (b) this block's ref colliding with `window.sgsBlocksData.activeDrawer` (the site's real Active header drawer) when this post is NOT that drawer's own post. `block.json`'s shared default `'sgs-nav-drawer'` is untouched. Live-verified: created test page 3522 with two blank `sgs/nav-drawer` blocks, both auto-renamed to unique `sgs-nav-drawer-<clientId8>` values within one re-render (confirmed via `wp.data.select('core/block-editor')`), persisted correctly on save (`wp post get 3522` shows `drawerRef:"sgs-nav-drawer-e15946d1"` / `"sgs-nav-drawer-5ecef158"`), zero console errors. Regression check: the live homepage's real burger still opens `dialog#sgs-nav-drawer` (the unmodified default) correctly — the 9 shipped zero-config header patterns are unaffected.
+
 **Still open, deliberately NOT implemented — need Bean's decision, not more investigation:**
 - **L1** — mirror the now-complete burger typography onto the nav-drawer close button. Proposal exists (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`), not yet dispatched (ran out of session context). Low-risk, same mechanical pattern as the burger fix — safe to pick up first next session.
-- **G6 (drawerRef collision)** — real architectural gap, proposal exists in cluster5's doc, needs Bean's sign-off on the collision-detection approach before building (touches block editor uid-generation patterns).
-- **Orphaned palette slug** — framework-wide (335 call sites, 73 files), needs Bean's sign-off on the fallback approach before touching `sgs_colour_value()`.
+- **Orphaned palette slug** — framework-wide (335 call sites, 73 files), needs Bean's sign-off on the fallback approach before touching `sgs_colour_value()`. Note: an uncommitted fix to `sgs_colour_value()` (adding a `currentColor` fallback) was observed mid-edit on the shared worktree during this task, unrelated to it.
 
 ## E1 (drawer symptoms 2/3) + E2 — SHIPPED (2026-09-12, commit `daa87be8d`)
 
