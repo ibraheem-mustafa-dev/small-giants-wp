@@ -40,6 +40,18 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	$css      = '';
 	$link_sel = $uid_sel . ' .sgs-nav-menu__link';
 
+	/*
+	 * Wave 2 cluster 3 (M4/M2/M6, 2026-09-12) — `.sgs-nav-menu__link` (the <a>)
+	 * and `.sgs-nav-menu__subtoggle` (the <button> containing
+	 * `.sgs-nav-menu__caret > svg`) are DOM SIBLINGS under one shared parent
+	 * (`.sgs-nav-menu__submenu-root`), never an ancestor/descendant pair — CSS
+	 * cannot select a sibling's sibling by value. `$caret_svg_sel` is the
+	 * companion selector every item TEXT-colour rule below pairs alongside
+	 * `$link_sel` so the caret's `stroke="currentColor"` glyph tracks the
+	 * item's own colour instead of the ambient/theme default.
+	 */
+	$caret_svg_sel = $uid_sel . ' .sgs-nav-menu__caret svg';
+
 	// ⛔ The RESOLVED treatment, never the stored attribute. render.php resolves
 	// it once (sgs_nav_menu_resolved_treatments()) immediately after the
 	// eligibility evaluation; every rule below reads THAT value.
@@ -50,6 +62,66 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// 4a. Item typography — flat scalar model, shared helper (matches
 	// TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
+
+	/*
+	 * Wave 2 M6 (2026-09-12) — caret oversize. `.sgs-nav-menu__caret svg` has no
+	 * font-size of its own to run `width:1em;height:1em` against (the sibling
+	 * rule nav-menu-submenu-css.php emits) — it falls back to the browser's UA
+	 * button-reset default. nav-menu-submenu-css.php's own `.sgs-nav-menu__
+	 * subtoggle` rule already carries `font:inherit` FOR THIS EXACT PURPOSE (its
+	 * own "M6 precondition" comment), which means the resolved size must live on
+	 * an ANCESTOR the button can inherit from — `.sgs-nav-menu__submenu-root`,
+	 * confirmed live: an explicit `font-size` on `.subtoggle` itself is a
+	 * same-specificity sibling to that `font:inherit` shorthand and LOSES to it
+	 * by source order (nav-menu-submenu-css.php concatenates after this file).
+	 *
+	 * Deliberately font-size ONLY — the low-level responsive emitters, not the
+	 * full `sgs_typography_css_rule()` wrapper. `.submenu-root` is also the
+	 * parent of the mega/dropdown PANEL (`[data-sgs-mega-panel]`), so cascading
+	 * the FULL typography set (font-family/weight/line-height/text-align) there
+	 * would restyle rich panel content that was never in scope for a caret-sizing
+	 * fix. Font-size alone is safe: `.sgs-nav-menu__sublink` already carries its
+	 * own explicit `submenuFontSize` rule (nav-menu-submenu-css.php) which wins
+	 * over this inherited value for the one thing panel content actually reads
+	 * font-size for.
+	 */
+	$submenu_root_sel      = $uid_sel . ' .sgs-nav-menu__submenu-root';
+	$item_size_attr        = $attributes['itemFontSize'] ?? null;
+	if ( is_array( $item_size_attr ) ) {
+		$item_size_unit_set = isset( $attributes['itemFontSizeUnit'] ) && '' !== $attributes['itemFontSizeUnit'];
+		$item_size_unit     = $item_size_unit_set ? sgs_responsive_sanitise_unit( $attributes['itemFontSizeUnit'] ) : 'px';
+		$css               .= sgs_emit_responsive_css(
+			$submenu_root_sel,
+			array(
+				array(
+					'value'        => $item_size_attr,
+					'css'          => 'font-size',
+					'unit_default' => $item_size_unit,
+					'transform'    => function ( $raw ) use ( $item_size_unit ) {
+						if ( is_numeric( $raw ) ) {
+							return (string) floatval( $raw ) . $item_size_unit;
+						}
+						return sgs_font_size_value( (string) $raw );
+					},
+				),
+			)
+		);
+	} elseif ( isset( $attributes['itemFontSize'] ) && '' !== $attributes['itemFontSize'] && is_numeric( $attributes['itemFontSize'] ) ) {
+		$css .= sgs_responsive_css_rule(
+			$attributes,
+			array(
+				array(
+					'attr'         => 'itemFontSize',
+					'css'          => 'font-size',
+					'unit_attr'    => isset( $attributes['itemFontSizeUnit'] ) && '' !== $attributes['itemFontSizeUnit'] ? 'itemFontSizeUnit' : '',
+					'unit_default' => 'px',
+					'tablet_attr'  => 'itemFontSizeTablet',
+					'mobile_attr'  => 'itemFontSizeMobile',
+				),
+			),
+			$submenu_root_sel
+		);
+	}
 
 	/*
 	 * 4a-ii. Nav CONTAINER appearance.
@@ -194,6 +266,22 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	$item_colour_hover   = isset( $attributes['itemColourHover'] ) ? (string) $attributes['itemColourHover'] : '';
 	$item_colour_current = isset( $attributes['itemColourCurrent'] ) ? (string) $attributes['itemColourCurrent'] : '';
 
+	// Wave 2 E1 (2026-09-12) / FR-41-36 locked default ("Top bar | Hover |
+	// text=accent"). An operator who never touches itemColourHover previously
+	// relied on WordPress core's own ambient `:root :where(a:hover)` rule —
+	// ZERO specificity, and it stops matching the instant the pointer leaves
+	// the literal <a> even while still inside the item's own open dropdown, so
+	// FR-41-13's rescue block below (which only re-emits an EXPLICITLY-set
+	// hover declaration) has nothing to hold onto. Defaulting here closes the
+	// gap by construction: every branch below that already gates on
+	// `'' !== $item_colour_hover` (the Hover-emission branch + the FR-41-13
+	// rescue block) now fires for every untouched item too, with zero further
+	// code change. Skipped only when the resolved text-hover TREATMENT is
+	// 'none' — an operator who explicitly chose no text-hover signal keeps it.
+	if ( '' === $item_colour_hover && 'none' !== $t_text ) {
+		$item_colour_hover = 'accent';
+	}
+
 	$smart_contrast = ! isset( $attributes['itemSmartContrast'] ) || (bool) $attributes['itemSmartContrast'];
 	if ( $smart_contrast ) {
 		// $sgs_nm_hex handles a slug OR a raw CSS colour for $preferred too —
@@ -237,7 +325,10 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	} elseif ( '' !== $item_colour_effective ) {
 		$item_colour_decl = sgs_text_colour_decl( $item_colour_effective );
 		if ( '' !== $item_colour_decl ) {
-			$css .= $link_sel . '{' . $item_colour_decl . ';}';
+			// Wave 2 M4 (2026-09-12): paired with $caret_svg_sel — same value,
+			// same rule, reaches the caret's `stroke="currentColor"` glyph too
+			// (a DOM sibling `$link_sel` alone cannot select).
+			$css .= $link_sel . ',' . $caret_svg_sel . '{' . $item_colour_decl . ';}';
 		}
 		$css .= sgs_text_colour_gradient_fallback_rule( $link_sel, $item_colour_effective );
 	}
@@ -253,7 +344,11 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	if ( '' !== $item_text_sweep['hover'] ) {
 		$css .= $item_text_sweep['hover'];
 	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover ) {
-		$css .= sgs_hover_state_rules( $link_sel, 'color:' . sgs_colour_value( $item_colour_hover ), ':focus-visible' );
+		// Wave 2 M4 (2026-09-12): $caret_svg_sel paired in the same call — a
+		// direct :hover/:focus-visible on the caret's own svg fires when the
+		// pointer/focus is on the caret itself (e.g. the has_url fork's
+		// separate `.sgs-nav-menu__subtoggle` button).
+		$css .= sgs_hover_state_rules( $link_sel . ',' . $caret_svg_sel, 'color:' . sgs_colour_value( $item_colour_hover ), ':focus-visible' );
 	}
 
 	// FR-41-6 — the Current-state weight, under the NEVER-LIGHTER rule. An
@@ -298,6 +393,24 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	$item_bg_current_decl = 'highlight' === $t_bg
 		? ''
 		: sgs_background_paint_decl( $item_bg_current_raw, $item_bg_current_gradient );
+
+	// Wave 2 A1/A2 (2026-09-12): under `highlight` the per-item hover FILL is
+	// unconditionally suppressed above (FR-41-14/FR-41-25 — the shared sliding
+	// pill is the ONE background shape for non-resting states). That is
+	// correct when the pill's colour visibly differs from the resting fill —
+	// it becomes illegible only when an operator sets `itemBg`/`itemBgHover`
+	// to the SAME token (background never visibly moves; the only signal left
+	// is the text-colour flip, which can itself be near-identical to the
+	// resting text). A font-weight bump is a SECOND signal that is discernible
+	// unconditionally, regardless of which colour pair an operator picks —
+	// same "never lighter" technique this file already ships for the
+	// Current-state weight rule (`itemFontWeightCurrent`, above). Emitted
+	// UNCONDITIONALLY under `highlight` (not gated on any colour comparison):
+	// it costs nothing when the colours already differ.
+	if ( 'highlight' === $t_bg ) {
+		$highlight_hover_weight = max( 700, (int) ( $attributes['itemFontWeight'] ?? 400 ) + 200 );
+		$css .= sgs_hover_state_rules( $link_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' );
+	}
 
 	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl ) {
 		// Radius only ever rounds a VISIBLE fill (G13 scenario 4) — emitted here,
@@ -685,9 +798,18 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		$bg_decl_str   = $item_hover_decls['bg'] ?? '';
 
 		// Mouse half — bar fork.
-		$bar_mouse_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link';
+		//
+		// Wave 2 M2 (2026-09-12): $bar_mouse_caret_sel pairs alongside
+		// $bar_mouse_sel for the LINK declaration only (never `::before`, which
+		// is the link's own background-fill pseudo-element and has no
+		// caret-svg equivalent) — closes the caret's own hover-persistence gap
+		// as a side effect of the SAME selector shape M4 already pairs above,
+		// no separate mechanism. Bar-only: the drawer fork's caret pairing is
+		// a different mechanism owned by nav-menu-submenu-css.php.
+		$bar_mouse_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link';
+		$bar_mouse_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:hover .sgs-nav-menu__caret svg';
 		if ( '' !== $link_decl_str ) {
-			$css .= sgs_hover_guarded_rule( $bar_mouse_sel, $link_decl_str );
+			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . ',' . $bar_mouse_caret_sel, $link_decl_str );
 		}
 		if ( '' !== $bg_decl_str ) {
 			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . '::before', $bg_decl_str );
@@ -703,9 +825,12 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		}
 
 		// Keyboard half — bar fork.
-		$bar_keyboard_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
+		//
+		// Wave 2 M2 (2026-09-12): same caret pairing as the mouse half above.
+		$bar_keyboard_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
+		$bar_keyboard_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) .sgs-nav-menu__caret svg';
 		if ( '' !== $link_decl_str ) {
-			$css .= $bar_keyboard_sel . '{' . $link_decl_str . ';}';
+			$css .= $bar_keyboard_sel . ',' . $bar_keyboard_caret_sel . '{' . $link_decl_str . ';}';
 		}
 		if ( '' !== $bg_decl_str ) {
 			$css .= $bar_keyboard_sel . '::before{' . $bg_decl_str . ';}';
