@@ -439,22 +439,42 @@ the drawer fork has resisted automated testing across this session (Step 22/23's
 contention, Wave 1's incomplete burger+drawer pairing, now this). Flagged, not root-caused —
 needs either a real manual pass or a dedicated automation-compatibility investigation.
 
-### M3 (dropdown panel anchors to chevron) — hypothesis refuted, correct behaviour confirmed live on production
+### M3 (dropdown panel anchors to chevron) — CONFIRMED real bug, found on Bean's own named fixture (correcting the earlier "refuted" verdict)
 
-The "mega-only fix" hypothesis was wrong. `mega-disclosure.js::repositionPanel` branches
-on a shared `data-sgs-nav-disclosure` attribute, not on the mega-specific trigger class —
-its own code comment states this is deliberate ("TWO KINDS, ONE FUNCTION"), covering mega
-and plain dropdowns identically. Live-tested on the ACTUAL PRODUCTION HOMEPAGE header (not
-a test page) — the "Our Story" plain dropdown's panel left edge exactly matches the parent
-item's left edge, 96px away from the chevron's own position. Confirmed no stale deploy, no
-duplicate/legacy render path, no animation creating a chevron-origin illusion.
+The earlier re-investigation tested the wrong location (production homepage only) and
+missed the real defect. **Bean's exact named fixture — "G14 negative submenuLinkBg blocks
+sweep" on page 3488, uid `sgs-nav-menu-0f6116a0` — carries `data-sgs-nav-submenu-align`
+explicitly, and confirmed live: `submenuAlign` is a COMPLETELY DEAD CONTROL.**
+`nav-menu-markup.php:268` writes the operator's chosen value into the DOM as
+`data-sgs-nav-submenu-align="%2$s"` — and NOTHING anywhere in `nav-menu-submenu-css.php`,
+`mega-disclosure.js`, or `store.js` ever reads that data attribute. Grepped the entire
+`includes/` and `nav-interactivity/` trees for it: one write site, zero readers.
 
-**Open question for Bean:** since the code is confirmed correct and live-verified on
-production right now, three explanations remain open rather than closed: a stale browser
-cache on your device, a different item/alignment-mode configuration than what's live now,
-or a perception effect from the chevron's own oversized hit-target (44×44px, confirmed
-separately as a real bug — see M6) sitting right next to a narrower link, which could read
-as "the panel centres on the chevron" even when it doesn't.
+Proven live: built a fresh fixture with `submenuAlign:"start"` and another with
+`submenuAlign:"center"` — **byte-identical panel position in both** (panel left edge always
+28px from viewport origin, panel centre always at x=128, matching neither the link's centre
+(44.8) nor the caret's centre (111.65) nor the combined item's centre (66.8) in either
+mode). Whatever position the panel lands at, it's a fixed default the CSS custom property
+`--sgs-mm-overflow-left` falls back to (built for the mega-panel's own overflow logic and
+silently reused here) — it never moves in response to the operator's alignment choice.
+**This is a different, more serious bug than "centres on the chevron" literally, but
+produces exactly the practical symptom Bean described: the dropdown's position bears no
+relation to what the operator configures, landing wherever the fallback happens to put it.**
+
+### I1 (submenu white lip) — CONFIRMED and visually matched, on Bean's own named fixture
+
+Bean's points 10A and 10B were the SAME fixture ("G14 negative submenuLinkBg blocks sweep")
+— a connection lost when the register split his report into separate groups. Rebuilt the
+exact config (`submenuLinkBg:"primary"`) and opened the panel via a real hover: the panel
+ELEMENT's own background resolves to cream (`rgb(255,249,240)`, its own independent
+fallback chain, unrelated to `submenuLinkBg`), while `submenuLinkBg` only fills the
+INDIVIDUAL sublink rows (`rgb(230,138,149)`, pink) — not the panel's own padding box. The
+panel has an 8px top/bottom padding, so that mismatched cream shows through as a band above
+the first row and below the last, framing the pink rows exactly as Bean described.
+Screenshot confirms an exact visual match to "pink background with a very noticeable white
+lip at top and bottom." Root cause: two independently-resolved background colours (panel's
+own default vs. the row-level `submenuLinkBg` override) with no mechanism keeping them in
+sync, and the panel's own padding is what exposes the seam.
 
 ### B1/B2 (burger colours "worse") — confirmed no code regression; one real, separate defect surfaced
 
@@ -501,17 +521,20 @@ check at all. Not what Bean saw here, but real and worth flagging for its own fi
 
 ## Investigation status
 
-**Wave 1 + 1.5 complete.** Before Wave 2 (solution design), three things need Bean's direct
-input (not something Wave 2 can resolve on its own):
+**Wave 1 + 1.5 + direct follow-up complete.** M3 and I1 are now fully confirmed and
+corrected above — both were found on Bean's own exact named fixture once tested there
+directly instead of a fresh/production-only repro. Only one genuine open question remains
+for Bean, the rest is ready for Wave 2 (solution design):
+
 1. **E1** — which instance were you testing (scratch-page fixtures vs the real live
    header)? Determines whether Wave 2 designs a fix for "no explicit hover colour set,
-   only the WP-core ambient default" or a different, already-known gap.
-2. **M3** — since production is confirmed correct right now, was this a stale view, a
-   different configuration, or could it be the oversized-chevron perception effect (M6)?
-3. **I1** — which page/screenshot showed the white lip? The current code has no mechanism
-   that could produce it, so either it's on a page/state not yet checked, or it needs a
-   fresh screenshot to re-diagnose from scratch.
+   only the WP-core ambient default" or a different, already-known gap. (Note: given M3 and
+   I1 both turned out to be real bugs on Bean's named fixtures once tested correctly, E1
+   very likely reproduces on the scratch pages exactly as reported too — this is now a
+   confidence check, not a live doubt.)
 
-Everything else is ready for Wave 2 (solution design): the confirmed real defects list is
-now materially larger and more precise than the original Wave 1 pass, and several Wave 1
-"not a bug"/"working as designed" verdicts held up under the harder re-testing.
+The confirmed real defects list is now materially larger and more precise than the
+original Wave 1 pass. Two Wave 1.5 verdicts ("M3 refuted", "I1 not reproduced") were
+themselves wrong — both traced to testing the wrong location, not to Bean's report being
+mistaken. Lesson for this session: when a fixture is NAMED, test that exact fixture before
+concluding anything, even under time pressure to reach a verdict quickly.
