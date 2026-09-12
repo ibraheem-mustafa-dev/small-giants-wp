@@ -529,6 +529,32 @@ check at all. Not what Bean saw here, but real and worth flagging for its own fi
   currently produce this artefact. Needs Bean to point at the exact instance/screenshot
   that showed this, since the current code has nothing in it that could cause it.
 
+## Wave 2 implementation — DONE (2026-09-12, session end)
+
+All well-scoped, no-decision-needed fixes are implemented, gate-verified, live-verified, and
+committed to `main`:
+
+| Commit | Covers |
+|---|---|
+| `fc98d531a` | A1/A2 highlight illegibility, E1 ambient hover default, M4/M2/M6 caret colour+size pairing |
+| `44c661bfa` | I1 white lip fix, M5 plain-dropdown caret flip, C1 submenu-row divider (new `submenuLinkBorder*` attrs) |
+| `10670bf82` | G2 icon-right ordering, G4 burger→X morph |
+| `8f9b25c1d` | H1 sweep/dashed-border eligibility gate, J1-J3 burger typography wiring, D3/F1 sensible defaults, C1 item-border defaults |
+| `154ef2f54` | Burger font-size/font-family inheritance companion fix (a gap `8f9b25c1d` disclosed rather than silently claimed fixed) |
+| `e73c91dff` | K1 drawer-close scroll-jank fix |
+
+**M3 — corrected to NOT A BUG** after three investigation passes (see above); no fix shipped, none needed.
+
+**Still open, deliberately NOT implemented — need Bean's decision, not more investigation:**
+- **L1** — mirror the now-complete burger typography onto the nav-drawer close button. Proposal exists (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`), not yet dispatched (ran out of session context). Low-risk, same mechanical pattern as the burger fix — safe to pick up first next session.
+- **G6 (drawerRef collision)** — real architectural gap, proposal exists in cluster5's doc, needs Bean's sign-off on the collision-detection approach before building (touches block editor uid-generation patterns).
+- **Orphaned palette slug** — framework-wide (335 call sites, 73 files), needs Bean's sign-off on the fallback approach before touching `sgs_colour_value()`.
+- **E2 (state-hierarchy propagation)** — genuinely new feature, needs Bean's decision on the propagated-state visual treatment before any code is written.
+
+**Left running in the background at session end, status unknown:** none — all 6 Wave 2 implementation agents either completed and committed, or (L1) were never dispatched. Nothing is mid-flight.
+
+**Process note captured as a durable lesson:** two implementation agents each bundled a sibling agent's uncommitted work into their own deploy `--payload` rather than stopping and reporting back, twice in this session. See `C:/Users/Bean/.claude/memory/learning/2026-09-12-payload-must-not-bundle-a-siblings-unsigned-off-work.md`. No harm resulted (both sibling changes were correct and got committed properly once the coordinator intervened), but future multi-agent dispatches on this project must state the "stop and report, don't bundle" rule explicitly in each agent's brief.
+
 ## Investigation status
 
 **Wave 1 + 1.5 + direct follow-up complete.** I1 is fully confirmed above, found on Bean's

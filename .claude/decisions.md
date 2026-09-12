@@ -1,3 +1,56 @@
+## D1039 [ROUTINE] — Bean's live nav-menu review: 26-issue register, root-caused, ~18 real defects fixed same-session
+
+**2026-09-12.** Bean did a full live review of the deployed Spec 41 nav-menu rebuild against
+the canary and the Step 22/23 verification pages, reporting ~26 distinct issues in one
+brain-dump message. Structured into a 13-group register
+(`.claude/reports/2026-09-12-nav-menu-visual-review-register.md`), ran a two-wave
+`/qc-council`-style process: Wave 1 (6 parallel diagnostic agents, root-cause only) + Wave 1.5
+(targeted re-investigation after Bean corrected 3 Wave 1 verdicts and challenged the depth of
+several findings) + Wave 2 (6 parallel solution-design proposals) + implementation.
+
+**Three Wave 1/1.5 verdicts were wrong and got corrected on re-investigation, twice on the same
+point (M3):** a "burger colours got worse" report traced to an invalid test-fixture colour
+slug, not a regression (confirmed via git history one commit further back than the first
+pass reached). A "dropdown panel anchors to the chevron" report was first wrongly refuted
+(tested on the wrong page), then wrongly "confirmed as a dead control" (tested an item pinned
+to the viewport edge, where a collision-avoidance clamp masks the real alignment behaviour),
+then finally confirmed CORRECT on a third pass using a mid-bar test fixture. A "submenu white
+lip" report was initially unreproduced, then confirmed and visually matched once tested on
+Bean's exact named fixture instead of a fresh one.
+
+**Implemented and shipped same-session** (commits `fc98d531a`, `44c661bfa`, `10670bf82`,
+`8f9b25c1d`, `154ef2f54`, `e73c91dff`): Highlight-treatment hover-fill suppression making
+resting and hover colours collide; submenu link text defaulting to the same colour as its own
+background; the FR-41-13 parent-hover rescue rule never covering WordPress core's own ambient
+link-hover default; dashed/dotted border styles being silently ignored (and visually clashing)
+under the Sweep hover treatment; the horizontal dropdown caret being a structurally
+disconnected DOM sibling with no colour or size relationship to its item; the caret's
+flip-on-open animation only ever being wired for the mega-menu trigger class; the burger
+button carrying zero typography wiring at all (rendering as the browser's unstyled default);
+sensible non-empty defaults for submenu hover colour and open animation; item-border defaults
+matching the already-locked FR-41-36 colour scheme; the drawer close scrolling the page to top
+then smooth-scrolling back down; icon-and-text burger ordering; and a burger→X morph animation
+built from scratch (none existed before).
+
+**Deliberately NOT implemented — flagged for Bean's decision, not more investigation:**
+mirroring the burger typography fix onto the nav-drawer close button (L1, low-risk, just
+ran out of session time); `nav-drawer`'s `drawerRef` defaulting to an unscoped literal that
+silently collides with the site's global header drawer (a new architectural finding, not
+originally reported by Bean); an orphaned/renamed palette colour slug rendering silently
+transparent framework-wide (335 call sites across 73 files — needs Bean's sign-off on the
+fallback approach before touching the shared `sgs_colour_value()` helper); and Bean's new
+state-hierarchy propagation requirement (current-page state should bubble up to a top-level
+parent item) — a genuinely new feature needing a visual-treatment decision, not a bug fix.
+
+**Process lesson captured:** two implementation agents, working in parallel on a shared
+worktree, each bundled a DIFFERENT sibling agent's uncommitted work into their own deploy
+`--payload` rather than stopping and reporting back — twice in one session. No harm resulted
+(both sibling changes were correct), but this is now a captured, durable lesson
+(`payload-must-not-bundle-a-siblings-unsigned-off-work`) that must be stated explicitly in
+every future multi-agent parallel-dispatch brief on a shared canary.
+
+---
+
 ## D1038 [ROUTINE] — Spec 41 Step 22/23 live-verification gate sweep found + fixed 4 real nav-menu defects
 
 **2026-09-11.** Two parallel Playwright agents asserted Spec 41's acceptance gates (G6-G20)

@@ -1,162 +1,47 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-11
+last_updated: 2026-09-12
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**The front is now Spec 41 — the `sgs/nav-menu` colour/state/border/typography/motion rebuild
-— Waves A+B closed (17/27 steps), Wave C next.** This is the block a visitor
-touches on every page of every client site; it turns three competing colour mechanisms into
-one 3-state (Normal/Hover/Current) model, the first block to carry that shape end to end. Five
-shared framework components were safely extended along the way (additive-only, nothing existing
-broke) — `decisions.md` D1028. A real shared-worktree commit-corruption incident was caught and
-fixed clean (D1029), and a peer session independently fixed a regression this phase's own
-manifest rewrite left behind, re-verified rather than trusted (D1030). One real design question
-is still open (see below) — it blocks a small piece of follow-up work, not the rest of Wave C.
+**Spec 41 nav-menu: Waves A+B+C (steps 1-23) DONE, deployed, and live-verified.** Wave C's
+own live-verification sweep (Steps 22/23) found + fixed 4 real defects same-session (D1038).
+Then Bean did a full hands-on review of the live result and reported ~26 issues in one
+message — colour defaults, a hover-state regression, submenu interactivity, the dropdown
+chevron's architecture, burger typography/scroll, and several missing test configurations.
+
+**That review is now fully processed: root-caused, solution-designed, and ~18 fixes are
+shipped, committed, and live on the canary** (D1039, full detail in
+`.claude/reports/2026-09-12-nav-menu-visual-review-register.md`). Three of Bean's own points
+needed a second or third investigation pass before landing on the right answer — worth
+knowing this rebuild's verification is genuinely thorough, not just "looked green once."
+
+**Four items are deliberately NOT built yet — they need Bean's decision, not more
+investigation:** mirroring the burger fix onto the drawer's close button (low-risk, just
+ran out of session time); a real architectural bug where an unnamed nav-drawer silently
+opens the wrong (site-global) drawer; a framework-wide (335 call-site) silent-failure mode
+where a renamed/deleted palette colour vanishes with no warning; and Bean's own new
+requirement that the current-page state should visually bubble up to a top-level parent
+item (a genuinely new feature, not a bug). See "THE FRONT" below for exactly what to do
+with each.
 
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
 
-**A second, independent track also made real progress this session** — header/footer/mega-panel
-motion + Indus branded content — running in parallel with the nav-menu work above, not competing
-with it. See the Pointers table row below for the full detail; it does not change the nav-menu
-front described above.
-
 ## Prior work (closed) — clone-fidelity closeout + R8 motion recognition
 
-**What's shipped (full list, in order):**
-1. Testimonial star colour, font-loading bug + security hole, 4 footer bugs, heading-font leak,
-   hero text centring, trust-bar background + pack-size pill typography, product-card border
-   regression, brand image sizing, quote block's italic default flip, hero hover-zoom
-   (rebuilt as reusable shared capability) — the 11-defect main closeout, `decisions.md` D1015.
-2. One of those (product-card title font) was found wrong and corrected the same session — a
-   self-catch, not assumed correct. Also in D1015.
-3. Independent 3-viewport visual verification (3 design-reviewer agents, real screenshots +
-   interaction checks) confirmed page-body fidelity is genuinely excellent and confirmed the
-   header/footer gap.
-4. Parity-tool scope correction: excludes header/footer/nav chrome from scoring (a separate
-   system) and gates CSS properties on whether they can actually apply. Regression-lock fixtures
-   added same day. Commit `0aa4b25f1`.
-5. **Second pass, found after the main closeout:**
-   - Hover-zoom (`hoverSpillScale`) investigated further — the CSS was actually already working
-     live (an earlier session's "broken" report was never explained, flagged not resolved) — and
-     the hardcoded `scale(1.05)` was deduplicated to reuse the existing hover-scale token
-     mechanism. Commits `ae604c09a`, `56e51a7dd`.
-   - Trust-bar badge circle border was an unconditional hardcoded CSS fallback with no editor
-     control — added `iconCircleBorderWidth`/`iconCircleBorderStyle`/`iconCircleBorderColour`
-     following the existing box-family pattern, live-verified via `getComputedStyle`. Commit
-     `d216ca7cd`.
-   - Cloning pipeline's section-boundary detector fixed — it only recursed one level into
-     `<main>`/`<article>` for `<section>` children, missing sections nested deeper past inert
-     wrapper divs. Verified on the Mama's Munches product draft (found 8 sections, was 6) with a
-     homepage negative control (byte-identical, no regression). Commit `4b6072757`.
-     File: `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py`.
-   - Hero split-media image not filling its column at tablet width — proven CSS-specificity bug
-     (a shared media-atom rule tied with and beat the hero's own height rule on load order),
-     fixed with a higher-specificity scoped rule in `render.php`, live-verified at 7 breakpoints
-     (375-1440px). Commit `ec3fcabfd`.
-6. Two plan docs re-verified against real live evidence (not their own claimed status) and
-   archived: `2026-09-08-parity-tool-bem-layer-aware-matching-design.md` (D1017, commit
-   `1ab1abea6`) and `phase-measurement-integrity.md` (D1016, commit `80c6442c0`).
-7. **New design doc produced, NOT yet actioned** — awaiting your pick from its menu:
-   `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`. Researches widening
-   HTML-draft recognition beyond the current BEM-only rule (found an existing conversion step
-   whose output is computed but never wired into the accept/reject gate — a near-free small fix)
-   and detecting template/archive-shaped pages to take structural shortcuts. Ranked menus only.
-8. Informational research note (no build): Anthropic's "Claude Design" tool needs no special
-   pipeline support — its static-HTML export is treated like any other non-BEM source. Filed at
-   `C:\Users\Bean\.claude\memory\research\2026-09-10-claude-design-sgs-pipeline-compatibility.md`.
-9. **Third pass, same day — tier-migration doc's 3 open design questions settled + R1/R9/R10
-   shipped (D1018):**
-   - New DB column `block_attributes.tier_shape` — promotes an existing but buried discriminator
-     (flat-sibling / tier-object / box-only) into a proper DB-derived column, matching the
-     `box_family` pattern. Independently gap-checked by a separate agent (5/6 held up; one
-     disclosed process gap — an unfindable `/qc-council` transcript, not a defect). Commit
-     `58642349d`.
-   - **R1 rescoped and found 96% already done** — the old 105-families/41-blocks estimate was
-     stale. Real remaining work: 17 attributes across 9 blocks (not yet built). Report:
-     `reports/2026-09-10-r1-rescoped-worklist.md`, commit `feefcb7a3`.
-   - **R9 capability-coverage inventory run** — confirmed motion as the biggest gap, found and
-     fixed a new one (`align-content`/`justify-items`, commit `23cd8322f`). Report:
-     `reports/2026-09-10-capability-coverage-inventory.md`, commit `09e223a81`.
-   - **R10 colour root cause found and fixed** — not a broken colour system, a diagnostic
-     classifier blind to shared-file CSS. Unresolved count 253→233. Commit `f6085e72b` (root
-     cause), `b9ea6047f` (fix).
-   - Both fixes independently re-verified via inline `/qc-inline` (direct code read + live
-     self-test run + live DB query, not agent self-report) — held up, 92/100, shipped. Full
-     detail + the disclosed `/qc-council`-unavailable process note: `decisions.md` D1018.
+**Fully closed, swept to `.claude/memory/session-2026-09-11-prior-work-closed.md` for the full
+narrative (11-defect closeout D1015, R1/R9/R10 D1018, R8 motion recognition D1021-D1026/D1032
+7/13 real-world coverage).** Still genuinely open from that track, carried forward: R1's real
+17-attribute conversion (measured, not built — `reports/2026-09-10-r1-rescoped-worklist.md`);
+the `tier_object_base()` 67-attribute over-match (latent, needs fix-or-park decision); the
+Mama's Munches PRODUCT draft's non-BEM hard-halt (needs the BEM-recognition brainstorming
+decision); header/footer (paused behind R8, unchanged); trust-bar pill padding gap (minor).
 
-**What's still genuinely open:**
-- **R8 (motion/animation cloning from raw CSS) — SHIPPED, council-fixed, WIRED, AND the hover-trigger
-  gap CLOSED, all 2026-09-11.** All 14 steps + 4 QA gates of
-  `plans/archive/phase-r8-motion-recognition.md` executed and closed (D1021) — a 4-rater
-  `/qc-council` sweep found and fixed a BLOCKER that would
-  have made the whole phase a silent no-op plus 5 more real bugs (D1022) — then a design
-  `/qc-council` validated exactly where to wire all 8 modules into the real pipeline, built both
-  streams (each checked by its own `/qc-inline` subagent reviewer before acceptance), now LIVE in
-  `assembly.py` (Tier 1/2/3, step 3a1b) and `stage_neg1_motion_probe()` in
-  `sgs-clone-orchestrator.py` (Tier 4a/4c/4d) (D1023). **The one disclosed gap from D1023 is now
-  fixed (`b47705354`):** `scoped_motion_css_text()` only ever read an element's UNCONDITIONAL CSS,
-  so a `.x:hover{animation:...}` shape was entirely invisible to Tier 1/2, not merely mis-tagged as
-  load-triggered — a narrower/worse problem than D1023 originally scoped. Fix adds a narrow,
-  same-element-only `:hover`/`:focus` selector fallback (`_own_hover_scoped_decls`), tried only
-  when the unconditional lookup finds nothing, wrapped in a real selector block so
-  `classify_trigger`'s brace-walk correctly resolves `fxTrigger='hover'`. Deliberately still out of
-  scope: ancestor-hover-triggers-descendant (`.card:hover .card__img`), responsive tiering of hover
-  rules, multi-rule cascade specificity — none of those were part of the disclosed gap. Verified:
-  all 13 motion_shape + 5 motion_trigger fixtures pass unchanged, full converter pytest suite 828
-  passed/1 skipped/1 xfailed/0 failures, plus dedicated scratch fixtures proving the hover case now
-  resolves `sgsAnimation` + `fxTrigger='hover'` and the ancestor-hover shape correctly stays
-  undetected. **fade-up/slide-up structural tie ALSO closed same day (D1025, `966efb518`):** the two
-  presets were true duplicates (identical CSS + a magnitude-band-widening fix from an earlier round
-  makes them permanently indistinguishable by magnitude alone — a magnitude-only fix was
-  investigated and found to be a structural no-op before building it). Real fix: a new
-  `co_animates_opacity` DB axis (AOS's real fade-vs-slide convention, fetched from source) makes
-  them genuinely distinguishable — `slide-*` now opts out of the shared opacity fade + moves a
-  genuinely larger 100px. Design-reviewed by 2 parallel agents against the live code before
-  building. Real-world Tier 1+2 (static-CSS) coverage: **6/13 (~46%)**, up from 5/13, after 2 genuine new
-  real-world matches (TAG Heuer's `slideUp`, `dy_appear_from_bottom`) traded against one coincidental
-  cross-shape match that never wrote a real attribute anyway (`preloaderAppear`↔`border-accent`).
-  **The transition-extractor dead-code gap (found during D1025's build) is ALSO now fixed same day
-  (D1026, `bc534f763`):** `scoped_motion_css_text`'s transition branch now builds a real snippet
-  `extract_shape_from_transition()` can use, restoring a `:hover`-triggered transition shape (e.g.
-  `border-accent`'s real pattern on a real element) as genuinely reachable end to end — verified,
-  not just fixture-level. **Confirmed this does NOT move the 6/13 sample** (grepped the coverage
-  report: zero mentions of "hover" — the sample's 3 transition-based matches are all JS-state-toggled,
-  not `:hover`-driven, a real scope boundary this fix can't and shouldn't cross).
-  **Honest ceiling answer, asked directly:** 6/13 is not a hard ceiling — every one of the 7 open
-  items has a named, disclosed cause (3 correct non-matches, 1 structural JS-runtime boundary
-  [Swiper], 3 needing live DOM/JS-state observation), and the single largest REMAINING code-fixable
-  item is `%`-unit transform matching not being scale-normalised against `px`-based bands — a real
-  design question (same shape as D1025's fade/slide split), not yet decided or built.
-  Full detail: `decisions.md` D1021–D1026, `reports/2026-09-11-r8-tier1-2-coverage-measurement.md`,
-  `reports/2026-09-11-r8-tag-heuer-full-verification.md`. Header/footer is next (see below).
-  One minor doc-accuracy item for next touch: the plan's own QA-gate pytest command collects zero
-  of this phase's files (keyword collision), not a code defect.
-  **Tier 4b "page-load-settle" live probe SHIPPED same day (D1032):** closes 1 of the 3
-  transition-based gaps D1026 disclosed as needing live DOM/JS-state observation — Locomotive's
-  `.c-preloader` (timing-triggered, not `:hover`/scroll). New `converter/resolvers/
-  load_settle_probe.py`, wired into `stage_neg1_motion_probe()` via a candidate-finder that
-  re-derives Tier 1/2's own "transition, no reachable hover" decline shape from the mockup
-  directly (no new CSS-reading logic). Combined real-world coverage: **7/13**. Detail: D1032.
-- **R1 is NOT done** — corrected 2026-09-10 later same day (was miswritten as "done" here and in
-  `decisions.md` D1018 in the same breath as listing its own open work; Bean caught it). Only
-  R1's MEASUREMENT is done (96% already correct); the real remaining 17-attribute conversion has
-  not been built — verified via `git log` showing zero converter commits touching it since
-  `reports/2026-09-10-r1-rescoped-worklist.md` landed.
-- A latent bug flagged, not fixed: an older predicate (`tier_object_base()`) over-matches 67
-  unrelated attributes the new `tier_shape` column correctly excludes — hasn't caused a live
-  problem yet (confirmed via `sgs/gallery.padding`). Needs a decision: fix now or park.
-- The Mama's Munches PRODUCT draft (not the homepage) still cannot fully clone — its sections
-  are now correctly found, but every section hard-halts at the next stage because its classes
-  aren't SGS-BEM. Needs either a draft rewrite or the Tier 0 gate-wiring fix from the
-  brainstorming doc — your call, not made yet.
-- Header/footer — still paused behind R8 per today's focus; nothing changed here today.
-- Trust-bar pill padding gap (7px 13px draft vs 8px 16px live) — still open, minor.
 
 ## Blockers
 
@@ -164,61 +49,51 @@ front described above.
 
 ## THE FRONT — what to pick up next
 
-**Spec 41 nav-menu colour/state system — IN EXECUTION. Waves A+B CLOSED (steps 1-17 of 27),
-Wave C next.** Plan: `plans/phase-nav-menu-colour-state.md` — read its
-**"Execution Progress Log"** section (near the top) as the single source of truth for what has
-landed; the step bodies further down are the original plan text and are not updated in place.
+**Spec 41 nav-menu Waves A/B/C (steps 1-23) are DONE.** Steps 24 (withdrawn, D1036) and 25
+(Bean's formal sign-off) remain in the original plan but are superseded by the live review
+below, which is a more thorough real-world check than step 25 would have been in isolation.
+Plan: `plans/phase-nav-menu-colour-state.md`'s "Execution Progress Log" has the full step
+history if needed, but the real front now is the post-review fix register, not the plan.
 
-- **Wave A (steps 1-12, shared components + manifest + detector):** closed. Manifest rewrite
-  went 79→132 attributes (`bb9df82dc`); QA-5 council found + fixed a real attrMap gap
-  (`b2174ada1`); QA-3 close re-verified a parallel peer session's independent fix to a
-  deploy-blocking regression Step 9 left behind (D1030).
-- **Wave B (steps 13-17, inspector rebuild + CSS emission):** closed, run as two parallel
-  subagent lanes. `colourRows` rebuilt 3-state (`76e0cfa11`), full panel rebuild
-  (`b8229503f`), `nav-drawer` close-button parity (`8c9330716`), full CSS-emission rewrite
-  (`070fbc9a8`), FR-41-15 fate table executed both surfaces (`61a141fbf`), `style.css`
-  finishing touches + a found-and-fixed dead `submenuAnimation` render consumer (`3fec38190`,
-  `c2ecf8b84`).
-- **Wave C (steps 18-27, NOT STARTED):** behaviour fixes (FR-41-13), static gate sweep (QA-6),
-  build+deploy, two Playwright verification lanes, Bean's visual sign-off, detector WARN→HARD,
-  living-docs update. ⛔ Steps 19/24 (migration notice FR-41-34; G5a) WITHDRAWN (D1036) — won't run.
+**Bean's live review + fix register — `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`
+is the single source of truth for this.** ~18 real defects found, root-caused (some needed 2-3
+investigation passes to get right — read the register's "Wave 1.5" section before assuming a
+verdict is final), solution-designed, and shipped same-session. Commits: `fc98d531a`,
+`44c661bfa`, `10670bf82`, `8f9b25c1d`, `154ef2f54`, `e73c91dff`.
 
-**One open design question — blocks only its own follow-up work, NOT the rest of Wave C:**
-the `sublink-marker` colour row. Originally planned as a Normal-only exemption; **Bean's actual
-direction (2026-09-11, supersedes the exemption)** is full Hover/Current states + a gradient
-toggle like every other row, but with the picker hidden by default (silently inheriting the
-sublink text's own colour) until an operator actually overrides it. This is a real
-`fillRow`/row-descriptor conditional-visibility behaviour, not a one-line manifest exemption —
-**do not add a `colourExemptions.sublink-marker` entry, that approach is superseded.** Needs
-building as part of (or a small follow-up to) Step 13's territory once Bean confirms the exact
-mechanism. Everything else in Wave C is unblocked and can proceed independently.
+**Four items deliberately NOT built — pick up next, in this order:**
+1. **L1 — mirror the burger typography fix onto the nav-drawer close button.** Lowest risk,
+   proposal already written (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`
+   §L1), same mechanical pattern as the already-shipped burger fix. Just dispatch it.
+2. **G6 — `nav-drawer`'s `drawerRef` defaults to an unscoped literal**, so any drawer without
+   an explicit unique ref silently opens the site's GLOBAL header drawer instead of its own.
+   Real architectural bug, not something Bean originally reported — found testing mega-menus
+   in a drawer. Proposal exists (`...cluster5-architecture-solutions.md` §G6) but needs Bean's
+   sign-off on the collision-detection approach before building.
+3. **Orphaned palette slug** — `sgs_colour_value()` (framework-wide, 335 call sites, 73 files)
+   silently renders transparent if a client's chosen colour is later renamed/deleted from the
+   palette. Proposal exists (same doc, §orphaned-slug) but needs Bean's sign-off before
+   touching a helper this widely shared.
+4. **E2 — state-hierarchy propagation.** Bean's own new requirement: the current-page's state
+   should visually bubble up to its top-level parent item so a visitor can tell which menu
+   contains the current page without hovering. Genuinely new feature, real prior art already
+   identified (FR-41-13's `:has()` pattern extends directly), but needs Bean's decision on
+   the propagated-state visual treatment before any code is written.
 
-Five shared framework components were safely extended for this (D1028); a shared-worktree
-commit-corruption incident was caught and fixed (D1029).
+**Process note for whoever dispatches multi-agent work next:** two implementation agents this
+session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
+instead of stopping and reporting back. No harm resulted, but every future multi-agent brief
+on this shared worktree must state explicitly: "if the deploy gate blocks on a file outside
+your scope, STOP and report back — never add it to your own payload." Full lesson:
+`C:/Users/Bean/.claude/memory/learning/2026-09-12-payload-must-not-bundle-a-siblings-unsigned-off-work.md`.
 
-**Also open (disclosed, not blocking):** Bean asked (2026-09-11) whether other colour-row blocks
-have a pattern nav-menu is missing, since `edit.js` landed at 625 lines against a 250 target
-(`colourRows`/panel mounts can't leave the file — detector constraint) — research dispatched,
-result pending.
+Five shared framework components were safely extended earlier in this phase (D1028); a
+shared-worktree commit-corruption incident was caught and fixed (D1029).
 
-**Prior track (R8 motion cloning + header/footer) — see "Prior work (closed)" above for R8's
-full record.** Header/footer implementation is still paused behind this phase, not dropped —
-read `.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up.
-
-**Other loose ends** (lower priority, not blocking):
-- R1's remaining 17-attribute conversion (rescoped today, not yet built) —
-  `reports/2026-09-10-r1-rescoped-worklist.md`.
-- The `tier_object_base()` latent-bug flag (67 over-matched attrs, not yet triggered) — needs a
-  fix-now-or-park decision.
-- Pick a direction from `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`
-  before attempting the Mama's Munches product-draft clone again — it will hard-halt on
-  non-BEM classes otherwise.
-- A test clone of a second draft page (Bean's own next step, to test the pipeline's claimed
-  universality) — the product draft was the first attempt; it needs the BEM-recognition
-  decision above before it can proceed further.
-- Trust-bar pill padding (7px 13px draft vs 8px 16px live) — real gap, not urgent.
-- A heading-structure oddity found on the verification page only (two `<h1>` elements) — likely
-  a test-page artefact; check on production page 2742 before treating as real.
+**Prior track (R8 motion cloning + header/footer)** — see "Prior work (closed)" above for the
+full record + remaining loose ends (R1, `tier_object_base()`, BEM-recognition decision,
+trust-bar padding). Header/footer is still paused behind this phase — read
+`.claude/prompts/2026-09-10-header-footer-implementation.md` in full when picked back up.
 
 ## Methodology guardrails (carried forward — all still true)
 
