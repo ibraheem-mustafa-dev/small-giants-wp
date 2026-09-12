@@ -102,7 +102,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * transition, no reduced-motion override is needed either.
 		 */
 		$css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;}';
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
+		// M5 fix (2026-09-12) — widened to a selector list covering BOTH trigger
+		// classes. `.sgs-nav-menu__mega-trigger` is the mega-menu item's own
+		// trigger class; the plain dropdown's trigger carries
+		// `.sgs-nav-menu__subtoggle` instead and had no matching rule at all — a
+		// selector never written for that second trigger, not a regression. One
+		// rule keeps both triggers' flip behaviour identical by construction.
+		$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret,'
+			. $uid_sel . ' .sgs-nav-menu__subtoggle[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
 		
 		/*
 		 * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
@@ -200,10 +207,25 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * No hover pair: submenu-bg is Normal-only by design (colourExemptions,
 		 * block.json — the panel is structurally unhoverable once open).
 		 */
+		$sgs_nm_submenu_bg_source          = (string) ( $attributes['submenuBg'] ?? '' );
+		$sgs_nm_submenu_bg_source_gradient = (string) ( $attributes['submenuBgGradient'] ?? '' );
+
+		// I1 fix (2026-09-12) — the panel is Normal-only by design (FR-41-9) and must
+		// stay that way, but an operator who set the ROW colour (submenuLinkBg) and
+		// never touched the separate PANEL colour (submenuBg) almost certainly wants
+		// the panel's own padding band to match the rows, not fall through to the
+		// independent surface-alt/surface/#fff token chain (the "white lip" bug).
+		// Only engages when submenuBg itself is untouched — an explicit submenuBg
+		// always wins, exactly as before.
+		if ( '' === $sgs_nm_submenu_bg_source && '' !== (string) ( $attributes['submenuLinkBg'] ?? '' ) ) {
+			$sgs_nm_submenu_bg_source          = (string) $attributes['submenuLinkBg'];
+			$sgs_nm_submenu_bg_source_gradient = (string) ( $attributes['submenuLinkBgGradient'] ?? '' );
+		}
+
 		$sgs_nm_submenu_bg_decls = sgs_custom_property_gradient_decls(
 			'sgs-nm-submenu-bg',
-			(string) ( $attributes['submenuBg'] ?? '' ),
-			(string) ( $attributes['submenuBgGradient'] ?? '' )
+			$sgs_nm_submenu_bg_source,
+			$sgs_nm_submenu_bg_source_gradient
 		);
 
 		$sgs_nm_submenu_vars = '';
@@ -599,6 +621,39 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			$css .= sgs_hover_state_rules( $sublink_sel, $sublink_bg_hover, ':focus-visible' );
 		}
 
+		/*
+		 * FR-41-36 (C1, 2026-09-12) — submenu-row item divider. Genuinely NEW
+		 * attribute surface: `submenuBorderColour` etc. above are the PANEL's own
+		 * OUTER border (Normal-only, wraps the whole dropdown) — reusing that
+		 * prefix for a per-ROW divider would repeat the exact "two elements, one
+		 * attribute prefix" conflation the I1 fix above already avoids for
+		 * background. Named `submenuLinkBorder*` to match the established
+		 * row-vs-panel split (`submenuLinkBg*` = row, `submenuBg*` = panel).
+		 * Mirrors `itemBorderColour`'s own emission shape in nav-menu-css.php: a
+		 * width with no style implies solid. No Current colour — the spec's
+		 * divider table gives this row only Normal/Hover language.
+		 */
+		$sublink_border_box          = is_array( $attributes['submenuLinkBorderWidth'] ?? null ) ? $attributes['submenuLinkBorderWidth'] : array();
+		$sublink_border_width        = $sublink_border_box ? sgs_box_object_shorthand( $sublink_border_box ) : null;
+		$sublink_border_style        = sgs_css_keyword_sanitise( $attributes['submenuLinkBorderStyle'] ?? '' );
+		$sublink_border_colour       = (string) ( $attributes['submenuLinkBorderColour'] ?? '' );
+		$sublink_border_colour_hover = (string) ( $attributes['submenuLinkBorderColourHover'] ?? '' );
+
+		if ( null !== $sublink_border_width && '' !== $sublink_border_width ) {
+			$css .= $sublink_sel . '{border-width:' . $sublink_border_width . ';border-style:'
+				. ( '' !== $sublink_border_style ? $sublink_border_style : 'solid' ) . ';}';
+		}
+		if ( '' !== $sublink_border_colour ) {
+			$css .= $sublink_sel . '{border-color:' . sgs_colour_value( $sublink_border_colour ) . ';}';
+		}
+		if ( '' !== $sublink_border_colour_hover ) {
+			$css .= sgs_hover_state_rules(
+				$sublink_sel,
+				'border-color:' . sgs_colour_value( $sublink_border_colour_hover ),
+				':focus-visible'
+			);
+		}
+
 		// FR-41-22(b) — submenu typography. ⛔ Without this line every one of the
 		// `submenu*` typography attributes is a dead control and the build fails
 		// `check-dead-controls.js`. The hover trio has no branch in the shared
@@ -695,9 +750,20 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * The toggle is a real button next to a real link when the parent has its own
 		 * URL, so it needs its own hit area rather than inheriting the link's.
 		 */
+		// M6 precondition (2026-09-12): `font:inherit` added so `1em` on the caret
+		// SVG below resolves against the inherited item font-size rather than the
+		// browser's UA button-reset default — matching the `.mega-trigger` reset
+		// two rules above, which already carries it.
 		$css .= $uid_sel . ' .sgs-nav-menu__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
-			. 'min-width:44px;min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;}';
+			. 'min-width:44px;min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}';
 		$css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;}';
+		// M6 fix (2026-09-12) — the caret SVG was the raw Lucide chevron-down at a
+		// static 24x24px with nothing tying its size to itemFontSize. `1em` rides
+		// the cascade: it resolves against whatever font-size the caret's own
+		// ancestor chain carries, so it tracks the responsive item tier for free
+		// once that tier's font-size reaches a shared ancestor (nav-menu-css.php's
+		// half of this fix). No PHP attribute read needed for the caret itself.
+		$css .= $uid_sel . ' .sgs-nav-menu__caret svg{width:1em;height:1em;}';
 		
 		/*
 		 * In-drawer: the dropdown becomes an inline accordion, exactly as the mega
@@ -772,7 +838,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// 8px gap keeps the visual indent unchanged from before this icon existed.
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}';
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker svg{width:14px;height:14px;}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle{color:inherit;}';
+		// M4/M2 drawer parity (2026-09-12) — widened to a paired selector list
+		// (subtoggle + link + caret svg) so the caret genuinely matches whatever
+		// colour the link/subtoggle resolve to inside the drawer, rather than
+		// relying on inheritance alone reaching the SVG unchanged. Mirrors the
+		// bar's own paired-selector fix in nav-menu-css.php's colour emission.
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle,'
+			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link,'
+			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__caret svg{color:inherit;}';
 		/*
 		 * ⛔ FR-41-15 census #3 — DELETED, and its STATIC TWIN in `style.css`
 		 * (`.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`, census #10)

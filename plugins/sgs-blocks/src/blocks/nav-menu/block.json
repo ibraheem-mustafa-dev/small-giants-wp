@@ -216,6 +216,11 @@
 						"fill"
 					],
 					"prefix": "",
+					"clusters": [
+						"text",
+						"fill",
+						"border"
+					],
 					"attrMap": {
 						"css:color": "submenuColour",
 						"css:color-gradient": "submenuColourGradient",
@@ -231,7 +236,10 @@
 						"css:letter-spacing": "submenuLetterSpacing",
 						"css:text-align": "submenuTextAlign",
 						"css:fill": "sublinkMarkerColour",
-						"css:fill-gradient": "sublinkMarkerColourGradient"
+						"css:fill-gradient": "sublinkMarkerColourGradient",
+						"css:border-color": "submenuLinkBorderColour",
+						"css:border-width": "submenuLinkBorderWidth",
+						"css:border-style": "submenuLinkBorderStyle"
 					},
 					"states": {
 						"hover": {
@@ -242,7 +250,8 @@
 								"css:text-decoration": "submenuTextDecorationHover",
 								"css:text-transform": "submenuTextTransformHover",
 								"css:fill": "sublinkMarkerColourHover",
-								"css:fill-gradient": "sublinkMarkerColourHoverGradient"
+								"css:fill-gradient": "sublinkMarkerColourHoverGradient",
+								"css:border-color": "submenuLinkBorderColourHover"
 							}
 						},
 						"current": {
@@ -756,6 +765,27 @@
 			"type": "string",
 			"default": "",
 			"description": "Normal-state gradient sibling of submenuLinkBg; non-empty wins over the flat colour."
+		},
+		"submenuLinkBorderWidth": {
+			"type": "object",
+			"default": {
+				"bottom": "1px"
+			},
+			"description": "FR-41-36 (C1) — the submenu ROW's own item-divider border, distinct from submenuBorderWidth (the PANEL's outer border). Defaults to a bottom-only 1px so an untouched dropdown/drawer-nested row shows the universal always-visible divider."
+		},
+		"submenuLinkBorderStyle": {
+			"type": "string",
+			"default": "solid"
+		},
+		"submenuLinkBorderColour": {
+			"type": "string",
+			"default": "border-light",
+			"description": "FR-41-36 (C1) — Normal-state divider colour token, locked by Spec 41 §FR-41-36's colour table."
+		},
+		"submenuLinkBorderColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-36 (C1) — Hover/Current-state divider colour token, locked by Spec 41 §FR-41-36's colour table. No separate Current colour: the spec's table gives this row only Normal/Hover language for the divider."
 		},
 		"submenuColourHoverTreatment": {
 			"type": "string",
