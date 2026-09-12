@@ -289,10 +289,22 @@ def compute_support_injected_attrs(supports):
 # file's own doc-comment / the helpers' own doc-comments.
 PREFIXED_HELPER_SUFFIXES = {
     'sgs_typography_css_rule': [
+        # Kept in sync with check-dead-controls.js's own PREFIXED_HELPER_SUFFIXES —
+        # this Python port had drifted stale (missing everything from FontFamily
+        # onward, which the JS list has carried since 2026-08-26/2026-09-06). The
+        # JS file's own doc-comment states the fix explicitly: "broaden the
+        # resolver when it false-positives a legitimate consumption pattern
+        # rather than accepting the finding" — a baseline entry would silence
+        # the attribute forever, including a future block where it really is
+        # dead. Surfaced 2026-09-12 by nav-menu's new burgerFontFamily (Spec 41
+        # Wave 2 J1), which is genuinely consumed via sgs_typography_attr(
+        # $prefix, 'FontFamily' ) at both control and render ends — neither
+        # contains the literal string "burgerFontFamily".
         'FontSize', 'FontSizeUnit', 'FontSizeTablet', 'FontSizeMobile',
-        'FontWeight', 'FontStyle', 'TextTransform', 'TextDecoration',
+        'FontFamily', 'FontWeight', 'FontStyle', 'TextTransform', 'TextDecoration',
         'LineHeight', 'LineHeightUnit', 'LineHeightTablet', 'LineHeightMobile',
         'LetterSpacing', 'LetterSpacingUnit', 'LetterSpacingTablet', 'LetterSpacingMobile',
+        'TextAlign', 'TextWrap', 'TextColumns', 'TextIndent', 'WritingMode',
     ],
     'sgs_button_element_style_css': [
         'ColourBackground', 'ColourText', 'ColourBorder',

@@ -82,7 +82,7 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 		 * button's own resting fill. style.css's `background:none` stays the
 		 * byte-identical default when this is left unset.
 		 */
-		$burger_bg = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
+		$burger_bg          = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
 		$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
 		if ( '' !== $burger_bg ) {
 			$css .= $uid_sel . ' .sgs-nav-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
@@ -107,6 +107,18 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 				. ( 'icon' === $trigger_mode ? 'width:' . $burger_size . ';' : 'width:auto;' )
 				. 'height:' . $burger_size . ';min-width:' . $burger_size . ';min-height:' . $burger_size . ';}';
 		}
+
+		/*
+		 * Menu-button LABEL typography (Spec 41 Wave 2 J1). Scoped to the TEXT SPAN
+		 * (`.sgs-nav-menu__burger-text`), never the button itself ($burger_sel), so
+		 * `icon-and-text` mode never accidentally resizes the icon SVG. Both the
+		 * font-family AND font-size inherit-when-blank escape hatches are opted in:
+		 * the burger label renders as a UA `<button>` (UA defaults ~13.3px/Arial),
+		 * not a heading tag governed by theme.json's own presets, so an unset value
+		 * must actively contest the UA default rather than stay silent.
+		 */
+		$burger_text_sel = $uid_sel . ' .sgs-nav-menu__burger-text';
+		$css            .= sgs_typography_css_rule( $attributes, 'burger', $burger_text_sel, '', true, true );
 
 		return $css;
 	}

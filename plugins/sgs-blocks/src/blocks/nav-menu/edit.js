@@ -594,6 +594,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showWritingMode: true,
 								showHover: true,
 							},
+							/* Spec 41 Wave 2 J3 — the burger typography target is OMITTED
+							   (not disabled) while triggerMode === 'icon': no text renders
+							   at all in that mode, so font size/family/weight/transform/
+							   letter-spacing are equally meaningless. Same "OMITTED not
+							   disabled" pattern already used a few lines below this file
+							   for sublinkMarkerIconIsCustom. The uppercase/600/0.05em
+							   defaults still apply even while hidden. */
+							...( triggerMode !== 'icon' ? [ {
+								key: 'burger',
+								label: __( 'Menu button', 'sgs-blocks' ),
+								prefix: 'burger',
+								showFontFamily: true,
+								showTransform: true,
+								showLetterSpacing: true,
+							} ] : [] ),
 						] }
 					/>
 				</TypographyPanel>

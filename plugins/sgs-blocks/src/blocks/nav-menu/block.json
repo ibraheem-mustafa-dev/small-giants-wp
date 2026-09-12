@@ -196,7 +196,12 @@
 						"css:color": "burgerColour",
 						"css:color-gradient": "burgerColourGradient",
 						"css:background-color": "burgerBg",
-						"css:background-image": "burgerBgGradient"
+						"css:background-image": "burgerBgGradient",
+						"css:font-size": "burgerFontSize",
+						"css:font-family": "burgerFontFamily",
+						"css:font-weight": "burgerFontWeight",
+						"css:text-transform": "burgerTextTransform",
+						"css:letter-spacing": "burgerLetterSpacing"
 					},
 					"states": {
 						"hover": {
@@ -330,6 +335,22 @@
 						"attr": "triggerMode",
 						"disallowedValues": [
 							"icon"
+						]
+					}
+				},
+				"itemBorderHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [],
+					"glyphGuard": {
+						"attr": "itemBorderStyle",
+						"disallowedValues": [
+							"dashed",
+							"dotted",
+							"double",
+							"groove",
+							"ridge",
+							"inset",
+							"outset"
 						]
 					}
 				}
@@ -509,6 +530,42 @@
 		"burgerSize": {
 			"type": "string",
 			"default": "44px"
+		},
+		"burgerFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 41 Wave 2 J1. Unset renders font-size:inherit (helpers-typography.php's sgs_typography_css_rule(), $inherit_font_size_when_blank) — inherits the theme's real body font-size rather than the UA <button> default (~13.3px)."
+		},
+		"burgerFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 41 Wave 2 J1. Unset renders font-family:inherit ($inherit_font_family_when_blank) — inherits the theme's real body font rather than the UA default (Arial)."
+		},
+		"burgerFontWeight": {
+			"type": "string",
+			"default": "600"
+		},
+		"burgerTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": "uppercase"
+		},
+		"burgerLetterSpacing": {
+			"type": "object",
+			"default": {
+				"desktop": 0.05
+			},
+			"description": "Tier object mirroring submenuLetterSpacing's shape. Default resolves to 0.05em (see burgerLetterSpacingUnit)."
+		},
+		"burgerLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"itemMagnetEnabled": {
 			"type": "boolean",
@@ -697,11 +754,12 @@
 		},
 		"itemBorderWidth": {
 			"type": "object",
-			"default": {}
+			"default": { "bottom": "1px" },
+			"description": "FR-41-36 locked default: an always-visible item divider (top bar / drawer top-level), bottom-only, 1px."
 		},
 		"itemBorderStyle": {
 			"type": "string",
-			"default": ""
+			"default": "solid"
 		},
 		"itemBorderRadius": {
 			"type": "object",
@@ -715,15 +773,18 @@
 		},
 		"itemBorderColour": {
 			"type": "string",
-			"default": ""
+			"default": "border-light",
+			"description": "FR-41-36 locked default: item divider colour at rest."
 		},
 		"itemBorderColourHover": {
 			"type": "string",
-			"default": ""
+			"default": "accent",
+			"description": "FR-41-36 locked default: item divider colour on hover."
 		},
 		"itemBorderColourCurrent": {
 			"type": "string",
-			"default": ""
+			"default": "accent",
+			"description": "FR-41-36 locked default: item divider colour on current/active — same colour as Hover; the absence of a bg fill is what distinguishes Current from Hover."
 		},
 		"itemColourHoverTreatment": {
 			"type": "string",
@@ -755,7 +816,8 @@
 		},
 		"submenuLinkBgHover": {
 			"type": "string",
-			"default": ""
+			"default": "accent-light",
+			"description": "FR-41-36 (D3) locked default: desktop submenu row hover tint. Bg-only signal — submenuColourHover stays unset (text=primary is retained) per the spec's own governing principle."
 		},
 		"submenuLinkBgCurrent": {
 			"type": "string",
@@ -799,8 +861,8 @@
 		},
 		"submenuAnimation": {
 			"type": "string",
-			"default": "none",
-			"description": "The submenu panel's open animation. PHP-validated, no JSON enum."
+			"default": "fade",
+			"description": "The submenu panel's open animation: none / fade / slide-down. PHP-validated, no JSON enum. FR-41-1 (F1) locked default: fade — a pure-opacity transition with no directional assumption, safe regardless of overflow-flip repositioning, and degrades cleanly under prefers-reduced-motion."
 		},
 		"submenuTopOffset": {
 			"type": "string",

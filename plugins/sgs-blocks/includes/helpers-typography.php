@@ -125,9 +125,22 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 *   contests a property cannot beat one that does. Confirmed live on
 	 *   the product-card title (`<h3>`): computed font-family resolved to
 	 *   the heading preset instead of the draft's body font.
+	 * @param bool   $inherit_font_size_when_blank Optional, default false.
+	 *   The font-size sibling of $inherit_font_family_when_blank above —
+	 *   same shape, same rationale, for the same class of caller: a flat
+	 *   scalar attribute rendering as a real UI/button element (not a
+	 *   heading tag governed by theme.json's own font-size presets) whose
+	 *   UA default (e.g. a `<button>`'s ~13.3px) must be actively contested
+	 *   rather than left silent. Set true ONLY when the caller has made
+	 *   that per-attribute decision — e.g. nav-menu's `burgerFontSize`
+	 *   (Spec 41 Wave 2 J1): an unset value must inherit the ancestor's
+	 *   real font-size (the theme's body-copy rule on every real page),
+	 *   never a hardcoded px literal that could drift from a given
+	 *   client's theme. Leave false for every existing caller — this is
+	 *   additive/backward-compatible, default preserves current behaviour.
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '', $inherit_font_family_when_blank = false ) {
+	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '', $inherit_font_family_when_blank = false, $inherit_font_size_when_blank = false ) {
 		$k_size        = sgs_typography_attr( $prefix, 'FontSize' );
 		$k_size_unit   = sgs_typography_attr( $prefix, 'FontSizeUnit' );
 		$k_family      = sgs_typography_attr( $prefix, 'FontFamily' );
@@ -280,6 +293,15 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			if ( '' !== $legacy ) {
 				$base_decls[] = 'font-size:' . $legacy . ';';
 			}
+		} elseif ( ! $size_is_tiered && empty( $attributes[ $k_size ] ) && $inherit_font_size_when_blank ) {
+			// See the $inherit_font_size_when_blank param doc above — mirrors the
+			// font-family escape hatch immediately below. `inherit` resolves
+			// through the DOM to the nearest ancestor with an explicit
+			// font-size (the theme's real body-copy rule on every real page),
+			// so the element can never render smaller than body text by
+			// construction — no hardcoded px literal that could drift from a
+			// given client's theme.
+			$base_decls[] = 'font-size:inherit;';
 		}
 		// Font-family — plain string, no responsive tiers (matches
 		// TypographyControls' showFontFamily picker, which offers no per-device

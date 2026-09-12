@@ -78,9 +78,11 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 	 * `Swap` restores it. Only the emission falls back to `'swap'`.
 	 *
 	 * ⚠ Only rows DECLARED in `sweepEligibility` are gated. `itemBorderHoverTreatment`
-	 * is deliberately absent from that declaration — its Sweep is a `::after` band,
-	 * not a `background-clip:text` glyph sweep, so none of the three conditions has
-	 * a referent on it.
+	 * IS declared (Spec 41 Wave 2 H1) — its Sweep is a `::after` gradient band, which
+	 * can only ever render solid, so it is gated purely via `glyphGuard` against
+	 * `itemBorderStyle` (dashed/dotted/etc withdraw Sweep back to `swap`); it has no
+	 * `blockingBackgroundAttrs`/`blockingGradientAttrs` referent since the band isn't
+	 * a `background-clip:text` glyph sweep.
 	 *
 	 * @param array $attributes Block attributes as handed to render.php.
 	 * @return array<string,string> Resolved treatment per attribute name.
