@@ -550,7 +550,23 @@ committed to `main`:
 
 **Still open, deliberately NOT implemented — need Bean's decision, not more investigation:**
 - **L1** — mirror the now-complete burger typography onto the nav-drawer close button. Proposal exists (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`), not yet dispatched (ran out of session context). Low-risk, same mechanical pattern as the burger fix — safe to pick up first next session.
-- **Orphaned palette slug** — framework-wide (335 call sites, 73 files), needs Bean's sign-off on the fallback approach before touching `sgs_colour_value()`. Note: an uncommitted fix to `sgs_colour_value()` (adding a `currentColor` fallback) was observed mid-edit on the shared worktree during this task, unrelated to it.
+
+**Orphaned palette slug — SHIPPED (2026-09-12, commit `7c0d11a50`, live-verified).** Per Bean's
+sign-off on the `currentColor` fallback (cluster5 architecture doc): `sgs_colour_value()`
+(`helpers-tokens.php`) and its JS mirror `colourVar()` (`src/utils/tokens.js`) now emit
+`var(--wp--preset--color--{slug}, currentColor)` instead of an unresolved `var()` with no
+fallback — kept in parity via the existing JS/PHP contract gate
+(`check-colour-preview-resolver.js`, updated to the new expected output). Added
+`wp sgs audit-colour-tokens` (`class-sgs-colour-audit-cli-commands.php`) as the discovery
+half — walks every post's parsed blocks against a DB-generated snapshot of colour-typed
+attributes (790 rows/66 blocks) and reports any stored slug no longer present in the live
+palette. Live-verified: the `burgerBg:"secondary"` fixture (post 3488) now computes
+`background-color` to the element's own resolved text colour instead of `rgba(0,0,0,0)`,
+and `wp sgs audit-colour-tokens` lists that exact fixture (post 3488, `sgs/nav-menu`,
+`burgerBg`, `secondary`) plus 11 other orphaned instances discovered live on the canary.
+Known minor limitation: a gradient string (`linear-gradient(...)`) stored in a colour-typed
+attribute is misclassified as an orphaned slug rather than excluded — cosmetic false
+positive in the audit report only, does not affect the render-time fallback fix.
 
 ## E1 (drawer symptoms 2/3) + E2 — SHIPPED (2026-09-12, commit `daa87be8d`)
 
