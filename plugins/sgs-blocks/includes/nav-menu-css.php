@@ -444,7 +444,58 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 			$css .= sgs_hover_state_rules( $link_sel, $item_bg_hover_decl, ':focus-visible', '::before' );
 		}
 	}
-	
+
+	/*
+	 * ── FR-41-13-adjacent — ANCESTOR shows Current styling when a descendant
+	 * submenu item IS the current page (nav-review fix 4, 2026-09-12). ─────────
+	 *
+	 * Bean explicitly rejected a THIRD visual language (a diluted/tinted
+	 * treatment) for this — the ancestor reuses the LITERAL existing Current
+	 * declarations verbatim, the same values `$item_colour_current` /
+	 * `$item_bg_current_decl` / `itemBorderColourCurrent` / `$item_weight_current`
+	 * already computed above for the item's OWN current-page rule. No new
+	 * custom property, no new colour.
+	 *
+	 * Selector shape extends the SAME `:has()` pattern the FR-41-13 rescue block
+	 * below already uses (there keyed on `[aria-expanded="true"]` /
+	 * `:focus-visible`), here keyed on `a[aria-current="page"]` instead, for
+	 * both forks (bar `.submenu-root` / drawer `.accordion-row`). `:has()` needs
+	 * no browser-support gate — FR-41-13 already ships it unconditionally.
+	 *
+	 * `:not(:hover):not(:focus-visible)` on the trailing `.sgs-nav-menu__link`
+	 * is what guarantees hover always wins over a propagated-current ancestor —
+	 * NOT specificity. Measured: the `:has(ul.sgs-nav-menu__submenu
+	 * a[aria-current="page"])` selector's own specificity (0,5,2) already
+	 * OUTRANKS the item's plain `:hover` rule (0,3,0), so relying on source
+	 * order or specificity here would have been backwards — a directly-hovered
+	 * parent would have kept showing the propagated Current paint underneath.
+	 * The `:not()` pair sidesteps the arithmetic entirely: while the link is
+	 * itself hovered or focus-visible, this rule simply does not match.
+	 */
+	$sgs_nm_ancestor_current_decls = array();
+	if ( '' !== $item_colour_current ) {
+		$sgs_nm_ancestor_current_decls[] = 'color:' . sgs_colour_value( $item_colour_current );
+	}
+	$sgs_nm_item_border_colour_current = (string) ( $attributes['itemBorderColourCurrent'] ?? '' );
+	if ( '' !== $sgs_nm_item_border_colour_current ) {
+		$sgs_nm_ancestor_current_decls[] = 'border-color:' . sgs_colour_value( $sgs_nm_item_border_colour_current );
+	}
+	if ( $item_weight_current > (int) ( $attributes['itemFontWeight'] ?? 0 ) ) {
+		$sgs_nm_ancestor_current_decls[] = 'font-weight:' . $item_weight_current;
+	}
+	$sgs_nm_ancestor_current_decl_str = implode( ';', $sgs_nm_ancestor_current_decls );
+
+	$sgs_nm_submenu_has_current = 'ul.sgs-nav-menu__submenu a[aria-current="page"]';
+	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .sgs-nav-menu__submenu-root:has(' . $sgs_nm_submenu_has_current . ') > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
+	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has(' . $sgs_nm_submenu_has_current . ') > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
+
+	if ( '' !== $sgs_nm_ancestor_current_decl_str ) {
+		$css .= $sgs_nm_ancestor_bar_sel . ',' . $sgs_nm_ancestor_drawer_sel . '{' . $sgs_nm_ancestor_current_decl_str . ';}';
+	}
+	if ( '' !== $item_bg_current_decl ) {
+		$css .= $sgs_nm_ancestor_bar_sel . '::before,' . $sgs_nm_ancestor_drawer_sel . '::before{' . $item_bg_current_decl . ';}';
+	}
+
 	/*
 	 * ── ITEM BORDER — three states + the directional Sweep band (FR-41-7/8). ─
 	 *

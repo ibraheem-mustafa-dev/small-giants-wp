@@ -514,6 +514,27 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * this fix (routing straight to a real global default via `:where()` on
 		 * the OLD override instead of adding this one) rendered sub-item text
 		 * invisible against its own background — caught live before shipping.
+		 *
+		 * Fix 3a reconciliation (nav-review E1, 2026-09-12) — checked against
+		 * FR-41-36 (locked 2026-09-11) and KEPT, not changed. FR-41-36's table
+		 * gives the drawer's nested submenu the same "plain tier" Normal-state
+		 * text as the top bar: `primary`. But the top bar's OWN item text
+		 * (`itemColour` in nav-menu-css.php) has NO explicit token default
+		 * either — it is unset and simply inherits ambient colour, exactly what
+		 * `color:inherit` does here. So this override does not diverge from "the
+		 * bar's top-level items" default; it already MATCHES it (both currently
+		 * rely on ambient inheritance, not an explicit `primary` literal). The
+		 * only mechanism available inside THIS file that is provably safe
+		 * against an arbitrary `drawerBg` is the drawer's own WCAG-computed
+		 * ambient foreground (documented above) — this file has no access to
+		 * `drawerBg` itself (that attribute lives on the separate sgs/nav-drawer
+		 * block), so a literal `primary` default here cannot be contrast-checked
+		 * and would reintroduce the exact invisible-text bug this override was
+		 * added to fix. Implementing FR-41-36's full literal `primary` token
+		 * everywhere (including the top bar's own currently-unset default) is
+		 * flagged as separate, larger, cross-file future work — the spec itself
+		 * marks the whole table "not yet built" (§FR-41-36) — not bundled into
+		 * this narrow fix.
 		 */
 		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{color:inherit;}';
 		// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
@@ -583,6 +604,21 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		if ( '' !== $submenu_colour_current ) {
 			$css .= $uid_sel . '{--sgs-nm-submenu-current-colour:' . sgs_colour_value( $submenu_colour_current ) . ';}';
 		}
+
+		/*
+		 * FR-41-3 tie-break fix (2026-09-12) — the actual `[aria-current="page"]`
+		 * colour rule now emits HERE, before the Hover rule below, mirroring
+		 * nav-menu-css.php's own documented pattern ("Current BEFORE Hover, and
+		 * never guarded — both states differ from the base by one single-
+		 * specificity suffix, so the pair always ties and source order is the
+		 * only tie-breaker: hover wins when you point at the item for the page
+		 * you are already on"). It previously emitted 136 lines below the Hover
+		 * rule (both (0,3,0), equal specificity), so Current won the tie instead
+		 * — backwards from the item family's own correct precedent. Declaration
+		 * unchanged; only the emission position moved.
+		 */
+		$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
+			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary, currentColor));}';
 
 		if ( '' !== $sublink_sweep['hover'] ) {
 			$css .= $sublink_sweep['hover'];
@@ -697,12 +733,31 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// CONVERTED (census row 1 of the fate table): the colour now reads the
 		// `--sgs-nm-submenu-current-colour` this file WRITES from
 		// `submenuColourCurrent` (above) instead of a property with no writer
-		// anywhere in the tree; the token fallback is kept verbatim so an
-		// untouched nav renders identically. The `font-weight:600` half moved out
+		// anywhere in the tree. The `font-weight:600` half moved out
 		// with the bar's own current-page weight rule — it is now
 		// `itemFontWeightCurrent` under FR-41-6's never-lighter guard.
-		$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
-			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary-dark, currentColor));}';
+		//
+		// ⛔ MOVED (Wave-2 nav-review fix 2, 2026-09-12): the actual rule now
+		// emits earlier, immediately after the `--sgs-nm-submenu-current-colour`
+		// custom-property write above (Current BEFORE Hover, FR-41-3) — see that
+		// comment for why. Nothing left to emit here.
+		//
+		// Fallback token softened (fix 4b, 2026-09-12): `primary-dark` →
+		// `primary`. Not FR-41-36-locked (FR-41-36's Desktop-submenu row states
+		// "no separate Current row colour specified beyond the shared
+		// item-divider language" — this fallback predates and sits outside that
+		// table), so it is free to revisit. `primary-dark` reads noticeably
+		// heavier/bolder than the row's own Normal-state `primary` token; once
+		// fix 4 propagates a descendant's current-page state up to its ANCESTOR
+		// row too, this fallback now paints in more places than before (every
+		// ancestor of a current page, not just the current link itself), so a
+		// darker-than-normal default reads louder across the whole component.
+		// `primary` is already the row's own resting-state token (line ~474
+		// above) — reusing it keeps Current legible via the `[aria-current]`
+		// selector's real distinguishing signal (still applied) while no longer
+		// stacking a second, heavier colour on top for the ancestor-propagation
+		// case. Before: `var(--wp--preset--color--primary-dark, currentColor)`.
+		// After: `var(--wp--preset--color--primary, currentColor)`.
 
 		/*
 		 * CENSUS #7 — CONVERTED, not deleted. Unlike #4/#6/#8 the `var()` half here
@@ -817,15 +872,29 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		/*
 		 * CENSUS #1 — CONVERTED. The `background` half was already attribute-driven
 		 * (`--sgs-nm-submenu-bg` HAS a real writer, from `submenuBg`), so it keeps
-		 * its `color-mix` fallback untouched. The `border:0` half was a hardcoded
-		 * SUPPRESSION: it may keep zeroing the bar's own panel border inside the
-		 * drawer, but it must NOT survive once `submenuBorderWidth` is set, or an
-		 * operator's drawer panel border silently renders nothing. It is now emitted
-		 * only while that attribute is empty.
+		 * its own operator-value precedence untouched. The `border:0` half was a
+		 * hardcoded SUPPRESSION: it may keep zeroing the bar's own panel border
+		 * inside the drawer, but it must NOT survive once `submenuBorderWidth` is
+		 * set, or an operator's drawer panel border silently renders nothing. It
+		 * is now emitted only while that attribute is empty.
+		 *
+		 * Fallback token fixed (fix 3b, nav-review E1, 2026-09-12): the
+		 * `color-mix(in srgb, currentColor 6% transparent)` tint predates FR-41-36
+		 * (locked 2026-09-11) and was never revisited against it. FR-41-36's own
+		 * table names a real token for this exact surface — "Drawer nested
+		 * submenu … bg=`surface`" — deliberately a plain neutral, one step
+		 * lighter than the drawer's own top-level `surface-alt` (the "governing
+		 * principle" pairing: top bar + drawer-nested-submenu share the plain
+		 * tier). `--wp--preset--color--surface` is now the primary fallback, with
+		 * the old `color-mix` tint kept as the LAST-resort net for a theme that
+		 * defines no palette at all (this file's own "never a literal" rule,
+		 * ~line 331) — an untouched SGS-theme install now shows the token
+		 * background instead of an ad-hoc currentColor tint; a non-SGS theme with
+		 * no `surface` token renders exactly as before.
 		 */
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;min-width:0;'
 			. ( $sgs_nm_submenu_border_box ? '' : 'border:0;' )
-			. 'background:var(--sgs-nm-submenu-bg, color-mix(in srgb, currentColor 6%, transparent));border-radius:0;padding:0;margin:0;}';
+			. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface, color-mix(in srgb, currentColor 6%, transparent)));border-radius:0;padding:0;margin:0;}';
 		// CENSUS #2 — KEPT. This is the drawer's resting sub-item INDENT, not a
 		// stateful rule: the marker icon's 12px padding + 14px icon + 8px gap is
 		// measured against the 32px indent this border occupies (see the note
