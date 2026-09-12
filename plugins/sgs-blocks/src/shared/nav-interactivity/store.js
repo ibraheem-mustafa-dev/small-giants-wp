@@ -162,6 +162,19 @@ function lockScroll() {
  * deferred `scrollTo` would cause).
  *
  * Ported verbatim from adaptive-nav/view.js:312-324 (`unlockScroll`, D340).
+ *
+ * K1 fix (2026-09-12): the site's global `html{scroll-behavior:smooth}`
+ * (`core-blocks-critical.css:80-84`) was unguarded at this call site, turning
+ * the restore into a ~350ms eased climb visible AFTER the drawer had already
+ * closed. `scrollTo()` resolves synchronously within the current task, so
+ * forcing `scroll-behavior:auto` for the duration of this one call — then
+ * restoring whatever was there before on the very next line — is safe;
+ * nothing else can scroll in between. Matches the idiom already used in
+ * `scripts/motion-qa/probe-horizontal-panel-focus.mjs:375`, scoped down from
+ * "disable smooth-scroll for the whole page session" (correct for a test
+ * probe) to "disable it only for this one call" (correct for production,
+ * where a genuine user-initiated smooth-scroll — e.g. an anchor link — must
+ * keep working immediately after the drawer closes).
  */
 function unlockScroll() {
 	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
@@ -173,7 +186,11 @@ function unlockScroll() {
 	document.body.style.right = '';
 	document.body.style.width = '';
 	if ( stored !== null ) {
+		const root = document.documentElement;
+		const previousScrollBehavior = root.style.scrollBehavior;
+		root.style.scrollBehavior = 'auto';
 		window.scrollTo( 0, parseInt( stored, 10 ) || 0 );
+		root.style.scrollBehavior = previousScrollBehavior;
 	}
 }
 
