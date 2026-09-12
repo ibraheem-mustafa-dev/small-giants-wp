@@ -439,27 +439,37 @@ the drawer fork has resisted automated testing across this session (Step 22/23's
 contention, Wave 1's incomplete burger+drawer pairing, now this). Flagged, not root-caused —
 needs either a real manual pass or a dedicated automation-compatibility investigation.
 
-### M3 (dropdown panel anchors to chevron) — CONFIRMED real bug, found on Bean's own named fixture (correcting the earlier "refuted" verdict)
+### M3 (dropdown panel anchors to chevron) — NOT A BUG, confirmed correct after a third look (correcting my own second wrong verdict)
 
-The earlier re-investigation tested the wrong location (production homepage only) and
-missed the real defect. **Bean's exact named fixture — "G14 negative submenuLinkBg blocks
-sweep" on page 3488, uid `sgs-nav-menu-0f6116a0` — carries `data-sgs-nav-submenu-align`
-explicitly, and confirmed live: `submenuAlign` is a COMPLETELY DEAD CONTROL.**
-`nav-menu-markup.php:268` writes the operator's chosen value into the DOM as
-`data-sgs-nav-submenu-align="%2$s"` — and NOTHING anywhere in `nav-menu-submenu-css.php`,
-`mega-disclosure.js`, or `store.js` ever reads that data attribute. Grepped the entire
-`includes/` and `nav-interactivity/` trees for it: one write site, zero readers.
+This point has now been investigated three times with two different wrong verdicts along
+the way — worth being precise about what actually happened, since I own both mistakes.
 
-Proven live: built a fresh fixture with `submenuAlign:"start"` and another with
-`submenuAlign:"center"` — **byte-identical panel position in both** (panel left edge always
-28px from viewport origin, panel centre always at x=128, matching neither the link's centre
-(44.8) nor the caret's centre (111.65) nor the combined item's centre (66.8) in either
-mode). Whatever position the panel lands at, it's a fixed default the CSS custom property
-`--sgs-mm-overflow-left` falls back to (built for the mega-panel's own overflow logic and
-silently reused here) — it never moves in response to the operator's alignment choice.
-**This is a different, more serious bug than "centres on the chevron" literally, but
-produces exactly the practical symptom Bean described: the dropdown's position bears no
-relation to what the operator configures, landing wherever the fallback happens to put it.**
+**Second verdict (wrong):** tested on Bean's named fixture ("G14 negative submenuLinkBg
+blocks sweep", page 3488, uid `sgs-nav-menu-0f6116a0") and found `submenuAlign:"start"` vs
+`submenuAlign:"center"` produced byte-identical panel positions. Concluded `submenuAlign`
+was a completely dead control — grepped `includes/` (PHP) for a reader and found none, but
+never checked the actual JS file that handles panel positioning.
+
+**Third look (correct):** `mega-disclosure.js::repositionPanel` line 385 DOES read
+`root.dataset.sgsNavSubmenuAlign` and branches into real start/center/end position
+formulas — the grep that produced the "dead control" verdict simply missed this file. The
+reason start/center looked identical on THAT specific fixture: the "Services" item sits at
+the very left edge of the nav bar (x=0), so a collision-avoidance clamp in the same
+function pulls any computed position back to the same edge-safe spot regardless of the
+requested alignment — the difference is real but was invisible on an edge-pinned item.
+Rebuilt the test with the same item positioned mid-bar (a dedicated menu with two items
+before it, well clear of the edge) and got three genuinely different, correctly-computed
+positions: `start` matches the link's own left edge, `center` matches the centre of the
+whole item unit (link + caret combined), `end` matches the item unit's right edge. The
+mechanism is coherent and works exactly as intended.
+
+**Verdict: `submenuAlign` works correctly. Bean's original observation on this specific
+point does not have a code-level cause** — three real possibilities remain, same as
+before the two wrong verdicts: a stale browser cache, a different item/position than
+tested here, or (most likely, given M6's separately-confirmed oversized chevron sitting
+right next to a narrower link) a perception effect where the visibly large chevron reads
+as "the dropdown is centred on this" even though it measurably isn't. No fix needed for
+`submenuAlign` itself — closing this one.
 
 ### I1 (submenu white lip) — CONFIRMED and visually matched, on Bean's own named fixture
 
@@ -521,10 +531,14 @@ check at all. Not what Bean saw here, but real and worth flagging for its own fi
 
 ## Investigation status
 
-**Wave 1 + 1.5 + direct follow-up complete.** M3 and I1 are now fully confirmed and
-corrected above — both were found on Bean's own exact named fixture once tested there
-directly instead of a fresh/production-only repro. Only one genuine open question remains
-for Bean, the rest is ready for Wave 2 (solution design):
+**Wave 1 + 1.5 + direct follow-up complete.** I1 is fully confirmed above, found on Bean's
+own exact named fixture once tested there directly instead of a fresh/production-only
+repro. M3 went through two wrong verdicts before landing on the correct one: it is NOT a
+bug — `submenuAlign` works correctly, confirmed with a mid-bar test fixture after the
+edge-pinned test fixture masked the real (working) behaviour. **No Wave 2 fix needed for
+M3** — the Cluster 2 solution-design proposal covering M3 is superseded by this finding
+and should not be built. Only one genuine open question remains for Bean, the rest is
+ready for Wave 2 (solution design):
 
 1. **E1** — which instance were you testing (scratch-page fixtures vs the real live
    header)? Determines whether Wave 2 designs a fix for "no explicit hover colour set,
