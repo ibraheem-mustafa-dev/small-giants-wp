@@ -70,8 +70,8 @@ function installCssSupportsShim() {
  * message says what breaks rather than which assertion tripped.
  */
 const CASES = [
-	{ in: 'primary',            expect: 'var(--wp--preset--color--primary)',      why: 'a palette colour must resolve to its preset custom property' },
-	{ in: 'text-inverse',       expect: 'var(--wp--preset--color--text-inverse)', why: 'a hyphenated palette slug must still be slug-wrapped' },
+	{ in: 'primary',            expect: 'var(--wp--preset--color--primary, currentColor)',      why: 'a palette colour must resolve to its preset custom property, with a currentColor fallback for an orphaned slug (2026-09-12)' },
+	{ in: 'text-inverse',       expect: 'var(--wp--preset--color--text-inverse, currentColor)', why: 'a hyphenated palette slug must still be slug-wrapped, with the same orphaned-slug fallback' },
 	{ in: '#00FF00',            expect: '#00FF00',                                why: 'a custom hex must pass through — wrapping it emits invalid CSS and the colour silently disappears (D792)' },
 	{ in: '#0A5',               expect: '#0A5',                                   why: 'a 3-digit hex must pass through for the same reason' },
 	{ in: 'rgb(1, 2, 3)',       expect: 'rgb(1, 2, 3)',                           why: 'a functional colour must pass through' },

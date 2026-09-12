@@ -626,7 +626,16 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 	// Sanitise slug to valid WordPress preset characters only (prevents CSS injection).
 	$slug = preg_replace( '/[^a-z0-9-]/', '', strtolower( $value ) );
 
-	return 'var(--wp--preset--color--' . $slug . ')';
+	// Fallback to currentColor when the slug is orphaned (renamed/deleted from the
+	// live palette after being stored) — an unresolved var() with no fallback drops
+	// the whole declaration silently (rgba(0,0,0,0)-equivalent invisibility). This
+	// function is called for color/background-color/border-color/gradient-stops/fill
+	// alike, so the fallback must resolve correctly for all of them: currentColor
+	// always bottoms out at the element's own resolved `color`, which is itself
+	// guaranteed a real value via inheritance. See
+	// .claude/reports/2026-09-12-nav-menu-wave2-cluster5-architecture-solutions.md
+	// ("Orphaned palette slug renders silently blank").
+	return 'var(--wp--preset--color--' . $slug . ', currentColor)';
 }
 
 /**

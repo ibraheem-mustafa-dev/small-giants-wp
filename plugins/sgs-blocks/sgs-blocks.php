@@ -532,6 +532,12 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	\WP_CLI::add_command( 'sgs header', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_HEADER ) );
 	\WP_CLI::add_command( 'sgs footer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_FOOTER ) );
 	\WP_CLI::add_command( 'sgs drawer', new Sgs_Header_Footer_Cli_Commands( Sgs_Active_Layout::AREA_DRAWER ) );
+
+	// Orphaned colour-token discovery (companion to the sgs_colour_value() currentColor
+	// fallback in helpers-tokens.php) — see
+	// .claude/reports/2026-09-12-nav-menu-wave2-cluster5-architecture-solutions.md.
+	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-colour-audit-cli-commands.php';
+	\WP_CLI::add_command( 'sgs audit-colour-tokens', Sgs_Colour_Audit_Cli_Commands::class );
 }
 
 SGS_Blocks::instance();

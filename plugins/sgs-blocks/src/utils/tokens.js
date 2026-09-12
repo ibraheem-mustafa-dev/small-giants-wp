@@ -29,6 +29,14 @@
  *
  * The server never had this bug; only the preview did. This makes the two agree.
  *
+ * FALLBACK (2026-09-12): mirrors the PHP side's `, currentColor` fallback added
+ * to `sgs_colour_value()` — a slug that is later renamed/deleted from the live
+ * palette resolves to an unresolved `var()` with no fallback, which is invalid
+ * CSS and drops the whole declaration silently. `currentColor` degrades to the
+ * element's own resolved text colour instead, regardless of which CSS property
+ * consumes the value. See
+ * .claude/reports/2026-09-12-nav-menu-wave2-cluster5-architecture-solutions.md.
+ *
  * SLUG-vs-LITERAL is decided by `CSS.supports()` rather than by porting the
  * server's 148-entry named-colour list. The browser IS the CSS colour spec, so
  * the test is complete by construction and cannot drift from it — and
@@ -60,7 +68,7 @@ export function colourVar( slug ) {
 		return value;
 	}
 
-	return `var(--wp--preset--color--${ value })`;
+	return `var(--wp--preset--color--${ value }, currentColor)`;
 }
 
 export function spacingVar( slug ) {
