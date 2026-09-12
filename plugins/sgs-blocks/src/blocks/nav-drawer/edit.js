@@ -26,6 +26,7 @@ import {
 	useSettings,
 	MediaUpload,
 	MediaUploadCheck,
+	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -35,7 +36,8 @@ import {
 	Button,
 	Icon,
 } from '@wordpress/components';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 
 /** backgroundSize control options — mirrors sgs/container's BackgroundPanel. */
 const BG_SIZE_OPTIONS = [
@@ -72,7 +74,7 @@ const BG_ATTACHMENT_OPTIONS = [
 ];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl, IconPicker,
+	SgsBorderControl, IconPicker, TypographyControls,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle } from '../../utils';
@@ -128,7 +130,7 @@ const ANCHOR_ANIM_LABEL = {
 	centred: __( 'scale up (modal)', 'sgs-blocks' ),
 };
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		drawerRef,
 		anchor,
@@ -138,6 +140,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		closeStyle,
 		closeLabel,
 		closeIcon,
+		closeSize,
 		animateFrom,
 		modality,
 		drawerBg,
@@ -165,6 +168,85 @@ export default function Edit( { attributes, setAttributes } ) {
 	const anchorDesktop = anchor?.desktop || 'full-screen';
 	const isCompact = anchorDesktop === 'trigger' || anchorDesktop === 'centred';
 	const [ palette ] = useSettings( 'color.palette' );
+
+	// ── G6 (2026-09-12 architecture doc) — auto-rename on detected collision. ──
+	//
+	// block.json's shared literal default 'sgs-nav-drawer' is deliberate (9
+	// shipped header patterns rely on it) and stays untouched. The bug this
+	// closes is a SECOND, genuinely independent drawer resolving to the same
+	// id as another drawer, so a burger opens the wrong dialog. Bean approved
+	// "auto-rename silently" over "warn and block".
+	//
+	// Two collision sources, checked in the same effect:
+	//  (a) within-post — another sgs/nav-drawer block in THIS post already
+	//      resolves to the same effective ref (mirrors useDrawerNotice.js's
+	//      getBlocksByName/getBlockIndex pattern). Only the LATER block (higher
+	//      index) is renamed, so the original zero-config drawer a header
+	//      pattern seeds is never rewritten out from under an operator.
+	//  (b) cross-post — window.sgsBlocksData.activeDrawer (published by
+	//      Sgs_Drawer_Render::editor_data(), class-sgs-blocks.php:284) names the
+	//      site's real Active header drawer by post id + ref. If this block's
+	//      ref matches but its OWN post is a different post, this is a second,
+	//      different drawer colliding with the real one — not the Active
+	//      drawer editing itself.
+	const effectiveDrawerRef = ( drawerRef || '' ).trim() || 'sgs-nav-drawer';
+	const collisionState = useSelect(
+		( select ) => {
+			const be = select( blockEditorStore );
+			const drawerIds = be.getBlocksByName
+				? be.getBlocksByName( 'sgs/nav-drawer' )
+				: [];
+			const withinPostCollision = drawerIds.some( ( id ) => {
+				if ( id === clientId ) {
+					return false;
+				}
+				const otherAttrs = be.getBlockAttributes( id ) || {};
+				const otherRef =
+					( otherAttrs.drawerRef || '' ).trim() || 'sgs-nav-drawer';
+				if ( otherRef !== effectiveDrawerRef ) {
+					return false;
+				}
+				return be.getBlockIndex( id ) < be.getBlockIndex( clientId );
+			} );
+
+			const editor = select( 'core/editor' );
+			return {
+				withinPostCollision,
+				postId: editor && editor.getCurrentPostId ? editor.getCurrentPostId() : null,
+			};
+		},
+		[ clientId, effectiveDrawerRef ]
+	);
+
+	useEffect( () => {
+		if ( collisionState.withinPostCollision ) {
+			setAttributes( {
+				drawerRef: `sgs-nav-drawer-${ clientId.substr( 0, 8 ) }`,
+			} );
+			return;
+		}
+
+		const active =
+			typeof window !== 'undefined' && window.sgsBlocksData
+				? window.sgsBlocksData.activeDrawer
+				: null;
+		if (
+			active &&
+			active.ref === effectiveDrawerRef &&
+			collisionState.postId &&
+			active.id !== collisionState.postId
+		) {
+			setAttributes( {
+				drawerRef: `sgs-nav-drawer-${ clientId.substr( 0, 8 ) }`,
+			} );
+		}
+	}, [
+		collisionState.withinPostCollision,
+		collisionState.postId,
+		effectiveDrawerRef,
+		clientId,
+		setAttributes,
+	] );
 
 	// Editor-only preview styling (reflects the same attrs render.php reads;
 	// inline style here is editor canvas only — the no-inline contract governs
@@ -819,6 +901,53 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ToolsPanelItem>
 					) }
 
+					{ /* closeSize — mirrors nav-menu's BurgerPanel `Size` field exactly
+					   (same SgsLengthControl shape, same 44px WCAG-floor help text).
+					   Not gated on closeStyle: it governs the button box in every
+					   style, matching burgerSize's own unconditional presence. */ }
+					<ToolsPanelItem
+						label={ __( 'Size', 'sgs-blocks' ) }
+						hasValue={ () => '44px' !== ( closeSize || '44px' ) }
+						onDeselect={ () => setAttributes( { closeSize: '44px' } ) }
+					>
+						<SgsLengthControl
+							label={ __( 'Size', 'sgs-blocks' ) }
+							value={ closeSize }
+							units={ [ { value: 'px', label: 'px', default: 44 } ] }
+							onChange={ ( val ) => setAttributes( { closeSize: val || '44px' } ) }
+							help={ __(
+								'44px minimum for a comfortable touch target (WCAG 2.2 AA).',
+								'sgs-blocks'
+							) }
+							presets={ false }
+						/>
+					</ToolsPanelItem>
+
+					{ /* ⛔ OMIT, never disable (D609 field 9c) — matching nav-menu's own
+					   burger-typography OMIT-while-icon gate (edit.js's `triggerMode !==
+					   'icon'` target). The close LABEL only renders under text-swap /
+					   icon-and-text (render.php's $sgs_nd_close_inner branch), so font
+					   size/family/weight/transform/letter-spacing are equally meaningless
+					   under separate-x / burger-morph. The uppercase(text-swap)/none
+					   (icon-and-text) text-transform defaults still apply while hidden
+					   (render.php resolves the per-style default). */ }
+					{ ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) && (
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							targets={ [
+								{
+									key: 'close',
+									label: __( 'Close label', 'sgs-blocks' ),
+									prefix: 'close',
+									showFontFamily: true,
+									showTransform: true,
+									showLetterSpacing: true,
+								},
+							] }
+						/>
+					) }
+
 					<p style={ { fontSize: '12px', color: '#757575', margin: '4px 0 0' } }>
 						{ __(
 							'Its colour is in the Colour panel above — leave that empty to match the drawer’s text colour automatically. The close button is always present; it cannot be deleted.',
@@ -845,7 +974,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				<span
 					className="sgs-nav-drawer__close-preview sgs-nav-drawer__close"
 					aria-hidden="true"
-					style={ resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ) }
+					style={ {
+						...resolveTextColourPreviewStyle( toggleCloseColour, toggleCloseColourGradient, ( v ) => resolveColourToken( v, palette ) ),
+						/* closeSize editor-canvas mirror (2026-09-12) — this preview span
+						   is hand-authored JSX, not a render.php-rendered node (the drawer
+						   cannot use ServerSideRender while it hosts editable InnerBlocks —
+						   see the module docstring), so render.php's scoped closeSize <style>
+						   never reaches it. Width is only forced when the style shows text
+						   (matches render.php's own text-bearing width:auto branch). */
+						width: ( 'text-swap' === closeStyle || 'icon-and-text' === closeStyle ) ? 'auto' : ( closeSize || '44px' ),
+						height: closeSize || '44px',
+						minWidth: closeSize || '44px',
+						minHeight: closeSize || '44px',
+					} }
 				>
 					{ closeStyle === 'text-swap' && (
 						<span className="sgs-nav-drawer__close-text">

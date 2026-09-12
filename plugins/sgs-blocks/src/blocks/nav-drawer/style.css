@@ -352,14 +352,15 @@
    `text-swap` widens the button for a text label; `burger-morph` draws a
    2-bar icon that already reads as an X (see render.php for why this is a
    drawn approximation rather than a literal cross-block morph). ── */
+/* Typography (font-size/font-weight/text-transform/letter-spacing) moved to
+   render.php's scoped .sgs-nav-drawer__close-text rule (closeFontSize/
+   closeFontWeight/closeTextTransform/closeLetterSpacing attrs, 2026-09-12) —
+   this rule keeps only the LAYOUT the label needs (width/padding), which stays
+   block-private CSS because no attribute governs it. */
 .sgs-nav-drawer--close-text-swap .sgs-nav-drawer__close {
 	width: auto;
 	min-width: 44px;
 	padding: 0 12px;
-	font-size: 14px;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
 }
 
 /* ── `icon-and-text` (Spec 41 FR-41-12 / step 14a). CHECKED BEFORE WRITING: the
@@ -368,15 +369,13 @@
    and the word would sit flush against each other inside a button too narrow for
    both. `--close-text-swap` sets the width/padding this needs but no gap, and it is
    a DIFFERENT modifier class, so it never applies here. Hence one rule, sharing
-   text-swap's width/padding and adding the gap. ── */
+   text-swap's width/padding and adding the gap. Typography moved to render.php's
+   scoped .sgs-nav-drawer__close-text rule (2026-09-12), same as text-swap above. ── */
 .sgs-nav-drawer--close-icon-and-text .sgs-nav-drawer__close {
 	width: auto;
 	min-width: 44px;
 	gap: 8px;
 	padding: 0 12px;
-	font-size: 14px;
-	font-weight: 600;
-	letter-spacing: 0.05em;
 }
 
 /* The glyph half. `display:flex` keeps the SVG optically centred against the word's

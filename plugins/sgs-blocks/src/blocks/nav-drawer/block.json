@@ -141,12 +141,20 @@
 					"label": "Close button",
 					"order": 2,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "toggleClose",
 					"attrMap": {
 						"css:color-gradient": "toggleCloseColourGradient",
-						"css:color": "toggleCloseColour"
+						"css:color": "toggleCloseColour",
+						"css:width": "closeSize",
+						"css:height": "closeSize",
+						"css:font-size": "closeFontSize",
+						"css:font-family": "closeFontFamily",
+						"css:font-weight": "closeFontWeight",
+						"css:text-transform": "closeTextTransform",
+						"css:letter-spacing": "closeLetterSpacing"
 					},
 					"states": {
 						"hover": {
@@ -155,7 +163,7 @@
 							}
 						}
 					},
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. 2026-09-12: closeSize (mirrors nav-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors nav-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) added — same mechanism (sgs_typography_css_rule()), giving the close button real inspector Typography controls where it previously had none, only style.css hardcoding. Defaults preserve the pre-existing hardcoded values exactly (see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch)."
 				},
 				"decorative": {
 					"label": "Decorative background",
@@ -322,6 +330,53 @@
 		"toggleCloseColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"closeSize": {
+			"type": "string",
+			"default": "44px",
+			"description": "Mirrors nav-menu's burgerSize (css:width/css:height, Spec 41). Sets the close button's box size in px. Default 44px reproduces the CURRENT effective size exactly — style.css's base rule already sets min-width/min-height:44px with no explicit width/height, so an unset value renders byte-identical. Under text-swap/icon-and-text (closeStyle), render.php keeps width:auto (mirrors burgerSize's own triggerMode branch — a button carrying a word cannot be forced back to a fixed square) and applies this value to height/min-width/min-height only; under separate-x/burger-morph it sets a fixed width+height square, matching the current icon-only rendering."
+		},
+		"closeFontSize": {
+			"type": "string",
+			"default": "14",
+			"description": "Spec 41 close-button typography (mirrors nav-menu's burgerFontSize mechanism, sgs_typography_css_rule()). Targets the close LABEL text span (.sgs-nav-drawer__close-text), only rendered under text-swap/icon-and-text closeStyle. Default '14' + closeFontSizeUnit 'px' reproduces style.css's pre-existing hardcoded font-size:14px exactly, so an untouched drawer (any closeStyle) renders byte-identical."
+		},
+		"closeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"closeFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Close-button label font-family. Unset = no declaration (inherits ambient font), matching current behaviour — style.css never hardcoded a font-family for the close label."
+		},
+		"closeFontWeight": {
+			"type": "string",
+			"default": "600",
+			"description": "Reproduces style.css's pre-existing hardcoded font-weight:600 on the close label exactly."
+		},
+		"closeTextTransform": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Left unset by default deliberately — the PRE-EXISTING hardcoded value differs by closeStyle (text-swap: uppercase; icon-and-text: none, style.css never declared it there), so a single flat default cannot represent both without changing one of them. render.php resolves the byte-identical per-style default only when this is empty; once an operator sets a value it applies uniformly to both text-bearing styles."
+		},
+		"closeLetterSpacing": {
+			"type": "object",
+			"default": {
+				"desktop": 0.05
+			},
+			"description": "Tier object mirroring burgerLetterSpacing's shape. Default resolves to 0.05em (see closeLetterSpacingUnit), reproducing style.css's pre-existing hardcoded letter-spacing:0.05em on the close label exactly."
+		},
+		"closeLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"drawerAlign": {
 			"type": "string",

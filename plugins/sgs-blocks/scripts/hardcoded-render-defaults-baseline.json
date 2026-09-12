@@ -145,6 +145,24 @@
       "attr": "margin",
       "reason": "2026-09-06 — pre-existing on main; sgs/whatsapp-cta was never touched by this session's colour-conformance work (git diff confirms zero changes to this block). Fix tracked separately.",
       "disposition": "accepted-debt"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "file": "src\\blocks\\nav-drawer\\style.css",
+      "property": "width",
+      "value": "28px",
+      "attr": "closeSize",
+      "reason": "2026-09-12 - detector collision, not a real gap: this rule (.sgs-nav-drawer__close svg) sizes the CLOSE ICON GLYPH, a completely different thing from the button BOX that closeSize governs (render.php's new closeSize CSS targets .sgs-nav-drawer__close, never its child svg). The close element's attrMap declares css:width/css:height -> closeSize for the button box (mirrors nav-menu's burgerSize); the detector's element-level match flags every width/height rule under that element's selector prefix, including this unrelated descendant. No attribute should own the icon's own fixed 28px render size.",
+      "disposition": "detector-limitation"
+    },
+    {
+      "block": "sgs/nav-drawer",
+      "file": "src\\blocks\\nav-drawer\\style.css",
+      "property": "height",
+      "value": "28px",
+      "attr": "closeSize",
+      "reason": "2026-09-12 - same detector collision as the width:28px sibling entry above (.sgs-nav-drawer__close svg icon glyph size, not the closeSize-governed button box).",
+      "disposition": "detector-limitation"
     }
   ],
   "_meta": {

@@ -532,10 +532,10 @@ if ( 'none' !== $border_style ) {
 	// G5 (Bean, 2026-08-26): a style with no width means NO border -- never fall
 	// through to the browser's initial `medium` (~3px).
 	if ( $has_border_width ) {
-		$bwt = '' !== $border_width_top ? $border_width_top : '0';
-		$bwr = '' !== $border_width_right ? $border_width_right : '0';
-		$bwb = '' !== $border_width_bottom ? $border_width_bottom : '0';
-		$bwl = '' !== $border_width_left ? $border_width_left : '0';
+		$bwt  = '' !== $border_width_top ? $border_width_top : '0';
+		$bwr  = '' !== $border_width_right ? $border_width_right : '0';
+		$bwb  = '' !== $border_width_bottom ? $border_width_bottom : '0';
+		$bwl  = '' !== $border_width_left ? $border_width_left : '0';
 		$css .= $root_sel . '{border-style:' . $border_style . ';border-width:' . "{$bwt} {$bwr} {$bwb} {$bwl}" . ';}';
 	}
 
@@ -569,7 +569,7 @@ if ( 'none' !== $border_style ) {
 // serialisation. The style-engine result is an intermediate PHP value ($out
 // array), never appended raw -- only its ['css'] string goes through the
 // detected sink (`.=` for a string accumulator, `[] =` for an array one). ──
-$radius_tiers = sgs_border_radius_tiers( $attributes );
+$radius_tiers      = sgs_border_radius_tiers( $attributes );
 $border_radius_obj = is_array( $radius_tiers['base'] ) ? $radius_tiers['base'] : array();
 if ( ! empty( $border_radius_obj ) ) {
 	$border_radius_out = wp_style_engine_get_styles(
@@ -675,6 +675,52 @@ $sgs_nd_allowed_close_styles = array( 'separate-x', 'text-swap', 'burger-morph',
 $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-x', $sgs_nd_allowed_close_styles, true )
 	? (string) $attributes['closeStyle']
 	: 'separate-x';
+
+// ── Close-button SIZE (closeSize, mirrors nav-menu's burgerSize mechanism —
+// nav-menu-trigger-css.php::sgs_nav_menu_trigger_css()'s own size block).
+// Default '44px' reproduces the CURRENT effective size exactly: style.css's
+// base `.sgs-nav-drawer__close` rule already carries min-width/min-height:44px
+// with no explicit width/height, so an untouched drawer renders byte-identical
+// whether this fires or not.
+//
+// Text-bearing styles (text-swap/icon-and-text) keep width:auto — style.css's
+// own `--close-text-swap`/`--close-icon-and-text` rules already set
+// `width:auto;min-width:44px;padding:0 12px` so the button can grow to fit the
+// word; forcing a fixed `width` here would re-clip it back to a square,
+// exactly the bug burgerSize's own triggerMode branch (nav-menu-trigger-css.php)
+// avoids for the identical reason on the open side.
+$sgs_nd_close_size = sgs_css_length_value( $attributes['closeSize'] ?? '44px' );
+if ( '' !== $sgs_nd_close_size ) {
+	$sgs_nd_close_text_bearing = in_array( $sgs_nd_close_style, array( 'text-swap', 'icon-and-text' ), true );
+	$css                      .= $close_sel . '{'
+		. ( $sgs_nd_close_text_bearing ? 'width:auto;' : 'width:' . $sgs_nd_close_size . ';' )
+		. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';}';
+}
+
+// ── Close-button LABEL typography (closeFontSize/closeFontFamily/closeFontWeight/
+// closeTextTransform/closeLetterSpacing — mirrors nav-menu's burgerFontSize
+// family, same sgs_typography_css_rule() helper, same "give the client a real
+// inspector control where only hardcoded CSS existed before" shape). Scoped to
+// the LABEL SPAN (.sgs-nav-drawer__close-text), never the button itself, so a
+// future icon-and-text glyph resize never rides on these attrs (matches
+// nav-menu-trigger-css.php's own $burger_text_sel scoping rationale). The span
+// only exists in the DOM under text-swap/icon-and-text closeStyle (render.php's
+// $sgs_nd_close_inner branch below), so this is a no-op on every other style.
+//
+// closeTextTransform is resolved, not read raw: style.css's PRE-EXISTING
+// hardcoded value differs by closeStyle (text-swap: uppercase; icon-and-text:
+// none — never declared there), so the untouched default must reproduce BOTH
+// values exactly rather than pick one. A non-empty operator value overrides
+// uniformly for either style, matching every other resolved-value pattern in
+// this codebase (e.g. nav-menu-trigger-css.php's $treatments array).
+if ( in_array( $sgs_nd_close_style, array( 'text-swap', 'icon-and-text' ), true ) ) {
+	$sgs_nd_close_text_sel         = $root_sel . ' .sgs-nav-drawer__close-text';
+	$sgs_nd_close_typography_attrs = $attributes;
+	if ( empty( $attributes['closeTextTransform'] ) ) {
+		$sgs_nd_close_typography_attrs['closeTextTransform'] = ( 'text-swap' === $sgs_nd_close_style ) ? 'uppercase' : '';
+	}
+	$css .= sgs_typography_css_rule( $sgs_nd_close_typography_attrs, 'close', $sgs_nd_close_text_sel );
+}
 
 $classes = array(
 	'sgs-nav-drawer',
