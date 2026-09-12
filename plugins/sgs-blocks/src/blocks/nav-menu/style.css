@@ -188,6 +188,8 @@
 	color: inherit;
 	cursor: pointer;
 	display: flex;
+	font-family: inherit;
+	font-size: inherit;
 	height: 44px;
 	justify-content: center;
 	min-height: 44px;
@@ -196,6 +198,24 @@
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease);
 	width: 44px;
 }
+
+/*
+ * J1-J3 companion rule. `<button>` is a form control — the UA stylesheet does
+ * NOT inherit font-family/font-size from ancestors by default (unlike normal
+ * flow elements), so without this the button itself sits at the browser's own
+ * default (~13.3px/Arial). `nav-menu-trigger-css.php`'s burger typography rule
+ * emits `font-family:inherit`/`font-size:inherit` on the CHILD text span
+ * (`.sgs-nav-menu__burger-text`) when those attrs are unset, but CSS `inherit`
+ * only pulls from the immediate parent's COMPUTED value — with no rule here,
+ * that parent (this button) still resolves to the UA default, so the span
+ * faithfully inherits the broken value instead of the theme's real body font.
+ * This rule gives the button a real value to pass down. Only font-family/
+ * font-size are set (not the `font` shorthand) — font-weight/text-transform/
+ * letter-spacing are set as explicit values directly on the text span, not
+ * `inherit`, so they are unaffected either way; narrowing to these two
+ * properties avoids resetting the button's own font-style/line-height for no
+ * reason.
+ */
 
 /*
  * Magnetic-pull companion rule (Spec 41 FR-41-31). Required the moment
