@@ -401,19 +401,117 @@ Bean), or **UNCONFIRMED** (genuinely couldn't test within budget).
   The duration-sync half is additionally blocked on Group F (no open animation exists yet
   to sync against).
 
+## Wave 1.5 — re-investigation after Bean's clarifications (2026-09-12)
+
+Bean corrected Wave 1 on three points and directly challenged the depth of several
+findings. Five targeted re-investigations ran (`/systematic-debugging` + real-interaction
+discipline, no forced style overrides, no synthetic hover shortcuts). Full evidence:
+`.claude/verify/nav-review-reinvestigate-*.md`.
+
+### E1 (parent-hover regression) — REPRODUCED, real mechanism found, one open question left
+
+Bean was right that it reproduces on his named fixtures. Root cause: six named fixtures
+(`G14 Submenu Neg` on page 3488; `G19b`/`G19c`/`G19d`/`G20SET`/`G20UNSET` on page 3487)
+never had `itemColourHover`/`itemBorderColourHover` EXPLICITLY set. Their only hover colour
+comes from **WordPress core's own site-wide default** (`theme.json`'s link-hover style,
+output as `:root :where(a:hover){color:var(--wp--preset--color--primary-dark)}`) — a rule
+keyed on the literal `<a>` tag's own `:hover`, zero specificity by design. FR-41-13's rescue
+rule only ever re-applies the block's OWN explicitly-configured colours; it has no
+awareness of this ambient WP-core rule, so there's nothing rescuing it. The instant the
+mouse leaves the `<a>` (even while still inside the dropdown wrapper), the ambient rule
+correctly stops matching and the colour vanishes — that's the actual mechanism, not a
+regression in the fix itself, but a real GAP in its scope (it never anticipated "the only
+hover signal is the WP-core ambient default, not a block attribute").
+
+**Open question for Bean:** the live "Primary" header menu (the real site nav) has an
+EXPLICIT base colour rule that blocks the ambient WP default from ever applying, hover or
+not — so the real header shows no hover colour change at all, before or after this bug.
+Were you testing the scratch-page fixtures (where this exact bug fires) or the real live
+header (where a different, separate, already-known gap — no hover signal at all — would be
+what you saw)? This changes which fix Wave 2 needs to design.
+
+**Drawer fork still untested — new blocker found, not the same one twice.** A real,
+separate bug now blocks testing it: clicking the real header burger correctly flips the
+Interactivity-API state (`aria-expanded="true"`), but the native `<dialog>` never actually
+opens under Playwright automation (`dialog.open` stays `false`) even though calling
+`showModal()` directly on the same element works fine. This is the THIRD different reason
+the drawer fork has resisted automated testing across this session (Step 22/23's browser
+contention, Wave 1's incomplete burger+drawer pairing, now this). Flagged, not root-caused —
+needs either a real manual pass or a dedicated automation-compatibility investigation.
+
+### M3 (dropdown panel anchors to chevron) — hypothesis refuted, correct behaviour confirmed live on production
+
+The "mega-only fix" hypothesis was wrong. `mega-disclosure.js::repositionPanel` branches
+on a shared `data-sgs-nav-disclosure` attribute, not on the mega-specific trigger class —
+its own code comment states this is deliberate ("TWO KINDS, ONE FUNCTION"), covering mega
+and plain dropdowns identically. Live-tested on the ACTUAL PRODUCTION HOMEPAGE header (not
+a test page) — the "Our Story" plain dropdown's panel left edge exactly matches the parent
+item's left edge, 96px away from the chevron's own position. Confirmed no stale deploy, no
+duplicate/legacy render path, no animation creating a chevron-origin illusion.
+
+**Open question for Bean:** since the code is confirmed correct and live-verified on
+production right now, three explanations remain open rather than closed: a stale browser
+cache on your device, a different item/alignment-mode configuration than what's live now,
+or a perception effect from the chevron's own oversized hit-target (44×44px, confirmed
+separately as a real bug — see M6) sitting right next to a narrower link, which could read
+as "the panel centres on the chevron" even when it doesn't.
+
+### B1/B2 (burger colours "worse") — confirmed no code regression; one real, separate defect surfaced
+
+Traced one commit further back than Wave 1 reached (`f4e38d429^`, before the 4-way PHP
+split). Diffed the original inline burger CSS property-by-property against current
+`nav-menu-trigger-css.php` — identical resolution logic for the untouched-attributes case;
+every addition since is opt-in and defaults to the old behaviour. Live-verified: today's
+actual production homepage burger and a fresh untouched control both compute to the exact
+same colour/size as the historical code would produce. **No regression found.**
+
+Separately investigated whether "an invalid colour slug silently renders blank" is itself
+a real defect Bean could hit for real: confirmed the actual colour-picker UI components
+(`DesignTokenPicker.js`, `GradientCapableColourControl.js`) can only ever write a
+currently-registered palette slug — `"secondary"` was hand-typed directly into the QC
+fixture's block markup under a heading literally labelled "negative" probe, not something
+reachable through normal editor use. **But this surfaced a genuinely new, separate, real
+defect worth its own fix**: if a palette colour is ever renamed or deleted after a client
+has already picked it for their burger, the stored (now-orphaned) slug would silently
+render transparent with zero warning anywhere — `sgs_colour_value()` has no registered-slug
+check at all. Not what Bean saw here, but real and worth flagging for its own fix.
+
+### Quality-depth re-pass — 3 of 4 unconfirmed items closed with real answers
+
+- **A1's indicator-pill wiring — CONFIRMED, not coincidence.** Two live fixtures with
+  different `itemBgHover` values (`accent` vs `primary`) produced two exact, correctly
+  matching indicator colours (`#f5d050` vs `#e68a95`) — a direct pass-through
+  (`render.php::724-744` → `nav-menu-submenu-css.php:912-913`), not a lucky default match.
+- **D1 (tinted-pink submenu bg) — no real stored value found anywhere live.** Checked raw
+  stored content on the actual live header, both drawer CPT rows, and the seeding pattern —
+  zero submenu-background attributes set anywhere. Corroborates: this is the deliberate
+  pink RESTING TEXT default (see A3) being visually misread as a background tint, not a
+  real stored colour.
+- **D4 (drawer marker hover colour) — CONFIRMED, via a genuinely real interaction.** Real
+  click opened the native `<dialog>`, real click expanded the native `<details>` accordion,
+  a real (not synthetic) `:hover` state changed the marker from black to an exact match of
+  the configured `error` token. Works correctly.
+- **I1 (submenu white lip) — genuinely not reproduced, honestly reported as such rather
+  than closed as "not a bug."** Two real dropdowns opened via real clicks (a forced
+  high-contrast fixture and the live default header dropdown); no structural mechanism
+  exists that COULD produce a top/bottom-only band (the one border rule present is
+  identical on all four sides, proven by direct measurement) — so by construction it can't
+  currently produce this artefact. Needs Bean to point at the exact instance/screenshot
+  that showed this, since the current code has nothing in it that could cause it.
+
 ## Investigation status
 
-**Wave 1 complete.** Before Wave 2 (solution design), Bean needs to weigh in on:
-1. **Group E1** — the parent-hover regression didn't reproduce under mouse testing on the
-   bar fork; the drawer fork is genuinely untested. Was your test on mouse or touch, bar or
-   drawer? This determines whether Wave 2 designs a fix or Wave 1 needs a second pass first.
-2. **Group M3** — the "panel anchored to chevron" observation contradicts a live-verified,
-   already-shipped fix from 2026-07-31. Which page/case were you looking at?
-3. **Group B1/B2** — the "burger colours got worse" read traces to an invalid test-fixture
-   colour slug, not a code regression. Worth confirming this lands as "no code regression
-   found" rather than something Wave 2 tries to fix.
+**Wave 1 + 1.5 complete.** Before Wave 2 (solution design), three things need Bean's direct
+input (not something Wave 2 can resolve on its own):
+1. **E1** — which instance were you testing (scratch-page fixtures vs the real live
+   header)? Determines whether Wave 2 designs a fix for "no explicit hover colour set,
+   only the WP-core ambient default" or a different, already-known gap.
+2. **M3** — since production is confirmed correct right now, was this a stale view, a
+   different configuration, or could it be the oversized-chevron perception effect (M6)?
+3. **I1** — which page/screenshot showed the white lip? The current code has no mechanism
+   that could produce it, so either it's on a page/state not yet checked, or it needs a
+   fresh screenshot to re-diagnose from scratch.
 
-Once those are settled, Wave 2 will re-group the CONFIRMED findings by their REAL shared
-root cause (which differs from this document's initial grouping in at least two places —
-Group M split into two, and several groups collapsed into "no default hover signal exists"
-as one underlying design question spanning D3/F1/parts of A).
+Everything else is ready for Wave 2 (solution design): the confirmed real defects list is
+now materially larger and more precise than the original Wave 1 pass, and several Wave 1
+"not a bug"/"working as designed" verdicts held up under the harder re-testing.
