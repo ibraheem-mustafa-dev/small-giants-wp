@@ -543,6 +543,30 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// switch to `background-image` for a gradient.
 		$submenu_colour          = (string) ( $attributes['submenuColour'] ?? '' );
 		$submenu_colour_hover    = (string) ( $attributes['submenuColourHover'] ?? '' );
+
+		/*
+		 * FR-41-36 REVISED (Bean-directed, 2026-09-13) — desktop submenu hover is
+		 * no longer bg-tint-only. The locked table originally paired the hover
+		 * ROW's `accent-light` background tint (`submenuLinkBgHover`'s own
+		 * block.json default) with an UNSET text colour ("text=primary is
+		 * retained"), on the reasoning that the bg tint alone was signal enough.
+		 * Bean reviewed that outcome and ruled it insufficient: an operator who
+		 * never touches `submenuColourHover` gets NO text-colour change at all on
+		 * hover, unlike every other row family in this component (item, featured,
+		 * burger all default-close to a real hover colour). This mirrors
+		 * `nav-menu-css.php`'s own `$item_colour_hover = 'accent'` default-closing
+		 * pattern verbatim — same token, same "skip only when the resolved
+		 * treatment is 'none'" guard, same reasoning (WordPress core's ambient
+		 * `:root :where(a:hover)` rule has ZERO specificity and stops matching the
+		 * instant the pointer leaves the literal <a>, so an unset hover colour is
+		 * not "no change", it is an invisible/unreliable one). The bg tint default
+		 * is untouched; this ADDS a text default alongside it, it does not
+		 * replace it.
+		 */
+		if ( '' === $submenu_colour_hover && 'none' !== $t_sub_text ) {
+			$submenu_colour_hover = 'accent';
+		}
+
 		$submenu_colour_current  = (string) ( $attributes['submenuColourCurrent'] ?? '' );
 		$submenu_colour_effective = sgs_resolve_text_colour_or_gradient(
 			$submenu_colour,

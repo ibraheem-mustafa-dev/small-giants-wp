@@ -406,7 +406,7 @@ Uses the real `theme.json` palette tokens: `primary` (#1F7A7A), `primary-dark`, 
 | Context | Normal | Hover | Current |
 |---|---|---|---|
 | **Top bar** (horizontal, desktop) | text=`primary`, bg=none, item-divider (FR-41-8)=`border-light` | text=`accent`, bg=`accent-light` (soft tint, **not** a solid fill — research found no mainstream WP theme defaults hover to a bold solid-colour fill), item-divider=`accent` | text=`accent`, bg=none (restrained — matches Astra's real shipped default of text-colour-only for active state, verified against Astra's own customiser docs), item-divider=`accent` (same colour as Hover; the **absence** of a bg fill is what visually distinguishes Current from Hover) |
-| **Desktop submenu** (dropdown panel) | bg=`surface-alt` (a raised/distinct neutral, not matching the top bar), text=`primary` | hover row=`accent-light` tint, submenu-item divider=`accent` | *(inherits the row treatment above; no separate Current row colour specified beyond the shared item-divider language)* |
+| **Desktop submenu** (dropdown panel) | bg=`surface-alt` (a raised/distinct neutral, not matching the top bar), text=`primary` | hover row=`accent-light` tint (bg) **+ text=`accent`** (REVISED 2026-09-13, Bean-directed — see note below), submenu-item divider=`accent` | *(inherits the row treatment above; no separate Current row colour specified beyond the shared item-divider language)* |
 | **Drawer top-level** (burger/off-canvas menu) | bg=`surface-alt`, text=`primary`, item divider=`accent` | hover row=`accent-light` tint | active row=`accent-light` tint |
 | **Drawer nested submenu** (accordion-expanded items) | bg=`surface`, text=`primary`, item divider=`accent` | — | — |
 
@@ -433,9 +433,24 @@ submenu) gets an always-visible item divider whose COLOUR changes consistently w
 the whole component that tells a user which state an item is in, independent of which context they
 are looking at.
 
-⚠ **This is a locked design decision, not yet built.** No attribute defaults, `block.json` values or
-`render.php` fallbacks have been changed to match this table — that is separate future implementation
-work.
+⚠ **This is a locked design decision.** No attribute defaults, `block.json` values or `render.php`
+fallbacks have been changed to match this table in full — most of it remains separate future
+implementation work.
+
+✅ **REVISED + PARTIALLY BUILT 2026-09-13 (Bean-directed).** Bean reviewed a fix that deliberately
+withheld a desktop-submenu hover TEXT-colour default because this table's original wording ("Bg-only
+signal — submenuColourHover stays unset, text=primary is retained") ruled it out. His explicit
+instruction: reconsider that specific restriction — a hover state with only a background tint and no
+text-colour signal is weaker than every OTHER row family in this component (top bar item, featured
+item and burger trigger all default-close their hover text colour). The desktop-submenu **Hover**
+cell above is revised accordingly: **text now defaults to `accent`**, alongside the existing
+`accent-light` background tint (`submenuLinkBgHover`'s block.json default, unchanged). Built in
+`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css()` — `submenuColourHover` default-closes to
+`'accent'` at the PHP layer (mirrors `plugins/sgs-blocks/includes/nav-menu-css.php`'s own `$item_colour_hover = 'accent'`
+pattern verbatim: same token, same "skip only when the resolved hover TREATMENT is `'none'`" guard).
+An operator's own explicit `submenuColourHover` choice still overrides, exactly as before. Every
+other row in this table (top bar Current, desktop submenu bg/Normal, drawer top-level, drawer nested
+submenu) remains unbuilt future work as originally noted.
 
 ### FR-41-2 — No new shared JS component is built. None is needed.
 

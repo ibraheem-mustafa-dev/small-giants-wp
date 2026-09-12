@@ -817,7 +817,7 @@
 		"submenuLinkBgHover": {
 			"type": "string",
 			"default": "accent-light",
-			"description": "FR-41-36 (D3) locked default: desktop submenu row hover tint. Bg-only signal — submenuColourHover stays unset (text=primary is retained) per the spec's own governing principle."
+			"description": "FR-41-36 (D3) locked default: desktop submenu row hover background tint. Revised 2026-09-13 (Bean-directed): no longer bg-tint-only — submenuColourHover now default-closes to 'accent' at the PHP layer (nav-menu-submenu-css.php), mirroring itemColourHover's own default-closing pattern, so hover carries a real text-colour signal alongside this tint."
 		},
 		"submenuLinkBgCurrent": {
 			"type": "string",
