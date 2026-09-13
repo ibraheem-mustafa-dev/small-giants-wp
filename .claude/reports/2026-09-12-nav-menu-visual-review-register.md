@@ -847,3 +847,45 @@ directly via `wp-json/wp/v2/block-renderer/sgs/nav-menu` against the deployed ca
 editor-side `Notice` was NOT visually confirmed this session (Playwright got stuck on an
 unresolvable `beforeunload` dialog, no dialog-handling tool available) — disclosed in that
 same report, flagged for a follow-up screenshot.
+
+---
+
+## Follow-up (2026-09-13, same day) — item-text Hover gradient toggle crash (`onGradientChange is not a function`) fixed + new capability shipped
+
+**Not one of the original A-M groups — a separate defect surfaced during investigation of
+this register's open threads, filed here for continuity with the M2 resolution above.**
+
+**Root cause:** `GradientCapableColourControl.js::StateContent` rendered the Solid/Gradient
+toggle for every state tab under a ROW-level `gradientCapable` flag, never checking whether
+the ACTIVE tab's state object actually had an `onGradientChange` handler. nav-menu's
+item-text row supplied `gradient: 'itemColourGradient'` (Normal only), so `gradientCapable`
+flipped true row-wide and the toggle appeared on the Hover (and Current) tabs too — a
+control with nowhere to write. Clicking it called `undefined(...)`. Traced in full in
+`.claude/verify/nav-menu-item-hover-colour-picker-investigation.md` (same-day investigation
+dispatch); dates to 2026-09-04 commit `10e08548a`, not any of that day's nav-menu work.
+
+**Fix (universal, not nav-menu-scoped):** gate the toggle per ACTIVE STATE
+(`typeof state.onGradientChange === 'function'`) rather than per row — protects every other
+`textRow()`/`fillRow()` row in the codebase with the same partial-gradient shape.
+
+**New capability:** `itemColourHoverGradient`, live-gated on `itemSmartContrast`'s current
+value in the inspector — available while the swap is OFF (now the default, per the M2
+follow-up above), hidden the instant it's switched ON, because the swap's auto-computed
+safe solid can't be meaningfully replaced by a client-chosen gradient (the original D956
+reasoning, which no longer blocks the OFF case now that the swap itself is opt-in).
+`render.php` resolves the stored gradient only when `itemSmartContrast` is false; when true
+it uses the swap's output unconditionally, so a stale gradient never silently reappears.
+
+Commit: `08d0df5af` (main, pushed). Deploy: sandybrown, via `build-deploy.py --payload`
+(pre-commit deploy, same pattern as the M2 follow-up above), payload-verified (83/83
+block.json checksums match). **Live in-browser click-through verification NOT completed
+this session** — the same orphaned `beforeunload` dialog blocking the M2 follow-up's Notice
+screenshot was still stuck, with no `browser_handle_dialog` tool available; every Playwright
+tool call failed with "does not handle the modal state." Verified instead via source read,
+full build-gate pass, and deployed-artefact SSH checks (live `block.json`/`index.js`/
+`nav-menu-css.php` all carry the new code). Full disclosure in
+`reports/visual-diff/nav-menu-2026-09-13-hover-gradient-crash-fix.md`. **Follow-up needed
+next session with a working browser tool** (or a fresh Playwright context that clears the
+stuck dialog): confirm the Hover tab's toggle appears/disappears live as `itemSmartContrast`
+is flipped, confirm no crash on click, confirm the frontend gradient renders and the
+smart-contrast fallback correctly ignores a stored gradient when the swap is re-enabled.
