@@ -334,6 +334,20 @@ Bean), or **UNCONFIRMED** (genuinely couldn't test within budget).
   new, real, separate architectural finding**, discovered as a side effect of trying to
   test G6, not something Bean originally reported.
 
+**G6 re-test, 2026-09-13, after the `drawerRef` collision fix (`74121a5f1`) shipped** — the
+collision no longer blocks testing; a scoped `drawerRef` correctly opens the right drawer.
+**Result: mega-menu in the drawer STILL degrades to a plain link, by design, not a residual
+bug.** `nav-menu-markup.php::sgs_nav_menu_render_items_drawer()`'s own docblock already
+documented this (FR-36-5: "the same panel renders inside the drawer" was named a FUTURE
+item, not built) — the drawerRef fix only unblocked TESTING the existing degrade, it did
+not change what the degrade does. Live-verified on a fresh test page/menu (`SPIKE Mega Test`
+menu, "Brands" item, `object_id` 1745): with a unique `drawerRef` on both blocks, the burger
+opens the correct drawer, and "Brands" renders as `<li><a class="sgs-nav-menu__link"
+href="…?sgs_mega_menu=spike-brands-panel">Brands</a></li>` — a plain link, not an accordion
+or the mega panel. The desktop bar renders the full mega-panel disclosure correctly in the
+same test. See the new `megaDrawerFallbackIds` feature below for the narrower, per-item
+opt-out this session shipped instead of the full future item.
+
 ### Group H — CONFIRMED real defect
 - H1: under `itemBorderHoverTreatment:'sweep'`, `itemBorderStyle` (dashed/dotted) has NO
   effect on the swept edge — the visible line always comes from the `::after` sweep band (a
@@ -547,6 +561,26 @@ committed to `main`:
 **M3 — corrected to NOT A BUG** after three investigation passes (see above); no fix shipped, none needed.
 
 **G6 (drawerRef collision) — SHIPPED (2026-09-12, commit `74121a5f1`, live-verified).** Per Bean's approval of "auto-rename silently on detected collision" (cluster5 architecture doc): `nav-drawer/edit.js` now runs a `useEffect`/`useSelect` on mount that detects (a) another `sgs/nav-drawer` block in the SAME post already resolving to this block's effective ref (renames only the later of the pair, so a header pattern's original zero-config drawer is never rewritten), and (b) this block's ref colliding with `window.sgsBlocksData.activeDrawer` (the site's real Active header drawer) when this post is NOT that drawer's own post. `block.json`'s shared default `'sgs-nav-drawer'` is untouched. Live-verified: created test page 3522 with two blank `sgs/nav-drawer` blocks, both auto-renamed to unique `sgs-nav-drawer-<clientId8>` values within one re-render (confirmed via `wp.data.select('core/block-editor')`), persisted correctly on save (`wp post get 3522` shows `drawerRef:"sgs-nav-drawer-e15946d1"` / `"sgs-nav-drawer-5ecef158"`), zero console errors. Regression check: the live homepage's real burger still opens `dialog#sgs-nav-drawer` (the unmodified default) correctly — the 9 shipped zero-config header patterns are unaffected.
+
+**Mega-menu drawer hide option — SHIPPED (2026-09-13, commit `689eaa817`, live-verified).**
+Bean, 2026-09-13: "there should be an option to not show a mega menu item on the nav drawer
+version since not everyone wants them." A mega-typed item's mega-panel configuration comes
+from a WordPress menu item's `object`/`object_id` pointing to an `sgs_mega_menu` CPT post
+(`nav-menu-markup.php::sgs_mega_render_panel_content()`); it always degrades to a plain link
+in the drawer (see the G6 re-test note above — confirmed still true, by design, not a bug).
+Added `megaDrawerFallbackIds` (array attribute, per-item checklist in a new "Mega menu
+(drawer)" `PanelBody`, `MegaDrawerPanel.js`, mirroring `FeaturedPanel.js`'s existing
+checklist pattern): when a mega item is ALSO authored as a `core/navigation-submenu` with
+real nested child links (not the CPT panel content — its own menu children) and its
+identifier is ticked here, those children render as an ordinary accordion in the drawer
+instead of the plain-link degrade. Identifier scheme matches `featuredItemIds` exactly (the
+target CPT's `object_id`, e.g. `id:1745`, not the `nav_menu_item`'s own post id). Bar/
+desktop form is completely untouched (`sgs_nav_menu_render_items()` was not modified).
+Live-verified on the sandybrown canary (`SPIKE Mega Test` menu, "Brands" item + a test
+"Brand A" child): unset (default) — plain link, unchanged, even once the item has a child;
+ticked — real `<details>` accordion with "Brand A" as a working sub-link, opened/closed via
+click in Playwright; bar mega-trigger markup unaffected in every case. See
+`reports/visual-diff/nav-menu-2026-09-13.md` for the full intent-capture report.
 
 **L1 — SHIPPED (2026-09-13, commits `6b50df583` + `6d9f78225`, live-verified).** Mirrored the burger typography onto the nav-drawer close button, PLUS closed a second, pre-existing editor-canvas gap found while doing it: `nav-drawer/edit.js`'s close-text span is hand-authored JSX (the block hosts editable InnerBlocks so cannot use `<ServerSideRender>` for its whole canvas, unlike `sgs/nav-menu`'s burger label, which needed no fix — its canvas is entirely SSR and already reflected PHP's CSS), so `closeFontSize`/`closeFontFamily`/`closeFontWeight`/`closeTextTransform`/`closeLetterSpacing` had real frontend behaviour via `sgs_typography_css_rule()` but zero editor-canvas effect. Added `typographyPreviewStyle()` (`plugins/sgs-blocks/src/utils/typography-preview.js`), a desktop/base-only JS mirror of the PHP helper, applied to both close-text render paths (text-swap and icon-and-text); `closeTextTransform`'s per-`closeStyle` default (uppercase for text-swap, none for icon-and-text) is resolved in JS the same way `render.php` resolves it, so an untouched instance's canvas now matches its frontend. First deploy surfaced a real bug in the mirror itself (`closeFontSize`'s block.json default is the STRING `"14"`, not a JS number — PHP's `is_numeric()` treats it as numeric via its modern flat-spec path, but the JS mirror's `typeof === 'number'` check missed the string shape and silently dropped the desktop font-size); fixed with an `isNumericLike()` helper and re-verified. Live-verified in the block editor (post 3500, `sgs/nav-drawer`, Show as = "Close" text): untouched instance now renders 14px/600/uppercase/0.05em (letter-spacing 0.7px at 14px) in-canvas, matching the frontend default exactly; changing Font size to 32 in the inspector updated the canvas computed style immediately (32px, letter-spacing recalculated to 1.6px) with no save/reload. Proposal reference: `.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`.
 
