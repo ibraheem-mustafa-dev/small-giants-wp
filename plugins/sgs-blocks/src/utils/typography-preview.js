@@ -38,16 +38,29 @@ export function typographyPreviewStyle( attributes, prefix = '' ) {
 	const desktopOf = ( raw ) =>
 		raw && 'object' === typeof raw && ! Array.isArray( raw ) ? raw.desktop : raw;
 
+	// PHP's is_numeric() accepts a numeric STRING ("14") as numeric, not just a
+	// genuine number type — block.json commonly declares a numeric-looking
+	// typography default as a JSON STRING (e.g. nav-drawer's closeFontSize:
+	// "14"), which sgs_typography_css_rule() still routes through its modern
+	// numeric flat-spec path (helpers-typography.php's $size_is_tiered check is
+	// `is_array()`, not `is_numeric()`+type — a numeric string is NOT the
+	// legacy/preset-slug branch). A plain `typeof === 'number'` check missed
+	// this shape entirely and silently dropped the desktop font-size (found
+	// live: closeFontSize stayed at the browser default instead of 14px).
+	const isNumericLike = ( v ) =>
+		'number' === typeof v || ( 'string' === typeof v && '' !== v.trim() && ! isNaN( Number( v ) ) );
+
 	const style = {};
 
 	const fontSize = desktopOf( attributes[ attrKey( 'FontSize' ) ] );
-	if ( 'number' === typeof fontSize ) {
+	if ( isNumericLike( fontSize ) ) {
 		const unit = attributes[ attrKey( 'FontSizeUnit' ) ] || 'px';
-		style.fontSize = `${ fontSize }${ unit }`;
+		style.fontSize = `${ Number( fontSize ) }${ unit }`;
 	}
-	// A string value is a theme font-size PRESET SLUG (TypographyControls'
-	// fontSizePresets picker) — not resolvable to a literal length without the
-	// theme.json settings tree, so it is left unset here rather than guessed.
+	// A NON-numeric string value is a theme font-size PRESET SLUG
+	// (TypographyControls' fontSizePresets picker) — not resolvable to a
+	// literal length without the theme.json settings tree, so it is left unset
+	// here rather than guessed.
 
 	const fontFamily = attributes[ attrKey( 'FontFamily' ) ];
 	if ( fontFamily ) {
@@ -75,9 +88,9 @@ export function typographyPreviewStyle( attributes, prefix = '' ) {
 	}
 
 	const letterSpacing = desktopOf( attributes[ attrKey( 'LetterSpacing' ) ] );
-	if ( 'number' === typeof letterSpacing ) {
+	if ( isNumericLike( letterSpacing ) ) {
 		const unit = attributes[ attrKey( 'LetterSpacingUnit' ) ] || 'em';
-		style.letterSpacing = `${ letterSpacing }${ unit }`;
+		style.letterSpacing = `${ Number( letterSpacing ) }${ unit }`;
 	}
 
 	return style;
