@@ -159,11 +159,12 @@
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "toggleCloseColourHover"
+								"css:color": "toggleCloseColourHover",
+								"css:color-gradient": "toggleCloseColourHoverGradient"
 							}
 						}
 					},
-					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. 2026-09-12: closeSize (mirrors nav-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors nav-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) added — same mechanism (sgs_typography_css_rule()), giving the close button real inspector Typography controls where it previously had none, only style.css hardcoding. Defaults preserve the pre-existing hardcoded values exactly (see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch)."
+					"_note": "The undeletable x close button, fixed chrome rendered as a sibling of $content (FR-36-6). CORRECTED 2026-09-04 (D956): the previous note here claimed toggleCloseColourHover had no per-block attribute behind :hover -- that was stale/wrong. render.php:344 genuinely wires it via sgs_hover_state_rules(), which emits BOTH a touch-guarded :hover rule AND an unguarded :focus-visible colour rule from the same value -- so toggleCloseColourHover controls both states' TEXT colour. Declared here explicitly (base attrMap + states.hover.attrMap) rather than relying on the default {prefix}{suffix} convention, which routed both attrs to the SAME (css:color, element=close, state=NULL) slot with no way to tell them apart -- a real routing-determinism ambiguity (F6 Check #1/#8), not a manifest gap. The button's :focus-visible OUTLINE (border, not colour) remains genuinely uncontrolled by any per-block attribute -- it resolves var(--sgs-focus-color, currentColor) since D467, following the site-wide focus token, which is correct behaviour, just not this element's colour attrs. 2026-09-12: closeSize (mirrors nav-menu's burgerSize, css:width+css:height) and the close-LABEL typography quintet (closeFontSize/closeFontFamily/closeFontWeight/closeTextTransform/closeLetterSpacing, mirrors nav-menu's burgerFontSize/burgerFontFamily/burgerFontWeight/burgerTextTransform/burgerLetterSpacing) added — same mechanism (sgs_typography_css_rule()), giving the close button real inspector Typography controls where it previously had none, only style.css hardcoding. Defaults preserve the pre-existing hardcoded values exactly (see render.php's close-typography block for the closeStyle-dependent text-transform resolution, and closeSize for the icon-vs-text width branch mirroring burgerSize's own triggerMode branch). 2026-09-13 (gradient-toggle sibling sweep): toggleCloseColourHoverGradient added -- commit e17bea203 wired the Normal-state toggleCloseColourGradient but left Hover as flat-colour-only with no stated reason (unlike nav-menu's itemColourHover, which had a documented D956 smart-contrast reason); confirmed accidental via git history and fixed the same way nav-menu's item-text Hover gained its own gradient sibling."
 				},
 				"decorative": {
 					"label": "Decorative background",
@@ -331,6 +332,11 @@
 		"toggleCloseColourGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"toggleCloseColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state gradient sibling of toggleCloseColourHover. Non-empty wins over toggleCloseColourHover on :hover/:focus-visible. Mirrors toggleCloseColourGradient's Normal-state resolution unconditionally -- unlike nav-menu's itemColourHoverGradient, no smart-contrast swap applies to this control."
 		},
 		"closeSize": {
 			"type": "string",

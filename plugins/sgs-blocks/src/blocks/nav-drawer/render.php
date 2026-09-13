@@ -192,6 +192,12 @@ $drawer_text_effective = sgs_resolve_text_colour_or_gradient(
 $close_colour_slug       = isset( $attributes['toggleCloseColour'] ) ? sanitize_html_class( $attributes['toggleCloseColour'] ) : '';
 $close_colour_gradient   = $attributes['toggleCloseColourGradient'] ?? '';
 $close_colour_hover_slug = isset( $attributes['toggleCloseColourHover'] ) ? sanitize_html_class( $attributes['toggleCloseColourHover'] ) : '';
+// toggleCloseColourHoverGradient (2026-09-13, gradient-toggle sibling sweep) --
+// Normal already resolved gradient-or-solid via $close_colour_gradient above;
+// Hover was left flat-colour-only with no stated reason (git history confirms
+// accidental, unlike nav-menu's documented D956 smart-contrast exemption).
+// Read raw here, resolved below alongside $close_colour_hover_slug.
+$close_colour_hover_gradient = $attributes['toggleCloseColourHoverGradient'] ?? '';
 
 // ── Submenu model — LIVE (FR-36-6). Published to the drawer's descendants via
 // block.json `providesContext` (`sgs/navDrawerSubmenuModel`, mapped from this
@@ -377,8 +383,18 @@ if ( '' !== $close_colour_effective ) {
 // The close button IS an interactive target, so it carries a real hover state —
 // it is NOT a candidate for a states exemption. :focus-visible is paired with
 // :hover so keyboard users get the same affordance.
-if ( '' !== $close_colour_hover_slug ) {
-	$css .= sgs_hover_state_rules( $close_sel, 'color:' . sgs_colour_value( $close_colour_hover_slug ), ':focus-visible' );
+//
+// toggleCloseColourHoverGradient (2026-09-13) — same resolve/decl/fallback
+// trio as the Normal state above; sgs_text_colour_decl() detects a gradient
+// function on its own and swaps in the background-clip:text declaration set,
+// so a flat slug still resolves exactly as before via sgs_colour_value().
+$close_colour_hover_effective = sgs_resolve_text_colour_or_gradient( $close_colour_hover_slug, $close_colour_hover_gradient );
+if ( '' !== $close_colour_hover_effective ) {
+	$close_colour_hover_decl = sgs_text_colour_decl( $close_colour_hover_effective );
+	if ( '' !== $close_colour_hover_decl ) {
+		$css .= sgs_hover_state_rules( $close_sel, $close_colour_hover_decl, ':focus-visible' );
+		$css .= sgs_text_colour_gradient_fallback_rule( $close_sel . ':hover,' . $close_sel . ':focus-visible', $close_colour_hover_effective );
+	}
 }
 
 // ── Anchor geometry (desktop variants). Guard on "is either attribute

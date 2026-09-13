@@ -392,6 +392,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							base: 'toggleCloseColour',
 							hover: 'toggleCloseColourHover',
 							gradient: 'toggleCloseColourGradient',
+							// toggleCloseColourHoverGradient (2026-09-13, gradient-toggle
+							// sibling sweep) -- e17bea203 wired the Normal-state gradient
+							// but left Hover flat-colour-only with no documented reason
+							// (unlike nav-menu's itemColourHover, which had D956's
+							// smart-contrast justification). Confirmed accidental via git
+							// history; wired unconditionally since no swap applies here.
+							hoverGradient: 'toggleCloseColourHoverGradient',
 						},
 						attributes,
 						setAttributes,
