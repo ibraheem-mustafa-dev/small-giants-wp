@@ -499,11 +499,30 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	/*
 	 * ── ITEM BORDER — three states + the directional Sweep band (FR-41-7/8). ─
 	 *
+	 * Terminology (2026-09-13 pass): on the horizontal bar the bottom-only
+	 * default reads as the item's own UNDERLINE (a text-indicator sitting
+	 * under one item's own label, not between two items); the identical
+	 * bottom edge on a vertical list (this same instance rendered inside a
+	 * nav-drawer, or a submenu-root stacked in-drawer) is geometrically a ROW
+	 * SEPARATOR between two adjacent rows. Both read the SAME attribute
+	 * family — that has not changed and is not being split (see below).
+	 *
 	 * ONE border control, per-side by construction: a bottom border is the
-	 * drawer-style row separator, a right border is the flat bar's vertical
-	 * divider, all four is a boxed item. ⛔ There is no separate "Item Divider"
-	 * mechanism — two mechanisms answering one question is how the pre-existing
-	 * double-line bug happened.
+	 * drawer-style row separator, a right border is a vertical divider on the
+	 * flat bar, all four is a boxed item. ⛔ There is STILL no separate
+	 * "Item Divider" TOGGLE competing with this width/style/colour family —
+	 * two mechanisms answering the SAME question (which edge does
+	 * itemBorderWidth paint, and what colour) is how the pre-existing
+	 * double-line bug happened, and that risk is unchanged.
+	 *
+	 * ⚠ What DID change (FR-41-37, same date): `itemSeparatorWidth/Style/
+	 * Colour(Hover)` is a genuinely SEPARATE, purpose-built attribute family
+	 * for a between-item vertical rule on the horizontal bar only — see its
+	 * own emission block further down. It answers a DIFFERENT question
+	 * (draw a line between item N and item N+1) from this one (style item
+	 * N's own edge), so it is not the "Item Divider" this comment rules out —
+	 * it does not let an operator style the SAME right-edge-of-itemBorderWidth
+	 * line two different ways from two different controls.
 	 *
 	 * Width is BASE-ONLY by the control's own design: per-device border width was
 	 * cancelled framework-wide (Bean, 2026-08-29), not deferred.
@@ -595,6 +614,59 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 			$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $hover_pos, ':focus-visible', '::after' );
 			// MANDATORY companion: keep both end states, drop only the travel.
 			$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
+		}
+	}
+
+	/*
+	 * ── ITEM SEPARATOR — NEW, independent vertical divider between adjacent
+	 * TOP-LEVEL BAR items (FR-41-37, 2026-09-13). ────────────────────────────
+	 *
+	 * Genuinely separate from the item border/underline family above: that
+	 * family's `right` option ALREADY lets an operator draw a vertical line
+	 * (FR-41-7), but it shares itemBorderColour/Hover/Current with the SAME
+	 * family's bottom-edge underline — one colour set, two edges — so it
+	 * cannot be styled independently of the underline. This is its own
+	 * attribute family (itemSeparatorWidth/Style/Colour(Hover)) precisely so
+	 * an operator can run both at once with different colours, or run this
+	 * one alone.
+	 *
+	 * BAR-ONLY BY CONSTRUCTION: gated on `.sgs-nav-menu__bar` NOT carrying the
+	 * `--drawer` modifier (see nav-menu-submenu-css.php's own use of the same
+	 * modifier class to fork bar/drawer CSS). A vertical list has no
+	 * "adjacent item" on this axis, so the drawer's own instance of this
+	 * block never renders the rule at all — not suppressed after the fact,
+	 * never emitted for that context.
+	 *
+	 * Longhand `border-right-*` properties, deliberately NOT the `border-
+	 * width`/`border-style`/`border-color` shorthands the underline family
+	 * uses a few lines above on the SAME `$link_sel` element: the shorthands
+	 * already set all four sides (today's default zeroes right/top/left), so
+	 * a shorthand here would silently reset whatever the underline family
+	 * just wrote. Longhand-after-shorthand on the same selector, later in
+	 * source order, wins for only the properties it names — the underline's
+	 * bottom edge is untouched.
+	 *
+	 * `:not(:last-child)` on the ITEM (not the link) — the trailing item has
+	 * nothing to its right to divide from.
+	 *
+	 * No Sweep here (documented in block.json's itemSeparatorWidth
+	 * description): the existing sweep band's geometry offsets against the
+	 * BOTTOM edge specifically (`bottom:calc(-1 * width)`), which has no
+	 * equivalent translation to a RIGHT edge without new positioning maths —
+	 * shipped as a plain Hover colour swap instead. No Current state: a
+	 * between-item rule is not itself "the current page".
+	 */
+	$item_separator_width  = sgs_css_length_value( (string) ( $attributes['itemSeparatorWidth'] ?? '' ) );
+	$item_separator_style  = sgs_css_keyword_sanitise( (string) ( $attributes['itemSeparatorStyle'] ?? '' ) );
+	$item_separator_colour = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
+	if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
+		$item_separator_sel = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child) .sgs-nav-menu__link';
+		$css               .= $item_separator_sel . '{border-right-width:' . $item_separator_width
+			. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
+			. ';border-right-color:' . $item_separator_colour . ';}';
+		$item_separator_hover = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
+		if ( '' !== $item_separator_hover ) {
+			$css .= sgs_hover_state_rules( $item_separator_sel, 'border-right-color:' . $item_separator_hover, ':focus-visible' );
 		}
 	}
 

@@ -30,6 +30,12 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+// FR-41-37 (2026-09-13) — own import line, deliberately NOT merged into a
+// neighbouring import statement: this file is being edited concurrently by
+// another session, and a shared import line is unstageable independently of
+// that session's own uncommitted work. A separate line keeps this change
+// isolatable.
+import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
 import { useBlockProps } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
 import { SgsColourPanel, TypographyControls, fillRow, textRow } from '../../components';
@@ -58,13 +64,17 @@ import EffectsPanel from './EffectsPanel';
 import FeaturedPanel from './FeaturedPanel';
 import MegaDrawerPanel from './MegaDrawerPanel';
 
-export default function Edit( { attributes, setAttributes, clientId } ) {
+export default function Edit( { attributes, setAttributes, clientId, context } ) {
 	const {
 		ref,
 		collapsePoint,
 		drawerRef,
 		navLabel,
 		itemSmartContrast,
+		itemSeparatorWidth,
+		itemSeparatorStyle,
+		itemSeparatorColour,
+		itemSeparatorColourHover,
 		featuredItemIds,
 		gap,
 		listColumns,
@@ -162,6 +172,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// The background actually rendered behind a menu item, for the border rows'
 	// WCAG 1.4.11 check. Unset on both → no background is known, so no check.
 	const itemSurface = itemBg || navBg || '';
+
+	// Terminology pass (2026-09-13) — itemBorderWidth/Colour paints the bar's
+	// own UNDERLINE (bottom-edge text-indicator, not between two items) OR a
+	// vertical list's ROW SEPARATOR (same attribute family, different
+	// geometry) depending on which instance of this block is rendering. This
+	// SPECIFIC instance's context tells us which: `sgs/navDrawerBg` is only
+	// ever provided by sgs/nav-drawer (block.json::providesContext), so its
+	// presence here means THIS Edit is the drawer's own nested nav-menu, not
+	// the header's flat bar — a cheap, correct switch with no new attribute.
+	const isDrawerInstance = Boolean( context?.[ 'sgs/navDrawerBg' ] );
 
 	// FR-41-30(b) RESOLVED 2026-09-11 — the sublink-marker colour row is
 	// revealed only once the operator picks a DIFFERENT icon than the
@@ -286,7 +306,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// border row beneath is gradient-capable and its check does run.
 		{
 			key: 'item-border',
-			label: __( 'Item border colour', 'sgs-blocks' ),
+			// Contextual label (2026-09-13 terminology pass) — same shared
+			// attribute family, two geometries: on the flat bar this is the
+			// item's own UNDERLINE; on the drawer's own nested nav-menu
+			// instance the identical bottom edge is a ROW SEPARATOR between
+			// stacked items. See `isDrawerInstance`'s own comment above.
+			label: isDrawerInstance
+				? __( 'Row separator colour', 'sgs-blocks' )
+				: __( 'Item underline colour', 'sgs-blocks' ),
 			...( itemSurface
 				? { contrastAgainst: itemSurface, contrastLargeText: true }
 				: {} ),
@@ -326,6 +353,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			),
 		},
+		// FR-41-37 (2026-09-13) — the NEW, independent vertical divider between
+		// adjacent TOP-LEVEL BAR items. HAND-WRITTEN LITERAL (no gradient, no
+		// Current state — see block.json::itemSeparatorWidth's description for
+		// why). Bar-only feature: omitted (not disabled) inside a drawer
+		// instance, where a vertical list has no "next item to the right".
+		...( ! isDrawerInstance
+			? [
+					{
+						key: 'item-separator',
+						label: __( 'Item separator colour (bar)', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: itemSeparatorColour,
+								onChange: ( val ) =>
+									setAttributes( { itemSeparatorColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: itemSeparatorColourHover,
+								onChange: ( val ) =>
+									setAttributes( { itemSeparatorColourHover: val ?? '' } ),
+								linked: true,
+							},
+						],
+					},
+			  ]
+			: [] ),
 		fillRow( {
 			key: 'submenu-bg',
 			heading: __( 'Submenu', 'sgs-blocks' ),
@@ -621,6 +679,50 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					itemBorderRadius={ itemBorderRadius }
 					setAttributes={ setAttributes }
 				/>
+
+				{ /* FR-41-37 (2026-09-13) — shape controls for the NEW bar-only
+				   vertical item separator. Mounted directly here (not a new
+				   ItemsPanel.js prop) to keep this whole feature inside edit.js,
+				   the one file this task is scoped to touch. Bar-only: omitted
+				   (not disabled) inside a drawer instance. */ }
+				{ ! isDrawerInstance && (
+					<PanelBody
+						title={ __( 'Item separator (bar)', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TextControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+							label={ __( 'Width', 'sgs-blocks' ) }
+							value={ itemSeparatorWidth || '' }
+							onChange={ ( val ) =>
+								setAttributes( { itemSeparatorWidth: val || '' } )
+							}
+							help={ __(
+								'A CSS length, e.g. 1px. Empty clears the separator entirely.',
+								'sgs-blocks'
+							) }
+						/>
+						<SelectControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+							label={ __( 'Style', 'sgs-blocks' ) }
+							value={ itemSeparatorStyle || 'solid' }
+							options={ [
+								{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+								{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
+								{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
+							] }
+							onChange={ ( val ) => setAttributes( { itemSeparatorStyle: val } ) }
+						/>
+						<p className="components-base-control__help">
+							{ __(
+								'A vertical line between adjacent top-level bar items — independent of the underline above, with its own colour in the Colour panel.',
+								'sgs-blocks'
+							) }
+						</p>
+					</PanelBody>
+				) }
 
 				<SubmenuItemsPanel
 					sublinkMarkerIcon={ sublinkMarkerIcon }

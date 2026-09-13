@@ -1168,6 +1168,79 @@
 			"notes": "Same multi-value failure as padding, at the corner level: link/unlink 4-corner control, not a single scalar. Marked non-responsive by default since radius rarely needs a device tier, but flag if a specific block proves otherwise. | v2 (2026-07-19): folds into the compound Border builder panel (per-corner control + link toggle + units), presented together with border width/style/colour rather than on a separate panel."
 		},
 		{
+			"setting_key": "css:border-right-width",
+			"category": "css-property",
+			"label": "Border width (right only)",
+			"optimal_control": {
+				"component": "TextControl/UnitControl — a single-side length, not the 4-side BoxControl this block's own shorthand css:border-width row already uses",
+				"props": {
+					"units": [ "px" ]
+				},
+				"preset_layer": null,
+				"units": "px",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "n/a",
+				"border_builder_member": false
+			},
+			"shared_component": null,
+			"spec_ref": "n/a — added ad hoc, not part of the original Spec 35 Phase 2 sweep",
+			"current_state": "1 distinct attr name (itemSeparatorWidth) / 1 instance, sgs/nav-menu.",
+			"divergence": "n/a — single adopter so far, no divergence to measure yet.",
+			"divergence_severity": "n/a",
+			"notes": "Added 2026-09-13 (sgs/nav-menu.itemSeparatorWidth, FR-41-37). A genuine, real CSS mechanism (a longhand per-side border, not the shorthand css:border-width row above) had no registry row at all — the same shape as the outline-width/box-shadow-color additions of 2026-08-20 (cluster-member-sets.json). Deliberately its own row, not css:border-width above: an element that already uses the shorthand for one purpose (e.g. an underline/row-separator on the bottom edge) can independently need an UNRELATED single-side rule (a between-item divider on the right edge) at the same time, with its own colour and width."
+		},
+		{
+			"setting_key": "css:border-right-style",
+			"category": "css-property",
+			"label": "Border style (right only)",
+			"optimal_control": {
+				"component": "SelectControl — solid/dashed/dotted, matching the shorthand css:border-style row's own option set",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "closed set (solid/dashed/dotted)",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "n/a",
+				"border_builder_member": false
+			},
+			"shared_component": null,
+			"spec_ref": "n/a — added ad hoc, not part of the original Spec 35 Phase 2 sweep",
+			"current_state": "1 distinct attr name (itemSeparatorStyle) / 1 instance, sgs/nav-menu.",
+			"divergence": "n/a — single adopter so far, no divergence to measure yet.",
+			"divergence_severity": "n/a",
+			"notes": "Sibling row to css:border-right-width, added the same day for the same reason."
+		},
+		{
+			"setting_key": "css:border-right-color",
+			"category": "css-property",
+			"label": "Border colour (right only)",
+			"optimal_control": {
+				"component": "DesignTokenPicker via SgsColourPanel — Normal/Hover states, matching the shorthand css:border-color row's own control",
+				"props": {
+					"allowReset": true
+				},
+				"preset_layer": "theme.json palette tokens",
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "state",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset",
+				"border_builder_member": false
+			},
+			"shared_component": null,
+			"spec_ref": "n/a — added ad hoc, not part of the original Spec 35 Phase 2 sweep",
+			"current_state": "2 distinct attr names (itemSeparatorColour, itemSeparatorColourHover) / 2 instances, sgs/nav-menu.",
+			"divergence": "n/a — single adopter so far, no divergence to measure yet.",
+			"divergence_severity": "n/a",
+			"notes": "Sibling row to css:border-right-width, added the same day for the same reason."
+		},
+		{
 			"setting_key": "css:border-style",
 			"category": "css-property",
 			"label": "Border style",

@@ -479,6 +479,35 @@
 					"nativeSupportsPath": "__experimentalBorder.radius"
 				},
 				{
+					"key": "css:border-right-width",
+					"label": "Border width (right only)",
+					"suffixes": [
+						"BorderRightWidth",
+						"SeparatorWidth"
+					],
+					"note": "Added 2026-09-13 (sgs/nav-menu.itemSeparatorWidth, FR-41-37). A genuine, real CSS mechanism (a longhand per-side border, not the shorthand `css:border-width` member above) had no cluster member at all, the same shape as the outline-width/box-shadow-color additions of 2026-08-20 — a real property with nowhere to be claimed reads as a defect forever, which is a model gap, not a per-block one. Deliberately its own member, not `css:border-width` above: an element that already uses the shorthand for one purpose (e.g. an underline/row-separator on the bottom edge) can independently need an UNRELATED single-side rule (a between-item divider on the right edge) at the same time, with its own colour and width — exactly sgs/nav-menu's own case."
+				},
+				{
+					"key": "css:border-right-style",
+					"label": "Border style (right only)",
+					"suffixes": [
+						"BorderRightStyle",
+						"SeparatorStyle"
+					],
+					"note": "Sibling to css:border-right-width, added the same day for the same reason."
+				},
+				{
+					"key": "css:border-right-color",
+					"label": "Border colour (right only)",
+					"suffixes": [
+						"BorderRightColour",
+						"BorderRightColor",
+						"SeparatorColour",
+						"SeparatorColor"
+					],
+					"note": "Sibling to css:border-right-width, added the same day for the same reason."
+				},
+				{
 					"key": "css:box-shadow",
 					"label": "Box shadow",
 					"suffixes": [

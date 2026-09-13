@@ -760,16 +760,25 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		}
 
 		/*
-		 * FR-41-36 (C1, 2026-09-12) — submenu-row item divider. Genuinely NEW
-		 * attribute surface: `submenuBorderColour` etc. above are the PANEL's own
-		 * OUTER border (Normal-only, wraps the whole dropdown) — reusing that
-		 * prefix for a per-ROW divider would repeat the exact "two elements, one
-		 * attribute prefix" conflation the I1 fix above already avoids for
-		 * background. Named `submenuLinkBorder*` to match the established
-		 * row-vs-panel split (`submenuLinkBg*` = row, `submenuBg*` = panel).
-		 * Mirrors `itemBorderColour`'s own emission shape in nav-menu-css.php: a
-		 * width with no style implies solid. No Current colour — the spec's
-		 * divider table gives this row only Normal/Hover language.
+		 * FR-41-36 (C1, 2026-09-12) — submenu-row SEPARATOR (renamed from
+		 * "item divider" 2026-09-13 — this is a genuine between-row line, so
+		 * the terminology pass keeps it as-is, just spelled consistently with
+		 * the rest of the component's new vocabulary: UNDERLINE for the bar's
+		 * own text-indicator, SEPARATOR for anything geometrically between two
+		 * rows/items). This SAME family paints BOTH the bar's dropdown panel
+		 * rows and a drawer's nested/accordion-expanded submenu rows — one
+		 * mechanism, one selector ($sublink_sel is not bar/drawer-forked),
+		 * confirmed identical for both contexts (2026-09-13 review). Genuinely
+		 * NEW attribute surface: `submenuBorderColour` etc. above are the
+		 * PANEL's own OUTER border (Normal-only, wraps the whole dropdown) —
+		 * reusing that prefix for a per-ROW separator would repeat the exact
+		 * "two elements, one attribute prefix" conflation the I1 fix above
+		 * already avoids for background. Named `submenuLinkBorder*` to match
+		 * the established row-vs-panel split (`submenuLinkBg*` = row,
+		 * `submenuBg*` = panel). Mirrors `itemBorderColour`'s own emission
+		 * shape in nav-menu-css.php: a width with no style implies solid. No
+		 * Current colour — the spec's separator table gives this row only
+		 * Normal/Hover language.
 		 */
 		$sublink_border_box          = is_array( $attributes['submenuLinkBorderWidth'] ?? null ) ? $attributes['submenuLinkBorderWidth'] : array();
 		$sublink_border_width        = $sublink_border_box ? sgs_box_object_shorthand( $sublink_border_box ) : null;

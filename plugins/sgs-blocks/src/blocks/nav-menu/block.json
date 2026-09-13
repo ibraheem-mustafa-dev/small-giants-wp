@@ -764,7 +764,7 @@
 		"itemBorderWidth": {
 			"type": "object",
 			"default": { "bottom": "1px" },
-			"description": "FR-41-36 locked default: an always-visible item divider (top bar / drawer top-level), bottom-only, 1px."
+			"description": "FR-41-36 locked default: bottom-only, 1px, always visible. On the horizontal bar this is the ITEM UNDERLINE â€” a bottom-edge text-indicator under one item's own label. On a vertical list (this same instance rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the identical bottom edge is geometrically a ROW SEPARATOR between two adjacent rows. One shared attribute family paints both, by design (2026-09-13 terminology pass) â€” see nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with itemSeparatorWidth, the independent NEW vertical divider between top-level bar items (FR-41-37)."
 		},
 		"itemBorderStyle": {
 			"type": "string",
@@ -783,17 +783,17 @@
 		"itemBorderColour": {
 			"type": "string",
 			"default": "border-light",
-			"description": "FR-41-36 locked default: item divider colour at rest."
+			"description": "FR-41-36 locked default: underline/row-separator colour at rest (bar: item underline; drawer: row separator — see itemBorderWidth's note)."
 		},
 		"itemBorderColourHover": {
 			"type": "string",
 			"default": "accent",
-			"description": "FR-41-36 locked default: item divider colour on hover."
+			"description": "FR-41-36 locked default: underline/row-separator colour on hover."
 		},
 		"itemBorderColourCurrent": {
 			"type": "string",
 			"default": "accent",
-			"description": "FR-41-36 locked default: item divider colour on current/active — same colour as Hover; the absence of a bg fill is what distinguishes Current from Hover."
+			"description": "FR-41-36 locked default: underline/row-separator colour on current/active — same colour as Hover; the absence of a bg fill is what distinguishes Current from Hover."
 		},
 		"itemColourHoverTreatment": {
 			"type": "string",
@@ -814,6 +814,26 @@
 			"type": "string",
 			"default": "left-to-right",
 			"description": "Secondary control, shown only when itemBorderHoverTreatment is 'sweep'. left-to-right / right-to-left. PHP-validated, no JSON enum."
+		},
+		"itemSeparatorWidth": {
+			"type": "string",
+			"default": "1px",
+			"description": "FR-41-37 (2026-09-13) — the NEW, independent vertical divider between adjacent TOP-LEVEL bar items (a right-edge rule), separate from itemBorderWidth (the item's own underline/row-separator). Genuinely distinct from FR-41-7's existing 'set itemBorderWidth.right for a vertical divider' option: that option shares itemBorderColour/Hover/Current with the bottom-edge underline (one colour family, two edges), so it cannot be styled independently — this attribute family can. Bar-only by construction (not rendered in-drawer, where a vertical list has no 'adjacent item' in that axis). No Current state and no Sweep: a between-item rule is not itself a page, and the bottom-edge sweep geometry (offset against the padding box) does not translate to a right-edge line without new positioning maths — shipped as a plain Hover colour swap only; sweep is flagged as separate future work if wanted."
+		},
+		"itemSeparatorStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "FR-41-37. solid / dashed / dotted / none. PHP-validated, no JSON enum."
+		},
+		"itemSeparatorColour": {
+			"type": "string",
+			"default": "border-light",
+			"description": "FR-41-37 — Normal-state colour, matching the same subtle default (border-light, not accent) the underline/row-separator family uses at rest, for one consistent visual language across all 4 separator contexts."
+		},
+		"itemSeparatorColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-37 — Hover-state colour, matching the underline/row-separator family's own Hover token."
 		},
 		"submenuColourCurrent": {
 			"type": "string",
@@ -842,7 +862,7 @@
 			"default": {
 				"bottom": "1px"
 			},
-			"description": "FR-41-36 (C1) — the submenu ROW's own item-divider border, distinct from submenuBorderWidth (the PANEL's outer border). Defaults to a bottom-only 1px so an untouched dropdown/drawer-nested row shows the universal always-visible divider."
+			"description": "FR-41-36 (C1) — the submenu ROW's own row-separator border (a horizontal line between two adjacent rows, both in the bar's dropdown panel AND a drawer's nested/accordion-expanded submenu — same mechanism, same selector), distinct from submenuBorderWidth (the PANEL's outer border). Defaults to a bottom-only 1px so an untouched dropdown/drawer-nested row shows the universal always-visible separator (2026-09-13 terminology pass — was called \"item-divider\")."
 		},
 		"submenuLinkBorderStyle": {
 			"type": "string",
@@ -851,12 +871,12 @@
 		"submenuLinkBorderColour": {
 			"type": "string",
 			"default": "border-light",
-			"description": "FR-41-36 (C1) — Normal-state divider colour token, locked by Spec 41 §FR-41-36's colour table."
+			"description": "FR-41-36 (C1) — Normal-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table."
 		},
 		"submenuLinkBorderColourHover": {
 			"type": "string",
 			"default": "accent",
-			"description": "FR-41-36 (C1) — Hover/Current-state divider colour token, locked by Spec 41 §FR-41-36's colour table. No separate Current colour: the spec's table gives this row only Normal/Hover language for the divider."
+			"description": "FR-41-36 (C1) — Hover/Current-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table. No separate Current colour: the spec's table gives this row only Normal/Hover language for the separator."
 		},
 		"submenuColourHoverTreatment": {
 			"type": "string",

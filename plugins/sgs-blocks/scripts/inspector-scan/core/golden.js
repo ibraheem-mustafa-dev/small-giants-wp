@@ -871,6 +871,16 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'background-color-gradient': 'fill',
 	'border-color': 'border',
 	'border-color-gradient': 'border',
+	// Longhand per-side border colour (2026-09-13, sgs/nav-menu.itemSeparatorColour
+	// — FR-41-37, a genuinely independent vertical divider control that must not
+	// share the shorthand `border-color`/`itemBorderColour` slot with the item's
+	// own underline). Same paint mechanism as the shorthand ('border'), just a
+	// single physical side — never guessed here, the DB's css_property already
+	// names the exact longhand the PHP emitter writes.
+	'border-right-color': 'border',
+	'border-left-color': 'border',
+	'border-top-color': 'border',
+	'border-bottom-color': 'border',
 	'outline-color': 'border',
 	'box-shadow-color': 'shadow',
 	fill: 'fill',
