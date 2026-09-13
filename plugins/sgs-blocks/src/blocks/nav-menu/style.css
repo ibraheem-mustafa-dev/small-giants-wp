@@ -420,6 +420,47 @@
 }
 
 /*
+ * Sticky-header / page-content stacking fix
+ * (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT, 2026-09-13). A page-embedded
+ * `sgs/nav-menu` sits inside `sgs/container`'s child-lift stacking context
+ * (`container/style.css`, load-bearing — never touched by this fix), which
+ * caps an open panel below the sticky header no matter how high the panel's
+ * OWN z-index goes. mega-disclosure.js's `reparentPanelIfNeeded()` answers
+ * this by moving the open panel to `<body>` once it has already settled
+ * into its normal `position:absolute` layout, freezing it at that exact
+ * measured screen position via `--sgs-mm-fixed-top`/`--sgs-mm-fixed-left`
+ * (Spec 32 — custom-property VALUES only, never a direct style.top/left
+ * property declaration) and marking it `[data-sgs-nav-fixed]`. This is a
+ * DISCLOSURE-only reparent (FR-36-10): no scroll-lock, no focus trap, no
+ * backdrop — unlike nav-drawer's DIALOG reparent (`store.js::reparentToBody`,
+ * D323). The panel closes on scroll/resize instead of tracking the viewport
+ * live (see `syncFixedScrollWatcher()`), so this position never needs to be
+ * anything but a one-time snapshot.
+ *
+ * Header-placed disclosures never reach this state at all — the header's own
+ * sticky z-index:100 already outranks page content, so
+ * `reparentPanelIfNeeded()` no-ops for them (`needsStackingFix()` checks for
+ * a `.sgs-site-header` ancestor) and this rule never matches on that
+ * instance.
+ *
+ * `[data-sgs-mega-panel]` is doubled up with the BEM class purely so this
+ * selector's specificity — one class + two attributes, (0,3,0) — reliably
+ * beats the uid-scoped `position:absolute` rule
+ * `nav-menu-submenu-css.php::sgs_nav_menu_submenu_css()` emits per-instance
+ * (one class + one element class, (0,2,0)), regardless of which `<style>`
+ * loads later in the document, without reaching for `!important`.
+ */
+.sgs-nav-menu__mega-panel-wrap[data-sgs-mega-panel][data-sgs-nav-fixed],
+.sgs-nav-menu__submenu-wrap[data-sgs-mega-panel][data-sgs-nav-fixed] {
+	left: var(--sgs-mm-fixed-left, 0px);
+	position: fixed;
+	right: auto;
+	top: var(--sgs-mm-fixed-top, 0px);
+	transform: none;
+	z-index: 101;
+}
+
+/*
  * ═══════════════════════════════════════════════════════════════════════
  * IN-DRAWER NESTED SUBMENU — accordion (native) + drill-down (JS-enhanced).
  * Spec 36 FR-36-6. Markup: nav-menu/render.php's render_items_drawer().

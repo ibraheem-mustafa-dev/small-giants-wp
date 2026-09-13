@@ -410,6 +410,7 @@ function repositionPanel( root ) {
 				`${ ( desired - parentRect.left ).toFixed( 2 ) }px`
 			);
 			activePanelRect = panel.getBoundingClientRect();
+			reparentPanelIfNeeded( root, panel, state.openMegaId );
 			return;
 		}
 		/*
@@ -430,7 +431,134 @@ function repositionPanel( root ) {
 		);
 		// Re-snapshot for the safe-triangle now the panel has moved.
 		activePanelRect = panel.getBoundingClientRect();
+		reparentPanelIfNeeded( root, panel, state.openMegaId );
 	} );
+}
+
+/**
+ * Panels currently reparented to `<body>` for the sticky-header stacking fix
+ * (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT), keyed by megaId so
+ * `watchOpenState` — which only ever sees the reactive `ctx`, never the DOM
+ * — can find and reverse the move on close. Per-open/per-close, unlike the
+ * drawer's PERMANENT `reparented` WeakSet in store.js (D323): a disclosure
+ * panel must return to its rendered position once closed, not live in
+ * `<body>` forever, since it is a normal in-flow part of the page for the
+ * vast majority of instances (the header placement never reparents at all).
+ *
+ * @type {Map<string,{panel:HTMLElement,originalParent:Node,originalNextSibling:Node|null}>}
+ */
+const reparentedPanels = new Map();
+
+/**
+ * True when this disclosure sits inside page content rather than the site
+ * header. The header's own dropdowns never need this fix — the header
+ * template part is `position:sticky;z-index:100` and already outranks page
+ * content by construction — whereas a page-embedded disclosure sits inside
+ * `sgs/container`'s child-lift rule (`container/style.css`, load-bearing,
+ * NOT to be touched), which creates a stacking context capping the panel
+ * below the header regardless of the panel's own z-index. See
+ * `.claude/reports/2026-09-13-sticky-header-dropdown-overlap-fix-proposal.md`.
+ *
+ * @param {HTMLElement} root The disclosure root.
+ * @return {boolean} True if this disclosure needs the body-reparent fix.
+ */
+function needsStackingFix( root ) {
+	return ! root.closest( '.sgs-site-header' );
+}
+
+/**
+ * Attach/detach a single document-level scroll+resize listener, gated
+ * strictly on whether ANY panel is currently reparented — mirroring
+ * `syncTriangleWatcher()`'s idempotent attach/detach shape immediately
+ * above. A reparented panel is frozen at a MEASURED screen position (see
+ * `reparentPanelIfNeeded()`); scrolling or resizing invalidates that
+ * measurement, so rather than tracking it live (no header/page layout needs
+ * that fidelity for a transient disclosure) the panel simply closes, same
+ * as most comparable dropdown/mega-menu implementations. Closing routes
+ * through `state.openMegaId = null`, which every open disclosure's own
+ * `watchOpenState` callback already reacts to (single-open mechanism,
+ * unchanged) — no new close path, just a new trigger for the existing one.
+ */
+let fixedScrollHandler = null;
+function syncFixedScrollWatcher() {
+	if ( reparentedPanels.size && ! fixedScrollHandler ) {
+		fixedScrollHandler = () => {
+			state.openMegaId = null;
+		};
+		window.addEventListener( 'scroll', fixedScrollHandler, { passive: true } );
+		window.addEventListener( 'resize', fixedScrollHandler, { passive: true } );
+	} else if ( ! reparentedPanels.size && fixedScrollHandler ) {
+		window.removeEventListener( 'scroll', fixedScrollHandler );
+		window.removeEventListener( 'resize', fixedScrollHandler );
+		fixedScrollHandler = null;
+	}
+}
+
+/**
+ * Reparent an open panel to `<body>` and freeze it at its own already-
+ * computed screen position — a DISCLOSURE-scoped reparent (FR-36-10), never
+ * the DIALOG reparent `store.js::reparentToBody` does for the drawer: no
+ * scroll-lock, no focus trap, no backdrop, and it reverses itself on close
+ * (see `revertReparent()`).
+ *
+ * Called AFTER `repositionPanel()`'s existing alignment/collision/centring
+ * math has already run and settled the panel into its correct
+ * `position:absolute` layout for this open — `getBoundingClientRect()` at
+ * that point already IS the correct screen position (viewport-relative
+ * regardless of `position:absolute` vs `fixed`), so this needs no second
+ * geometry pass and cannot drift from what `repositionPanel()` decided.
+ *
+ * No-op for a header-placed disclosure (`needsStackingFix()` false) and a
+ * no-op if this megaId is already reparented (idempotent, matching
+ * `reparentToBody`'s own idempotency guard in store.js).
+ *
+ * @param {HTMLElement} root   The disclosure root.
+ * @param {HTMLElement} panel  The panel element (`[data-sgs-mega-panel]`).
+ * @param {string}      megaId This disclosure's megaId.
+ */
+function reparentPanelIfNeeded( root, panel, megaId ) {
+	if ( ! needsStackingFix( root ) || reparentedPanels.has( megaId ) ) {
+		return;
+	}
+	const rect = panel.getBoundingClientRect();
+	reparentedPanels.set( megaId, {
+		panel,
+		originalParent: panel.parentNode,
+		originalNextSibling: panel.nextSibling,
+	} );
+	// CSS-var VALUES only (Spec 32 no-inline) — style.css's
+	// `[data-sgs-nav-fixed]` rule reads these two and switches the panel to
+	// `position:fixed`.
+	panel.style.setProperty( '--sgs-mm-fixed-top', `${ rect.top.toFixed( 2 ) }px` );
+	panel.style.setProperty( '--sgs-mm-fixed-left', `${ rect.left.toFixed( 2 ) }px` );
+	panel.setAttribute( 'data-sgs-nav-fixed', '' );
+	document.body.appendChild( panel );
+	syncFixedScrollWatcher();
+}
+
+/**
+ * Reverse `reparentPanelIfNeeded()` — move the panel back to exactly where
+ * it originally rendered and drop the fixed-mode markers, so it returns to
+ * its normal `position:absolute` layout the next time it opens. A no-op
+ * when this megaId was never reparented (the common case: every header
+ * placement, or a page-content one that never opened).
+ *
+ * @param {string} megaId The disclosure's megaId.
+ */
+function revertReparent( megaId ) {
+	const rec = reparentedPanels.get( megaId );
+	if ( ! rec ) {
+		return;
+	}
+	reparentedPanels.delete( megaId );
+	const { panel, originalParent, originalNextSibling } = rec;
+	if ( originalParent ) {
+		originalParent.insertBefore( panel, originalNextSibling );
+	}
+	panel.removeAttribute( 'data-sgs-nav-fixed' );
+	panel.style.removeProperty( '--sgs-mm-fixed-top' );
+	panel.style.removeProperty( '--sgs-mm-fixed-left' );
+	syncFixedScrollWatcher();
 }
 
 /** Move keyboard focus to the first focusable element inside the open panel. */
@@ -666,6 +794,21 @@ const { state } = store( 'sgs/mega', {
 				clearOpenTimer( ctx.megaId );
 				clearCloseTimer( ctx.megaId );
 			}
+			// Funnels EVERY close path through one reversal, not just this
+			// branch's forced-close: self-initiated closes (close(), the
+			// toggle() close branch, Escape/Tab in triggerKeydown/
+			// panelKeydown) already set `ctx.isOpen = false` themselves
+			// before this callback re-runs (data-wp-watch re-fires on any
+			// tracked dependency change, including one this same callback
+			// just wrote above), and the scroll/resize close
+			// (`syncFixedScrollWatcher`) only ever sets
+			// `state.openMegaId = null`, relying entirely on this callback
+			// to close + revert. `revertReparent()` is a no-op for a
+			// disclosure that was never reparented (every header
+			// placement), so this costs nothing for the common case.
+			if ( ! ctx.isOpen ) {
+				revertReparent( ctx.megaId );
+			}
 		},
 	},
 } );
@@ -707,5 +850,11 @@ if ( typeof window !== 'undefined' ) {
 		activePanelRect = null;
 		state.openMegaId = null;
 		syncTriangleWatcher();
+		// Defensive, ahead of the reactive watchOpenState path above: a
+		// bfcache restore replays the JS heap exactly as frozen (see the
+		// module docblock), so a panel reparented to <body> when the
+		// visitor navigated away would otherwise still be sitting there —
+		// revert every one immediately rather than waiting a reactive tick.
+		Array.from( reparentedPanels.keys() ).forEach( revertReparent );
 	} );
 }
