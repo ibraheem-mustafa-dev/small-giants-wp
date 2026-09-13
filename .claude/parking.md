@@ -526,13 +526,6 @@ The generic-underline clash and the featured-item hover controls are both built 
 
 **Trigger:** header-clone pipeline exists and has been run against this item.
 
-### P-NAV-ITEM-SEPARATORS — nav-menu has no divider/separator capability between items
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-20
-
-Across the whole framework only `sgs/breadcrumbs` has a separator attribute; nav-menu has none. This is a real gap (vertical dividers between links are standard in utility bars/footer navs/editorial headers). Deliberately scoped out of the hover-state rework because a separator is a distinct ELEMENT under the element-first model, not a state of the link. Proposed shape: a `separator` element (style: none/line/dot, colour, thickness, height) rendered as a `::before` on adjacent items, suppressed on the featured item and inside the drawer's stacked layout, with no reflexive hover state (the item reacts to hover, the separator normally stays static).
-
-**Trigger:** next nav/framework session, or the first client draft that uses a separated nav.
-
 ### P-P3-ADMIN-POLISH — Spec 28 admin-UI non-blocking polish residuals
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-09
 
@@ -689,18 +682,6 @@ so a closed-panel shot is reported VACUOUS rather than saved; capture real menu-
 clone-first would only reproduce the rejected half-clone with more steps. This entry is therefore
 NOT queued work; it is the standard the clone must meet when the system is complete. Task 5 must
 not be re-presented to Bean until every defect above is fixed.
-
-### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state
-**Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-28
-
-`closeStyle: 'burger-morph'` currently draws a static x-reading icon on the drawer's own close
-chrome. A TRUE morph — the HEADER burger animating into an x when the drawer opens — needs state
-wiring between two independent block instances via `store('sgs/nav')`. **Not a GSAP or
-animation-library job** (Bean asked, 2026-07-28): the motion is cheap CSS on the button spans; the
-missing piece is cross-block state. Documented in the shipped code comments + design doc.
-
-**Trigger:** next nav-drawer/Spec-36 session that touches `store('sgs/nav')` — piggyback the
-cross-block wiring rather than opening a dedicated session for it.
 
 ### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29

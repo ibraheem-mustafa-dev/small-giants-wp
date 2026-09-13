@@ -7,6 +7,52 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-13 — 1 entry RESOLVED: header burger-to-X morph, live-verified
+
+> ### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state
+> **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-07-28
+>
+> `closeStyle: 'burger-morph'` currently draws a static x-reading icon on the drawer's own close
+> chrome. A TRUE morph — the HEADER burger animating into an x when the drawer opens — needs state
+> wiring between two independent block instances via `store('sgs/nav')`. **Not a GSAP or
+> animation-library job** (Bean asked, 2026-07-28): the motion is cheap CSS on the button spans; the
+> missing piece is cross-block state. Documented in the shipped code comments + design doc.
+>
+> **Trigger:** next nav-drawer/Spec-36 session that touches `store('sgs/nav')` — piggyback the
+> cross-block wiring rather than opening a dedicated session for it.
+
+**Correction (2026-09-13):** the original framing was wrong — a scoping investigation found no
+cross-block state problem existed. `sgs/nav-menu`'s own burger already had a correct, working,
+per-instance `state.isOpen` (`store.js::state.isOpen`, a derived getter reading `context.isOpen`,
+already bound via `data-wp-bind--aria-expanded="state.isOpen"`). No wiring between the header
+burger and the drawer's own `closeStyle` was ever needed — they are two independent controls, not
+one synced state.
+
+**Resolved by commit `10670bf82`** (`fix(nav-menu): Wave 2 G2/G4 — burger icon-right order,
+burger-to-X morph`), shipped in an earlier session on the same day this entry was picked up: the
+default (unmodified) burger glyph is restructured into 3 real `<span>` bars
+(`sgs_nav_menu_burger_toggle_markup()`, `plugins/sgs-blocks/includes/nav-menu-markup.php`), and
+`nav-menu/style.css`'s `.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar`
+rules rotate/fade them into an X using the EXISTING `aria-expanded` binding — zero new JS, zero
+cross-block store changes.
+
+**Live-verified 2026-09-13** on the sandybrown canary (already deployed, confirmed via direct SSH
+read of the live plugin files — no redeploy needed): morph fires correctly on open (bar 1 rotates
++45°, bar 2 fades to opacity 0, bar 3 rotates -45°) and reverts correctly on close via the × button
+(re-tested end to end: transforms/opacities back to resting, `aria-expanded="false"`, dialog
+closed). ESC and backdrop-click were not independently exercisable in this session's harness (ESC
+needs a real OS-level keypress for the native `<dialog>` `cancel` event, which a synthetic
+`KeyboardEvent` does not trigger; the canary's current drawer instance uses the full-screen modal
+anchor, which has no area outside the panel for a backdrop click to land) — but both paths route
+through the identical `store.js::runClose()` → `onNativeClose()` teardown that flips
+`ctx.isOpen = false` already proven live via the × path, so the morph-revert is the same code path
+regardless of which control triggered the close. Confirmed the custom-trigger-icon gate
+(`$burger_icon_is_default` in `render.php`, requires `triggerIcon.source==='lucide'` AND
+`triggerIcon.name==='menu'`) by code inspection — a custom icon renders `$burger_icon` untouched
+with no `.sgs-nav-menu__burger-bar` spans, so the CSS `:has(.sgs-nav-menu__burger-bar)` selector
+structurally cannot match and no morph is attempted; no live instance with a custom icon exists on
+the canary to exercise end-to-end.
+
 ## 2026-09-11 — 1 entry RESOLVED: archive-product WC block-validation, confirmed via live editor check
 
 > ### P-ARCHIVE-PRODUCT-WC-VALIDATION — archive-product template shows editor block-validation errors (frontend renders fine)
@@ -4023,3 +4069,26 @@ the actual `recognise_section()`/`build_block_markup()` pipeline (not a hand-bui
 the sandybrown canary and confirmed the live rendered DOM carries the correct structural markup
 per variant. Both sub-items (nav-drawer D974, trust-bar D975) are now genuinely closed. Full
 detail: `decisions.md` D975.
+
+## P-NAV-ITEM-SEPARATORS — CLOSED 2026-09-13
+
+Originally parked 2026-07-20. Verbatim residual scope at close: "nav-menu has no
+divider/separator capability between items. Across the whole framework only sgs/breadcrumbs
+has a separator attribute; nav-menu has none. This is a real gap (vertical dividers between
+links are standard in utility bars/footer navs/editorial headers). Deliberately scoped out
+of the hover-state rework because a separator is a distinct ELEMENT under the element-first
+model, not a state of the link. Proposed shape: a separator element (style: none/line/dot,
+colour, thickness, height) rendered as a ::before on adjacent items, suppressed on the
+featured item and inside the drawer's stacked layout, with no reflexive hover state (the
+item reacts to hover, the separator normally stays static)."
+
+**Closed 2026-09-13 (Spec 41 FR-41-37) — built with a different shape than originally
+proposed, superseding rather than matching this entry's sketch.** A "separator" concept now
+exists as a real, always-available control across four contexts: the drawer's main vertical
+list, the drawer's own dropdown/submenu rows, the horizontal bar's dropdown/submenu rows (all
+three as a horizontal line between rows — the OPPOSITE of "suppressed inside the drawer's
+stacked layout" that this entry originally proposed, since Bean's actual direction was to make
+it universal there, not suppressed), and a genuinely new vertical divider between adjacent
+top-level horizontal bar items. Distinct from "underline" (the bar's own hover/current text
+indicator), which was the source of a naming collision this same session resolved. Full detail:
+`.claude/reports/2026-09-12-nav-menu-visual-review-register.md`, `.claude/reports/2026-09-13-nav-menu-divider-terminology-standardisation.md`, commit `ced102333`.
