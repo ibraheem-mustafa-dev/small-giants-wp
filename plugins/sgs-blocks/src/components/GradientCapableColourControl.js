@@ -99,8 +99,20 @@ function StateContent( {
 	contrastLargeText,
 } ) {
 	const [ localMode, setLocalMode ] = useState( null );
+
+	// ⛔ CRASH FIX (2026-09-13) — `gradientCapable` is a ROW-LEVEL flag (true the
+	// moment ANY state on the row has a gradient sibling attribute). Rendering
+	// the Solid/Gradient toggle for EVERY state under that flag put a live
+	// control on a state whose `onGradientChange` handler was never wired
+	// (nav-menu's item-text Hover tab: `gradient` supplied, `hoverGradient`
+	// not) — clicking it called `undefined(...)`. Gate per ACTIVE STATE instead:
+	// only a state that genuinely carries a handler gets the toggle; every
+	// other state renders solid-only. Protects every `textRow()`/`fillRow()`
+	// row across the codebase with the same partial-gradient shape, not just
+	// nav-menu.
+	const stateIsGradientCapable = typeof state.onGradientChange === 'function';
 	const gradientEnabled =
-		localMode !== null ? localMode : !! state.gradientValue;
+		stateIsGradientCapable && ( localMode !== null ? localMode : !! state.gradientValue );
 
 	const displayValue = state.linked
 		? resolveColourToken( state.value, colours )
@@ -234,17 +246,19 @@ function StateContent( {
 					{ contrastNotice }
 				</Notice>
 			) }
-			<ToggleGroupControl
-				label={ __( 'Colour type', 'sgs-blocks' ) }
-				value={ gradientEnabled ? 'gradient' : 'solid' }
-				onChange={ ( val ) => setLocalMode( val === 'gradient' ) }
-				isBlock
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
-			>
-				<ToggleGroupControlOption value="solid" label={ __( 'Solid', 'sgs-blocks' ) } />
-				<ToggleGroupControlOption value="gradient" label={ __( 'Gradient', 'sgs-blocks' ) } />
-			</ToggleGroupControl>
+			{ stateIsGradientCapable && (
+				<ToggleGroupControl
+					label={ __( 'Colour type', 'sgs-blocks' ) }
+					value={ gradientEnabled ? 'gradient' : 'solid' }
+					onChange={ ( val ) => setLocalMode( val === 'gradient' ) }
+					isBlock
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				>
+					<ToggleGroupControlOption value="solid" label={ __( 'Solid', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="gradient" label={ __( 'Gradient', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
+			) }
 
 			{ gradientEnabled ? (
 				<SgsGradientPicker
@@ -264,8 +278,11 @@ function StateContent( {
 						setLocalMode( false );
 						// Switching to Solid clears the gradient sibling so the
 						// two paths never disagree about which is current —
-						// mirrors GradientOverlayControl exactly.
-						state.onGradientChange( '' );
+						// mirrors GradientOverlayControl exactly. Only when this
+						// state actually has a gradient sibling to clear.
+						if ( stateIsGradientCapable ) {
+							state.onGradientChange( '' );
+						}
 						if ( ! state.linked ) {
 							state.onChange( picked ?? '' );
 							return;

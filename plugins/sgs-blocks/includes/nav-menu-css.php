@@ -191,12 +191,13 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// D956 -- sibling gradient wins when set+valid. Safe unconditionally: itemBg
 	// (below) paints on a `::before` layer, never $link_sel itself (D942 recipe
 	// item 1's own comment at the itemBg block explains why ::after was unusable
-	// here). The Hover text colour is NOT wired to a gradient sibling:
-	// `itemSmartContrast` resolves it for WCAG contrast against the Hover fill,
-	// which a client-chosen gradient cannot meaningfully replace -- and it is
-	// also condition 2's blocking input for the text Sweep (FR-41-26).
+	// here).
 	$item_colour_gradient  = isset( $attributes['itemColourGradient'] ) ? (string) $attributes['itemColourGradient'] : '';
 	$item_colour_effective = sgs_resolve_text_colour_or_gradient( $item_colour, $item_colour_gradient );
+	// itemColourHoverGradient (2026-09-13, Bean-directed) -- read here, resolved
+	// further down AFTER the itemSmartContrast branch runs, because the swap
+	// must win over any stored gradient (see $item_colour_hover_effective below).
+	$item_colour_hover_gradient = isset( $attributes['itemColourHoverGradient'] ) ? (string) $attributes['itemColourHoverGradient'] : '';
 	// RAW attribute value, never resolved to a literal hex — a slug flows
 	// through sgs_background_paint_decl() -> sgs_colour_value() as a live
 	// var(--wp--preset--color--{slug}) reference, so a later theme recolour
@@ -314,6 +315,16 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		$item_colour_current = $smart_fg( $item_bg_current_hex, $item_colour_current );
 	}
 
+	// itemColourHoverGradient (2026-09-13) -- the swap above ALWAYS wins when
+	// itemSmartContrast is ON: $item_colour_hover is already the auto-computed
+	// safe solid at this point, and a stored gradient value is deliberately
+	// ignored here rather than resolved, so a stale gradient set while the
+	// swap was OFF never silently reappears once it's switched back ON. When
+	// the swap is OFF the sibling resolves exactly like the Normal state does.
+	$item_colour_hover_effective = $smart_contrast
+		? $item_colour_hover
+		: sgs_resolve_text_colour_or_gradient( $item_colour_hover, $item_colour_hover_gradient );
+
 	// Passed to the block-private typography-hover emitter so a hover
 	// text-decoration travels WITH the swept glyphs (FR-41-26) — '' on every
 	// non-sweep row, because on a resolved 'swap' `text-decoration-color`
@@ -356,12 +367,24 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 
 	if ( '' !== $item_text_sweep['hover'] ) {
 		$css .= $item_text_sweep['hover'];
-	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover ) {
+	} elseif ( 'none' !== $t_text && '' !== $item_colour_hover_effective ) {
 		// Wave 2 M4 (2026-09-12): $caret_svg_sel paired in the same call — a
 		// direct :hover/:focus-visible on the caret's own svg fires when the
 		// pointer/focus is on the caret itself (e.g. the has_url fork's
 		// separate `.sgs-nav-menu__subtoggle` button).
-		$css .= sgs_hover_state_rules( $link_sel . ',' . $caret_svg_sel, 'color:' . sgs_colour_value( $item_colour_hover ), ':focus-visible' );
+		// itemColourHoverGradient (2026-09-13): sgs_text_colour_decl() detects a
+		// gradient function on its own and swaps in the background-clip:text
+		// declaration set; a flat colour resolves exactly as before via
+		// `color:`. Guarded on a non-empty decl (an invalid stored value
+		// resolves to '', matching every other colour branch in this file).
+		$item_colour_hover_decl = sgs_text_colour_decl( $item_colour_hover_effective );
+		if ( '' !== $item_colour_hover_decl ) {
+			$css .= sgs_hover_state_rules( $link_sel . ',' . $caret_svg_sel, $item_colour_hover_decl, ':focus-visible' );
+			$css .= sgs_text_colour_gradient_fallback_rule(
+				$link_sel . ':hover,' . $caret_svg_sel . ':hover,' . $link_sel . ':focus-visible,' . $caret_svg_sel . ':focus-visible',
+				$item_colour_hover_effective
+			);
+		}
 	}
 
 	// FR-41-6 — the Current-state weight, under the NEVER-LIGHTER rule. An

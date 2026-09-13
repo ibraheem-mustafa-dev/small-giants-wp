@@ -298,6 +298,22 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				hover: 'itemColourHover',
 				current: 'itemColourCurrent',
 				gradient: 'itemColourGradient',
+				// Live-gated on itemSmartContrast (Bean-directed 2026-09-13): the
+				// swap ON auto-computes a safe solid for WCAG contrast against
+				// itemBgHover, which a gradient can't meaningfully replace — the
+				// ORIGINAL reason (D956) this row's Hover tab had no gradient at
+				// all. That reason no longer applies while the swap is OFF (the
+				// current default), so the Hover tab gets its own gradient
+				// sibling ONLY while `itemSmartContrast` is false. The key
+				// itself stays a string literal either way (never conditionally
+				// omitted) — only the VALUE toggles between the attribute name
+				// and `undefined`, so `textRow()`'s `hoverGradient ? {...} : {}`
+				// branch (unconditional in source) attaches/omits the state's
+				// `onGradientChange` handler live as the operator flips the
+				// toggle, and GradientCapableColourControl's per-state gate
+				// (2026-09-13 crash fix) hides the Gradient option the instant
+				// it disappears.
+				hoverGradient: itemSmartContrast ? undefined : 'itemColourHoverGradient',
 			},
 			attributes,
 			setAttributes,

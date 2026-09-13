@@ -125,6 +125,7 @@
 						"hover": {
 							"attrMap": {
 								"css:color": "itemColourHover",
+								"css:color-gradient": "itemColourHoverGradient",
 								"css:background-color": "itemBgHover",
 								"css:background-image": "itemBgHoverGradient",
 								"css:border-color": "itemBorderColourHover",
@@ -433,7 +434,7 @@
 		"itemColourGradient": {
 			"type": "string",
 			"default": "",
-			"description": "CSS gradient string painting the resting nav-item text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over itemColour. Safe unconditionally -- itemBg already paints on a ::before layer (D942 recipe item 1), never this same selector. Not offered on hover: itemColourHover's 'pill' style auto-computes its colour for WCAG contrast against itemBgHover."
+			"description": "CSS gradient string painting the resting nav-item text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over itemColour. Safe unconditionally -- itemBg already paints on a ::before layer (D942 recipe item 1), never this same selector. See itemColourHoverGradient for the Hover-state sibling."
 		},
 		"itemBg": {
 			"type": "string",
@@ -447,6 +448,11 @@
 		"itemColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"itemColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the Hover-state nav-item text, mirroring itemColourGradient's background-clip:text mechanism. Non-empty wins over itemColourHover. Offered in the editor ONLY while itemSmartContrast is OFF (the default) -- when itemSmartContrast is ON, itemColourHover auto-computes a safe solid colour for WCAG contrast against itemBgHover, which a gradient cannot meaningfully replace, so a stored value here is ignored by render.php while the swap is active rather than silently reappearing."
 		},
 		"itemBgHover": {
 			"type": "string",
