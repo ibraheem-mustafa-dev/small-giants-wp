@@ -758,8 +758,8 @@
 		},
 		"itemSmartContrast": {
 			"type": "boolean",
-			"default": true,
-			"description": "Resolves the item's foreground automatically so it stays readable against whatever background the item is sitting on (Spec 41 FR-41-5)."
+			"default": false,
+			"description": "Opt-in AUTO-FIX: when ON, resolves the item's foreground automatically so it stays readable against whatever background the item is sitting on (Spec 41 FR-41-5). Default OFF (changed 2026-09-13, Bean-directed): an operator's explicit itemColourHover is now respected as-authored by default — no silent swap. The readability CHECK itself is unconditional and always warns in the editor inspector regardless of this setting; only the automatic colour SWAP is gated on it."
 		},
 		"itemBorderWidth": {
 			"type": "object",

@@ -56,21 +56,24 @@ export default function DropdownSettingsPanel( {
 				/>
 
 				{ /* RELOCATED here in step 14 (Spec 41 §9.5 / FR-41-27) from the old
-				   Design-tab colour/state area. The toggle, its default and its
-				   two-case contrast resolution are UNCHANGED; only its home moved.
-				   It sits beside the navigation label because both answer "does this
-				   menu behave safely for every visitor", which is what a General-tab
-				   Accessibility panel is for. The Colour panel's Item text and Item
-				   background rows each carry a rendered note pointing here, so the
-				   control does not read as having been dropped.
+				   Design-tab colour/state area. It sits beside the navigation label
+				   because both answer "does this menu behave safely for every
+				   visitor", which is what a General-tab Accessibility panel is for.
+				   DEFAULT FLIPPED 2026-09-13 (Bean-directed): was default-ON
+				   (silently swapping an operator's explicit hover colour); now
+				   default-OFF — an explicit colour always renders as-authored
+				   unless this is switched ON. The readability CHECK itself is
+				   unconditional regardless of this toggle: the item-text row below
+				   always shows an advisory note when the hover colour would be hard
+				   to read, and points back here.
 				   ⛔ No "WCAG", no "contrast ratio", no "AA" in any client-visible
 				   string on this block (FR-41-5). */ }
 				<ToggleControl
 					label={ __( 'Keep text readable automatically', 'sgs-blocks' ) }
-					checked={ itemSmartContrast !== false }
+					checked={ itemSmartContrast === true }
 					onChange={ ( val ) => setAttributes( { itemSmartContrast: val } ) }
 					help={ __(
-						'When you set a background, we check your text colour stays readable against it and swap in a readable one if it doesn’t. Switch this off to always use exactly the colour you picked.',
+						'When you set a background, we can check your text colour stays readable against it and swap in a readable one if it doesn’t. Off by default, so your chosen colour always renders exactly as picked — switch this on to have it corrected automatically instead.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom

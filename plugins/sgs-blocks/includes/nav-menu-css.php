@@ -241,17 +241,27 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * ── ITEM TEXT — three states (FR-41-3 / FR-41-23). ───────────────────────
 	 *
 	 * `itemSmartContrast` (FR-41-5) is the pill branch's one genuinely unique
-	 * behaviour, preserved as a toggle rather than a hardcoded side effect. When
-	 * ON and the operator has set a Hover or Current BACKGROUND, the matching
-	 * foreground resolves through the EXISTING shared WCAG helpers — the same two
-	 * the retired pill branch called, and the same two the featured pill and
-	 * sgs/nav-drawer already use. ⛔ No new contrast function is built.
+	 * behaviour, preserved as an OPT-IN toggle rather than a hardcoded side
+	 * effect. Default changed to OFF 2026-09-13 (Bean-directed): a silent
+	 * colour swap surprised an operator whose explicit `itemColourHover` looked
+	 * "not applied" — it had been quietly overridden by this exact branch. The
+	 * swap logic below is UNCHANGED and stays available as an explicit opt-in;
+	 * only the DEFAULT flipped. The readability CHECK itself (same WCAG maths)
+	 * now lives unconditionally in edit.js as an advisory inspector Notice —
+	 * it always warns on a failing combination, regardless of this attribute's
+	 * value; only the automatic SWAP below is gated on it.
 	 *
-	 * ⚠ Case two means an explicit colour does not always win: the operator's
-	 * choice is kept whenever it clears AA against the resolved fill, and falls
-	 * back to the guaranteed-safe binary only when it does not. That is the
-	 * shipped behaviour being preserved. An operator who wants their unreadable
-	 * colour rendered as-is switches the toggle off; that is what it is for.
+	 * When ON and the operator has set a Hover or Current BACKGROUND, the
+	 * matching foreground resolves through the EXISTING shared WCAG helpers —
+	 * the same two the retired pill branch called, and the same two the
+	 * featured pill and sgs/nav-drawer already use. ⛔ No new contrast function
+	 * is built.
+	 *
+	 * ⚠ Case two means an explicit colour does not always win: with the toggle
+	 * ON, the operator's choice is kept whenever it clears AA against the
+	 * resolved fill, and falls back to the guaranteed-safe binary only when it
+	 * does not. With the toggle OFF (the default), the operator's choice is
+	 * ALWAYS kept as-authored — the swap never runs.
 	 */
 	// RAW values feed the paint declaration (see $item_bg_raw's comment above);
 	// the _hex siblings are resolved ONLY for the WCAG maths below — luminance
@@ -282,7 +292,10 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		$item_colour_hover = 'accent';
 	}
 
-	$smart_contrast = ! isset( $attributes['itemSmartContrast'] ) || (bool) $attributes['itemSmartContrast'];
+	// Default OFF (2026-09-13, Bean-directed) — was default-ON. Unset or
+	// explicitly false = the operator's itemColourHover renders exactly
+	// as-authored, no swap. Only an explicit `true` opts into the swap below.
+	$smart_contrast = isset( $attributes['itemSmartContrast'] ) && (bool) $attributes['itemSmartContrast'];
 	if ( $smart_contrast ) {
 		// $sgs_nm_hex handles a slug OR a raw CSS colour for $preferred too —
 		// the same G16(c) gap applied here: a client-chosen custom hex text

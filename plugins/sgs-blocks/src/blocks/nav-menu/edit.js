@@ -36,9 +36,22 @@ import { __ } from '@wordpress/i18n';
 // that session's own uncommitted work. A separate line keeps this change
 // isolatable.
 import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
-import { useBlockProps } from '@wordpress/block-editor';
+import { useEffect, useRef, useState } from 'react';
+import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
+import { Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import { SgsColourPanel, TypographyControls, fillRow, textRow } from '../../components';
+import {
+	SgsColourPanel,
+	TypographyControls,
+	fillRow,
+	textRow,
+	resolveColourToken,
+} from '../../components';
+import {
+	calculateRelativeLuminance,
+	calculateContrastRatio,
+	meetsWCAG_AA,
+} from '../../utils/wcag-contrast';
 import {
 	ItemTextTreatment,
 	ItemBgTreatment,
@@ -48,7 +61,6 @@ import {
 	BurgerIconTreatment,
 	BurgerBgTreatment,
 } from './ColourRowExtras';
-import { InspectorControls } from '@wordpress/block-editor';
 import useNavMenuSource from './useNavMenuSource';
 import useDrawerNotice from './useDrawerNotice';
 import NavMenuNotices from './NavMenuNotices';
@@ -71,6 +83,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		drawerRef,
 		navLabel,
 		itemSmartContrast,
+		itemColourHover,
 		itemSeparatorWidth,
 		itemSeparatorStyle,
 		itemSeparatorColour,
@@ -142,7 +155,28 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		showDrawerNotice,
 	} = useDrawerNotice( { clientId, ref, drawerRef } );
 
-	const blockProps = useBlockProps();
+	// Reference element for resolving `var(--wp--preset--color--x)` stops via
+	// getComputedStyle, mirroring GradientCapableColourControl's own probe
+	// pattern (see that file's StateContent). Merged onto blockProps so the
+	// wrapper around ServerSideRender doubles as the probe — no extra DOM node.
+	const contrastRefEl = useRef( null );
+	const blockProps = useBlockProps( { ref: contrastRefEl } );
+	const [ colourPalette ] = useSettings( 'color.palette' );
+
+	// ── Item hover-text readability check (FR-41-5, 2026-09-13) ─────────────
+	//
+	// UNCONDITIONAL — fires regardless of itemSmartContrast (that attribute now
+	// only gates the automatic colour SWAP in nav-menu-css.php; this warns
+	// every time, so an operator always knows their choice may be hard to read,
+	// whether or not they want it auto-corrected). Only checked against
+	// `itemColourHover` once the operator has actually set one — an untouched
+	// attribute stays '' in the stored attributes even though render.php
+	// default-closes it to 'accent' server-side (see nav-menu-css.php's own
+	// comment on that default-close), so this never fires against a value the
+	// operator never chose. Background is the hover fill if set, else falls
+	// back to the resting surface (itemBg/navBg) — the same surface that shows
+	// through when no hover background is set.
+	const [ itemHoverContrastNotice, setItemHoverContrastNotice ] = useState( null );
 
 	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────
 	//
@@ -182,6 +216,45 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	// presence here means THIS Edit is the drawer's own nested nav-menu, not
 	// the header's flat bar — a cheap, correct switch with no new attribute.
 	const isDrawerInstance = Boolean( context?.[ 'sgs/navDrawerBg' ] );
+
+	// The surface actually behind the item ON HOVER specifically — itemBgHover
+	// if the operator set one, else the same resting surface used above (that
+	// is what still shows through when no hover fill is set). Feeds the
+	// unconditional readability check declared above `colourRows`.
+	const itemHoverSurface = itemBgHover || itemSurface || '';
+
+	useEffect( () => {
+		if ( ! itemColourHover || ! itemHoverSurface ) {
+			setItemHoverContrastNotice( null );
+			return;
+		}
+
+		try {
+			const bgLuminance = calculateRelativeLuminance(
+				resolveColourToken( itemHoverSurface, colourPalette ) || itemHoverSurface,
+				contrastRefEl.current
+			);
+			const fgLuminance = calculateRelativeLuminance(
+				resolveColourToken( itemColourHover, colourPalette ) || itemColourHover,
+				contrastRefEl.current
+			);
+			const ratio = calculateContrastRatio( bgLuminance, fgLuminance );
+
+			if ( ! meetsWCAG_AA( ratio, false ) ) {
+				setItemHoverContrastNotice(
+					__(
+						'This hover colour may be hard to read against its background. Turn on “Keep text readable automatically” in the Accessibility panel (General tab) to have it corrected automatically, or choose a different colour.',
+						'sgs-blocks'
+					)
+				);
+			} else {
+				setItemHoverContrastNotice( null );
+			}
+		} catch ( error ) {
+			// Never throw on an unparseable colour — warn-only, fall back to no notice.
+			setItemHoverContrastNotice( null );
+		}
+	}, [ itemColourHover, itemHoverSurface, colourPalette ] );
 
 	// FR-41-30(b) RESOLVED 2026-09-11 — the sublink-marker colour row is
 	// revealed only once the operator picks a DIFFERENT icon than the
@@ -229,11 +302,22 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			attributes,
 			setAttributes,
 			after: (
-				<ItemTextTreatment
-					value={ itemColourHoverTreatment }
-					onChange={ ( val ) => setAttributes( { itemColourHoverTreatment: val } ) }
-					attributes={ attributes }
-				/>
+				<>
+					{ itemHoverContrastNotice && (
+						<Notice
+							status="warning"
+							isDismissible={ false }
+							className="sgs-contrast-notice"
+						>
+							{ itemHoverContrastNotice }
+						</Notice>
+					) }
+					<ItemTextTreatment
+						value={ itemColourHoverTreatment }
+						onChange={ ( val ) => setAttributes( { itemColourHoverTreatment: val } ) }
+						attributes={ attributes }
+					/>
+				</>
 			),
 		} ),
 		// ⛔ HAND-WRITTEN LITERAL, DELIBERATELY — the one fill row that does not
