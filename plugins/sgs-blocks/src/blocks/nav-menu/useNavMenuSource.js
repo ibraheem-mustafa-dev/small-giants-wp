@@ -130,12 +130,20 @@ export default function useNavMenuSource( { ref, featuredItemIds, setAttributes 
 					const identifier = parentPath
 						? `${ parentPath }>${ keyOf( item ) }`
 						: keyOf( item );
+					// isMega mirrors render.php's from_link() 'type' check — a
+					// classic nav_menu_item's REST `object` field carries the
+					// linked post type slug for a link to an sgs_mega_menu CPT
+					// post. Feeds the megaDrawerFallbackIds checklist
+					// (MegaDrawerPanel.js).
 					out.push( {
 						identifier,
 						label:
 							item.title?.rendered ||
 							__( '(untitled item)', 'sgs-blocks' ),
 						depth,
+						isMega: 'sgs_mega_menu' === item.object,
+						hasChildren:
+							( byParent.get( String( item.id ) ) || [] ).length > 0,
 					} );
 					// Depth 1 matches render.php's MAX_SUBMENU_DEPTH: anything
 					// deeper is flattened INTO level 1 there, so offering it as a

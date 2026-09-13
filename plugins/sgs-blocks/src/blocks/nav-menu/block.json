@@ -387,6 +387,14 @@
 				"type": "string"
 			}
 		},
+		"megaDrawerFallbackIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			},
+			"description": "Per-item opt-OUT from the mega-menu item's default plain-link degrade in the DRAWER form only (Bean 2026-09-13: 'not everyone wants them'). A mega-typed item authored as a core/navigation-submenu with real nested child links renders those children as an ordinary accordion/submenu list in the drawer when its identifier is listed here, instead of collapsing to a plain link. A mega item with NO nested children still degrades to a plain link regardless (nothing to list). The BAR/desktop form is completely unaffected — it keeps the full mega-panel disclosure either way. Unset (default []) renders byte-identically to before this feature (FR-36-5 still reserves the FULL mega-panel-inside-the-drawer build as future work)."
+		},
 		"navLabel": {
 			"type": "string",
 			"default": ""

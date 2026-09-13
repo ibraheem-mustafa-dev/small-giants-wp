@@ -322,6 +322,17 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 		 * names "the same panel renders inside the drawer" as a FUTURE item this
 		 * task does not build.
 		 *
+		 * $mega_drawer_fallback_ids (Bean 2026-09-13, "not everyone wants them")
+		 * is a narrower, already-buildable slice of that future item: when a
+		 * mega-typed item is authored as a `core/navigation-submenu` carrying
+		 * REAL nested child links (not the CPT mega panel — its own menu
+		 * children) AND its identifier is listed here, those children render as
+		 * an ordinary accordion/submenu list instead of the plain-link degrade.
+		 * A mega item with no nested children still degrades to a plain link
+		 * regardless of this list (nothing to show as an accordion). The bar/
+		 * desktop form is untouched either way — it always gets the full mega
+		 * panel. Unset (default empty array) is byte-identical to before.
+		 *
 		 * Split out of the SGS_Nav_Menu_Bar_Renderer class (Spec 41 step 8,
 		 * pure refactor) into a standalone function -- $this->featured_ids
 		 * becomes an explicit parameter, body otherwise byte-identical.
@@ -332,24 +343,36 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 		 *                      + sub-panel DOM id namespace, mirrors the mega
 		 *                      panel's own instance-scoping).
 		 * @param array  $featured_ids Featured item identifiers (was $this->featured_ids).
+		 * @param string $marker_icon Rendered sublink-marker glyph HTML.
+		 * @param array  $mega_drawer_fallback_ids Mega item identifiers opted OUT of the
+		 *                      plain-link degrade in favour of an accordion of their own
+		 *                      nested children (megaDrawerFallbackIds attribute).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_menu_render_items_drawer( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '' ): string {
+		function sgs_nav_menu_render_items_drawer( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array() ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
 				$li_class    = 'sgs-nav-menu__item sgs-nav-menu__item--drawer' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
 
-				// Mega item — documented degrade (see docblock above).
+				// Mega item — documented degrade (see docblock above), UNLESS the
+				// operator opted this item into the accordion fallback AND it
+				// actually carries real nested children to show.
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
-					$html .= sprintf(
-						'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
-						esc_attr( $li_class ),
-						esc_url( $item['url'] ),
-						esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-						esc_html( $item['label'] )
-					);
-					continue;
+					$mega_children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();
+					$mega_fallback = ! empty( $mega_children ) && in_array( $item['identifier'], $mega_drawer_fallback_ids, true );
+					if ( ! $mega_fallback ) {
+						$html .= sprintf(
+							'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+							esc_attr( $li_class ),
+							esc_url( $item['url'] ),
+							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
+							esc_html( $item['label'] )
+						);
+						continue;
+					}
+					// Falls through to the ordinary children-accordion rendering
+					// below, exactly as though this were a plain dropdown item.
 				}
 
 				$children = isset( $item['children'] ) && is_array( $item['children'] ) ? $item['children'] : array();

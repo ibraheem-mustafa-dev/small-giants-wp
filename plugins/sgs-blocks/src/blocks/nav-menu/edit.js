@@ -56,6 +56,7 @@ import SubmenuItemsPanel from './SubmenuItemsPanel';
 import DropdownStylePanel from './DropdownStylePanel';
 import EffectsPanel from './EffectsPanel';
 import FeaturedPanel from './FeaturedPanel';
+import MegaDrawerPanel from './MegaDrawerPanel';
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
@@ -116,6 +117,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredRadiusHover,
 		featuredFontWeight,
 		featuredFontWeightHover,
+		megaDrawerFallbackIds,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
@@ -654,6 +656,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					featuredRadiusHover={ featuredRadiusHover }
 					featuredFontWeight={ featuredFontWeight }
 					featuredFontWeightHover={ featuredFontWeightHover }
+				/>
+
+				<MegaDrawerPanel
+					menuRef={ ref }
+					resolvedItems={ resolvedItems }
+					megaDrawerFallbackIds={ megaDrawerFallbackIds }
+					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
 

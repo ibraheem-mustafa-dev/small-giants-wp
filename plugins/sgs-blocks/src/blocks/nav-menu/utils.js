@@ -97,7 +97,14 @@ export function flattenMenuItems( blocks, parentPath = '', depth = 0 ) {
 		 * renders. Top-level keys stay bare, so existing selections still match.
 		 */
 		const identifier = parentPath ? `${ parentPath }>${ ownKey }` : ownKey;
-		items.push( { identifier, label, depth } );
+		// isMega mirrors render.php's from_link() 'type' check ('type' === the
+		// linked post type slug for a link to an sgs_mega_menu CPT post) — feeds
+		// the megaDrawerFallbackIds checklist (MegaDrawerPanel.js).
+		const isMega = 'sgs_mega_menu' === block.attributes?.type;
+		const hasChildren =
+			'core/navigation-submenu' === block.name &&
+			( block.innerBlocks || [] ).length > 0;
+		items.push( { identifier, label, depth, isMega, hasChildren } );
 		/*
 		 * Recurse into children. Without this the checklist listed TOP-LEVEL
 		 * items only, so render.php's featured-child support (it marks any child

@@ -563,9 +563,13 @@ if ( '' !== $sgs_nm_marker_grad_current['fallback_rule'] ) {
 	$sgs_nm_marker_css .= $sgs_nm_marker_grad_current['fallback_rule'];
 }
 
+// Per-item opt-out from the mega item's plain-link degrade in the drawer
+// (megaDrawerFallbackIds attribute, Bean 2026-09-13 — see block.json).
+$mega_drawer_fallback_ids = is_array( $attributes['megaDrawerFallbackIds'] ?? null ) ? $attributes['megaDrawerFallbackIds'] : array();
+
 $submenu_model_ctx = $block->context['sgs/navDrawerSubmenuModel'] ?? null;
 if ( is_string( $submenu_model_ctx ) && in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
-	$items_html            = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker );
+	$items_html            = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids );
 	$sgs_nm_is_drawer_list = true;
 } else {
 	$items_html            = sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
