@@ -735,3 +735,66 @@ original Wave 1 pass. Two Wave 1.5 verdicts ("M3 refuted", "I1 not reproduced") 
 themselves wrong — both traced to testing the wrong location, not to Bean's report being
 mistaken. Lesson for this session: when a fixture is NAMED, test that exact fixture before
 concluding anything, even under time pressure to reach a verdict quickly.
+
+## F2 + M2 — F2 SHIPPED, M2 mechanism CONFIRMED live (2026-09-13, commit `4d2daa318`)
+
+**F2 (dropdown + chevron feel laggy) — root cause found and fixed.** The earlier Wave 1
+verdict ("two independent 300ms mechanisms coincidentally share a duration") was
+incomplete: `nav-menu-markup.php` hardcodes `intentDelay: 300` for both the mega and
+dropdown forks, feeding the JS hover-intent debounce in `mega-disclosure.js::enterBridge`.
+That single timer gates `context.isOpen`, which BOTH the panel's `display:block` AND the
+chevron's `rotate(180deg)` (`nav-menu-submenu-css.php`'s `[aria-expanded="true"]
+.sgs-nav-menu__caret` rule) are keyed off — so "the dropdown AND the chevron both feel
+laggy" is one shared cause, not two coincidental ones. Fix: capped the effective delay to
+`Math.min(configuredDelay, 80)` in `enterBridge()` (`mega-disclosure.js` only — the
+markup/CSS coupling itself is out of this fix's file scope and was left as-is).
+
+Live-verified with real millisecond timing (Playwright, `performance.now()`, polling
+`aria-expanded`/computed `transform`/computed `display` every rAF) on the real canary
+header, "Our Story" bar dropdown item, at 1440px (the bar is `display:none` below
+desktop width — an earlier same-session measurement at a narrower default viewport wrongly
+read the chevron transform as "stuck at none"; re-run at 1440px showed it was a viewport
+artifact, not a bug — `nav-menu-submenu-css.php`'s rotate rule fires correctly):
+
+| Signal | Before (code-read, hardcoded value) | After (measured live) |
+|---|---|---|
+| `aria-expanded` flip | 300ms | ~88-110ms |
+| Chevron `transform` flip | 300ms (same timer) | ~110ms (same tick as aria-expanded) |
+| Panel `display:block` | 300ms (same timer) | ~110ms (same tick as aria-expanded) |
+
+All three flip on the SAME tick post-fix, confirming they share one timer as diagnosed.
+~110ms reads as instant to a pointer that stops on an item, while still swallowing a fast
+mouse-sweep across the ~100px bar item (which crosses in well under 80ms).
+
+**M2 (does hovering the chevron also trigger the parent item's own hover state?) —
+mechanism CONFIRMED WORKING, with one separate new finding.** Built the missing test
+fixture Wave 1 flagged as never existing (`itemColourHover:"#ff0000"` set temporarily on
+the live header's bar nav-menu, post 2671, then reverted after verification — never
+committed, never left live). Real Playwright mouse click on the chevron/toggle button
+(genuine pointer position, not a synthetic `dispatchEvent` — synthetic events do NOT set
+browser `:hover`, which cost one false lead mid-investigation) confirmed:
+`.sgs-nav-menu__submenu-root:hover` and its child trigger both report `:matches(':hover')
+=== true`, and the parent link's computed `color` changed from its resting value
+(`rgb(58,46,38)`) to a hover-state colour (`rgb(245,208,80)`) — the FR-41-13 rescue rule
+(`nav-menu-css.php`, `.sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link`) DOES fire
+from a chevron-only hover, exactly as Wave 1's architectural read predicted. **No code
+change was needed or made to `nav-menu-css.php`'s rescue rule — the mechanism already
+works.**
+
+**New finding, NOT part of M2, NOT fixed this pass (outside this task's scope, flagging for
+follow-up):** the hover colour applied on the real front-end request was the resolved
+`accent` DEFAULT, not the explicit `#ff0000` the test fixture set — even on a genuine
+LiteSpeed cache MISS (confirmed via response header) with no persistent object cache
+active (`wp_using_ext_object_cache()` returns false). Isolated `do_blocks()` /
+`render_block()` calls against the exact same post content (same block array, verified via
+`parse_blocks()`) DID correctly resolve `#ff0000`, so `nav-menu-css.php`'s own logic
+(`sgs_nav_menu_item_state_css()`) is proven correct in isolation — the discrepancy appears
+only on the genuine front-end template-part render path, not in the function under test.
+Root cause not yet found; needs a dedicated investigation into how `sgs/nav-menu`'s
+attributes are resolved when rendered as part of the real `wp_template_part` → full-page
+chain versus a standalone `do_blocks()` call on the same content string. Does not block or
+change M2's verdict (the propagation mechanism itself is confirmed correct); it is a
+separate, real defect in colour VALUE resolution, worth its own ticket.
+
+Commit: `4d2daa318` (main, pushed). Deploy: sandybrown, verified via live payload checksum
+match (83/83 block.json) + motion-qa probes green + smoke check 200.
