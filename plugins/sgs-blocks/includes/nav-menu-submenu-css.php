@@ -42,6 +42,11 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 	 *                                        `sgs_nav_menu_resolved_treatments()` —
 	 *                                        ⛔ never the stored attribute.
 	 * @param string $trigger_mode           Resolved `triggerMode` (icon|text|icon-and-text).
+	 * @param string $drawer_bg_slug        The parent nav-drawer's `drawerBg` palette
+	 *                                        slug, reached via block Context
+	 *                                        (`sgs/navDrawerBg`) — empty when this
+	 *                                        instance is not nested inside a real
+	 *                                        nav-drawer.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_menu_submenu_css(
@@ -54,7 +59,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		array $sgs_tor_padding_desktop,
 		array $sgs_tor_margin_desktop,
 		array $treatments = array(),
-		string $trigger_mode = 'icon'
+		string $trigger_mode = 'icon',
+		string $drawer_bg_slug = ''
 	): string {
 		$css         = '';
 		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
@@ -396,7 +402,39 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			$css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
 		}
 
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:8px 0;'
+		/*
+		 * I1 REDESIGN (2026-09-13, Bean root-cause) — the 2026-09-12 fallback above
+		 * (falling `--sgs-nm-submenu-bg` back to `submenuLinkBg` when `submenuBg` is
+		 * unset) only ever coalesced the Normal-state colour. It could not touch the
+		 * "lip": `padding:8px 0` on THIS rule reserved a band above/below the item
+		 * list that is painted by the PANEL's own background-color and can never be
+		 * painted by any ROW state — including `submenuLinkBgHover` — because no row
+		 * geometry extends into it. Bean's own description ("a static panel fill
+		 * shows through in the padding zone, especially obvious on hover") is that
+		 * exact geometry: two independently-resolved layers, one of which owns a
+		 * strip the other cannot reach.
+		 *
+		 * Chose shape (b) over shape (a): removing the panel's own background
+		 * outright was rejected because the panel is a genuinely floating element
+		 * (`position:absolute`) over arbitrary page content — it needs SOME fill to
+		 * read as a card, which is exactly why `submenuBg`/`submenuBorder*`/
+		 * `submenuShadow` exist as real attributes above. Zeroing the padding
+		 * instead removes the one place the panel's own fill could ever be exposed
+		 * next to a row: `overflow:hidden` on this rule clips the list to its own
+		 * `border-radius`, so a square-cornered first/last row is cropped to the
+		 * panel's rounded corners rather than leaving a square tab poking past them
+		 * — the standard rounded-container technique (already precedented in this
+		 * file: `.submenu-wrap` gets the same radius for its box-shadow). The
+		 * existing Normal-state coalesce above is KEPT, not removed — it still
+		 * closes the sub-pixel residual at the four rounded corners for the common
+		 * case (no explicit `submenuBg`), same reasoning, smaller radius.
+		 *
+		 * Net effect: at every point along the panel's edges the visible colour is
+		 * now ALWAYS a row's own state (Normal/Hover/Current), for every operator
+		 * configuration, with no attribute-dependent edge case — because there is no
+		 * geometry left for the panel's own fill to show through against a row.
+		 */
+		$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:0;overflow:hidden;'
 			. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);'
@@ -536,7 +574,47 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * marks the whole table "not yet built" (§FR-41-36) — not bundled into
 		 * this narrow fix.
 		 */
-		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{color:inherit;}';
+
+		/*
+		 * FR-41-36 FULL FIX (2026-09-13, superseding the `color:inherit` placeholder
+		 * documented above) — `drawerBg` is now genuinely reachable from THIS file:
+		 * `sgs/nav-menu` declares `usesContext: ["sgs/navDrawerBg"]` and
+		 * `sgs/nav-drawer` maps it via `providesContext: {"sgs/navDrawerBg":
+		 * "drawerBg"}` — the identical channel `sgs/navDrawerSubmenuModel` already
+		 * proves works for this exact parent/child pair (nav-menu/render.php reads
+		 * both off `$block->context`). render.php resolves the slug and passes it in
+		 * as `$drawer_bg_slug`.
+		 *
+		 * The check below reuses `sgs_wcag_preferred_text_colour_for_bg()` — the same
+		 * helper nav-drawer's own render.php already uses for `drawerFgHex` — rather
+		 * than reinventing contrast maths. It is NOT a rare-edge-case guard:
+		 * `drawerBg` defaults to `'primary'` (nav-drawer/render.php), so an
+		 * unmodified drawer pairs `primary` text with a `primary` background by
+		 * default — an unconditional "just default to primary" shortcut would
+		 * reintroduce the exact invisible-text bug this override exists to prevent,
+		 * on the FRAMEWORK DEFAULT, not an edge case.
+		 *
+		 * When `primary` clears 4.5:1 against the resolved `drawerBg`, the TOKEN
+		 * wins (kept as `var()`, so it still tracks a live palette/style-variation
+		 * change for free — matching FR-41-36's "same token as the bar" intent).
+		 * When it fails, degrade to the same binary `#000`/`#fff` safe pairing
+		 * `drawerFgHex` itself degrades to. If either hex cannot be resolved (no
+		 * context reached — this instance is not nested in a real nav-drawer, or a
+		 * non-hex palette entry), fall back to `color:inherit`, the pre-fix value's
+		 * own safe floor.
+		 */
+		$sgs_nm_drawer_sublink_colour_decl = 'color:inherit';
+		if ( '' !== $drawer_bg_slug ) {
+			$sgs_nm_drawer_bg_hex = sgs_resolve_palette_hex( $drawer_bg_slug, '' );
+			$sgs_nm_primary_hex   = sgs_resolve_palette_hex( 'primary', '' );
+			if ( '' !== $sgs_nm_drawer_bg_hex && '' !== $sgs_nm_primary_hex ) {
+				$sgs_nm_drawer_sublink_fg           = sgs_wcag_preferred_text_colour_for_bg( $sgs_nm_drawer_bg_hex, $sgs_nm_primary_hex );
+				$sgs_nm_drawer_sublink_colour_decl = ( $sgs_nm_drawer_sublink_fg === $sgs_nm_primary_hex )
+					? 'color:var(--wp--preset--color--primary, currentColor)'
+					: 'color:' . $sgs_nm_drawer_sublink_fg;
+			}
+		}
+		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{' . $sgs_nm_drawer_sublink_colour_decl . ';}';
 		// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
 		// Phase 3); routed as a direct decl (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot

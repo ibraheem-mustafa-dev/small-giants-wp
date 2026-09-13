@@ -577,6 +577,17 @@ if ( is_string( $submenu_model_ctx ) && in_array( $submenu_model_ctx, array( 'ac
 	$submenu_model_ctx     = '';
 }
 
+// FR-41-36 full-fix (2026-09-13) — the drawer's own `drawerBg` attribute,
+// reached via the SAME real WP block-context channel as
+// `sgs/navDrawerSubmenuModel` two lines above (nav-drawer's own
+// `providesContext`, extended with `sgs/navDrawerBg` mapped from
+// `drawerBg`). Only meaningful when this instance is actually nested inside
+// a real nav-drawer ($sgs_nm_is_drawer_list) — outside a drawer the context
+// is simply absent and the submenu CSS builder degrades to its old
+// `color:inherit` floor. See nav-menu-submenu-css.php for the contrast
+// check this feeds.
+$sgs_nm_drawer_bg_ctx = $sgs_nm_is_drawer_list ? (string) ( $block->context['sgs/navDrawerBg'] ?? '' ) : '';
+
 if ( '' === $items_html ) {
 	return '';
 }
@@ -810,7 +821,9 @@ $css .= sgs_nav_menu_submenu_css(
 	$sgs_tor_padding_tiers,
 	$sgs_tor_padding_desktop,
 	$sgs_tor_margin_desktop,
-	$sgs_nm_treatments
+	$sgs_nm_treatments,
+	'icon',
+	$sgs_nm_drawer_bg_ctx
 );
 // FR-41-30(b): sublink-marker colour CSS, built above alongside the marker's
 // own SVG defs injection (§ before line 456) — kept as a plain string here

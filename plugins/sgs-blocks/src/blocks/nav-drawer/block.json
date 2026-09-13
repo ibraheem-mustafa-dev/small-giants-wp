@@ -187,7 +187,8 @@
 		"border": ".wp-block-sgs-nav-drawer"
 	},
 	"providesContext": {
-		"sgs/navDrawerSubmenuModel": "submenuModel"
+		"sgs/navDrawerSubmenuModel": "submenuModel",
+		"sgs/navDrawerBg": "drawerBg"
 	},
 	"attributes": {
 		"drawerRef": {
