@@ -573,14 +573,34 @@ Following the `.claude/verify/nav-review-e1-drawer-submenu-investigation.md` roo
 (three E1-drawer symptoms) and Bean's simplified E2 design (reuse the LITERAL existing
 Current-page declarations on the ancestor, no new visual language):
 
-- **E1 Symptom 1 (submenu hover has no default text-colour)** — investigated and NOT
+- **E1 Symptom 1 (submenu hover has no default text-colour)** — SHIPPED 2026-09-13
+  (commit `1a7393bc6`), reversing the earlier "not implemented" verdict below (kept for
+  the record). Bean reviewed the original bg-tint-only verdict and explicitly ruled it
+  insufficient: a hover state with only a background tint and no text-colour signal is
+  weaker than every other row family in this component (item/featured/burger all
+  default-close their hover text). `submenuColourHover` (`nav-menu-submenu-css.php`,
+  `sgs_nav_menu_submenu_css()`) now default-closes to `'accent'` at the PHP layer,
+  mirroring `nav-menu-css.php`'s own `$item_colour_hover = 'accent'` pattern verbatim
+  (same token, same "skip only when the resolved treatment is `'none'`" guard); an
+  operator's own explicit choice still overrides. The `accent-light` background tint is
+  unchanged — this adds the text signal alongside it, it does not replace it.
+  `plugins/sgs-blocks/src/blocks/nav-menu/block.json`'s `submenuLinkBgHover` description
+  and `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`'s FR-41-36 table were both
+  updated so neither still claims text stays unset. **Live-verified** on the canary
+  (sandybrown, homepage, nav instance `.sgs-nav-menu-ef1c6d6c`) by fetching the deployed
+  scoped stylesheet (`wp-content/uploads/sgs-css/sgs-3567-*.css`) directly: it now emits
+  `.sgs-nav-menu__sublink:hover{color:var(--wp--preset--color--accent, currentColor)}`
+  alongside the pre-existing `background-color:var(--wp--preset--color--accent-light,
+  currentColor)` hover rule — both present, neither replacing the other — with the
+  `--wp--preset--color--accent` token resolving live to `#f5d050`. Zero console errors.
+  Original bg-tint-only verdict (superseded, kept for audit trail): investigated and NOT
   implemented as originally briefed. FR-41-36 (owner-ruled, locked 2026-09-11) explicitly
-  states the desktop submenu's Hover state is bg-tint-only (`accent-light`), with text
+  stated the desktop submenu's Hover state is bg-tint-only (`accent-light`), with text
   colour staying at its Normal default — confirmed independently by `block.json`'s own
   comment on `submenuLinkBgHover`. Mirroring the item family's `accent` hover-text default
   onto the submenu would have directly violated that locked decision. Flagged back to the
-  coordinator rather than shipped; needs Bean's explicit call if the locked scheme itself is
-  to change.
+  coordinator rather than shipped; needed Bean's explicit call if the locked scheme itself
+  was to change — which is exactly what happened next.
 - **E1 Symptom 2 (current beats hover on submenu rows, backwards from the item family)** —
   FIXED. The `[aria-current="page"]` colour rule now emits before the Hover rule in
   `nav-menu-submenu-css.php`, matching `nav-menu-css.php`'s own documented tie-break order.

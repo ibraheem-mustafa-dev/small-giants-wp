@@ -445,7 +445,7 @@ text-colour signal is weaker than every OTHER row family in this component (top 
 item and burger trigger all default-close their hover text colour). The desktop-submenu **Hover**
 cell above is revised accordingly: **text now defaults to `accent`**, alongside the existing
 `accent-light` background tint (`submenuLinkBgHover`'s block.json default, unchanged). Built in
-`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css()` — `submenuColourHover` default-closes to
+`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css` — `submenuColourHover` default-closes to
 `'accent'` at the PHP layer (mirrors `plugins/sgs-blocks/includes/nav-menu-css.php`'s own `$item_colour_hover = 'accent'`
 pattern verbatim: same token, same "skip only when the resolved hover TREATMENT is `'none'`" guard).
 An operator's own explicit `submenuColourHover` choice still overrides, exactly as before. Every
