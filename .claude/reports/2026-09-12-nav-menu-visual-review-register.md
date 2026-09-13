@@ -543,6 +543,29 @@ check at all. Not what Bean saw here, but real and worth flagging for its own fi
   currently produce this artefact. Needs Bean to point at the exact instance/screenshot
   that showed this, since the current code has nothing in it that could cause it.
 
+  **SUPERSEDED, 2026-09-13 — SHIPPED (commit `0743c5e54`).** Bean explained the real
+  mechanism directly from observation: the PANEL (`.sgs-nav-menu__submenu`) carries its own
+  independent `background-color`, separate from each row's own background — hovering a row
+  only repaints that row, the panel's own fill stays static everywhere else, and its
+  `padding:8px 0` exposed exactly that static fill as a band above/below the row list
+  whenever it didn't match the (different, often hover-changed) row colour. This is a real
+  mechanism the Wave-1.5 "not reproduced" pass never tested for, because it was chasing a
+  border-symmetry theory, not a two-independent-background-layers theory.
+
+  Fix shape chosen: zero the panel's own `padding` (`padding:0`) and add `overflow:hidden` so
+  square row corners clip to the panel's own `border-radius` — a row's own painted state
+  always covers 100% of the panel's visible area, in every colour/hover configuration,
+  rather than trying to keep two independently-resolved colours in sync. Rejected making the
+  panel transparent-by-default (the panel genuinely needs its own fill/border/shadow to read
+  as a floating card over arbitrary page content). Kept the earlier 2026-09-12
+  `submenuBg`→`submenuLinkBg` Normal-state coalesce as defence-in-depth for the negligible
+  corner residual `overflow:hidden` leaves at the four rounded corners.
+
+  Live-verified on the sandybrown canary (real Playwright click, not synthetic): dropdown
+  panel shows a clean rounded card with rows flush to its edges, no visible seam top or
+  bottom. Full evidence:
+  `reports/visual-diff/nav-menu-submenu-lip-drawer-contrast-2026-09-13.md`.
+
 ## Wave 2 implementation — DONE (2026-09-12, session end)
 
 All well-scoped, no-decision-needed fixes are implemented, gate-verified, live-verified, and
@@ -646,6 +669,29 @@ Current-page declarations on the ancestor, no new visual language):
   token), and this file has no access to the drawer's own `drawerBg` attribute to safely
   resolve a literal token instead — implementing FR-41-36's full `primary` token everywhere
   is separate, larger, cross-file future work the spec itself marks "not yet built."
+
+  **SUPERSEDED, 2026-09-13 — FULL FIX SHIPPED (commit `0743c5e54`).** The blocking
+  precondition above ("this file has no access to the drawer's own `drawerBg` attribute")
+  is now false: found a real, already-precedented WP block-context channel between these two
+  exact blocks (`sgs/navDrawerSubmenuModel`, already declared on both sides for the
+  accordion/drill-down model) and extended it with a second key,
+  `"sgs/navDrawerBg": "drawerBg"`, added to `nav-drawer/block.json::providesContext` and
+  `nav-menu/block.json::usesContext`. `nav-menu/render.php` now resolves
+  `$block->context['sgs/navDrawerBg']` and passes it into
+  `sgs_nav_menu_submenu_css()`, which contrast-checks the real `primary` token against the
+  drawer's resolved background via `sgs_wcag_preferred_text_colour_for_bg()` — the same
+  helper `nav-drawer`'s own `drawerFgHex` already uses. Token wins when it clears 4.5:1;
+  degrades to computed `#000`/`#fff` when it fails; falls back to `color:inherit` only when
+  context/hex resolution genuinely isn't available (not nested in a real nav-drawer).
+
+  This was not a rare edge case: `drawerBg` DEFAULTS to `'primary'`
+  (`nav-drawer/render.php`), so an unmodified drawer pairs `primary` text with a `primary`
+  background by default — confirmed live on this canary (`primary` = `drawerBg` =
+  `#e68a95`, 1:1 contrast, correctly degrades to computed `#000`). An unconditional "just
+  ship `primary`" shortcut would have shipped invisible text on the framework's own default
+  configuration. Live-verified via real Playwright click on both the header dropdown and the
+  mobile drawer accordion. Full evidence:
+  `reports/visual-diff/nav-menu-submenu-lip-drawer-contrast-2026-09-13.md`.
 - **E2 (state-hierarchy propagation)** — SHIPPED, per Bean's simplified design (no new
   visual language). A parent nav item now shows the literal existing Current-page
   declarations (text colour / background / border-colour / font-weight) when its own
