@@ -403,12 +403,34 @@ Uses the real `theme.json` palette tokens: `primary` (#1F7A7A), `primary-dark`, 
 `accent-light`, `accent-text`, `surface` (#FAF9F6, page bg), `surface-alt` (#F1F0EC, raised bg),
 `text`, `border-light`.
 
+**Terminology (2026-09-13 pass, D-terminology-map, zero attribute/behaviour change).** "Item
+divider" below is renamed, by context, to two distinct terms — same shared attribute family
+(`itemBorderWidth`/`Colour`/`ColourHover`/`ColourCurrent` and its submenu-row sibling
+`submenuLinkBorder*`), same values, comment/label text only: **Underline** on the horizontal
+bar's own top-level items (a bottom-edge text-indicator under one item's own label, not
+between two items); **Row separator** everywhere the identical bottom edge sits between two
+adjacent rows (drawer top-level accordion rows, and the bar/drawer's shared dropdown/submenu
+rows). See FR-41-37 immediately below this FR for the genuinely NEW, independent capability
+this pass also added — a vertical divider between top-level BAR items, which is NOT part of
+this shared family.
+
 | Context | Normal | Hover | Current |
 |---|---|---|---|
-| **Top bar** (horizontal, desktop) | text=`primary`, bg=none, item-divider (FR-41-8)=`border-light` | text=`accent`, bg=`accent-light` (soft tint, **not** a solid fill — research found no mainstream WP theme defaults hover to a bold solid-colour fill), item-divider=`accent` | text=`accent`, bg=none (restrained — matches Astra's real shipped default of text-colour-only for active state, verified against Astra's own customiser docs), item-divider=`accent` (same colour as Hover; the **absence** of a bg fill is what visually distinguishes Current from Hover) |
-| **Desktop submenu** (dropdown panel) | bg=`surface-alt` (a raised/distinct neutral, not matching the top bar), text=`primary` | hover row=`accent-light` tint (bg) **+ text=`accent`** (REVISED 2026-09-13, Bean-directed — see note below), submenu-item divider=`accent` | *(inherits the row treatment above; no separate Current row colour specified beyond the shared item-divider language)* |
-| **Drawer top-level** (burger/off-canvas menu) | bg=`surface-alt`, text=`primary`, item divider=`accent` | hover row=`accent-light` tint | active row=`accent-light` tint |
-| **Drawer nested submenu** (accordion-expanded items) | bg=`surface`, text=`primary`, item divider=`accent` | — | — |
+| **Top bar** (horizontal, desktop) | text=`primary`, bg=none, item underline (FR-41-8)=`border-light` | text=`accent`, bg=`accent-light` (soft tint, **not** a solid fill — research found no mainstream WP theme defaults hover to a bold solid-colour fill), underline=`accent` | text=`accent`, bg=none (restrained — matches Astra's real shipped default of text-colour-only for active state, verified against Astra's own customiser docs), underline=`accent` (same colour as Hover; the **absence** of a bg fill is what visually distinguishes Current from Hover) |
+| **Desktop submenu** (dropdown panel) | bg=`surface-alt` (a raised/distinct neutral, not matching the top bar), text=`primary` | hover row=`accent-light` tint (bg) **+ text=`accent`** (REVISED 2026-09-13, Bean-directed — see note below), submenu-row separator=`accent` | *(inherits the row treatment above; no separate Current row colour specified beyond the shared row-separator language)* |
+| **Drawer top-level** (burger/off-canvas menu) | bg=`surface-alt`, text=`primary`, row separator=`accent` | hover row=`accent-light` tint | active row=`accent-light` tint |
+| **Drawer nested submenu** (accordion-expanded items) | bg=`surface`, text=`primary`, row separator=`accent` | — | — |
+
+**Rest-state discrepancy check (2026-09-13, resolved — no change needed).** A casual
+paraphrase of the "Universal divider rule" below ("vertical modes get a visible separator,
+accent-coloured, by default") reads as if REST state should be `accent`. It should not, and
+the table above already agrees: REST is `border-light` (a neutral, subtler default) and only
+Hover/Current resolve to `accent` — verified live in `block.json` (`itemBorderColour` default
+`"border-light"`, `itemBorderColourHover`/`itemBorderColourCurrent` default `"accent"`,
+`submenuLinkBorderColour` default `"border-light"`, `submenuLinkBorderColourHover` default
+`"accent"`). Code and spec were already consistent; only the loose paraphrase overstated it.
+Design call, stated once: a subtle rest-state line reads more tasteful than an accent-coloured
+line on every menu by default — keep `border-light` at rest.
 
 ⛔ **The drawer explicitly does NOT default to a brand/primary-colour-filled whole panel.** Research
 confirmed none of Kadence/Astra/GeneratePress/Divi default their drawer to a brand-coloured fill; all
@@ -427,15 +449,51 @@ text=`primary`) — they are a matched PAIR. The **desktop submenu panel** and t
 top-level menu** share the same "distinct" tier (bg=`surface-alt`) — they are the OTHER matched pair.
 This pairing is deliberate. Don't let one pair drift independently of the other.
 
-**Universal divider rule:** every context (top bar, desktop submenu, drawer top-level, drawer nested
-submenu) gets an always-visible item divider whose COLOUR changes consistently with state
-(`border-light` at rest, `accent` on hover/current) — the single consistent visual language across
-the whole component that tells a user which state an item is in, independent of which context they
-are looking at.
+**Universal underline/separator rule (renamed 2026-09-13, same rule):** every context (top bar,
+desktop submenu, drawer top-level, drawer nested submenu) gets an always-visible line whose
+COLOUR changes consistently with state (`border-light` at rest, `accent` on hover/current) —
+the single consistent visual language across the whole component that tells a user which state
+an item is in, independent of which context they are looking at. Call it Underline on the bar's
+own top-level items, Row separator anywhere it sits between two rows.
 
-⚠ **This is a locked design decision.** No attribute defaults, `block.json` values or `render.php`
-fallbacks have been changed to match this table in full — most of it remains separate future
-implementation work.
+⚠ **This is a locked design decision.** `block.json` values now match this table in full for the
+Underline/Row-separator family (`itemBorderColour`/`Hover`/`Current`, `submenuLinkBorderColour`/
+`Hover`) — shipped across FR-41-36's original work + the 2026-09-13 terminology/defaults pass.
+
+### FR-41-37 — NEW: an independent vertical divider between top-level BAR items (2026-09-13)
+
+**Not part of the Underline/Row-separator family above — genuinely new attribute surface,
+purpose-built.** Bean asked for a vertical line between adjacent top-level bar items that can
+be coloured/hovered independently of the bar's own Underline (FR-41-7 already lets an operator
+set `itemBorderWidth.right` for a vertical line, but that shares `itemBorderColour`/`Hover`/
+`Current` with the SAME family's bottom-edge Underline — one colour set, two edges — so it
+cannot be styled independently, which is what "independent" requires).
+
+**Attributes:** `itemSeparatorWidth` (string, default `"1px"`) · `itemSeparatorStyle` (string,
+default `"solid"`, PHP-validated no JSON enum) · `itemSeparatorColour` (string, default
+`"border-light"`) · `itemSeparatorColourHover` (string, default `"accent"`). No Current state
+(a between-item rule is not itself "the current page"); no Sweep (the existing border-sweep
+band's geometry offsets against the BOTTOM edge specifically — `bottom:calc(-1 * width)` — with
+no equivalent translation to a RIGHT edge without new positioning maths; shipped as a plain
+Hover colour swap instead, `@media (hover:hover)`-guarded like every other hover rule in this
+component).
+
+**Scope: bar-only by construction.** Gated on `.sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer)`
+in `nav-menu-css.php` — the drawer's own nested `sgs/nav-menu` instance never renders the rule
+at all (not suppressed after the fact; the selector simply never matches). A vertical list has
+no "next item to the right" on that axis. `edit.js`'s `isDrawerInstance` (reads block context
+`sgs/navDrawerBg`, provided only by `sgs/nav-drawer`) mirrors this in the inspector: the Colour
+panel row and the shape-control panel are both OMITTED, not disabled, inside a drawer instance.
+
+**Default is visible, matching the Underline/Row-separator family's own philosophy:**
+`border-light` rest / `accent` hover — the same "one consistent visual language" FR-41-36
+already establishes, applied to the new 4th context rather than inventing a different one.
+
+**Live-verified** on the sandybrown canary 2026-09-13: `border-right-width/style/color` render
+correctly on every top-level bar item except the last (`:not(:last-child)`), the Hover rule
+resolves `var(--wp--preset--color--accent, currentColor)` and is scoped to bar-only + non-last-
+child, and the pre-existing Underline (`border-bottom`) rendered byte-identical before/after —
+zero regression from the terminology relabel that shipped alongside this FR.
 
 ✅ **REVISED + PARTIALLY BUILT 2026-09-13 (Bean-directed).** Bean reviewed a fix that deliberately
 withheld a desktop-submenu hover TEXT-colour default because this table's original wording ("Bg-only

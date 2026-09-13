@@ -580,6 +580,22 @@ committed to `main`:
 | `154ef2f54` | Burger font-size/font-family inheritance companion fix (a gap `8f9b25c1d` disclosed rather than silently claimed fixed) |
 | `e73c91dff` | K1 drawer-close scroll-jank fix |
 | `74121a5f1` | G6 (drawerRef collision) — see below; note the commit MESSAGE covers a different, concurrently-landed feature (close-button typography/size controls) because both changes reached the same file (`nav-drawer/edit.js`) before either was committed on this shared worktree, and this code got swept in under that commit rather than its own. Content verified intact (`git show 74121a5f1 -- plugins/sgs-blocks/src/blocks/nav-drawer/edit.js`). |
+| `ced102333` | Terminology pass (relabels the shared `itemBorderWidth`/`Colour` family — see terminology map below) + new FR-41-37 `itemSeparatorWidth/Style/Colour(Hover)` bar-only vertical divider between top-level items. Live-verified on the canary: underline byte-identical, new separator renders + hover-swaps, absent on the last item, zero console errors. |
+
+### Terminology map (2026-09-13, closes the original Group C naming ambiguity)
+
+One shared attribute family, contextual meaning by geometry — no attribute rename, label/comment
+only, zero blast radius:
+
+| Term | Attributes | Where it paints | Contexts |
+|---|---|---|---|
+| **Underline** | `itemBorderWidth`/`Colour`/`ColourHover`/`ColourCurrent` | Bottom edge of `.sgs-nav-menu__link` | Horizontal bar's own top-level items (a text-indicator under one item's own label) |
+| **Row separator** | Same attributes as Underline (identical mechanism, contextual label only) | Same bottom edge | Drawer's top-level accordion rows AND the bar/drawer's shared dropdown/submenu rows (`submenuLinkBorder*` family, `nav-menu-submenu-css.php`) — a horizontal line between two adjacent rows |
+| **Item separator (NEW, FR-41-37)** | `itemSeparatorWidth`/`Style`/`Colour`/`ColourHover` | Right edge of `.sgs-nav-menu__link`, bar-only | The genuinely new capability: a vertical line between adjacent TOP-LEVEL bar items, independently colourable from the Underline. No Current state, no sweep animation (bottom-edge sweep geometry does not translate to a right edge). |
+
+`isDrawerInstance` in `edit.js` (reads block context `sgs/navDrawerBg`, only ever provided by
+`sgs/nav-drawer`) drives the Colour panel's contextual label ("Item underline colour" vs "Row
+separator colour") and omits the new Item separator row/panel entirely inside a drawer instance.
 
 **M3 — corrected to NOT A BUG** after three investigation passes (see above); no fix shipped, none needed.
 
