@@ -7,6 +7,42 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-14 — 1 entry RESOLVED: page-embedded nav-menu dropdown stacking, fixed + live-verified
+
+> ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-31
+>
+> An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky
+> header and by the footer. Measured on canary 2091, five sample points, every one returning a
+> rival element. Root cause: `plugins/sgs-blocks/src/blocks/container/style.css`'s load-bearing
+> child-lift rule gives `.entry-content` `position:relative;z-index:1` (via `sgs/container`'s
+> unconditional `> *:not(.sgs-container__overlay){position:relative;z-index:1}`), capping every
+> descendant's stacking context below the sticky header's `z-index:100` regardless of the panel's
+> own z-index. The normal HEADER placement is unaffected — the header itself already outranks page
+> content. Not fixable from the block by raising an in-block z-index (a stacking-context boundary,
+> not a z-index deficit), and `container/style.css`'s rule must not be touched (site-wide
+> background-layer stacking depends on it). Recommended fix (option 2 of 3 assessed 2026-08-01):
+> portal the panel out via `position:fixed`, positioned from `getBoundingClientRect()` — needs a
+> design gate + re-verification against the header dropdown suite.
+
+**Resolution evidence, 2026-09-14:** re-verified the root cause live via
+`.claude/reports/2026-09-13-sticky-header-dropdown-overlap-fix-proposal.md`, then built the
+disclosure-scoped reparent (FR-36-10 — no scroll-lock/focus-trap/backdrop, unlike nav-drawer's
+D323 dialog reparent): `mega-disclosure.js::reparentPanelIfNeeded()` moves the open panel to
+`<body>` once `repositionPanel()` has already settled it, freezing it at that measured screen
+position via `--sgs-mm-fixed-top/-left`; `nav-menu/style.css`'s new `[data-sgs-nav-fixed]` rule
+switches it to `position:fixed`. Reverts on every close path (self-close, ESC, Tab-out,
+single-open, bfcache restore, and a new scroll/resize close) via the existing `watchOpenState`
+funnel. Header-placed instances are excluded by construction (`needsStackingFix()` — no
+`.sgs-site-header` ancestor). Deployed to the sandybrown canary and live-verified on page 2091
+(`/t1-dropdown-verify/`): the reparented panel is `<body>`'s last child, `position:fixed`,
+`z-index:101` against the header's measured `z-index:100`, and wins a hit-test at its own screen
+coordinates; `.entry-content` still measures `position:relative;z-index:1` live, confirming the
+root cause is present and untouched — the fix escapes it rather than removing it. The header's own
+dropdown was regression-checked (open, ArrowDown-keyboard-open + focus-into-panel, ESC-close) with
+no change in behaviour and no reparenting. Full assertions + live results:
+`reports/visual-diff/nav-menu-2026-09-14.md`. Shipped in `92002dcae`.
+
 ## 2026-09-13 — 1 entry RESOLVED: header burger-to-X morph, live-verified
 
 > ### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state

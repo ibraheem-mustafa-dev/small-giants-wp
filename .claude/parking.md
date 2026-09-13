@@ -77,56 +77,6 @@ scoped). A real design task, not a quick fix; the wrapper's own overlay CSS is c
 capable than the atom (has tiering the atom didn't, until D922's tiering fix), so this is not
 urgent — the wrapper works fine as-is, this is purely a dedup opportunity.
 
-### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
-
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-31
-
-An `sgs/nav-menu` placed inside PAGE CONTENT has its open dropdown painted over by the sticky header
-and by the footer. Measured on canary 2091, five sample points, every one returning a rival element.
-
-⚠ **`.entry-content{position:relative;z-index:1}` does not exist anywhere in `theme/sgs-theme/`.**
-`decisions.md` and a `nav-menu/render.php` comment both name it as the cause — do not act on that.
-
-**The real mechanism is in the PLUGIN, not the theme.** `plugins/sgs-blocks/src/blocks/container/
-style.css:47-50` applies, unconditionally, to every `sgs/container`:
-`.sgs-container > *:not(.sgs-container__overlay){position:relative;z-index:1}`. It has been there
-since the block's first commit (`9d38e5b8`) and is LOAD-BEARING — it guarantees content paints above
-the container's own background layers (`__overlay`, `__video-bg`, `__svg-bg`), any of which an
-operator can switch on at any time.
-
-It reaches `.entry-content` because `theme/sgs-theme/templates/page.html` wraps the page body in
-`sgs/container[tagName=main]` with WP's `post-content` (which renders `<div class="entry-content">`)
-as a DIRECT child — and no band props are set on that container, so `$has_band_props` is false,
-`.sgs-container__inner` never renders, and `.entry-content` matches the `>` selector directly.
-The header is unaffected because `site-header/style.css:28-29` gives it `z-index:100` deliberately.
-
-Lifting every level the block owns (item / bar / block root at `z-index:101`) does not help, because
-the cap sits above all of them.
-
-**The normal HEADER placement is UNAFFECTED and verified correct** — all five points return the panel
-as topmost there, because the header itself outranks page content. This bites only the unusual
-placement.
-
-Not fixable from the block: raising `.entry-content` would put ALL page content above the sticky
-header. Evidence: `reports/visual-diff/nav-menu-2026-07-31.md`.
-
-**Three options, assessed 2026-08-01 — NONE is a 1-2 line fix, so this stays parked:**
-1. Bump the in-block `:has()` z-index above 100 — REJECTED: bodges from the block, and promotes the
-   whole page-content region above the sticky header while a dropdown is open.
-2. **Portal the panel out via `position:fixed` / the CSS Popover API / top layer**, positioned from
-   `getBoundingClientRect()` — the architecturally correct fix (the Radix / Floating UI technique);
-   removes the panel from the stacking context so no z-index war is needed. **Recommended, but it
-   needs a design gate + re-verification against the 18-scenario header suite.**
-3. Accept as a documented limitation — header placement (the supported usage) is verified correct.
-
-**Do NOT "fix" `container/style.css:47-50`** — removing or narrowing it is a shared-mechanism change
-with site-wide blast radius (Rule 7 design gate), and it would break background-layer stacking on
-every container on both live sites.
-
-**Trigger:** a session that can take the option-2 design gate. Investigation was static-source only —
-the live re-check on canary 2091 was not possible (browser instance held by another agent), so the
-CURRENT paint has not been re-observed since 2026-07-31.
-
 *(Two motion-track entries — the canary-fixtures-invalid-in-editor one and the fx-panel-unguarded-by-
 every-control-gate one — were REMOVED from parking on 2026-08-01 and moved into
 `plans/2026-07-31-motion-wave-D-client-readiness.md` (CLOSED 2026-09-04, now `plans/archive/`) as
@@ -684,7 +634,7 @@ NOT queued work; it is the standard the clone must meet when the system is compl
 not be re-presented to Bean until every defect above is fixed.
 
 ### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-29
+**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-29
 
 `nav-menu`'s in-drawer `listColumns` grid uses `grid-auto-flow: row`, so a 7-item menu lays out
 ACROSS the columns instead of down them. Measured live on fixture page 1922 at 1440: menu order is
@@ -699,14 +649,16 @@ row-wise grid, reading ACROSS rows already yields the menu order, and authoring 
 2 gives a correct pattern either way. There is also **no ground truth** — the reference capture for
 this exact variant (studionamma) failed, so what the reference actually does is unverified.
 
-Fix shape IF it is ever confirmed wrong: `grid-auto-flow: column` plus an explicit row count derived
-from the item count in `nav-menu/render.php`. That changes rendering semantics of a shared block, so
-it needs Bean's sign-off (project rule 7) rather than an inline change.
-
-**Trigger:** a verified menu-OPEN capture of the studionamma reference showing which reading model
-it actually uses — then Bean's decision on finding F1 of
-`.claude/reports/2026-07-29-nav-drawer-variants-task5-exit-gate.md`. Do not change the block before
-that capture exists.
+**2026-09-14 — IMPLEMENTED, verification pending.** Bean re-triggered this on new evidence: the
+reference site's real DOM order confirmed the sequential column-major "4+3" split. Fixed in
+`af8f9759a` — `nav-menu-submenu-css.php`'s `listColumns` emission now adds `grid-auto-flow:column`
+plus an explicit `grid-template-rows:repeat(ceil(itemCount/columns), …)` (item count threaded
+through from `render.php`'s `count($flat_items)`), so the grid genuinely splits sequentially rather
+than relying on `column` flow's own unbounded auto-wrap. ⚠ **NOT yet live-verified** — deploy to the
+sandybrown canary was blocked this session by a concurrent sibling session's uncommitted work in the
+same plugin (mega-disclosure.js + nav-menu style.css). Remaining trigger: deploy `af8f9759a`, then
+Playwright-verify a multi-item drawer list with `listColumns` set reads sequentially down columns
+("4+3"), not across rows, before closing this entry.
 
 ### P-PRODUCT-PAGE-REDESIGN — product page design does not line up with the cloned draft
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-14
