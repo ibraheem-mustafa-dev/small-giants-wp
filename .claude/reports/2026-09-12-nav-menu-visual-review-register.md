@@ -814,3 +814,36 @@ separate, real defect in colour VALUE resolution, worth its own ticket.
 
 Commit: `4d2daa318` (main, pushed). Deploy: sandybrown, verified via live payload checksum
 match (83/83 block.json) + motion-qa probes green + smoke check 200.
+
+---
+
+## Follow-up (2026-09-13) — resolved: "my colour isn't applying" was `itemSmartContrast`'s silent swap, not a resolution bug
+
+**Not one of the original A-M groups above — a NEW finding, filed here because it is the
+concrete resolution of the M2 investigation's open thread** (the paragraph immediately
+above: "the hover colour applied on the real front-end request was the resolved `accent`
+DEFAULT, not the explicit `#ff0000` the test fixture set"). Root cause found and fixed.
+
+**Root cause:** `itemSmartContrast` (FR-41-5, `nav-menu-css.php`) defaulted to `true`.
+Whenever the operator's explicit `itemColourHover` failed 4.5:1 contrast against the
+resolved hover background, this branch silently swapped in a computed WCAG-safe
+black/white — with no warning shown anywhere. `#ff0000` on the M2 fixture's resolved hover
+fill genuinely failed that check, so it was silently swapped, which is exactly the symptom
+M2 recorded ("resolved `accent` DEFAULT, not the explicit colour the fixture set") even
+though `nav-menu-css.php`'s logic was — correctly, per M2's own isolation test — doing
+precisely what it was built to do. Not a template-part/render-path resolution bug at all.
+
+**Fix (Bean-directed):** `itemSmartContrast` default flipped `true → false`. An operator's
+explicit `itemColourHover` now always renders as-authored by default; the readability check
+itself is unconditional and shows an advisory `Notice` in the editor inspector regardless of
+the toggle, telling the operator to turn the setting on if they want the auto-fix. The
+auto-fix swap logic itself is untouched, now purely opt-in.
+
+Commit: `cce38999d` (main, pushed). Deploy: sandybrown, uncommitted-payload deploy per the
+deploy<->commit-gate workflow, verified via live payload checksum match (83/83 block.json) +
+motion-qa probes green. Live-verified both server-side branches (default OFF vs opt-in ON)
+directly via `wp-json/wp/v2/block-renderer/sgs/nav-menu` against the deployed canary — see
+`reports/visual-diff/nav-menu-2026-09-13.md` for the full request/response evidence. The
+editor-side `Notice` was NOT visually confirmed this session (Playwright got stuck on an
+unresolvable `beforeunload` dialog, no dialog-handling tool available) — disclosed in that
+same report, flagged for a follow-up screenshot.
