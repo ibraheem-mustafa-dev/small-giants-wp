@@ -512,6 +512,25 @@ const { state } = store( 'sgs/mega', {
 		 * gated by the safe triangle (FR-36-4): if another panel is already
 		 * open AND the pointer is currently tracking into it, the open is
 		 * deferred and re-polled rather than firing early.
+		 *
+		 * MAX_INTENT_DELAY_MS caps whatever the markup declares (Wave-2 F2/M2,
+		 * 2026-09-13 — root-caused live). `nav-menu-markup.php` hardcodes
+		 * `intentDelay: 300` for both the mega and dropdown forks; that 300ms
+		 * is not just an open-panel delay — the chevron flip
+		 * (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-menu__caret`
+		 * rule) and the panel's own `display:block` are BOTH keyed off the
+		 * SAME `aria-expanded`/`context.isOpen` value this timer sets, so
+		 * Bean's "the dropdown AND the chevron both feel laggy" report is one
+		 * cause, not two. That coupling is owned by markup/CSS files outside
+		 * this module's scope, so it cannot be split into a fast chevron +
+		 * slow panel here — the fix available at this layer is to cap the
+		 * shared delay itself. 300ms reads as sluggish to a moving pointer;
+		 * clamping to 80ms keeps enough of a window to swallow a fast
+		 * mouse-sweep across the bar (which crosses a ~100px item in well
+		 * under 80ms) while feeling instant to a pointer that actually stops
+		 * on an item — the classic hover-intent range (~80-150ms) used by
+		 * comparable nav-bar libraries. `Math.min` rather than a flat
+		 * override so a future markup value smaller than 80ms still wins.
 		 */
 		enterBridge() {
 			const ctx = getContext();
@@ -522,7 +541,11 @@ const { state } = store( 'sgs/mega', {
 			const { ref } = getElement();
 			const root = rootFor( ref );
 			clearOpenTimer( ctx.megaId );
-			const delay = Number.isFinite( ctx.intentDelay ) ? ctx.intentDelay : 300;
+			const MAX_INTENT_DELAY_MS = 80;
+			const configuredDelay = Number.isFinite( ctx.intentDelay )
+				? ctx.intentDelay
+				: 300;
+			const delay = Math.min( configuredDelay, MAX_INTENT_DELAY_MS );
 			scheduleIntentOpen( ctx, root, delay );
 		},
 
