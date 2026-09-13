@@ -636,18 +636,43 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 			 */
 			$css .= $link_sel . '{position:relative;border-bottom-color:transparent;}';
 
-			$rtl        = 'right-to-left' === (string) ( $attributes['borderHoverAnimationDirection'] ?? 'left-to-right' );
-			$first_stop = $rtl ? $sweep_normal : $sweep_hover;
-			$last_stop  = $rtl ? $sweep_hover : $sweep_normal;
-			$rest_pos   = $rtl ? '0 0' : '100% 0';
-			$hover_pos  = $rtl ? '100% 0' : '0 0';
+			/*
+			 * Directional sweep (FR-41-37 follow-up, 2026-09-13) — generalised
+			 * to `sgs_directional_sweep_css()` (includes/sweep-css.php), an
+			 * angle-driven primitive replacing the old hard-coded "to right"
+			 * gradient + stop-order swap. `sweepAngle` is the ONE new
+			 * attribute (standard CSS gradient-angle degrees, AnglePickerControl
+			 * convention); 90deg/270deg reproduce the retired
+			 * `left-to-right`/`right-to-left` output pixel-for-pixel (see the
+			 * helper's own docblock for the proof).
+			 *
+			 * ⚠ COMPAT SHIM, one-time: `borderHoverAnimationDirection` was
+			 * REMOVED from block.json (2026-09-14, no-version-bumps/no-
+			 * deprecations-pre-production, D293) — it is no longer a declared
+			 * attribute, so `21-render-without-control` correctly cannot find
+			 * a control for it, and the framework never emits it as a client-
+			 * settable value again. This line reads it DEFENSIVELY off the raw
+			 * $attributes array only — WordPress does not strip an undeclared
+			 * key from an already-serialised block's parsed attrs before
+			 * render.php runs — purely so a post saved before this change
+			 * still renders its chosen direction rather than silently
+			 * resetting to the sweepAngle default. `sweepAngle` always carries
+			 * its block.json default (90) on such a pre-existing post; only
+			 * when the legacy value is explicitly `right-to-left` do we derive
+			 * 270 instead.
+			 */
+			$sweep_angle = isset( $attributes['sweepAngle'] ) ? (float) $attributes['sweepAngle'] : 90.0;
+			if ( ! isset( $attributes['sweepAngle'] ) && 'right-to-left' === (string) ( $attributes['borderHoverAnimationDirection'] ?? 'left-to-right' ) ) {
+				$sweep_angle = 270.0;
+			}
+			$sweep = sgs_directional_sweep_css( $sweep_angle, $sweep_normal, $sweep_hover );
 
 			$css .= $link_sel . '::after{content:"";position:absolute;inset-inline:0;'
 				. 'bottom:calc(-1 * ' . $sweep_edge . ');height:' . $sweep_edge . ';'
-				. 'background-image:linear-gradient(to right,' . $first_stop . ' 50%,' . $last_stop . ' 50%);'
-				. 'background-size:200% 100%;background-position:' . $rest_pos . ';background-repeat:no-repeat;'
+				. 'background-image:' . $sweep['gradient'] . ';'
+				. 'background-size:' . $sweep['background_size'] . ';background-position:' . $sweep['rest_position'] . ';background-repeat:no-repeat;'
 				. 'transition:background-position 300ms ease;pointer-events:none;}';
-			$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $hover_pos, ':focus-visible', '::after' );
+			$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $sweep['hover_position'], ':focus-visible', '::after' );
 			// MANDATORY companion: keep both end states, drop only the travel.
 			$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
 		}
@@ -685,24 +710,53 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * `:not(:last-child)` on the ITEM (not the link) — the trailing item has
 	 * nothing to its right to divide from.
 	 *
-	 * No Sweep here (documented in block.json's itemSeparatorWidth
-	 * description): the existing sweep band's geometry offsets against the
-	 * BOTTOM edge specifically (`bottom:calc(-1 * width)`), which has no
-	 * equivalent translation to a RIGHT edge without new positioning maths —
-	 * shipped as a plain Hover colour swap instead. No Current state: a
-	 * between-item rule is not itself "the current page".
+	 * ⚠ SWEEP (added 2026-09-13, FR-41-37 follow-up): the old blocker — "the
+	 * existing sweep band's geometry offsets against the BOTTOM edge
+	 * specifically, which has no equivalent translation to a RIGHT edge
+	 * without new positioning maths" — is exactly what
+	 * `sgs_directional_sweep_css()` now supplies (any-angle background-
+	 * position maths, includes/sweep-css.php). The band still cannot live on
+	 * `.sgs-nav-menu__link::after` — that pseudo-element is already claimed by
+	 * the item border-bottom sweep above whenever BOTH treatments are
+	 * 'sweep' on the same row — so it renders on the <li>
+	 * (`.sgs-nav-menu__item::after`) instead, a DIFFERENT element with no
+	 * competing claim on either of its own pseudo-elements. No Current
+	 * state: a between-item rule is not itself "the current page".
 	 */
-	$item_separator_width  = sgs_css_length_value( (string) ( $attributes['itemSeparatorWidth'] ?? '' ) );
-	$item_separator_style  = sgs_css_keyword_sanitise( (string) ( $attributes['itemSeparatorStyle'] ?? '' ) );
-	$item_separator_colour = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
+	$item_separator_width     = sgs_css_length_value( (string) ( $attributes['itemSeparatorWidth'] ?? '' ) );
+	$item_separator_style     = sgs_css_keyword_sanitise( (string) ( $attributes['itemSeparatorStyle'] ?? '' ) );
+	$item_separator_colour    = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
+	$item_separator_hover     = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
+	$item_separator_treatment = (string) ( $attributes['itemSeparatorHoverTreatment'] ?? 'swap' );
 	if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
-		$item_separator_sel = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child) .sgs-nav-menu__link';
-		$css               .= $item_separator_sel . '{border-right-width:' . $item_separator_width
-			. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
-			. ';border-right-color:' . $item_separator_colour . ';}';
-		$item_separator_hover = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
-		if ( '' !== $item_separator_hover ) {
-			$css .= sgs_hover_state_rules( $item_separator_sel, 'border-right-color:' . $item_separator_hover, ':focus-visible' );
+		$item_separator_sel  = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child) .sgs-nav-menu__link';
+		$item_separator_li_sel = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child)';
+
+		if ( 'sweep' === $item_separator_treatment && '' !== $item_separator_hover ) {
+			// The static line is suppressed (transparent) and repainted by the
+			// `::after` band on the <li> — same "one paint, no double line"
+			// discipline as the item border-bottom sweep above.
+			$css .= $item_separator_sel . '{border-right-width:' . $item_separator_width
+				. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
+				. ';border-right-color:transparent;}';
+
+			$item_separator_angle = isset( $attributes['itemSeparatorSweepAngle'] ) ? (float) $attributes['itemSeparatorSweepAngle'] : 180.0;
+			$item_separator_sweep = sgs_directional_sweep_css( $item_separator_angle, $item_separator_colour, $item_separator_hover );
+
+			$css .= $item_separator_li_sel . '{position:relative;}';
+			$css .= $item_separator_li_sel . '::after{content:"";position:absolute;top:0;bottom:0;right:calc(-1 * ' . $item_separator_width . ');width:' . $item_separator_width . ';'
+				. 'background-image:' . $item_separator_sweep['gradient'] . ';'
+				. 'background-size:' . $item_separator_sweep['background_size'] . ';background-position:' . $item_separator_sweep['rest_position'] . ';background-repeat:no-repeat;'
+				. 'transition:background-position 300ms ease;pointer-events:none;}';
+			$css .= sgs_hover_state_rules( $item_separator_li_sel, 'background-position:' . $item_separator_sweep['hover_position'], ':focus-within', '::after' );
+			$css .= '@media (prefers-reduced-motion:reduce){' . $item_separator_li_sel . '::after{transition:none;}}';
+		} else {
+			$css .= $item_separator_sel . '{border-right-width:' . $item_separator_width
+				. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
+				. ';border-right-color:' . $item_separator_colour . ';}';
+			if ( '' !== $item_separator_hover ) {
+				$css .= sgs_hover_state_rules( $item_separator_sel, 'border-right-color:' . $item_separator_hover, ':focus-visible' );
+			}
 		}
 	}
 

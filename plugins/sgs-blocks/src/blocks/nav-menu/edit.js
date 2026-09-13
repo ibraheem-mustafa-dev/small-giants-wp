@@ -56,6 +56,7 @@ import {
 	ItemTextTreatment,
 	ItemBgTreatment,
 	ItemBorderTreatment,
+	ItemSeparatorTreatment,
 	SubmenuTextTreatment,
 	SubmenuLinkBgTreatment,
 	BurgerIconTreatment,
@@ -88,6 +89,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		itemSeparatorStyle,
 		itemSeparatorColour,
 		itemSeparatorColourHover,
+		itemSeparatorHoverTreatment,
+		itemSeparatorSweepAngle,
 		featuredItemIds,
 		gap,
 		listColumns,
@@ -101,7 +104,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		itemBgHoverTreatment,
 		itemColourHoverTreatment,
 		itemBorderHoverTreatment,
-		borderHoverAnimationDirection,
+		sweepAngle,
 		submenuColourHoverTreatment,
 		submenuLinkBgHoverTreatment,
 		burgerColourHoverTreatment,
@@ -446,10 +449,8 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				<ItemBorderTreatment
 					value={ itemBorderHoverTreatment }
 					onChange={ ( val ) => setAttributes( { itemBorderHoverTreatment: val } ) }
-					direction={ borderHoverAnimationDirection }
-					onDirectionChange={ ( val ) =>
-						setAttributes( { borderHoverAnimationDirection: val } )
-					}
+					angle={ sweepAngle }
+					onAngleChange={ ( val ) => setAttributes( { sweepAngle: val } ) }
 				/>
 			),
 		},
@@ -458,6 +459,9 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 		// Current state — see block.json::itemSeparatorWidth's description for
 		// why). Bar-only feature: omitted (not disabled) inside a drawer
 		// instance, where a vertical list has no "next item to the right".
+		// FR-41-37 follow-up (2026-09-13) — now Sweep-capable too, via the
+		// generalised angle mechanism (`after` slot below), matching
+		// ItemBorderTreatment's own shape.
 		...( ! isDrawerInstance
 			? [
 					{
@@ -481,6 +485,18 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								linked: true,
 							},
 						],
+						after: (
+							<ItemSeparatorTreatment
+								value={ itemSeparatorHoverTreatment }
+								onChange={ ( val ) =>
+									setAttributes( { itemSeparatorHoverTreatment: val } )
+								}
+								angle={ itemSeparatorSweepAngle }
+								onAngleChange={ ( val ) =>
+									setAttributes( { itemSeparatorSweepAngle: val } )
+								}
+							/>
+						),
 					},
 			  ]
 			: [] ),

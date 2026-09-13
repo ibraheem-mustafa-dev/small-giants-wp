@@ -3367,6 +3367,22 @@
         "css_property": "background-image",
         "css_element": "submenu-panel"
       }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorHoverTreatment",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-09-14 (FR-41-37 follow-up, directional sweep generalisation). Same shape as the pre-existing itemBorderHoverTreatment/itemColourHoverTreatment on this same block: a pure treatment-selector enum (none/swap/sweep) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all sgs/nav-menu)."
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorSweepAngle",
+      "fields": {
+        "role": "behaviour",
+        "_reason": "2026-09-14 (FR-41-37 follow-up). A numeric CSS gradient-angle parameter consumed entirely inside includes/sweep-css.php's PHP maths (sin/cos position derivation) -- never emitted as a paintable colour/typography/box value of its own, matching the established 'behaviour' role for pure-configuration numeric attrs with no direct visual property mapping (precedent: sgs/buybox.triggerMagnetRadius-class numeric behaviour params)."
+      }
     }
   ]
 }

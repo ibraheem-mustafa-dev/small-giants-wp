@@ -19,7 +19,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
+import { SelectControl, AnglePickerControl } from '@wordpress/components';
 import { sweepEligible, TreatmentSelect, CrossRefNote } from './ColourTreatment';
 // Read-only static import of this block's own manifest — the ONE declared source for
 // the Sweep-eligibility predicate (FR-41-26), the same thing `index.js` already does.
@@ -57,6 +57,58 @@ const SMART_CONTRAST_NOTE = __(
 	'Automatic readable-text checking for these colours is switched on under General → Accessibility.',
 	'sgs-blocks'
 );
+
+/**
+ * Directional sweep angle control (FR-41-37 follow-up, 2026-09-13) — the
+ * generalised replacement for the old two-option "Sweep direction"
+ * left-to-right/right-to-left SelectControl. One preset SelectControl (UI
+ * sugar) plus WordPress core's own AnglePickerControl, BOTH writing into the
+ * SAME `angle` attribute (includes/sweep-css.php's CSS gradient-angle
+ * convention: 0=to top, 90=to right, 180=to bottom, 270=to left). Shared by
+ * every sweep-capable row in this block — one mechanism, one control.
+ *
+ * @param {Object}   root0               Props.
+ * @param {number}   root0.angle         The stored angle, degrees.
+ * @param {Function} root0.onAngleChange Receives the next angle, degrees.
+ * @return {Object} The node.
+ */
+function SweepAngleControl( { angle, onAngleChange } ) {
+	const current = Number.isFinite( angle ) ? angle : 90;
+	const presets = [
+		{ label: __( 'Horizontal (left to right)', 'sgs-blocks' ), value: 90 },
+		{ label: __( 'Horizontal (right to left)', 'sgs-blocks' ), value: 270 },
+		{ label: __( 'Vertical (top to bottom)', 'sgs-blocks' ), value: 180 },
+		{ label: __( 'Vertical (bottom to top)', 'sgs-blocks' ), value: 0 },
+	];
+	const presetMatch = presets.find( ( p ) => p.value === current );
+	return (
+		<>
+			<SelectControl
+				label={ __( 'Sweep direction', 'sgs-blocks' ) }
+				value={ presetMatch ? String( current ) : 'custom' }
+				options={ [
+					...presets.map( ( p ) => ( {
+						label: p.label,
+						value: String( p.value ),
+					} ) ),
+					{ label: __( 'Custom angle…', 'sgs-blocks' ), value: 'custom' },
+				] }
+				onChange={ ( val ) => {
+					if ( 'custom' !== val ) {
+						onAngleChange( Number( val ) );
+					}
+				} }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<AnglePickerControl
+				label={ __( 'Angle', 'sgs-blocks' ) }
+				value={ current }
+				onChange={ ( val ) => onAngleChange( Number( val ) ) }
+			/>
+		</>
+	);
+}
 
 /**
  * Each row's own `after` node (Spec 41 §9.6). These live here rather than inline in
@@ -129,7 +181,7 @@ export function ItemBgTreatment( { value, onChange } ) {
  *                                       Sweep-eligibility predicate, never written.
  * @return {Object} The node.
  */
-export function ItemBorderTreatment( { value, onChange, direction, onDirectionChange } ) {
+export function ItemBorderTreatment( { value, onChange, angle, onAngleChange } ) {
 	return (
 		<>
 			<TreatmentSelect
@@ -139,17 +191,7 @@ export function ItemBorderTreatment( { value, onChange, direction, onDirectionCh
 				options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_SWEEP ] }
 			/>
 			{ 'sweep' === value && (
-				<SelectControl
-					label={ __( 'Sweep direction', 'sgs-blocks' ) }
-					value={ direction || 'left-to-right' }
-					options={ [
-						{ label: __( 'Left to right', 'sgs-blocks' ), value: 'left-to-right' },
-						{ label: __( 'Right to left', 'sgs-blocks' ), value: 'right-to-left' },
-					] }
-					onChange={ onDirectionChange }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				<SweepAngleControl angle={ angle } onAngleChange={ onAngleChange } />
 			) }
 			<CrossRefNote>
 				{ __(
@@ -157,6 +199,36 @@ export function ItemBorderTreatment( { value, onChange, direction, onDirectionCh
 					'sgs-blocks'
 				) }
 			</CrossRefNote>
+		</>
+	);
+}
+
+/**
+ * FR-41-37 follow-up (2026-09-13) — the top-level bar item SEPARATOR now
+ * offers Sweep too, using the same generalised angle mechanism as
+ * `ItemBorderTreatment` above (a genuinely separate attribute pair —
+ * `itemSeparatorHoverTreatment` / `itemSeparatorSweepAngle` — matching the
+ * separator's own separate attribute family, never itemBorderHoverTreatment's).
+ *
+ * @param {Object}   root0               Props.
+ * @param {string}   root0.value         The stored treatment value.
+ * @param {Function} root0.onChange      Receives the next treatment value.
+ * @param {number}   root0.angle         The stored sweep angle, degrees.
+ * @param {Function} root0.onAngleChange Receives the next angle, degrees.
+ * @return {Object} The node.
+ */
+export function ItemSeparatorTreatment( { value, onChange, angle, onAngleChange } ) {
+	return (
+		<>
+			<TreatmentSelect
+				label={ __( 'Separator on hover', 'sgs-blocks' ) }
+				value={ value }
+				onChange={ onChange }
+				options={ [ TREATMENT_NONE, TREATMENT_SWAP, TREATMENT_SWEEP ] }
+			/>
+			{ 'sweep' === value && (
+				<SweepAngleControl angle={ angle } onAngleChange={ onAngleChange } />
+			) }
 		</>
 	);
 }

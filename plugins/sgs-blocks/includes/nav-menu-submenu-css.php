@@ -47,6 +47,16 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 	 *                                        (`sgs/navDrawerBg`) — empty when this
 	 *                                        instance is not nested inside a real
 	 *                                        nav-drawer.
+	 * @param int    $item_count            Top-level item count (count($flat_items)
+	 *                                        in render.php) — used ONLY by the
+	 *                                        `listColumns` in-drawer grid below, to
+	 *                                        derive an explicit row count so
+	 *                                        `grid-auto-flow:column` splits the list
+	 *                                        sequentially (column-major, "4+3") rather
+	 *                                        than relying on `column` flow's own
+	 *                                        auto-wrap, which needs an explicit
+	 *                                        row/column count to behave predictably
+	 *                                        (P-NAV-MENU-LISTCOLUMNS-READING-ORDER).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
 	function sgs_nav_menu_submenu_css(
@@ -60,7 +70,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		array $sgs_tor_margin_desktop,
 		array $treatments = array(),
 		string $trigger_mode = 'icon',
-		string $drawer_bg_slug = ''
+		string $drawer_bg_slug = '',
+		int $item_count = 0
 	): string {
 		$css         = '';
 		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
@@ -1108,6 +1119,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 */
 		if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['listColumns'] ?? null ) && ! empty( $attributes['listColumns'] ) ) {
 			$drawer_bar_sel = '.sgs-nav-drawer ' . $uid_sel . '.wp-block-sgs-nav-menu .sgs-nav-menu__bar';
+			$sgs_nm_list_item_count = max( 0, $item_count );
 			$css           .= sgs_emit_responsive_css(
 				$drawer_bar_sel,
 				array(
@@ -1124,6 +1136,40 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 						'transform' => static function ( $raw ) {
 							$n = max( 1, absint( $raw ) );
 							return 'repeat(' . $n . ', minmax(0, 1fr))';
+						},
+					),
+					/*
+					 * READING ORDER FIX (P-NAV-MENU-LISTCOLUMNS-READING-ORDER,
+					 * 2026-09-14) — the reference site's real DOM order confirmed a
+					 * sequential column-major split (read column 1 fully, e.g.
+					 * items 1-4, THEN column 2, e.g. items 5-7 — "4+3"), not the
+					 * row-major interleaving `grid-auto-flow: row` (the implicit
+					 * default) produces. `grid-auto-flow: column` alone is not
+					 * sufficient: without an explicit row count it falls back to
+					 * AUTO row-sizing, which the CSS Grid spec defines as filling
+					 * ONE column indefinitely (never wrapping) unless a
+					 * `grid-template-rows` track count bounds it — so the row
+					 * count below is what actually makes the wrap happen, not
+					 * just the flow direction. Rows = ceil(itemCount / columns),
+					 * so the FIRST column absorbs the remainder and later columns
+					 * are equal or shorter — exactly the "4+3" shape for 7 items
+					 * across 2 columns.
+					 */
+					array(
+						'value'     => $attributes['listColumns'],
+						'css'       => 'grid-auto-flow',
+						'transform' => static function () {
+							return 'column';
+						},
+					),
+					array(
+						'value'     => $attributes['listColumns'],
+						'css'       => 'grid-template-rows',
+						'transform' => static function ( $raw ) use ( $sgs_nm_list_item_count ) {
+							$cols = max( 1, absint( $raw ) );
+							$rows = $sgs_nm_list_item_count > 0 ? (int) ceil( $sgs_nm_list_item_count / $cols ) : 1;
+							$rows = max( 1, $rows );
+							return 'repeat(' . $rows . ', minmax(0, auto))';
 						},
 					),
 				)

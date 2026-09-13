@@ -64,6 +64,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-nav-menu-source.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-markup.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
+require_once dirname( __DIR__, 3 ) . '/includes/sweep-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-trigger-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
@@ -823,7 +824,8 @@ $css .= sgs_nav_menu_submenu_css(
 	$sgs_tor_margin_desktop,
 	$sgs_nm_treatments,
 	'icon',
-	$sgs_nm_drawer_bg_ctx
+	$sgs_nm_drawer_bg_ctx,
+	count( $flat_items )
 );
 // FR-41-30(b): sublink-marker colour CSS, built above alongside the marker's
 // own SVG defs injection (§ before line 456) — kept as a plain string here

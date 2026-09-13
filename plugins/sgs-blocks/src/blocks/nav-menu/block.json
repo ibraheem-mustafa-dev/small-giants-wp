@@ -155,7 +155,28 @@
 					"attrMap": {},
 					"_note": "The `.sgs-nav-menu__indicator` sliding pill, view.js-animated behind the active/hovered item. It is rendered under `itemBgHoverTreatment === 'highlight'` and paints from the item Background row's OWN Hover swatch — `itemBgHover` / `itemBgHoverGradient`, claimed by the `item` element's `states.hover` (Spec 41 FR-41-25) — so this element routes no attribute of its own: one picker, one property, three ways of applying it. `clusters: [\"fill\"]` is retained (not `[]`) because the forward-resolution pass only visits a cluster's members when the cluster is declared; with an empty attrMap the fill members are honest GAPs, ungated and correct, since this element has no controls of its own. `supports.sgs.colourExemptions.indicator` records why it carries no hover state: style.css declares `.sgs-nav-menu__indicator { pointer-events: none; }`, so the element is structurally unhoverable."
 				},
-				"featured": {
+				"item-separator": {
+						"label": "Item separator (bar)",
+						"order": 5.5,
+						"clusters": [
+							"border"
+						],
+						"prefix": "itemSeparator",
+						"attrMap": {
+							"css:border-right-color": "itemSeparatorColour",
+							"css:border-right-width": "itemSeparatorWidth",
+							"css:border-right-style": "itemSeparatorStyle"
+						},
+						"states": {
+							"hover": {
+								"attrMap": {
+									"css:border-right-color": "itemSeparatorColourHover"
+								}
+							}
+						},
+						"_note": "FR-41-37 (2026-09-13) + follow-up (2026-09-14, directional sweep generalisation). The between-item vertical rule on the horizontal bar (nav-menu-css.php's item-separator block) -- a GENUINELY SEPARATE element from `item` (the link itself): this rule paints on the <li> (`.sgs-nav-menu__item::after` when Sweep is active) or via longhand border-right-* on the <a>'s existing border box otherwise, never the item's own itemBorderColour/itemBorderWidth family (see nav-menu-css.php's own comment distinguishing the two). Longhand border-right-* declared explicitly (not the `border-color`/`border-width` shorthand `item` uses) because a shorthand here would reset whatever the item's own underline/row-separator family already wrote on the SAME selector when Sweep is off. `itemSeparatorHoverTreatment`/`itemSeparatorSweepAngle` are declared `role:behaviour` (attr-classification-overrides.json) rather than routed through this manifest -- they are control-selector/parameter attrs, not paintable CSS values, matching the established pattern for itemBorderHoverTreatment/borderHoverAnimationDirection's sibling on the `item` element above."
+					},
+					"featured": {
 					"label": "Featured item",
 					"order": 6,
 					"clusters": [
@@ -353,6 +374,17 @@
 							"ridge",
 							"inset",
 							"outset"
+						]
+					}
+				},
+				"itemSeparatorHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [],
+					"glyphGuard": {
+						"attr": "itemSeparatorStyle",
+						"disallowedValues": [
+							"dashed",
+							"dotted"
 						]
 					}
 				}
@@ -816,10 +848,10 @@
 			"default": "swap",
 			"description": "How the item BORDER colour changes on hover: none / swap / sweep. PHP-validated, no JSON enum."
 		},
-		"borderHoverAnimationDirection": {
-			"type": "string",
-			"default": "left-to-right",
-			"description": "Secondary control, shown only when itemBorderHoverTreatment is 'sweep'. left-to-right / right-to-left. PHP-validated, no JSON enum."
+		"sweepAngle": {
+			"type": "number",
+			"default": 90,
+			"description": "Directional sweep angle (FR-41-37 follow-up, 2026-09-13) -- standard CSS gradient-angle degrees (0=to top, 90=to right, 180=to bottom, 270=to left), the same convention @wordpress/components's AnglePickerControl uses. Governs the item border/underline Sweep (itemBorderHoverTreatment==='sweep'). Default 90 reproduces the retired borderHoverAnimationDirection=left-to-right output pixel-for-pixel; 270 reproduces right-to-left. See includes/sweep-css.php."
 		},
 		"itemSeparatorWidth": {
 			"type": "string",
@@ -840,6 +872,16 @@
 			"type": "string",
 			"default": "accent",
 			"description": "FR-41-37 — Hover-state colour, matching the underline/row-separator family's own Hover token."
+		},
+		"itemSeparatorHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "FR-41-37 follow-up (2026-09-13). How the item separator changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.itemSeparatorHoverTreatment passes. Default 'swap' preserves the original shipped behaviour (a plain border-right-color change) byte-for-byte. PHP-validated, no JSON enum."
+		},
+		"itemSeparatorSweepAngle": {
+			"type": "number",
+			"default": 180,
+			"description": "FR-41-37 follow-up (2026-09-13). Directional sweep angle for the item separator (same convention as sweepAngle -- CSS gradient-angle degrees). Default 180 (to bottom) is a sensible vertical default for a right-edge divider; shown only when itemSeparatorHoverTreatment is 'sweep'. See includes/sweep-css.php."
 		},
 		"submenuColourCurrent": {
 			"type": "string",

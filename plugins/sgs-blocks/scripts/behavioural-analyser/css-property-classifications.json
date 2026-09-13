@@ -5500,6 +5500,46 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "closeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "closeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerAlign",
       "fields": {
         "css_property": "align-items",
@@ -5549,6 +5589,32 @@
         "css_property": "color",
         "role": "color",
         "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColour",
+      "fields": {
+        "css_property": "fill",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColourCurrent",
+      "fields": {
+        "css_property": "fill",
+        "css_element": "sublink",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColourHover",
+      "fields": {
+        "css_property": "fill",
+        "css_element": "sublink",
         "css_state": "hover"
       }
     },
@@ -14969,6 +15035,14 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "closeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "close"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerGap",
       "fields": {
         "css_property": "gap",
@@ -15034,6 +15108,15 @@
       }
     },
     {
+      "slug": "sgs/nav-drawer",
+      "attr": "toggleCloseColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "close",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/nav-menu",
       "attr": "burgerBg",
       "fields": {
@@ -15079,6 +15162,30 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "burgerFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "burgerFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "burgerFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "burgerHoverColour",
       "fields": {
         "css_property": "background-color",
@@ -15089,9 +15196,25 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "burgerLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "burgerSize",
       "fields": {
         "css_property": "height,width",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "burgerTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "burger"
       }
     },
@@ -15332,6 +15455,15 @@
     },
     {
       "slug": "sgs/nav-menu",
+      "attr": "itemColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
       "attr": "itemFontSize",
       "fields": {
         "css_property": "font-size",
@@ -15378,6 +15510,39 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorColour",
+      "fields": {
+        "css_property": "border-right-color",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorColourHover",
+      "fields": {
+        "css_property": "border-right-color",
+        "css_element": "item-separator",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorStyle",
+      "fields": {
+        "css_property": "border-right-style",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "itemSeparatorWidth",
+      "fields": {
+        "css_property": "border-right-width",
+        "css_element": "item-separator"
       }
     },
     {
@@ -15494,10 +15659,28 @@
     },
     {
       "slug": "sgs/nav-menu",
-      "attr": "sublinkMarkerColour",
+      "attr": "sublinkMarkerColourCurrentGradient",
       "fields": {
-        "css_property": "fill",
+        "css_property": "fill-gradient",
+        "css_element": "sublink",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColourGradient",
+      "fields": {
+        "css_property": "fill-gradient",
         "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "sublinkMarkerColourHoverGradient",
+      "fields": {
+        "css_property": "fill-gradient",
+        "css_element": "sublink",
+        "css_state": "hover"
       }
     },
     {
@@ -15506,6 +15689,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuBgGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "submenu-panel"
       }
     },
@@ -15679,6 +15870,41 @@
         "role": "color",
         "css_element": "sublink",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuLinkBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuLinkBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuLinkBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-menu",
+      "attr": "submenuLinkBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "sublink"
       }
     },
     {
