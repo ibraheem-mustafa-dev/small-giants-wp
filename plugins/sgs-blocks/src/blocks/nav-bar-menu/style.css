@@ -103,6 +103,28 @@
 	transition: transform 0.2s ease-out;
 }
 
+/*
+ * Badge (Step 7, D1059) — a tinted chip. `currentColor`-derived background
+ * (never a named preset token) so it reads correctly against ANY client's
+ * item-text colour without a per-theme contrast check: a translucent tint of
+ * the SAME colour the text is already painted in is contrast-safe by
+ * construction, on both a light and a dark item-text colour. Zero-specificity
+ * default (G20c pattern, matches `.sgs-nav-bar-menu__indicator` above) — no
+ * colour ATTRIBUTE for the badge exists yet (out of Step 7's scope).
+ */
+:where(.sgs-nav-bar-menu__badge) {
+	background-color: color-mix(in srgb, currentColor 12%, transparent);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	font-size: 0.65em;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: 1;
+	margin-inline-start: 0.4em;
+	padding: 0.22em 0.5em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
 /* Link text + item content must paint ABOVE the indicator pill — the pill
  * is `position:absolute` so, without this, it would paint over every link's
  * text regardless of DOM order (positioned elements paint above in-flow

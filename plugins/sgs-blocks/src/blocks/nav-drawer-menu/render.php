@@ -293,6 +293,10 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 				'label'      => $label,
 				'type'       => (string) ( $attrs['type'] ?? '' ),
 				'object_id'  => (int) ( $attrs['id'] ?? 0 ),
+				// Step 7 (D1059) — same repurposing as `nav-bar-menu/render.php`'s
+				// own `from_link()`; see that file's docblock for the "genuinely
+				// unused before this" evidence.
+				'badge'      => (string) ( $attrs['description'] ?? '' ),
 				'children'   => array(),
 			);
 		}

@@ -371,6 +371,14 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				'label'      => $label,
 				'type'       => (string) ( $attrs['type'] ?? '' ),
 				'object_id'  => (int) ( $attrs['id'] ?? 0 ),
+				// Step 7 (D1059) — the operator's own "Description" field on a
+				// classic menu item / `core/navigation-link`'s native `description`
+				// attribute, repurposed as free-text badge copy ("SOON"). Genuinely
+				// unused by any render path before this (verified: no prior
+				// `'description'` read anywhere in this file or nav-menu-markup.php),
+				// so wiring it up here is additive, not a behaviour change for any
+				// existing item that already carries one.
+				'badge'      => (string) ( $attrs['description'] ?? '' ),
 				'children'   => array(),
 			);
 		}

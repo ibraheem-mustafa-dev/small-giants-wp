@@ -44,6 +44,46 @@
 
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
+	/**
+	 * Build the optional badge fragment for a leaf item's link (Step 7, D1059).
+	 *
+	 * Same datum for both blocks (`$item['badge']`, from each render.php's own
+	 * `from_link()` — the operator's menu-item "Description" field, repurposed;
+	 * genuinely unused by any render path before this, see that function's own
+	 * docblock). `$bem_root` only picks which BEM root's `__badge` element
+	 * applies — `style.css` owns the actual visual difference (a tinted chip on
+	 * the bar, a bare letter-spaced word in the drawer).
+	 *
+	 * Real visually-hidden TEXT, not CSS `::before`/`::after` `content` — some
+	 * browser/AT combinations do not fold generated content into the
+	 * accessible name, so a real text node is the only reliable way to make
+	 * "Glasses" + "SOON" read as one phrase, "Glasses (SOON)", rather than
+	 * "GlassesSOON" run together.
+	 *
+	 * @param string $badge    Badge text, '' = none.
+	 * @param string $bem_root 'sgs-nav-bar-menu' or 'sgs-nav-drawer-menu'.
+	 * @return string HTML fragment, or '' when there is no badge.
+	 */
+	function sgs_nav_shared_badge_html( string $badge, string $bem_root ): string {
+		$badge = trim( $badge );
+		if ( '' === $badge ) {
+			return '';
+		}
+		// A badge is a short marker, not a second sentence — cap it so an
+		// operator who filled this field in for its ORIGINAL purpose (a real
+		// description) doesn't ship a paragraph-long chip. 24 chars covers
+		// every reference badge copy ("SOON", "NEW", "Coming spring 2027")
+		// with headroom.
+		$badge = function_exists( 'mb_substr' ) ? mb_substr( $badge, 0, 24 ) : substr( $badge, 0, 24 );
+		return sprintf(
+			'<span class="screen-reader-text"> (</span><span class="%1$s__badge">%2$s</span><span class="screen-reader-text">)</span>',
+			esc_attr( $bem_root ),
+			esc_html( $badge )
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 		/**
 		 * Render the flat <li><a> list.
@@ -288,11 +328,12 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 				}
 
 				$html .= sprintf(
-					'<li class="%s"><a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a></li>',
+					'<li class="%s"><a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
 					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-					esc_html( $item['label'] )
+					esc_html( $item['label'] ),
+					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-bar-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
 				);
 			}
 			return $html;
@@ -436,8 +477,14 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 							esc_html( $item['label'] )
 						);
 					} else {
+						// Step 7 (D1059) — `aria-disabled="true"` names what this span
+						// already visually IS: a link-styled element with no href, not
+						// a real interactive control. Without it, AT that exposes
+						// elements by their visual/class styling alone can announce
+						// this as a link that goes nowhere; the expander button right
+						// next to it is the actual interactive control.
 						$label_html = sprintf(
-							'<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label"><span class="sgs-nav-drawer-menu__link-text">%s</span></span>',
+							'<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label" aria-disabled="true"><span class="sgs-nav-drawer-menu__link-text">%s</span></span>',
 							esc_html( $item['label'] )
 						);
 					}
@@ -467,11 +514,12 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 				}
 
 				$html .= sprintf(
-					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
+					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span>%5$s</a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
 					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
-					esc_html( $item['label'] )
+					esc_html( $item['label'] ),
+					sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_nav_shared_badge_html() esc_attr/esc_html's internally.
 				);
 			}
 			return $html;

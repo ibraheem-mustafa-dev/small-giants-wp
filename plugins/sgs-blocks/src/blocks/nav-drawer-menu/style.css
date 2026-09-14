@@ -112,6 +112,22 @@
 	text-decoration: none;
 }
 
+/*
+ * Badge (Step 7, D1059) — a bare letter-spaced word, not a chip (the bar's
+ * version is a tinted chip; a drawer row already has its own row background,
+ * so a second nested tint reads as visual clutter, not a marker). Reduced
+ * opacity + `currentColor` inheritance, same theme-agnostic reasoning as the
+ * bar's badge. Zero-specificity default — no colour attribute exists yet.
+ */
+:where(.sgs-nav-drawer-menu__badge) {
+	font-size: 0.7em;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	margin-inline-start: 0.5em;
+	opacity: 0.65;
+	text-transform: uppercase;
+}
+
 .sgs-nav-drawer-menu :focus-visible {
 	outline: 2px solid var( --sgs-focus-color, currentColor );
 	outline-offset: 2px;
