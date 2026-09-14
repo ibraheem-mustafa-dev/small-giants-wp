@@ -89,7 +89,9 @@ to build Tier 1+2 directly, per D1053) — genuinely open work, not closed by th
 `draft-responsive-probe.js` (draft-only responsive-value extraction — `computed-parity.js`
 needs both `--draft`+`--clone`, can't be reused). Real finding: `<sc-for>`/`<sc-if>` do NOT
 survive rendering — the two tools read different DOMs and are NOT yet linked; that
-correlation, and route coverage beyond one already-loaded page, are open/named, not built.
+correlation, route coverage beyond one page, and Piece 1's Tier B (Haiku classifier, only
+scaffolded) are open/named, not built. **CODE SHIPPED, outcome partial** — both primitives
+work standalone; the linked mechanism a converter could actually consume does not exist yet.
 
 
 ## Blockers
