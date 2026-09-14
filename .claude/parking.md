@@ -590,19 +590,6 @@ Five smaller open items from the Spec 37 coverage matrix: (a) the skip-link regr
 
 **Trigger:** alongside the FR-37-31 retirement work.
 
-### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-15
-
-Research-backed enhancement: when a client turns the drawer logo on, auto-derive its background/foreground from the client's own existing header row so the drawer logo is legible by construction. No competitor does this; full design already written up.
-
-⚠ **Scope mismatch, surfaced this week (see `.claude/decisions.md` D-current, `.claude/LEDGER.md`) —
-the original design's target no longer exists.** The design doc was written against a "head strip"
-wrapper around the drawer logo; that wrapper does not exist post-rebuild — the drawer no longer has
-one. Left OPEN, flagged for Bean's decision, not silently resolved: pick (a) colour attributes
-directly on the logo block, or (b) reintroduce a head-row wrapper to carry the original design.
-
-**Trigger:** Bean picks (a) or (b) above; then a client flags an illegible drawer logo, or the drawer rework touches the head row for another reason.
-
 ### P-VAT-ZERO-RATED-PRECISION — VAT-label gate is store-level, not per-product-tax-rate precise
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-12
 

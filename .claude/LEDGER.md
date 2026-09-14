@@ -22,13 +22,33 @@ reading order, and a same-day sticky-header dropdown-stacking fix (dropdown now 
 (ancestor-current + keyboard-focus highlight lost during the body-reparent; submenu colours
 defaulting off a runtime contrast check instead of a fixed per-state default).
 
-**Two items are deliberately NOT built — they need Bean's decision, not more investigation:**
-auto-deriving the drawer logo's colours from the header row (the original design's target
-wrapper no longer exists post-rebuild, needs Bean to pick a new mechanism); and click-outside-
-to-close on the horizontal dropdown for touch devices (confirmed real, pre-existing gap, no
-build-now-vs-backlog call made yet). See "THE FRONT" below for detail. Everything else
-previously listed here as open (L1 burger→drawer typography mirror, the drawerRef collision
-bug, and current-page state-hierarchy propagation) has since shipped.
+**Both previously-open decision items have now been resolved and shipped (2026-09-14):**
+Bean picked colour attributes directly on `sgs/responsive-logo` (not a reintroduced head-row
+wrapper) for the drawer-logo colour work — `backgroundColour`/`backgroundColourGradient`/
+`backgroundColourHover`/`backgroundColourHoverGradient` added, mirroring `sgs/brand-strip`,
+commit `46fbdb5a0` (D1045), live-verified, parking entry archived. Click-outside-to-close for
+touch devices was approved and built directly — a document-level click listener in
+`mega-disclosure.js` now closes an open dropdown/mega panel on an outside tap, commit
+`6f7dc3867` (D1046). A third, previously-unrecorded defect was also found and fixed same
+session: `sgs/nav-menu`'s drawer re-render pass was emitting a hidden duplicate "Open menu"
+burger; gated to the real header/bar pass only, commit `ab9e5f893` (D1047), live-verified
+exactly one such element exists at both mobile and desktop widths. Everything else previously
+listed here as open (L1 burger→drawer typography mirror, the drawerRef collision bug, and
+current-page state-hierarchy propagation) has also since shipped.
+
+**Still genuinely open — do not treat as closed:** Wave C's own steps 25 (Bean's formal
+3-viewport visual sign-off, per the plan's own pass condition) and 26 (flip a WARN gate to
+HARD — re-confirmed unsafe twice today, `sgs/nav-menu` itself still carries 7 ungated-paint
+findings) have NOT been done. Live testing today also surfaced a real, reproducible-but-
+intermittent click-reliability issue on the drawer's own burger button (2 of 3 real clicks
+failed to open the drawer in one test session) — the duplicate-burger fix above is a genuine,
+separate defect fix and is NOT proven to be the root cause of this intermittent issue; Bean
+needs to retest live and report back whether the freeze/unresponsive behaviour still occurs.
+The D1044 ESC/mega-disclosure bubble-path retest triggered an unexpected page navigation when
+tested via a synthetic keydown dispatch — still flagged inconclusive, not confirmed safe,
+needs a follow-up session with real keyboard input. File-size drift on `ColourRowExtras.js`,
+`edit.js`, `nav-menu-css.php` and `nav-menu-submenu-css.php` (all over their caps) is also
+still unaddressed.
 
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
@@ -74,14 +94,12 @@ default, `d9f90b875`) caught by a same-session `/qc-council` diagnostic pass and
 **The register file has not been re-read/updated against this later work — check it against
 git log before trusting its own "not yet built" list.**
 
-**Two items remain genuinely open — need Bean's decision, not more investigation:**
-1. **Drawer-logo auto-derive.** Auto-deriving the drawer-head logo's colours from the header
-   row was designed against a head-row wrapper that no longer exists post-rebuild. Needs Bean
-   to choose between colour attributes on the logo block itself vs reintroducing a wrapper —
-   see `.claude/parking.md` `P-UIMAX-DRAWER-LOGO-AUTODERIVE` for the original design.
-2. **Click-outside-to-close on the horizontal dropdown, touch devices only.** Confirmed real
-   during the latest `/qc-council` pass — not yet written up in any report. Needs Bean's
-   build-now-vs-backlog call.
+**Both previously-open decision items shipped 2026-09-14 (see Human Summary above for
+detail; D1045/D1046/D1047).** Genuinely open now: Wave C steps 25/26 (formal sign-off + WARN→
+HARD gate flip), the intermittent drawer-burger click-reliability issue (needs Bean's live
+retest), the D1044 ESC bubble-path retest (inconclusive, needs real-keyboard follow-up), and
+file-size drift on `ColourRowExtras.js`/`edit.js`/`nav-menu-css.php`/
+`nav-menu-submenu-css.php`.
 
 **Process note for whoever dispatches multi-agent work next:** two implementation agents this
 session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
@@ -170,7 +188,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1039** — verify with
+- **D-ceiling:** **D1047** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.

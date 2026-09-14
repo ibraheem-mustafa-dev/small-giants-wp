@@ -1,3 +1,53 @@
+## D1047 [ROUTINE] — Duplicate burger button inside the drawer's own re-entrant render pass, fixed
+
+**2026-09-14.** `plugins/sgs-blocks/src/blocks/nav-menu/render.php` renders `sgs/nav-menu`
+twice per page load in the drawer configuration — once for the real header/bar pass, once for
+the drawer's own internal re-render of the menu content — and the "Open menu" burger markup
+was being emitted on BOTH passes, producing a second, hidden duplicate burger button sitting
+inside the drawer markup itself. Gated the burger emission to the real header/bar pass only
+(commit `ab9e5f893`). Live-verified on the sandybrown canary at both mobile and desktop
+widths: exactly one such element exists in the DOM now, at both widths. No parking entry
+existed for this — found and fixed same-session as a genuine pre-existing defect, not a
+regression from today's other nav work.
+
+## D1046 [ROUTINE] (Bean-approved) — Click-outside-to-close for mega/dropdown disclosure on touch devices
+
+**2026-09-14.** Resolves the second of the two "needs Bean's decision" items carried in
+`LEDGER.md`'s "THE FRONT" (no formal parking entry existed for this one — it was flagged
+live during a `/qc-council` pass, not written up separately). Confirmed pre-existing gap: a
+touch-device user with an open dropdown/mega panel had no way to dismiss it except re-tapping
+the trigger or pressing ESC — no tap-elsewhere-to-close, unlike every native OS/browser
+disclosure pattern. Bean approved building it directly, no backlog. Added a document-level
+click listener (`onOutsideClick`) to
+`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`, wired through a new
+`syncOutsideClickWatcher()` that attaches/detaches the listener in step with the existing
+`watchOpenState` open/close funnel — a click landing outside both the open panel and its
+trigger closes the panel via the same close path as ESC/self-close/scroll-close. Commit
+`6f7dc3867`. Header-placed and page-embedded instances both covered by construction (the
+listener is attached per-disclosure, not scoped to header placement). No parking entry to
+archive for this item — it never had one; confirmed via `.claude/parking.md` grep before
+writing this entry.
+
+## D1045 [ROUTINE] (Bean-approved) — Drawer-logo colour attributes added directly to `sgs/responsive-logo`
+
+**2026-09-14.** Resolves `.claude/parking.md::P-UIMAX-DRAWER-LOGO-AUTODERIVE`'s open scope
+mismatch (the original auto-derive design targeted a drawer "head strip" wrapper that no
+longer exists post-rebuild). Bean chose option (a) from the two the parking entry offered:
+add colour attributes directly to the logo block itself, rather than (b) reintroducing a
+head-row wrapper to carry the original design. Added
+`backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/
+`backgroundColourHoverGradient` to `sgs/responsive-logo`, mirroring `sgs/brand-strip`'s root
+background pair exactly (`SgsColourPanel`-driven, `sgs_background_paint_decl()` +
+`sgs_hover_state_rules()`) — the block's own background tile can now be set independently of
+whether it sits in the site header or inside `sgs/nav-drawer`. Also declares `supports.color`
+(background/gradients/text all false, `__experimentalSkipSerialization`) to satisfy
+`audit-block-uniformity.py`'s `supports_color_missing` check, and wires `SgsBorderControl`'s
+`contrastAgainst` prop via `wire-border-contrast.js --fix --apply`. Commit `46fbdb5a0`.
+Live-verified on the sandybrown canary: no header regression. Parking entry archived to
+`.claude/memory/parking-archive.md` in the same session (residual auto-derive-from-header-row
+enhancement not built — this shipped the colour-attribute mechanism only, not automatic
+derivation; if that's still wanted, it needs a fresh design against the now-real attributes).
+
 ## D1044 [ROUTINE] — Live-verification closeout of a stale plan-mode file (nav-drawer/nav-menu, 3 tasks, D1011/D1012 territory)
 
 **2026-09-14.** A prior session's plan (`~/.claude/plans/nav-drawer-track-delegated-snowglobe.md`, local-only, outside the repo, not re-readable) named 3 fixes as needing live proof, not just code-presence. Verified all 3 live on the sandybrown canary via two scratch fixture pages (`page_id` 3542/3543, deleted after use — non-modal drawer + real classic-menu submenu (`ref:112`, "T1 Dropdown Test") + `anchor:centred`), then deleted.

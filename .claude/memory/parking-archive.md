@@ -7,6 +7,30 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-14 — 1 entry RESOLVED: drawer-logo colour attributes, Bean picked option (a)
+
+> ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-15
+>
+> Research-backed enhancement: when a client turns the drawer logo on, auto-derive its background/foreground from the client's own existing header row so the drawer logo is legible by construction. No competitor does this; full design already written up.
+>
+> ⚠ **Scope mismatch, surfaced this week (see `.claude/decisions.md` D-current, `.claude/LEDGER.md`) —
+> the original design's target no longer exists.** The design doc was written against a "head strip"
+> wrapper around the drawer logo; that wrapper does not exist post-rebuild — the drawer no longer has
+> one. Left OPEN, flagged for Bean's decision, not silently resolved: pick (a) colour attributes
+> directly on the logo block, or (b) reintroduce a head-row wrapper to carry the original design.
+>
+> **Trigger:** Bean picks (a) or (b) above; then a client flags an illegible drawer logo, or the drawer rework touches the head row for another reason.
+
+**Resolution evidence, 2026-09-14:** Bean chose option (a) — colour attributes directly on the
+logo block, not a reintroduced head-row wrapper. Built and live-verified same session: added
+`backgroundColour`/`backgroundColourGradient`/`backgroundColourHover`/
+`backgroundColourHoverGradient` to `sgs/responsive-logo`, mirroring `sgs/brand-strip`'s root
+background pair exactly (`SgsColourPanel`-driven), commit `46fbdb5a0`. See `.claude/decisions.md`
+D1045 for full detail. Note: this ships the colour-ATTRIBUTE mechanism only, not automatic
+derivation from the header row — the original enhancement's "auto-derive" behaviour was not
+built; if still wanted, it needs a fresh design against these now-real attributes.
+
 ## 2026-09-14 — 1 entry RESOLVED: page-embedded nav-menu dropdown stacking, fixed + live-verified
 
 > ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — a page-embedded nav's dropdown is overlapped
