@@ -1671,6 +1671,26 @@ it as prose, never as the token (see STOP-67 vs STOP-67-GATE-ANOMALY for why tha
   requirement is unmet" into a governing spec. **Rule: invoke `[bash, '-lc', cmd]` explicitly, and
   ship a positive control that proves which shell you are in before trusting any result.**
 
+- **STOP-A-DOM-REPARENT-BREAKS-A-HAS-BASED-ANCESTOR-SELECTOR (2026-09-14, `e62ce1bf2`).** A `:has()`
+  ancestor selector (e.g. `.submenu-root:has(ul .submenu a[aria-current="page"])`) stops matching the
+  INSTANT its descendant is moved elsewhere in the DOM via `appendChild`/`moveTo` — `:has()` can only
+  see a genuine descendant, and a reparent (sticky-header body-reparent, portal, modal-move-to-`<body>`,
+  any JS that relocates a node for stacking-context or `overflow:hidden` escape reasons) makes the
+  moved subtree stop being one, for as long as the move lasts. Two nav-menu rules (current-page
+  ancestor highlight, keyboard-focus ancestor highlight) went silently dead exactly while
+  `mega-disclosure.js`'s `reparentPanelIfNeeded()` had the panel parked on `<body>` — no error, no
+  failing gate, just a highlight that stopped appearing for the duration of an open dropdown. **Rule:
+  before shipping ANY feature that moves an element via `appendChild`/similar (portals, sticky-header
+  workarounds, modal escapes, drag-and-drop), grep the codebase for `:has(` selectors that assume the
+  ORIGINAL parent/descendant relationship and check each one survives the move.** The general fix
+  shape: mirror the fact the `:has()` was checking onto a stable ancestor as a data-attribute
+  (`data-sgs-*`, JS-toggled for the duration of the move only), then OR it into the selector via
+  `:is(:has(…), [data-sgs-*])` — a single compound selector, not a comma-joined pair, if a
+  pseudo-element (`::before`/`::after`) is appended to the selector string afterwards (comma lists
+  only attach a trailing pseudo-element to the LAST selector — see the sibling rule already in this
+  file for that trap). Never delete or "simplify" a `:has()`-plus-data-attribute pairing you find in
+  nav-menu CSS without checking why the data-attribute half exists.
+
 
 ## C. Pre-flight self-attestation ritual (answer inline before first Write/Edit)
 

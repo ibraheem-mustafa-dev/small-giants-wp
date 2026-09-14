@@ -220,7 +220,10 @@ FR-41-7 · FR-41-8 · FR-41-9 · FR-41-10 · FR-41-11 · FR-41-12 (BOTH sides �
 `sgs/nav-drawer` close mirror) · **FR-41-15 (census FULLY EXECUTED — see its STATUS note)** ·
 FR-41-16 · FR-41-21 · FR-41-22 · FR-41-23 · FR-41-24 · FR-41-25 · FR-41-26 (including
 `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.sweepEligibility` and its two mechanical readers) · FR-41-28 · FR-41-29 ·
-FR-41-30 · FR-41-31 · FR-41-33 · FR-41-35
+FR-41-30 · FR-41-31 · FR-41-33 · FR-41-35 · **FR-41-37** (the vertical divider itself — live-verified
+on the canary 2026-09-13; its own §'s "PARTIALLY BUILT" tag refers only to the desktop-submenu-hover
+text-colour default it revised alongside, not to the divider capability, which is fully built) ·
+**FR-41-38** (directional sweep generalisation — `sgs_directional_sweep_css()`)
 (`plugins/sgs-blocks/scripts/check-ungated-paint-rules.py`).
 
 ### 0a.3 Written but NOT built — each with the command that proves it
@@ -509,6 +512,34 @@ pattern verbatim: same token, same "skip only when the resolved hover TREATMENT 
 An operator's own explicit `submenuColourHover` choice still overrides, exactly as before. Every
 other row in this table (top bar Current, desktop submenu bg/Normal, drawer top-level, drawer nested
 submenu) remains unbuilt future work as originally noted.
+
+### FR-41-38 — NEW: the hover Sweep generalised to any angle, gap candidate recorded (2026-09-14)
+
+**Recorded here so a future reader does not mistake this for an undocumented ad-hoc addition —
+`af8f9759a`.** Every prior Sweep rule in this component (FR-41-26 and its readers) was a
+hard-coded horizontal "to right" gradient with a stop-order swap for the retired
+`borderHoverAnimationDirection` (`left-to-right`/`right-to-left` only). This is now a shared,
+angle-driven primitive: `sgs_directional_sweep_css()` in the new
+`plugins/sgs-blocks/includes/sweep-css.php` — a `linear-gradient(<angle>deg)` at
+`background-size:200% 200%`, with both `background-position` endpoints computed from
+`sin`/`cos` of the angle, so any degree value produces a correct two-stop travel, not just the
+two the old code hard-coded. New attribute `sweepAngle` (`AnglePickerControl` + a preset
+dropdown) reproduces the retired attribute's two directions pixel-for-pixel at 90°/270°, and
+`borderHoverAnimationDirection` itself was removed from `block.json` outright (D293
+no-version-bumps/no-deprecations-pre-production) — a defensive PHP-only read off the raw,
+undeclared `$attributes` key keeps a pre-existing saved post's chosen direction rendering
+correctly (WordPress does not strip an undeclared key from an already-parsed block's attrs
+before `render.php` runs; see the block-note-comment prior art at `plugins/sgs-blocks/CLAUDE.md`
+"D338" for why editor-invisible ≠ render-invisible).
+
+**Same mechanism wired onto FR-41-37's vertical bar-item separator**, which previously had no
+hover effect at all: new `itemSeparatorHoverTreatment` / `itemSeparatorSweepAngle` attributes,
+sweep band on the `<li>`'s own `::after` (kept off the link's own `::before` to avoid a
+pseudo-element collision with the link's existing border-bottom sweep).
+
+**DB-first, not a hardcoded dict:** a new `item-separator` manifest element in `block.json` plus
+`attr-classification-overrides.json` entries for the new behaviour-role treatment/angle
+attributes, reseeded via `sgs-update-v2.py` Stage 1 + 9 (per R-31-1).
 
 ### FR-41-2 — No new shared JS component is built. None is needed.
 
@@ -875,6 +906,20 @@ behaviour exactly.
 Help text must be plain language, e.g. *"When you set a background, we check your text colour stays
 readable against it and swap in a readable one if it doesn't. Switch this off to always use exactly
 the colour you picked."* No "WCAG", no "contrast ratio", no "AA" in a client-visible string.
+
+⚠ **DEFAULT FLIPPED 2026-09-13 (Bean-directed, `cce38999d`) — the "Default ON" paragraph above is
+now STALE, kept for history, not the shipped behaviour.** `itemSmartContrast` was silently
+overriding an operator's explicit `itemColourHover` whenever it failed contrast, surfaced this
+session as the real explanation behind a "my colour isn't applying" report. Shipped fix: default
+is now `false` (`plugins/sgs-blocks/src/blocks/nav-menu/block.json::attributes.itemSmartContrast`) —
+an explicit hover colour always renders as-authored unless the operator opts in. The readability
+CHECK itself stays unconditional: the editor now
+shows an always-on advisory `Notice` under the Item text colour row whenever the current
+hover combination fails contrast, regardless of the toggle's position, pointing to the toggle
+in the Accessibility panel (§9.5 / FR-41-27). Only the automatic colour SWAP is gated on the
+toggle. Live-verified both server-side branches via `wp-json/wp/v2/block-renderer` against the
+sandybrown canary; the editor-side Notice was not visually confirmed that session (Playwright got
+stuck on an unresolvable `beforeunload` dialog) — see `reports/visual-diff/nav-menu-2026-09-13.md`.
 
 ### FR-41-6 — The non-colour state signal (WCAG 1.4.1) survives the retirement
 
@@ -3099,7 +3144,7 @@ Listed so a builder working from a 0.4.0 copy does not declare them.
 | `submenuTextDecorationHover` | string | `""` | **RESTORED 0.4.2.** `showHover` trio member, Submenu target (FR-41-22) |
 | `submenuTextTransformHover` | string | `""` | **RESTORED 0.4.2.** `showHover` trio member, Submenu target |
 | `submenuFontWeightHover` | string | `""` | **RESTORED 0.4.2.** `showHover` trio member, Submenu target. **String, not number** |
-| `itemSmartContrast` | boolean | `true` | FR-41-5 auto-readable foreground |
+| `itemSmartContrast` | boolean | `false` (flipped 2026-09-13, `cce38999d` — was `true`) | FR-41-5 auto-readable foreground; readability CHECK is unconditional (advisory Notice), only the auto-SWAP is gated on this toggle |
 | `itemBorderWidth` | object | `{}` | box object, base-only, `SgsBorderControl` |
 | `itemBorderStyle` | string | `""` | `SgsBorderControl`'s colour popover |
 | `itemBorderRadius` | object | `{"topLeft":"8px","topRight":"8px","bottomRight":"8px","bottomLeft":"8px"}` | corner object, `SgsBorderControl`'s radius half. ⚑ **DEFAULT DECIDED 0.4.6 (owner): 8px on all four corners, NOT `{}`** — see the ⛔ below |
@@ -3246,10 +3291,21 @@ for the defect this section just disproved.
 
 ### 8.5 Two deliberate boundaries — do not "complete the set"
 
-1. **`itemColourGradient` stays Normal-only, and there is no `itemColourHoverGradient` or
-   `itemColourCurrentGradient`.** Its own `block.json` description records why the hover sibling was
-   never offered: a gradient has no single hex to contrast-test, so a hover TEXT gradient would have
-   to disable the smart-contrast safety (FR-41-5). The same reasoning extends to Current.
+1. ⚑ **SUPERSEDED AS BUILT (2026-09-13, `08d0df5af`) — `itemColourHoverGradient` now exists; the
+   boundary below is history, not current behaviour.** The original boundary read: *"`itemColourGradient`
+   stays Normal-only, and there is no `itemColourHoverGradient` or `itemColourCurrentGradient`."* Its own
+   `block.json` description recorded why the hover sibling was never offered: a gradient has no single
+   hex to contrast-test, so a hover TEXT gradient would have to disable the smart-contrast safety
+   (FR-41-5). **That premise changed the same day `itemSmartContrast` defaulted OFF (FR-41-5's
+   2026-09-13 revision above) — with the auto-swap no longer active by default, the Hover tab now
+   gets its own gradient sibling, live-gated on `itemSmartContrast`'s CURRENT value**: offered only
+   while the toggle is off, hidden the instant an operator switches it on (the toggle can still be
+   opted back in per-row, and a gradient can't be contrast-tested, so the two stay mutually exclusive
+   exactly as the original reasoning required — the boundary's LOGIC survives, only its "never
+   offered" conclusion is superseded). `render.php` ignores any stored hover gradient while the swap
+   is active rather than silently reappearing. **`itemColourCurrentGradient` remains genuinely absent**
+   — Current has no smart-contrast toggle to gate against in the first place, so this specific
+   commit did not touch it; do not assume it shipped too. The same reasoning extends to Current.
    ⚠ **This is a TEXT-row boundary, not a general one — the item BACKGROUND row deliberately gets a
    full three-state gradient set (`itemBgGradient` / `itemBgHoverGradient` /
    `itemBgCurrentGradient`).** A background gradient has nothing to contrast-test against; it IS the
