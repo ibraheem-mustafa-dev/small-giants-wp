@@ -113,14 +113,20 @@ BLIND_SPOT_KINDS = {
     'root_class_literal', 'uid_prefix', 'wp_block_selector', 'keyframes_or_details_name',
     'php_identifier',
 }
+# ⚠ NO `\b` AFTER A HYPHENATED NAME. In a regex a hyphen is a non-word character, so `\b`
+# matches BETWEEN `menu` and a following `-`: `sgs/nav-menu\b` also matches inside
+# `sgs/nav-menu-anything`. Same bug class `migrate-orchestrator-rename.py` documents
+# (`\borchestrator\.py\b` matching inside `sgs-clone-orchestrator.py`). `_END` is a
+# negative lookahead for any slug character instead — `--self-test` asserts it.
+_END = r'(?![a-zA-Z0-9_-])'
 LITERAL_PATTERNS = [
     ('bem_element',              re.compile(r'sgs-nav-menu__[a-z0-9-]+')),
     ('root_class_literal',       re.compile(r'''['"]sgs-nav-menu['"]''')),
-    ('wp_block_selector',        re.compile(r'wp-block-sgs-nav-menu\b')),
+    ('wp_block_selector',        re.compile(r'wp-block-sgs-nav-menu' + _END)),
     ('keyframes_or_details_name', re.compile(r'sgs-nav-menu-(?:submenu|accordion)[a-z0-9-]*')),
     ('uid_prefix',               re.compile(r'''['"]sgs-nav-menu-['"]''')),
     ('php_identifier',           re.compile(r'\bsgs_nav_menu_[a-z_]+')),
-    ('block_slug',               re.compile(r'sgs/nav-menu\b')),
+    ('block_slug',               re.compile(r'sgs/nav-menu' + _END)),
 ]
 
 
@@ -164,7 +170,7 @@ def iter_instances(text: str):
     `gridTemplateColumns`, ...) are never mishandled. Self-closing comments never push a
     level, which is what keeps `<!-- wp:sgs/nav-menu /-->` from swallowing its siblings.
 
-    Yields: (start, end, attrs|None, ancestors:list[str], raw_attr_span|None)
+    Yields: (start, end, attrs|None, ancestors:list[str], raw_attr_span|None, unparseable:bool)
     """
     stack: list[str] = []
     for m in _BLOCK_TOKEN_RE.finditer(text):
@@ -189,9 +195,12 @@ def iter_instances(text: str):
                     attrs, attr_span = obj, (idx, end)
             except json.JSONDecodeError:
                 attrs, attr_span = None, None
+        # An opening brace that did not decode to a dict. Computed HERE, from the real
+        # parse, so --self-test exercises the same logic the survey reports.
+        unparseable = brace != -1 and attrs is None
 
         if name == SOURCE_BLOCK:
-            yield m.start(), m.end(), attrs, list(stack), attr_span
+            yield m.start(), m.end(), attrs, list(stack), attr_span, unparseable
 
         if not self_closing:
             stack.append(name)
@@ -206,14 +215,13 @@ def survey_instances():
     rows = []
     for f in iter_theme_files():
         text = f.read_text(encoding='utf-8', errors='replace')
-        for start, _end, attrs, ancestors, attr_span in iter_instances(text):
+        for start, _end, attrs, ancestors, _span, unparseable in iter_instances(text):
             line = text.count('\n', 0, start) + 1
             rows.append({
                 'file': f,
                 'line': line,
                 'attrs': attrs,
-                'unparseable': attrs is None and attr_span is None
-                               and '{' in text[start:_end],
+                'unparseable': unparseable,
                 'ancestors': ancestors,
                 'route': route_for(ancestors),
             })
@@ -411,6 +419,113 @@ def report_survey() -> int:
     return 0
 
 
+# ── Self-test ──────────────────────────────────────────────────────────────────────────
+#
+# Every fixture below is a shape the REAL theme files do not happen to contain today, which
+# is exactly why each one needs planting: a census that has only ever run against the tree
+# it describes reports its own blind spots as "clean". Each case names the specific parser
+# behaviour it pins, so a failure says which rule broke rather than just "something".
+
+_ROUTE_CASES = [
+    ('top-level instance routes to the bar',
+     '<!-- wp:sgs/nav-menu {"ref":0} /-->',
+     [TARGET_BAR]),
+    ('direct child of the drawer routes to the drawer',
+     '<!-- wp:sgs/nav-drawer --><!-- wp:sgs/nav-menu {"ref":0} /--><!-- /wp:sgs/nav-drawer -->',
+     [TARGET_DRAWER]),
+    ('nested TWO deep inside the drawer still routes to the drawer (ancestor, not parent)',
+     '<!-- wp:sgs/nav-drawer --><!-- wp:sgs/container --><!-- wp:sgs/nav-menu /-->'
+     '<!-- /wp:sgs/container --><!-- /wp:sgs/nav-drawer -->',
+     [TARGET_DRAWER]),
+    ('a SELF-CLOSING drawer must not push a level: its later sibling is a bar instance',
+     '<!-- wp:sgs/nav-drawer /--><!-- wp:sgs/nav-menu {"ref":0} /-->',
+     [TARGET_BAR]),
+    ('the drawer CLOSER must pop: an instance after the closed drawer is a bar instance',
+     '<!-- wp:sgs/nav-drawer --><!-- wp:sgs/nav-menu /--><!-- /wp:sgs/nav-drawer -->'
+     '<!-- wp:sgs/nav-menu {"gap":"28px"} /-->',
+     [TARGET_DRAWER, TARGET_BAR]),
+    ('a self-closing drawer carrying attributes must not push a level either',
+     '<!-- wp:sgs/nav-drawer {"drawerRef":"x/y"} /--><!-- wp:sgs/nav-menu /-->',
+     [TARGET_BAR]),
+    ('a prefix-colliding slug is NOT an instance of sgs/nav-menu',
+     '<!-- wp:sgs/nav-menu-extra {"ref":0} /-->',
+     []),
+    ('the real pattern shape: header bar + sibling drawer, in one file',
+     '<!-- wp:sgs/site-header --><!-- wp:sgs/site-header-row -->'
+     '<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->'
+     '<!-- /wp:sgs/site-header-row --><!-- /wp:sgs/site-header -->'
+     '<!-- wp:sgs/nav-drawer --><!-- wp:sgs/nav-menu {"ref":0} /--><!-- /wp:sgs/nav-drawer -->',
+     [TARGET_BAR, TARGET_DRAWER]),
+]
+
+# (kind, text, expected match count)
+_LITERAL_CASES = [
+    ('block_slug',        "'sgs/nav-menu'",                 1),
+    ('block_slug',        'sgs/nav-menu-extra',             0),   # the \b bug: must NOT match
+    ('block_slug',        'sgs/nav-menus',                  0),
+    ('block_slug',        'sgs/nav-bar-menu',               0),   # the Step 2 target name
+    ('block_slug',        'sgs/nav-drawer-menu',            0),   # the Step 2 target name
+    ('wp_block_selector', '.wp-block-sgs-nav-menu .x',      1),
+    ('wp_block_selector', '.wp-block-sgs-nav-menu-extra',   0),   # the \b bug: must NOT match
+    ('bem_element',       '.sgs-nav-menu__link',            1),
+    ('bem_element',       '.sgs-nav-bar-menu__link',        0),   # renamed root: must NOT match
+    ('root_class_literal', "array( 'sgs-nav-menu', $uid )", 1),
+    ('uid_prefix',        "$uid = 'sgs-nav-menu-' . x",     1),
+]
+
+
+def _route_failures(route_fn) -> list[str]:
+    fails = []
+    for label, text, expected in _ROUTE_CASES:
+        got = [route_fn(anc) for *_, anc, _span, _unp in iter_instances(text)]
+        if got != expected:
+            fails.append(f'{label}: expected {expected}, got {got}')
+    return fails
+
+
+def self_test() -> int:
+    failures: list[str] = []
+
+    # 1. Routing, against the real router.
+    failures += _route_failures(route_for)
+
+    # 2. Unparseable JSON is reported, never crashes, never silently becomes "no attrs".
+    rows = list(iter_instances('<!-- wp:sgs/nav-menu {"ref":0 /-->'))
+    if len(rows) != 1 or not rows[0][5] or rows[0][2] is not None:
+        failures.append(f'malformed JSON: expected one row flagged unparseable, got {rows!r}')
+    rows = list(iter_instances('<!-- wp:sgs/nav-menu /-->'))
+    if len(rows) != 1 or rows[0][5]:
+        failures.append('a bare self-closing instance with no attrs must NOT be flagged unparseable')
+
+    # 3. Literal patterns, including the hyphen-boundary regression.
+    pats = dict(LITERAL_PATTERNS)
+    for kind, text, want in _LITERAL_CASES:
+        got = len(pats[kind].findall(text))
+        if got != want:
+            failures.append(f'literal {kind} on {text!r}: expected {want} match(es), got {got}')
+
+    # 4. NEGATIVE CONTROL ON THE SELF-TEST ITSELF. A suite that cannot fail proves nothing,
+    #    and a suite whose fixtures all happen to agree with a broken router is vacuous.
+    #    Two sabotaged routers must each be CAUGHT; if either passes clean, the fixtures do
+    #    not discriminate and every green result above is meaningless.
+    for name, broken in (('always-bar', lambda _anc: TARGET_BAR),
+                         ('parent-only (ignores deeper ancestors)',
+                          lambda anc: TARGET_DRAWER if anc[-1:] == [DRAWER_BLOCK] else TARGET_BAR)):
+        if not _route_failures(broken):
+            failures.append(f'NEGATIVE CONTROL FAILED: the sabotaged "{name}" router passed '
+                            f'every routing fixture — the fixtures do not discriminate')
+
+    total = len(_ROUTE_CASES) + 2 + len(_LITERAL_CASES) + 2
+    if failures:
+        print(f'[nav-menu-split --self-test] FAIL — {len(failures)} of {total} check(s):')
+        for f in failures:
+            print(f'   - {f}')
+        return 1
+    print(f'[nav-menu-split --self-test] OK — {total} check(s) passed, including 2 negative '
+          f'controls proving the routing fixtures reject a broken router.')
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description='Census + codemod for the sgs/nav-menu bar/drawer split.')
@@ -421,8 +536,13 @@ def main() -> int:
                       help='Rewrite theme pattern instances. Dry-run unless --apply.')
     mode.add_argument('--check', action='store_true',
                       help='Gate: non-zero exit while any sgs/nav-menu instance remains.')
+    mode.add_argument('--self-test', action='store_true',
+                      help='Run planted fixtures + negative controls against the parser.')
     ap.add_argument('--apply', action='store_true', help='With --fix, actually write.')
     args = ap.parse_args()
+
+    if args.self_test:
+        return self_test()
 
     if args.fix or args.check:
         ok, missing = targets_exist()
