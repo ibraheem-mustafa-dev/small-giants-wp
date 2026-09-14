@@ -28,7 +28,8 @@ class Form_REST_Submission {
 	 *
 	 * Guard order (do not reorder without security review):
 	 *   1. Honeypot trap     — return fake 200.
-	 *   2. Form-config fetch — transient.
+	 *   2. Form-config fetch — transient; refuse 503 if unresolvable (FR-42-0 — never
+	 *                          guess requireLogin true or false when the config is missing).
 	 *   3. validate_fields() — 400/413 on malformed payload.
 	 *   4. Require-login     — 401 when form is login-gated.
 	 *   5. check_rate_limit  — 429 when IP quota exceeded.
@@ -56,9 +57,24 @@ class Form_REST_Submission {
 		}
 
 		// 2. Retrieve cached form configuration (set by render.php, lives 24 hours).
-		$form_config    = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
-		$require_login  = is_array( $form_config ) ? (bool) ( $form_config['requireLogin'] ?? false ) : false;
-		$rate_limit_max = is_array( $form_config ) ? absint( $form_config['rateLimit'] ?? 5 ) : 5;
+		// FR-42-0: a page-cache layer (e.g. LiteSpeed on the canary) can serve a page
+		// without re-running render.php, so this transient can be cold even for a
+		// real, valid form. Refuse the submission outright rather than guessing
+		// requireLogin true or false — a silent default-false here was a live
+		// fail-open security defect (a login-gated form became anonymously
+		// submittable with no error, no log line, nothing).
+		$form_config = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
+
+		if ( ! is_array( $form_config ) ) {
+			return new \WP_Error(
+				'form_config_unavailable',
+				__( 'This form could not be submitted right now. Please try again shortly.', 'sgs-blocks' ),
+				[ 'status' => 503 ]
+			);
+		}
+
+		$require_login  = (bool) ( $form_config['requireLogin'] ?? false );
+		$rate_limit_max = absint( $form_config['rateLimit'] ?? 5 );
 
 		// 3. Schema-level payload validation runs BEFORE the login check so a
 		// 400 response cannot be used to probe whether a form requires login.

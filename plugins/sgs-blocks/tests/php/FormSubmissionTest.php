@@ -318,4 +318,68 @@ class FormSubmissionTest extends TestCase {
             'class-form-activator.php must create/reference the form submissions DB table.'
         );
     }
+
+    // ── FR-42-0: fail-closed requireLogin resolution ──────────────────────────
+
+    /**
+     * Regression control for the live fail-open defect: an unresolvable form-config
+     * transient must never silently coerce to `requireLogin = false`. The old code
+     * read `is_array( $form_config ) ? ... : false` — a ternary whose false branch
+     * IS the vulnerability. Assert that shape is gone.
+     */
+    public function test_handle_submit_does_not_default_require_login_to_false(): void {
+        $content = $this->read_forms_file( 'class-form-rest-submission.php' );
+
+        $this->assertStringNotContainsString(
+            "is_array( \$form_config ) ? (bool) ( \$form_config['requireLogin'] ?? false ) : false",
+            $content,
+            'class-form-rest-submission.php must not silently default requireLogin to false when the form-config transient is unresolvable (FR-42-0 fail-open regression).'
+        );
+    }
+
+    /**
+     * Positive control: the fix refuses the submission (503) when the config
+     * transient does not resolve to an array, before requireLogin/rateLimit are
+     * ever read from it.
+     */
+    public function test_handle_submit_refuses_when_form_config_unresolvable(): void {
+        $content = $this->read_forms_file( 'class-form-rest-submission.php' );
+
+        $this->assertStringContainsString(
+            'if ( ! is_array( $form_config ) )',
+            $content,
+            'class-form-rest-submission.php must guard on an unresolvable form-config transient.'
+        );
+
+        $this->assertStringContainsString(
+            "'status' => 503",
+            $content,
+            'class-form-rest-submission.php must refuse with a 503 status when form config cannot be resolved (FR-42-0).'
+        );
+
+        $this->assertStringContainsString(
+            'form_config_unavailable',
+            $content,
+            "class-form-rest-submission.php must return the 'form_config_unavailable' WP_Error code on unresolved config."
+        );
+    }
+
+    /**
+     * The unresolved-config guard must run before requireLogin/rateLimit are read
+     * from $form_config, so neither value is ever computed from a non-array.
+     */
+    public function test_form_config_guard_precedes_require_login_read(): void {
+        $content = $this->read_forms_file( 'class-form-rest-submission.php' );
+
+        $guard_pos          = strpos( $content, 'if ( ! is_array( $form_config ) )' );
+        $require_login_pos  = strpos( $content, '$require_login  = (bool)' );
+
+        $this->assertNotFalse( $guard_pos, 'Unresolved-config guard not found.' );
+        $this->assertNotFalse( $require_login_pos, 'requireLogin read not found.' );
+        $this->assertLessThan(
+            $require_login_pos,
+            $guard_pos,
+            'The unresolved-config guard must run before requireLogin is read from $form_config.'
+        );
+    }
 }
