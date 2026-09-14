@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel } from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -174,6 +174,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColourHoverGradient,
 		borderStyle,
 		borderWidth,
+		backgroundColour,
+		backgroundColourGradient,
+		backgroundColourHover,
+		backgroundColourHoverGradient,
 	} = attributes;
 
 	// `maxWidth` AND `maxHeight` are both TIER OBJECTS as of Spec 35 pass 2
@@ -245,6 +249,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const mobileUrl  = attributes.logoUrlMobile;
 
 	const hasAnimation = animationStyle && 'none' !== animationStyle;
+
+	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
+	// against the block's own background. When the background is a gradient,
+	// the flat backgroundColour is not rendered, so skip the check in that case.
+	const responsiveLogoContrastAgainst =
+		attributes.backgroundColour && ! attributes.backgroundColourGradient
+			? attributes.backgroundColour
+			: '';
 
 	return (
 		<>
@@ -504,6 +516,39 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</PanelBody>
 
+				{ /* ── Background colour (D609/D618 uniformity — SgsColourPanel is the
+				   ONLY sanctioned colour control). Decision 1, 2026-09-14: gives the
+				   logo's own background tile independent control whether it sits in
+				   the site header or inside sgs/nav-drawer. ── */ }
+				<SgsColourPanel
+					rows={ [
+						{
+							key: 'background',
+							label: __( 'Background colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: backgroundColour,
+									onChange: ( val ) => setAttributes( { backgroundColour: val ?? '' } ),
+									gradientValue: backgroundColourGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { backgroundColourGradient: val ?? '' } ),
+								},
+								{
+									key: 'hover',
+									label: __( 'Hover', 'sgs-blocks' ),
+									value: backgroundColourHover,
+									onChange: ( val ) => setAttributes( { backgroundColourHover: val ?? '' } ),
+									gradientValue: backgroundColourHoverGradient,
+									onGradientChange: ( val ) =>
+										setAttributes( { backgroundColourHoverGradient: val ?? '' } ),
+								},
+							],
+						},
+					] }
+				/>
+
 				{ /* ── Panel 5: Border ── */ }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
@@ -523,6 +568,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							  gradientValue: borderColourHoverGradient,
 							  onGradientChange: ( val ) => setAttributes( { borderColourHoverGradient: val ?? '' } ) },
 						] }
+						contrastAgainst={ responsiveLogoContrastAgainst }
 						radiusValues={ {
 							base: attributes.borderRadius?.desktop ?? {},
 							tablet: attributes.borderRadius?.tablet ?? {},

@@ -45,8 +45,8 @@ defined( 'ABSPATH' ) || exit;
 // other block's render.php has had a chance to load it. Requiring the
 // defining file directly, here, removes the load-order dependency.
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
-$sgs_tor_padding_tiers  = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
-$sgs_tor_margin_tiers   = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
+$sgs_tor_padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
+$sgs_tor_margin_tiers    = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 $sgs_tor_padding_desktop = is_array( $sgs_tor_padding_tiers['desktop'] ) ? $sgs_tor_padding_tiers['desktop'] : array();
 $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_tor_margin_tiers['desktop'] : array();
 
@@ -85,6 +85,14 @@ $border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
 $border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
 $border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+
+// Background colour (Decision 1, 2026-09-14 — SGS nav-drawer/logo colour work).
+// Mirrors sgs/brand-strip's root background pair exactly: gradient (via
+// background-image) wins over the flat colour when set+valid, base + hover.
+$bg_colour                = isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '';
+$bg_colour_gradient       = isset( $attributes['backgroundColourGradient'] ) ? (string) $attributes['backgroundColourGradient'] : '';
+$bg_colour_hover          = isset( $attributes['backgroundColourHover'] ) ? (string) $attributes['backgroundColourHover'] : '';
+$bg_colour_hover_gradient = isset( $attributes['backgroundColourHoverGradient'] ) ? (string) $attributes['backgroundColourHoverGradient'] : '';
 
 // Validate animationStyle against allowed values.
 $allowed_animation_styles = array( 'none', 'draw-on-load', 'hover-redraw', 'scroll-trigger' );
@@ -240,6 +248,18 @@ $border_colour_css = sgs_border_states_css(
 );
 if ( '' !== $border_colour_css ) {
 	$scoped_css[] = $border_colour_css;
+}
+
+// --- Background colour (Decision 1, 2026-09-14) — gradient wins over flat
+// colour when set+valid (sgs_background_paint_decl()), base + hover on the
+// same wrapper selector. Mirrors sgs/brand-strip's root background pair. ---
+$bg_decl = sgs_background_paint_decl( $bg_colour, $bg_colour_gradient );
+if ( '' !== $bg_decl ) {
+	$scoped_css[] = "{$sel}{" . $bg_decl . ';}';
+}
+$bg_hover_decl = sgs_background_paint_decl( $bg_colour_hover, $bg_colour_hover_gradient );
+if ( '' !== $bg_hover_decl ) {
+	$scoped_css[] = sgs_hover_state_rules( $sel, $bg_hover_decl, ':focus-within' );
 }
 
 $border_radius_tiers      = sgs_border_radius_tiers( $attributes );
