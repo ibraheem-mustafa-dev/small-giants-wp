@@ -1,5 +1,92 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1060 [ROUTINE] — Drawer colour defaults + drawer submenu panel settings (supersedes FR-41-36's drawer rows and `drawerBg` default)
+
+**2026-09-14, owner-ruled.** Evidence and every quoted rule:
+`.claude/reports/2026-09-14-nav-menu-split-decisions-review.md`.
+
+**Root cause (proven two ways).** `nav-drawer/block.json::drawerBg` defaults to `primary`, against
+FR-41-36's own *"the drawer explicitly does NOT default to a brand/primary-colour-filled whole
+panel"*. The 2026-09-14 redesign comment in `nav-menu-submenu-css.php` records that nested rows got
+a fixed cream surface *because* the backdrop was that brand default. The hardcoded drawer
+`color:inherit` (0,3,0) — written only to make the caret match the link — makes `itemColour` do
+nothing inside the drawer. Every compensating rule traces back to the non-compliant default.
+
+**Rulings:**
+1. **`drawerBg` defaults to `surface`.** Owner asked whether brand colour builds more impression;
+   evidence: Claude Design drafted a brand-fill drawer for 1 of 3 (Indus Foods, `#0A7EA8`) and a
+   neutral one for 2 of 3 (Eye Care `#FAF8F5` = page; generic Mega Menu `var(--bg)`). A default
+   applies to every client who never chooses, so it must be the one that cannot fail on contrast.
+   Brand fill stays one click away via the existing `solid-brand-light` variant, and a cloned draft
+   carries its own drawer colour.
+2. **Drawer top-level items are transparent at rest**, blending with the drawer. Supersedes
+   FR-41-36's drawer top-level `bg=surface-alt`, which was never wired. Owner clarified FR-41-36's
+   original intent: top-level items blend at rest and submenu rows *flip* to a background at rest —
+   also superseded.
+3. **Drawer nested submenu rows are transparent at rest** (background on hover only), matching both
+   Claude Design nested drawers. Supersedes FR-41-36's nested `bg=surface` and the 2026-09-14 fixed
+   cream surface.
+4. **Every drawer paint default is a zero-specificity `:where()` default**, never a hardcoded rule that
+   beats a client's setting — this is what fixes `itemColour` in the drawer. Owner: the adaptive
+   colours are "supposed to be a default not hardcoded".
+5. **No contrast enforcement by default** (owner, 2026-09-14: "shouldn't have contrast checks that
+   enforce anything by default"). `itemSmartContrast` stays opt-in.
+6. **`sgs/nav-drawer-menu` does not offer `submenuMinWidth`, `submenuBorderRadius`, `submenuShadow` or
+   `submenuShadowColour`.** None appears on a nested drawer list in either Claude Design nested drawer,
+   and all four do nothing in the drawer today.
+7. **`submenuPadding` stays on the drawer block and is made to work** — both nested Claude Design
+   drawers use bottom-heavy padding (`0 0 16px`, `0 6px 16px`), and today's hardcoded `padding:0`
+   blocks it. Background and the border family stay (border width is the on-switch — a deliberate
+   gate). Sub-item indent is a missing drawer-native control, not scoped here.
+8. **Hide the text-indent control on both nav blocks.** `itemTextIndent` / `submenuTextIndent` are
+   unwired (`sgs_typography_css_rule()` needs a fourth argument neither call site passes), and a
+   first-line indent has no use on single-line nav links. Attributes stay declared.
+9. **A gradient renders by default; it is ignored only when auto contrast adaptation is on** (off by
+   default). `submenuBgGradient` is currently discarded by the 2026-09-12 fallback in the default
+   state, and separately cancelled in the drawer by a `background:` shorthand. Fixed before Step 3,
+   together with the classifier defects, and designed with rules 2–4 because they touch the same rule.
+
+**Follow-ups:** FR-41-36 needs amending to record rulings 1–3. `featuredColour` in the drawer is
+probably overridden by the same `color:inherit` rule — not individually verified.
+
+## D1059 [ROUTINE] — Split `sgs/nav-menu` into `sgs/nav-bar-menu` + `sgs/nav-drawer-menu`
+
+**2026-09-14, owner-ruled.** Plan: `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md`.
+Evidence: `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` and
+`.claude/reports/2026-09-14-nav-menu-split-decisions-review.md`.
+
+**Why.** One block renders two genuinely different things — a flat `<ul>` bar with dropdowns, and a
+nested `<details>` accordion inside `sgs/nav-drawer` — from one 156-attribute schema and an 824-line
+`edit.js`. Single attribute names carried two meanings (`itemBorderWidth` = item underline on the bar,
+row separator in the drawer), resolved by a contextual label swap (D1041 / FR-41-37). The owner
+reported bugs as hard to localise, discussion needing disambiguation every time, and every upgrade
+being messy. Framework is pre-production (D293), so migration cost is not an objection.
+
+**Rulings:**
+1. **The block name is the namespace — no attribute renaming.** Once the forks are separate blocks
+   each attribute has one meaning.
+2. **Separate BEM roots** `.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`. Recognition resolves a
+   root class by `"sgs/" + class[4:]` against `blocks.slug`, strictly one-to-one with no hook for a
+   carve-out; the 13 `sgs/form-field-*` blocks share `.sgs-form-field__`, `sgs/form-field` is not
+   registered, and the whole family is invisible to the cloning pipeline. `lint-naming-conventions.py`
+   does not catch a shared root.
+3. **`isDrawerInstance`, the PHP drawer fork and `usesContext` are deleted**; each block is what it is.
+   Variants were rejected: a variant is an operator-set attribute, while today's fork is derived from
+   position and cannot be set wrong.
+4. **`sgs/nav-drawer-menu` declares `"ancestor": ["sgs/nav-drawer"]`.**
+5. **Placement is measured, not inferred** (classifier, commit `ac027faa6`): BAR 32, DRAWER 9, BOTH 96,
+   16 needing a paired value. `collapsePoint` is **bar-only** — its drawer rule loses the cascade.
+6. **`DropdownSettingsPanel` is split, not moved**: it holds `navLabel` and `itemSmartContrast` (both
+   blocks) beside bar-only dropdown settings.
+7. **`check-ungated-paint-rules.py::HARD_FAIL_BLOCKS` must list both new slugs**, or hard-fail
+   enforcement silently drops to warn-only. `mega-panel/view.js`'s hardcoded
+   `.sgs-nav-menu__mega-*` selectors and `class-sgs-nav-menu-source.php`'s slug allowlist must be
+   updated in the same pass.
+8. **Pattern migration uses the dated codemod** `scripts/migrations/2026-09-14-nav-menu-split.py`
+   (routing by nesting inside `sgs/nav-drawer`), not `migrate-core-blocks/driver.py`, which maps one
+   source to one target, sees no ancestor chain, and silently skips four of the ten pattern files via
+   its `HANDS_OFF` list.
+
 ## D1058 [ROUTINE] — Universal-pipeline upgrade Piece 2: draft-only render-and-measure primitive, sc-for identity does NOT survive rendering
 
 **2026-09-14.** `computed-parity.js` measures draft-vs-clone fidelity AFTER a clone exists
