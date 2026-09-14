@@ -114,6 +114,57 @@ def test_unknown_token_routes_to_layout_signature() -> None:
     print("  PASS  unknown-token: layout-signature fall-through with is_gap_candidate=True")
 
 
+# --- Tier 1 additions (2026-09-14, BEM-recognition brainstorm doc Q1) ------
+
+def test_tailwind_and_shadcn_component_tokens() -> None:
+    """Tier 1: both previously-empty slot_maps now recognise real component
+    names, not just default_block=container for everything."""
+    r = mod.convert_class("card", source_convention_hint="Tailwind utility")
+    assert r.block == "card-grid", f"got {r.block}"
+    assert r.is_slot_map_hit, "card should be a genuine slot_map hit, not a default fallback"
+    r2 = mod.convert_class("badge", source_convention_hint="shadcn / Radix")
+    assert r2.block == "info-box", f"got {r2.block}"
+    assert r2.is_slot_map_hit
+    print("  PASS  tailwind+shadcn component tokens: card->card-grid, badge->info-box")
+
+
+def test_webflow_convention() -> None:
+    r = mod.convert_class("w-nav", source_convention_hint="Webflow")
+    assert r.source_convention == "Webflow", f"got {r.source_convention}"
+    assert r.block == "header", f"got {r.block}"
+    assert r.is_slot_map_hit
+    r2 = mod.convert_class("w-dyn-item", source_convention_hint="Webflow")
+    assert r2.block == "card-grid", f"got {r2.block}"
+    print(f"  PASS  webflow: w-nav -> {r.sgs_bem_class}, w-dyn-item -> {r2.sgs_bem_class}")
+
+
+def test_elementor_divi_convention() -> None:
+    r = mod.convert_class("elementor-widget-button", source_convention_hint="Elementor / Divi")
+    assert r.source_convention == "Elementor / Divi", f"got {r.source_convention}"
+    assert r.block == "button", f"got {r.block}"
+    assert r.is_slot_map_hit
+    r2 = mod.convert_class("et_pb_footer", source_convention_hint="Elementor / Divi")
+    assert r2.block == "footer", f"got {r2.block}"
+    print(f"  PASS  elementor/divi: elementor-widget-button -> {r.sgs_bem_class}, et_pb_footer -> {r2.sgs_bem_class}")
+
+
+def test_data_slot_resolves_hashed_class() -> None:
+    """Tier 1e: a hashed/generated shadcn class carries zero signal in the
+    class string itself -- the data-slot attribute is the real identity."""
+    hashed_classes = ["sc-a1b2c3d4x5"]
+    out_without = mod.convert_class_signature(hashed_classes)
+    assert out_without["primary_is_slot_map_hit"] is False, (
+        f"expected no hit without data_slot: {out_without}"
+    )
+    out_with = mod.convert_class_signature(hashed_classes, data_slot="card")
+    assert out_with["primary_block"] == "card-grid", f"got {out_with['primary_block']}"
+    assert out_with["primary_is_slot_map_hit"] is True
+    # No matching vocabulary entry -> no-op, never a false hit.
+    out_unknown = mod.convert_class_signature(hashed_classes, data_slot="totally-unknown-slot")
+    assert out_unknown["primary_is_slot_map_hit"] is False
+    print("  PASS  data-slot: hashed class + data-slot='card' -> card-grid; unknown slot no-ops")
+
+
 def main() -> int:
     print("Spec 31 Phase 5c.2 + 5c.3 -- lingua_franca contract")
     test_sgs_bem_canonical_passthrough()
@@ -126,7 +177,12 @@ def main() -> int:
     test_round_trip_identity_for_sgs_bem()
     test_signature_no_false_rewrites_on_canonical_draft()
     test_unknown_token_routes_to_layout_signature()
+    test_tailwind_and_shadcn_component_tokens()
+    test_webflow_convention()
+    test_elementor_divi_convention()
+    test_data_slot_resolves_hashed_class()
     print("\nLINGUA-FRANCA-5C: PASS (5 rules + canonical passthrough + hashed gap + no-false-rewrites)")
+    print("LINGUA-FRANCA-TIER-1: PASS (Webflow + Elementor/Divi + component tokens + data-slot)")
     return 0
 
 

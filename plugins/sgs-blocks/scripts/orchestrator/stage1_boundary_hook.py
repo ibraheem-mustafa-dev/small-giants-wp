@@ -92,6 +92,12 @@ _Trace = _load_trace()
 _HEURISTIC_PATTERNS = [
     ("SGS WordPress",    re.compile(r"^sgs-[a-z]")),                   # sgs-prefixed
     ("Bootstrap 5",      re.compile(r"^(btn|card|navbar|alert|col|row)(-|$)")),
+    # Tier 1 (2026-09-14): Webflow/Elementor/Divi's prefixes are narrow and
+    # unambiguous -- tried BEFORE kebab-semantic's broad catch-all below,
+    # which would otherwise misclassify `elementor-widget-button`/`w-nav`
+    # as generic kebab-semantic and never reach the real rule's slot_map.
+    ("Webflow",          re.compile(r"^w-")),
+    ("Elementor / Divi", re.compile(r"^(elementor-widget-|et_pb_)")),
     ("Tailwind utility", re.compile(r"^[a-z]+-[0-9]+|^(flex|grid|hidden|truncate)$")),
     ("BEM",              re.compile(r"__|--")),                          # bare BEM seps
     ("kebab-semantic",   re.compile(r"^[a-z]+(-[a-z]+)+$")),
@@ -168,7 +174,14 @@ def enrich_boundary(
         return enriched
 
     convention = (classifier or heuristic_classify)(classes)
-    result = _lf.convert_class_signature(classes, source_convention_hint=convention)
+    # Tier 1 (2026-09-14): the element's data-slot attribute, when present
+    # (per-section-convention-voter.py::build_boundary threads it through as
+    # boundary["data_slot"]) -- shadcn/Radix's real identity signal for a
+    # hashed/generated class the string alone can't resolve.
+    data_slot = boundary.get("data_slot")
+    result = _lf.convert_class_signature(
+        classes, source_convention_hint=convention, data_slot=data_slot,
+    )
     enriched["source_convention"] = convention
     enriched["primary_sgs_bem"] = result["primary_sgs_bem"]
     enriched["primary_is_slot_map_hit"] = result["primary_is_slot_map_hit"]

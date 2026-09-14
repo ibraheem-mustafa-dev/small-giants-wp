@@ -118,6 +118,26 @@ def test_injected_classifier_takes_precedence() -> None:
     print("  PASS  injected-classifier: overrides heuristic when provided")
 
 
+# --- Tier 1 addition (2026-09-14, BEM-recognition brainstorm doc Q1) -------
+
+def test_data_slot_resolves_a_hashed_class_signature() -> None:
+    """A boundary carrying a hashed/generated class (CSS-in-JS output) plus
+    a real data-slot attribute -- per-section-convention-voter.py threads
+    the attribute through as boundary['data_slot'] -- resolves via the
+    attribute even though the class string itself carries zero signal."""
+    boundary = {
+        "section_id": "sec-shadcn-card",
+        "selector": "[data-slot=card]",
+        "class_signature": ["sc-a1b2c3d4x5"],
+        "data_slot": "card",
+    }
+    out = mod.enrich_boundary(boundary)
+    assert out["lingua_franca_skipped"] is False
+    assert out["primary_is_slot_map_hit"] is True, f"expected data-slot hit: {out}"
+    assert "sgs-card-grid" in out["primary_sgs_bem"], f"got {out['primary_sgs_bem']}"
+    print(f"  PASS  data-slot-resolves-hashed-class: primary={out['primary_sgs_bem']}")
+
+
 def main() -> int:
     print("Spec 31 Phase 5c.4 -- stage1_boundary_hook contract")
     test_canonical_sgs_bem_skipped()
@@ -126,7 +146,9 @@ def main() -> int:
     test_full_stage1_payload_enrichment()
     test_writes_back_to_staged_output()
     test_injected_classifier_takes_precedence()
+    test_data_slot_resolves_a_hashed_class_signature()
     print("\nSTAGE1-HOOK-5C.4: PASS (canonical skip + bootstrap convert + gap candidates + payload + writeback + injectable)")
+    print("STAGE1-HOOK-TIER-1: PASS (data-slot attribute resolves a hashed class signature)")
     return 0
 
 

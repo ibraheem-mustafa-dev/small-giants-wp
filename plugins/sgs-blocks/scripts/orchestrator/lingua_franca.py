@@ -11,14 +11,17 @@ convention to SGS-BEM at scrape time, per Spec 31 Â§8.1:
 
 The 16 known conventions live in uimax.naming_conventions. This
 module embeds STRUCTURED conversion rules (regex + slot-map) for the
-five highest-priority non-canonical conventions identified in the
-Phase 5c plan:
+highest-priority non-canonical conventions identified in the
+Phase 5c plan, plus two scraped-site conventions added 2026-09-14
+(BEM-recognition brainstorm doc Q1 Tier 1):
 
   - BEM (bare, no namespace)
   - Tailwind utility
   - Bootstrap 5 component
   - shadcn / Radix (Tailwind-shaped with data-slot attrs)
   - kebab-semantic (lowercase-hyphen semantic block names)
+  - Webflow (`w-`-prefixed classes)
+  - Elementor / Divi (`elementor-widget-*` / `et_pb_*` prefixes)
 
 For un-recognised classes, the converter falls through to the
 layout-signature path with `is_gap_candidate=true` flagged on the
@@ -89,14 +92,68 @@ _BEM_BARE = {
     "is_canonical_for_drafts": False,
 }
 
+# Tier 1 (2026-09-14, BEM-recognition brainstorm doc Q1): Tailwind component
+# libraries and shadcn primitives DO carry recognisable component-name tokens
+# even inside utility soup -- they were just never captured. Shared between
+# both rules below (identical vocabulary, same reasoning) rather than two
+# copies that could drift out of sync.
+_UTILITY_COMPONENT_SLOT_MAP = {
+    "card":         "card-grid",
+    "dialog":       "modal",
+    "modal":        "modal",
+    "badge":        "info-box",
+    "alert":        "info-box",
+    "nav":          "header",
+    "footer":       "footer",
+    "hero":         "hero",
+    "accordion":    "accordion",
+    "tabs":         "tabs",
+}
+
 _TAILWIND_UTILITY = {
     "convention": "Tailwind utility",
     # property-scale or single-word utility
     "pattern": _re(r"^(?:(?P<variant>[a-z]+):)?(?P<property>[a-z][a-z0-9]*)(?:-(?P<scale>[a-z0-9.]+))?$"),
-    # Tailwind has no block semantics -- always lands in a generic container
-    # unless adjacent classes give a hint. We let the recogniser route by
-    # aggregating utilities into a layout-signature instead.
-    "slot_map": {},
+    # Tailwind has no block semantics for most utilities -- they land in a
+    # generic container unless the property token itself names a component
+    # (Tier 1: `card`, `badge`, `hero`, etc. -- see _UTILITY_COMPONENT_SLOT_MAP).
+    "slot_map": _UTILITY_COMPONENT_SLOT_MAP,
+    "default_block": "container",
+    "is_canonical_for_drafts": False,
+}
+
+_WEBFLOW = {
+    "convention": "Webflow",
+    # Every Webflow-generated class carries a `w-`-prefixed utility class
+    # (Tier 1). The accompanying `w-node-...` element ID is not a class and
+    # is irrelevant to this class-only rule.
+    "pattern": _re(r"^w-(?P<block>[a-z][a-z0-9]*(?:-[a-z0-9]+)*)$"),
+    "slot_map": {
+        "nav":          "header",
+        "slider":       "hero",
+        # Webflow's CMS collection-list pattern -- the most common
+        # repeating-card shape a scraped Webflow site will carry.
+        "dyn-list":     "card-grid",
+        "dyn-item":     "card-grid",
+    },
+    "default_block": "container",
+    "is_canonical_for_drafts": False,
+}
+
+_ELEMENTOR_DIVI = {
+    "convention": "Elementor / Divi",
+    # WordPress page-builder scrape targets. Elementor prefixes
+    # `elementor-widget-*`, Divi prefixes `et_pb_*` -- both predictable
+    # (Tier 1). One shared "block" group covers both prefixes.
+    "pattern": _re(r"^(?:elementor-widget-|et_pb_)(?P<block>[a-z][a-z0-9_-]*)$"),
+    "slot_map": {
+        "button":            "button",
+        "image-box":         "info-box",
+        "blurb":             "info-box",
+        "fullwidth_header":  "hero",
+        "menu":              "header",
+        "footer":            "footer",
+    },
     "default_block": "container",
     "is_canonical_for_drafts": False,
 }
@@ -124,9 +181,13 @@ _BOOTSTRAP = {
 
 _SHADCN = {
     "convention": "shadcn / Radix",
-    # shadcn ships Tailwind utilities + data-* primitives.
+    # shadcn ships Tailwind utilities + data-* primitives. Tier 1: the same
+    # component vocabulary as Tailwind (shadcn primitives use the same
+    # recognisable names) -- also reused by _try_data_slot() below for the
+    # actual data-slot-attribute signal, since that IS this convention's
+    # real identity per its own documented routing.
     "pattern": _re(r"^(?P<property>[a-z][a-z0-9-]+)$"),
-    "slot_map": {},
+    "slot_map": _UTILITY_COMPONENT_SLOT_MAP,
     "default_block": "container",
     "is_canonical_for_drafts": False,
     "data_slot_attrs": True,        # routing relies on data-* attrs, not class names
@@ -163,6 +224,16 @@ _SGS_BEM_CANONICAL = {
 RULES: list[dict] = [
     _SGS_BEM_CANONICAL,
     _BEM_BARE,
+    # Webflow/Elementor/Divi have narrow, unambiguous prefixes (`w-`,
+    # `elementor-widget-`/`et_pb_`) -- tried before the broader
+    # Bootstrap/kebab-semantic/Tailwind/shadcn rules so a genuine slot_map
+    # hit here is never shadowed by an earlier rule's syntactic (but
+    # non-hit) match on the same lowercase-hyphenated token. Matters mainly
+    # for the no-hint default path; when `heuristic_classify` (or the
+    # production classifier) names the convention, convert_class already
+    # reorders RULES to try the hinted rule first regardless of this order.
+    _WEBFLOW,
+    _ELEMENTOR_DIVI,
     _BOOTSTRAP,
     _KEBAB_SEMANTIC,
     _TAILWIND_UTILITY,
@@ -299,11 +370,48 @@ def convert_class(
     )
 
 
+def _try_data_slot(data_slot: str | None) -> ConversionResult | None:
+    """shadcn/Radix's real identity signal is a `data-slot` HTML attribute,
+    not a class name -- `_SHADCN`'s `data_slot_attrs` flag has said so since
+    this file's first version; Tier 1 (2026-09-14) is what actually reads it.
+
+    Looks the attribute VALUE up directly against the shared component
+    vocabulary (`_UTILITY_COMPONENT_SLOT_MAP`), since shadcn's own
+    `data-slot` values use the same component names (`data-slot="card"`,
+    `data-slot="dialog"`, ...). Returns None when there's no attribute or no
+    vocabulary hit -- callers must not treat that as a failure.
+    """
+    if not data_slot:
+        return None
+    mapped_block = _UTILITY_COMPONENT_SLOT_MAP.get(data_slot)
+    if mapped_block is None:
+        return None
+    return ConversionResult(
+        sgs_bem_class=_build_sgs_bem(mapped_block, None, None),
+        block=mapped_block,
+        source_class=f"[data-slot={data_slot}]",
+        source_convention="shadcn / Radix",
+        is_canonical_for_drafts=False,
+        is_slot_map_hit=True,
+        notes="mapped via data-slot attribute (shadcn's real identity signal)",
+    )
+
+
 def convert_class_signature(
     classes: list[str],
     source_convention_hint: str | None = None,
+    data_slot: str | None = None,
 ) -> dict:
     """Convert an entire class signature (e.g. a DOM element's classList).
+
+    `data_slot` (Tier 1, 2026-09-14): the element's `data-slot` HTML
+    attribute value, when present. Consulted once at the signature level
+    (not threaded into `_try_rule`/`convert_class`, which are per-class-token
+    functions) because it is an ELEMENT-level attribute, not a class. A
+    genuine data-slot hit is promoted to `primary` when the class-token pass
+    alone didn't produce a genuine slot-map hit -- this is exactly the case a
+    hashed/generated shadcn class (`sc-bdVaJa`) needs, since the class
+    string itself carries zero signal.
 
     Returns a dict carrying:
       - primary_sgs_bem:  the highest-confidence SGS-BEM class (the most
@@ -324,6 +432,12 @@ def convert_class_signature(
         primary = next((r for r in per_class if not r.is_gap_candidate), None)
     if primary is None and per_class:
         primary = per_class[0]
+    data_slot_result = _try_data_slot(data_slot)
+    if data_slot_result is not None:
+        per_class.append(data_slot_result)
+        equiv[data_slot_result.source_class] = data_slot_result.sgs_bem_class
+        if primary is None or not primary.is_slot_map_hit:
+            primary = data_slot_result
     return {
         "primary_sgs_bem":           primary.sgs_bem_class if primary else None,
         "primary_block":             primary.block if primary else None,

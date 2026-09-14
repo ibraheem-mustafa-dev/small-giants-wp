@@ -407,6 +407,12 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         "class_signature": class_signature,
         "candidate_block_slug": slug,
         "candidate_confidence": confidence,
+        # Tier 1 (2026-09-14, BEM-recognition brainstorm doc Q1): shadcn/
+        # Radix's real identity signal is a data-slot attribute, not a class
+        # name. Threaded through to stage1_boundary_hook.py::enrich_boundary
+        # -> lingua_franca.convert_class_signature's data_slot param. None
+        # for every other source -- harmless, `_try_data_slot()` no-ops on it.
+        "data_slot": node.get("data-slot"),
     }
 
 
