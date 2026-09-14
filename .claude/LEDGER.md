@@ -119,10 +119,10 @@ and the STOP-CATALOGUE S4 entry step 27 named but never added.
 
 ## Next-session orchestration plan
 
-**State recap:** the nav-menu/nav-drawer track is functionally done and archived. Four small
-items remain, none blocking, none urgent — this is cleanup, not a new phase.
+**State recap (updated 2026-09-14, D1049):** three of the four cleanup items are now closed.
+Only Task A remains, and it needs Bean specifically — no further orchestration possible.
 
-### Task A — Bean retests the drawer-burger click issue
+### Task A — Bean retests the drawer-burger click issue (STILL OPEN)
 **What:** confirm live whether the intermittent click-miss (2/3 real clicks failed to open the
 drawer in automated testing) still occurs now the duplicate-burger fix (D1047) has shipped.
 **Why:** D1047 is a proven, separate defect fix — NOT proven to be this issue's root cause.
@@ -131,45 +131,29 @@ not another Playwright run (automated testing already hit its ceiling here).
 **Depends on:** none. **Acceptance:** Bean reports pass/fail; if fail, dispatch a fresh
 `/systematic-debugging` investigation with his exact repro steps (browser, device, close path used).
 
-### Task B — real-keyboard ESC/mega-disclosure retest, second attempt
-**What:** the D1044 retest already fixed its own methodology (real Playwright keyboard input
-instead of `document.dispatchEvent`) and returned CLEAN on 5 configurations — this is genuinely
-closed, not open. (Corrected from an earlier LEDGER draft that still listed it open — see D1044
-in decisions.md for the full clean result.) No action needed unless Bean disputes it live.
+### Task B — real-keyboard ESC/mega-disclosure retest — CLOSED, no action
+Already clean on 5 configurations per D1044. Confirmed still correct 2026-09-14 — no work done.
 
-### Task C — file-size drift on `ColourRowExtras.js` / `edit.js`
-**What:** both still exceed the 250-line JS cap after D1048's split.
-**Why:** `ColourRowExtras.js` (244 lines, effectively at cap already) needs no further action.
-`edit.js` (821 lines) is DELIBERATELY over cap — its `colourRows` array must stay in-file for
-`scripts/inspector-scan/rules/31-golden-colour-control.js` to see it (owner ruling 3). This is a
-closed architectural decision, not residual drift — do not re-attempt splitting it further
-without first re-reading that rule and confirming it's changed.
-**Orchestration:** none needed — Bean should be told this is closed, not delegate it.
+### Task C — file-size drift on `ColourRowExtras.js` / `edit.js` — CLOSED, no action
+`ColourRowExtras.js` (244 lines) is at cap; `edit.js`'s overage is a documented owner ruling
+(colourRows must stay in-file for the golden-colour-control gate to see it), now formally
+recorded as STOP-CATALOGUE E25 (see Task D). Confirmed still correct — no split attempted.
 
-### Task D — add the `colourRows` atomicity / two-corpus-blindness STOP-CATALOGUE entry
-**What:** step 27's own audit named a new structural-defence entry that documents why
-`colourRows` must stay a single literal array (the golden-colour-control gate can't see across
-files) — never added.
-**Why:** without it, a future session may re-attempt the `edit.js` split and silently blind that
-gate again.
-**Orchestration:**
-- Execution: delegated (subagent) — Sonnet, single-agent.
-- Dispatch pattern: single `wp-sgs-developer` dispatch.
-- Brief: read `.claude/STOP-CATALOGUE.md`'s D101 carry-forward ritual in full first (uncapped,
-  3275 lines — grep for structure, don't read blind), draft ONE new entry in the existing
-  format documenting the golden-colour-control single-file-visibility constraint, run the
-  carry-forward count-check (entries after ≥ entries before), then `handoff-preflight.py --check`.
-- Depends on: none. Parallel with: Task A (different files).
-- /qc gate after: no — mechanical doc addition, the carry-forward count-check IS the gate.
-- **Acceptance:** `handoff-preflight.py --check` passes with the STOP count one higher than
-  today's baseline (280 → 281), and `edit.js`'s own docblock cross-references the new entry.
+### Task D — add the `colourRows` atomicity STOP-CATALOGUE entry — DONE 2026-09-14 (D1049)
+Added `.claude/STOP-CATALOGUE.md` E25 (`STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-SPLIT-LITERAL-
+ARRAY`), bulleted-style so the floor extractor counts it. `handoff-preflight.py --check`
+confirmed 280 → 281 STOPs before/after. Cross-referenced from `edit.js`'s own docblock. Done
+directly inline (not delegated — the task was small enough that a subagent round-trip cost more
+than doing it), avoiding the session's own recurring subagent-backgrounding failure mode.
 
-### Dependency graph
-```
-Task A (Bean, inline) ---- independent
-Task D (subagent, Sonnet) ---- independent, can run any time
-Tasks B and C: already closed / closed-by-decision — no work needed
-```
+### Remaining
+Only Task A needs anyone's attention, and it needs Bean, not a subagent. No dependency graph
+needed — one item, no orchestration left to plan.
+
+**Also surfaced, not actioned:** `decisions.md`, Spec 36, and Spec 41 all scored below the
+project's normal doc-quality bar (docscore run earlier this session) — pre-existing size/
+structure debt, not caused by anything shipped in the nav-menu track. Worth a dedicated cleanup
+session if Bean wants one; not urgent, not blocking anything.
 
 ### Methodology guardrails
 See "Methodology guardrails (carried forward — all still true)" above — unchanged, still binding.

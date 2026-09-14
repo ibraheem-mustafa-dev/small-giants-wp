@@ -26,6 +26,9 @@
  * 2026-09-11 (Spec 41 step 13): the detector resolves a `fillRow`/`textRow` CALL
  * natively via `describeRow()`, which is a different question from the corpus
  * limit above — the call site is what has to stay here, not the builder.
+ * See `.claude/STOP-CATALOGUE.md` E25 (STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-
+ * SPLIT-LITERAL-ARRAY) — this file staying over the 250-line cap is a recorded
+ * structural exception, not drift.
  *
  * @package SGS\Blocks
  */

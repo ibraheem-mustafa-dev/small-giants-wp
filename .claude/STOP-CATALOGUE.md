@@ -3273,3 +3273,33 @@ specific and confident.
 **D101 carry-forward receipt for E24.** Two STOP entries added (narrative `⛔ **STOP-…**` style,
 matching E15-E23), zero removed, zero reworded, zero ritual questions touched. Ritual questions
 in §C unchanged. STOP-bullet count: 29 before this session, 31 after.
+
+### E25. Earned 2026-09-14 — Spec 41 nav-menu file-size-cap closeout (D1048): a split can blind a cross-file detector
+
+- **STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-SPLIT-LITERAL-ARRAY.** `sgs/nav-menu`'s `edit.js`
+  hit the project's 250-line JS cap and most of its content was split into sibling modules
+  (`ColourRowExtras.js`, `SubmenuBurgerTreatments.js`, `ItemSeparatorPanel.js`,
+  `useItemHoverContrast.js`) — but the `colourRows` array stayed in `edit.js` on purpose, and
+  must stay there indefinitely. `scripts/inspector-scan/rules/31-golden-colour-control.js`
+  resolves a colour row's declared state count by reading a literal `ArrayExpression` (or a
+  `fillRow()`/`textRow()` call it can statically describe) in the SAME file it is scanning, or in
+  `src/components/`. It does not follow imports, does not merge ASTs across files, and does not
+  error when the array it expects isn't there — it simply finds nothing to check. Moving
+  `colourRows` to a sibling file to satisfy the line-count cap would not fail the build, would not
+  fail the gate, and would not look different in a diff review; the gate would just silently stop
+  checking every colour row in the block, forever, until someone thought to ask why a rule that
+  used to fire hasn't fired in months. **Rule: before splitting a file to satisfy a line-count cap,
+  check whether any static AST-based detector resolves state from a literal in that file (grep the
+  detector's own resolution logic, don't assume) — if it does, that literal is NOT eligible for the
+  split, full stop, regardless of how over-cap the file is.** `edit.js`'s own docblock (top of file,
+  "owner ruling 3") carries this as a standing exception to the 250-line cap. Sibling of
+  STOP-A-FIX-AT-THE-EMITTER-COVERS-ONLY-WHAT-THE-EMITTER-EMITS (a shared mechanism's real reach can
+  be narrower than its described scope) and STOP-A-FILES-METADATA-NEVER-DECIDES-WHAT-IS-INSIDE-IT
+  (a line count told the wrong story about a file's contents in both incidents) — this one is the
+  refactor-time mirror: the FILE STRUCTURE ITSELF is the thing a detector silently depends on, not
+  just its content.
+
+**D101 carry-forward receipt for E25.** `python .claude/hooks/handoff-preflight.py --check` run
+pre-edit reported 280 STOPs (bulleted-style count); one added here (bulleted style, matching
+E15/E16 — not the narrative `⛔` style used in E17-E24, so the floor extractor sees it), zero
+removed, zero reworded, zero ritual questions touched. 280 → 281. 281 >= 280. PASS.

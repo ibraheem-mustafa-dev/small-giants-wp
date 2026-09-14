@@ -1,3 +1,28 @@
+## D1049 [ROUTINE] (Bean-approved) — Nav-menu closeout Task D: added the missing STOP-CATALOGUE entry for the `colourRows` single-file gate constraint
+
+**2026-09-14.** Closes the last of the four small cleanup items from the LEDGER's
+next-session orchestration plan (Task D). Step 27's own audit named a structural-defence gap
+that D1048 never filled: `edit.js`'s `colourRows` array must stay physically in-file because
+`scripts/inspector-scan/rules/31-golden-colour-control.js` resolves a colour row's state count
+from a literal `ArrayExpression` (or a statically-describable `fillRow()`/`textRow()` call) it
+can see in that SAME file or in `src/components/` — it does not follow imports or merge ASTs
+across files, and fails silently (finds nothing, checks nothing) rather than erroring if the
+array moves. Added `.claude/STOP-CATALOGUE.md` E25
+(`STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-SPLIT-LITERAL-ARRAY`), bulleted-style (gate-counted,
+not the narrative style used in E17-E24) so `handoff-preflight.py`'s stop-carry-forward check
+actually counts it: 280 → 281, confirmed via a fresh `--check` run before and after. Cross-
+referenced from `edit.js`'s own docblock alongside the existing "owner ruling 3" note.
+
+**Other three LEDGER cleanup items, status recorded here rather than reworked:** Task A
+(drawer-burger click-reliability retest) needs Bean's own hands on a live device — cannot be
+automated, no code change made. Task B (ESC/mega-disclosure retest) was already closed per
+D1044 — the LEDGER's own "Task B" section already states this correctly; no action taken.
+Task C (`edit.js`/`ColourRowExtras.js` file-size drift) is a closed architectural decision, not
+open drift — `ColourRowExtras.js` is at 244 lines (effectively at cap) and `edit.js`'s overage
+is the exact thing E25 above documents as deliberate; no further split attempted.
+
+**Files:** `.claude/STOP-CATALOGUE.md` (E25 added), `plugins/sgs-blocks/src/blocks/nav-menu/edit.js` (docblock cross-reference only, no logic change).
+
 ## D1048 [ROUTINE] (Bean-approved) — Wave C steps 25/26 closed: last 7 ungated-paint findings fixed, 4 oversized files split, WARN gate flipped to HARD on `sgs/nav-menu`
 
 **2026-09-14.** Closes the last two open items on the phase plan (Wave C steps 25 and 26) — the
