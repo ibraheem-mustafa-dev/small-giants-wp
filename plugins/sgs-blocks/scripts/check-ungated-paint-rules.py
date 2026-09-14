@@ -110,7 +110,7 @@ _FIXTURES_DIR = _HERE / "fixtures" / "ungated-paint"
 # blocks while every other block's findings stay printed-and-passing.
 # Framework-wide hardening beyond that is separate future work, triaged
 # against a real no-filter `--survey` run.
-HARD_FAIL_BLOCKS: list[str] = []
+HARD_FAIL_BLOCKS: list[str] = ["sgs/nav-menu"]
 
 
 # ---------------------------------------------------------------------------
