@@ -1,5 +1,59 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1077 [ROUTINE] — Classless recognition: 4-branch parallel investigation, next-design-attempt
+doc written, Tier A false-claim bug fixed (one real bug still open)
+
+**2026-09-14.** After D1074 parked the classless-repeater-recognition problem, Bean pushed back
+directly on the "the source code doesn't reliably say what's what" framing, correctly suspecting
+unexamined signal existed elsewhere in the draft file. Investigated live: the JS construction
+layer DOES carry strong signal never checked by any of the 3 failed council rounds (field names
+are self-describing English words; a shared reused formatter function like `this.gbp(...)`
+unambiguously marks a value's type; a function-valued field is always an action) — written up in
+`.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md`.
+
+Bean then asked for 4 more angles, dispatched in parallel (`/dispatching-parallel-agents` +
+`/delegate`, all Sonnet):
+- **Content-value-shape detectors** — 3 clean, zero-collision signals found (relative dates
+  `"2 years ago"`, FAQ questions ending `?`, SVG icon-path grammar). Real negative results too:
+  raw prices carry no signal until formatted; names/brands/titles are shape-identical, no way to
+  tell apart by value shape alone.
+- **DB-fact elimination (the strongest result of the whole session)** — checking simple, already-
+  existing database facts (price field present? avatar field? image field?) against the real
+  `block_attributes`/`array_item_schema` tables correctly narrowed 6 of 8 real draft groups down
+  to exactly ONE confident, correct block — using facts that already exist, nothing invented.
+  Also honestly found one real framework gap (a content shape with no matching block in the
+  current ~85-block roster) and one genuine tie between two plausible blocks.
+- **Cross-reference against our own block source** — narrow help only (icon-slug/link fields via
+  `array_item_schema.role`); does NOT help distinguish name/date/title/body, because the
+  framework's own blocks name fields just as inconsistently as the draft does.
+- **Tier A (variable-name-alone) real hit-rate, measured for the first time** — 0 of 35 real
+  groups in the draft resolve correctly today; 2 resolve but wrong; the module's own docstring
+  claimed 4 specific words were a "verified... genuine convention... via real cross-draft GitHub
+  search" that turned out to be entirely fabricated — none of those 4 words are actually in the
+  `slots.aliases` table.
+
+**Fixed same session:** the Tier A docstring's false claim, commit `372ed8ce1` (verified
+independently, not just trusted from the subagent's report — confirmed the commit is real, the
+self-test still passes, and the change is a documentation correction only, zero functional
+change). **Left deliberately unfixed, disclosed not silently dropped:** the `items`/`thumbs` →
+wrong `sgs/info-box` alias bug — the implementer correctly judged this needs real DB
+investigation before a confident fix, not a guess (a wrong alias is worse than no alias). Real,
+open, tracked — not resolved.
+
+**Synthesis written:** `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md`
+— a working document (explicitly NOT a spec) combining all of the above into one recommended
+shape (DB-fact elimination as the primary mechanism, content-value + JS-construction signals as
+secondary field-level resolvers) for next session's `/brainstorming` pass to start from. Every
+figure sourced from a conversation-only thread (not yet written to its own file) is explicitly
+flagged as needing re-verification before being treated as settled fact in a future spec — same
+discipline that caught the two real fabricated-mechanism citations in the reverted v2.0.0/v3.0.0
+spec drafts (D1074).
+
+**Outcome: CODE SHIPPED (the docstring fix), OUTCOME NOT YET HIT (the core recognition problem
+itself) — genuinely stronger evidence base now than at any point this session, not yet a proven,
+buildable design.** Next session starts with `/brainstorming` fresh, informed by the new
+synthesis doc, not by re-deriving any of tonight's findings from scratch.
+
 ## D1076 [ROUTINE] — nav-menu split (D1059) Steps 3-5 complete: BEM roots separated, patterns +
 live content migrated, DB reseeded; the split itself is now fully done
 

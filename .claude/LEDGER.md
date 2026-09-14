@@ -125,30 +125,30 @@ Both specs revised: **Spec 42 → v2.1.0**, **Spec 43 → v1.2.0** (pricing rebu
 detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
 `/phase-planner` run when reached. **Next action: execute Phase 0.**
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074) — parked, not blocking
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077)
 
-**State recap (plain English):** the `/sgs-clone` pipeline can now correctly SEE classless
-content (a Claude Design export with zero CSS classes) and let it past the hard-halt gate — that
-part is shipped, tested, and live-verified. What it still can't do reliably is figure out WHICH
-piece of a repeated card/badge/chip is the title versus the price versus an icon, without any
-class names to go on. Three separate rounds of expert review, each fixing the previous round's
-problems, each found a NEW fundamental flaw underneath — including twice discovering the design
-was quietly built on an unverified claim (a spec document describing a mechanism that turned out
-not to exist in the actual code). Spec 44 was reverted to its original design rather than pushing
-a 4th live rewrite; nothing is lost, the full trail is in git history and D1074.
+**State recap (plain English):** the pipeline can SEE classless content and let it past the
+hard-halt gate (shipped, live-verified). What it can't yet do reliably: figure out WHICH piece
+of a repeated card is the title/price/icon. Three council rounds on Spec 44, each finding a new
+fundamental flaw, reverted rather than a 4th live rewrite (D1074) — full trail in git history.
+Tier B's auto-classification is SOLVED (D1075, halt-and-resume, no API key needed — remove any
+stale "blocked on API key" note if you see one, that's no longer true).
 
-**Next priority — do NOT resume by rewriting the spec again.** Recommended: build a small,
-disposable prototype directly against the real Eye Care Birmingham draft's actual repeated-group
-HTML (ticker badges, brand tiles, "why choose us" cards, filter chips, basket line items) and
-measure what a few real, simple matching rules actually get right/wrong — empirical evidence
-first, THEN write the spec from what was learned, rather than reasoning it out on paper across
-more council rounds. Read `.claude/decisions.md` D1074 in full before starting; it names the
-exact three fundamental flaws each round found, so the prototype can be designed to sidestep
-them from the start rather than rediscovering them a 4th time.
+**Next priority — start with `.claude/reports/2026-09-14-classless-recognition-next-design-
+attempt.md`, NOT a blank prototype.** Bean pushed on "the source code has more signal than you
+checked" and he was right — a same-session investigation (D1077) found real, strong evidence the
+3 failed rounds never looked at: the JS layer that BUILDS each item's content has self-describing
+field names and a reused price-formatter function (`.claude/reports/2026-09-14-claude-design-
+draft-field-identity-schema.md`); and — the strongest single result — checking simple DATABASE
+facts (does this group need an image/price/avatar field?) against the real block schema narrowed
+6 of 8 real draft groups to exactly ONE confident, correct block, using facts that already exist.
+Next session: `/brainstorming` fresh, reading the next-design-attempt doc first, then rework
+Spec 44 from real evidence rather than re-deriving any of this from scratch.
 
-**Separately open, not blocking:** Tier B (Haiku classifier) auto-wiring needs a real Anthropic
-API key decision from Bean — the pipeline scripts currently have no way to call an AI model
-themselves (checked directly, confirmed absent). Not urgent.
+**Also fixed this session (D1077):** Tier A's docstring claimed a "verified via real cross-draft
+GitHub search" convention that was entirely fabricated — corrected (`372ed8ce1`). **Still open,
+disclosed not fixed:** `items`/`thumbs` sc-for names wrongly resolve to `sgs/info-box` via a bad
+alias — needs real DB investigation before a confident fix, don't guess at it.
 
 ### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
 Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
@@ -267,7 +267,7 @@ binding. **Add from this session:**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1076 as of this write — re-check, don't trust a cached number here).
+  D1077 as of this write — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **Nav-bar-menu/nav-drawer-menu have NO visual-diff report yet** — deliberately scoped-bypassed
@@ -291,7 +291,7 @@ binding. **Add from this session:**
 |---|---|
 | **Nav-menu split — SPLIT DONE (Steps 1-5), next is Step 6-8 (new features)** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/) (full Step 1-8 sequence + locked rulings); `decisions.md` D1059 (split architecture), D1060 (drawer colour defaults), D1076 (Steps 3-5 close-out); `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` (BAR 32/DRAWER 9/BOTH 100/NO-EFFECT 12) |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
-| **Classless repeater recognition — parked after 3 council rounds, D1074** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (reverted to original v1.0.0 design); `decisions.md` D1074 (the full 3-round trail + recommended next approach), D1073 (the shipped dom_shape admission gate) |
+| **Classless repeater recognition — start here next session** | `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md` (read FIRST); `.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md`; `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (reverted to v1.0.0); `decisions.md` D1074 (3-round failure trail), D1077 (new evidence + what's still fabricated-vs-real) |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
