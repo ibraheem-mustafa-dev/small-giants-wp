@@ -43,6 +43,11 @@ dropdown was regression-checked (open, ArrowDown-keyboard-open + focus-into-pane
 no change in behaviour and no reparenting. Full assertions + live results:
 `reports/visual-diff/nav-menu-2026-09-14.md`. Shipped in `92002dcae`.
 
+⚠ **Reopened 2026-09-14, same day.** The z-index/stacking fix above stands, but the reparent
+introduces a distinct, unaddressed regression (the moved panel loses its `.{uid}`-scoped CSS
+entirely, rendering transparent) — see `parking.md::P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`
+(`Status: PARTIAL`) for the live evidence and fix shape.
+
 ## 2026-09-13 — 1 entry RESOLVED: header burger-to-X morph, live-verified
 
 > ### P-DRAWER-BURGER-MORPH-SYNC — true burger-to-X morph needs cross-block state

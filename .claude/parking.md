@@ -211,6 +211,33 @@ matches.
 
 ## Framework: blocks, theme, specs
 
+### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
+**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-31 · **Reopened:** 2026-09-14
+
+The z-index/stacking half of this item (a page-embedded `sgs/nav-menu`'s dropdown painted over by
+the sticky header) IS genuinely fixed — `mega-disclosure.js::reparentPanelIfNeeded()` moves the
+open panel to `<body>` and repositions it via `position:fixed`, live-verified on canary page 2091.
+That evidence stands; do not re-litigate it. See full history: `memory/parking-archive.md`
+("2026-09-14 — page-embedded nav-menu dropdown stacking").
+
+**What the "RESOLVED" close missed, found the same day by a different investigation:** the
+reparent moves `[data-sgs-mega-panel]` (the `<ul class="sgs-nav-menu__submenu">` and everything in
+it) out from under the block's `.{uid}` scoping class, which lives on the root `<nav>` and never
+moves (`plugins/sgs-blocks/src/blocks/nav-menu/render.php::$uid_sel`). Every plain
+`.{uid} .sgs-nav-menu__submenu...`-scoped rule in `nav-menu-submenu-css.php` (background-colour,
+background-image, sublink padding, current-page styling — not just the two `:has()`
+ancestor-highlight rules already patched the same day) stops matching the instant the panel moves.
+Live-confirmed on canary page 2091: the header's own dropdown (never reparents) renders a correct
+cream panel (`rgb(251, 243, 220)`); the page-embedded instance's reparented panel renders fully
+transparent (`rgba(0, 0, 0, 0)`), with its links floating unstyled over whatever's behind them.
+
+**Minimal fix shape (not built):** mirror the `.{uid}` class onto the reparented panel at
+move-time (same pattern as the already-shipped `attachAncestorFlagWatcher` snapshot/restore for
+the `:has()` fix), stripped again in `revertReparent()`. Needs verifying this restores every
+affected rule, not just background.
+
+**Trigger:** whoever picks up this item next — needs a build task, not more investigation.
+
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 
