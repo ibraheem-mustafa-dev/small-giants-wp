@@ -176,8 +176,9 @@ else its submenu is a simple dropdown. **Interaction precision:** dropdowns/mega
 non-touch (default) / tap on touch / keyboard throughout** (avoids the sticky-hover mobile bug). Mechanics
 (research S1): hover-opens with a hover-intent delay (**default 300 ms; attribute 100–500 ms**) AND
 click/Enter/Space; a hover BRIDGE with a close-grace delay (**default 170 ms**, operator attribute
-`submenuCloseGrace` — `plugins/sgs-blocks/src/blocks/nav-menu/render.php::submenuCloseGrace`, read into the
-renderer's `close_grace` default). ⚠ **Safe-triangle
+`submenuCloseGrace` — `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::submenuCloseGrace`, read into
+the renderer's `close_grace` default). **Bar-only as of the D1059 split (2026-09-14)** — dropdowns/mega only
+exist on `sgs/nav-bar-menu`; `sgs/nav-drawer-menu` has no hover-close mechanism to gate. ⚠ **Safe-triangle
 geometry SHIPS, layered in front of the close-grace bridge — corrected 2026-09-09.** Both mechanisms are
 built: `plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js::isHeadingIntoOpenPanel` tests the pointer against the open panel's top-left and
 top-right corners via `::pointInTriangle`/`::triangleSign`, and `::scheduleIntentOpen` defers the open while
@@ -210,7 +211,7 @@ A featured style a draft can author MUST have somewhere in the data model to lan
 (added 2026-09-10, see FR-36-28). "Active-trail" does NOT, and is still unbuilt.** Spec 41 supplies
 the concrete state model: exactly THREE states — Normal / Hover / **current** — on every stateful
 colour, `current` keyed on the `aria-current="page"` that
-`plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage` already stamps client-side
+`plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage` (duplicated identically in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage` since the D1059 split, 2026-09-14) already stamps client-side
 (FR-36-11's cache-safe mechanism, reused not re-derived; `current` is the framework's own state
 vocabulary per `plugins/sgs-blocks/scripts/consistency/golden-controls.json::_meta.stateVocabulary.real`,
 renamed from `selected` at D676/D678). Hover and current stay VISUALLY DISTINCT and Hover out-ranks
@@ -803,14 +804,18 @@ STARTER pattern ships an `sgs/nav-drawer` as a sibling of `sgs/site-header`, but
 inserting the blocks by hand has none, so the burger opens nothing — silently, with nothing for a non-coder
 to diagnose (parking `P-HEADER-SIMPLICITY-FINDINGS` finding 1). Both cases now warn, with different
 plain-English copy and different one-click fixes: **no drawer** → *"Add the mobile menu"* inserts an
-`sgs/nav-drawer` seeded with a `sgs/nav-menu` on the same menu, **as a root-level SIBLING** of whatever
-top-level block the menu sits in, and selects it so the operator lands on its content; **dangling ref** →
-*"Open “X” instead"* re-points `drawerRef` at the drawer that does exist.
+`sgs/nav-drawer` (itself seeded with a `sgs/nav-drawer-menu` on the same menu) as a **root-level SIBLING**
+of whatever top-level block the header's `sgs/nav-bar-menu` sits in, and selects it so the operator lands on
+its content; **dangling ref** → *"Open “X” instead"* re-points `drawerRef` at the drawer that does exist.
 **Binding details, all mirrored from the render path rather than assumed:** a blank `drawerRef` resolves to
-`sgs-nav-drawer` on BOTH sides (`plugins/sgs-blocks/src/blocks/nav-menu/render.php::$drawer_ref`, `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$drawer_ref`), so the editor
-compares *effective* refs — a blank-vs-default pair is a MATCH, not a mismatch. A `sgs/nav-menu` **inside** a
-drawer renders a vertical list, not a burger, and is suppressed from the notice entirely. The fix action is
-gated on `sgs/nav-drawer` being registered (`createBlock` throws on an unregistered slug).
+`sgs-nav-drawer` on BOTH sides (`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$drawer_ref`,
+`plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$drawer_ref`), so the editor compares *effective* refs
+— a blank-vs-default pair is a MATCH, not a mismatch. **This whole notice only ever fires on
+`sgs/nav-bar-menu` instances (post-D1059 split, 2026-09-14)** — `drawerRef` doesn't exist on
+`sgs/nav-drawer-menu`'s own `block.json` at all (verified), so a drawer's own menu can never trigger it; the
+pre-split sentence here about a single block "detecting it is inside a drawer" described the now-deleted
+`isDrawerInstance` runtime check and no longer applies. The fix action is gated on `sgs/nav-drawer` being
+registered (`createBlock` throws on an unregistered slug).
 **The drawer cannot instead be seeded from `sgs/site-header`'s TEMPLATE** — its root is a `<dialog>` that
 promotes to the top layer, it must be a sibling, and the container is `templateLock:'all'` around exactly
 three rows (D393). A notice on the nav block is the only mechanism that reaches the raw-insert path.
@@ -1035,7 +1040,7 @@ Three rules that make this optimal rather than box-ticking:
    name, so unique landmark names hold **by construction** and `landmark-unique` cannot regress —
    with no duplicated label to drift out of sync.
 2. **`aria-current="page"` is computed CLIENT-SIDE — reuse it, never re-derive it.**
-   `plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage` already does this and documents why: LiteSpeed (this stack's confirmed
+   `plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage` (duplicated identically in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage` since the D1059 split, 2026-09-14) already does this and documents why: LiteSpeed (this stack's confirmed
    cache layer) would otherwise cache one page's answer and serve it on every page (FR-36-11).
 3. **`<nav>` is OPT-IN, never automatic.** A four-column footer where every column is a landmark
    yields four nav landmarks; landmark bloat is itself an accessibility defect. Menu-bound defaults
@@ -1250,7 +1255,7 @@ colour/motion-only state.
 
 **The colour half of this FR has a named mechanism: [Spec 41](41-NAV-MENU-COLOUR-STATE-SYSTEM.md)**
 (added 2026-09-10, FR-36-28). Its `aria-current="page"` clause above is the SAME client-side
-mechanism Spec 41 consumes — `plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage`,
+mechanism Spec 41 consumes — `plugins/sgs-blocks/src/blocks/nav-bar-menu/view.js::markCurrentPage` (duplicated identically in `plugins/sgs-blocks/src/blocks/nav-drawer-menu/view.js::markCurrentPage` since the D1059 split, 2026-09-14),
 reused verbatim, never re-derived server-side (LiteSpeed would serve one page's answer everywhere).
 Spec 41's contrast posture is deliberately conservative and does not weaken anything here: the
 existing live luminance check in
@@ -1317,9 +1322,11 @@ EVERY `sgs/*` block unconditionally; the opt-out `supports.sgs.hideExtensions` a
 already used by `sgs/brand-strip`. `sgs/nav-menu` and `sgs/nav-drawer` never declared it, so a client
 was offered extra inspector panels on a navigation menu — including *Element parallax* on a sticky
 bar, *Click Effects*, and a generic *Custom Spacing* panel duplicating the block's own per-element
-spacing controls. `sgs/nav-menu`'s `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.hideExtensions` declares
-`[ "clickEffects", "parallax", "spacing" ]` (verified live, three values — not five; *hover* and
-*blockLink* were never added to the opt-out list for this block, since the block's own hover system
+spacing controls. Post-D1059 split (2026-09-14), both
+`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::supports.sgs.hideExtensions` and
+`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::supports.sgs.hideExtensions` declare the
+identical `[ "clickEffects", "parallax", "spacing" ]` (verified live, three values — not five; *hover* and
+*blockLink* were never added to the opt-out list for either block, since the block's own hover system
 and its Block Link setting are both wanted here), live-verified with a negative control
 (`sgs/card-grid`, which declares nothing, still shows all four — the shared mechanism is untouched).
 
@@ -1379,12 +1386,14 @@ Spec 41 owns the mechanism. Read together.**
 controls (owned by the mega-menu builder); the `featured` item-flag
 mechanism (FR-36-4 / D351 — untouched); sticky/scrolled colour duplication (owner-rejected; the
 header owns scroll state per Spec 37); a device-visibility panel (already covered by the universal
-`responsive-visibility.js` / `conditional-visibility.js` extensions, which `sgs/nav-menu` does not
-opt out of — verified in its `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.hideExtensions`, which lists only
-`clickEffects`, `parallax`, `spacing`).
+`responsive-visibility.js` / `conditional-visibility.js` extensions, which neither `sgs/nav-bar-menu` nor
+`sgs/nav-drawer-menu` opt out of — verified in
+`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::supports.sgs.hideExtensions` and
+`plugins/sgs-blocks/src/blocks/nav-drawer-menu/block.json::supports.sgs.hideExtensions`, both of which list
+only `clickEffects`, `parallax`, `spacing`).
 
-(FR-36-14's `hideExtensions` paragraph above was corrected in place to match this — the live
-`sgs/nav-menu` block.json declares three values, not five. No open tension remains here.)
+(FR-36-14's `hideExtensions` paragraph above was corrected in place to match this — both new blocks'
+`block.json` declare three values, not five, post-D1059 split. No open tension remains here.)
 
 ## 6a. Build-order note
 
@@ -1643,8 +1652,9 @@ piece is intrinsically responsive (min-content ≤ container at every breakpoint
   the differentiator is server-rendered *rich mega content* (no AJAX) + **AI-auto-generation of the whole nav
   from a sitemap** (the un-copyable weapon — §0; Phase 3, Opp 1).
 - **Semantic + descriptive — BUILT:** `<nav>` landmarks + unique labels; real `<ul>/<li>/<a>`; descriptive
-  anchor text. The block's root IS a `<nav>` element with a computed `aria-label`
-  (`plugins/sgs-blocks/src/blocks/nav-menu/render.php`).
+  anchor text. Both split blocks' roots ARE `<nav>` elements with a computed `aria-label`
+  (`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php`, `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php`
+  — verified identically true of both post-D1059).
 - **Schema — split by status, do not conflate:**
   - **`BreadcrumbList` JSON-LD — BUILT.** Emitted by `plugins/sgs-blocks/src/blocks/breadcrumbs/render.php`
     (the `'@type' => 'BreadcrumbList'` emission).
