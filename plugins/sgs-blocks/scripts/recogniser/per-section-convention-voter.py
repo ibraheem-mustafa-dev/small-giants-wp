@@ -440,8 +440,41 @@ def dom_shape_hint_for_gap_candidate(node: Tag) -> dict | None:
         return None
 
 
+def detect_source_builder(soup: "BeautifulSoup") -> str | None:
+    """Document-level site-builder signal, computed ONCE per page.
+
+    2026-09-14 (research-buddies): the professional way to detect Webflow is
+    at the document level, not via class-name regex -- every real
+    fingerprinting tool (Wappalyzer's actual source) checks `data-wf-site`/
+    `data-wf-page` on <html> or the generator meta tag, confirmed present on
+    every real Webflow export found (2014-2024). Advisory only -- a
+    per-class certainty in stage1_boundary_hook.py::classify_w_prefixed
+    always outranks this (handles a mixed Webflow-base + Tailwind-embed
+    page correctly). Full research:
+    C:/Users/Bean/.claude/memory/research/
+    2026-09-14-webflow-vs-tailwind-class-detection.md
+
+    Returns "webflow" | "tailwind" | None.
+    """
+    html_tag = soup.find("html")
+    if html_tag is not None and (
+        html_tag.has_attr("data-wf-site")
+        or html_tag.has_attr("data-wf-page")
+        or html_tag.has_attr("data-wf-domain")
+    ):
+        return "webflow"
+    generator = soup.find("meta", attrs={"name": "generator"})
+    if generator and "webflow" in (generator.get("content") or "").lower():
+        return "webflow"
+    for script in soup.find_all("script", src=True):
+        if "tailwindcss.com" in script["src"]:
+            return "tailwind"
+    return None
+
+
 def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
-                   run_dir: Path | None = None) -> dict:
+                   run_dir: Path | None = None,
+                   source_builder: str | None = None) -> dict:
     """Build a single boundary dict for one section node."""
     class_signature = collect_class_signature(node)
     convention = detect_convention(class_signature)
@@ -482,6 +515,12 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         # -> lingua_franca.convert_class_signature's data_slot param. None
         # for every other source -- harmless, `_try_data_slot()` no-ops on it.
         "data_slot": node.get("data-slot"),
+        # Research-buddies (2026-09-14): page-level document signal, computed
+        # once in vote() and passed straight through -- only ever consulted
+        # by stage1_boundary_hook.py::classify_w_prefixed for the w-/h-
+        # residue (a class matching neither the Webflow nor Tailwind closed
+        # vocabulary).
+        "source_builder": source_builder,
     }
 
     # Tier 2 (2026-09-14, BEM-recognition brainstorm doc Q1): only attempted
@@ -589,20 +628,27 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
     """Top-level voting entry point. Returns orchestrator-compatible JSON dict."""
     html = mockup_path.read_text(encoding="utf-8")
     soup = BeautifulSoup(html, "html.parser")
+    source_builder = detect_source_builder(soup)
 
     used_ids: set[str] = set()
     boundaries: list[dict] = []
 
     if auto_section:
         for idx, (node, selector) in enumerate(auto_detect_sections(soup), start=1):
-            boundaries.append(build_boundary(node, selector, used_ids, idx, run_dir=run_dir))
+            boundaries.append(build_boundary(
+                node, selector, used_ids, idx, run_dir=run_dir,
+                source_builder=source_builder,
+            ))
     else:
         if not section_selector:
             sys.exit("ERROR: --section required unless --auto-section set")
         node = find_section_node(soup, section_selector)
         if node is None:
             sys.exit(f"ERROR: selector {section_selector!r} matched zero nodes in {mockup_path}")
-        boundaries.append(build_boundary(node, section_selector, used_ids, 1, run_dir=run_dir))
+        boundaries.append(build_boundary(
+            node, section_selector, used_ids, 1, run_dir=run_dir,
+            source_builder=source_builder,
+        ))
 
     convention_counter = Counter(b["convention_per_section"] for b in boundaries)
     most_common = convention_counter.most_common()
@@ -616,6 +662,12 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
             "secondary": secondary,
             "mixed_sections_count": convention_counter.get("mixed", 0),
             "gap_candidate_count": sum(1 for b in boundaries if b["fallback_strategy"] == "gap-candidate"),
+            # Research-buddies (2026-09-14): page-level document signal --
+            # surfaced here for observability even though it's only ever
+            # consulted per-class for the w-/h- residue, never overriding a
+            # per-class certainty. Makes a mixed-builder page visible in the
+            # artefact rather than silently averaged away.
+            "source_builder": source_builder,
         },
     }
 

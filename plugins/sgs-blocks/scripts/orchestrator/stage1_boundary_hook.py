@@ -92,34 +92,104 @@ _Trace = _load_trace()
 _HEURISTIC_PATTERNS = [
     ("SGS WordPress",    re.compile(r"^sgs-[a-z]")),                   # sgs-prefixed
     ("Bootstrap 5",      re.compile(r"^(btn|card|navbar|alert|col|row)(-|$)")),
-    # Tier 1 (2026-09-14): Webflow/Elementor/Divi's prefixes are narrow and
-    # unambiguous -- tried BEFORE kebab-semantic's broad catch-all below,
-    # which would otherwise misclassify `elementor-widget-button`/`w-nav`
-    # as generic kebab-semantic and never reach the real rule's slot_map.
-    #
-    # ⚠ qc-council finding (2026-09-14, disclosed not fixed): `^w-` also
-    # matches genuine Tailwind width/height utilities (`w-full`, `w-1/2`,
-    # `w-64`, `w-screen`, `w-auto`) -- confirmed empirically these get
-    # heuristically mislabelled "Webflow" instead of "Tailwind utility".
-    # Traced through to the actual block-routing outcome: no case found
-    # where this changes the final `block` value (_WEBFLOW's slot_map is
-    # narrow enough that the outcome coincides with Tailwind's own
-    # container default either way) -- but `source_convention`/
-    # `convention_per_section` metadata is wrong for these classes. A real
-    # fix needs Tailwind's own bare-keyword heuristic set expanded to
-    # recognise sizing words (full/auto/screen/fit/etc.), which risks its
-    # own new edge cases -- deliberately deferred, not silently dropped.
-    ("Webflow",          re.compile(r"^w-")),
+    # Elementor/Divi's prefixes are narrow and unambiguous -- tried BEFORE
+    # kebab-semantic's broad catch-all below, which would otherwise
+    # misclassify `elementor-widget-button` as generic kebab-semantic and
+    # never reach the real rule's slot_map. `w-`/`h-`-prefixed classes are
+    # NOT handled here -- see classify_w_prefixed() below, consulted first
+    # in heuristic_classify() before this list is ever tried, per the
+    # 2026-09-14 research-buddies resolution (both Webflow AND Tailwind use
+    # this prefix; a single regex here can never disambiguate them).
     ("Elementor / Divi", re.compile(r"^(elementor-widget-|et_pb_)")),
     ("Tailwind utility", re.compile(r"^[a-z]+-[0-9]+|^(flex|grid|hidden|truncate)$")),
     ("BEM",              re.compile(r"__|--")),                          # bare BEM seps
     ("kebab-semantic",   re.compile(r"^[a-z]+(-[a-z]+)+$")),
 ]
 
+# --- w-/h- prefix disambiguation (2026-09-14, research-buddies) -----------
+#
+# Webflow and Tailwind BOTH use bare `w-`/`h-` prefixes -- the qc-council
+# finding earlier this session confirmed a plain `^w-` regex mislabels
+# genuine Tailwind classes (w-full, w-64, w-screen) as Webflow. Resolved via
+# research-buddies (2 rounds, GitHub-verified against real Webflow exports
+# 2014-2024 + Tailwind's own docs): BOTH vocabularies are closed and
+# independently enumerable, and empirically DO NOT COLLIDE -- every
+# real-world "collision" found was Tailwind vendored into a hybrid/rebuilt
+# stack, never genuine Webflow using a Tailwind sizing keyword as its own
+# class. Full research: C:/Users/Bean/.claude/memory/research/
+# 2026-09-14-webflow-vs-tailwind-class-detection.md
+#
+# Webflow's runtime class vocabulary -- confirmed against real 2014-2024
+# exports (nav/dropdown/slider/tab/form/commerce/pagination/layout-grid/
+# grid-column families). NOT a hardcoded per-instance dict (R-31-1 sense) --
+# this file's own module docstring already exempts it as a static rule
+# table; this is that same precedent.
+_W_WEBFLOW = re.compile(
+    r"^[wh]-(?:nav|dyn|slider|tab|form|input|button|dropdown|layout|"
+    r"richtext|container|row|col|embed|checkbox|radio|lightbox|"
+    r"background-video|inline-block|clearfix|condition-invisible|mod-|"
+    r"pagination|commerce|password-page|select|file-upload|video|icon|"
+    r"-current)"  # the trailing state class is w--current (one dash already
+                  # consumed by the shared `[wh]-` prefix above, one dash here)
+)
 
-def heuristic_classify(class_signature: list[str]) -> str | None:
+# Tailwind's closed width/height sizing-keyword set -- identical v3/v4 apart
+# from h-lh (v4-only, line-height unit) and the v4-only container-scale
+# tier (w-3xs..w-7xl). Numeric scale (w-4, w-64), fractions (w-1/2), and
+# arbitrary values (w-[300px]) also included -- confirmed complete against
+# tailwindcss.com/docs/width + /docs/height (v4 current) and
+# v3.tailwindcss.com/docs/width (v3 baseline). A plain Python tuple, not a
+# hand-typed regex alternation, so it stays readable and testable.
+_TAILWIND_SIZE_KEYWORDS = (
+    "auto", "px", "full", "screen", "svw", "lvw", "dvw", "svh", "lvh", "dvh",
+    "min", "max", "fit", "lh",
+    "3xs", "2xs", "xs", "sm", "md", "lg", "xl",
+    "2xl", "3xl", "4xl", "5xl", "6xl", "7xl",
+)
+_W_TAILWIND = re.compile(
+    r"^[wh]-(?:"
+    r"\d+(?:/\d+)?"                                  # w-4, w-64, w-1/2
+    r"|\[.+\]"                                        # w-[300px], w-[calc(...)]
+    r"|(?:" + "|".join(_TAILWIND_SIZE_KEYWORDS) + r")"  # closed keyword set
+    r")$"
+)
+
+
+def classify_w_prefixed(cls: str, source_builder: str | None = None) -> str:
+    """Resolve one `w-`/`h-`-prefixed class to "Webflow" or "Tailwind utility".
+
+    Precedence is deliberate: per-class certainty (either closed vocabulary
+    matching) OUTRANKS the page-level `source_builder` hint, so a Tailwind
+    custom-code embed inside an otherwise-Webflow page (or vice versa)
+    still classifies correctly section-by-section -- a page-level flag that
+    overrode per-class evidence would be a worse bug than the one being fixed.
+
+    The residue (matches NEITHER closed vocabulary) falls back to
+    `source_builder` when known, else defaults to "Webflow" -- confirmed
+    empirically (not assumed) that Tailwind never emits a novel
+    word-suffixed `w-`/`h-` class outside its own closed keyword set.
+    """
+    if _W_WEBFLOW.match(cls):
+        return "Webflow"
+    if _W_TAILWIND.match(cls):
+        return "Tailwind utility"
+    if source_builder == "tailwind":
+        return "Tailwind utility"
+    if source_builder == "webflow":
+        return "Webflow"
+    return "Webflow"
+
+
+def heuristic_classify(
+    class_signature: list[str], source_builder: str | None = None
+) -> str | None:
     """Cheap convention classifier from class names alone. Returns the
     convention_name of the FIRST rule that matches a majority of classes.
+
+    `source_builder` (2026-09-14): the page-level document signal (see
+    per-section-convention-voter.py::detect_source_builder), consulted only
+    for `w-`/`h-`-prefixed classes whose vocabulary is ambiguous on their
+    own -- see classify_w_prefixed().
 
     Production orchestrator should replace this with the higher-quality
     /uimax-classify-naming dispatch -- this exists so the hook is
@@ -129,6 +199,10 @@ def heuristic_classify(class_signature: list[str]) -> str | None:
         return None
     scores: dict[str, int] = {}
     for cls in class_signature:
+        if cls.startswith("w-") or cls.startswith("h-"):
+            name = classify_w_prefixed(cls, source_builder)
+            scores[name] = scores.get(name, 0) + 1
+            continue
         for name, pattern in _HEURISTIC_PATTERNS:
             if pattern.search(cls):
                 scores[name] = scores.get(name, 0) + 1
@@ -186,7 +260,17 @@ def enrich_boundary(
                 pass
         return enriched
 
-    convention = (classifier or heuristic_classify)(classes)
+    # source_builder (2026-09-14, research-buddies): the page-level document
+    # signal (per-section-convention-voter.py::detect_source_builder), only
+    # ever consulted for the w-/h- residue -- an injected `classifier`
+    # keeps its simple single-arg contract (used by tests + the pluggable
+    # production classifier), only the default heuristic reads it.
+    if classifier is not None:
+        convention = classifier(classes)
+    else:
+        convention = heuristic_classify(
+            classes, source_builder=boundary.get("source_builder")
+        )
     # Tier 1 (2026-09-14): the element's data-slot attribute, when present
     # (per-section-convention-voter.py::build_boundary threads it through as
     # boundary["data_slot"]) -- shadcn/Radix's real identity signal for a

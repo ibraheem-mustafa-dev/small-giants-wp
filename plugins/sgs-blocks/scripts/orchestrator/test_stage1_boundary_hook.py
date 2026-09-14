@@ -138,6 +138,73 @@ def test_data_slot_resolves_a_hashed_class_signature() -> None:
     print(f"  PASS  data-slot-resolves-hashed-class: primary={out['primary_sgs_bem']}")
 
 
+# --- research-buddies fix (2026-09-14): w-/h- Webflow vs Tailwind --------
+
+def test_w_prefix_regression_cases() -> None:
+    """Every case the research-buddies investigation traced through,
+    re-confirmed as a durable test (not just an inline python -c check)."""
+    webflow_cases = ["w-nav", "w-nav-link", "w-dyn-item", "w-slider-mask",
+                      "w-col-4", "w-commerce-cartitem", "w--current",
+                      "w-icon-nav-menu"]
+    tailwind_cases = ["w-full", "w-64", "w-screen", "w-1/2", "w-auto",
+                       "w-[300px]", "h-8", "h-screen", "h-lh", "w-sm", "w-7xl"]
+    for cls in webflow_cases:
+        got = mod.classify_w_prefixed(cls)
+        assert got == "Webflow", f"{cls!r} -> {got!r}, expected Webflow"
+    for cls in tailwind_cases:
+        got = mod.classify_w_prefixed(cls)
+        assert got == "Tailwind utility", f"{cls!r} -> {got!r}, expected Tailwind utility"
+    print(f"  PASS  w-prefix-regression: {len(webflow_cases)} Webflow + {len(tailwind_cases)} Tailwind cases")
+
+
+def test_w_prefix_residue_defaults_to_webflow_without_hint() -> None:
+    """A novel w-/h- class matching NEITHER closed vocabulary, with no
+    source_builder hint, defaults to Webflow -- confirmed empirically
+    (not assumed) that Tailwind never emits a word-suffixed w-/h- class
+    outside its own closed keyword set."""
+    got = mod.classify_w_prefixed("w-totally-novel-thing")
+    assert got == "Webflow", f"got {got}"
+    print("  PASS  w-prefix-residue-default: unknown w- class defaults to Webflow")
+
+
+def test_w_prefix_per_class_certainty_outranks_page_hint() -> None:
+    """THE hard-constraint test for the mixed-page guarantee: per-class
+    certainty (either closed vocabulary matching) must ALWAYS outrank the
+    page-level source_builder hint -- a page-level flag overriding a
+    per-class certainty would be a worse bug than the one being fixed."""
+    # w-full is unambiguously Tailwind even when the page hint says Webflow
+    # (a Tailwind custom-code embed inside an otherwise-Webflow page).
+    assert mod.classify_w_prefixed("w-full", source_builder="webflow") == "Tailwind utility"
+    # w-nav is unambiguously Webflow even when the page hint says Tailwind
+    # (a vendored Webflow form fragment inside a Tailwind-built page).
+    assert mod.classify_w_prefixed("w-nav", source_builder="tailwind") == "Webflow"
+    print("  PASS  w-prefix-hint-never-overrides: per-class certainty always wins")
+
+
+def test_heuristic_classify_uses_w_prefix_classifier() -> None:
+    """heuristic_classify() must route w-/h- classes through
+    classify_w_prefixed(), not the generic pattern list -- proves the
+    end-to-end wiring, not just the standalone function."""
+    assert mod.heuristic_classify(["w-nav"]) == "Webflow"
+    assert mod.heuristic_classify(["w-full", "flex"]) == "Tailwind utility"
+    # Mixed signature: 2 Webflow classes should outvote 1 Tailwind class.
+    assert mod.heuristic_classify(["w-nav", "w-dyn-item", "w-full"]) == "Webflow"
+    print("  PASS  heuristic-classify-w-prefix-wiring: routes through classify_w_prefixed")
+
+
+def test_enrich_boundary_threads_source_builder() -> None:
+    """A boundary carrying source_builder="tailwind" resolves an otherwise-
+    ambiguous w- class correctly through the full enrich_boundary() path."""
+    boundary = {
+        "section_id": "s", "selector": ".x",
+        "class_signature": ["w-full"],
+        "source_builder": "tailwind",
+    }
+    out = mod.enrich_boundary(boundary)
+    assert out["source_convention"] == "Tailwind utility", f"got {out['source_convention']}"
+    print("  PASS  enrich-boundary-source-builder: threaded through end-to-end")
+
+
 def main() -> int:
     print("Spec 31 Phase 5c.4 -- stage1_boundary_hook contract")
     test_canonical_sgs_bem_skipped()
@@ -147,8 +214,14 @@ def main() -> int:
     test_writes_back_to_staged_output()
     test_injected_classifier_takes_precedence()
     test_data_slot_resolves_a_hashed_class_signature()
+    test_w_prefix_regression_cases()
+    test_w_prefix_residue_defaults_to_webflow_without_hint()
+    test_w_prefix_per_class_certainty_outranks_page_hint()
+    test_heuristic_classify_uses_w_prefix_classifier()
+    test_enrich_boundary_threads_source_builder()
     print("\nSTAGE1-HOOK-5C.4: PASS (canonical skip + bootstrap convert + gap candidates + payload + writeback + injectable)")
     print("STAGE1-HOOK-TIER-1: PASS (data-slot attribute resolves a hashed class signature)")
+    print("STAGE1-HOOK-W-PREFIX: PASS (research-buddies Webflow/Tailwind disambiguation)")
     return 0
 
 
