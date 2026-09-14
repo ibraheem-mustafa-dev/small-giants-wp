@@ -201,6 +201,108 @@ class TestScVarTierGate:
             f"Got status={per_section[0]['status']!r}."
         )
 
+    def test_sc_var_count_source_admits_but_injects_no_class(self, tmp_path: Path) -> None:
+        """Real regression found AND rolled back live (2026-09-14), in two
+        steps -- both load-bearing here:
+
+        Step 1 (the actual bug): Stage 4 used to inject "sgs-<slug>" onto a
+        sc_var-admitted boundary's root element (mirroring Tier 0). For
+        Tier A's count-based fallback (source='sc_var_count', names
+        "card-grid" -- the REPEATED GROUP's shape, not this individual
+        item's own identity), that injection forced the converter to treat
+        a small/atomic leaf element (a button, a span) as a whole
+        composite block, collapsing 17 real conversions to 2
+        (ContentConservationError: "recursed to N results with ZERO
+        content blocks").
+
+        Step 2 (the overcorrection, ALSO reverted): excluding sc_var_count
+        from eligibility ENTIRELY. Verified live this cost real
+        recognition (414 -> 96 attrs extracted) for no benefit -- once the
+        class-injection was removed, letting these boundaries through was
+        always safe; the converter's OWN internal atomic-tag recognition
+        handled them correctly with no injected identity at all.
+
+        Net state this test proves: a sc_var_count-sourced hint DOES admit
+        (eligibility is source-agnostic), but the HTML handed to the
+        converter carries NO injected class -- the fix that actually
+        mattered."""
+        run_dir = tmp_path / "run-sc-var-count-admits-no-inject"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path, tag="button")
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    sc_var_hint={"block": "card-grid", "confidence": 0.5, "evidence": "test", "source": "sc_var_count"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(sc_var_min_confidence=0.0, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+        fake_convert = MagicMock(return_value={
+            "status": "complete", "block_name": "sgs/button",
+            "block_markup": "<!-- wp:sgs/button /-->", "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert):
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant", (
+            "sc_var_count must still ADMIT the boundary (eligibility is source-agnostic). "
+            f"Got status={per_section[0]['status']!r}."
+        )
+        fake_convert.assert_called_once()
+        _, call_kwargs = fake_convert.call_args
+        html_seen = call_kwargs.get("html", "")
+        assert "sgs-" not in html_seen, (
+            f"No class should ever be injected for the sc_var Tier -- got html={html_seen!r}"
+        )
+
+    def test_alias_sourced_hint_still_admits_normally(self, tmp_path: Path) -> None:
+        """Positive control alongside the exclusion above: a REAL per-item
+        identity signal (source='sc_var_alias', a genuine slots.aliases
+        hit) must still admit normally -- the exclusion is scoped to
+        sc_var_count specifically, not to sc_var_hint as a whole."""
+        run_dir = tmp_path / "run-sc-var-alias-still-admits"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path)
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    sc_var_hint={"block": "sgs/info-box", "confidence": 0.4, "evidence": "test", "source": "sc_var_alias"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(sc_var_min_confidence=0.0, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+        fake_convert = MagicMock(return_value={
+            "status": "complete", "block_name": "sgs/info-box",
+            "block_markup": "<!-- wp:sgs/info-box /-->", "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert):
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant"
+        fake_convert.assert_called_once()
+
     def test_flag_omitted_still_hard_halts_even_with_a_strong_hint(self, tmp_path: Path) -> None:
         """The load-bearing negative control: --sc-var-min-confidence is None
         (omitted, today's default) -- a boundary must hard-halt EXACTLY as

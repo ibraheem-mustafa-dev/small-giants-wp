@@ -1,5 +1,68 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1071 [ROUTINE] — Nested `sc-for` boundary detection (pure static parsing) closes D1066's remaining gap; 0 -> 414 real attributes extracted from the Ward End Eye Care draft
+
+**2026-09-14.** Follows D1066-D1068. Bean asked two direct questions that reframed this pass:
+"how do you fix nested boundary detection" and, pointedly, "why are you unable to pull these
+values directly from the standalone html file... we're not dependent on how it loads, events,
+interaction etc?"
+
+**Answer, confirmed by building it:** for STRUCTURE/IDENTITY (which `sc-for`/`sc-if` exist,
+what block they map to), the user is right -- 100% obtainable from the static source text, zero
+rendering dependency. This was already Piece 1's whole design; the gap was that
+`auto_detect_sections()` stops recursing the instant it hits a `LEAF_SECTION_TAG`
+(`section`/`header`/etc, by design -- that section's children are meant for a LATER
+slot-extraction stage, not further boundary-splitting), so it never looked inside a section for
+a nested `<sc-for>`. Confirmed live: 0 of 31 real top-level boundaries ever carried
+`sc_var_kind='for'` -- the real repeated content was always deeper.
+
+**Fix, purely additive, purely static:** new `detect_sc_for_item_boundaries()`
+(`per-section-convention-voter.py`) -- `soup.find_all('sc-for')` at ANY nesting depth (BS4's
+native recursive find, no walker change needed), each item template becomes its own boundary.
+Wired into `vote(auto_section=True)` alongside the existing top-level walk (continuing the same
+`boundary_id` sequence) and into `write_tagged_mockup()` so Stage 4's relocation (D1066) covers
+these too. sc-if deliberately excluded (Piece 1's own D1057 design: a boolean state flag, not a
+collection, carries no identity signal).
+
+**Verified live:** real draft now yields 70 boundaries (31 top-level + 39 nested), 37 carrying a
+real `sc_var_hint` (up from 0).
+
+**Real regression found, fixed, THEN OVER-CORRECTED, then correctly reverted -- full account,
+not the sanitised version:**
+1. Finished the Tier 0-style HTML class injection left incomplete in D1066 (`sgs-<slug>`
+   onto the sc_var-admitted boundary's root element). Real result: 0 -> 414 attrs, 17 complete
+   `sgs/button` blocks.
+2. Re-ran with the injection added: **414 -> 78 -> 2 complete**, 35 new
+   `ContentConservationError` ("recursed to N results with ZERO content blocks"). Root cause:
+   Tier A's count-fallback names `"card-grid"` -- the REPEATED GROUP's shape, not this
+   individual item's own identity. Injecting it forced the converter to treat one small/atomic
+   leaf element (a button, a span) as a whole composite block expecting real child content.
+3. First fix attempt: excluded `source="sc_var_count"` from eligibility entirely (Stage 2 +
+   Stage 4). Regression tests passed. Re-ran against the real draft: **414 -> 96 attrs** --
+   WORSE, for a reason the tests couldn't catch (they don't run the real converter): the
+   exclusion was blocking boundaries that were fine all along.
+4. Root-caused properly: the injection itself was the ONLY problem. The 17 real "complete"
+   results were `sgs/button` -- the converter's OWN internal atomic-tag recognition, working
+   correctly once merely LET THROUGH the eligibility gate, needing no injected identity at all.
+   Removed the injection entirely (kept the eligibility gate, source-agnostic) and reverted the
+   Stage 2/Stage 4 `sc_var_count` exclusion. Re-ran: back to 414 attrs / 17 complete, this time
+   without the regression risk.
+
+Test suite updated to match the FINAL verified behaviour, not an intermediate one: 33 tests
+pass, including a regression test proving `sc_var_count` admits but injects no class.
+
+**Interactive-state discovery (Bean's parallel ask, dispatched to a subagent):** a full static
+survey of the real draft found 73 unique `sc-if` flags and catalogued three distinct state
+mechanisms (boolean toggle / single-enum-field with N derived booleans / nested multi-step
+object) plus inconsistent trigger wiring (`onClick` on button/a/div, `onMouseEnter` for the
+hover-driven mega-menu specifically). Full report not yet actioned -- feeds the still-open
+"route coverage beyond one interaction" gap (D1064's own named follow-up), not built this pass.
+
+**Still open:** Piece 2 (responsive values) -> attribute extraction remains the deferred bigger
+piece. The 17 real `sgs/button` blocks carry no responsive attributes yet -- that's the next
+real milestone once this recognition path is stable, which it is now, proven twice (once
+broken, once fixed, with evidence both times).
+
 ## D1070 [ROUTINE] — `sgs_modal`/`modalRef` mechanism live-proven end-to-end on a generic test post
 
 **2026-09-14.** Follow-up to D1067 (mechanism built + QC'd) / D1069 (the "6 real trigger

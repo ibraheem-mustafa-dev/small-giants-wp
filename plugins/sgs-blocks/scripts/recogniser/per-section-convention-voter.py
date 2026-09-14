@@ -720,6 +720,46 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     return out
 
 
+def detect_sc_for_item_boundaries(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
+    """Find every `sc-for` item template in the document, at ANY nesting
+    depth, and return each as its own boundary.
+
+    Real gap this closes (2026-09-14, "connect the pieces" follow-up, found
+    via a real end-to-end dry run -- see D1066): `auto_detect_sections()`
+    STOPS recursing the moment it hits a `LEAF_SECTION_TAG` (`section` etc)
+    -- deliberately, since that section's children are meant to be walked by
+    a LATER pipeline stage as slot content, not re-split into further
+    boundaries. But a Claude Design draft's real repeated content (the
+    "reasons" cards, "featured" products, etc.) lives INSIDE those sections,
+    wrapped by `<sc-for>` -- confirmed live: 29 of 31 real top-level
+    boundaries in the Ward End Eye Care draft are `sc-if`-gated page-routing
+    sections, and 0 carry `sc_var_kind='for'` at all, because the walker
+    never looks inside them.
+
+    This is a SEPARATE, ADDITIVE pass -- it does not change
+    `auto_detect_sections()`'s existing behaviour (BEM-classed drafts are
+    unaffected; a section's normal slot-extraction path is untouched). It
+    is PURE STATIC PARSING, same as everything else Piece 1 does -- no
+    rendering, no interaction, no dependency on load order or JS execution.
+    Every `<sc-for>` tag is already literal text in the source `.dc.html`
+    file; this only needed someone to actually look for it below the
+    top-level landmarks, which nothing did until now.
+
+    Deliberately sc-for ONLY, not sc-if -- Piece 1's own design (research-
+    buddies finding, D1057) is that `sc-if` names a boolean STATE flag, not
+    a collection, so it carries no block-identity signal; scanning for it
+    here would just create noise the classifier would immediately reject.
+    """
+    out: list[tuple[Tag, str]] = []
+    for idx, sc_for in enumerate(soup.find_all("sc-for"), start=1):
+        item = sc_for.find(True, recursive=False)
+        if item is None:
+            continue
+        selector = f"sc-for:nth-of-type({idx}) > {item.name}"
+        out.append((item, selector))
+    return out
+
+
 def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
          run_dir: Path | None = None, sc_var_cache: dict | None = None) -> dict:
     """Top-level voting entry point. Returns orchestrator-compatible JSON dict."""
@@ -731,7 +771,21 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
     boundaries: list[dict] = []
 
     if auto_section:
-        for idx, (node, selector) in enumerate(auto_detect_sections(soup), start=1):
+        top_level_sections = auto_detect_sections(soup)
+        # Additive, not a replacement -- see detect_sc_for_item_boundaries's
+        # docstring. Continues the SAME idx sequence so every boundary_id in
+        # a run stays unique; write_tagged_mockup() below re-derives this
+        # exact combined order for Stage 4 element relocation.
+        sc_for_items = detect_sc_for_item_boundaries(soup)
+        idx = 0
+        for node, selector in top_level_sections:
+            idx += 1
+            boundaries.append(build_boundary(
+                node, selector, used_ids, idx, run_dir=run_dir,
+                source_builder=source_builder, sc_var_cache=sc_var_cache,
+            ))
+        for node, selector in sc_for_items:
+            idx += 1
             boundaries.append(build_boundary(
                 node, selector, used_ids, idx, run_dir=run_dir,
                 source_builder=source_builder, sc_var_cache=sc_var_cache,
@@ -774,11 +828,13 @@ SGS_BOUNDARY_ID_ATTR = "data-sgs-boundary-id"
 
 def write_tagged_mockup(mockup_path: Path, out_path: Path) -> int:
     """Write a copy of the mockup with `data-sgs-boundary-id="bN"` injected onto
-    each `--auto-section`-detected boundary's root element, in the SAME order
-    `vote(auto_section=True)` assigns `boundary_id`s (both call
-    `auto_detect_sections()` on a fresh parse of the same file -- BS4's parse
-    of identical bytes is deterministic, so the Nth node here IS boundary
-    `bN`'s node, by construction, no cross-stage state needed).
+    each `--auto-section`-detected boundary's root element, in the SAME
+    combined order `vote(auto_section=True)` assigns `boundary_id`s: every
+    top-level `auto_detect_sections()` landmark first, then every nested
+    `detect_sc_for_item_boundaries()` item -- both called against the SAME
+    soup instance here (BS4's parse of identical bytes is otherwise
+    deterministic across separate parses too, but running both detectors
+    once against one parse avoids relying on that).
 
     Real bug this exists to fix (2026-09-14, "connect the pieces" follow-up):
     Stage 4 of the orchestrator re-parses the mockup independently and looks
@@ -796,7 +852,13 @@ def write_tagged_mockup(mockup_path: Path, out_path: Path) -> int:
     html = mockup_path.read_text(encoding="utf-8")
     soup = BeautifulSoup(html, "html.parser")
     count = 0
-    for idx, (node, _selector) in enumerate(auto_detect_sections(soup), start=1):
+    idx = 0
+    for node, _selector in auto_detect_sections(soup):
+        idx += 1
+        node[SGS_BOUNDARY_ID_ATTR] = f"b{idx}"
+        count += 1
+    for node, _selector in detect_sc_for_item_boundaries(soup):
+        idx += 1
         node[SGS_BOUNDARY_ID_ATTR] = f"b{idx}"
         count += 1
     out_path.write_text(str(soup), encoding="utf-8")

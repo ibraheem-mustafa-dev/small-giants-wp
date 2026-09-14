@@ -1574,6 +1574,19 @@ def stage_2_match(boundary_output: dict, run_dir: Path, sc_var_min_confidence: f
 
             # sc_var_hint cross-check (opt-in, see docstring) -- attached to the boundary by
             # per-section-convention-voter.py, not scored by confidence-matrix at all.
+            #
+            # NOTE on Tier A's count-based fallback (source="sc_var_count" -- names
+            # "card-grid", a bare non-namespaced string, not a real DB block slug; D1062's
+            # already-named observation): this WAS excluded here during live debugging of
+            # the Stage 4 class-injection regression below, then the exclusion was reverted
+            # -- verified live it was costing real recognition (414 -> 96 attrs extracted)
+            # for no benefit, because `chosen_block` here is COSMETIC once cv2_eligible
+            # admits the boundary (Stage 4's converter path derives identity from the HTML
+            # itself via recognise_section, never from this field, when no class is
+            # injected -- confirmed by reading real output: "complete" boundaries carried
+            # block_name="sgs/container" regardless of what Stage 2 chose). The actual
+            # regression cause was ALWAYS the Stage 4 HTML-class injection (now removed
+            # entirely, see that comment) -- not this cross-check.
             sc_var_hint = boundary.get("sc_var_hint")
             sc_var_confidence = 0.0
             if (
@@ -1936,6 +1949,9 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             # explicit and visible per-run rather than silently baked in here.
             _cv2_eligible_via_sc_var = False
             _sc_var_min_conf = getattr(args, "sc_var_min_confidence", None)
+            # See the matching Stage 2 note on source="sc_var_count" -- tried excluding it
+            # here too during live debugging, reverted: eligibility alone (no HTML class
+            # injection, see below) is safe for every sc_var_hint source, verified live.
             _boundary_sc_var_hint = boundary.get("sc_var_hint")
             if (
                 not _cv2_eligible
@@ -2118,6 +2134,20 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     _primary_bem_cls = boundary.get("primary_sgs_bem")
                     if _primary_bem_cls and _primary_bem_cls not in _existing_classes:
                         _sec_el["class"] = _existing_classes + [_primary_bem_cls]
+                # sc_var Tier — deliberately NO class injection here, unlike Tier 0 above.
+                # Tried live (2026-09-14) and reverted: injecting "sgs-<slug>" from
+                # sc_var_hint onto a classless boundary's root element forces the
+                # converter's recognise_section() to treat that element as a full instance
+                # of a COMPOSITE block (info-box, card-grid, ...), which expects real child
+                # content to recurse into. Claude Design's sc-for items are frequently
+                # small/atomic (a single <button>, <label>, <span>) -- verified live: doing
+                # this collapsed 17 real conversions (all genuinely correct `sgs/button`
+                # emissions, produced by the converter's OWN internal atomic-tag
+                # recognition once merely LET THROUGH the eligibility gate, no injection
+                # needed) down to 0, all failing ContentConservationError ("recursed to N
+                # results with ZERO content blocks"). The eligibility gate alone is the
+                # right amount of intervention -- it lets the converter's own recognition
+                # run; forcing a specific composite identity on top of it is not.
                 _section_html = str(_sec_el) if _sec_el is not None else ""
                 # Build media map dict from file if provided.
                 _media_map_obj: dict = {}
