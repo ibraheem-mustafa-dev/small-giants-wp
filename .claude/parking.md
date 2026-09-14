@@ -221,17 +221,23 @@ matches.
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-31 · **Reopened:** 2026-09-14
 
-The z-index/stacking half of this item (a page-embedded `sgs/nav-menu`'s dropdown painted over by
+The z-index/stacking half of this item (a page-embedded `sgs/nav-bar-menu`'s dropdown — this block
+was `sgs/nav-menu` before the 2026-09-14 split, D1059/D1076; only the bar fork can be
+page-embedded, since `nav-drawer-menu` carries `"ancestor":["sgs/nav-drawer"]` — painted over by
 the sticky header) IS genuinely fixed — `mega-disclosure.js::reparentPanelIfNeeded()` moves the
 open panel to `<body>` and repositions it via `position:fixed`, live-verified on canary page 2091.
 That evidence stands; do not re-litigate it. See full history: `memory/parking-archive.md`
 ("2026-09-14 — page-embedded nav-menu dropdown stacking").
 
-**What the "RESOLVED" close missed, found the same day by a different investigation:** the
-reparent moves `[data-sgs-mega-panel]` (the `<ul class="sgs-nav-menu__submenu">` and everything in
-it) out from under the block's `.{uid}` scoping class, which lives on the root `<nav>` and never
-moves (`plugins/sgs-blocks/src/blocks/nav-menu/render.php::$uid_sel`). Every plain
-`.{uid} .sgs-nav-menu__submenu...`-scoped rule in `nav-menu-submenu-css.php` (background-colour,
+**What the "RESOLVED" close missed, found the same day by a different investigation. Re-verified
+live 2026-09-14 post-split — the bug is unchanged, only the paths/names are:** the reparent moves
+`[data-sgs-mega-panel]` (the `<ul class="sgs-nav-bar-menu__submenu">` and everything in it) out
+from under the block's `.{uid}` scoping class, which lives on the root `<nav>` and never moves
+(`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$uid_sel` — confirmed still
+`'sgs-nav-bar-menu-' . substr(md5(...),0,8)`). Every plain `.{uid} .sgs-nav-bar-menu__submenu...`
+-scoped rule in `nav-menu-submenu-css.php` (confirmed still scoping every declaration as
+`$uid_sel . ' .' . $bem_root . '__submenu...'`, param name changed from a hardcoded literal to
+`$bem_root`, mechanism identical) (background-colour,
 background-image, sublink padding, current-page styling — not just the two `:has()`
 ancestor-highlight rules already patched the same day) stops matching the instant the panel moves.
 Live-confirmed on canary page 2091: the header's own dropdown (never reparents) renders a correct

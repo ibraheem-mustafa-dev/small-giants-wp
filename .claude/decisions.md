@@ -1,5 +1,46 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1076 [ROUTINE] — nav-menu split (D1059) Steps 3-5 complete: BEM roots separated, patterns +
+live content migrated, DB reseeded; the split itself is now fully done
+
+**2026-09-14.** Ran Step 3 (BEM-root separation) and Step 4 (pattern/seed migration) as two
+parallel subagents on verified-disjoint files (checked via the survey's per-kind file breakdown
+before dispatch, not assumed) — commit `782281040`. Step 3 rewrote all `sgs-nav-menu` CSS
+classes/PHP identifiers/selectors/keyframes/uid-prefixes to `sgs-nav-bar-menu`/
+`sgs-nav-drawer-menu`, handling all 7 documented blind spots; shared emitters genuinely called by
+both blocks were renamed to a neutral `sgs_nav_shared_*` prefix taking the BEM root as an explicit
+parameter. Step 4 implemented the survey script's stubbed `--fix`/`--check` modes and routed all
+17 theme-pattern instances by drawer-nesting position. Then Step 5: `sgs-update-v2.py` ran in
+full, Stage 9 pruned the orphaned `sgs/nav-menu` block row (154 attrs) from the DB. Two real gates
+broke as a DIRECT CONSEQUENCE of the split (not pre-existing) and were fixed, not bypassed:
+`feature-parity-exceptions.json`'s 17 `core/navigation` exceptions moved to `sgs/nav-bar-menu`;
+`attr-classification-overrides.json` got its 12 old entries re-split onto the new slugs plus 8 new
+`role:behaviour` entries for `*HoverTreatment` control-selector attrs the DB left unclassified
+post-split. `npm run build` (full prebuild gate chain + `wp-scripts build`) passes clean — commit
+`a04ccf942`.
+
+**Bean-directed content decision:** the live canary carried 90+ posts still citing the deleted
+block — one genuinely live (the site's real header template, post 2671, migrated to the two new
+slugs by nesting position) and 22 old QA/test fixture pages/CPTs from prior nav testing work (`T1
+nav`, `Spec41-*`, `Gate3 Mega Nav`, etc.). Asked Bean rather than guessing: migrate-vs-park-vs-
+delete the fixtures. **Bean chose delete outright** (`wp post delete --force`, not trash) rather
+than migrate or park as debt — none were live-facing, and dev/test fixtures worth zero clones.
+
+**Still open, tracked in the plan file:** Steps 6-8 (the actual new features this split exists
+for — split-nav layout, SOON badge, drawer two-tier look) not started. Step 3's renames
+reintroduced fresh Spec 36/41 citation drift (function names changed again) — same class of
+finding as before, disclosed via `[gates-ok:spec-drift]` on `782281040`, not yet re-fixed.
+
+**Recurrence, not new:** while staging `782281040`'s commit, `plugins/sgs-blocks/scripts/
+orchestrator/draft-responsive-probe.js` (515 unrelated lines, a concurrent session's Tier B
+auto-detect work per D1075's own incident note) was included in the pathspec because it appeared
+in `git status --short` — neither dispatched subagent's own file list named it, and that
+discrepancy wasn't caught before staging. D1075 already verified no data was lost and chose not
+to rewrite the shared pushed commit; noted here as confirmation the failure recurred
+(`feedback_a_shared_git_index_can_hold_another_tracks_staged_files`) and the concrete process gap:
+cross-check every `git status` file against the actual claimed scope (subagent reports, in this
+case) before staging, not just the visual "does this look plausible" scan.
+
 ## D1075 [ROUTINE] — Tier B wired as an in-session halt-and-resume (no API key needed); route-
 coverage generalised to auto-detect + auto-drive interactive states
 
