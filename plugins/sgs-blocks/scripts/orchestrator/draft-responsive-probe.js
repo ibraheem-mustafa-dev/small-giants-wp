@@ -55,9 +55,22 @@
  * `sc-for` boundaries, falling back to text-containment for everything else (static
  * sections, headings) where source and rendered text genuinely do match.
  *
+ * ROUTE COVERAGE (2026-09-14, "the 2 gaps" follow-up -- proof-of-concept, not a general
+ * interaction-discovery engine): the module docstring above named "driving interaction
+ * states (mega-menu open, filter drawer, lens modal) to reach other routes/states" as an
+ * unsolved risk. `--click <selector>[,<selector>...]` proves the pattern on ONE real case --
+ * verified live against the real Ward End Eye Care draft: `button[aria-label="Bag"]` genuinely
+ * mounts the bag drawer (`sc-if value="{{ bagOpen }}"`, confirmed by its real copy "Nothing in
+ * here yet." appearing only after the click -- NOT by guessing at text, an earlier attempt in
+ * this session's own working notes wrongly checked for "Your bag", a DIFFERENT section's
+ * copy, and wrongly looked like a failure). State persists across a viewport resize (also
+ * verified live), so clicks happen ONCE after page load, before the width loop -- not
+ * per-width. Generalising this to every interactive state on every route is still unbuilt
+ * follow-up work; this flag proves the mechanism, it does not enumerate the state space.
+ *
  * Usage:
  *   node draft-responsive-probe.js --draft <path|url> [--viewports 375,768,1440]
- *        [--out report.json] [--label <route-name>]
+ *        [--out report.json] [--label <route-name>] [--click <selector>[,<selector>...]]
  *   node draft-responsive-probe.js --self-test
  */
 'use strict';
@@ -72,6 +85,8 @@ const DRAFT = toURL(arg('draft'));
 const VIEWPORTS = arg('viewports', '375,768,1440').split(',').map(Number);
 const OUT = arg('out', '');
 const LABEL = arg('label', 'draft');
+const CLICK = arg('click', '');
+const CLICK_SELECTORS = CLICK ? CLICK.split(',').map((s) => s.trim()).filter(Boolean) : [];
 const SELF_TEST = process.argv.includes('--self-test');
 if (!SELF_TEST && !DRAFT) { console.error('ERROR: --draft <path|url> is required.'); process.exit(2); }
 
@@ -173,15 +188,47 @@ async function captureAtWidth(page, width, mobilePreviewCheck) {
   return result;
 }
 
-async function probe(draftUrl, viewports, label) {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  await page.goto(draftUrl, { waitUntil: 'networkidle' });
-  const byWidth = {};
-  for (const w of viewports) {
-    byWidth[w] = await captureAtWidth(page, w, true);
+async function driveInteraction(page, clickSelectors) {
+  // Clicked ONCE, before the width loop -- verified live that the resulting state (e.g. the
+  // bag drawer) persists across a viewport resize, so re-clicking per width would be both
+  // unnecessary and risky (a second click on a now-different element under the drawer could
+  // close it again). A selector that never matches fails LOUDLY, not silently -- a route-
+  // coverage capture that silently measured the closed state while claiming to measure the
+  // open one would be worse than not attempting it at all.
+  const clicked = [];
+  for (const selector of clickSelectors) {
+    const locator = page.locator(selector).first();
+    const count = await page.locator(selector).count();
+    if (count === 0) {
+      throw new Error(`--click selector matched zero elements: ${selector}`);
+    }
+    await locator.click();
+    await page.waitForTimeout(300);
+    clicked.push(selector);
   }
-  await browser.close();
+  return clicked;
+}
+
+async function probe(draftUrl, viewports, label, clickSelectors) {
+  const browser = await chromium.launch();
+  let clicked;
+  let byWidth;
+  try {
+    const page = await browser.newPage();
+    await page.goto(draftUrl, { waitUntil: 'networkidle' });
+    // driveInteraction can throw (a bad --click selector, by design -- fail loudly, never
+    // silently capture the wrong state) -- the browser must still close either way, or a
+    // failed run leaks a live Chromium process and hangs the caller. Found live: the
+    // negative-control self-test case threw here with `browser.close()` still below it,
+    // leaking a browser and hanging the whole script past its 100s self-test timeout.
+    clicked = clickSelectors && clickSelectors.length ? await driveInteraction(page, clickSelectors) : [];
+    byWidth = {};
+    for (const w of viewports) {
+      byWidth[w] = await captureAtWidth(page, w, true);
+    }
+  } finally {
+    await browser.close();
+  }
 
   // Match elements across widths by their content key. An element present at every width
   // is a genuine same-content comparison; present-at-some-widths-only is reported
@@ -236,6 +283,10 @@ async function probe(draftUrl, viewports, label) {
     label,
     draft: draftUrl,
     viewports,
+    // Self-documenting: a report from an interaction-driven capture must never be mistaken
+    // for the default (closed/unclicked) state -- empty array means "default page state,
+    // nothing clicked", matching every report this script produced before --click existed.
+    interaction: { clicked },
     elements_total_at_narrowest: byWidth[widthKeys[0]].elements.length,
     elements_present_at_all_widths: presentAtAll.size,
     responsive_elements: results.length,
@@ -245,8 +296,11 @@ async function probe(draftUrl, viewports, label) {
 
 async function main() {
   if (SELF_TEST) return selfTest();
-  const report = await probe(DRAFT, VIEWPORTS, LABEL);
-  console.log(`draft-responsive-probe: ${report.responsive_elements} responsive element(s) of ${report.elements_present_at_all_widths} present at all ${VIEWPORTS.length} widths (${report.elements_total_at_narrowest} total at the narrowest width).`);
+  const report = await probe(DRAFT, VIEWPORTS, LABEL, CLICK_SELECTORS);
+  const interactionNote = report.interaction.clicked.length
+    ? ` (interaction: clicked ${report.interaction.clicked.join(' -> ')})`
+    : '';
+  console.log(`draft-responsive-probe: ${report.responsive_elements} responsive element(s) of ${report.elements_present_at_all_widths} present at all ${VIEWPORTS.length} widths (${report.elements_total_at_narrowest} total at the narrowest width)${interactionNote}.`);
   if (OUT) {
     fs.writeFileSync(OUT, JSON.stringify(report, null, 2), 'utf8');
     console.log(`Written: ${OUT}`);
@@ -268,6 +322,8 @@ async function selfTest() {
   const html = `<!doctype html><html><body>
     <div id="root"></div>
     <div id="cards"></div>
+    <button id="open-drawer" onclick="window.__drawerOpen = true; render();">Open drawer</button>
+    <div id="drawer"></div>
     <script>
       function render() {
         const w = window.innerWidth;
@@ -284,6 +340,17 @@ async function selfTest() {
         document.getElementById('cards').innerHTML = cards.map(function (t) {
           return '<div style="padding:' + cardPad + '"><h3>' + t + '</h3><p>Body copy</p></div>';
         }).join('');
+        // A drawer that only mounts after a click -- mirrors the real draft's
+        // sc-if-gated bag drawer (conditionally rendered, not just CSS-hidden), with a
+        // responsive value of its own so route coverage proves it can measure content
+        // that is invisible until the interaction is driven.
+        if (window.__drawerOpen) {
+          const drawerPad = w < 700 ? '10px' : '24px';
+          document.getElementById('drawer').innerHTML =
+            '<div style="padding:' + drawerPad + '">Drawer content</div>';
+        } else {
+          document.getElementById('drawer').innerHTML = '';
+        }
       }
       window.addEventListener('resize', render);
       render();
@@ -304,7 +371,34 @@ async function selfTest() {
       if (c.group_size !== 4) throw new Error(`SELF-TEST FAILED: expected group_size=4, got ${c.group_size} for key=${c.key}`);
       if (!c.changed_properties.includes('padding-top')) throw new Error(`SELF-TEST FAILED: card ${c.key} should show a changed padding-top`);
     }
-    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected, static element excluded, 4-card structural group detected)');
+
+    // Default (no --click) run must never see the drawer content -- it doesn't exist in
+    // the DOM until clicked (sc-if-style conditional mount, matching the real draft).
+    const drawerBeforeClick = report.elements.find((e) => e.key.includes('drawer content'));
+    if (drawerBeforeClick) throw new Error('SELF-TEST FAILED: drawer content must be absent from a default (unclicked) capture');
+    if (report.interaction.clicked.length !== 0) throw new Error(`SELF-TEST FAILED: default run must report interaction.clicked=[], got ${JSON.stringify(report.interaction.clicked)}`);
+
+    // Route-coverage proof-of-concept: --click drives the interaction, then the drawer's
+    // OWN responsive value is measured, exactly like the real "Bag" drawer.
+    const clickedReport = await probe(pathToFileURL(fixturePath).href, [375, 1440], 'self-test-clicked', ['#open-drawer']);
+    if (JSON.stringify(clickedReport.interaction.clicked) !== JSON.stringify(['#open-drawer'])) {
+      throw new Error(`SELF-TEST FAILED: expected interaction.clicked=['#open-drawer'], got ${JSON.stringify(clickedReport.interaction.clicked)}`);
+    }
+    const drawerAfterClick = clickedReport.elements.find((e) => e.key.includes('drawer content'));
+    if (!drawerAfterClick) throw new Error('SELF-TEST FAILED: drawer content must be measured once --click opens it');
+    if (!drawerAfterClick.changed_properties.includes('padding-top')) throw new Error(`SELF-TEST FAILED: drawer content should show a changed padding-top, got ${drawerAfterClick.changed_properties}`);
+
+    // Negative control: a --click selector that matches nothing must fail LOUDLY, never
+    // silently capture the default state while claiming to have driven an interaction.
+    let threw = false;
+    try {
+      await probe(pathToFileURL(fixturePath).href, [375, 1440], 'self-test-bad-selector', ['#does-not-exist']);
+    } catch (e) {
+      threw = true;
+    }
+    if (!threw) throw new Error('SELF-TEST FAILED (negative control): a --click selector matching zero elements must throw, not silently no-op');
+
+    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected, static element excluded, 4-card structural group detected, route-coverage --click proven, bad-selector negative control)');
   } finally {
     fs.unlinkSync(fixturePath);
   }

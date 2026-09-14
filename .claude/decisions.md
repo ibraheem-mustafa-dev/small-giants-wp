@@ -1,5 +1,45 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1064 [ROUTINE] — Route-coverage proof-of-concept: `--click` interaction driving in `draft-responsive-probe.js`, closing D1061's second named gap
+
+**2026-09-14.** Follows D1061/D1062 -- the other named gap (Piece 2 only measuring one
+already-loaded page/state). Bean-scoped deliberately as ONE proof-of-concept, not a general
+interaction-discovery engine: "pick ONE real interactive state... prove the pattern works end
+to end. Generalising... is separate follow-up work, named not hidden."
+
+**New:** `--click <selector>[,<selector>...]` on `draft-responsive-probe.js`. Clicked ONCE
+after page load, before the width loop (verified live: state persists across a resize, so
+per-width re-clicking is unnecessary and risky). A selector matching zero elements throws
+loudly -- a route-coverage capture that silently measured the closed state while claiming to
+measure the open one would be worse than not attempting it. Every report now carries
+`interaction: {clicked: [...]}` so a default (unclicked) capture is never confused with a
+driven one.
+
+**Real target, verified live end-to-end against the Ward End Eye Care draft, not a synthetic
+fixture:** `button[aria-label="Bag"]` opens the `sc-if value="{{ bagOpen }}"`-gated bag
+drawer. First attempt checked for the wrong copy ("Your bag", a DIFFERENT section's text) and
+looked like a failure; re-checked against the drawer's REAL rendered copy ("Nothing in here
+yet.") and confirmed the click genuinely mounts new content, which persists across a viewport
+resize. The real probe run measured `div|bag 0#1` (the drawer's "Bag (0)" heading) with real
+padding/gap/font-size changes across 375/768/1440 -- content invisible to every prior capture.
+
+**Real bug found and fixed via the self-test itself, not shipped silently.** The negative-
+control test (a `--click` selector matching zero elements, which must throw) threw INSIDE
+`probe()` before `browser.close()`, leaking a live Chromium process and hanging the whole
+script past its self-test timeout -- caught because the self-test's own exit code (124,
+timeout) disagreed with its printed PASS line. Fixed: `browser.close()` moved into a
+`finally` block wrapping the whole capture, so a thrown interaction error still cleans up.
+
+**Verified:** self-test now exits in ~4.7s with a real exit code 0 (was timing out at 100s+
+before the fix). New self-test coverage: default run never sees interaction-gated content,
+`--click` run measures it with real changed properties, bad-selector negative control throws
+without hanging.
+
+**Both of D1061's named gaps are now closed as proof-of-concept:** Tier B (D1062) and route
+coverage (this). Neither is exhaustive -- Tier B has only ever classified one real draft's
+2 unresolved names; route coverage has only ever driven one real interaction on one draft.
+Generalising either is unbuilt follow-up work, not silently assumed done.
+
 ## D1063 [ROUTINE] — Spec 43: `sgs/choice-flow` replaces the "quiz vs configurator" split from D1056/Spec 42
 
 **2026-09-14.** A same-day `/research-council` + `/adversarial-council` pass on Spec 42
