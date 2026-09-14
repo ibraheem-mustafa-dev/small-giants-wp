@@ -1,13 +1,14 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.2
-status: SIGNED-OFF (v2.2, design-council repairs 2026-09-09 — six repairs applied with no FR renumbering: the late-CSS A/B defined with a procedure + pass condition (§8); the Indus gate-2 TBD restructured to derive N from the draft at gate time (§8); a Bean's-eye pre-check rubric added under R-31-13, which it does NOT weaken (§8); the §1 Site-Info/logo defect RESOLVED as FR-36-22's first MUST (owner option A — Site Info as a middle resolution tier); FR-36-9's inverted hide-on-scroll dependency corrected and closed-by-design; a `Spec maturity: OUTLINE|DISPATCHABLE` field added to the six §4 FRs plus an index (spec readiness, explicitly NOT build status). Plus: every line-form code citation converted to symbol form, eight of them stale; `ResponsiveTriStateControl` mount count corrected 3→4 in three places; and the drawer-modality decision recorded as APPROVED-NOT-BUILT (non-modal `.show()` + z-index, header above panel; `aria-modal="true"` banned), with the consequent accuracy edits to FR-36-10 and FR-36-13. v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav home; Phase 6 spec-purge + build-planning now unblocked). Council-driven integration 2026-07-19 — 7-persona adversarial council + fact-check: the former appended "PART TWO / §14–17" is now INTEGRATED into the body (utility pieces → §4 as FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner rulings applied: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker); over-engineered failure states removed (kept only mega-`object_id` resolution + the non-deletable drawer close); Nav Health stays Phase 3. Lineage: v2.0 added the utility pieces; v1.3 folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions (classic WP menus PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT Responsive-Visibility extension; labelCollapse is BUILT). Passed QC council + adversarial council + gap-analysis. Bean signed off 2026-07-19; Phase 6 (spec purge) + build-planning next.)
+spec_version: 2.3
+status: SIGNED-OFF (v2.4, 2026-09-10 — CORRECTION to the v2.3 amendment, no FR renumbered: v2.3 claimed Spec 41 satisfied FR-36-4's "active-trail" clause. It does not — `markCurrentPage` matches by EXACT path equality, so a parent whose CHILD page is current receives no marking at all. The claim is narrowed to current-page indication in all four places it appeared (companions entry, FR-36-4, FR-36-11, FR-36-28 + its index row), with active-trail recorded as open work and its shape named. The third state is also renamed `Active` → `current`, the framework's own existing vocabulary per `golden-controls.json::_meta.stateVocabulary.real` (D676/D678), and Spec 41's FR table is refreshed to its spec_version 0.2.0 contents. — v2.3, 2026-09-10 — PURELY ADDITIVE amendment, no FR renumbered, no existing content rewritten or dropped: **Spec 41** is named as the concrete mechanism satisfying FR-36-4's "distinct hover+focus states; active-trail … a visible style" and FR-36-11's colour-state floor, a pointer clause is appended to each of those two FRs, and one new requirement **FR-36-28** is appended in §6 with the index row and companion entry to match. Everything from v2.2 below is unchanged. — v2.2, design-council repairs 2026-09-09 — six repairs applied with no FR renumbering: the late-CSS A/B defined with a procedure + pass condition (§8); the Indus gate-2 TBD restructured to derive N from the draft at gate time (§8); a Bean's-eye pre-check rubric added under R-31-13, which it does NOT weaken (§8); the §1 Site-Info/logo defect RESOLVED as FR-36-22's first MUST (owner option A — Site Info as a middle resolution tier); FR-36-9's inverted hide-on-scroll dependency corrected and closed-by-design; a `Spec maturity: OUTLINE|DISPATCHABLE` field added to the six §4 FRs plus an index (spec readiness, explicitly NOT build status). Plus: every line-form code citation converted to symbol form, eight of them stale; `ResponsiveTriStateControl` mount count corrected 3→4 in three places; and the drawer-modality decision recorded as APPROVED-NOT-BUILT (non-modal `.show()` + z-index, header above panel; `aria-modal="true"` banned), with the consequent accuracy edits to FR-36-10 and FR-36-13. v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav home; Phase 6 spec-purge + build-planning now unblocked). Council-driven integration 2026-07-19 — 7-persona adversarial council + fact-check: the former appended "PART TWO / §14–17" is now INTEGRATED into the body (utility pieces → §4 as FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner rulings applied: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker); over-engineered failure states removed (kept only mega-`object_id` resolution + the non-deletable drawer close); Nav Health stays Phase 3. Lineage: v2.0 added the utility pieces; v1.3 folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions (classic WP menus PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT Responsive-Visibility extension; labelCollapse is BUILT). Passed QC council + adversarial council + gap-analysis. Bean signed off 2026-07-19; Phase 6 (spec purge) + build-planning next.)
 owner: framework
 date: 2026-07-19
 companions:
   - 37-HEADER-FOOTER-BUILDER.md (the header the nav plugs INTO; nav → header dependency only; FR-S9-8 (Spec 37 §3.8) labelCollapse/per-tier visibility is BUILT; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md (LOCKED header/footer builder; ResponsiveTriStateControl is DESIGNED-not-built there)
+  - 41-NAV-MENU-COLOUR-STATE-SYSTEM.md — the CONCRETE MECHANISM for FR-36-4's "distinct hover+focus states" and FR-36-11's colour-state floor. Owns the 3-state (Normal/Hover/current) colour model on `sgs/nav-menu`, the 3-state PHP emitters, the retirement of `hoverStyle`, the 3-state per-side item border + hover colour animation, the submenu panel/link split + open animation + top offset, the menu-trigger icon/text mode, the parent-stays-hovered fix and the indicator-suppression rule. ⛔ It does NOT implement active-trail — see FR-41-20. See FR-36-28.
   - 32 (no-inline) · 35 (Part L controls + Part G native mechanisms incl. templateLock:contentOnly + the Responsive-Visibility extension) · 31 §13 + 33 Part 2 (converter — built AFTER the nav passes its test gate; see FR-36-15)
   - seo-schema / seo-technical skills own schema JSON-LD emission
 supersedes:
@@ -128,6 +129,7 @@ carrying a fake "verified" badge).
 | FR-36-15 | 9 | Converter-emittability |
 | FR-36-17 | 11 | Crawlable, schema-friendly, fast |
 | FR-36-25 | 11 | Structured-data-once |
+| FR-36-28 | 6 | Nav colour-state + control system → **Spec 41** (satisfies FR-36-4's hover/focus half + FR-36-11's colour floor; active-trail NOT satisfied — Spec 41 FR-41-20) |
 
 ## 2. Architecture
 
@@ -203,6 +205,32 @@ operator-set from the block inspector (Featured panel). **Why this is a spec-lev
 implementation detail:** the block originally had NO background attribute, so the converter had nowhere to
 put a draft's featured fill and silently dropped it, producing accent-on-surface text at 1.35:1 on Mama's.
 A featured style a draft can author MUST have somewhere in the data model to land — see D351.
+
+**"Distinct hover+focus states" has a named mechanism — [Spec 41](41-NAV-MENU-COLOUR-STATE-SYSTEM.md)
+(added 2026-09-10, see FR-36-28). "Active-trail" does NOT, and is still unbuilt.** Spec 41 supplies
+the concrete state model: exactly THREE states — Normal / Hover / **current** — on every stateful
+colour, `current` keyed on the `aria-current="page"` that
+`plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage` already stamps client-side
+(FR-36-11's cache-safe mechanism, reused not re-derived; `current` is the framework's own state
+vocabulary per `plugins/sgs-blocks/scripts/consistency/golden-controls.json::_meta.stateVocabulary.real`,
+renamed from `selected` at D676/D678). Hover and current stay VISUALLY DISTINCT and Hover out-ranks
+current by source order, preserving Bean's 2026-07-31 ruling that a visitor must be able to tell
+where they ARE from what they are POINTING AT.
+
+⛔ **The active-TRAIL half of this clause is NOT satisfied by Spec 41 and must not be read as
+satisfied.** `markCurrentPage` matches by EXACT path equality (`path !== '' && path === current`),
+so a parent menu item whose CHILD page is the current page receives no marking at all — there is no
+trail of ancestors. Spec 41 implements "this exact link is the current page" and states the
+boundary explicitly as its own FR-41-20. Active-trail remains open work with no owner: it needs an
+ancestor-path list emitted per item at render time plus a prefix match in `markCurrentPage` stamping
+a signal that is NOT `aria-current="page"` (which is single-valued per page and belongs to the exact
+link).
+
+⛔ The `featured` item-flag mechanism above is explicitly OUT of Spec 41's scope and is untouched by
+it. Spec 41 also carries nav behaviours that are correctness fixes with no operator control: a
+parent item stays in its Hover state while its own open dropdown is hovered, and
+`indicatorStyle:'pill'` suppresses the per-item hover/current BACKGROUND it would otherwise
+double-paint.
 
 ### FR-36-5 — The mega CPT + the native-menu association
 
@@ -1206,6 +1234,22 @@ keeps 44 px); skip-link visible-on-focus; `prefers-reduced-motion`; `forced-colo
 boundaries — borders/focus rings must not vanish in Windows High Contrast) + `prefers-contrast`; no
 colour/motion-only state.
 
+**The colour half of this FR has a named mechanism: [Spec 41](41-NAV-MENU-COLOUR-STATE-SYSTEM.md)**
+(added 2026-09-10, FR-36-28). Its `aria-current="page"` clause above is the SAME client-side
+mechanism Spec 41 consumes — `plugins/sgs-blocks/src/blocks/nav-menu/view.js::markCurrentPage`,
+reused verbatim, never re-derived server-side (LiteSpeed would serve one page's answer everywhere).
+Spec 41's contrast posture is deliberately conservative and does not weaken anything here: the
+existing live luminance check in
+`plugins/sgs-blocks/src/components/GradientCapableColourControl.js` stays **warn-only** — it never
+blocks or silently alters an operator's colour (Spec 41 FR-41-17) — and an opt-in "Auto-adjust for
+readability" nudge is carried as Spec 41 FR-41-18, explicitly non-blocking and OFF by default. The
+automatic WCAG foreground resolution via `sgs_wcag_preferred_text_colour_for_bg()` is preserved as
+Spec 41's `itemSmartContrast` toggle (FR-41-5), default ON, and acts only where the operator left
+the matching text colour empty. **This FR's "no colour/motion-only state" clause is carried by Spec
+41 FR-41-6**, which replaces the retired underline mechanism's WCAG 1.4.1 guarantee with two
+explicit, operator-reachable non-colour defaults: an underline on Hover and a weight change on
+current.
+
 ### FR-36-12 — Operator a11y feedback INFORMATIONAL ONLY (P2 DP2a)
 Editor/admin a11y feedback = a passive Notice, never a gate. (The *operator-facing* a11y warnings are the
 "Nav Health" surface — §7 Opp 3, Phase 3.) Distinct from FR-36-9a *error* states.
@@ -1257,12 +1301,13 @@ application in SGS — see FR-36-3). Custom/preset UI welcome where it improves 
 The four universal extensions (`hover-effects`, `parallax`, `custom-spacing`, `animation`) attach to
 EVERY `sgs/*` block unconditionally; the opt-out `supports.sgs.hideExtensions` already exists and was
 already used by `sgs/brand-strip`. `sgs/nav-menu` and `sgs/nav-drawer` never declared it, so a client
-was offered **13 inspector panels on a navigation menu** — including *Block Link* (wrap the whole nav
-in one `<a>`), *Element parallax* on a sticky bar, *Click Effects*, and a generic *Hover Effects*
-panel duplicating the block's own per-element hover controls. Both now declare
-`"hideExtensions": [ "hover", "blockLink", "clickEffects", "parallax", "spacing" ]` → **nav-menu 8
-panels, nav-drawer 4**, live-verified with a negative control (`sgs/card-grid`, which declares
-nothing, still shows all four — the shared mechanism is untouched).
+was offered extra inspector panels on a navigation menu — including *Element parallax* on a sticky
+bar, *Click Effects*, and a generic *Custom Spacing* panel duplicating the block's own per-element
+spacing controls. `sgs/nav-menu`'s `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.hideExtensions` declares
+`[ "clickEffects", "parallax", "spacing" ]` (verified live, three values — not five; *hover* and
+*blockLink* were never added to the opt-out list for this block, since the block's own hover system
+and its Block Link setting are both wanted here), live-verified with a negative control
+(`sgs/card-grid`, which declares nothing, still shows all four — the shared mechanism is untouched).
 
 **Two findings worth carrying:** (1) the *Spacing* panel was not merely a duplicate — it was
 **silently DEAD on nav-menu**: its four fields write `sgsMarginTop/Bottom/PaddingTop/Bottom`, which
@@ -1275,6 +1320,57 @@ but noted for whoever needs it hideable.
 **Rule for any NEW nav block: declare `hideExtensions` deliberately. Inheriting all four is a
 decision, not a default.** ⚠ Still open framework-wide, NOT fixed here: the bespoke Custom CSS field
 in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks — a separate task.
+
+### FR-36-28 — Nav colour-state system → Spec 41 (added 2026-09-10)
+
+**The `sgs/nav-menu` colour, state and control system is specified in
+[`41-NAV-MENU-COLOUR-STATE-SYSTEM.md`](41-NAV-MENU-COLOUR-STATE-SYSTEM.md).** That spec is the
+concrete mechanism satisfying FR-36-4's "distinct hover+focus states" and the colour half of
+FR-36-11, and it sits under FR-36-14's control-completeness contract rather than beside it.
+⛔ It does **not** satisfy FR-36-4's "active-trail" clause — see the boundary note under FR-36-4
+above and Spec 41 FR-41-20.
+
+**Why a separate spec rather than more of this one.** This document carries a measured prohibition
+on renumbering (§1b: **1,530 `FR-36-*` citations across 164 files**) and is 1,600 lines; a full
+control-surface design folded in would push the single canonical nav doc past readability for a
+cleanly separable concern. Same split logic as Spec 32 ↔ Spec 35. **Spec 36 keeps the requirement;
+Spec 41 owns the mechanism. Read together.**
+
+**What Spec 41 covers, in one line each** (FR numbers per spec_version 0.2.0):
+
+| Spec 41 FR | What |
+|---|---|
+| FR-41-1 | Every stateful control targets the LINK, never the `<li>` — `aria-current` lives on the anchor |
+| FR-41-2 | No new shared component is built: nav-menu uses literal row objects, and `SgsBorderControl` is already N-state |
+| FR-41-3 | The 3-state PHP emitters + the current-before-Hover source-order rule |
+| FR-41-4 | `hoverStyle` and the whole underline mechanism are RETIRED |
+| FR-41-5 | `itemSmartContrast` — the pill's auto-readable foreground, preserved as a toggle |
+| FR-41-6 | The non-colour state signal (WCAG 1.4.1) survives the retirement: hover underline + current weight |
+| FR-41-7 | ONE 3-state per-side item border. No separate "Item Divider" concept |
+| FR-41-8 | "Hover colour animation" — one control, border panel only, mandatory reduced-motion companion |
+| FR-41-9 | The submenu split: panel background Normal-only, LINK background 3-state |
+| FR-41-10 | Submenu open animation (`none` / `fade` / `slide-down`) |
+| FR-41-11 | Submenu top offset — today a hardcoded `top:100%` |
+| FR-41-12 | Menu trigger icon/text/both + label; the close-side gaps named as `sgs/nav-drawer` companions |
+| FR-41-13 | Parent item stays hovered while its own dropdown is hovered — `:has()` for the keyboard half only |
+| FR-41-14 | `indicatorStyle:'pill'` suppresses per-item Hover/current background — a UI conditional, no control |
+| FR-41-15 | Every existing hardcoded current-page rule is deleted or converted; each one's fate named |
+| FR-41-16 | `SgsColourPanel` gains optional row sub-headings — additive, zero blast radius |
+| FR-41-17 | The warn-only WCAG contrast check carries forward unchanged |
+| FR-41-18 | Opt-in "Auto-adjust for readability" — its OWN FR, explicitly NON-BLOCKING, off by default |
+| FR-41-19 | The `item._note` comment update, with no retirement narration |
+| FR-41-20 | ⛔ Active-trail is NOT implemented — stated as an explicit non-scope boundary |
+
+⛔ **Out of Spec 41's scope, deliberately, and not to be re-opened there:** mega-menu colours and
+controls (owned by the mega-menu builder); the `featured` item-flag
+mechanism (FR-36-4 / D351 — untouched); sticky/scrolled colour duplication (owner-rejected; the
+header owns scroll state per Spec 37); a device-visibility panel (already covered by the universal
+`responsive-visibility.js` / `conditional-visibility.js` extensions, which `sgs/nav-menu` does not
+opt out of — verified in its `plugins/sgs-blocks/src/blocks/nav-menu/block.json::supports.sgs.hideExtensions`, which lists only
+`clickEffects`, `parallax`, `spacing`).
+
+(FR-36-14's `hideExtensions` paragraph above was corrected in place to match this — the live
+`sgs/nav-menu` block.json declares three values, not five. No open tension remains here.)
 
 ## 6a. Build-order note
 
