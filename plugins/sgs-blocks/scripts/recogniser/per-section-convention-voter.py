@@ -474,7 +474,8 @@ def detect_source_builder(soup: "BeautifulSoup") -> str | None:
 
 def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
                    run_dir: Path | None = None,
-                   source_builder: str | None = None) -> dict:
+                   source_builder: str | None = None,
+                   sc_var_cache: dict | None = None) -> dict:
     """Build a single boundary dict for one section node."""
     class_signature = collect_class_signature(node)
     convention = detect_convention(class_signature)
@@ -593,24 +594,38 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
                 boundary.get("sc_var_hint_count"),
                 subtree_class_signature,
             )
+            # Tier B (2026-09-14, "connect the pieces" follow-up): a Tier A
+            # miss (no slots.aliases hit, count < 2) falls back to a
+            # previously-committed Haiku classification, keyed by the SAME
+            # fingerprint. `sc_var_cache` is optional and defaults to None
+            # (today's Tier-A-only behaviour, zero change for every existing
+            # caller) -- only a caller that explicitly loads the committed
+            # `sc-var-hints.json` sidecar (via sc_var_haiku_batch.py's
+            # workflow) gets Tier B applied.
+            if sc_var_hint is None and sc_var_cache is not None:
+                sc_var_hint = _scv.hint_from_cache(
+                    sc_var_cache,
+                    boundary["sc_var_fingerprint"],
+                    subtree_class_signature,
+                )
+            # Universal-pipeline "connect the pieces" work (2026-09-14):
+            # raw text + structural fields alongside the fingerprint --
+            # computed UNCONDITIONALLY (not gated on a hint actually firing)
+            # because the two consumers that need them most need them
+            # precisely WHEN there is no hint yet: sc_var_responsive_
+            # correlator.py joins hinted sc-for boundaries structurally, and
+            # sc_var_haiku_batch.py needs child-skeleton/raw-text context for
+            # exactly the UNRESOLVED boundaries a Haiku call is meant to
+            # classify. Gating this on `sc_var_hint is not None` was a real
+            # bug -- found live: the real "bagItems" sc-for (genuinely
+            # unresolved, hint_placeholder_count<2, no slots.aliases hit)
+            # produced a Tier B batch item with `child_tag_skeleton: null`
+            # and `raw_text: null`, exactly the context Haiku most needs.
+            boundary["sc_var_text"] = text_snippet
+            boundary["sc_var_own_tag"] = node.name
+            boundary["sc_var_child_tag_skeleton"] = child_tag_skeleton
             if sc_var_hint is not None:
                 boundary["sc_var_hint"] = sc_var_hint.to_dict()
-                # Universal-pipeline "connect the pieces" work (2026-09-14):
-                # raw text alongside the hint so sc_var_responsive_correlator.py
-                # can test containment against Piece 2's rendered-element text
-                # -- the fingerprint above is a one-way hash, useless for that.
-                # NOTE this only matches for NON-sc-for boundaries -- an sc-for
-                # item's own text is the literal `{{ r.title }}`-shaped source
-                # placeholder, never the rendered content (verified live), so
-                # the correlator falls back to the structural fields below for
-                # sc-for specifically.
-                boundary["sc_var_text"] = text_snippet
-                # Structural join key (own tag + immediate-children skeleton)
-                # -- matches draft-responsive-probe.js's own `group_signature`
-                # definition exactly (own tag + child tag list), the only
-                # signal that survives an sc-for item's source->rendered gap.
-                boundary["sc_var_own_tag"] = node.name
-                boundary["sc_var_child_tag_skeleton"] = child_tag_skeleton
         except Exception:
             pass
 
@@ -706,7 +721,7 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
 
 
 def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
-         run_dir: Path | None = None) -> dict:
+         run_dir: Path | None = None, sc_var_cache: dict | None = None) -> dict:
     """Top-level voting entry point. Returns orchestrator-compatible JSON dict."""
     html = mockup_path.read_text(encoding="utf-8")
     soup = BeautifulSoup(html, "html.parser")
@@ -719,7 +734,7 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
         for idx, (node, selector) in enumerate(auto_detect_sections(soup), start=1):
             boundaries.append(build_boundary(
                 node, selector, used_ids, idx, run_dir=run_dir,
-                source_builder=source_builder,
+                source_builder=source_builder, sc_var_cache=sc_var_cache,
             ))
     else:
         if not section_selector:
@@ -729,7 +744,7 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
             sys.exit(f"ERROR: selector {section_selector!r} matched zero nodes in {mockup_path}")
         boundaries.append(build_boundary(
             node, section_selector, used_ids, 1, run_dir=run_dir,
-            source_builder=source_builder,
+            source_builder=source_builder, sc_var_cache=sc_var_cache,
         ))
 
     convention_counter = Counter(b["convention_per_section"] for b in boundaries)
@@ -760,15 +775,32 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--section", type=str, default=None, help="CSS selector for a single section")
     parser.add_argument("--auto-section", action="store_true", help="Auto-detect all top-level sections")
     parser.add_argument("--out", type=Path, default=None, help="Write JSON here (default: stdout)")
+    parser.add_argument(
+        "--sc-var-cache", type=Path, default=None,
+        help=(
+            "Optional Tier B sidecar (sites/<client>/sc-var-hints.json, "
+            "written by sc_var_haiku_batch.py --apply-response) -- when "
+            "given, a Tier A miss on an sc-for boundary falls back to this "
+            "committed Haiku classification before giving up."
+        ),
+    )
     args = parser.parse_args(argv)
 
     if not args.mockup.exists():
         sys.exit(f"ERROR: mockup not found at {args.mockup}")
 
+    sc_var_cache: dict | None = None
+    if args.sc_var_cache is not None:
+        _scripts_root = Path(__file__).resolve().parent.parent
+        if str(_scripts_root) not in sys.path:
+            sys.path.insert(0, str(_scripts_root))
+        from recogniser import sc_var_classifier as _scv
+        sc_var_cache = _scv.load_cache(args.sc_var_cache)
+
     # Derive run_dir from the --out path so trace events land in the same
     # pipeline-state/<run_id>/ folder that the orchestrator owns.
     run_dir: Path | None = args.out.parent if args.out else None
-    result = vote(args.mockup, args.section, args.auto_section, run_dir=run_dir)
+    result = vote(args.mockup, args.section, args.auto_section, run_dir=run_dir, sc_var_cache=sc_var_cache)
     payload = json.dumps(result, indent=2, ensure_ascii=False)
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)

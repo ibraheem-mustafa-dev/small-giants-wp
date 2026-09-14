@@ -106,6 +106,69 @@ def test_sc_if_never_produces_a_block_identity_hint() -> None:
     print("  PASS  sc-if wrapper never produces a block-identity hint")
 
 
+def test_unresolved_sc_for_still_carries_structural_context_regression() -> None:
+    """Real-draft-verified bug (2026-09-14, "the 2 gaps" follow-up): the
+    structural/text fields were originally written ONLY inside the `if
+    sc_var_hint is not None` branch, so a genuinely UNRESOLVED sc-for
+    (count<2, no slots.aliases hit -- the exact case sc_var_haiku_batch.py
+    exists to classify) got `sc_var_child_tag_skeleton`/`sc_var_text`
+    silently absent, exactly when a Tier B classifier needs them most.
+    Caught live against the real "bagItems" sc-for in the Ward End Eye Care
+    draft, which produced a Haiku batch item with `child_tag_skeleton: null`."""
+    html = (
+        '<sc-for list="{{ bagItems }}" as="b" hint-placeholder-count="1">'
+        "<section><div>{{ b.name }}</div></section></sc-for>"
+    )
+    b = _build(html, "section")
+    assert b["fallback_strategy"] == "gap-candidate", f"got {b['fallback_strategy']}"
+    assert b.get("sc_var_hint") is None, "count=1 must not fire a hint -- this must stay unresolved"
+    assert b.get("sc_var_own_tag") == "section", f"got {b}"
+    assert b.get("sc_var_child_tag_skeleton") == ["div"], f"got {b}"
+    assert b.get("sc_var_text"), f"raw text must be present even with no hint: {b}"
+    print("  PASS  unresolved-sc-for-still-carries-structural-context-regression")
+
+
+def test_tier_b_cache_resolves_an_unresolved_boundary() -> None:
+    """End-to-end Tier B: a boundary Tier A cannot resolve (bespoke name,
+    count<2, no slots.aliases hit) stays unresolved with no cache, then
+    resolves via `hint_from_cache` once a committed classification is
+    passed in through `sc_var_cache` -- verified live against the real Ward
+    End Eye Care draft's "bagItems" sc-for + a real sc_var_haiku_batch.py
+    round trip before this test was written (see D-log)."""
+    _scripts_root = HERE.parent
+    if str(_scripts_root) not in sys.path:
+        sys.path.insert(0, str(_scripts_root))
+    from recogniser import sc_var_classifier as scv
+
+    html = (
+        '<sc-for list="{{ bagItems }}" as="it" hint-placeholder-count="1">'
+        "<section><div>{{ it.name }}</div></section></sc-for>"
+    )
+    soup = BeautifulSoup(html, "html.parser")
+    node = soup.find("section")
+
+    b_no_cache = voter.build_boundary(node, "bag-item", set(), 1)
+    assert b_no_cache.get("sc_var_hint") is None, "must genuinely be unresolved without Tier B"
+    fingerprint = b_no_cache["sc_var_fingerprint"]
+
+    cache = {
+        "schema_version": scv.CACHE_SCHEMA_VERSION,
+        "entries": {
+            fingerprint: {
+                "block": "sgs/counter",
+                "confidence": 0.3,
+                "evidence": "test",
+                "model_id": "claude-haiku-4-5-20251001",
+            }
+        },
+    }
+    b_with_cache = voter.build_boundary(node, "bag-item", set(), 1, sc_var_cache=cache)
+    hint = b_with_cache.get("sc_var_hint")
+    assert hint is not None and hint["block"] == "sgs/counter", f"got {hint}"
+    assert hint["source"] == "sc_var_model"
+    print("  PASS  tier-b-cache-resolves-an-unresolved-boundary")
+
+
 def test_route_sc_var_hints_enriches_matching_gap_bucket_item() -> None:
     """End-to-end: a gap-candidate boundary's sc_var_hint reaches the
     matching unrecognised_class bucket item as pure enrichment."""
@@ -158,6 +221,8 @@ def main() -> int:
     test_no_sc_wrapper_leaves_fields_absent()
     test_descendant_canonical_class_suppresses_hint_regression()
     test_gap_candidate_sc_for_section_with_bespoke_name_gets_count_hint()
+    test_unresolved_sc_for_still_carries_structural_context_regression()
+    test_tier_b_cache_resolves_an_unresolved_boundary()
     test_sc_if_never_produces_a_block_identity_hint()
     test_route_sc_var_hints_enriches_matching_gap_bucket_item()
     test_route_sc_var_hints_never_overwrites_existing_key()

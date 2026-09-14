@@ -1,5 +1,47 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1062 [ROUTINE] — Shipped Piece 1's Tier B (Haiku batch classifier), closing one of D1061's two named gaps
+
+**2026-09-14.** New: `plugins/sgs-blocks/scripts/recogniser/sc_var_haiku_batch.py`. Threads an
+optional `sc_var_cache` param through `build_boundary`/`vote`/the CLI (`--sc-var-cache`) --
+default `None`, zero behaviour change for every existing caller.
+
+**Design, matching `sc_var_classifier.py`'s own docstring exactly:** the script itself has no
+network access and no API client -- `--write-prompt` builds one ready-to-dispatch prompt per
+DRAFT (never per boundary), the calling Claude Code session sends it to a Haiku model,
+`--apply-response` validates the raw response (fingerprint must be one we asked about, block
+must be in the DB-authoritative vocabulary read from `slots.standalone_block` -- R-31-1, never
+hardcoded -- confidence capped at `TIER2_MAX_CONFIDENCE`) and commits via the already-shipped
+`write_cache_entries()`.
+
+**Real bug found and fixed via live verification, not fixture-only testing.** Building the
+real batch prompt against the Ward End Eye Care draft's genuinely-unresolved "bagItems"
+`sc-for` showed `child_tag_skeleton: null` / `raw_text: null` -- the exact context Haiku needs
+most. Root cause: `per-section-convention-voter.py::build_boundary` wrote those fields (plus
+`sc_var_own_tag`, added for D1061's correlator) only INSIDE the `if sc_var_hint is not None`
+branch -- i.e. only when a hint already fired, never for the unresolved case both this
+classifier and D1061's correlator most need them for. Fixed: moved unconditional (the values
+were already cheaply computed either way). Regression test added
+(`test_unresolved_sc_for_still_carries_structural_context_regression`).
+
+**Verified live, full round trip on real data:** built real boundaries for all 39 `sc-for`
+items in the draft (37 already Tier-A-resolved, "bagItems" x2 genuinely unresolved) -> wrote a
+real 2-item batch prompt -> dispatched it to an actual Haiku subagent -> got back a real
+response (correctly `null` for both -- no product-card/cart block exists in the current
+vocabulary, and Haiku declined rather than guessing, proving the discipline holds) -> proved
+the write path separately with a valid synthetic response against the same real fingerprints
+-> confirmed `hint_from_cache` resolves the previously-unresolved boundary
+(`source: sc_var_model`) when the committed cache is passed to `build_boundary`.
+
+**Named observation, not actioned (out of today's scope):** Tier A's own count-fallback value
+`"card-grid"` (bare, no `sgs/` prefix) is not in `slots.standalone_block` at all -- there is no
+real `sgs/card-grid` block. Tier B's DB-driven vocabulary is stricter and correctly can never
+produce it. Fixing Tier A's placeholder naming is separate, pre-existing (D1057) scope, not
+touched here.
+
+**Still open:** the other named gap from D1061 -- route coverage beyond one already-loaded
+page (Piece 2).
+
 ## D1061 [ROUTINE] — Connected Piece 1 (sc-var identity) to Piece 2 (responsive values) via a structural + text-containment correlator
 
 **2026-09-14.** Follows D1057/D1058 (Piece 1, Piece 2 shipped standalone; both left the
