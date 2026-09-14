@@ -51,13 +51,17 @@ adversarial-council pass Bean asked for.** Read `specs/42-SGS-FORM-CPT-AND-PRICI
 `specs/43-SGS-CHOICE-FLOW.md` in full before touching; FR-42-0 (fail-open `requireLogin` bug) is
 independently ship-ready any time. See "Front B" below for the orchestration plan.
 
-**Ward End Eye Care Tasks 1/2/4/5 (sgs_modal CPT, form-field-hidden fix, product-card Frame
-Card fields, cart/checkout templates) — QC-closed this session (D1067).** All four PASS or
-PASS-WITH-GAPS; two doc-rot comments fixed inline; a separately-scoped pre-existing bug
-(`.sgs-form-field--hidden` has no CSS rule, so a disabled conditional field stays visually on
-the page) recorded in D1067 for whoever next touches `sgs/form`'s conditional-logic system.
-Task 1's one real gap — the 6 live trigger points were never repointed to `modalRef` — is being
-closed by a dispatched follow-up agent; check its outcome before treating Task 1 as fully done.
+**Ward End Eye Care Tasks 1/2/4/5 — FULLY CLOSED this session (D1067/D1069/D1070, CSS fix
+`153f8ec1d`).** QC-closed all four (D1067: PASS or PASS-WITH-GAPS); two doc-rot comments fixed
+inline. Task 1's "6 live trigger points" turned out to be a false premise, checked against the
+live site rather than assumed — Ward End Eye Care has no build yet, so there is no real content
+to migrate (D1069). The `sgs_modal`/`modalRef` mechanism itself was instead live-proven
+end-to-end on a generic test post: two independent pages, one canonical source, an edit to the
+source propagated to both without touching either page (D1070) — re-open the REAL migration only
+once the eye-care build exists. The separately-scoped pre-existing bug Task 2's QC surfaced
+(`.sgs-form-field--hidden` had no CSS rule, so a disabled conditional field stayed visually on
+the page though correctly excluded from submission) is now FIXED and live-verified — commit
+`153f8ec1d`, `plugins/sgs-blocks/src/blocks/form/style.css`.
 
 **Spec 41 nav-menu colour/state — Waves A/B/C (steps 1-23) fully DONE, deployed, live-verified,
 plan archived to `plans/archive/phase-nav-menu-colour-state.md`.** Full decision trail
