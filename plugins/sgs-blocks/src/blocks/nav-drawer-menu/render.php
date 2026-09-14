@@ -341,6 +341,36 @@ $featured_ids = is_array( $attributes['featuredItemIds'] ?? null ) ? $attributes
 $flattener    = new SGS_Nav_Drawer_Menu_Flattener( $featured_ids, $uid );
 $flat_items   = $flattener->flatten( $menu_blocks );
 
+/*
+ * ── 2b. Split-nav slicing (Step 8, D1059) — the drawer's two-tier look. ────
+ *
+ * Ported from `nav-bar-menu/render.php`'s own §2b (Step 6) — same mechanism,
+ * same identifier keying, same fail-VISIBLE fallback. Lets two instances of
+ * this block share one menu — e.g. a Playfair 34px "primary" tier followed
+ * by an Outfit 15px "secondary" tier, each its own instance with its own
+ * typography attrs — rather than the old workaround of a second block with a
+ * hardcoded `itemFontSize`. See that file's §2b docblock for the full
+ * rationale; not repeated here.
+ */
+$sgs_nm_split_side = (string) ( $attributes['splitSide'] ?? '' );
+if ( in_array( $sgs_nm_split_side, array( 'before', 'after' ), true ) ) {
+	$sgs_nm_split_after_id = (string) ( $attributes['splitAfterItemId'] ?? '' );
+	$sgs_nm_split_index    = null;
+	if ( '' !== $sgs_nm_split_after_id ) {
+		foreach ( $flat_items as $sgs_nm_i => $sgs_nm_item ) {
+			if ( ( $sgs_nm_item['identifier'] ?? '' ) === $sgs_nm_split_after_id ) {
+				$sgs_nm_split_index = $sgs_nm_i;
+				break;
+			}
+		}
+	}
+	if ( null !== $sgs_nm_split_index ) {
+		$flat_items = 'before' === $sgs_nm_split_side
+			? array_slice( $flat_items, 0, $sgs_nm_split_index + 1 )
+			: array_slice( $flat_items, $sgs_nm_split_index + 1 );
+	}
+}
+
 // FR-41-30(b): the drawer sub-item marker is operator-chosen, resolved through
 // the same source-aware resolver as sgs/icon. The stored default
 // (`lucide`/`chevron-right`) reproduces the previously-hardcoded glyph exactly.
@@ -502,6 +532,21 @@ if ( '' === $nav_label && $ref > 0 ) {
 }
 if ( '' === $nav_label ) {
 	$nav_label = __( 'Primary', 'sgs-blocks' );
+}
+
+/*
+ * Split-nav landmark-unique guard (Step 8, D1059) — ported verbatim from
+ * `nav-bar-menu/render.php`'s own guard (Step 6); see that file for the
+ * full rationale.
+ */
+if ( '' === trim( (string) ( $attributes['navLabel'] ?? '' ) )
+	&& in_array( $sgs_nm_split_side, array( 'before', 'after' ), true )
+) {
+	$nav_label = 'before' === $sgs_nm_split_side
+		/* translators: %s: the auto-derived menu label, e.g. "Primary". */
+		? sprintf( __( '%s (first half)', 'sgs-blocks' ), $nav_label )
+		/* translators: %s: the auto-derived menu label, e.g. "Primary". */
+		: sprintf( __( '%s (second half)', 'sgs-blocks' ), $nav_label );
 }
 
 /*

@@ -319,6 +319,15 @@
 			"type": "number",
 			"default": 0
 		},
+		"splitAfterItemId": {
+			"type": "string",
+			"default": ""
+		},
+		"splitSide": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "before", "after" ]
+		},
 		"featuredItemIds": {
 			"type": "array",
 			"default": [],

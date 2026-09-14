@@ -53,6 +53,7 @@ import useNavMenuSource from '../../shared/nav-menu-panels/useNavMenuSource';
 import useItemHoverContrast from '../../shared/nav-menu-panels/useItemHoverContrast';
 import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
+import SplitPanel from './SplitPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
 import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
@@ -111,6 +112,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		featuredFontWeight,
 		featuredFontWeightHover,
 		megaDrawerFallbackIds,
+		splitAfterItemId,
+		splitSide,
 	} = attributes;
 
 	const { menuOptions, isResolving, resolvedItems, toggleFeatured } =
@@ -434,6 +437,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				<DropdownSettingsPanel
 					navLabel={ navLabel }
 					itemSmartContrast={ itemSmartContrast }
+					setAttributes={ setAttributes }
+				/>
+
+				<SplitPanel
+					splitAfterItemId={ splitAfterItemId }
+					splitSide={ splitSide }
+					resolvedItems={ resolvedItems }
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
