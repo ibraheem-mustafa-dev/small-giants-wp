@@ -1,5 +1,32 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1068 [ROUTINE] — Fixed Tier B's block vocabulary: was querying the wrong DB table, silently excluding 181 real blocks including `sgs/cart` and `sgs/card-grid`
+
+**2026-09-14.** Bean caught this directly from the D1066 gap list -- asked why real, existing
+blocks (`sgs/card-grid`, `sgs/cart`) weren't recognised when `sc_var_haiku_batch.py`'s earlier
+real dispatch (D1062) returned `null` for "bagItems".
+
+**Root cause, confirmed via `sgs-db.py sql`, not assumed:** `_load_valid_blocks()` queried
+`slots.standalone_block` -- a NARROW element-scope slot->block mapping (24 distinct values) --
+as if it were the block catalogue. The real registry is `blocks` (`sgs-db.py`/`/wp-blocks`'s
+own source of truth). D1062's "Haiku correctly declined -- no cart block exists" was true
+for the list I gave it, and wrong about the actual catalogue: it was never offered the option.
+
+**Second issue found in the same fix, before it shipped:** an unfiltered `blocks` query
+returns 205 rows, but 122 of those are `source='native_wp'` (core WordPress blocks,
+catalogued for reference only). Offering those to Haiku would have violated CONVERT-not-mirror
+(CLAUDE.md Rule 1) and the core-blocks ban. Fixed to `WHERE status='built' AND source='sgs'`
+-- 83 real, legal SGS blocks, `sgs/cart` and `sgs/card-grid` both present.
+
+**Re-verified live** with a real Haiku dispatch against the same "bagItems" item using the
+corrected 83-block vocabulary: it now picked `sgs/product-card` (confidence 0.35), not
+`sgs/cart` -- a genuine, plausible judgement (the repeated ITEMS inside a cart drawer are
+individually product-entry-shaped; `sgs/cart` more likely names the outer cart
+widget/mechanism itself, not the per-line-item repeat unit). Recorded here rather than
+silently declared "now correctly says cart" -- the vocabulary bug is fixed and proven; which
+specific slug is the RIGHT answer for this content is a separate judgement call, not
+re-litigated by this fix.
+
 ## D1067 [ROUTINE] — QC council closes Tasks 1/2/4/5 (Ward End Eye Care 5-task session): all PASS or PASS-WITH-GAPS, one real gap dispatched as a follow-up
 
 Ran 4 independent QC subagents (`wp-sgs-developer`), one per committed task, against the real

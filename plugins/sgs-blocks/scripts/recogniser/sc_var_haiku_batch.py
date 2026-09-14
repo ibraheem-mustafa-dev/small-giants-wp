@@ -58,14 +58,29 @@ DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.
 
 def _load_valid_blocks() -> list[str]:
     """R-31-1: Haiku's allowed vocabulary comes from the DB, never a
-    hand-typed list -- `slots.standalone_block` is the same authoritative
-    column `sc_var_classifier.py::_load_slot_aliases` already reads."""
+    hand-typed list.
+
+    Real bug found live (2026-09-14, Bean caught it): this originally queried
+    `slots.standalone_block`, which is a NARROW element-scope slot->block
+    mapping (24 distinct values) -- NOT the block catalogue. `blocks` is the
+    actual registry and is what `sgs-db.py sql "SELECT slug FROM blocks"` and
+    `/wp-blocks` both read. The narrow table's absence of `sgs/cart` /
+    `sgs/card-grid` (both real, built blocks) made the earlier real Haiku
+    dispatch correctly-but-wrongly decline to classify "bagItems" as null --
+    it was never given the option, not because no such block exists.
+
+    Second issue caught in the SAME fix, before it shipped: `blocks` also
+    catalogues 122 core WordPress blocks (`source='native_wp'`) alongside 83
+    real SGS ones (`source='sgs'`) -- an unfiltered query would have offered
+    Haiku `core/*` slugs as valid conversion targets, directly violating this
+    project's CONVERT-not-mirror rule (CLAUDE.md Rule 1) and the core-blocks
+    ban (`check-no-core-blocks.py`). `source='sgs'` excludes them.
+    """
     try:
         conn = sqlite3.connect(f"file:{DB_PATH.as_posix()}?mode=ro", uri=True)
         try:
             rows = conn.execute(
-                "SELECT DISTINCT standalone_block FROM slots "
-                "WHERE standalone_block IS NOT NULL"
+                "SELECT DISTINCT slug FROM blocks WHERE status='built' AND source='sgs'"
             ).fetchall()
         finally:
             conn.close()
