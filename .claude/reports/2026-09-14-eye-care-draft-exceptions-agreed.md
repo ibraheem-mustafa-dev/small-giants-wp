@@ -104,18 +104,34 @@ overstates this by one surface). `sgs/product-card` is missing: swatch row, rati
 count, brand wordmark overlay, saving badge. Task 4 closes this on the existing block, shipping
 Frame Card's look and Mama's Munches' current look as two style variations of the same block.
 
-## In progress (this session, not the fresh-session prompt)
+## Shipped this session (2026-09-14, D1057/D1058)
 
-- Claude Design identity recognition (`sc-for`/`sc-if` attribute names, reusing the
-  `data_slot_attrs` build shipped this session for shadcn) and a draft-only render-and-measure
-  primitive for responsive values, scoped to blank-canvas pages only (Home/About/Help/Contact
-  for this draft). Being built now, in parallel with the fresh-session prompt's 5 tasks —
-  neither track touches the other's files (see the prompt's own guardrail).
+- **Claude Design identity recognition** — `recogniser/sc_var_classifier.py`, commit
+  `093af7329` (+ fix `8b6952751`). NOT "attribute names reusing `data_slot_attrs`" as
+  originally planned here — corrected during the build: `sc-for`/`sc-if` are ANCESTOR TAG
+  NAMES, not same-element attributes like shadcn's `data-slot`, so this shipped as its own
+  advisory module (mirroring the DOM-shape-classifier Tier 2 shape) rather than a
+  `data_slot_attrs`-style reuse. Scoped to `sc-for` only (`sc-if` names a boolean state flag,
+  not a collection). Advisory-only, never authoritative — never writes to `slots.aliases`.
+- **Draft-only render-and-measure primitive** — `orchestrator/draft-responsive-probe.js`,
+  commit `5afc455ee`. Renders one already-loaded route at 375/768/1440, reports genuinely
+  responsive elements. Verified: 46 of 616 on the real Home route.
+- **Real finding, not originally anticipated:** `<sc-for>`/`<sc-if>` do not survive
+  rendering at all (0 in the rendered DOM). The two mechanisms above read DIFFERENT DOMs
+  (source parse vs rendered page) and cannot be trivially linked — see "Not yet designed"
+  below.
 
 ## Not yet designed (explicitly deferred, not forgotten)
 
+- **Correlating a Piece 2 (rendered-value) measurement back to a Piece 1 (source-identity)
+  boundary** — real, separate, unbuilt work discovered while building the two pieces above;
+  they read different DOMs (source `.dc.html` parse vs the rendered page), so linking them
+  needs a structural DOM-path or content-overlap correlation step that doesn't exist yet.
+- **Route coverage beyond one already-loaded page** — driving interaction states (mega-menu
+  open, filter drawer, lens modal, bag) to reach the other nine routes. Named risk in the
+  harmonisation report §8, confirmed still unsolved.
 - The clone-time detector that recognises a draft section as header/footer/drawer/mega-menu/
   shop/product-shaped and routes it into the right CPT/template, instead of the walker's
   current chrome-skip-and-discard. Real, named, unbuilt work — not covered by this session's
-  in-progress pipeline work (which only covers the genuinely blank-canvas pages) or by the
-  fresh-session prompt's 5 tasks.
+  pipeline work (which only covers the genuinely blank-canvas pages) or by the fresh-session
+  prompt's 5 tasks.

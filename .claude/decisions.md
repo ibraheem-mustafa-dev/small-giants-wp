@@ -1,5 +1,70 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1058 [ROUTINE] — Universal-pipeline upgrade Piece 2: draft-only render-and-measure primitive, sc-for identity does NOT survive rendering
+
+**2026-09-14.** `computed-parity.js` measures draft-vs-clone fidelity AFTER a clone exists
+(hard-requires `--draft` AND `--clone`) — it cannot be reused as-is for extraction-time
+reading of Claude Design's JS-computed responsive values (a ResizeObserver-driven width ->
+boolean -> inline-style-string chain, not CSS `@media`). Design grounded in
+`.claude/reports/2026-09-14-claude-design-draft-pipeline-harmonisation.md` §7.
+
+**Shipped**, commit `5afc455ee`: new `orchestrator/draft-responsive-probe.js` — renders one
+draft route at this project's fixed SGS device-tier widths (375/768/1440, never the draft's
+own arbitrary JS breakpoints), diffs computed values per element keyed by normalised text
+content (rule 4a), reports only genuinely responsive elements. Verified against the real Ward
+End Eye Care draft's home route: 46 responsive elements of 616 present at all 3 widths. `§8`'s
+named risk re-verified live before building: `mobilePreview` is still hardcoded `false` in the
+real draft (the script fails loudly if a regeneration ever flips it).
+
+**Real finding, corrected before shipping:** an identity-attachment attempt mirroring D1057
+(read the nearest `<sc-for>`/`<sc-if>` ancestor from the rendered DOM) was dead code —
+verified live that custom-element tags do NOT survive rendering at all (0 found in the real
+draft's rendered DOM, vs 39/87 in the source `.dc.html`). Removed rather than shipped
+silently non-functional; the self-test fixture (which had used an unrealistic sc-for-wrapped
+shape masking this) was corrected to match. **This also corrects a claim in the
+harmonisation report's §7**: "`sc-for`/`sc-if` is the identical shape [as `data-slot`]" is
+wrong in a load-bearing way beyond the ancestor-vs-attribute difference already known when
+that report was written — the two are unreadable from the SAME DOM at all (`data-slot`
+survives into the render; `sc-for`/`sc-if` do not). Report corrected same day.
+
+**Still open, named not solved:** correlating a Piece 2 measurement back to a Piece 1
+`sc_var_hint` boundary (they read different DOMs — source parse vs rendered page) needs a
+structural or content-overlap correlation step; route coverage beyond one already-loaded page
+(mega-menu open, filter drawer, lens modal) is unbuilt.
+
+## D1057 [ROUTINE] — Universal-pipeline upgrade Piece 1: Claude Design `sc-for` variable-name identity (advisory hint, not authoritative)
+
+**2026-09-14.** Claude Design (`.dc.html`) drafts carry zero CSS classes; the only identity
+signal for repeated content is the free-text variable name bound by the nearest `<sc-for
+list="{{ name }}">`/`<sc-if value="{{ name }}">` ANCESTOR wrapper — these are tag names, not
+attributes on the target element, a real correction to the initial "mirrors `data-slot`"
+framing (caught before writing code, via a direct read of the real draft).
+
+**Research verdict (`/research-buddies`, 2 rounds, persisted to
+`C:/Users/Bean/.claude/memory/research/2026-09-14-claude-design-sc-for-variable-naming.md`):**
+generic variable names (`reasons`/`featured`/`ticker`/`marquee`) recur across dozens of
+independent Claude Design drafts on GitHub — a real emergent naming habit of the model, not
+draft-author noise. Compound names (`megaTopBrands`, `shapeTiles`) don't recur — bespoke.
+`slot_synonyms` is dead (D99); its successor `slots.aliases` is AUTHORITATIVE for real client
+BEM classes — seeding Claude Design's free-text names into it would cross-contaminate that
+table permanently. `sc-if` names a boolean state flag, not a collection — excluded from
+block-identity classification entirely (cuts the boundary surface ~69%).
+
+**Shipped**, commit `093af7329` (+ fix `8b6952751`): new `recogniser/sc_var_classifier.py`
+mirrors `dom_shape_classifier.py`'s `Hint`/confidence-cap/advisory-only contract exactly.
+Tier A (free, deterministic): `hint-placeholder-count` cardinality + a read-only
+`slots.aliases` lookup (never a write). Tier B (a per-draft-batched Haiku classification,
+cached to a committed JSON sidecar) is scaffolded (`unresolved_sc_for_names`/`load_cache`/
+`hint_from_cache`) but not invoked — no model call is wired in yet. Wired through
+`per-section-convention-voter.py::build_boundary` (gap-candidate gated, same shape as Tier
+2's `dom_shape_hint`) and `leftover-bucket-router.py::route_sc_var_hints` (pure enrichment).
+
+**Bug found via a light direct-execution `/qc` pass (not full `/qc-council`) and fixed same
+day (`8b6952751`):** the gate only checked the section's OWN top-level classes, missing an
+authored SGS-BEM class on a DESCENDANT — the same failure class qc-council's Tier 2 finding 1
+caught. Fixed to scan the whole subtree; regression-guarded
+(`test_descendant_canonical_class_suppresses_hint_regression`).
+
 ## D1056 [ROUTINE] — Spec 42: `sgs_form` CPT mandatory, one signed pricing delta, revision-pinned
 
 **2026-09-14.** A `/research-council` run (1 deep-dive researcher, 4-reviewer council —

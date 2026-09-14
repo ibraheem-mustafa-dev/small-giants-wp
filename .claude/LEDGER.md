@@ -83,6 +83,14 @@ someone still needs to `/sgs-clone` it fresh and confirm it now converts (or sti
 why). The doc's own "measure Tier 0 first" gate also remains undone (Bean deliberately skipped it
 to build Tier 1+2 directly, per D1053) — genuinely open work, not closed by the Tier 1/2 ship.
 
+**Universal-pipeline upgrade (Claude Design `.dc.html` support) — Piece 1 + Piece 2 SHIPPED
+2026-09-14 (D1057/D1058), a SEPARATE mechanism from the BEM tier system above.**
+`sc_var_classifier.py` (identity, advisory-only, never writes `slots.aliases`) +
+`draft-responsive-probe.js` (draft-only responsive-value extraction — `computed-parity.js`
+needs both `--draft`+`--clone`, can't be reused). Real finding: `<sc-for>`/`<sc-if>` do NOT
+survive rendering — the two tools read different DOMs and are NOT yet linked; that
+correlation, and route coverage beyond one already-loaded page, are open/named, not built.
+
 
 ## Blockers
 
@@ -255,7 +263,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1054** — verify with
+- **D-ceiling:** **D1058** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -275,7 +283,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 | **A separate, parallel track — header/footer/mega-panel motion + Indus branded content, updated 2026-09-11 (this is NOT the stale 2026-09-10 snapshot — re-read it fresh)** | `.claude/prompts/2026-09-10-header-footer-implementation.md` — motion capability (cursor-field/particle-trail/grid-dot/flowing-gradient/surface-treatment/scroll-reveal) shipped on `site-header-row`/`site-footer-row`/mega-panel; Indus Brands mega-menu content recovered into a real test post; two real bugs found+fixed en route (`sgs/card-grid` + `sgs/brand-strip` image-picker schema/UI mismatch silently wiping the live frontend list — D1027, D1031); confirmed no separate cloning pipeline or separate WP site is needed for per-client branded content — the shared canary hosts it directly via `push-theme-snapshot.py` + the active-header/footer option. A real path exists to build Indus's full header/footer/mega-panel next, no infrastructure blocker. |
 | Today's full fix detail (main closeout) | `decisions.md` D1015 (also D1013, D1014 for the measurement-tool repair that preceded it) |
 | Second-pass fixes (hover-zoom, trust-bar border, section-boundary detector, hero split-media) | commits `ae604c09a`, `56e51a7dd`, `d216ca7cd`, `4b6072757`, `ec3fcabfd` — no separate D-number, see this LEDGER's Human Summary |
-| BEM-recognition + template-detection brainstorm — Q1 Tier 0/1/2 + Q2 Tier 1 all SHIPPED (D1034/D1035/D1037/D1053/D1054); Tier 0's own real-source measurement + the Mama's Munches PRODUCT draft re-run are STILL open; Tier 3 (both questions) deliberately out of scope | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` (inline ✅ SHIPPED markers per tier); research: `C:/Users/Bean/.claude/memory/research/2026-09-14-webflow-vs-tailwind-class-detection.md` |
+| BEM-recognition + template-detection brainstorm — Q1 Tier 0/1/2 + Q2 Tier 1 all SHIPPED (D1034/D1035/D1037/D1053/D1054); Tier 0's own real-source measurement + the Mama's Munches PRODUCT draft re-run are STILL open; Tier 3 (both questions) deliberately out of scope. **Claude Design addendum (D1057/D1058) also SHIPPED, see its own bullet above.** | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` (✅ SHIPPED markers + addendum); research: `.../2026-09-14-webflow-vs-tailwind-class-detection.md`, `.../2026-09-14-claude-design-sc-for-variable-naming.md` |
 | R8 motion-recognition design (settled, references only) | `plans/archive/2026-09-10-r8-motion-recognition-brainstorm.md` |
 | R8 execution plan (DONE, archived — reference only) | `plans/archive/phase-r8-motion-recognition.md` |
 | **Spec 41 nav-menu colour/state — THE FRONT. Whole plan (Waves A/B/C, all steps) DONE/superseded/withdrawn, archived 2026-09-14; the post-review fix register (see "THE FRONT" above) is the real front, not the plan's own step count** | `.claude/reports/2026-09-12-nav-menu-visual-review-register.md` (intake — stale against the latest commits, see "THE FRONT"); `plans/archive/phase-nav-menu-colour-state.md`'s "Execution Progress Log" is ALSO stale (last updated 2026-09-11, predates the register work); spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |

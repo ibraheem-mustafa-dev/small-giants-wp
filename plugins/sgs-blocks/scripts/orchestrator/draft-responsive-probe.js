@@ -45,7 +45,7 @@
  * NOT DONE HERE (named gap, not silently dropped): identity correlation back to Piece 1's
  * sc-for/sc-if boundaries. Verified live before writing this file that `<sc-for>`/`<sc-if>`
  * do NOT survive rendering -- the runtime materialises them away entirely (measured: 0
- * custom-element tags of any kind in the rendered DOM, vs 35 `sc-for` + 48 `sc-if` in the
+ * custom-element tags of any kind in the rendered DOM, vs 39 `sc-for` + 87 `sc-if` in the
  * SOURCE `.dc.html`). So a rendered element cannot be asked "which sc-for wrapped you?" the
  * way Piece 1 asks the SOURCE parse tree. This script outputs responsive VALUES keyed by
  * rendered content only; matching a result here to a Piece 1 boundary (by structural DOM

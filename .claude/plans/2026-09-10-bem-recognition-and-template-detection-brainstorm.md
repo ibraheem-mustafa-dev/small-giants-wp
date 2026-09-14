@@ -134,6 +134,34 @@ Tier 2 is still not started until they're measured).
 - *Risk:* **must feed the pipeline's existing gap-candidate / operator-review flow** (`leftover-buckets.json`, bucket-c classifier) rather than silently asserting a block identity — a shape guess is lower-confidence than an authored class and should be treated that way. **Hard constraint for whenever this is built:** DOM-shape inference must never be consulted when an element's `class_signature` is already SGS-BEM canonical, even partially — otherwise a Bean draft mixing one authored BEM class with one incidental utility class on the same element could have its role silently overridden by a shape guess instead of respecting the authored identity. This is a design constraint to carry into the eventual build, not something to resolve now.
 - *Value:* the only option here that helps genuinely classless plain-HTML sources, which Tier 0/1 cannot touch at all.
 
+### Addendum (2026-09-14) — Claude Design `sc-for`/`sc-if`: a source outside this tier system's original scope, handled as a sibling pair of mechanisms
+
+**✅ SHIPPED 2026-09-14 — D1057 (identity, commit `093af7329`+`8b6952751`), D1058 (values,
+commit `5afc455ee`).** Full detail: `.claude/reports/2026-09-14-claude-design-draft-pipeline-
+harmonisation.md` §7/§8 (corrected same day against what building it actually found) and
+`.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`.
+
+Claude Design (`.dc.html`) drafts are not a Tier 0/1/2 case in the sense above — Tiers 0-2 all
+recognise identity from something readable off the SAME rendered/parsed element (a class
+string, or the element's own DOM shape). Claude Design splits into two SEPARATE problems that
+turned out to need two separate tools reading two DIFFERENT DOMs:
+
+- **Identity** — `recogniser/sc_var_classifier.py`. The only identity signal is the free-text
+  variable name bound by the nearest `<sc-for list="{{ name }}">` ANCESTOR wrapper (a tag
+  name, not an attribute — corrected from an earlier "mirrors `data-slot`" assumption before
+  any code was written). `/research-buddies` confirmed generic names (`reasons`/`featured`/
+  `ticker`/`marquee`) recur reliably across independent drafts; compound names don't and fall
+  back to a count-based structural hint. Advisory-only, same confidence-cap/gap-candidate-
+  gated shape as Tier 2 above; never writes to the authoritative `slots.aliases` table.
+- **Values** — `orchestrator/draft-responsive-probe.js`. Responsiveness is JS-computed
+  (ResizeObserver-driven), not CSS `@media` — nothing for the converter to read at extraction
+  time unless the draft is rendered and measured first. Renders one route at this project's
+  fixed device-tier widths, diffs computed values keyed by content.
+- **The two cannot be merged into one pass**: verified live that `<sc-for>`/`<sc-if>` do NOT
+  survive rendering (0 custom-element tags in the rendered DOM) — Piece 1 reads the SOURCE
+  file, Piece 2 reads the RENDERED page. Correlating a Piece 2 result back to a Piece 1
+  boundary is real, unbuilt follow-up work.
+
 **Tier 3 — visual/computed-style clustering.**
 Render candidate elements (via Playwright) and cluster by rendered box size, position, and typography to group repeating structures or identify a hero region, independent of markup entirely.
 - *Cost:* highest — a real headless-render pass per candidate element, new infrastructure, slow.
