@@ -1,5 +1,64 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1078 [ROUTINE] — Bean corrected the D1077 "thumbs has no match" finding live; real block
+SOURCE CODE beats the DB schema table; new architectural idea flagged for next session
+
+**2026-09-15, immediately post-handoff.** D1077 concluded `thumbs` (a product-image thumbnail
+selector in the draft) had "no confident match" in the framework, based on querying
+`array_item_schema`. Bean disputed this directly with real evidence: a live screenshot of a
+working thumbnail selector on an already-built SGS site, and its real CSS selector, naming
+`product-card__thumbs` inside `sgs-buybox__gallery-col`.
+
+**Verified directly, not trusted from the correction alone:** `plugins/sgs-blocks/src/blocks/
+buybox/gallery-col.php` exists and renders exactly this — `product-card__thumb` buttons with
+`data-index` (matches the draft's `t.pick` action), `aria-label="Image N"` (matches `t.label`),
+an `<img src=... alt=...>` with a no-image SVG fallback (matches `t.hasImg`/`t.img`/`t.noImg`).
+Field-for-field real match.
+
+**`items` — D1077's answer was ALSO wrong, caught by Bean live-inspecting the real deployed
+site, not from more code-reading.** D1077 matched `items`/`filterGroups` to `sgs/option-picker`
+on declared-attribute-vocabulary grounds (`optionItems`, `pillStyle`). Bean checked the ACTUAL
+live Mama's Munches shop page filter panel and found it runs on **WooCommerce's own native
+filter blocks**, not `sgs/option-picker` at all. Verified independently: `sgs/filter-search`'s
+own `block.json` description states it nests "inside a Product Filter (Attribute) block,
+before its chips" — a WooCommerce-native block, not an SGS one — and the real shop template,
+`theme/sgs-theme/templates/archive-product.html`, genuinely uses
+`woocommerce/product-filter-attribute`. **The correct real answer: the draft's filter panel
+maps to WooCommerce's native Product Filter blocks, with `sgs/filter-search` as a small SGS
+companion enhancement nested inside — not `sgs/option-picker`,** which merely happens to share
+similar attribute vocabulary while not being the block actually used for this purpose.
+
+**This is a second, independent instance of the SAME root cause `thumbs` just proved:**
+neither `array_item_schema` NOR `block_attributes` schema-matching can find an answer that
+isn't an SGS block at all — WooCommerce's native blocks aren't in either table. Two real
+misses in one correction cycle, both caught by direct evidence (real source code; a real live
+page) rather than by extending the database-matching method further.
+
+**Root cause of the miss: `array_item_schema` (the table D1077's elimination method queried)
+only covers 12 of the framework's real blocks.** `sgs/buybox`'s thumbnail strip is hand-
+rendered directly in PHP from a plain array, never registered in that table — a DB-only check
+is structurally blind to it, not unlucky. The real, complete answer was in the block's own
+source file the entire time.
+
+**New architectural idea, Bean's own, not yet designed — flagged as the single most
+consequential open question for next session:** stop solving field identity leaf-by-leaf.
+Recognise the PARENT/composite structure first (e.g. "this region is a buybox-shaped
+gallery+thumbnails block"), then every descendant INHERITS its identity from its known
+position in that block's already-complete real source — no separate per-field guessing needed,
+because the PHP/JS already states exactly what each part is. Unverified beyond this one real
+case; how a parent structure gets initially recognised (before descendants can inherit from
+it) is not designed, and reading full source for every candidate block as a runtime mechanism
+is a real cost not yet weighed against Thread 3's cheap DB queries.
+
+**Docs updated same session:** `.claude/reports/2026-09-14-classless-recognition-next-design-
+attempt.md` gained a new Thread 6 documenting this (including the `items`/WooCommerce
+correction), with an explicit flag that the "recommended shape" (§3) predates Thread 6 and
+needs re-thinking against it, not built as written. The `items`/`thumbs` "still open" framing
+from D1077/LEDGER is now resolved at the IDENTITY level (`thumbs` → `sgs/buybox`'s thumbnail
+pattern; `items` → WooCommerce's native Product Filter blocks + `sgs/filter-search`) — what
+remains open is the actual code fix, and the bigger architectural question of how to reach a
+non-SGS native-block answer at all, not the identities themselves.
+
 ## D1077 [ROUTINE] — Classless recognition: 4-branch parallel investigation, next-design-attempt
 doc written, Tier A false-claim bug fixed (one real bug still open)
 

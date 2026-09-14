@@ -133,30 +133,32 @@ Both specs revised: **Spec 42 → v2.1.0**, **Spec 43 → v1.2.0** (pricing rebu
 detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
 `/phase-planner` run when reached. **Next action: execute Phase 0.**
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078)
 
-**State recap (plain English):** the pipeline can SEE classless content and let it past the
-hard-halt gate (shipped, live-verified). What it can't yet do reliably: figure out WHICH piece
-of a repeated card is the title/price/icon. Three council rounds on Spec 44, each finding a new
-fundamental flaw, reverted rather than a 4th live rewrite (D1074) — full trail in git history.
-Tier B's auto-classification is SOLVED (D1075, halt-and-resume, no API key needed — remove any
-stale "blocked on API key" note if you see one, that's no longer true).
+**State recap:** the pipeline can SEE classless content and let it past the hard-halt gate
+(shipped, live-verified). Can't yet reliably tell WHICH piece of a repeated card is the
+title/price/icon. Three council rounds on Spec 44, each finding a new flaw, reverted rather
+than a 4th rewrite (D1074) — full trail in git history. Tier B's auto-classification is SOLVED
+(D1075, halt-and-resume, no API key needed — that blocker is gone, remove stale notes).
 
 **Next priority — start with `.claude/reports/2026-09-14-classless-recognition-next-design-
-attempt.md`, NOT a blank prototype.** Bean pushed on "the source code has more signal than you
-checked" and he was right — a same-session investigation (D1077) found real, strong evidence the
-3 failed rounds never looked at: the JS layer that BUILDS each item's content has self-describing
-field names and a reused price-formatter function (`.claude/reports/2026-09-14-claude-design-
-draft-field-identity-schema.md`); and — the strongest single result — checking simple DATABASE
-facts (does this group need an image/price/avatar field?) against the real block schema narrowed
-6 of 8 real draft groups to exactly ONE confident, correct block, using facts that already exist.
-Next session: `/brainstorming` fresh, reading the next-design-attempt doc first, then rework
-Spec 44 from real evidence rather than re-deriving any of this from scratch.
+attempt.md` (6 threads, esp. Thread 6), NOT a blank prototype.** Strongest lead: Thread 6
+(D1078) — a DATABASE table of declared schemas missed real answers that direct source/live-page
+inspection found immediately (some answers aren't even SGS blocks — WooCommerce natives).
+**Bean's own idea, not yet designed:** recognise a PARENT/composite structure first,
+descendants inherit identity from their known position in that structure — no per-field
+guessing. §3's "recommended shape" predates this, needs re-thinking not building as written.
+Also still strong: DB-fact elimination (Thread 3, 6/8 groups to one block) + the
+JS-construction signal (`.claude/reports/2026-09-14-claude-design-draft-field-identity-
+schema.md`). Next session: `/brainstorming` fresh, reading the design doc first.
 
-**Also fixed this session (D1077):** Tier A's docstring claimed a "verified via real cross-draft
-GitHub search" convention that was entirely fabricated — corrected (`372ed8ce1`). **Still open,
-disclosed not fixed:** `items`/`thumbs` sc-for names wrongly resolve to `sgs/info-box` via a bad
-alias — needs real DB investigation before a confident fix, don't guess at it.
+**Also fixed:** Tier A's fabricated docstring claim — corrected (`372ed8ce1`). **`items`/
+`thumbs`: identities KNOWN (D1078), code fix still open.** `thumbs` → `sgs/buybox`'s
+thumbnail-strip. `items` → **WooCommerce's native Product Filter blocks** +
+`sgs/filter-search` (NOT `sgs/option-picker` — that first guess was ALSO wrong, caught by
+Bean live-inspecting the real shop page; no DB table reaches a non-SGS native-block answer).
+`sc_var_classifier.py`'s alias table still wrongly resolves both to `sgs/info-box` — a
+small, separate, not-yet-done fix.
 
 ### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
 Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
@@ -275,7 +277,7 @@ binding. **Add from this session:**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1077 as of this write — re-check, don't trust a cached number here).
+  D1078 — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **Nav-bar-menu/nav-drawer-menu have NO visual-diff report yet** — deliberately scoped-bypassed

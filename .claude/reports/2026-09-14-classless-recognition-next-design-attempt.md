@@ -62,7 +62,8 @@ per-classifier `Hint.source` and a DB-verified `sgs/card-grid` slug (both fixes 
 
 ---
 
-## 2. What's new — four evidence threads none of the three failed rounds considered
+## 2. What's new — six evidence threads none of the three failed rounds considered (Thread 6
+added post-handoff, 2026-09-15)
 
 ### Thread 1 — JS construction-layer + HTML action-attribute signal (written up, verified on disk)
 
@@ -161,14 +162,84 @@ even though it still contributes the narrow icon/link win.
 
 The existing "guess from the group's variable name alone" mechanism (Tier A,
 `sc_var_classifier.py`) was tested against all 35 real repeated groups in the draft and found
-to resolve **zero of them correctly** — a real, separate bug, currently being fixed in
-parallel by another subagent in this session (`fix-tier-a-alias-bug`). Not part of the
-recognition-design question itself, but relevant context: don't assume Tier A already
-contributes any real signal until that fix lands and is re-verified.
+to resolve **zero of them correctly** — a real, separate bug, fixed same session (docstring
+false-claim only, commit `372ed8ce1`; the module's own logic was already honest, just its
+comment wasn't). One real, still-open bug survives: `items`/`thumbs` wrongly resolve to
+`sgs/info-box` via a bad alias entry — see Thread 6 for their actual correct answers, found
+by a different method than Tier A uses.
+
+### Thread 6 — real block SOURCE CODE beats the DB schema table; Bean's "recognise the parent
+structure, then inherit descendants" idea (2026-09-15, POST-HANDOFF — the session's strongest
+correction, verify everything here before trusting it, nothing is re-tested against a second
+draft yet)
+
+Immediately after the D1077 handoff landed, Bean directly disputed the Thread 3/4 conclusion
+that `thumbs` had "no confident match" — with real, first-hand evidence: a live screenshot of
+a working product-image thumbnail selector on an already-built SGS site, and its real CSS
+selector, naming the exact class `product-card__thumbs` inside `sgs-buybox__gallery-col`.
+
+**Verified directly, not just trusted:** `plugins/sgs-blocks/src/blocks/buybox/gallery-col.php`
+exists and DOES render this exact structure — `product-card__thumb` buttons, each with
+`data-index` (a click-to-select action, matching the draft's `t.pick`), `aria-label="Image N"`
+(matching `t.label`), and an `<img src=... alt=...>` with a no-image SVG fallback state
+(matching `t.hasImg`/`t.img`/`t.noImg`). Field-for-field match, confirmed against real PHP
+source, not inferred.
+
+**Why Thread 3/4 missed it — a real, structural gap in the method, not a one-off oversight:**
+both threads queried `array_item_schema`, the DB table declaring each block's repeater-item
+field roles. That table only covers **12 of the framework's real blocks**. `sgs/buybox`'s
+thumbnail strip is hand-rendered directly in PHP from a plain `$buybox_def_gallery` array —
+it was never registered in that table at all, so a DB-only check is **structurally blind to
+it**, not just unlucky. The real, complete ground truth was sitting in the block's own source
+file the whole time.
+
+**`items` — Thread 3's answer was ALSO wrong, and caught a different way: a real live page,
+not more code-reading.** First check (`option-picker/block.json`'s declared `optionItems` +
+`pillStyle`/`typeKey`) looked like a confirmation — but Bean directly inspected the real,
+live Mama's Munches shop page's filter panel and found it runs on **WooCommerce's own native
+Product Filter blocks**, not `sgs/option-picker`. Verified independently: `sgs/filter-search`'s
+own `block.json` description states it nests "inside a Product Filter (Attribute) block,
+before its chips" (a WooCommerce-native block), and the real shop template
+`theme/sgs-theme/templates/archive-product.html` genuinely uses
+`woocommerce/product-filter-attribute`. **Correct answer: WooCommerce's native Product Filter
+blocks + `sgs/filter-search` as a small SGS companion — not `sgs/option-picker`,** which only
+happened to share similar attribute vocabulary. Two real misses in one correction cycle, both
+from the identical root cause: **no SGS-only DB table (or even SGS-only source-reading) can
+reach an answer that isn't an SGS block at all.**
+
+**Bean's bigger architectural point, not yet designed, flagged for next session:** don't solve
+field identity leaf-by-leaf. Recognise the PARENT/composite structure first (e.g. "this whole
+region is a buybox-shaped gallery-plus-thumbnails block", or "this is a shop filter panel, which
+in this framework means WooCommerce's own native filter blocks"), then every descendant INHERITS
+its identity from its known position in that structure — no separate per-field guessing needed,
+because the real implementation (SGS or WooCommerce-native) already states exactly what each
+part is. This is a materially different, and on tonight's two examples, more powerful method
+than anything in Threads 1-5: those all try to identify a field in isolation; this identifies a
+whole subtree at once by matching it against a real, complete, ground-truth implementation
+instead of a partial DB projection of it — AND it's the only method that can reach a WooCommerce
+answer at all, since native WC blocks were never going to appear in an SGS-scoped database table.
+
+**What's unverified about this idea, stated plainly, not oversold:** exactly two real cases
+(`buybox`'s thumbnail strip; the shop filter panel's WooCommerce identity) have been checked
+this way. How a "parent structure" gets initially recognised (before its descendants can
+inherit from it) is not designed — this may still need Thread 3's DB-elimination or Thread 1's
+JS-signal work as the FIRST step, with this idea as what happens AFTER a parent is identified,
+not a replacement for identifying it. Also unverified: whether reading full PHP/JS source for
+every candidate block (SGS AND WooCommerce-native) scales sanely as a runtime mechanism, versus
+the cheap DB queries Thread 3 used — a real engineering cost this idea has not yet been asked
+to justify. And now a THIRD unresolved question this correction cycle adds: does recognition
+need to search WooCommerce's own native block registry too, not just SGS's — if so, that's a
+materially bigger search space than anything designed for so far.
 
 ---
 
 ## 3. The recommended shape (synthesis — not a spec)
+
+**Revise before building from this section — Thread 6 (added post-handoff) proposes a
+genuinely different primary mechanism (match the whole subtree against real block SOURCE
+CODE, not a DB schema table) that may supersede Stage A below rather than sit alongside it.
+The two/three-stage split described here predates Thread 6 and needs re-thinking against it
+next session, not built as written.**
 
 **Two-stage pipeline, primary mechanism first, secondary signals to resolve what's left.**
 
@@ -223,6 +294,13 @@ in any form.
 
 Flagged, not answered — don't re-derive these from scratch:
 
+0. **NEW, likely the first question to resolve: does Thread 6 (source-code subtree matching)
+   REPLACE Stage A, run BEFORE it as a first pass, or run only as a fallback when Stage A
+   ties/fails?** Thread 6 found the correct answer (`buybox`) for a case Stage A's DB-only
+   method structurally could not reach (the block isn't in `array_item_schema` at all) — but
+   Thread 6 is unverified beyond that one case, and reading full source for every candidate
+   block on every run is a real cost Stage A's cheap DB queries don't have. This is the
+   single most consequential open question left by tonight's work.
 1. **Does Stage A's DB-fact elimination run once per group, or once per member?** Round 2's
    failed v2.0.0 design tried to build member-level consistency-checking for the wrong reason
    (bolted onto a scoring function that didn't exist). Does a genuinely group-level Stage A
