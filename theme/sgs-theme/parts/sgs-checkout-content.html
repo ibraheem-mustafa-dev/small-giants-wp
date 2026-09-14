@@ -3,7 +3,15 @@
      composition (copied verbatim from a fresh Checkout page's post_content on WC
      11.1.0) — express payment, contact info, shipping, billing, payment, terms,
      actions, and the order-summary sidebar all ship native Block Editor inspector
-     controls already. Composed here, not rebuilt. -->
+     controls already. Composed here, not rebuilt.
+
+     WC's OWN page-checkout.html template omits an <h1> entirely (unlike its own
+     page-cart.html, which keeps post-title) — a live axe-core scan on this
+     template caught the resulting page-has-heading-one violation. Adding the
+     post-title here, matching cart's own pattern, is a WCAG fix within this
+     part's own scope, not a structural invention. -->
+
+<!-- wp:post-title {"level":1,"textColor":"text"} /-->
 
 <!-- wp:woocommerce/store-notices /-->
 
