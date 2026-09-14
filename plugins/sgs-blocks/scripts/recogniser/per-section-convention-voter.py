@@ -595,6 +595,22 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
             )
             if sc_var_hint is not None:
                 boundary["sc_var_hint"] = sc_var_hint.to_dict()
+                # Universal-pipeline "connect the pieces" work (2026-09-14):
+                # raw text alongside the hint so sc_var_responsive_correlator.py
+                # can test containment against Piece 2's rendered-element text
+                # -- the fingerprint above is a one-way hash, useless for that.
+                # NOTE this only matches for NON-sc-for boundaries -- an sc-for
+                # item's own text is the literal `{{ r.title }}`-shaped source
+                # placeholder, never the rendered content (verified live), so
+                # the correlator falls back to the structural fields below for
+                # sc-for specifically.
+                boundary["sc_var_text"] = text_snippet
+                # Structural join key (own tag + immediate-children skeleton)
+                # -- matches draft-responsive-probe.js's own `group_signature`
+                # definition exactly (own tag + child tag list), the only
+                # signal that survives an sc-for item's source->rendered gap.
+                boundary["sc_var_own_tag"] = node.name
+                boundary["sc_var_child_tag_skeleton"] = child_tag_skeleton
         except Exception:
             pass
 

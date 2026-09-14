@@ -42,15 +42,18 @@
  * NEVER parses support.js internals (§7's hard rule) -- every value here comes from
  * rendering + `getComputedStyle`, never from reading the runtime's own JS source.
  *
- * NOT DONE HERE (named gap, not silently dropped): identity correlation back to Piece 1's
- * sc-for/sc-if boundaries. Verified live before writing this file that `<sc-for>`/`<sc-if>`
- * do NOT survive rendering -- the runtime materialises them away entirely (measured: 0
- * custom-element tags of any kind in the rendered DOM, vs 39 `sc-for` + 87 `sc-if` in the
- * SOURCE `.dc.html`). So a rendered element cannot be asked "which sc-for wrapped you?" the
- * way Piece 1 asks the SOURCE parse tree. This script outputs responsive VALUES keyed by
- * rendered content only; matching a result here to a Piece 1 boundary (by structural DOM
- * position or content overlap) is unbuilt follow-up work, not something this file claims
- * to do.
+ * IDENTITY CORRELATION (2026-09-14, "connect the pieces" pass): a rendered `sc-for` item
+ * cannot be matched to Piece 1's boundary by TEXT -- Piece 1 reads the SOURCE parse tree,
+ * where an `sc-for` item is a template containing literal `{{ r.title }}`-shaped
+ * placeholders, not real content (verified live against the real "reasons" sc-for: its
+ * `sc_var_text` is literally `"{{ r.no }} {{ r.title }} {{ r.body }}"`, which can never
+ * contain-match rendered text like "01 Fast Turnaround..."). So this script also captures a
+ * STRUCTURAL signature per element -- own tag + immediate-children tag skeleton + sibling
+ * repeat count under the same parent -- which Piece 1 can independently compute from its
+ * SOURCE node (same definition: own tag + `find_all(True, recursive=False)` skeleton +
+ * `hint-placeholder-count`). `sc_var_responsive_correlator.py` joins on this signature for
+ * `sc-for` boundaries, falling back to text-containment for everything else (static
+ * sections, headings) where source and rendered text genuinely do match.
  *
  * Usage:
  *   node draft-responsive-probe.js --draft <path|url> [--viewports 375,768,1440]
@@ -101,6 +104,31 @@ const CAPTURE_SRC = `() => {
     return v.replace(/(-?\\d+\\.\\d+)px/g, (m, n) => Math.round(parseFloat(n)) + 'px');
   };
   const SKIP_TAGS = { STYLE: 1, SCRIPT: 1, NOSCRIPT: 1, SVG: 1, PATH: 1, TEMPLATE: 1, LINK: 1, META: 1, TITLE: 1, HEAD: 1 };
+
+  // Structural sibling-group signature -- an sc-for-rendered item's TEXT never matches its
+  // SOURCE template placeholder text (see module docstring), but its shape does: own tag +
+  // immediate-children tag skeleton, repeated N times under the same parent. Computed once
+  // per parent, attached to each qualifying child, independent of the text-key walk below.
+  const childSkeleton = (el) => Array.from(el.children).map((c) => c.tagName.toLowerCase());
+  const groupInfo = new WeakMap();
+  const parents = new Set();
+  for (const el of document.body.querySelectorAll('*')) {
+    if (el.parentElement) parents.add(el.parentElement);
+  }
+  for (const parent of parents) {
+    const bySig = new Map();
+    for (const child of parent.children) {
+      if (SKIP_TAGS[child.tagName]) continue;
+      const sig = child.tagName.toLowerCase() + '>' + childSkeleton(child).join(',');
+      if (!bySig.has(sig)) bySig.set(sig, []);
+      bySig.get(sig).push(child);
+    }
+    for (const [sig, group] of bySig) {
+      if (group.length < 2) continue;
+      for (const child of group) groupInfo.set(child, { group_signature: sig, group_size: group.length });
+    }
+  }
+
   const out = [];
   const keyCounts = {};
   const walk = document.body.querySelectorAll('*');
@@ -116,7 +144,12 @@ const CAPTURE_SRC = `() => {
     const baseKey = el.tagName.toLowerCase() + '|' + ownText;
     keyCounts[baseKey] = (keyCounts[baseKey] || 0) + 1;
     const key = baseKey + '#' + keyCounts[baseKey]; // disambiguate repeated identical text
-    out.push({ key, tag: el.tagName.toLowerCase(), css });
+    const group = groupInfo.get(el);
+    out.push({
+      key, tag: el.tagName.toLowerCase(), css,
+      group_signature: group ? group.group_signature : null,
+      group_size: group ? group.group_size : null,
+    });
   }
   return { elements: out, rootClientWidth: document.documentElement.clientWidth, windowInnerWidth: window.innerWidth };
 }`;
@@ -169,10 +202,19 @@ async function probe(draftUrl, viewports, label) {
     let changedProperties = new Set();
     let tag = null;
     let prevCss = null;
+    // Structural group info -- read from the narrowest width's capture (a group's own
+    // tag/skeleton/size is a structural fact of the DOM, not something that changes per
+    // width; the narrowest width is captured first so it's a stable, arbitrary choice).
+    let groupSignature = null;
+    let groupSize = null;
     for (const w of widthKeys) {
       const el = elementsByKeyByWidth[w].get(key);
       perWidth[w] = el.css;
       tag = el.tag;
+      if (groupSignature === null && el.group_signature) {
+        groupSignature = el.group_signature;
+        groupSize = el.group_size;
+      }
       if (prevCss) {
         for (const p of RESPONSIVE_PROPS) {
           if (prevCss[p] !== el.css[p]) changedProperties.add(p);
@@ -183,6 +225,8 @@ async function probe(draftUrl, viewports, label) {
     if (changedProperties.size === 0) continue; // not part of the responsive surface
     results.push({
       key, tag,
+      group_signature: groupSignature,
+      group_size: groupSize,
       changed_properties: [...changedProperties].sort(),
       values_by_width: perWidth,
     });
@@ -223,6 +267,7 @@ async function selfTest() {
   // one genuinely non-responsive element (a negative control -- must NOT appear in output).
   const html = `<!doctype html><html><body>
     <div id="root"></div>
+    <div id="cards"></div>
     <script>
       function render() {
         const w = window.innerWidth;
@@ -230,6 +275,15 @@ async function selfTest() {
         document.getElementById('root').innerHTML =
           '<div style="padding:' + pad + '">Responsive item</div>' +
           '<div style="padding:20px">Static item</div>';
+        // A 4-member sc-for-rendered card group -- each card's TEXT differs (mirrors real
+        // rendered content, never the source template's placeholder text) but the TAG +
+        // CHILDREN SKELETON is identical across all 4 -- this is what group_signature/
+        // group_size must detect.
+        const cardPad = w < 700 ? '8px' : '16px';
+        const cards = ['Fast turnaround', 'Free parking', 'Friendly staff', 'Same-day fit'];
+        document.getElementById('cards').innerHTML = cards.map(function (t) {
+          return '<div style="padding:' + cardPad + '"><h3>' + t + '</h3><p>Body copy</p></div>';
+        }).join('');
       }
       window.addEventListener('resize', render);
       render();
@@ -243,7 +297,14 @@ async function selfTest() {
     if (!responsive) throw new Error('SELF-TEST FAILED: the genuinely responsive element was not detected');
     if (!responsive.changed_properties.includes('padding-top')) throw new Error(`SELF-TEST FAILED: expected padding-top in changed_properties, got ${responsive.changed_properties}`);
     if (staticEl) throw new Error('SELF-TEST FAILED (negative control): the static element must NOT appear in the responsive-elements output');
-    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected + static element correctly excluded)');
+
+    const cardEls = report.elements.filter((e) => e.group_signature === 'div>h3,p');
+    if (cardEls.length !== 4) throw new Error(`SELF-TEST FAILED: expected 4 card-group members detected, got ${cardEls.length}`);
+    for (const c of cardEls) {
+      if (c.group_size !== 4) throw new Error(`SELF-TEST FAILED: expected group_size=4, got ${c.group_size} for key=${c.key}`);
+      if (!c.changed_properties.includes('padding-top')) throw new Error(`SELF-TEST FAILED: card ${c.key} should show a changed padding-top`);
+    }
+    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected, static element excluded, 4-card structural group detected)');
   } finally {
     fs.unlinkSync(fixturePath);
   }

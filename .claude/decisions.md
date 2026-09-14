@@ -1,5 +1,40 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1061 [ROUTINE] — Connected Piece 1 (sc-var identity) to Piece 2 (responsive values) via a structural + text-containment correlator
+
+**2026-09-14.** Follows D1057/D1058 (Piece 1, Piece 2 shipped standalone; both left the
+correlation between them as unbuilt follow-up work). New:
+`plugins/sgs-blocks/scripts/recogniser/sc_var_responsive_correlator.py`.
+
+**Real bug found before shipping, not after.** The first design (text containment only —
+match a Piece 2 rendered element's text against a Piece 1 boundary's own text) was verified
+live against the real "reasons" `sc-for` in `Eye Care Birmingham.dc.html` and found broken
+for exactly the case that matters most: Piece 1 reads the SOURCE parse tree, where an
+`sc-for` item is still a template — its `sc_var_text` came back as the literal
+`"{{ r.no }} {{ r.title }} {{ r.body }}"`, which can never contain-match the RENDERED text
+Piece 2 measures ("01 below RRP and I show you by how much..."). Static (non-`sc-for`)
+boundaries were unaffected — their source text is real authored copy that survives rendering
+unchanged.
+
+**Fix (Bean-approved judgement call: strict matching, no guessing on ambiguity).** Two join
+strategies, selected per boundary kind: `sc-for` boundaries join STRUCTURALLY (own tag +
+immediate-children tag skeleton + `hint-placeholder-count`, matched against a new
+`group_signature`/`group_size` Piece 2 now computes in-browser by grouping rendered siblings
+sharing the same tag+skeleton under one parent); everything else keeps text containment. Both
+modes are strict — zero or 2+ candidates on either side drops the record as unresolved rather
+than guessing, mirroring Piece 1/2's own confidence-capping discipline.
+
+**Verified live end-to-end (not just fixtures):** built the real "reasons" boundary
+(`sc_var_own_tag="div"`, `sc_var_child_tag_skeleton=["div","h3","p"]`, `hint_count=4`), ran
+`draft-responsive-probe.js` against the real draft, and confirmed the correlator joins them —
+producing a real record: `card-grid` identity + measured padding `28px@375 -> 34px@768` for
+the actual rendered card.
+
+**Still open, named not silently dropped:** wiring the correlated OUTPUT into the converter's
+actual attribute-writer (this pass produces the joined data artefact only); route coverage
+beyond one already-loaded page (Piece 2's pre-existing gap); Piece 1 Tier B (Haiku
+classifier, still scaffolded only).
+
 ## D1060 [ROUTINE] — Drawer colour defaults + drawer submenu panel settings (supersedes FR-41-36's drawer rows and `drawerBg` default)
 
 **2026-09-14, owner-ruled.** Evidence and every quoted rule:
