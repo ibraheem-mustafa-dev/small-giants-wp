@@ -64,17 +64,18 @@ def transform(node, text):
     gtc, ncols = _synthesise_grid(node)
     out = {
         'layout': 'grid',
-        'gridTemplateColumns': gtc,
-        # EXPLICIT mobile stack (gridTemplateColumnsMobile:"1fr"), not the numeric
-        # columnsMobile — the numeric shorthand class is beaten by the explicit
-        # base gridTemplateColumns rule, so mobile stayed 2-col (live-proven). WP
-        # columns stack to one column below ~782px; the wrapper's mobile tier
-        # (<768px) applies this @media override that BEATS the base grid ratio.
-        'gridTemplateColumnsMobile': '1fr',
+        # TIER OBJECT (Spec 35). sgs/container declares gridTemplateColumns as an
+        # object {desktop,tablet,mobile}; the flat string + `gridTemplateColumnsMobile`
+        # sibling this module used to emit predate that migration. A flat string on an
+        # object attr is silently coerced to the default {} by WordPress, and the
+        # sibling is no longer declared (the gate rejected it, 2026-09-14). The mobile
+        # tier keeps the EXPLICIT stack: WP columns stack to one column below ~782px,
+        # and an explicit mobile ratio beats the base desktop ratio at <768px.
+        'gridTemplateColumns': {'desktop': gtc, 'mobile': '1fr'},
     }
     accounting = {}
-    notes = [f'grid synthesised from {ncols} core/column widths → gridTemplateColumns:{gtc!r}; '
-             f'gridTemplateColumnsMobile:1fr (WP columns stack on mobile)']
+    notes = [f'grid synthesised from {ncols} core/column widths → gridTemplateColumns '
+             f'{{desktop:{gtc!r}, mobile:"1fr"}} (WP columns stack on mobile)']
 
     for key, value in attrs_in.items():
         if key == 'style':
@@ -118,15 +119,24 @@ def transform(node, text):
                 raise GapError(f'verticalAlignment {value!r} unmapped')
             out['verticalAlign'] = mapping[value]
             accounting[key] = ('mapped', f'row verticalAlignment → verticalAlign:{mapping[value]}')
-        elif key in ('align', 'backgroundColor', 'textColor', 'gradient', 'className',
+        elif key == 'align':
+            # sgs/container declares no supports.align; its width control is the
+            # contentWidth tier object, tokens normal|wide|full (SGS_Container_Wrapper
+            # maps wide → --wp--style--global--wide-size, full → no cap). Passing
+            # `align` through was silently discarded (the gate rejected it, 2026-09-14).
+            if value not in ('wide', 'full'):
+                raise GapError(f'align {value!r} has no sgs/container contentWidth mapping')
+            out['contentWidth'] = {'desktop': value}
+            accounting[key] = ('mapped', f'align:{value} → contentWidth {{desktop:{value!r}}}')
+        elif key in ('backgroundColor', 'textColor', 'gradient', 'className',
                      'anchor', 'metadata', 'fontSize'):
             out[key] = value
             accounting[key] = ('mapped', f'{key} (native / passthrough)')
         elif key == 'isStackedOnMobile':
-            # Default true = stack (gridTemplateColumnsMobile:1fr, already set).
-            # false = keep the desktop columns on mobile → drop the mobile override.
+            # Default true = stack (the mobile tier's 1fr, already set).
+            # false = keep the desktop columns on mobile → drop the mobile tier.
             if value is False:
-                out.pop('gridTemplateColumnsMobile', None)
+                out['gridTemplateColumns'].pop('mobile', None)
             accounting[key] = ('mapped', f'isStackedOnMobile:{value} → mobile stack {value}')
         else:
             raise GapError(f'source attr "{key}" not handled by this module — extend the mapping')

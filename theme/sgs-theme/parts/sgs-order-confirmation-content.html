@@ -25,29 +25,17 @@
 <!-- wp:woocommerce/order-confirmation-downloads {"lock":{"remove":true}} /-->
 <!-- /wp:woocommerce/order-confirmation-downloads-wrapper -->
 
-<!-- wp:columns {"align":"wide","className":"wc-block-order-confirmation-address-wrapper"} -->
-<div class="wp-block-columns alignwide wc-block-order-confirmation-address-wrapper">
-	<!-- wp:column -->
-	<div class="wp-block-column">
-		<!-- wp:woocommerce/order-confirmation-shipping-wrapper {"align":"wide"} -->
+<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr","mobile":"1fr"},"contentWidth":{"desktop":"wide"},"className":"wc-block-order-confirmation-address-wrapper"} --><!-- wp:sgs/container --><!-- wp:woocommerce/order-confirmation-shipping-wrapper {"align":"wide"} -->
 		<!-- wp:pattern {"slug":"woocommerce/order-confirmation-shipping-heading"} /-->
 
 		<!-- wp:woocommerce/order-confirmation-shipping-address {"lock":{"remove":true}} /-->
-		<!-- /wp:woocommerce/order-confirmation-shipping-wrapper -->
-	</div>
-	<!-- /wp:column -->
+		<!-- /wp:woocommerce/order-confirmation-shipping-wrapper --><!-- /wp:sgs/container -->
 
-	<!-- wp:column -->
-	<div class="wp-block-column">
-		<!-- wp:woocommerce/order-confirmation-billing-wrapper {"align":"wide"} -->
+	<!-- wp:sgs/container --><!-- wp:woocommerce/order-confirmation-billing-wrapper {"align":"wide"} -->
 		<!-- wp:pattern {"slug":"woocommerce/order-confirmation-billing-heading"} /-->
 
 		<!-- wp:woocommerce/order-confirmation-billing-address {"lock":{"remove":true}} /-->
-		<!-- /wp:woocommerce/order-confirmation-billing-wrapper -->
-	</div>
-	<!-- /wp:column -->
-</div>
-<!-- /wp:columns -->
+		<!-- /wp:woocommerce/order-confirmation-billing-wrapper --><!-- /wp:sgs/container --><!-- /wp:sgs/container -->
 
 <!-- wp:woocommerce/order-confirmation-additional-fields-wrapper {"align":"wide"} -->
 <!-- wp:pattern {"slug":"woocommerce/order-confirmation-additional-fields-heading"} /-->
