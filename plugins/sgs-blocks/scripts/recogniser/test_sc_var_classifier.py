@@ -92,7 +92,7 @@ def test_deterministic_classifier_count_fallback() -> None:
     hint (Tier A's cardinality signal, free and DB-independent)."""
     hint = scv.classify_sc_var_deterministic("megaTopBrands", 10, [])
     assert hint is not None
-    assert hint.block == "card-grid"
+    assert hint.block == "sgs/card-grid"
     assert hint.confidence <= scv.TIER2_MAX_CONFIDENCE
     print(f"  PASS  count-fallback hint (bespoke name, no alias hit): {hint}")
 

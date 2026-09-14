@@ -163,7 +163,7 @@ def classify_sc_var_deterministic(
             )
     if hint_placeholder_count is not None and hint_placeholder_count >= 2:
         return Hint(
-            block="card-grid",
+            block="sgs/card-grid",
             confidence=min(TIER2_MAX_CONFIDENCE, 0.25 + 0.03 * hint_placeholder_count),
             evidence=(
                 f'sc-for variable "{var_name}" declares '
