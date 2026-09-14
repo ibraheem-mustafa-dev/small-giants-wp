@@ -111,7 +111,7 @@ const FOOTER_PROMOTED = [
 		attributes: { displayType: 'phone' },
 	},
 	{ slug: 'sgs/social-icons', label: __( 'Social links', 'sgs-blocks' ) },
-	{ slug: 'sgs/nav-menu', label: __( 'Footer navigation', 'sgs-blocks' ) },
+	{ slug: 'sgs/nav-bar-menu', label: __( 'Footer navigation', 'sgs-blocks' ) },
 	{
 		slug: 'sgs/button',
 		variant: 'cta',

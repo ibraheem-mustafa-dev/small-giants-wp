@@ -35,7 +35,7 @@
  *
  *   Flat:
  *   {
- *     "openSelector": ".sgs-nav-menu__toggle",
+ *     "openSelector": ".sgs-nav-bar-menu__toggle",
  *     "probes": [ { ... }, { ... } ]
  *   }
  *

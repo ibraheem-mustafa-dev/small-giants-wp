@@ -3,9 +3,10 @@
  * Shared navigation menu-source resolver.
  *
  * ONE source of truth for "where does the site's primary menu live". The bar
- * (sgs/nav-menu) and the drawer (sgs/nav-drawer) both resolve their menu through
- * this class, so a single WordPress menu drives both — no divergent/duplicated
- * menu content (Spec 36 FR-36-1 "one menu source"; composite-mirror R-31-9).
+ * (sgs/nav-bar-menu) and the drawer (sgs/nav-drawer-menu, itself nested inside
+ * sgs/nav-drawer) both resolve their menu through this class, so a single
+ * WordPress menu drives both — no divergent/duplicated menu content (Spec 36
+ * FR-36-1 "one menu source"; composite-mirror R-31-9).
  *
  * TWO menu formats resolve here (Spec 36 FR-36-1). **Classic menus are PRIMARY**
  * (Appearance → Menus, `nav_menu` terms); block-based `wp_navigation` posts are
@@ -56,16 +57,19 @@ class SGS_Nav_Menu_Source {
 	/**
 	 * Resolve the nav-holding block names searched for in the header, in priority order.
 	 *
-	 * Order matters: sgs/nav-menu is the canonical SGS nav block (Spec 36 rebuild,
-	 * FR-36-1). sgs/adaptive-nav was retired (FR-37-21). core/navigation is kept for
-	 * back-compat with headers not yet migrated — WooCommerce hooks its
-	 * mini-cart/customer-account onto it.
+	 * Order matters: sgs/nav-bar-menu is the canonical SGS bar nav block (D1059
+	 * split from the former sgs/nav-menu, 2026-09-14) — the header-searching branch
+	 * below only ever finds the bar fork, since get_header_content() reads the
+	 * HEADER, not the drawer; sgs/nav-drawer-menu is listed alongside it for the
+	 * same resolution allowlist regardless (D1059 ruling). sgs/adaptive-nav was
+	 * retired (FR-37-21). core/navigation is kept for back-compat with headers not
+	 * yet migrated — WooCommerce hooks its mini-cart/customer-account onto it.
 	 *
 	 * NOT a bare hardcoded const (R-31-1 DB-first). This was `private const
 	 * NAV_BLOCK_NAMES` until Spec 36 Wave-0 flagged it as the exact anti-pattern the
 	 * binding rule forbids. The seed list below is run through two DB/registry-style
 	 * gates instead of being trusted as-is:
-	 *   1. `apply_filters( 'sgs_nav_menu_block_names', ... )` — a future nav-holding
+	 *   1. `apply_filters( 'sgs_nav_shared_block_names', ... )` — a future nav-holding
 	 *      block (or a follow-up that declares `supports.sgs.navMenuBlock` in
 	 *      block.json and derives this list from the block registry) can extend or
 	 *      replace the seed without editing this class.
@@ -88,8 +92,8 @@ class SGS_Nav_Menu_Source {
 	 */
 	private static function get_nav_block_names(): array {
 		$names = (array) apply_filters(
-			'sgs_nav_menu_block_names',
-			array( 'sgs/nav-menu', 'core/navigation' )
+			'sgs_nav_shared_block_names',
+			array( 'sgs/nav-bar-menu', 'sgs/nav-drawer-menu', 'core/navigation' )
 		);
 
 		$registry = WP_Block_Type_Registry::get_instance();
@@ -116,7 +120,7 @@ class SGS_Nav_Menu_Source {
 	 * @return array Parsed nav blocks (core/navigation-link / -submenu / page-list).
 	 */
 	public static function get_menu_blocks( int $ref = 0, bool $page_list_fallback = true ): array {
-		// 1. Explicit ref wins (caller's own ref attribute, e.g. sgs/nav-menu).
+		// 1. Explicit ref wins (caller's own ref attribute, e.g. sgs/nav-bar-menu/sgs/nav-drawer-menu).
 		if ( $ref > 0 ) {
 			$blocks = self::blocks_from_ref( $ref );
 			if ( ! empty( $blocks ) ) {
@@ -144,7 +148,7 @@ class SGS_Nav_Menu_Source {
 				}
 
 				// Inline innerBlocks are the menu ONLY for core/navigation, whose
-				// children ARE the menu (core/navigation-link blocks). sgs/nav-menu
+				// children ARE the menu (core/navigation-link blocks). sgs/nav-bar-menu/sgs/nav-drawer-menu
 				// always resolves via its `ref` attribute above, never innerBlocks.
 				if ( 'core/navigation' === $nav_block_name && ! empty( $nav['innerBlocks'] ) ) {
 					return $nav['innerBlocks'];

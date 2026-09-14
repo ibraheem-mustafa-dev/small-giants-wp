@@ -34,10 +34,10 @@ import { __ } from '@wordpress/i18n';
  * tighter stacked gap than the header bar's default reads better vertically.
  *
  * @param {Object} extra Extra nav-menu attribute overrides for this look.
- * @return {Array} A `[ 'sgs/nav-menu', attrs ]` InnerBlocks entry.
+ * @return {Array} A `[ 'sgs/nav-drawer-menu', attrs ]` InnerBlocks entry.
  */
 function navMenu( extra = {} ) {
-	return [ 'sgs/nav-menu', { gap: '4px', ...extra } ];
+	return [ 'sgs/nav-drawer-menu', { gap: '4px', ...extra } ];
 }
 
 const variations = [

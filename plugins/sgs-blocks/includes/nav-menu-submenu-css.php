@@ -25,7 +25,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 	/**
 	 * Build the submenu/dropdown/burger/indicator/root-box half of nav-menu's
 	 * scoped <style>.
@@ -39,7 +39,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 	 * @param array  $sgs_tor_padding_desktop Desktop-tier padding sides array.
 	 * @param array  $sgs_tor_margin_desktop  Desktop-tier margin sides array.
 	 * @param array  $treatments             RESOLVED hover treatments from
-	 *                                        `sgs_nav_menu_resolved_treatments()` —
+	 *                                        `sgs_nav_shared_resolved_treatments()` —
 	 *                                        ⛔ never the stored attribute.
 	 * @param string $trigger_mode           Resolved `triggerMode` (icon|text|icon-and-text).
 	 * @param string $drawer_bg_slug        The parent nav-drawer's `drawerBg` palette
@@ -59,7 +59,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 	 *                                        (P-NAV-MENU-LISTCOLUMNS-READING-ORDER).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_submenu_css(
+	function sgs_nav_shared_submenu_css(
 		array $attributes,
 		string $uid_sel,
 		string $indicator_style,
@@ -68,13 +68,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		array $sgs_tor_padding_tiers,
 		array $sgs_tor_padding_desktop,
 		array $sgs_tor_margin_desktop,
+		string $bem_root,
 		array $treatments = array(),
 		string $trigger_mode = 'icon',
 		string $drawer_bg_slug = '',
 		int $item_count = 0
 	): string {
 		$css         = '';
-		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
+		$sublink_sel = $uid_sel . ' .' . $bem_root . '__sublink';
 		$t_sub_text  = (string) ( $treatments['submenuColourHoverTreatment'] ?? 'swap' );
 		$t_sub_bg    = (string) ( $treatments['submenuLinkBgHoverTreatment'] ?? 'swap' );
 		// Read once: census #9 gates the panel's own border on it, and census #1
@@ -99,20 +100,20 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// is the control that opens the navigation. A named landmark containing the
 		// disclosure button is the W3C APG disclosure-navigation shape; hiding the root
 		// would remove the burger from the accessibility tree along with the list.
-		$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .sgs-nav-menu__bar{display:none;}' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:flex;}}';
-		$css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .sgs-nav-menu__toggle-wrap{display:none;}}';
+		$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .' . $bem_root . '__bar{display:none;}' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:flex;}}';
+		$css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:none;}}';
 		
 		// 4g. Mega-menu disclosure — caret rotation + panel positioning (U9). The
 		// trigger is a <button>, not an <a>, so it needs a minimal reset to inherit
 		// the bar link's look rather than the browser's default button chrome.
 		//
 		// D1060 (2026-09-14): wrapped in :where(). The trigger also carries
-		// .sgs-nav-menu__link, and this reset is written AFTER the item rules at the
+		// .{bem}__link, and this reset is written AFTER the item rules at the
 		// same (0,2,0) specificity — so its `background:none`, `border:0` and
 		// `font:inherit` shorthands wiped the client's item background (and gradient),
 		// item border and item typography on every mega item. As a zero-specificity
 		// default it still beats the browser's own button styles.
-		$css .= ':where(' . $uid_sel . ' .sgs-nav-menu__mega-trigger){background:none;border:0;font:inherit;cursor:pointer;}';
+		$css .= ':where(' . $uid_sel . ' .' . $bem_root . '__mega-trigger){background:none;border:0;font:inherit;cursor:pointer;}';
 		
 		/*
 		 * Caret flips when the disclosure opens. Bean, 2026-09-10: the flip used to
@@ -125,19 +126,19 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * everywhere rather than a per-consumer carve-out. Since there's no
 		 * transition, no reduced-motion override is needed either.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__caret{display:inline-flex;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__caret{display:inline-flex;}';
 		// M5 fix (2026-09-12) — widened to a selector list covering BOTH trigger
-		// classes. `.sgs-nav-menu__mega-trigger` is the mega-menu item's own
+		// classes. `.{bem}__mega-trigger` is the mega-menu item's own
 		// trigger class; the plain dropdown's trigger carries
-		// `.sgs-nav-menu__subtoggle` instead and had no matching rule at all — a
+		// `.{bem}__subtoggle` instead and had no matching rule at all — a
 		// selector never written for that second trigger, not a regression. One
 		// rule keeps both triggers' flip behaviour identical by construction.
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] .sgs-nav-menu__caret,'
-			. $uid_sel . ' .sgs-nav-menu__subtoggle[aria-expanded="true"] .sgs-nav-menu__caret{transform:rotate(180deg);}';
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] .' . $bem_root . '__caret,'
+			. $uid_sel . ' .' . $bem_root . '__subtoggle[aria-expanded="true"] .' . $bem_root . '__caret{transform:rotate(180deg);}';
 		
 		/*
 		 * Panel anchoring (Bean design-gated — Gate-3 finding). The wrap anchors to
-		 * the BAR (`.sgs-nav-menu__bar` is already position:relative in style.css
+		 * the BAR (`.{bem}__bar` is already position:relative in style.css
 		 * for the indicator pill), not to the <li>-level hover bridge, so the panel
 		 * can exceed a single menu item's width. The draft designs (sites/Mega-menu
 		 * design + Indus Foods Mega Menu Design, both at
@@ -150,7 +151,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * centres its "More" dropdown and it reads badly).
 		 *
 		 * Hover safety holds because the wrap stays a DOM child of the
-		 * `.sgs-nav-menu__mega` bridge — mouseleave fires on DOM containment, not
+		 * `.{bem}__mega` bridge — mouseleave fires on DOM containment, not
 		 * geometry — and the panel (>= bar width) always extends beneath its own
 		 * trigger. Edge overflow: mega-disclosure.js repositionPanel() measures the
 		 * centred rect and pins to the bar's right/left edge via the CSS vars below
@@ -195,8 +196,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * is NOT what makes the panel wheel-scrollable at all; that is the
 		 * `data-lenis-prevent` on the emitted wrap (see the markup note above).
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"] ~ .sgs-nav-menu__mega-panel-wrap{display:block;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:100%;left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:min(1120px, calc(100vw - 56px));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
 		
 		/*
 		 * ── DROPDOWN SUBMENU ────────────────────────────────────────────────────────
@@ -276,7 +277,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			$css .= $uid_sel . '{' . $sgs_nm_submenu_vars . '}';
 		}
 		
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu-root{position:relative;display:flex;align-items:center;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__submenu-root{position:relative;display:flex;align-items:center;}';
 		// Same vertical bound as the mega panel above, and for the same reason — see
 		// the VERTICAL BOUND note there. A dropdown is the likelier of the two to run
 		// long, since it has no width:min() forcing a wide multi-column layout.
@@ -311,7 +312,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * a fresh install now genuinely ships no shadow until an operator
 		 * opts in.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
+		$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
 
 
 		/*
@@ -326,14 +327,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * OPENNESS and never touches CSS `:hover`. The panel correctly stays open
 		 * across the gap today; the parent's PAINT does not.
 		 *
-		 * Safe by construction: `.sgs-nav-menu__submenu-wrap::before` is claimed by
+		 * Safe by construction: `.{bem}__submenu-wrap::before` is claimed by
 		 * nothing; the wrap is already `position:absolute`, so it is its own
 		 * containing block; and a `display:none` element has no pseudo-elements, so
 		 * the bridge exists only while the panel is open and can never sit
 		 * invisibly over the bar.
 		 */
 		if ( '' !== $submenu_top_offset ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:' . $submenu_top_offset . ';pointer-events:auto;}';
+			$css .= $uid_sel . ' .' . $bem_root . '__submenu-wrap::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:' . $submenu_top_offset . ';pointer-events:auto;}';
 		}
 
 		/*
@@ -342,18 +343,18 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * returned `sgs-responsive-logo__image--desktop`, not the panel).
 		 *
 		 * `z-index:100` on the panel alone is not enough. The panel sits inside
-		 * stacking contexts its own ancestors create — `.sgs-nav-menu__item{z-index:1}`,
-		 * `.sgs-nav-menu__bar{z-index:1}`, `.entry-content{z-index:1}` — so its 100 only
+		 * stacking contexts its own ancestors create — `.{bem}__item{z-index:1}`,
+		 * `.{bem}__bar{z-index:1}`, `.entry-content{z-index:1}` — so its 100 only
 		 * ranks it against its SIBLINGS, never against a later block that forms its own
 		 * context. Raising the ancestor that actually competes is the fix. Scoped with
 		 * `:has()` to the OPEN state so a closed menu leaves the page's stacking order
 		 * exactly as it was. A mega panel never hit this because it lives in the sticky
 		 * header, which already outranks page content.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__item--has-submenu:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__item--has-submenu:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
 		
 		/*
-		 * Lift every level we own, not just the item: `.sgs-nav-menu__bar{z-index:1}`
+		 * Lift every level we own, not just the item: `.{bem}__bar{z-index:1}`
 		 * and the block root sit between the item and the page, so a 101 on the item
 		 * alone only ordered it against its own siblings.
 		 *
@@ -378,8 +379,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * for a reason that had nothing to do with a dropdown. Council-caught.
 		 */
 		$css .= $uid_sel . ':has([data-sgs-mega-trigger][aria-expanded="true"]){position:relative;z-index:101;}';
-		$css .= $uid_sel . ' .sgs-nav-menu__bar:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
-		$css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .sgs-nav-menu__submenu-wrap{display:block;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__bar:has([data-sgs-mega-trigger][aria-expanded="true"]){z-index:101;}';
+		$css .= $uid_sel . ' [data-sgs-mega-trigger][aria-expanded="true"] ~ .' . $bem_root . '__submenu-wrap{display:block;}';
 		
 		/*
 		 * EVERY default here is a THEME TOKEN, never a literal (Bean, 2026-07-31 —
@@ -489,7 +490,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * configuration, with no attribute-dependent edge case — because there is no
 		 * geometry left for the panel's own fill to show through against a row.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu{list-style:none;margin:0;padding:0;overflow:hidden;'
+		$css .= $uid_sel . ' .' . $bem_root . '__submenu{list-style:none;margin:0;padding:0;overflow:hidden;'
 			. 'min-width:var(--sgs-nm-submenu-min-width, 200px);'
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);'
@@ -506,7 +507,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * (previously unscoped). Specificity is now
 		 * `{uid} .bar--drawer[data-drill-enhanced] .accordion .submenu` =
 		 * (0,5,0), still comfortably above the accordion-mode drawer rule
-		 * below (`.sgs-nav-drawer {uid} .sgs-nav-menu__submenu`, (0,3,0)) and
+		 * below (`.sgs-nav-drawer {uid} .{bem}__submenu`, (0,3,0)) and
 		 * the base rule above ((0,2,0)) — so drill-enhanced mode continues to
 		 * resolve THIS chain (surface-alt -> surface -> #fff), matching the
 		 * flat bar's own dropdown rather than the accordion-mode drawer's
@@ -518,7 +519,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 */
 		// D1060 (2026-09-14): longhands, not the `background:` shorthand — the
 		// shorthand reset background-image to none and cancelled submenuBgGradient.
-		$css .= $uid_sel . ' .sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu{'
+		$css .= $uid_sel . ' .' . $bem_root . '__bar--drawer[data-drill-enhanced] .' . $bem_root . '__accordion .' . $bem_root . '__submenu{'
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);}';
 
@@ -526,7 +527,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// key at all. Emits nothing when neither colour attribute is set, so the
 		// token fallback in the rule above survives untouched.
 		$css .= sgs_border_states_css(
-			$uid_sel . ' .sgs-nav-menu__submenu',
+			$uid_sel . ' .' . $bem_root . '__submenu',
 			$attributes,
 			array(
 				'base'     => 'submenuBorderColour',
@@ -546,7 +547,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 */
 		if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['submenuPadding'] ?? null ) ) {
 			$css .= sgs_emit_responsive_css(
-				$uid_sel . ' .sgs-nav-menu__submenu',
+				$uid_sel . ' .' . $bem_root . '__submenu',
 				array(
 					array(
 						'value'        => $attributes['submenuPadding'],
@@ -558,7 +559,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			);
 		}
 		
-		$css .= $uid_sel . ' .sgs-nav-menu__subitem{margin:0;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__subitem{margin:0;}';
 		
 		/*
 		 * 44px min touch target (SGS baseline — beats WCAG 2.2's 24px) and a visible
@@ -586,14 +587,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * `P-MAMAS-PRIMARY-CONTRAST` entry stands on its own merits and is unaffected.
 		 * The operator's own colour still overrides, below.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
+		$css .= $uid_sel . ' .' . $bem_root . '__sublink{display:flex;align-items:center;min-height:44px;padding:0 16px;'
 			. 'text-decoration:none;white-space:nowrap;'
 			. 'color:var(--wp--preset--color--primary, currentColor);}';
 		
 		/*
 		 * …EXCEPT in the drawer, where `nowrap` has nothing to wrap into (2026-09-10).
 		 *
-		 * Exactly the defect style.css already fixes for `.sgs-nav-menu__link`, one
+		 * Exactly the defect style.css already fixes for `.{bem}__link`, one
 		 * level down: the drawer reuses this same sublink class for a VERTICAL stacked
 		 * list, so a long label has no second row to move to and can only push
 		 * sideways. Measured on the canary at 375px, the top-level `__link` overflowed
@@ -602,13 +603,13 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * scrollbar the drawer should never have.
 		 *
 		 * It has to be emitted HERE rather than in style.css because the `nowrap` it
-		 * overrides is emitted here too, at `$uid_sel .sgs-nav-menu__sublink` (0,2,0);
+		 * overrides is emitted here too, at `$uid_sel .{bem}__sublink` (0,2,0);
 		 * style.css's floor rule for the same selector sits at 0,1,0 and would lose to
 		 * it. `:where()` contributes nothing, so this stays at 0,2,0 — identical to the
 		 * base rule directly above and winning on source order alone, which keeps it
 		 * below any higher-specificity operator override rather than outranking one.
 		 */
-		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{white-space:normal;overflow-wrap:break-word;}';
+		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{white-space:normal;overflow-wrap:break-word;}';
 		
 		/*
 		 * …and in the drawer specifically, text defaults to the drawer's OWN
@@ -659,7 +660,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * 2026-09-13 runtime-computed version documented above from 2026-09-13
 		 * through 2026-09-14) — the drawer's nested submenu row previously had NO
 		 * opaque background of its own by default: the drill-down-mode panel rule
-		 * (style.css `.sgs-nav-menu__bar--drawer[data-drill-enhanced] … .submenu`)
+		 * (style.css `.{bem}__bar--drawer[data-drill-enhanced] … .submenu`)
 		 * fell back to `inherit` rather than the token chain the accordion-mode
 		 * panel rule already used, so the row's real backdrop was whatever colour
 		 * `drawerBg` happened to be (its default at the time, `'primary'`) — hence the runtime
@@ -682,7 +683,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * own `submenuColour` still wins below (same specificity, later source
 		 * order — see the comment at the original site of this rule).
 		 */
-		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{color:var(--wp--preset--color--text, inherit);}';
+		$css .= $uid_sel . ' :where(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__sublink{color:var(--wp--preset--color--text, inherit);}';
 		// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
 		// Phase 3); routed as a direct decl (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
@@ -720,7 +721,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 
 		/*
 		 * ⚠ The sublink Sweep selector EXCLUDES featured sub-items. A featured
-		 * sub-item paints a real background directly on `.sgs-nav-menu__sublink`
+		 * sub-item paints a real background directly on `.{bem}__sublink`
 		 * (from `featuredBg`, republished as `--sgs-nm-featured-bg`), which
 		 * `background-clip:text` would clip to the glyph shapes. The predicate is
 		 * per-ROW and "featured" is a per-ITEM distinction, so adding `featuredBg`
@@ -732,7 +733,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * MUST join the row's declared `blockingBackgroundAttrs` and Sweep must be
 		 * withdrawn from the whole row — those are the only two compliant outcomes.
 		 */
-		$sublink_sweep_sel = $uid_sel . ' .sgs-nav-menu__subitem:not(.sgs-nav-menu__subitem--featured) .sgs-nav-menu__sublink';
+		$sublink_sweep_sel = $uid_sel . ' .' . $bem_root . '__subitem:not(.' . $bem_root . '__subitem--featured) .' . $bem_root . '__sublink';
 		$sublink_sweep     = array(
 			'base'  => '',
 			'hover' => '',
@@ -740,7 +741,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$submenu_sweep_hover = '';
 		if ( 'sweep' === $t_sub_text && '' !== $submenu_colour_hover ) {
 			$submenu_sweep_hover = sgs_colour_value( $submenu_colour_hover );
-			$sublink_sweep       = sgs_nav_menu_text_sweep_css(
+			$sublink_sweep       = sgs_nav_shared_text_sweep_css(
 				$sublink_sweep_sel,
 				'' !== $submenu_colour ? sgs_colour_value( $submenu_colour ) : '',
 				$submenu_sweep_hover
@@ -793,7 +794,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * — backwards from the item family's own correct precedent. Declaration
 		 * unchanged; only the emission position moved.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
+		$css .= $uid_sel . ' .' . $bem_root . '__sublink[aria-current="page"]{'
 			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--text, currentColor));}';
 
 		if ( '' !== $sublink_sweep['hover'] ) {
@@ -808,7 +809,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// 2026-09-14). $submenu_sweep_hover threads through explicitly (it depends
 		// on the submenuColourHover default-close branch above); the other locals
 		// that module needs are cheap, deterministic recomputes from $attributes.
-		$css .= sgs_nav_menu_submenu_link_css(
+		$css .= sgs_nav_shared_submenu_link_css(
 			$attributes,
 			$uid_sel,
 			$indicator_style,
@@ -819,7 +820,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			$sgs_tor_margin_desktop,
 			$treatments,
 			$item_count,
-			$submenu_sweep_hover
+			$submenu_sweep_hover,
+			$bem_root
 		);
 
 		return $css;

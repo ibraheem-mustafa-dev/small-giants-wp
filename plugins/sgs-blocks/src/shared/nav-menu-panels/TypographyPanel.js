@@ -54,7 +54,7 @@ export default function TypographyPanel( {
 			   ⛔ This ⓘ note is the TWIN of the one under the item border row in the
 			   Colour panel. Neither ships without the other, or one control points at
 			   a partner that never points back. */ }
-			<p className="components-base-control__help sgs-nav-menu__colour-note">
+			<p className="components-base-control__help sgs-nav-panel__colour-note">
 				{ __(
 					'These change how the menu word itself looks on hover. For a line across the whole item, use the item border’s hover setting in the Colour panel instead.',
 					'sgs-blocks'

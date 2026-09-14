@@ -24,36 +24,36 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	/**
 	 * Build the item/state-colour half of nav-menu's scoped <style>.
 	 *
 	 * @param array  $attributes Block attributes (verbatim render.php param).
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
 	 * @param array  $treatments RESOLVED hover treatments from
-	 *                           `sgs_nav_menu_resolved_treatments()` — ⛔ never the
+	 *                           `sgs_nav_shared_resolved_treatments()` — ⛔ never the
 	 *                           stored attribute, which can say 'sweep' on a row
 	 *                           whose eligibility predicate is false.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_item_state_css( array $attributes, string $uid_sel, array $treatments = array() ): string {
+	function sgs_nav_shared_item_state_css( array $attributes, string $uid_sel, string $bem_root, array $treatments = array() ): string {
 	$css      = '';
-	$link_sel = $uid_sel . ' .sgs-nav-menu__link';
+	$link_sel = $uid_sel . ' .' . $bem_root . '__link';
 
 	/*
-	 * Wave 2 cluster 3 (M4/M2/M6, 2026-09-12) — `.sgs-nav-menu__link` (the <a>)
-	 * and `.sgs-nav-menu__subtoggle` (the <button> containing
-	 * `.sgs-nav-menu__caret > svg`) are DOM SIBLINGS under one shared parent
-	 * (`.sgs-nav-menu__submenu-root`), never an ancestor/descendant pair — CSS
+	 * Wave 2 cluster 3 (M4/M2/M6, 2026-09-12) — `.{bem}__link` (the <a>)
+	 * and `.{bem}__subtoggle` (the <button> containing
+	 * `.{bem}__caret > svg`) are DOM SIBLINGS under one shared parent
+	 * (`.{bem}__submenu-root`), never an ancestor/descendant pair — CSS
 	 * cannot select a sibling's sibling by value. `$caret_svg_sel` is the
 	 * companion selector every item TEXT-colour rule below pairs alongside
 	 * `$link_sel` so the caret's `stroke="currentColor"` glyph tracks the
 	 * item's own colour instead of the ambient/theme default.
 	 */
-	$caret_svg_sel = $uid_sel . ' .sgs-nav-menu__caret svg';
+	$caret_svg_sel = $uid_sel . ' .' . $bem_root . '__caret svg';
 
 	// ⛔ The RESOLVED treatment, never the stored attribute. render.php resolves
-	// it once (sgs_nav_menu_resolved_treatments()) immediately after the
+	// it once (sgs_nav_shared_resolved_treatments()) immediately after the
 	// eligibility evaluation; every rule below reads THAT value.
 	$t_text   = (string) ( $treatments['itemColourHoverTreatment'] ?? 'swap' );
 	$t_bg     = (string) ( $treatments['itemBgHoverTreatment'] ?? 'swap' );
@@ -64,13 +64,13 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
 
 	/*
-	 * Wave 2 M6 (2026-09-12) — caret oversize. `.sgs-nav-menu__caret svg` has no
+	 * Wave 2 M6 (2026-09-12) — caret oversize. `.{bem}__caret svg` has no
 	 * font-size of its own to run `width:1em;height:1em` against (the sibling
 	 * rule nav-menu-submenu-css.php emits) — it falls back to the browser's UA
-	 * button-reset default. nav-menu-submenu-css.php's own `.sgs-nav-menu__
+	 * button-reset default. nav-menu-submenu-css.php's own `.{bem}__
 	 * subtoggle` rule already carries `font:inherit` FOR THIS EXACT PURPOSE (its
 	 * own "M6 precondition" comment), which means the resolved size must live on
-	 * an ANCESTOR the button can inherit from — `.sgs-nav-menu__submenu-root`,
+	 * an ANCESTOR the button can inherit from — `.{bem}__submenu-root`,
 	 * confirmed live: an explicit `font-size` on `.subtoggle` itself is a
 	 * same-specificity sibling to that `font:inherit` shorthand and LOSES to it
 	 * by source order (nav-menu-submenu-css.php concatenates after this file).
@@ -80,12 +80,12 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * parent of the mega/dropdown PANEL (`[data-sgs-mega-panel]`), so cascading
 	 * the FULL typography set (font-family/weight/line-height/text-align) there
 	 * would restyle rich panel content that was never in scope for a caret-sizing
-	 * fix. Font-size alone is safe: `.sgs-nav-menu__sublink` already carries its
+	 * fix. Font-size alone is safe: `.{bem}__sublink` already carries its
 	 * own explicit `submenuFontSize` rule (nav-menu-submenu-css.php) which wins
 	 * over this inherited value for the one thing panel content actually reads
 	 * font-size for.
 	 */
-	$submenu_root_sel      = $uid_sel . ' .sgs-nav-menu__submenu-root';
+	$submenu_root_sel      = $uid_sel . ' .' . $bem_root . '__submenu-root';
 	$item_size_attr        = $attributes['itemFontSize'] ?? null;
 	if ( is_array( $item_size_attr ) ) {
 		$item_size_unit_set = isset( $attributes['itemFontSizeUnit'] ) && '' !== $attributes['itemFontSizeUnit'];
@@ -337,7 +337,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	);
 	if ( 'sweep' === $t_text && '' !== $item_colour_hover ) {
 		$item_sweep_hover = sgs_colour_value( $item_colour_hover );
-		$item_text_sweep  = sgs_nav_menu_text_sweep_css(
+		$item_text_sweep  = sgs_nav_shared_text_sweep_css(
 			$link_sel,
 			'' !== $item_colour ? sgs_colour_value( $item_colour ) : '',
 			$item_sweep_hover
@@ -371,7 +371,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		// Wave 2 M4 (2026-09-12): $caret_svg_sel paired in the same call — a
 		// direct :hover/:focus-visible on the caret's own svg fires when the
 		// pointer/focus is on the caret itself (e.g. the has_url fork's
-		// separate `.sgs-nav-menu__subtoggle` button).
+		// separate `.{bem}__subtoggle` button).
 		// itemColourHoverGradient (2026-09-13): sgs_text_colour_decl() detects a
 		// gradient function on its own and swaps in the background-clip:text
 		// declaration set; a flat colour resolves exactly as before via
@@ -394,16 +394,16 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// "600" always emits and today's output is preserved byte-for-byte.
 	$item_weight_current = (int) ( $attributes['itemFontWeightCurrent'] ?? 0 );
 	if ( $item_weight_current > (int) ( $attributes['itemFontWeight'] ?? 0 ) ) {
-		$css .= $uid_sel . ' .sgs-nav-menu__link[aria-current="page"],'
-			. $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{font-weight:' . $item_weight_current . ';}';
+		$css .= $uid_sel . ' .' . $bem_root . '__link[aria-current="page"],'
+			. $uid_sel . ' .' . $bem_root . '__sublink[aria-current="page"]{font-weight:' . $item_weight_current . ';}';
 	}
 
-	$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'item', $link_sel, $item_sweep_hover );
+	$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'item', $link_sel, $item_sweep_hover );
 
 	/*
 	 * ── ITEM BACKGROUND — ALL THREE fills on `{link}::before` (FR-41-23). ────
 	 *
-	 * ⛔ No state's fill is emitted onto `.sgs-nav-menu__link` itself. If any of
+	 * ⛔ No state's fill is emitted onto `.{bem}__link` itself. If any of
 	 * them landed there, the item TEXT row's
 	 * Sweep would clip the operator's hover fill to the shape of the letters —
 	 * the exact defect class FR-41-26's eligibility section exists to prevent,
@@ -498,9 +498,9 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * both forks (bar `.submenu-root` / drawer `.accordion-row`). `:has()` needs
 	 * no browser-support gate — FR-41-13 already ships it unconditionally.
 	 *
-	 * `:not(:hover):not(:focus-visible)` on the trailing `.sgs-nav-menu__link`
+	 * `:not(:hover):not(:focus-visible)` on the trailing `.{bem}__link`
 	 * is what guarantees hover always wins over a propagated-current ancestor —
-	 * NOT specificity. Measured: the `:has(ul.sgs-nav-menu__submenu
+	 * NOT specificity. Measured: the `:has(ul.{bem}__submenu
 	 * a[aria-current="page"])` selector's own specificity (0,5,2) already
 	 * OUTRANKS the item's plain `:hover` rule (0,3,0), so relying on source
 	 * order or specificity here would have been backwards — a directly-hovered
@@ -511,7 +511,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * ⚠ BAR FORK ONLY — `[data-sgs-nav-has-current]` `:has()` rescue
 	 * (2026-09-14, sticky-header reparent regression). `mega-disclosure.js`'s
 	 * `reparentPanelIfNeeded()` moves the bar's `[data-sgs-mega-panel]`
-	 * (containing `ul.sgs-nav-menu__submenu`) to `<body>` while a page-embedded
+	 * (containing `ul.{bem}__submenu`) to `<body>` while a page-embedded
 	 * dropdown is open, which breaks `:has()` above for exactly that long — the
 	 * `<ul>` is no longer a DOM descendant of `.submenu-root` to check. JS
 	 * mirrors the same fact onto `.submenu-root` itself (which never moves) as
@@ -546,9 +546,9 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * `::before` still applies to both the `:has()` match and the reparent
 	 * fallback.
 	 */
-	$sgs_nm_submenu_has_current = 'ul.sgs-nav-menu__submenu a[aria-current="page"]';
-	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .sgs-nav-menu__submenu-root:is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
-	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has(' . $sgs_nm_submenu_has_current . ') > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
+	$sgs_nm_submenu_has_current = 'ul.' . $bem_root . '__submenu a[aria-current="page"]';
+	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .' . $bem_root . '__submenu-root:is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
+	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .' . $bem_root . '__accordion-row:has(' . $sgs_nm_submenu_has_current . ') > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
 
 	if ( '' !== $sgs_nm_ancestor_current_decl_str ) {
 		$css .= $sgs_nm_ancestor_bar_sel . ',' . $sgs_nm_ancestor_drawer_sel . '{' . $sgs_nm_ancestor_current_decl_str . ';}';
@@ -561,11 +561,11 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	// includes/nav-menu-item-border-featured-css.php (file-size maintenance
 	// pass, 2026-09-14): fully self-contained, no shared state beyond
 	// $attributes/$link_sel/$uid_sel/$t_border.
-	$css .= sgs_nav_menu_item_border_css( $attributes, $link_sel, $uid_sel, $t_border );
+	$css .= sgs_nav_shared_item_border_css( $attributes, $link_sel, $uid_sel, $t_border, $bem_root );
 
 	// Featured items (LABEL/PILL forms + republished custom properties + Hover
 	// state) — extracted to the same module, same rationale.
-	$css .= sgs_nav_menu_featured_css( $attributes, $uid_sel );
+	$css .= sgs_nav_shared_featured_css( $attributes, $uid_sel, $bem_root );
 
 	/*
 	 * ── FR-41-13 — Parent item keeps Hover state while submenu is hovered ─────
@@ -577,8 +577,8 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 *
 	 * FOUR rules: mouse variant (bar + drawer) + keyboard variant (bar + drawer).
 	 * Mouse needs no `:has()` (hover bubbles); keyboard needs `:has()` (focus does
-	 * not bubble). Always key keyboard on `ul.sgs-nav-menu__submenu` — the ONE
-	 * class present in both forks. `.sgs-nav-menu__submenu-wrap` exists bar-only.
+	 * not bubble). Always key keyboard on `ul.{bem}__submenu` — the ONE
+	 * class present in both forks. `.{bem}__submenu-wrap` exists bar-only.
 	 *
 	 * ⚠ Declarations are the SAME as the existing item hover rules — reuse their
 	 * output, never hand-copy a duplicate that can drift.
@@ -644,8 +644,8 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		// as a side effect of the SAME selector shape M4 already pairs above,
 		// no separate mechanism. Bar-only: the drawer fork's caret pairing is
 		// a different mechanism owned by nav-menu-submenu-css.php.
-		$bar_mouse_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:hover > .sgs-nav-menu__link';
-		$bar_mouse_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:hover .sgs-nav-menu__caret svg';
+		$bar_mouse_sel       = $uid_sel . ' .' . $bem_root . '__submenu-root:hover > .' . $bem_root . '__link';
+		$bar_mouse_caret_sel = $uid_sel . ' .' . $bem_root . '__submenu-root:hover .' . $bem_root . '__caret svg';
 		if ( '' !== $link_decl_str ) {
 			$css .= sgs_hover_guarded_rule( $bar_mouse_sel . ',' . $bar_mouse_caret_sel, $link_decl_str );
 		}
@@ -654,7 +654,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		}
 
 		// Mouse half — drawer fork.
-		$drawer_mouse_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:hover > .sgs-nav-menu__link';
+		$drawer_mouse_sel = $uid_sel . ' .' . $bem_root . '__accordion-row:hover > .' . $bem_root . '__link';
 		if ( '' !== $link_decl_str ) {
 			$css .= sgs_hover_guarded_rule( $drawer_mouse_sel, $link_decl_str );
 		}
@@ -669,7 +669,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		// ⚠ `:is( :has(…), [data-sgs-nav-has-focus] )` is the same reparent-safe
 		// `:has()` rescue as the current-page ancestor rule above (2026-09-14)
 		// — while `reparentPanelIfNeeded()` has moved the bar's panel to
-		// `<body>`, `:has( ul.sgs-nav-menu__submenu :focus-visible )` can no
+		// `<body>`, `:has( ul.{bem}__submenu :focus-visible )` can no
 		// longer see the focus-visible descendant, so `mega-disclosure.js`
 		// mirrors that LIVE fact onto `.submenu-root` itself (via a
 		// `focusin`/`focusout` listener on the moved panel, kept in sync for
@@ -680,8 +680,8 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		// already recorded for this file. Drawer fork needs no equivalent —
 		// its submenu never reparents (see the note above the current-page
 		// rule).
-		$bar_keyboard_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:is( :has( ul.sgs-nav-menu__submenu :focus-visible ), [data-sgs-nav-has-focus] ) > .sgs-nav-menu__link';
-		$bar_keyboard_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:is( :has( ul.sgs-nav-menu__submenu :focus-visible ), [data-sgs-nav-has-focus] ) .sgs-nav-menu__caret svg';
+		$bar_keyboard_sel       = $uid_sel . ' .' . $bem_root . '__submenu-root:is( :has( ul.' . $bem_root . '__submenu :focus-visible ), [data-sgs-nav-has-focus] ) > .' . $bem_root . '__link';
+		$bar_keyboard_caret_sel = $uid_sel . ' .' . $bem_root . '__submenu-root:is( :has( ul.' . $bem_root . '__submenu :focus-visible ), [data-sgs-nav-has-focus] ) .' . $bem_root . '__caret svg';
 		if ( '' !== $link_decl_str ) {
 			$css .= $bar_keyboard_sel . ',' . $bar_keyboard_caret_sel . '{' . $link_decl_str . ';}';
 		}
@@ -690,7 +690,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		}
 
 		// Keyboard half — drawer fork.
-		$drawer_keyboard_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
+		$drawer_keyboard_sel = $uid_sel . ' .' . $bem_root . '__accordion-row:has( ul.' . $bem_root . '__submenu :focus-visible ) > .' . $bem_root . '__link';
 		if ( '' !== $link_decl_str ) {
 			$css .= $drawer_keyboard_sel . '{' . $link_decl_str . ';}';
 		}

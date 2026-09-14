@@ -80,7 +80,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // renders its root block-private since D539 (see §5). Re-adding the require
 // would reintroduce a dependency nothing uses.
 
-if ( ! function_exists( 'sgs_nav_menu_typography_hover_rule' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	/**
 	 * BLOCK-PRIVATE hover-typography emitter (Spec 41 FR-41-21, owner ruling 2).
 	 *
@@ -116,7 +116,7 @@ if ( ! function_exists( 'sgs_nav_menu_typography_hover_rule' ) ) {
 	 *                                   under them stays at the resting colour.
 	 * @return string CSS, or '' when nothing permitted is set.
 	 */
-	function sgs_nav_menu_typography_hover_rule( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' ): string {
+	function sgs_nav_shared_typography_hover_rule( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' ): string {
 		if ( '' === $selector ) {
 			return '';
 		}
@@ -239,7 +239,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 
 		/**
 		 * Accessor for the validated submenu settings (Spec 41 step 8, pure
-		 * refactor) -- render.php now calls sgs_nav_menu_render_items() as a
+		 * refactor) -- render.php now calls sgs_nav_bar_menu_render_items() as a
 		 * free function (see includes/nav-menu-markup.php), which has no
 		 * $this and so cannot read $this->submenu directly. This getter is the
 		 * ONLY new surface this split adds to the class; it exposes existing
@@ -406,7 +406,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 // ── 1. Deterministic content-addressed uid (CSS scope). ────────────────────
 // STOP-NO-KSORT: $attributes passed verbatim into the uid hash + the wrapper.
 $anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) ? (string) $block->parsed_block['attrs']['anchor'] : '';
-$uid        = 'sgs-nav-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );
+$uid        = 'sgs-nav-bar-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );
 $uid_sel    = '.' . $uid;
 
 // ── 2. Resolve the menu (one-source rule) + flatten to top-level links only. ──
@@ -429,10 +429,10 @@ $flat_items   = $bar_renderer->flatten( $menu_blocks );
 // The former runtime fork (`sgs/navDrawerSubmenuModel` context /
 // `$sgs_nm_is_drawer_list`) is gone by construction: the in-drawer
 // accordion/drill-down list is the separate `sgs/nav-drawer-menu` block,
-// which calls `sgs_nav_menu_render_items_drawer()` in its OWN render.php.
+// which calls `sgs_nav_drawer_menu_render_items()` in its OWN render.php.
 // This block never receives drawer context and never needs to detect what it
 // is — it IS the bar.
-$items_html = sgs_nav_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
+$items_html = sgs_nav_bar_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
 
 if ( '' === $items_html ) {
 	return '';
@@ -481,7 +481,7 @@ if ( '' === $trigger_label ) {
 
 $burger_icon = 'text' === $trigger_mode
 	? ''
-	: sgs_nav_menu_icon_markup(
+	: sgs_nav_shared_icon_markup(
 		$attributes['triggerIcon'] ?? null,
 		array(
 			'source' => 'lucide',
@@ -491,7 +491,7 @@ $burger_icon = 'text' === $trigger_mode
 
 /*
  * G4 — is the resolved glyph the UNMODIFIED default ({source:lucide,name:menu})?
- * Gates the burger↔X morph markup in sgs_nav_menu_burger_toggle_markup(): a
+ * Gates the burger↔X morph markup in sgs_nav_bar_menu_burger_toggle_markup(): a
  * custom triggerIcon (G3) can be any glyph shape with no guaranteed 3-line
  * structure, so it must keep rendering its own resolved markup untouched.
  */
@@ -532,7 +532,7 @@ $burger_context_attr = wp_interactivity_data_wp_context(
 // runs as the drawer's own internal list (that is `sgs/nav-drawer-menu`'s job
 // now), so there is no gate here any more (contrast the pre-split
 // `$sgs_nm_is_drawer_list ? '' : …` fork).
-$toggle_html = sgs_nav_menu_burger_toggle_markup(
+$toggle_html = sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_context_attr,
 	$drawer_ref,
 	$burger_icon,
@@ -595,14 +595,13 @@ $bar_data_attrs            = '';
 $bar_data_attrs           .= 'pill' === $indicator_style ? ' data-sgs-nav-indicator' : '';
 $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 
-// Note: `sgs-nav-menu__bar` stays the BEM class literal here (Step 3's job to
-// rename, per the split plan's BEM-root migration — not this scaffolding
-// step). The former `--drawer` modifier + `data-sgs-nav-submenu-model`
-// attribute belonged exclusively to the in-drawer render path
-// ($sgs_nm_is_drawer_list), which no longer exists on this block — that
-// branch, and the modifier class, are gone here (they live on
-// `sgs/nav-drawer-menu`'s own render.php instead).
-$bar_class = 'sgs-nav-menu__bar';
+// D1059 split (Step 3, 2026-09-14): `sgs-nav-bar-menu__bar` is this block's
+// own separate BEM root -- no longer shared with the drawer fork. The former
+// `--drawer` modifier + `data-sgs-nav-submenu-model` attribute belonged
+// exclusively to the in-drawer render path ($sgs_nm_is_drawer_list), which no
+// longer exists on this block — that branch, and the modifier class, are gone
+// here (they live on `sgs/nav-drawer-menu`'s own render.php instead).
+$bar_class = 'sgs-nav-bar-menu__bar';
 
 $bar_html = sprintf(
 	'<ul class="%3$s"%2$s>%1$s</ul>',
@@ -617,7 +616,7 @@ $bar_html = sprintf(
  * ⛔ The Sweep eligibility predicate is not a UI rule — it is the EMISSION rule,
  * and the inspector merely reflects it. Its inputs are OTHER attributes, which
  * the operator can change AFTER choosing Sweep, so a UI-only gate is not a gate
- * at all. `sgs_nav_menu_resolved_treatments()` re-evaluates the SAME declared
+ * at all. `sgs_nav_shared_resolved_treatments()` re-evaluates the SAME declared
  * rows (`block.json::supports.sgs.sweepEligibility`) the inspector reads, and
  * falls back to 'swap' when the predicate is false — regardless of the stored
  * value, which is NOT cleared (it becomes valid again the moment the operator
@@ -628,16 +627,16 @@ $bar_html = sprintf(
  * where that distinction bites: keyed on the stored value it would fire on a row
  * that never swept.
  */
-$sgs_nm_treatments = sgs_nav_menu_resolved_treatments( $attributes, 'sgs/nav-bar-menu' );
+$sgs_nm_treatments = sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-bar-menu' );
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 // This block is never nested inside `sgs/nav-drawer` (no `sgs/navDrawerBg`
 // context — the drawer's own render path is `sgs/nav-drawer-menu` now), so
 // the drawer-bg-aware submenu contrast parameter is always ''.
 $css  = '';
-$css .= sgs_nav_menu_item_state_css( $attributes, $uid_sel, $sgs_nm_treatments );
-$css .= sgs_nav_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
-$css .= sgs_nav_menu_submenu_css(
+$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments );
+$css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
+$css .= sgs_nav_shared_submenu_css(
 	$attributes,
 	$uid_sel,
 	$indicator_style,
@@ -646,6 +645,7 @@ $css .= sgs_nav_menu_submenu_css(
 	$sgs_tor_padding_tiers,
 	$sgs_tor_padding_desktop,
 	$sgs_tor_margin_desktop,
+	'sgs-nav-bar-menu',
 	$sgs_nm_treatments,
 	'icon',
 	'',
@@ -684,10 +684,9 @@ if ( '' !== $css ) {
 
 // STOP-21 / DONE-item-2: the block's own scoped `<style>` targets `.$uid …`, so
 // the SAME `$uid` MUST ride onto the rendered element as a CLASS or every scoped
-// rule above is a silent render no-op. `sgs-nav-menu` is the (shared, not-yet-
-// renamed) BEM root the stylesheet and view.js both key on — Step 3 owns
-// renaming it; `$uid` is the per-instance scope.
-$nav_root_classes = array( 'sgs-nav-menu', $uid );
+// rule above is a silent render no-op. `sgs-nav-bar-menu` is this block's own
+// BEM root (D1059 split, Step 3); `$uid` is the per-instance scope.
+$nav_root_classes = array( 'sgs-nav-bar-menu', $uid );
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here —
 // on the element carrying the role. Exactly one <nav> per instance and exactly

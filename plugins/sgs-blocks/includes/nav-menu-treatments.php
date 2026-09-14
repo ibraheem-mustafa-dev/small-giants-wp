@@ -22,7 +22,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_sweep_eligible' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_sweep_eligible' ) ) {
 	/**
 	 * Evaluate ONE declared `sweepEligibility` row (Spec 41 FR-41-26).
 	 *
@@ -39,7 +39,7 @@ if ( ! function_exists( 'sgs_nav_menu_sweep_eligible' ) ) {
 	 *                          blockingGradientAttrs / glyphGuard.
 	 * @return bool True when Sweep may be emitted for that row.
 	 */
-	function sgs_nav_menu_sweep_eligible( array $attributes, array $row ): bool {
+	function sgs_nav_shared_sweep_eligible( array $attributes, array $row ): bool {
 		foreach ( array( 'blockingBackgroundAttrs', 'blockingGradientAttrs' ) as $bucket ) {
 			$names = isset( $row[ $bucket ] ) && is_array( $row[ $bucket ] ) ? $row[ $bucket ] : array();
 			foreach ( $names as $name ) {
@@ -63,7 +63,7 @@ if ( ! function_exists( 'sgs_nav_menu_sweep_eligible' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_resolved_treatments' ) ) {
 	/**
 	 * Resolve every hover-treatment attribute ONCE, server-side (FR-41-26).
 	 *
@@ -93,7 +93,7 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 	 *                           registered type, never a shared/hardcoded one.
 	 * @return array<string,string> Resolved treatment per attribute name.
 	 */
-	function sgs_nav_menu_resolved_treatments( array $attributes, string $block_name = 'sgs/nav-bar-menu' ): array {
+	function sgs_nav_shared_resolved_treatments( array $attributes, string $block_name = 'sgs/nav-bar-menu' ): array {
 		$resolved = array(
 			'itemColourHoverTreatment'    => 'swap',
 			'itemBgHoverTreatment'        => 'swap',
@@ -139,7 +139,7 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 			}
 			if ( 'sweep' === $resolved[ $key ] && isset( $eligibility[ $key ] ) ) {
 				$row = is_array( $eligibility[ $key ] ) ? $eligibility[ $key ] : array();
-				if ( ! sgs_nav_menu_sweep_eligible( $attributes, $row ) ) {
+				if ( ! sgs_nav_shared_sweep_eligible( $attributes, $row ) ) {
 					$resolved[ $key ] = 'swap';
 				}
 			}
@@ -149,7 +149,7 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_text_sweep_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_text_sweep_css' ) ) {
 	/**
 	 * The glyph colour-sweep (Spec 41 FR-41-26) — the shipped
 	 * `sgs/business-info` attribution-link technique, adopted rather than
@@ -167,7 +167,7 @@ if ( ! function_exists( 'sgs_nav_menu_text_sweep_css' ) ) {
 	 * @param string $hover    Resolved hover colour (required).
 	 * @return array{base: string, hover: string}
 	 */
-	function sgs_nav_menu_text_sweep_css( string $selector, string $normal, string $hover ): array {
+	function sgs_nav_shared_text_sweep_css( string $selector, string $normal, string $hover ): array {
 		if ( '' === $selector || '' === $hover ) {
 			return array(
 				'base'  => '',
@@ -224,7 +224,7 @@ if ( ! function_exists( 'sgs_nav_menu_text_sweep_css' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_icon_markup' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_icon_markup' ) ) {
 	/**
 	 * Resolve an IconPicker `{source,name}` object to markup (Spec 41 FR-41-30).
 	 *
@@ -233,13 +233,13 @@ if ( ! function_exists( 'sgs_nav_menu_icon_markup' ) ) {
 	 * `sgs_get_wp_icon()` / a `span.dashicons` / a literal emoji glyph), against
 	 * the SAME four-value allowlist, reached from the `{source,name}` object
 	 * shape `sgs/icon` already stores. Block-private for the same reason
-	 * `sgs_nav_menu_typography_hover_rule()` is, and guarded for the same reason.
+	 * `sgs_nav_shared_typography_hover_rule()` is, and guarded for the same reason.
 	 *
 	 * @param mixed  $icon     The stored `{source,name}` object (anything else falls back).
 	 * @param array  $fallback Default `array( 'source' => …, 'name' => … )`.
 	 * @return string Icon markup, or '' when nothing resolves.
 	 */
-	function sgs_nav_menu_icon_markup( $icon, array $fallback ): string {
+	function sgs_nav_shared_icon_markup( $icon, array $fallback ): string {
 		$icon   = is_array( $icon ) ? $icon : array();
 		$source = (string) ( $icon['source'] ?? $fallback['source'] );
 		$name   = (string) ( $icon['name'] ?? $fallback['name'] );

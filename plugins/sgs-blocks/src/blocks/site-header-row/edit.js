@@ -88,7 +88,7 @@ const normaliseBox = ( box ) => {
 // Slugs verified against plugins/sgs-blocks/src/blocks/*/block.json.
 const HEADER_PROMOTED = [
 	{ slug: 'sgs/responsive-logo', label: __( 'Logo', 'sgs-blocks' ) },
-	{ slug: 'sgs/nav-menu', label: __( 'Navigation', 'sgs-blocks' ) },
+	{ slug: 'sgs/nav-bar-menu', label: __( 'Navigation', 'sgs-blocks' ) },
 	{ slug: 'sgs/product-search', label: __( 'Search', 'sgs-blocks' ) },
 	{ slug: 'sgs/cart', label: __( 'Cart', 'sgs-blocks' ) },
 	{

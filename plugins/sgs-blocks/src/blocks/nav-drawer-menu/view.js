@@ -49,14 +49,14 @@ function normalisePath( pathname ) {
 }
 
 /**
- * Mark the current-page link (if any) inside one `.sgs-nav-menu` list.
+ * Mark the current-page link (if any) inside one `.sgs-nav-drawer-menu` list.
  *
  * @param {HTMLElement} root The `.wp-block-sgs-nav-drawer-menu` root.
  */
 function markCurrentPage( root ) {
 	const current = normalisePath( window.location.pathname );
 	root.querySelectorAll(
-		'.sgs-nav-menu__link[data-sgs-nav-path], .sgs-nav-menu__sublink[data-sgs-nav-path]'
+		'.sgs-nav-drawer-menu__link[data-sgs-nav-path], .sgs-nav-drawer-menu__sublink[data-sgs-nav-path]'
 	).forEach(
 		( link ) => {
 			const path = normalisePath( link.dataset.sgsNavPath || '' );
@@ -75,24 +75,24 @@ function markCurrentPage( root ) {
 let activeCleanups = [];
 
 /**
- * Wire the opt-in motion effects for one `.sgs-nav-menu__bar`, keyed on the
+ * Wire the opt-in motion effects for one `.sgs-nav-drawer-menu__bar`, keyed on the
  * data-attribute flags render.php emits only when an operator has switched
  * the effect on.
  *
  * @param {HTMLElement} root The `.wp-block-sgs-nav-drawer-menu` root.
  */
 function initBarEffects( root ) {
-	const bar = root.querySelector( '.sgs-nav-menu__bar' );
+	const bar = root.querySelector( '.sgs-nav-drawer-menu__bar' );
 	if ( ! bar ) {
 		return;
 	}
 
 	if ( bar.hasAttribute( 'data-sgs-nav-indicator' ) ) {
-		activeCleanups.push( initNavIndicator( bar ) );
+		activeCleanups.push( initNavIndicator( bar, 'sgs-nav-drawer-menu' ) );
 	}
 
 	if ( bar.hasAttribute( 'data-magnet' ) ) {
-		bar.querySelectorAll( '.sgs-nav-menu__magnet-target' ).forEach(
+		bar.querySelectorAll( '.sgs-nav-drawer-menu__magnet-target' ).forEach(
 			( el ) => activeCleanups.push( initMagnet( el ) )
 		);
 	}

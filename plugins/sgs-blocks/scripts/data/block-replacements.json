@@ -48,7 +48,7 @@
   "sgs/multi-button": [
     "core/buttons"
   ],
-  "sgs/nav-menu": [
+  "sgs/nav-bar-menu": [
     "core/navigation"
   ],
   "sgs/post-grid": [

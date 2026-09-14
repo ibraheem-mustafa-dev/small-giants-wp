@@ -5,12 +5,12 @@
  * Split out of render.php (Spec 41 step 8, pure refactor). REQUIRED, not
  * optional — the markup half (428 code lines) cannot fit one 300-line file
  * alongside render.php's own class/entry + menu resolution. This file holds
- * the two flat-list renderers (`sgs_nav_menu_render_items()`,
- * `sgs_nav_menu_render_items_drawer()`, extracted from
+ * the two flat-list renderers (`sgs_nav_bar_menu_render_items()`,
+ * `sgs_nav_drawer_menu_render_items()`, extracted from
  * SGS_Nav_Menu_Bar_Renderer's own methods — the class itself, its
  * constructor, `flatten()`, `from_link()` and `from_page_list()` all STAY in
  * render.php, matching the plan's own file assignment) and the burger/
- * trigger markup builder (`sgs_nav_menu_burger_toggle_markup()`).
+ * trigger markup builder (`sgs_nav_bar_menu_burger_toggle_markup()`).
  *
  * ⚠ NOT a pure copy-paste of the class methods: `$this->featured_ids`,
  * `$this->uid` and `$this->submenu` become explicit parameters, since a
@@ -44,7 +44,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
+if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 		/**
 		 * Render the flat <li><a> list.
 		 *
@@ -58,11 +58,11 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 		 * @param array  $featured_ids Featured item identifiers (was $this->featured_ids).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_menu_render_items( array $items, array $featured_ids, string $uid, array $submenu ): string {
+		function sgs_nav_bar_menu_render_items( array $items, array $featured_ids, string $uid, array $submenu ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
-				$li_class    = 'sgs-nav-menu__item' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
+				$li_class    = 'sgs-nav-bar-menu__item' . ( $is_featured ? ' sgs-nav-bar-menu__item--featured' : '' );
 
 				if ( 'sgs_mega_menu' === ( $item['type'] ?? '' ) ) {
 					$panel_post_id = (int) ( $item['object_id'] ?? 0 );
@@ -86,7 +86,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 					$viewall_for_panel = '';
 					if ( ! $panel_has_cta && '#' !== $item['url'] && '' !== $item['url'] ) {
 						$viewall_for_panel = sprintf(
-							'<a class="sgs-nav-menu__mega-viewall" href="%s">%s</a>',
+							'<a class="sgs-nav-bar-menu__mega-viewall" href="%s">%s</a>',
 							esc_url( $item['url'] ),
 							// translators: %s is the mega-menu item's own label (e.g. "Products").
 							esc_html( sprintf( __( 'View all %s', 'sgs-blocks' ), $item['label'] ) )
@@ -113,7 +113,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 					if ( null !== $panel_html ) {
 						// Instance-scoped id (reviewer finding): fold in $uid so
 						// two nav-menus bound to the SAME menu can't collide (axe
-						// duplicate-id-aria). $uid already carries the sgs-nav-menu- prefix.
+						// duplicate-id-aria). $uid already carries the sgs-nav-bar-menu- prefix.
 						$panel_dom_id = $uid . '-mega-' . (int) $item['object_id'];
 						$mega_ctx     = wp_interactivity_data_wp_context(
 							array(
@@ -125,10 +125,10 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 						);
 						$caret = function_exists( 'sgs_get_lucide_icon' ) ? sgs_get_lucide_icon( 'chevron-down' ) : '';
 						$html .= sprintf(
-							'<li class="%1$s sgs-nav-menu__item--mega">'
-							. '<div class="sgs-nav-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
-							. '<button type="button" class="sgs-nav-menu__link sgs-nav-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
-							. '<span class="sgs-nav-menu__label sgs-nav-menu__magnet-target">%4$s</span><span class="sgs-nav-menu__caret" aria-hidden="true">%5$s</span>'
+							'<li class="%1$s sgs-nav-bar-menu__item--mega">'
+							. '<div class="sgs-nav-bar-menu__mega" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__mega-trigger" data-sgs-mega-trigger aria-expanded="false" aria-controls="%3$s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+							. '<span class="sgs-nav-bar-menu__label sgs-nav-bar-menu__magnet-target">%4$s</span><span class="sgs-nav-bar-menu__caret" aria-hidden="true">%5$s</span>'
 							. '</button>'
 							// `data-lenis-prevent`: the site runs Lenis smooth scrolling
 							// (<html class="lenis">), which intercepts wheel events
@@ -142,7 +142,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 							// theme/sgs-theme/assets/js/sgs-shop-filters.js::scrollWrap.
 							// Set in the markup rather than at runtime because this
 							// element is server-rendered.
-							. '<div id="%3$s" class="sgs-nav-menu__mega-panel-wrap" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
+							. '<div id="%3$s" class="sgs-nav-bar-menu__mega-panel-wrap" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">%6$s</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
 							$mega_ctx, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
@@ -195,8 +195,8 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 						 */
 						$child_featured = in_array( $child['identifier'], $featured_ids, true );
 						$child_html    .= sprintf(
-							'<li class="sgs-nav-menu__subitem%s"><a class="sgs-nav-menu__sublink" href="%s" data-sgs-nav-path="%s">%s</a></li>',
-							$child_featured ? ' sgs-nav-menu__subitem--featured' : '',
+							'<li class="sgs-nav-bar-menu__subitem%s"><a class="sgs-nav-bar-menu__sublink" href="%s" data-sgs-nav-path="%s">%s</a></li>',
+							$child_featured ? ' sgs-nav-bar-menu__subitem--featured' : '',
 							esc_url( $child['url'] ),
 							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
 							esc_html( $child['label'] )
@@ -221,7 +221,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 						);
 						$sub_caret  = '';
 						if ( $submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) ) {
-							$sub_caret = '<span class="sgs-nav-menu__caret" aria-hidden="true">'
+							$sub_caret = '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">'
 								. sgs_get_lucide_icon( 'chevron-down' ) . '</span>';
 						}
 
@@ -234,8 +234,8 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 						 */
 						if ( ! empty( $item['has_url'] ) ) {
 							$trigger_html = sprintf(
-								'<a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span></a>'
-								. '<button type="button" class="sgs-nav-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								'<a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a>'
+								. '<button type="button" class="sgs-nav-bar-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
 								. '<span class="screen-reader-text">%s</span>%s</button>',
 								esc_url( $item['url'] ),
 								esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -247,8 +247,8 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 							);
 						} else {
 							$trigger_html = sprintf(
-								'<button type="button" class="sgs-nav-menu__link sgs-nav-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
-								. '<span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span>%s</button>',
+								'<button type="button" class="sgs-nav-bar-menu__link sgs-nav-bar-menu__subtoggle" data-sgs-mega-trigger aria-expanded="false" aria-controls="%s" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.triggerKeydown">'
+								. '<span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span>%s</button>',
 								esc_attr( $sub_dom_id ),
 								esc_html( $item['label'] ),
 								$sub_caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon().
@@ -260,19 +260,19 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 						// PHP-validated to one of none|fade|slide-down by the
 						// renderer's constructor — 'none' emits no modifier class,
 						// matching the pre-animation markup byte-for-byte.
-						$sub_wrap_class = 'sgs-nav-menu__submenu-wrap'
-							. ( 'none' !== $submenu['animation'] ? ' sgs-nav-menu__submenu-wrap--' . $submenu['animation'] : '' );
+						$sub_wrap_class = 'sgs-nav-bar-menu__submenu-wrap'
+							. ( 'none' !== $submenu['animation'] ? ' sgs-nav-bar-menu__submenu-wrap--' . $submenu['animation'] : '' );
 
 						$html .= sprintf(
-							'<li class="%1$s sgs-nav-menu__item--has-submenu">'
-							. '<div class="sgs-nav-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							'<li class="%1$s sgs-nav-bar-menu__item--has-submenu">'
+							. '<div class="sgs-nav-bar-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '%4$s'
 							// `data-lenis-prevent` for the same reason as the mega panel
 							// above — see that note. A dropdown is the likelier of the two
 							// to overflow its bound, so it is the likelier to need a
 							// wheel-reachable scroll region.
 							. '<div id="%5$s" class="%6$s" data-sgs-mega-panel data-lenis-prevent data-wp-on--keydown="actions.panelKeydown">'
-							. '<ul class="sgs-nav-menu__submenu">%7$s</ul>'
+							. '<ul class="sgs-nav-bar-menu__submenu">%7$s</ul>'
 							. '</div>'
 							. '</div></li>',
 							esc_attr( $li_class ),
@@ -288,7 +288,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 				}
 
 				$html .= sprintf(
-					'<li class="%s"><a class="sgs-nav-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-menu__link-text sgs-nav-menu__magnet-target">%s</span></a></li>',
+					'<li class="%s"><a class="sgs-nav-bar-menu__link" href="%s" data-sgs-nav-path="%s"><span class="sgs-nav-bar-menu__link-text sgs-nav-bar-menu__magnet-target">%s</span></a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
 					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -299,7 +299,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items' ) ) {
 		}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
+if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 		/**
 		 * Render the flat items as a REAL nested vertical list for the drawer
 		 * (Spec 36 FR-36-6 — the flat-bar collapse to one link, above, is
@@ -349,11 +349,11 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 		 *                      nested children (megaDrawerFallbackIds attribute).
 		 * @return string HTML <li> elements.
 		 */
-		function sgs_nav_menu_render_items_drawer( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array() ): string {
+		function sgs_nav_drawer_menu_render_items( array $items, string $model, string $uid, array $featured_ids, string $marker_icon = '', array $mega_drawer_fallback_ids = array() ): string {
 			$html = '';
 			foreach ( $items as $item ) {
 				$is_featured = in_array( $item['identifier'], $featured_ids, true );
-				$li_class    = 'sgs-nav-menu__item sgs-nav-menu__item--drawer' . ( $is_featured ? ' sgs-nav-menu__item--featured' : '' );
+				$li_class    = 'sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--drawer' . ( $is_featured ? ' sgs-nav-drawer-menu__item--featured' : '' );
 
 				// Mega item — documented degrade (see docblock above), UNLESS the
 				// operator opted this item into the accordion fallback AND it
@@ -363,7 +363,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 					$mega_fallback = ! empty( $mega_children ) && in_array( $item['identifier'], $mega_drawer_fallback_ids, true );
 					if ( ! $mega_fallback ) {
 						$html .= sprintf(
-							'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+							'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
 							esc_attr( $li_class ),
 							esc_url( $item['url'] ),
 							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -386,7 +386,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 					// `sgs/icon` uses and handed in already-rendered. The stored default
 					// is lucide/chevron-right, so an untouched nav is byte-identical.
 					$sub_marker = '' !== $marker_icon
-						? '<span class="sgs-nav-menu__sublink-marker" aria-hidden="true">' . $marker_icon . '</span>'
+						? '<span class="sgs-nav-drawer-menu__sublink-marker" aria-hidden="true">' . $marker_icon . '</span>'
 						: '';
 					$child_html = '';
 					foreach ( $children as $child ) {
@@ -395,8 +395,8 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 						}
 						$child_featured = in_array( $child['identifier'], $featured_ids, true );
 						$child_html    .= sprintf(
-							'<li class="sgs-nav-menu__subitem%1$s"><a class="sgs-nav-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
-							$child_featured ? ' sgs-nav-menu__subitem--featured' : '',
+							'<li class="sgs-nav-drawer-menu__subitem%1$s"><a class="sgs-nav-drawer-menu__sublink" href="%2$s" data-sgs-nav-path="%3$s">%4$s%5$s</a></li>',
+							$child_featured ? ' sgs-nav-drawer-menu__subitem--featured' : '',
 							esc_url( $child['url'] ),
 							esc_attr( wp_parse_url( $child['url'], PHP_URL_PATH ) ?? '' ),
 							$sub_marker, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon(), same pattern as $caret elsewhere in this file.
@@ -408,7 +408,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 					// (mirrors render_items()'s own null-panel/empty-children degrade).
 					if ( '' === $child_html ) {
 						$html .= sprintf(
-							'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+							'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
 							esc_attr( $li_class ),
 							esc_url( $item['url'] ),
 							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -424,31 +424,31 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 					 * Split parent-link from expander (FR-36-6 — "split parent-link
 					 * from expander"). A parent WITH a URL keeps a real, separately
 					 * clickable link AND an adjacent expander toggle (mirrors the
-					 * bar's own `sgs-nav-menu__subtoggle` split); a parent with NO
+					 * bar's own `sgs-nav-drawer-menu__subtoggle` split); a parent with NO
 					 * URL of its own has nothing to link to, so its label renders as
 					 * plain text next to the expander instead of a dead `href="#"`.
 					 */
 					if ( ! empty( $item['has_url'] ) ) {
 						$label_html = sprintf(
-							'<a class="sgs-nav-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-menu__link-text">%3$s</span></a>',
+							'<a class="sgs-nav-drawer-menu__link" href="%1$s" data-sgs-nav-path="%2$s"><span class="sgs-nav-drawer-menu__link-text">%3$s</span></a>',
 							esc_url( $item['url'] ),
 							esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
 							esc_html( $item['label'] )
 						);
 					} else {
 						$label_html = sprintf(
-							'<span class="sgs-nav-menu__link sgs-nav-menu__link--label"><span class="sgs-nav-menu__link-text">%s</span></span>',
+							'<span class="sgs-nav-drawer-menu__link sgs-nav-drawer-menu__link--label"><span class="sgs-nav-drawer-menu__link-text">%s</span></span>',
 							esc_html( $item['label'] )
 						);
 					}
 
 					$html .= sprintf(
-						'<li class="%1$s sgs-nav-menu__item--has-submenu">'
-						. '<div class="sgs-nav-menu__accordion-row">'
+						'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu">'
+						. '<div class="sgs-nav-drawer-menu__accordion-row">'
 						. '%2$s'
-						. '<details class="sgs-nav-menu__accordion" name="sgs-nav-menu-accordion-%3$s" id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
-						. '<summary class="sgs-nav-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-menu__caret" aria-hidden="true">%8$s</span></summary>'
-						. '<ul class="sgs-nav-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
+						. '<details class="sgs-nav-drawer-menu__accordion" name="sgs-nav-drawer-menu-accordion-%3$s" id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
+						. '<summary class="sgs-nav-drawer-menu__accordion-summary" aria-label="%7$s"><span class="sgs-nav-drawer-menu__caret" aria-hidden="true">%8$s</span></summary>'
+						. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%9$s</ul>'
 						. '</details>'
 						. '</div></li>',
 						esc_attr( $li_class ),
@@ -467,7 +467,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 				}
 
 				$html .= sprintf(
-					'<li class="%1$s"><a class="sgs-nav-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-menu__link-text">%4$s</span></a></li>',
+					'<li class="%1$s"><a class="sgs-nav-drawer-menu__link" href="%2$s" data-sgs-nav-path="%3$s"><span class="sgs-nav-drawer-menu__link-text">%4$s</span></a></li>',
 					esc_attr( $li_class ),
 					esc_url( $item['url'] ),
 					esc_attr( wp_parse_url( $item['url'], PHP_URL_PATH ) ?? '' ),
@@ -478,7 +478,7 @@ if ( ! function_exists( 'sgs_nav_menu_render_items_drawer' ) ) {
 		}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
+if ( ! function_exists( 'sgs_nav_bar_menu_burger_toggle_markup' ) ) {
 	/**
 	 * Build the burger button + toggle-wrap markup (was inlined in render.php
 	 * as the `$toggle_html = sprintf(...)` assignment; body byte-identical,
@@ -499,7 +499,7 @@ if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
 	 *                                     morph has no well-defined shape for an arbitrary glyph).
 	 * @return string The `<div>` + `<button>` toggle markup.
 	 */
-	function sgs_nav_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false ): string {
+	function sgs_nav_bar_menu_burger_toggle_markup( string $burger_context_attr, string $drawer_ref, string $burger_icon, string $trigger_mode = 'icon', string $trigger_label = '', string $aria_attr = '', string $magnet_attrs = '', bool $is_default_icon = false ): string {
 		if ( ! in_array( $trigger_mode, array( 'icon', 'text', 'icon-and-text' ), true ) ) {
 			$trigger_mode = 'icon';
 		}
@@ -526,41 +526,41 @@ if ( ! function_exists( 'sgs_nav_menu_burger_toggle_markup' ) ) {
 				// animatable structure to work with. Always wrapped (both `icon`
 				// and `icon-and-text`) — unlike the custom-icon branch below, this
 				// is new-feature markup, not a byte-identical-preservation case.
-				$icon_html = '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">'
-					. str_repeat( '<span class="sgs-nav-menu__burger-bar"></span>', 3 )
+				$icon_html = '<span class="sgs-nav-bar-menu__burger-icon" aria-hidden="true">'
+					. str_repeat( '<span class="sgs-nav-bar-menu__burger-bar"></span>', 3 )
 					. '</span>';
 			} else {
 				// ⚠ Under `icon-and-text` a real visible word names the button, so the
 				// glyph is decorative — the same convention this file already applies
-				// to `.sgs-nav-menu__sublink-marker` and `.sgs-nav-menu__caret`. Under
+				// to `.sgs-nav-bar-menu__sublink-marker` and `.sgs-nav-bar-menu__caret`. Under
 				// `icon` the SVG is the only content and the button's own aria-label
 				// names it, so it is emitted bare — byte-identical to pre-0.4.x output.
 				// A custom `triggerIcon` (G3) never morphs — an arbitrary glyph has no
 				// well-defined 3-bar shape (Spec 41 G4 scope boundary, disclosed).
 				$icon_html = 'icon' === $trigger_mode
 					? $burger_icon
-					: '<span class="sgs-nav-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
+					: '<span class="sgs-nav-bar-menu__burger-icon" aria-hidden="true">' . $burger_icon . '</span>';
 			}
 		}
 
 		$text_html = 'icon' === $trigger_mode
 			? ''
-			: '<span class="sgs-nav-menu__burger-text">' . esc_html( $trigger_label ) . '</span>';
+			: '<span class="sgs-nav-bar-menu__burger-text">' . esc_html( $trigger_label ) . '</span>';
 
 		// No modifier class under `icon`: that mode must render today's markup
 		// byte-for-byte (FR-41-12), and a class nothing styles is not free.
-		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-menu__burger--' . $trigger_mode;
+		$mode_class = 'icon' === $trigger_mode ? '' : ' sgs-nav-bar-menu__burger--' . $trigger_mode;
 
 		return sprintf(
-			'<div class="sgs-nav-menu__toggle-wrap" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
-			'<button type="button" class="sgs-nav-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s>%6$s%7$s</button>' .
+			'<div class="sgs-nav-bar-menu__toggle-wrap" data-wp-interactive="sgs/nav" %1$s data-wp-init="callbacks.pruneDanglingAriaControls">' .
+			'<button type="button" class="sgs-nav-bar-menu__burger%2$s" data-wp-on--click="actions.toggleDrawer" data-wp-bind--aria-expanded="state.isOpen" aria-controls="%3$s"%4$s%5$s>%6$s%7$s</button>' .
 			'</div>',
 			$burger_context_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_interactivity_data_wp_context() self-escapes.
 			esc_attr( $mode_class ),
 			esc_attr( $drawer_ref ),
 			$aria_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from a fixed literal + esc_attr__() by this function or its caller.
 			$magnet_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from fixed literals + absint()+esc_attr() values in render.php.
-			$icon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_menu_icon_markup() (esc_attr/esc_html per source).
+			$icon_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted icon markup from sgs_nav_shared_icon_markup() (esc_attr/esc_html per source).
 			$text_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled above from an esc_html() label.
 		);
 	}

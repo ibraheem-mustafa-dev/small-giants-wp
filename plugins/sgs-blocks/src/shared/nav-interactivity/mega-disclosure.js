@@ -296,7 +296,7 @@ function repositionPanel( root ) {
 		/*
 		 * Centre the panel on the BAR, clamped to the viewport (2026-07-28,
 		 * Bean-caught fix). The CSS `left:50% / translateX(-50%)` default
-		 * CANNOT do this: every `.sgs-nav-menu__item` is position:relative
+		 * CANNOT do this: every `.sgs-nav-bar-menu__item` is position:relative
 		 * (style.css — required so links paint above the indicator pill), so
 		 * the wrap's containing block is the ~100px MENU ITEM, the centred
 		 * rect always overflows, and the old edge-pin glued the panel to the
@@ -317,7 +317,7 @@ function repositionPanel( root ) {
 		 * VERTICAL BOUND — publish the panel's own available height as a custom-
 		 * property VALUE (Spec 32; a direct `style.maxHeight` write is a property
 		 * declaration and is not permitted). `nav-menu/render.php`'s
-		 * `.sgs-nav-menu__mega-panel-wrap` and `.sgs-nav-menu__submenu-wrap` rules
+		 * `.sgs-nav-bar-menu__mega-panel-wrap` and `.sgs-nav-bar-menu__submenu-wrap` rules
 		 * read `--sgs-mm-panel-max-h`, keeping the older header-derived expression
 		 * behind it as the no-JS / pre-first-open floor.
 		 *
@@ -453,10 +453,10 @@ const reparentedPanels = new Map();
 /**
  * `:has()` ancestor-highlight rescue (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT
  * follow-up, 2026-09-14). `reparentPanelIfNeeded()` below moves the panel
- * (the `[data-sgs-mega-panel]` wrap, containing `ul.sgs-nav-menu__submenu`)
- * OUT of `.sgs-nav-menu__submenu-root` while open — but two `nav-menu-css.php`
- * rules key off that exact containment via `:has(ul.sgs-nav-menu__submenu …)`
- * anchored on the still-in-place `.sgs-nav-menu__submenu-root`: the
+ * (the `[data-sgs-mega-panel]` wrap, containing `ul.sgs-nav-bar-menu__submenu`)
+ * OUT of `.sgs-nav-bar-menu__submenu-root` while open — but two `nav-menu-css.php`
+ * rules key off that exact containment via `:has(ul.sgs-nav-bar-menu__submenu …)`
+ * anchored on the still-in-place `.sgs-nav-bar-menu__submenu-root`: the
  * current-PAGE ancestor highlight (`a[aria-current="page"]` descendant, a
  * STATIC per-page-load fact) and the keyboard-focus ancestor highlight
  * (`:focus-visible` descendant, a LIVE fact that changes as focus moves).
@@ -477,7 +477,7 @@ const reparentedPanels = new Map();
  * `reparentPanelIfNeeded()` call regardless of how the panel was opened).
  *
  * @param {HTMLElement} panel The reparented panel.
- * @param {HTMLElement} root  The disclosure root (`.sgs-nav-menu__submenu-root`).
+ * @param {HTMLElement} root  The disclosure root (`.sgs-nav-bar-menu__submenu-root`).
  * @return {Function} The `focusin`/`focusout` handler to remove on revert.
  */
 function attachAncestorFlagWatcher( panel, root ) {
@@ -787,7 +787,7 @@ const { state } = store( 'sgs/mega', {
 		 * 2026-09-13 — root-caused live). `nav-menu-markup.php` hardcodes
 		 * `intentDelay: 300` for both the mega and dropdown forks; that 300ms
 		 * is not just an open-panel delay — the chevron flip
-		 * (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-menu__caret`
+		 * (`nav-menu-submenu-css.php`'s `[aria-expanded="true"] .sgs-nav-bar-menu__caret`
 		 * rule) and the panel's own `display:block` are BOTH keyed off the
 		 * SAME `aria-expanded`/`context.isOpen` value this timer sets, so
 		 * Bean's "the dropdown AND the chevron both feel laggy" report is one

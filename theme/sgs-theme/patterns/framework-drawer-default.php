@@ -37,6 +37,6 @@
  */
 ?>
 <!-- wp:sgs/nav-drawer -->
-<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0} /-->
 <!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
 <!-- /wp:sgs/nav-drawer -->

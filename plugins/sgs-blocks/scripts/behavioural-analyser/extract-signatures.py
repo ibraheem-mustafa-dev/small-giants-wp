@@ -1561,8 +1561,8 @@ def _attrs_from_helper_calls(
     other call sites — counter/icon-list/option-picker/trust-bar/whatsapp-cta) is
     now resolved via `_build_php_selector_var_map` (Cause B, root-cause report
     2026-08-27) WHEN that variable was assigned a literal BEM-bearing selector
-    in an earlier statement — e.g. sgs/nav-menu/render.php:829/833:
-      `$link_sel = $uid_sel . ' .sgs-nav-menu__link';`
+    in an earlier statement — e.g. nav-bar-menu/render.php::$uid_sel:
+      `$link_sel = $uid_sel . ' .sgs-nav-bar-menu__link';`
       `$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );`
     This is the SAME general "trace any selector variable" mechanism Cause B
     built for the Shapes A/B/C path (`_attr_to_raw_props_php`) — it was never
@@ -4467,12 +4467,13 @@ def _self_test_helper_call_selector_var_yields_bem_element() -> bool:
     """`--self-test` fixture proving `_attrs_from_helper_calls` (Shape D) now
     wires the Cause B selector-variable resolver (`_build_php_selector_var_map`)
     into its OWN selector-argument handling — closing the gap found live on
-    sgs/nav-menu: `itemBg`/`itemColour`/`itemRadius` (Cause A,
+    sgs/nav-bar-menu (formerly the conflated sgs/nav-menu, split D1059):
+    `itemBg`/`itemColour`/`itemRadius` (Cause A,
     `_attrs_from_state_colour_helper_calls`) flipped to `css_element='link'`,
     but the fourth "item"-prefixed attribute, `itemFontSize`, is applied via
     the SAME `$link_sel` variable through the ALREADY-allowlisted
-    `sgs_typography_css_rule` helper (render.php:829,833):
-      `$link_sel = $uid_sel . ' .sgs-nav-menu__link';`
+    `sgs_typography_css_rule` helper (nav-bar-menu/render.php::$uid_sel):
+      `$link_sel = $uid_sel . ' .sgs-nav-bar-menu__link';`
       `$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );`
     Before this fix, `_attrs_from_helper_calls` only ever tried
     `_derive_bem_element_from_selector` directly on the raw argument text — a

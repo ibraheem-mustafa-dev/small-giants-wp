@@ -25,7 +25,7 @@ function wp_parse_url( $u, $c = -1 ) { return parse_url( $u, $c ); }
 function wp_json_encode( $d ) { return json_encode( $d ); }
 function sgs_get_lucide_icon( $n ) { return '<svg data-icon="' . $n . '"></svg>'; }
 
-$path = '' . __DIR__ . '/../../src/blocks/nav-menu/render.php';
+$path = '' . __DIR__ . '/../../src/blocks/nav-bar-menu/render.php';
 $src  = file_get_contents( $path );
 
 // Locate the class by its own text, never by line number.
@@ -102,8 +102,8 @@ check( 'depth-3 label survives (no silent data loss)', in_array( 'L3', $labels, 
 
 echo "\n=== RENDER (the half that was never tested) ===\n";
 $html = $r->render_items( $out );
-check( 'child <li> present', substr_count( $html, 'sgs-nav-menu__subitem' ), 2 );
-check( 'child <a> present', substr_count( $html, 'sgs-nav-menu__sublink' ), 2 );
+check( 'child <li> present', substr_count( $html, 'sgs-nav-bar-menu__subitem' ), 2 );
+check( 'child <a> present', substr_count( $html, 'sgs-nav-bar-menu__sublink' ), 2 );
 check( 'interactive root emitted', substr_count( $html, 'data-wp-interactive="sgs/mega"' ), 1 );
 check( 'trigger hook emitted', substr_count( $html, 'data-sgs-mega-trigger' ), 1 );
 check( 'panel hook emitted', substr_count( $html, 'data-sgs-mega-panel' ), 1 );
@@ -112,7 +112,7 @@ check( 'aria-expanded starts false', substr_count( $html, 'aria-expanded="false"
 
 // The root must PHYSICALLY WRAP trigger and panel — the hover bridge is DOM
 // containment, not geometry. A sibling panel would close on pointer-out.
-$root_at    = strpos( $html, 'sgs-nav-menu__submenu-root' );
+$root_at    = strpos( $html, 'sgs-nav-bar-menu__submenu-root' );
 $trigger_at = strpos( $html, 'data-sgs-mega-trigger' );
 $panel_at   = strpos( $html, 'data-sgs-mega-panel' );
 $root_close = strpos( $html, '</div></li>', $root_at );
@@ -134,16 +134,16 @@ echo "\n=== DEGRADE: children exist but every label is empty ===\n";
 $empty      = $r->flatten( array( mksub( 'Services', '/s', array( mklink( '', '/x' ) ) ) ) );
 $html_empty = $r->render_items( $empty );
 check( 'no dropdown emitted', strpos( $html_empty, 'data-sgs-mega-trigger' ), false );
-// NOTE: match the EXACT class attribute. 'sgs-nav-menu__link' is a substring of
-// 'sgs-nav-menu__link-text', which sits inside every plain link, so the loose
+// NOTE: match the EXACT class attribute. 'sgs-nav-bar-menu__link' is a substring of
+// 'sgs-nav-bar-menu__link-text', which sits inside every plain link, so the loose
 // token double-counts and the assertion measures the grep, not the markup.
-check( 'degrades to a plain link', substr_count( $html_empty, 'class="sgs-nav-menu__link"' ), 1 );
+check( 'degrades to a plain link', substr_count( $html_empty, 'class="sgs-nav-bar-menu__link"' ), 1 );
 
 echo "\n=== FLAT MENU UNCHANGED (every existing nav on both live sites) ===\n";
 $flat      = $r->flatten( array( mklink( 'Home', '/' ), mklink( 'Contact', '/contact' ) ) );
 $html_flat = $r->render_items( $flat );
 check( 'no submenu machinery', strpos( $html_flat, 'submenu-root' ), false );
-check( 'plain links still render', substr_count( $html_flat, 'class="sgs-nav-menu__link"' ), 2 );
+check( 'plain links still render', substr_count( $html_flat, 'class="sgs-nav-bar-menu__link"' ), 2 );
 check( 'top-level identifier unchanged', $flat[0]['identifier'], 'label:Home' );
 
 echo "\n=== ALIGNMENT reaches the markup ===\n";
@@ -163,8 +163,8 @@ echo "
 $r_feat     = new SGS_Nav_Menu_Bar_Renderer( array( 'label:Services>label:SEO Audits' ), 'uid4' );
 $items_feat = $r_feat->flatten( array( mksub( 'Services', '/s', array( mklink( 'Web Design', '/w' ), mklink( 'SEO Audits', '/seo' ) ) ) ) );
 $h_feat     = $r_feat->render_items( $items_feat );
-check( 'featured CHILD gets its modifier', substr_count( $h_feat, 'sgs-nav-menu__subitem--featured' ), 1 );
-check( 'non-featured sibling does NOT', substr_count( $h_feat, 'class="sgs-nav-menu__subitem"' ), 1 );
+check( 'featured CHILD gets its modifier', substr_count( $h_feat, 'sgs-nav-bar-menu__subitem--featured' ), 1 );
+check( 'non-featured sibling does NOT', substr_count( $h_feat, 'class="sgs-nav-bar-menu__subitem"' ), 1 );
 // Negative control: with an EMPTY roster nothing may be marked featured.
 $r_none = new SGS_Nav_Menu_Bar_Renderer( array(), 'uid5' );
 $h_none = $r_none->render_items( $r_none->flatten( array( mksub( 'Services', '/s', array( mklink( 'SEO Audits', '/seo' ) ) ) ) ) );
@@ -174,7 +174,7 @@ check( 'NEG CONTROL: empty roster marks nothing', strpos( $h_none, '--featured' 
 // Counted on the SUBLINK specifically: a bare 'data-sgs-nav-path=' count returns
 // 3 here because the PARENT link carries one too, which is correct and not what
 // this assertion is about.
-preg_match_all( '/class="sgs-nav-menu__sublink"[^>]*data-sgs-nav-path="/', $h_feat, $m_paths );
+preg_match_all( '/class="sgs-nav-bar-menu__sublink"[^>]*data-sgs-nav-path="/', $h_feat, $m_paths );
 check( 'every CHILD link carries data-sgs-nav-path', count( $m_paths[0] ), 2 );
 
 echo "
@@ -204,7 +204,7 @@ check( 'both flattened grandchildren survive',
 // And the depth-3 tree must RENDER, not merely flatten — render_items() was
 // never exercised on this shape before.
 $deep_html = $r_deep->render_items( $deep_out );
-check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-menu__sublink' ) >= 2, true );
+check( 'depth-3 tree renders child links', substr_count( $deep_html, 'sgs-nav-bar-menu__sublink' ) >= 2, true );
 
 printf( "\n%s — %d failure(s)\n", $fails ? 'FAILED' : 'ALL PASSED', $fails );
 exit( $fails ? 1 : 0 );

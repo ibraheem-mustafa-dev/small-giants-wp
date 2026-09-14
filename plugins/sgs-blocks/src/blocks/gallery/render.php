@@ -703,7 +703,8 @@ ob_start();
 		   `position:relative; z-index:1` on EVERY page, so `z-index:100000`
 		   here lost to the sticky site header's `z-index:100` in the ROOT
 		   stacking context. elementFromPoint over the open lightbox returned
-		   `a.sgs-nav-menu__link`. No number could have won that fight and no
+		   `a.sgs-nav-bar-menu__link` (the header nav's own link class post-D1059
+		   split). No number could have won that fight and no
 		   container-scoped fix could either — only the top layer escapes an
 		   ancestor stacking context. Mirrors sgs/modal, which already does
 		   this, and inherits the UA focus trap + Escape for free.

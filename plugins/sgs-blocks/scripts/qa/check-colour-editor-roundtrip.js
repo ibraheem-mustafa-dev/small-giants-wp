@@ -364,7 +364,7 @@ async function assertion3( page, creds, url, drawerRef ) {
 		// the querySelector-first-match trap. Scope to the drawer this probe
 		// owns via aria-controls, and WAIT for visibility rather than sampling
 		// it instantly (the collapse-point media query needs a beat to apply).
-		const burger = page.locator( `button.sgs-nav-menu__burger[aria-controls="${ drawerRef }"]` ).first();
+		const burger = page.locator( `button.sgs-nav-bar-menu__burger[aria-controls="${ drawerRef }"]` ).first();
 		const burgerVisible = await burger
 			.waitFor( { state: 'visible', timeout: 5000 } )
 			.then( () => true )

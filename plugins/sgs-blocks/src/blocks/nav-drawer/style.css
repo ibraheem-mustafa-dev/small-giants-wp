@@ -97,10 +97,12 @@
 	}
 }
 
-/* A nav-menu placed inside the drawer renders as a vertical link list; its own
-   burger is suppressed (the drawer is opened by the header burger, not a nested one). */
-.sgs-nav-drawer .wp-block-sgs-nav-menu .sgs-nav-menu__bar { display: flex; flex-direction: column; }
-.sgs-nav-drawer .wp-block-sgs-nav-menu .sgs-nav-menu__toggle-wrap { display: none; }
+/* A nav-drawer-menu placed inside the drawer renders as a vertical link list
+   (D1059 split, 2026-09-14 -- this block never emits a burger/toggle-wrap of
+   its own, so the second rule below now matches nothing; kept for parity with
+   the bar block's own structural rule rather than deleted as dead CSS). */
+.sgs-nav-drawer .wp-block-sgs-nav-drawer-menu .sgs-nav-drawer-menu__bar { display: flex; flex-direction: column; }
+.sgs-nav-drawer .wp-block-sgs-nav-drawer-menu .sgs-nav-drawer-menu__toggle-wrap { display: none; }
 
 /* The editable content column. Flex so drawerGap (gap) + drawerAlign
    (align-items) apply; min-height:100% lets a short menu still fill the screen

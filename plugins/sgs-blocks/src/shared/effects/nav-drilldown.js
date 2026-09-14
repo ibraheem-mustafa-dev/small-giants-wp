@@ -1,7 +1,7 @@
 /**
  * SGS shared motion — in-drawer drill-down submenu (Spec 36 FR-36-6).
  *
- * Progressive enhancement over the accordion markup `sgs/nav-menu`'s
+ * Progressive enhancement over the accordion markup `sgs/nav-drawer-menu`'s
  * `render_items_drawer()` (PHP) always emits — a `<details name>` exclusive
  * accordion, per-item. With this module NOT running (no JS, or a page where
  * it never mounts), that accordion IS the whole experience: `<summary>`
@@ -30,7 +30,7 @@
  *     so re-opening the drawer shows the same panel it was on — matching how
  *     the pre-existing accordion mode already behaves for the same reason.
  *
- * CSS consumer (nav-menu/style.css): everything here is gated behind the
+ * CSS consumer (nav-drawer-menu/style.css): everything here is gated behind the
  * `[data-drill-enhanced]` attribute this module sets on the bar on init, so
  * the structural slide rules only ever apply once this module has actually
  * wired up the behaviour they assume.
@@ -41,7 +41,7 @@
 import { prefersReducedMotion } from './motion-utils';
 
 const PANEL_ACTIVE_CLASS = 'is-active';
-const BAR_DRILL_ACTIVE_CLASS = 'sgs-nav-menu__bar--drill-active';
+const BAR_DRILL_ACTIVE_CLASS = 'sgs-nav-drawer-menu__bar--drill-active';
 
 /**
  * Mark every top-level `<li>` in `barEl` INERT except `activeLi` (or clear
@@ -56,7 +56,7 @@ const BAR_DRILL_ACTIVE_CLASS = 'sgs-nav-menu__bar--drill-active';
  * was meant to isolate. Marking every OTHER item inert instead achieves the
  * same "Tab cannot reach a hidden link" goal without that trap.
  *
- * @param {HTMLElement}      barEl    The `.sgs-nav-menu__bar--drawer` element.
+ * @param {HTMLElement}      barEl    The `.sgs-nav-drawer-menu__bar--drawer` element.
  * @param {HTMLElement|null} activeLi The top-level `<li>` to leave interactive,
  *                                    or null to clear `inert` from every item.
  */
@@ -73,7 +73,7 @@ function setSiblingsInert( barEl, activeLi ) {
 /**
  * Initialise drill-down behaviour on one drawer's nav bar.
  *
- * @param {HTMLElement} barEl The `.sgs-nav-menu__bar--drawer` element with
+ * @param {HTMLElement} barEl The `.sgs-nav-drawer-menu__bar--drawer` element with
  *                            `data-sgs-nav-submenu-model="drill-down"`.
  * @return {Function} Cleanup — removes every listener + injected Back button,
  *                     restores the plain accordion state. Safe on a
@@ -85,7 +85,7 @@ export function initDrillDown( barEl ) {
 	}
 
 	const accordions = Array.from(
-		barEl.querySelectorAll( ':scope > .sgs-nav-menu__item--has-submenu > .sgs-nav-menu__accordion-row > .sgs-nav-menu__accordion' )
+		barEl.querySelectorAll( ':scope > .sgs-nav-drawer-menu__item--has-submenu > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion' )
 	);
 	if ( 0 === accordions.length ) {
 		return () => {};
@@ -119,8 +119,8 @@ export function initDrillDown( barEl ) {
 	}
 
 	accordions.forEach( ( details ) => {
-		const summary = details.querySelector( ':scope > summary.sgs-nav-menu__accordion-summary' );
-		const panelList = details.querySelector( ':scope > ul.sgs-nav-menu__submenu' );
+		const summary = details.querySelector( ':scope > summary.sgs-nav-drawer-menu__accordion-summary' );
+		const panelList = details.querySelector( ':scope > ul.sgs-nav-drawer-menu__submenu' );
 		if ( ! summary || ! panelList ) {
 			return;
 		}
@@ -131,17 +131,17 @@ export function initDrillDown( barEl ) {
 		// translated server-side via __( 'Back to %s', 'sgs-blocks' )) rather
 		// than hardcoded here, so this JS module carries zero English text.
 		const backLi = document.createElement( 'li' );
-		backLi.className = 'sgs-nav-menu__drill-back';
+		backLi.className = 'sgs-nav-drawer-menu__drill-back';
 		const backBtn = document.createElement( 'button' );
 		backBtn.type = 'button';
-		backBtn.className = 'sgs-nav-menu__drill-back-btn';
+		backBtn.className = 'sgs-nav-drawer-menu__drill-back-btn';
 		// The arrow is a real `aria-hidden` element, not CSS `content` — a
 		// generated pseudo-element's text can still surface in some browsers'
 		// accessibility trees even while its host is genuinely hidden/inert,
 		// which is a real risk for a decorative glyph a screen reader has no
 		// reason to announce. The visible label carries the actual meaning.
 		const backArrow = document.createElement( 'span' );
-		backArrow.className = 'sgs-nav-menu__drill-back-btn__arrow';
+		backArrow.className = 'sgs-nav-drawer-menu__drill-back-btn__arrow';
 		backArrow.setAttribute( 'aria-hidden', 'true' );
 		backArrow.textContent = '←';
 		const backLabel = document.createElement( 'span' );

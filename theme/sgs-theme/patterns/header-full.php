@@ -22,13 +22,13 @@
 
 <!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->
 <!-- wp:sgs/responsive-logo {"width":300,"linkToHome":true} /-->
-<!-- wp:sgs/nav-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
+<!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":"28px"} /-->
 <!-- /wp:sgs/site-header-row -->
 
 <!-- /wp:sgs/site-header -->
 
 <!-- wp:sgs/nav-drawer -->
-<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0} /-->
 <!-- wp:sgs/responsive-logo {"width":140,"linkToHome":true} /-->
 <!-- wp:sgs/business-info {"displayType":"phone"} /-->
 <!-- wp:sgs/business-info {"displayType":"email"} /-->

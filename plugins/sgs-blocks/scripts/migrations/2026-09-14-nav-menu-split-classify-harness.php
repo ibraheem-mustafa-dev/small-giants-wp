@@ -7,11 +7,11 @@
  * the DRAWER fork, or both? This side produces evidence; the Python side decides.
  *
  * WHY RENDER RATHER THAN READ: `render.php` forks the markup, but calls its CSS emitters for
- * BOTH forks — `sgs_nav_menu_trigger_css` runs for a drawer that renders no burger. Static
+ * BOTH forks — `sgs_nav_bar_menu_trigger_css` runs for a drawer that renders no burger. Static
  * "which branch reads it" analysis would call every burger attribute "both".
  *
  * ⚠ EACH FORK RENDERS INSIDE ITS REAL ANCESTORS. v1 rendered nav-menu in isolation and
- * mis-scored 12 attributes: their CSS is scoped `.sgs-nav-drawer .sgs-nav-menu-UID …`, and an
+ * mis-scored 12 attributes: their CSS is scoped `.sgs-nav-drawer .sgs-nav-drawer-menu-UID …`, and an
  * isolated render has no `.sgs-nav-drawer` element, so live rules scored as dead. A real
  * `sgs/nav-drawer` dialog carries that bare class (verified 2026-09-14). So:
  *   bar    = sgs/site-header > sgs/site-header-row > sgs/nav-menu
@@ -85,7 +85,7 @@ function sgs_probe_render( string $fork, array $attrs ): string {
 		? sgs_probe_block( 'sgs/nav-drawer', array(), array( $menu ) )
 		: sgs_probe_block( 'sgs/site-header', array(), array( sgs_probe_block( 'sgs/site-header-row', array( 'rowSlot' => 'middle' ), array( $menu ) ) ) );
 	// uid = md5( attributes ): it changes with EVERY perturbation. Normalise, or every rule differs.
-	return (string) preg_replace( '/sgs-nav-menu-[0-9a-f]{8}/', 'sgs-nav-menu-UID', ( new WP_Block( $tree ) )->render() );
+	return (string) preg_replace( '/sgs-nav-(?:bar|drawer)-menu-[0-9a-f]{8}/', 'sgs-nav-menu-UID', ( new WP_Block( $tree ) )->render() );
 }
 
 function sgs_probe_split( string $html ): array {

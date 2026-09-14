@@ -62,13 +62,13 @@
  *
  *   # Open the drawer, then scope the axe run to the drawer only (guard auto-arms)
  *   node axe-run.mjs https://sandybrown-nightingale-600381.hostingersite.com/ \
- *     --open ".sgs-nav-menu__burger" --scope ".sgs-nav-drawer"
+ *     --open ".sgs-nav-bar-menu__burger" --scope ".sgs-nav-drawer"
  *
  *   # Open a desktop mega (hover-bridge — MUST use the keyboard path), scope to
  *   # the panel in the page content, force a 1440 viewport
  *   node axe-run.mjs https://sandybrown-nightingale-600381.hostingersite.com/gate3-mega-nav/ \
- *     --open ".entry-content .sgs-nav-menu__mega-trigger" --open-via keyboard \
- *     --scope ".entry-content .sgs-nav-menu__mega-panel-wrap" --viewport 1440
+ *     --open ".entry-content .sgs-nav-bar-menu__mega-trigger" --open-via keyboard \
+ *     --scope ".entry-content .sgs-nav-bar-menu__mega-panel-wrap" --viewport 1440
  *
  * Exit codes
  * ----------

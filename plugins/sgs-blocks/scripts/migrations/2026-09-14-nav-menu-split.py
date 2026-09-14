@@ -76,6 +76,28 @@ DRAWER_BLOCK = 'sgs/nav-drawer'
 TARGET_BAR = 'sgs/nav-bar-menu'
 TARGET_DRAWER = 'sgs/nav-drawer-menu'
 
+# ── Step 4 fix targets (plan "Build sequence" Step 4) ──────────────────────────────────
+# Editor-side drawer seeds: both insert a DEFAULT nav-menu instance INSIDE a new drawer,
+# so both are fixed-target (always TARGET_DRAWER) rather than nesting-routed.
+NAV_DRAWER_VARIATIONS_JS = BLOCKS_DIR / 'nav-drawer' / 'variations.js'
+NAV_DRAWER_EDIT_JS = BLOCKS_DIR / 'nav-drawer' / 'edit.js'
+BLOCK_REPLACEMENTS_JSON = (
+    REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'data' / 'block-replacements.json'
+)
+CHECK_UNGATED_PAINT_PY = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'check-ungated-paint-rules.py'
+CLASSIFICATION_REPORT = (
+    REPO / '.claude' / 'reports' / '2026-09-14-nav-menu-split-attribute-classification.md'
+)
+# One known additional real `block_slug` literal file the Section B census turned up
+# beyond the plan's named list: these two editor rows seed the header/footer row's
+# "quick insert" buttons and reference the now-deleted block by name. Both promote a
+# BAR-shaped instance (a flat list dropped straight into a header/footer row, never
+# inside sgs/nav-drawer, whose "ancestor" constraint would refuse it there anyway) —
+# so both are fixed-target TARGET_BAR, same reasoning as the drawer seeds above but the
+# other route. Flagged distinctly in the fix report as found-not-briefed.
+SITE_HEADER_ROW_EDIT_JS = BLOCKS_DIR / 'site-header-row' / 'edit.js'
+SITE_FOOTER_ROW_EDIT_JS = BLOCKS_DIR / 'site-footer-row' / 'edit.js'
+
 THEME_DIRS = [
     REPO / 'theme' / 'sgs-theme' / 'patterns',
     REPO / 'theme' / 'sgs-theme' / 'templates',
@@ -322,6 +344,325 @@ def survey_attribute_reads(attrs: list[str]):
     return reads
 
 
+# ── Step 4: --fix implementation ────────────────────────────────────────────────────────
+
+def load_classification() -> tuple[frozenset, frozenset]:
+    """Parse the BAR-only and DRAWER-only attribute name sets out of the Step 1/2
+    classification report (ground truth, not re-derived). BOTH/NO-EFFECT attrs, and
+    anything the report doesn't mention at all (e.g. the framework-injected `ref`
+    item-source binding, which is declared on both new blocks — verified against both
+    block.json files), are treated as safe on either route. Only a BAR-only attribute
+    landing on a drawer-routed instance, or a DRAWER-only attribute landing on a
+    bar-routed one, is a real conflict `--fix` must surface rather than silently keep.
+    """
+    if not CLASSIFICATION_REPORT.exists():
+        return frozenset(), frozenset()
+    text = CLASSIFICATION_REPORT.read_text(encoding='utf-8')
+
+    def _section(heading: str) -> frozenset:
+        m = re.search(rf'^### {heading} \(\d+\)\s*\n(.*?)(?=\n###|\Z)', text, re.S | re.M)
+        return frozenset(re.findall(r'`([a-zA-Z0-9]+)`', m.group(1))) if m else frozenset()
+
+    return _section('BAR'), _section('DRAWER')
+
+
+def iter_fix_matches(text: str):
+    """Like `iter_instances`, but yields the raw regex Match object for every
+    `sgs/nav-menu` OPENING token (plus its ancestor snapshot), so `--fix` can replace
+    exactly the block-NAME substring (`m.span(2)`) and leave the attributes JSON
+    byte-for-byte untouched. Deliberately a separate function rather than widening
+    `iter_instances`' return shape, which `--self-test`'s positional tuple-unpacking
+    (`for *_, anc, _span, _unp in iter_instances(text)`) depends on staying fixed.
+    Mirrors `iter_instances`' nesting-stack logic exactly.
+    """
+    stack: list[str] = []
+    for m in _BLOCK_TOKEN_RE.finditer(text):
+        closing, name, _middle, self_closing = m.group(1), m.group(2), m.group(3), m.group(4)
+        if closing:
+            if name in stack:
+                while stack and stack.pop() != name:
+                    pass
+            continue
+        if name == SOURCE_BLOCK:
+            yield m, list(stack)
+        if not self_closing:
+            stack.append(name)
+
+
+def fix_pattern_text(text: str, bar_only: frozenset, drawer_only: frozenset):
+    """Rewrite every `sgs/nav-menu` instance in `text` to its routed target block,
+    preserving the attributes JSON verbatim. Returns (new_text, per-instance records).
+    Each record is {'route', 'attrs', 'gap_attrs'} -- `gap_attrs` lists any attribute
+    that is meaningless on the routed target (BLIND_SPOT-style accounting per
+    `driver.py::gate_result`'s mapped/dropped/gap three-verb model; this migration
+    never DROPS an attribute -- an incompatible one is kept verbatim AND reported as a
+    gap, since silently deciding to drop it would itself be an undisclosed decision).
+    """
+    records = []
+    pieces = []
+    last = 0
+    for m, ancestors in iter_fix_matches(text):
+        route = route_for(ancestors)
+        g2_start, g2_end = m.start(2), m.end(2)
+        pieces.append(text[last:g2_start])
+        pieces.append(route)
+        last = g2_end
+
+        attrs = None
+        brace = m.group(3).find('{')
+        if brace != -1:
+            idx = m.start(3) + brace
+            try:
+                obj, _end = json.JSONDecoder().raw_decode(text, idx)
+                if isinstance(obj, dict):
+                    attrs = obj
+            except json.JSONDecodeError:
+                attrs = None
+
+        gap_attrs = []
+        for attr_name in (attrs or {}):
+            if route == TARGET_BAR and attr_name in drawer_only:
+                gap_attrs.append(attr_name)
+            elif route == TARGET_DRAWER and attr_name in bar_only:
+                gap_attrs.append(attr_name)
+        records.append({'route': route, 'attrs': attrs, 'gap_attrs': gap_attrs})
+    pieces.append(text[last:])
+    return ''.join(pieces), records
+
+
+# The exact literal shape both drawer editor seeds use for their default InnerBlocks
+# entry -- narrow ON PURPOSE. A blind whole-file `sgs/nav-menu` -> TARGET_DRAWER
+# replace would also rewrite `nav-drawer/edit.js`'s unrelated prose comment about
+# "sgs/nav-menu's three-value triggerMode" (which is talking about the BAR fork's own
+# burger-trigger attribute, not anything seeded inside the drawer) -- see the
+# hand-written fix for that line in `fix_seed_files()` below.
+_SEED_ARRAY_RE = re.compile(r"(\[\s*)'sgs/nav-menu'")
+
+# The one prose mention in nav-drawer/edit.js that is NOT the seed array -- it
+# describes the BAR fork's own `triggerMode` enum (the "open side"), so it routes to
+# TARGET_BAR, not TARGET_DRAWER like the seed arrays in the same file.
+_EDIT_JS_PROSE_OLD = "sgs/nav-menu's three-value triggerMode"
+_EDIT_JS_PROSE_NEW = "sgs/nav-bar-menu's three-value triggerMode"
+
+
+def fix_seed_files(apply: bool):
+    """Rewrite the two drawer editor seeds (`variations.js` default-look factory,
+    `edit.js` default InnerBlocks template) -- both insert a fresh nav-menu instance
+    INSIDE a new drawer, so both are fixed-target TARGET_DRAWER, never nesting-routed
+    (there is no markup to walk -- these are JS array literals, not block comments).
+    """
+    results = []
+    for f in (NAV_DRAWER_VARIATIONS_JS, NAV_DRAWER_EDIT_JS):
+        if not f.exists():
+            results.append((f, 0, 'MISSING'))
+            continue
+        text = f.read_text(encoding='utf-8')
+        new_text, n = _SEED_ARRAY_RE.subn(r"\1'" + TARGET_DRAWER + "'", text)
+        prose_hits = 0
+        if f == NAV_DRAWER_EDIT_JS and _EDIT_JS_PROSE_OLD in new_text:
+            prose_hits = new_text.count(_EDIT_JS_PROSE_OLD)
+            new_text = new_text.replace(_EDIT_JS_PROSE_OLD, _EDIT_JS_PROSE_NEW)
+        total = n + prose_hits
+        if total:
+            results.append((f, total, 'OK'))
+            if apply:
+                f.write_text(new_text, encoding='utf-8')
+    return results
+
+
+def fix_promoted_quick_insert_files(apply: bool):
+    """Found-not-briefed (see the module-level comment above
+    `SITE_HEADER_ROW_EDIT_JS`): `HEADER_PROMOTED`/`FOOTER_PROMOTED` quick-insert arrays
+    reference the deleted block by literal slug. Both route to TARGET_BAR -- a flat
+    list dropped straight into a header/footer row, never inside sgs/nav-drawer.
+    """
+    pat = re.compile(r"""(slug:\s*)'sgs/nav-menu'""")
+    results = []
+    for f in (SITE_HEADER_ROW_EDIT_JS, SITE_FOOTER_ROW_EDIT_JS):
+        if not f.exists():
+            results.append((f, 0, 'MISSING'))
+            continue
+        text = f.read_text(encoding='utf-8')
+        new_text, n = pat.subn(r"\1'" + TARGET_BAR + "'", text)
+        if n:
+            results.append((f, n, 'OK'))
+            if apply:
+                f.write_text(new_text, encoding='utf-8')
+    return results
+
+
+def fix_block_replacements_json(apply: bool):
+    """`sgs/nav-menu` currently claims `["core/navigation"]` in the migrate-core-blocks
+    replacement map. The plan recommends `nav-bar-menu` inherit it -- the bar is the
+    more direct successor to a flat WP nav-menu conversion (a WP core/navigation block
+    is always a flat list, never a drawer accordion). Renaming the KEY in place keeps
+    the file's existing alphabetical ordering correct (`nav-bar-menu` still sorts after
+    `multi-button` and before `post-grid`).
+    """
+    if not BLOCK_REPLACEMENTS_JSON.exists():
+        return False
+    text = BLOCK_REPLACEMENTS_JSON.read_text(encoding='utf-8')
+    old_key = '"sgs/nav-menu": ['
+    new_key = '"sgs/nav-bar-menu": ['
+    if old_key not in text:
+        return False
+    if apply:
+        BLOCK_REPLACEMENTS_JSON.write_text(text.replace(old_key, new_key, 1), encoding='utf-8')
+        # Validate the write didn't corrupt the JSON.
+        json.loads(BLOCK_REPLACEMENTS_JSON.read_text(encoding='utf-8'))
+    return True
+
+
+def fix_hard_fail_blocks(apply: bool):
+    """`check-ungated-paint-rules.py::HARD_FAIL_BLOCKS` is a `block_slug`-kind list
+    (currently `["sgs/nav-menu"]`) naming the scope Step 26 of Spec 41's phase-plan will
+    flip `--check` to hard-fail for. Both new slugs replace the one old one -- the paint
+    gate's scope should track the split blocks, not vanish along with the retired slug.
+    """
+    if not CHECK_UNGATED_PAINT_PY.exists():
+        return False
+    text = CHECK_UNGATED_PAINT_PY.read_text(encoding='utf-8')
+    old = 'HARD_FAIL_BLOCKS: list[str] = ["sgs/nav-menu"]'
+    new = f'HARD_FAIL_BLOCKS: list[str] = ["{TARGET_BAR}", "{TARGET_DRAWER}"]'
+    if old not in text:
+        return False
+    if apply:
+        CHECK_UNGATED_PAINT_PY.write_text(text.replace(old, new, 1), encoding='utf-8')
+    return True
+
+
+def report_fix(apply: bool) -> int:
+    ok, missing = targets_exist()
+    if not ok:
+        print('[nav-menu-split] REFUSED — destination block(s) not present: '
+              f'{", ".join(missing)}.')
+        return 1
+
+    bar_only, drawer_only = load_classification()
+    mode = 'APPLYING' if apply else 'DRY RUN (pass --apply to write)'
+    print('=' * 78)
+    print(f'--fix ({mode})')
+    print('=' * 78)
+
+    print('\n-- theme pattern instances (nesting-routed) --')
+    total_mapped = 0
+    total_gap = 0
+    gap_rows = []
+    files_touched = 0
+    for f in iter_theme_files():
+        text = f.read_text(encoding='utf-8', errors='replace')
+        new_text, records = fix_pattern_text(text, bar_only, drawer_only)
+        if not records:
+            continue
+        for rec in records:
+            n_attrs = len(rec['attrs'] or {})
+            n_gap = len(rec['gap_attrs'])
+            total_mapped += n_attrs - n_gap
+            total_gap += n_gap
+            for attr in rec['gap_attrs']:
+                gap_rows.append((f, rec['route'], attr))
+        if new_text != text:
+            files_touched += 1
+            print(f'  {_short(f)}  ({len(records)} instance(s))')
+            if apply:
+                f.write_text(new_text, encoding='utf-8')
+
+    print(f'\n  {files_touched} file(s) touched.')
+
+    print('\n-- drawer editor seeds (fixed-target: TARGET_DRAWER) --')
+    seed_results = fix_seed_files(apply)
+    for f, n, status in seed_results:
+        print(f'  {_short(f)}: {n} occurrence(s) [{status}]')
+    if not seed_results:
+        print('  (nothing to do)')
+
+    print('\n-- header/footer row quick-insert arrays (found-not-briefed; fixed-target: TARGET_BAR) --')
+    promoted_results = fix_promoted_quick_insert_files(apply)
+    for f, n, status in promoted_results:
+        print(f'  {_short(f)}: {n} occurrence(s) [{status}]')
+    if not promoted_results:
+        print('  (nothing to do)')
+
+    print('\n-- scripts/data/block-replacements.json --')
+    br_changed = fix_block_replacements_json(apply)
+    print(f'  "sgs/nav-menu" -> "sgs/nav-bar-menu" key rename: '
+          f'{"done" if (apply and br_changed) else ("pending" if br_changed else "nothing found")}')
+
+    print('\n-- check-ungated-paint-rules.py::HARD_FAIL_BLOCKS --')
+    hf_changed = fix_hard_fail_blocks(apply)
+    print(f'  ["sgs/nav-menu"] -> ["{TARGET_BAR}", "{TARGET_DRAWER}"]: '
+          f'{"done" if (apply and hf_changed) else ("pending" if hf_changed else "nothing found")}')
+
+    print()
+    print('=' * 78)
+    print('ACCOUNTING (driver.py::gate_result three-verb model)')
+    print('=' * 78)
+    print(f'  mapped: {total_mapped} attribute(s) across {files_touched} pattern file(s)')
+    print(f'  dropped: 0 (this migration never silently drops an attribute)')
+    print(f'  gap: {total_gap} attribute(s)')
+    if gap_rows:
+        for f, route, attr in gap_rows:
+            print(f'     ** {_short(f)} -> {route}: `{attr}` is not classified for this '
+                  f'route — kept verbatim, needs a human call.')
+    if not apply:
+        print('\n  DRY RUN — no files were written. Re-run with --apply to write.')
+    return 0
+
+
+def report_check() -> int:
+    ok, missing = targets_exist()
+    if not ok:
+        print('[nav-menu-split] REFUSED — destination block(s) not present: '
+              f'{", ".join(missing)}.')
+        return 1
+
+    failures = []
+
+    rows = survey_instances()
+    if rows:
+        failures.append(f'{len(rows)} sgs/nav-menu block-comment instance(s) remain in '
+                         f'theme/sgs-theme/ (patterns/templates/parts).')
+        for r in rows:
+            failures.append(f'   {_short(r["file"])}:{r["line"]}')
+
+    block_slug_re = dict(LITERAL_PATTERNS)['block_slug']
+    # Files Step 4 owns the WHOLE literal surface of (every `sgs/nav-menu` mention,
+    # including prose, must be gone): the two drawer editor seeds, the replacements
+    # map, and the two found-not-briefed quick-insert arrays.
+    owned_files_whole_surface = [
+        NAV_DRAWER_VARIATIONS_JS, NAV_DRAWER_EDIT_JS, BLOCK_REPLACEMENTS_JSON,
+        SITE_HEADER_ROW_EDIT_JS, SITE_FOOTER_ROW_EDIT_JS,
+    ]
+    for f in owned_files_whole_surface:
+        if not f.exists():
+            continue
+        text = f.read_text(encoding='utf-8', errors='replace')
+        n = len(block_slug_re.findall(text))
+        if n:
+            failures.append(f'{n} `sgs/nav-menu` literal(s) survive in {_short(f)} '
+                             f'(owned by Step 4, not Step 3).')
+
+    # check-ungated-paint-rules.py: Step 4 only owns the HARD_FAIL_BLOCKS constant —
+    # the rest of that file's prose is legitimate FR-41-15 incident history describing
+    # a real defect found on the OLD block, and stays. Assert only the constant.
+    if CHECK_UNGATED_PAINT_PY.exists():
+        text = CHECK_UNGATED_PAINT_PY.read_text(encoding='utf-8', errors='replace')
+        expected = f'HARD_FAIL_BLOCKS: list[str] = ["{TARGET_BAR}", "{TARGET_DRAWER}"]'
+        if expected not in text:
+            failures.append('check-ungated-paint-rules.py::HARD_FAIL_BLOCKS was not '
+                             f'updated to {[TARGET_BAR, TARGET_DRAWER]!r}.')
+
+    if failures:
+        print('[nav-menu-split --check] FAIL:')
+        for line in failures:
+            print(f'   - {line}')
+        return 1
+    print('[nav-menu-split --check] OK — zero sgs/nav-menu block-comment instances in '
+          'theme/sgs-theme/, and zero block_slug literals in Step 4-owned files '
+          '(class-sgs-nav-menu-source.php excluded — Step 3 owns it).')
+    return 0
+
+
 def _short(f: Path) -> str:
     try:
         return str(f.relative_to(REPO)).replace('\\', '/')
@@ -544,7 +885,7 @@ def main() -> int:
     if args.self_test:
         return self_test()
 
-    if args.fix or args.check:
+    if args.fix:
         ok, missing = targets_exist()
         if not ok:
             print('[nav-menu-split] REFUSED — destination block(s) not present: '
@@ -552,9 +893,10 @@ def main() -> int:
             print('  Scaffold them first (plan Step 2). Rewriting a pattern to a block '
                   'WordPress cannot resolve renders nothing and fails the oldshape gate.')
             return 1
-        print('[nav-menu-split] --fix/--check are not implemented yet (plan Step 4). '
-              'The destination blocks now exist, so this gate has been cleared.')
-        return 1
+        return report_fix(args.apply)
+
+    if args.check:
+        return report_check()
 
     return report_survey()
 

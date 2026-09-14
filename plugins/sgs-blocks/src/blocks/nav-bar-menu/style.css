@@ -4,7 +4,7 @@
  * Split from the former conflated `sgs/nav-menu` (D1059, 2026-09-14) — this
  * copy carries the BAR fork's structural rules only. The in-drawer nested
  * accordion/drill-down rules (the former "IN-DRAWER NESTED SUBMENU" section,
- * and the `.sgs-nav-menu__bar--drawer` nowrap override) are DROPPED here —
+ * and the `.sgs-nav-bar-menu__bar--drawer` nowrap override) are DROPPED here —
  * this block never emits the `--drawer` bar modifier or a `<details>`
  * accordion; that markup and its styling belong to `sgs/nav-drawer-menu`.
  *
@@ -15,16 +15,15 @@
  * emitted by render.php's #uid-scoped <style> (Spec 32 no-inline). This file
  * deliberately hardcodes none of them.
  *
- * ⚠ BEM classes stay `.sgs-nav-menu*` here, UNCHANGED, for this scaffolding
- * step — Step 3 of the split plan owns renaming the shared BEM root to
- * `.sgs-nav-bar-menu*` across the whole codebase (7 documented blind spots);
- * renaming it only here would desync render.php/view.js/style.css from each
- * other and from the shared includes/ emitters that also target these
- * literals.
+ * BEM root renamed to `.sgs-nav-bar-menu*` (D1059 split, Step 3, 2026-09-14)
+ * — this block's OWN root, no longer shared with the drawer fork. The
+ * shared includes/ CSS emitters receive this string as an explicit
+ * `$bem_root` parameter from this block's render.php rather than hardcoding
+ * it, so they stay usable by both `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`.
  */
 
 /* Root nav element (rendered block-private, D539). */
-.sgs-nav-menu {
+.sgs-nav-bar-menu {
 	align-items: center;
 	display: flex;
 }
@@ -36,11 +35,11 @@
  * Without :where() the literal (0,1,0) would tie-break by source order and the
  * new control would be silently dead (F3, check-hardcoded-render-defaults).
  */
-:where(.sgs-nav-menu) {
+:where(.sgs-nav-bar-menu) {
 	justify-content: space-between;
 }
 
-.sgs-nav-menu__bar {
+.sgs-nav-bar-menu__bar {
 	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
@@ -60,14 +59,14 @@
  *
  * DELIBERATE, TIGHTLY-SCOPED EXCEPTION to project rule 1 ("transition ONLY
  * transform and opacity"): this element transitions `width` alongside
- * `transform: translateX()`. `.sgs-nav-menu__indicator` is `position:
+ * `transform: translateX()`. `.sgs-nav-bar-menu__indicator` is `position:
  * absolute` and `pointer-events: none`, i.e. OUT OF NORMAL FLOW, so
  * animating its width cannot reflow or repaint any sibling. Do NOT "fix"
  * this back to scaleX() — an earlier scaleX() version distorted the
  * border-radius into a smeared lozenge (border-radius resolves before the
  * transform is applied).
  */
-.sgs-nav-menu__indicator {
+.sgs-nav-bar-menu__indicator {
 	height: 100%;
 	left: 0;
 	opacity: var(--sgs-nav-indicator-opacity, 0);
@@ -84,10 +83,10 @@
 
 /* Zero-specificity overridable defaults (G20c ungated-paint fix). The fill is
    ALREADY attribute-driven: render.php emits a higher-specificity
-   `.{uid} .sgs-nav-menu__indicator{background-color:…}` rule whenever
+   `.{uid} .sgs-nav-bar-menu__indicator{background-color:…}` rule whenever
    itemBgHover/itemBgHoverGradient is set. border-radius has no attribute
    anywhere in this block — a genuinely structural shape default. */
-:where(.sgs-nav-menu__indicator) {
+:where(.sgs-nav-bar-menu__indicator) {
 	background-color: var(--wp--preset--color--accent, currentColor);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
@@ -98,7 +97,7 @@
  * bar with the effect off — or with JS unavailable — renders the label
  * exactly where it would sit without this rule at all.
  */
-[data-magnet] .sgs-nav-menu__magnet-target {
+[data-magnet] .sgs-nav-bar-menu__magnet-target {
 	display: inline-block;
 	transform: translateX(var(--magnet-x, 0px));
 	transition: transform 0.2s ease-out;
@@ -108,7 +107,7 @@
  * is `position:absolute` so, without this, it would paint over every link's
  * text regardless of DOM order (positioned elements paint above in-flow
  * content by default). */
-.sgs-nav-menu__item {
+.sgs-nav-bar-menu__item {
 	display: block;
 	position: relative;
 	z-index: 1;
@@ -120,7 +119,7 @@
  * repaints the bar. render.php's #uid-scoped rule (higher specificity)
  * applies an operator-chosen itemColour when set.
  */
-.sgs-nav-menu__link {
+.sgs-nav-bar-menu__link {
 	align-items: center;
 	box-sizing: border-box;
 	color: inherit;
@@ -139,23 +138,23 @@
  * fires on ANY focus). ":focus:not(:focus-visible)" isolates real keyboard
  * focus, which still gets the visible indicator via :focus-visible below.
  */
-.sgs-nav-menu__link:focus:not(:focus-visible) {
+.sgs-nav-bar-menu__link:focus:not(:focus-visible) {
 	color: inherit;
 	text-decoration: none;
 }
 
-.sgs-nav-menu :focus-visible {
+.sgs-nav-bar-menu :focus-visible {
 	outline: 2px solid var( --sgs-focus-color, currentColor );
 	outline-offset: 2px;
 }
 
 /* The toggle-wrap / burger — hidden above collapsePoint by render.php's
  * scoped @media rule; this file only owns the button's SHAPE. */
-.sgs-nav-menu__toggle-wrap {
+.sgs-nav-bar-menu__toggle-wrap {
 	display: none;
 }
 
-.sgs-nav-menu__burger {
+.sgs-nav-bar-menu__burger {
 	align-items: center;
 	background: none;
 	border: none;
@@ -177,7 +176,7 @@
    attribute governs the burger button's corner radius anywhere in this
    block; a genuinely structural shape default, demoted so it never masks a
    future attr-driven rule. */
-:where(.sgs-nav-menu__burger) {
+:where(.sgs-nav-bar-menu__burger) {
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
@@ -195,7 +194,7 @@
  * ⛔ NO `!important` here, ever — see the four-selector reduced-motion
  * rescue below, which is the one mechanism that must win under `reduce`.
  */
-.sgs-nav-menu__burger[data-sgs-fx="magnet"] {
+.sgs-nav-bar-menu__burger[data-sgs-fx="magnet"] {
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
 		var(--sgs-magnet-transition, transform 180ms ease-out);
 }
@@ -203,52 +202,52 @@
 /* Burger ICON glyph size — distinct from `burgerSize`, which governs the 44px
    button touch-target (render.php scoped). Zero-specificity :where() marks it an
    overridable default so it never masks an attr-driven rule. */
-:where(.sgs-nav-menu__burger svg) {
+:where(.sgs-nav-bar-menu__burger svg) {
 	height: 24px;
 	width: 24px;
 }
 
 /*
  * G2 — `icon-and-text` mode: the icon belongs on the RIGHT of the label, not
- * the left (Bean: no convention in the wild puts it left). `.sgs-nav-menu__burger`
+ * the left (Bean: no convention in the wild puts it left). `.sgs-nav-bar-menu__burger`
  * is already `display:flex` (above) with no `flex-direction`/`order` override,
  * so DOM order alone was deciding visual order — this is a pure visual reorder
  * via `order`, DOM order (and therefore reading/tab order) is unchanged.
  */
-.sgs-nav-menu__burger--icon-and-text .sgs-nav-menu__burger-icon {
+.sgs-nav-bar-menu__burger--icon-and-text .sgs-nav-bar-menu__burger-icon {
 	order: 2;
 }
 
-.sgs-nav-menu__burger--icon-and-text .sgs-nav-menu__burger-text {
+.sgs-nav-bar-menu__burger--icon-and-text .sgs-nav-bar-menu__burger-text {
 	order: 1;
 }
 
 /*
  * G4 — burger↔X morph. Only the DEFAULT (unmodified) trigger glyph is
  * restructured into three real `<span>` bars by
- * `sgs_nav_menu_burger_toggle_markup()` (nav-menu-markup.php) — a custom
+ * `sgs_nav_bar_menu_burger_toggle_markup()` (nav-menu-markup.php) — a custom
  * `triggerIcon` (G3) keeps rendering its own resolved SVG/glyph untouched, with
  * no morph, since a morph has no well-defined shape for an arbitrary glyph.
  * `currentColor` inherits the existing `burgerColour` mechanism for free; no
  * new attribute needed. Driven entirely by the EXISTING
  * `data-wp-bind--aria-expanded="state.isOpen"` binding — zero new JS.
  */
-.sgs-nav-menu__burger-icon:has(.sgs-nav-menu__burger-bar) {
+.sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar) {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 }
 
 /* Zero-specificity overridable defaults — mirrors
-   `:where(.sgs-nav-menu__burger svg)` above (glyph size is not `burgerSize`,
+   `:where(.sgs-nav-bar-menu__burger svg)` above (glyph size is not `burgerSize`,
    which governs the 44px touch-target; :where() means it never masks a future
    attr-driven rule for this element). */
-:where(.sgs-nav-menu__burger-icon:has(.sgs-nav-menu__burger-bar)) {
+:where(.sgs-nav-bar-menu__burger-icon:has(.sgs-nav-bar-menu__burger-bar)) {
 	width: 24px;
 	height: 18px;
 }
 
-.sgs-nav-menu__burger-bar {
+.sgs-nav-bar-menu__burger-bar {
 	display: block;
 	width: 100%;
 	transition: transform 200ms ease, opacity 200ms ease;
@@ -256,46 +255,46 @@
 
 /* `background`/`border-radius` moved here (G20c ungated-paint fix) —
    `currentColor` already tracks the burger's own `color` (set by the
-   existing `burgerColour` attribute via `.sgs-nav-menu__burger{color:inherit}`
+   existing `burgerColour` attribute via `.sgs-nav-bar-menu__burger{color:inherit}`
    → render.php's scoped `css:color` rule); `border-radius` has no attribute
    anywhere, same structural-default category as `height` above.
    Zero-specificity so neither ever masks a future attr-driven rule. */
-:where(.sgs-nav-menu__burger-bar) {
+:where(.sgs-nav-bar-menu__burger-bar) {
 	background: currentColor;
 	border-radius: 1px;
 	height: 2px;
 }
 
-.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(1) {
+.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(1) {
 	transform: translateY(8px) rotate(45deg);
 }
 
-.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(2) {
+.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(2) {
 	opacity: 0;
 }
 
-.sgs-nav-menu__burger[aria-expanded="true"] .sgs-nav-menu__burger-bar:nth-child(3) {
+.sgs-nav-bar-menu__burger[aria-expanded="true"] .sgs-nav-bar-menu__burger-bar:nth-child(3) {
 	transform: translateY(-8px) rotate(-45deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-nav-menu__burger-bar {
+	.sgs-nav-bar-menu__burger-bar {
 		transition-duration: 0.01ms;
 	}
 }
 
 @supports not (background-color: color-mix(in srgb, currentColor 8%, transparent)) {
-	.sgs-nav-menu__burger:hover,
-	.sgs-nav-menu__burger:focus-visible {
+	.sgs-nav-bar-menu__burger:hover,
+	.sgs-nav-bar-menu__burger:focus-visible {
 		background-color: rgba(128, 128, 128, 0.12);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-nav-menu__burger,
-	.sgs-nav-menu__link,
-	.sgs-nav-menu__indicator,
-	[data-magnet] .sgs-nav-menu__magnet-target {
+	.sgs-nav-bar-menu__burger,
+	.sgs-nav-bar-menu__link,
+	.sgs-nav-bar-menu__indicator,
+	[data-magnet] .sgs-nav-bar-menu__magnet-target {
 		transition-duration: 0.01ms !important;
 	}
 }
@@ -303,10 +302,10 @@
 /* Windows High Contrast / forced-colors: keep the burger's border + focus
  * ring visible even when background-colour is neutralised by the mode. */
 @media (forced-colors: active) {
-	.sgs-nav-menu__burger {
+	.sgs-nav-bar-menu__burger {
 		border: 1px solid ButtonText;
 	}
-	.sgs-nav-menu :focus-visible {
+	.sgs-nav-bar-menu :focus-visible {
 		outline-color: Highlight;
 	}
 }
@@ -317,22 +316,22 @@
  * `submenuAnimation`: none|fade|slide-down). Structural shape only — the
  * trigger is the existing binary display toggle
  * (`{uid} [data-sgs-mega-trigger][aria-expanded="true"] ~
- * .sgs-nav-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php),
+ * .sgs-nav-bar-menu__submenu-wrap{display:block;}`, nav-menu-submenu-css.php),
  * unchanged by this. Toggling an element's OWN `display` from `none` to
  * `block` restarts any CSS animation declared on it, so a modifier class
  * that is simply PRESENT on the wrap is enough to make each open animate —
  * no JS replay logic needed. `none` (the default) renders today's output
  * byte-identical: neither modifier class below is ever applied for it.
  */
-.sgs-nav-menu__submenu-wrap--fade {
-	animation: sgs-nav-menu-submenu-fade-in 0.18s ease-out;
+.sgs-nav-bar-menu__submenu-wrap--fade {
+	animation: sgs-nav-bar-menu-submenu-fade-in 0.18s ease-out;
 }
 
-.sgs-nav-menu__submenu-wrap--slide-down {
-	animation: sgs-nav-menu-submenu-slide-down-in 0.26s ease-out;
+.sgs-nav-bar-menu__submenu-wrap--slide-down {
+	animation: sgs-nav-bar-menu-submenu-slide-down-in 0.26s ease-out;
 }
 
-@keyframes sgs-nav-menu-submenu-fade-in {
+@keyframes sgs-nav-bar-menu-submenu-fade-in {
 	from {
 		opacity: 0;
 	}
@@ -342,7 +341,7 @@
 	}
 }
 
-@keyframes sgs-nav-menu-submenu-slide-down-in {
+@keyframes sgs-nav-bar-menu-submenu-slide-down-in {
 	from {
 		opacity: 0;
 		transform: translateY(-8px);
@@ -365,8 +364,8 @@
  * wrap at its `from` state (opacity:0) — invisible, not calmer.
  */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-nav-menu__submenu-wrap--fade,
-	.sgs-nav-menu__submenu-wrap--slide-down {
+	.sgs-nav-bar-menu__submenu-wrap--fade,
+	.sgs-nav-bar-menu__submenu-wrap--slide-down {
 		animation-duration: 0.01ms !important;
 	}
 }
@@ -387,12 +386,12 @@
  * `[data-sgs-mega-panel]` is doubled up with the BEM class purely so this
  * selector's specificity — one class + two attributes, (0,3,0) — reliably
  * beats the uid-scoped `position:absolute` rule
- * `nav-menu-submenu-css.php::sgs_nav_menu_submenu_css()` emits per-instance
+ * `nav-menu-submenu-css.php::sgs_nav_shared_submenu_css()` emits per-instance
  * (one class + one element class, (0,2,0)), regardless of which `<style>`
  * loads later in the document, without reaching for `!important`.
  */
-.sgs-nav-menu__mega-panel-wrap[data-sgs-mega-panel][data-sgs-nav-fixed],
-.sgs-nav-menu__submenu-wrap[data-sgs-mega-panel][data-sgs-nav-fixed] {
+.sgs-nav-bar-menu__mega-panel-wrap[data-sgs-mega-panel][data-sgs-nav-fixed],
+.sgs-nav-bar-menu__submenu-wrap[data-sgs-mega-panel][data-sgs-nav-fixed] {
 	left: var(--sgs-mm-fixed-left, 0px);
 	position: fixed;
 	right: auto;

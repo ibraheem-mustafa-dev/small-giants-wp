@@ -3,8 +3,8 @@
  *
  * One absolute pill tracking the hovered/focused nav item, falling back to
  * the current-page item ( `[aria-current="page"]`, set client-side by
- * `sgs/nav-menu`'s view.js — see FR-36-10/-11 ) once the pointer/focus
- * leaves the bar. This is ADDITIVE to `sgs/nav-menu`'s existing per-link
+ * each nav block's own view.js — see FR-36-10/-11 ) once the pointer/focus
+ * leaves the bar. This is ADDITIVE to the item's existing per-link
  * `hoverStyle` treatments (pill/underline/text) — it does not replace or
  * alter them; both can render at once when an operator opts in.
  *
@@ -17,14 +17,14 @@
  * ~120px stretched the corners 120× horizontally into a smeared lozenge, not
  * a pill. Rule 1 exists to stop layout thrash PROPAGATING to sibling
  * elements; that risk doesn't apply here because
- * `.sgs-nav-menu__indicator` is `position: absolute` + `pointer-events: none`
+ * `.{bemRoot}__indicator` is `position: absolute` + `pointer-events: none`
  * — OUT OF NORMAL FLOW — so animating its width cannot reflow or repaint
  * anything else on the page. See the full rationale in the consuming CSS's
- * own comment (`sgs/nav-menu/style.css`, `.sgs-nav-menu__indicator`).
+ * own comment (each block's own `style.css`, `.{bemRoot}__indicator`).
  *
- * CONSUMING CSS (ships in `sgs/nav-menu/style.css`, not here):
- *   .sgs-nav-menu__bar { position: relative; }
- *   .sgs-nav-menu__indicator {
+ * CONSUMING CSS (ships in each block's own `style.css`, not here):
+ *   .{bemRoot}__bar { position: relative; }
+ *   .{bemRoot}__indicator {
  *     position: absolute; left: 0; top: 0; height: 100%;
  *     pointer-events: none; z-index: 0;
  *     width: var( --sgs-nav-indicator-w, 0px );
@@ -45,8 +45,10 @@
 
 import { prefersReducedMotion, isTouchInput } from './motion-utils';
 
-const LINK_SELECTOR = '.sgs-nav-menu__link';
-const INDICATOR_CLASS = 'sgs-nav-menu__indicator';
+// D1059 split (2026-09-14): this module is SHARED between sgs/nav-bar-menu
+// and sgs/nav-drawer-menu -- each has its OWN BEM root, so the link
+// selector + indicator class are derived from the caller's `bemRoot`
+// argument rather than a single hardcoded literal.
 
 /**
  * Measure a link's position/width relative to the bar it lives in.
@@ -67,15 +69,20 @@ function measure( barEl, link ) {
 /**
  * Initialise the sliding indicator on one nav bar.
  *
- * @param {HTMLElement} barEl The `.sgs-nav-menu__bar` element (or any
- *                            ancestor of the links carrying `position`).
+ * @param {HTMLElement} barEl   The `.{bemRoot}__bar` element (or any
+ *                              ancestor of the links carrying `position`).
+ * @param {string}      bemRoot This instance's BEM root -- 'sgs-nav-bar-menu'
+ *                              (default) or 'sgs-nav-drawer-menu'.
  * @return {Function} Cleanup — removes listeners + the pill element. Safe
  *                     on a detached/empty element.
  */
-export function initNavIndicator( barEl ) {
+export function initNavIndicator( barEl, bemRoot = 'sgs-nav-bar-menu' ) {
 	if ( ! barEl || typeof barEl.querySelectorAll !== 'function' ) {
 		return () => {};
 	}
+
+	const LINK_SELECTOR = `.${ bemRoot }__link`;
+	const INDICATOR_CLASS = `${ bemRoot }__indicator`;
 
 	let pill = barEl.querySelector( `:scope > .${ INDICATOR_CLASS }` );
 	if ( ! pill ) {

@@ -141,7 +141,7 @@ export function TreatmentSelect( { label, value, onChange, options, help } ) {
  */
 export function CrossRefNote( { children } ) {
 	return (
-		<p className="components-base-control__help sgs-nav-menu__colour-note">
+		<p className="components-base-control__help sgs-nav-panel__colour-note">
 			{ children }
 		</p>
 	);

@@ -18,9 +18,9 @@
  * sibling combinator reacting to the TRIGGER BUTTON's `aria-expanded`, not by
  * any attribute on the panel itself:
  *
- *   .sgs-nav-menu__mega-panel-wrap { display: none; }
- *   .sgs-nav-menu__mega-trigger[aria-expanded="true"]
- *     ~ .sgs-nav-menu__mega-panel-wrap { display: block; }
+ *   .sgs-nav-bar-menu__mega-panel-wrap { display: none; }
+ *   .sgs-nav-bar-menu__mega-trigger[aria-expanded="true"]
+ *     ~ .sgs-nav-bar-menu__mega-panel-wrap { display: block; }
  *
  * `mega-disclosure.js` only ever writes `context.isOpen`, which the
  * Interactivity API reflects onto the TRIGGER's `aria-expanded` via
@@ -32,8 +32,8 @@
  *   `[aria-controls="<id>"]` anywhere in the document. Robust to DOM
  *   reordering; this is the contract that MUST hold regardless of markup
  *   shape.
- * - FALLBACK: walk up to the closest `.sgs-nav-menu__mega-panel-wrap`, then
- *   walk its previous siblings for `.sgs-nav-menu__mega-trigger` (the same
+ * - FALLBACK: walk up to the closest `.sgs-nav-bar-menu__mega-panel-wrap`, then
+ *   walk its previous siblings for `.sgs-nav-bar-menu__mega-trigger` (the same
  *   shape the CSS `~` combinator relies on).
  * - If NEITHER resolves the trigger, this module deliberately does nothing
  *   further (no observer, no hidden starting values are ever written) — the
@@ -49,8 +49,8 @@
 import { initStagger } from '../../shared/effects/stagger';
 import { initSpotlight } from '../../shared/effects/spotlight';
 
-const MEGA_WRAP_SELECTOR = '.sgs-nav-menu__mega-panel-wrap';
-const MEGA_TRIGGER_SELECTOR = '.sgs-nav-menu__mega-trigger';
+const MEGA_WRAP_SELECTOR = '.sgs-nav-bar-menu__mega-panel-wrap';
+const MEGA_TRIGGER_SELECTOR = '.sgs-nav-bar-menu__mega-trigger';
 
 /**
  * Resolve the disclosure trigger button for a rendered mega panel.

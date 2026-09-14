@@ -31,7 +31,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 	/**
 	 * Build the submenu LINK background/border/typography-hover, in-drawer
 	 * overrides, listColumns grid, sliding-indicator override and root-box CSS.
@@ -45,19 +45,19 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 	 * @param array  $sgs_tor_padding_desktop   Desktop-tier padding sides array.
 	 * @param array  $sgs_tor_margin_desktop    Desktop-tier margin sides array.
 	 * @param array  $treatments                RESOLVED hover treatments from
-	 *                                           `sgs_nav_menu_resolved_treatments()` —
+	 *                                           `sgs_nav_shared_resolved_treatments()` —
 	 *                                           ⛔ never the stored attribute.
 	 * @param int    $item_count                Top-level item count — used ONLY by the
 	 *                                           `listColumns` in-drawer grid, to derive
 	 *                                           an explicit row count.
 	 * @param string $submenu_sweep_hover       The sublink text-sweep hover colour,
-	 *                                           computed by `sgs_nav_menu_submenu_css()`
+	 *                                           computed by `sgs_nav_shared_submenu_css()`
 	 *                                           alongside the sublink text-colour states
 	 *                                           — needed here for the typography-hover
 	 *                                           emitter.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_submenu_link_css(
+	function sgs_nav_shared_submenu_link_css(
 		array $attributes,
 		string $uid_sel,
 		string $indicator_style,
@@ -68,10 +68,11 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		array $sgs_tor_margin_desktop,
 		array $treatments,
 		int $item_count,
-		string $submenu_sweep_hover
+		string $submenu_sweep_hover,
+		string $bem_root
 	): string {
 		$css         = '';
-		$sublink_sel = $uid_sel . ' .sgs-nav-menu__sublink';
+		$sublink_sel = $uid_sel . ' .' . $bem_root . '__sublink';
 		$t_sub_bg    = (string) ( $treatments['submenuLinkBgHoverTreatment'] ?? 'swap' );
 		// Read once, same as the sibling file's own copy of this line — census #9
 		// gates the panel's own border on it, and census #1 gates the drawer's
@@ -156,12 +157,12 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// `check-dead-controls.js`. The hover trio has no branch in the shared
 		// helper at all, hence the block-private companion emitter beside it.
 		$css .= sgs_typography_css_rule( $attributes, 'submenu', $sublink_sel );
-		$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'submenu', $sublink_sel, $submenu_sweep_hover );
+		$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'submenu', $sublink_sel, $submenu_sweep_hover );
 
 		/*
 		 * ⛔ FR-41-15 census #6 — DELETED. It emitted an unconditional
 		 * `background:var(--wp--preset--color--surface, …)` tint on
-		 * `.sgs-nav-menu__sublink:hover`, ungated on any attribute, through
+		 * `.{bem}__sublink:hover`, ungated on any attribute, through
 		 * `sgs_hover_guarded_rule()` (which is why two literal-string scans missed
 		 * it), scoped to `$uid_sel` so it fired on the bar's dropdown AND inside the
 		 * drawer. Three independent reasons, any one sufficient: (a) it painted a
@@ -241,7 +242,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 			|| '' !== (string) ( $attributes['featuredBgGradient'] ?? '' )
 			|| '' !== (string) ( $attributes['featuredColour'] ?? '' );
 		if ( $sgs_nm_featured_bg_written ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink{'
+			$css .= $uid_sel . ' .' . $bem_root . '__subitem--featured .' . $bem_root . '__sublink{'
 				. 'color:var(--sgs-nm-featured-colour, var(--wp--preset--color--text-inverse, currentColor));'
 				. 'background-color:var(--sgs-nm-featured-bg);'
 				. 'font-weight:var(--sgs-nm-featured-weight, 600);'
@@ -260,7 +261,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * hardcoded `primary-dark` fallback, on every render, in every install.
 		 * Superseded outright by the submenu link's own three-state fill.
 		 */
-		$css .= $uid_sel . ' .sgs-nav-menu__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__sublink:focus-visible{outline:2px solid var(--wp--preset--color--primary, currentColor);outline-offset:-2px;}';
 
 		/*
 		 * The toggle is a real button next to a real link when the parent has its own
@@ -270,16 +271,16 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// SVG below resolves against the inherited item font-size rather than the
 		// browser's UA button-reset default — matching the `.mega-trigger` reset
 		// two rules above, which already carries it.
-		$css .= $uid_sel . ' .sgs-nav-menu__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
+		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle{display:inline-flex;align-items:center;justify-content:center;'
 			. 'min-width:44px;min-height:44px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;}';
-		$css .= $uid_sel . ' .sgs-nav-menu__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__subtoggle:focus-visible{outline:2px solid currentColor;outline-offset:-2px;}';
 		// M6 fix (2026-09-12) — the caret SVG was the raw Lucide chevron-down at a
 		// static 24x24px with nothing tying its size to itemFontSize. `1em` rides
 		// the cascade: it resolves against whatever font-size the caret's own
 		// ancestor chain carries, so it tracks the responsive item tier for free
 		// once that tier's font-size reaches a shared ancestor (nav-menu-css.php's
 		// half of this fix). No PHP attribute read needed for the caret itself.
-		$css .= $uid_sel . ' .sgs-nav-menu__caret svg{width:1em;height:1em;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__caret svg{width:1em;height:1em;}';
 
 		/*
 		 * In-drawer: the dropdown becomes an inline accordion, exactly as the mega
@@ -290,8 +291,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		/*
 		 * IN-DRAWER SUBMENU — real nested accordion/drill-down markup.
 		 *
-		 * `.sgs-nav-menu__submenu-root` / `-wrap` no longer render inside a drawer at
-		 * all — `render_items_drawer()` above emits `.sgs-nav-menu__accordion(-row)`
+		 * `.{bem}__submenu-root` / `-wrap` no longer render inside a drawer at
+		 * all — `render_items_drawer()` above emits `.{bem}__accordion(-row)`
 		 * / `-summary` instead (a real `<details name>` exclusive accordion, per
 		 * FR-36-6), so the CSS that used to reflow those hover-disclosure classes for
 		 * the drawer context is gone with them. The structural accordion/drill-down
@@ -302,7 +303,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 *
 		 * Everything below still derives from `currentColor` so it works on ANY
 		 * drawer background — light, dark or brand — instead of assuming one; these
-		 * three rules survive because `.sgs-nav-menu__submenu` / `-sublink` /
+		 * three rules survive because `.{bem}__submenu` / `-sublink` /
 		 * `-subtoggle` are the SAME class names the new accordion markup reuses for
 		 * its own nested `<ul>`/`<a>` (the subtoggle rule is inert for a drawer
 		 * instance specifically — the bar's subtoggle split has no drawer
@@ -359,7 +360,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * forced here: at (0,3,0) it beat `submenuPadding`'s (0,2,0) rule, and the
 		 * base panel rule in nav-menu-submenu-css.php already defaults padding to 0.
 		 */
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;min-width:0;'
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__submenu{box-shadow:none;min-width:0;'
 			. ( $sgs_nm_submenu_border_box ? '' : 'border:0;' )
 			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface, color-mix(in srgb, currentColor 6%, transparent)));'
 			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);border-radius:0;margin:0;}';
@@ -368,13 +369,13 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// measured against the 32px indent this border occupies (see the note
 		// directly below). Structural, so FR-41-7's one-border rule does not claim
 		// it and the double-line bug that condemns #3/#10 cannot occur here.
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink{padding:0 16px 0 12px;gap:8px;'
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__sublink{padding:0 16px 0 12px;gap:8px;'
 			. 'border-left:2px solid color-mix(in srgb, currentColor 25%, transparent);}';
 		// D1011-adjacent (Bean, 2026-09-10): the marker icon lives INSIDE the same
 		// 32px indent the border-left always occupied -- 12px padding + 14px icon +
 		// 8px gap keeps the visual indent unchanged from before this icon existed.
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker svg{width:14px;height:14px;}';
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__sublink-marker{display:inline-flex;flex-shrink:0;opacity:0.6;}';
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__sublink-marker svg{width:14px;height:14px;}';
 		// M4/M2 drawer parity (2026-09-12) — widened to a paired selector list
 		// (subtoggle + link + caret svg) so the caret genuinely matches whatever
 		// colour the link/subtoggle resolve to inside the drawer, rather than
@@ -386,12 +387,12 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// never reached the drawer. The caret still matches the link: when
 		// itemColour is set, nav-menu-css.php writes the link and the caret svg in
 		// the same declaration; when unset, this zero-specificity inherit applies.
-		$css .= ':where(.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle,'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link,'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__caret svg){color:inherit;}';
+		$css .= ':where(.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__subtoggle,'
+			. '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__link,'
+			. '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__caret svg){color:inherit;}';
 		/*
 		 * ⛔ FR-41-15 census #3 — DELETED, and its STATIC TWIN in `style.css`
-		 * (`.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`, census #10)
+		 * (`.{bem}__item--drawer + .{bem}__item--drawer`, census #10)
 		 * with it. This was the drawer's hardcoded item separator, and FR-41-7 is
 		 * explicit that the item border is the ONE separator mechanism. Leaving it
 		 * meant an operator setting a bottom `itemBorderWidth` got TWO horizontal
@@ -428,7 +429,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		/*
 		 * A mega-menu item degrades to a plain link inside the drawer
 		 * (render_items_drawer(), see its docblock) rather than rendering the mega
-		 * panel — so `.sgs-nav-menu__mega-panel-wrap` never appears inside a drawer's
+		 * panel — so `.{bem}__mega-panel-wrap` never appears inside a drawer's
 		 * OWN nav-menu instance and needs no in-drawer override here. (FR-36-5's
 		 * "the same panel renders inside the drawer" mega-in-drawer capability
 		 * remains a declared future item, not yet built.)
@@ -450,10 +451,10 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * or if the drawer is an older render.
 		 */
 		$css .= '.sgs-nav-drawer ' . $uid_sel . '{width:100%;}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__bar'
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__bar'
 			. '{width:100%;align-items:var(--sgs-drawer-align, stretch);}';
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link,'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink'
+		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__link,'
+			. '.sgs-nav-drawer ' . $uid_sel . ' .' . $bem_root . '__sublink'
 			. '{text-align:var(--sgs-drawer-text-align, start);}';
 
 		/*
@@ -464,13 +465,13 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * default, an empty/unset object) leaves the existing flex-column stack from
 		 * nav-drawer/style.css unchanged — byte-identical. >=2 columns switches the
 		 * bar to a CSS grid (studionamma's 2-column desktop -> 1-column mobile merge).
-		 * The extra `.wp-block-sgs-nav-menu` qualifier gives this rule certain
+		 * The extra `.wp-block-{block-slug}` qualifier gives this rule certain
 		 * precedence over nav-drawer/style.css's `display:flex` rule at any tier
 		 * this attribute is actually set (both are 3-selector-part rules; source
 		 * order alone should not be relied on across two different stylesheets).
 		 */
 		if ( function_exists( 'sgs_emit_responsive_css' ) && is_array( $attributes['listColumns'] ?? null ) && ! empty( $attributes['listColumns'] ) ) {
-			$drawer_bar_sel         = '.sgs-nav-drawer ' . $uid_sel . '.wp-block-sgs-nav-menu .sgs-nav-menu__bar';
+			$drawer_bar_sel         = '.sgs-nav-drawer ' . $uid_sel . '.' . 'wp-block-' . $bem_root . ' .' . $bem_root . '__bar';
 			$sgs_nm_list_item_count = max( 0, $item_count );
 			$css                   .= sgs_emit_responsive_css(
 				$drawer_bar_sel,
@@ -541,12 +542,12 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * site-header/style.css), only while open, and is scoped by uid. Verified
 		 * live by injection: 400ms diagonal hover survives with it, closes without.
 		 */
-		$css .= '.entry-content:has(' . $uid_sel . ' .sgs-nav-menu__mega-trigger[aria-expanded="true"]){z-index:2;}';
+		$css .= '.entry-content:has(' . $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"]){z-index:2;}';
 		// The "View all X" fallback now renders INSIDE the panel (sgs/mega-panel's
 		// footer slot), so it is styled as a panel footer row rather than a bare
 		// line: separated from the content above, aligned with the panel's own
 		// padding box, and never sitting under the trigger's hover underline.
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-viewall{display:inline-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;}';
+		$css .= $uid_sel . ' .' . $bem_root . '__mega-viewall{display:inline-block;margin-top:16px;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;}';
 
 		/*
 		 * 4h-i. Sliding indicator colour override (Mega-Menu Build Spec §6 row 2).
@@ -561,7 +562,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// colour, so sgs_background_paint_decl() — which DOES resolve the
 		// gradient on its own — never even ran (G13 scenario 2).
 		if ( 'pill' === $indicator_style && ( '' !== $indicator_colour || '' !== $indicator_colour_gradient ) ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__indicator{' . sgs_background_paint_decl( $indicator_colour, $indicator_colour_gradient ) . ';}';
+			$css .= $uid_sel . ' .' . $bem_root . '__indicator{' . sgs_background_paint_decl( $indicator_colour, $indicator_colour_gradient ) . ';}';
 		}
 
 		// 4g-bis. ROOT BOX — max-width + native spacing + responsive padding tiers.
@@ -648,7 +649,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// had a label, a value and a reset, and changed the page not at all.
 		$nav_gap = isset( $attributes['gap'] ) ? sgs_css_length_value( (string) $attributes['gap'] ) : '';
 		if ( '' !== $nav_gap ) {
-			$root_box_css .= $uid_sel . ' .sgs-nav-menu__bar{gap:' . $nav_gap . ';}';
+			$root_box_css .= $uid_sel . ' .' . $bem_root . '__bar{gap:' . $nav_gap . ';}';
 		}
 
 		if ( '' !== $root_box_css ) {

@@ -12,7 +12,7 @@ handed it in. `wp_json_encode()` preserves PHP array key order, so any sort appl
 `$attributes` (or the exact array passed into the hash) BEFORE the hash line silently
 changes the uid for identical content — fragmenting the CSS cache (Spec 37 FR-37-16's
 "re-save = same uid" golden) with no visible symptom; the page still renders correctly,
-it just leaks scoped `<style>` blocks that never dedup. `nav-menu/render.php` and
+it just leaks scoped `<style>` blocks that never dedup. `nav-bar-menu/render.php` and
 `site-header/render.php` both carry a `STOP-NO-KSORT` comment recording this — this gate
 is what makes the comment true rather than aspirational
 (`.claude/reports/2026-08-21-unenforced-prohibition-register.md`).
@@ -38,7 +38,7 @@ GATE SHAPE
 - Default (no flag): observational report, exit 0.
 - --check:     exit 1 on any violation.
 - --self-test: proves the gate can fail — injects `ksort( $attributes );` before a real
-  hash line in a temp copy of `nav-menu/render.php`, asserts RED, restores, asserts GREEN.
+  hash line in a temp copy of `nav-bar-menu/render.php`, asserts RED, restores, asserts GREEN.
 
 Run: python plugins/sgs-blocks/scripts/check-ksort-before-hash.py --check
 """
@@ -113,7 +113,7 @@ def run_scan() -> list[str]:
 
 
 def self_test() -> bool:
-    fixture = BLOCKS_DIR / "nav-menu" / "render.php"
+    fixture = BLOCKS_DIR / "nav-bar-menu" / "render.php"
     if not fixture.exists():
         print("[ksort-before-hash --self-test] FAIL — fixture file missing: " + str(fixture))
         return False
@@ -122,18 +122,18 @@ def self_test() -> bool:
     clean_violations = _scan_file(fixture, original)
     if clean_violations:
         print(
-            "[ksort-before-hash --self-test] FAIL — the unmodified nav-menu render.php "
+            "[ksort-before-hash --self-test] FAIL — the unmodified nav-bar-menu render.php "
             "already reports a violation; the negative control has no clean baseline:\n  "
             + "\n  ".join(clean_violations)
         )
         return False
-    print("[ksort-before-hash --self-test] negative control: clean nav-menu is silent — OK")
+    print("[ksort-before-hash --self-test] negative control: clean nav-bar-menu is silent — OK")
 
-    hash_line = "$uid        = 'sgs-nav-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );"
+    hash_line = "$uid        = 'sgs-nav-bar-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );"
     if hash_line not in original:
         print(
             "[ksort-before-hash --self-test] FAIL — the expected hash line anchor was "
-            "not found in nav-menu/render.php (file shape changed; update the fixture)."
+            "not found in nav-bar-menu/render.php (file shape changed; update the fixture)."
         )
         return False
 

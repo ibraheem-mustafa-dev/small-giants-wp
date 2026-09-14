@@ -22,7 +22,7 @@
 /*
  * The mobile drawer ships with EVERY header, including this blank one.
  *
- * Why it is here and not optional: sgs/nav-menu collapses to a burger below its
+ * Why it is here and not optional: sgs/nav-bar-menu collapses to a burger below its
  * `collapsePoint` (default 768) and opens sgs/nav-drawer by id. A header built
  * without a drawer therefore renders a burger that opens nothing — a silent
  * failure a non-coder cannot diagnose, and the exact gap the FR-37-26
@@ -36,5 +36,5 @@
  */
 ?>
 <!-- wp:sgs/nav-drawer -->
-<!-- wp:sgs/nav-menu {"ref":0} /-->
+<!-- wp:sgs/nav-drawer-menu {"ref":0} /-->
 <!-- /wp:sgs/nav-drawer -->

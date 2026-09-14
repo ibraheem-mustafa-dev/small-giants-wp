@@ -780,7 +780,7 @@ function resolveTextGradientChainSelector( php, attr, varName ) {
 			continue;
 		}
 
-		// Concatenation shape (e.g. nav-menu: `$uid_sel . ' .sgs-nav-menu__sublink{' . $submenu_colour_decl`;
+		// Concatenation shape (e.g. nav-menu: `$uid_sel . ' .sgs-nav-bar-menu__sublink{' . $submenu_colour_decl`;
 		// product-card: `$sgs_tag_text_colour_sel . '{' . $sgs_tag_text_colour_decl`). Walk the `.`-joined
 		// terms and rebuild each as embeddable text: a bare `$var` becomes
 		// `{$var}`, a quoted literal keeps its unescaped contents.
@@ -1034,7 +1034,7 @@ function wireOnlyGradientCheck( db, slug, blockJson, php, baseAttr ) {
 // `background-color:` need not be an entirely standalone quoted-concatenation
 // segment (`'background-color:' .`) — it may instead be the TAIL of a larger
 // single string literal that also carries a selector/other-property prefix in
-// the SAME quotes (e.g. `' .sgs-nav-menu__burger{background-color:' .`, real
+// the SAME quotes (e.g. `' .sgs-nav-bar-menu__burger{background-color:' .`, real
 // shape found live at sgs/nav-menu's burgerBg/indicatorColour). Both shapes
 // are matched by one regex; `prefix`/`quote` come back non-empty only for the
 // fused shape, telling the caller to re-close the literal at the split point
@@ -1811,7 +1811,7 @@ function applyGradientRenderPhpFix( phpText, gp ) {
 		const call = `sgs_background_paint_decl( $${ gp.phpVarName }, $${ gp.gradVarName } )`;
 		// A fused literal (Bug A) carries a non-empty `prefix` — the text that
 		// sat between the literal's opening quote and `background-color:`
-		// (e.g. a selector like ` .sgs-nav-menu__burger{`). That text is NOT
+		// (e.g. a selector like ` .sgs-nav-bar-menu__burger{`). That text is NOT
 		// part of what's being replaced (fragStart starts at the quote), so
 		// it must be re-emitted, re-closed with the SAME quote char, before
 		// concatenating the paint-decl call. An empty prefix (the original,
@@ -1895,11 +1895,11 @@ function applyRenderPhpFix( phpText, plan ) {
 	// "Touch-safe HOVER helpers"). It splits the guarded `:hover` rule from
 	// the unguarded `:focus-visible` rule and is exactly what the codemod's
 	// own cited reference model (nav-menu:1172,
-	// `sgs_hover_state_rules( $uid_sel . ' .sgs-nav-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' )`)
+	// `sgs_hover_state_rules( $uid_sel . ' .sgs-nav-bar-menu__burger', 'background-color:' . sgs_colour_value( $burger_hover_slug ), ':focus-visible' )`)
 	// already does correctly. Double-quoted selectorTemplate, matching both
 	// branches below — NOT single-quoted — because a selectorTemplate can
 	// legitimately carry `{$var}` PHP-interpolation syntax (Strategy T,
-	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-menu__sublink`
+	// resolveTextGradientChainSelector, e.g. `{$uid_sel} .sgs-nav-bar-menu__sublink`
 	// for sgs/nav-menu.submenuColour); PHP only expands `{$var}` inside double
 	// quotes.
 	const hoverCall =

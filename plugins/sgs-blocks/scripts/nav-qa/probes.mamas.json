@@ -1,13 +1,13 @@
 {
-  "_comment": "REAL probes file for Mama's Munches (gate-1) — Spec 36 §8 / FR-36-16. Authored 2026-07-20 against the LIVE sandybrown canary DOM, not from the block source: every selector below was confirmed present by querying the rendered page (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
+  "_comment": "REAL probes file for Mama's Munches (gate-1) — Spec 36 §8 / FR-36-16. Authored 2026-07-20 against the LIVE sandybrown canary DOM, not from the block source: every selector below was confirmed present by querying the rendered page (5 bar items Shop/Our Story/Send to Ward/Gift Ideas/FAQs; drawer = <dialog class='sgs-nav-drawer'> containing its own .sgs-nav-bar-menu__bar). Baseline target per Spec 36 §8: 10/10 at 375.",
 
-  "_selector_note": "There are TWO .sgs-nav-menu__bar instances on the page — the header bar (.sgs-site-header > … > .sgs-container__inner) and the drawer's copy (.sgs-nav-drawer__body). Every probe below is scoped to one or the other; NEVER use a bare .sgs-nav-menu__bar, which matches both and silently probes whichever comes first in the DOM.",
+  "_selector_note": "There are TWO .sgs-nav-bar-menu__bar instances on the page — the header bar (.sgs-site-header > … > .sgs-container__inner) and the drawer's copy (.sgs-nav-drawer__body). Every probe below is scoped to one or the other; NEVER use a bare .sgs-nav-bar-menu__bar, which matches both and silently probes whichever comes first in the DOM.",
 
   "_viewport_note": "elementfrompoint-sweep.mjs opens every viewport at height 1200, so yRatio is a fraction of 1200 — not of a real device height. The 0.028 header-row ratio = the ~34px close-control centre measured live.",
 
   "375": {
     "_comment": "Mobile: burger opens the full-screen <dialog> drawer. 10 probes = the Spec 36 §8 Mama's baseline. Proves (a) the header row hit-tests to the close control, (b) every drawer link is reachable at its own centre, (c) everything below the header is unreachable — the modal owns the hit-test.",
-    "openSelector": ".sgs-nav-menu__burger",
+    "openSelector": ".sgs-nav-bar-menu__burger",
     "openScope": "dialog.sgs-nav-drawer",
     "probes": [
       {
@@ -20,27 +20,27 @@
       {
         "name": "drawer-link-1-shop-returns-self",
         "kind": "self",
-        "selector": ".sgs-nav-drawer .sgs-nav-menu__item:nth-child(1) .sgs-nav-menu__link"
+        "selector": ".sgs-nav-drawer .sgs-nav-drawer-menu__item:nth-child(1) .sgs-nav-drawer-menu__link"
       },
       {
         "name": "drawer-link-2-our-story-returns-self",
         "kind": "self",
-        "selector": ".sgs-nav-drawer .sgs-nav-menu__item:nth-child(2) .sgs-nav-menu__link"
+        "selector": ".sgs-nav-drawer .sgs-nav-drawer-menu__item:nth-child(2) .sgs-nav-drawer-menu__link"
       },
       {
         "name": "drawer-link-3-send-to-ward-featured-returns-self",
         "kind": "self",
-        "selector": ".sgs-nav-drawer .sgs-nav-menu__item:nth-child(3) .sgs-nav-menu__link"
+        "selector": ".sgs-nav-drawer .sgs-nav-drawer-menu__item:nth-child(3) .sgs-nav-drawer-menu__link"
       },
       {
         "name": "drawer-link-4-gift-ideas-returns-self",
         "kind": "self",
-        "selector": ".sgs-nav-drawer .sgs-nav-menu__item:nth-child(4) .sgs-nav-menu__link"
+        "selector": ".sgs-nav-drawer .sgs-nav-drawer-menu__item:nth-child(4) .sgs-nav-drawer-menu__link"
       },
       {
         "name": "drawer-link-5-faqs-returns-self",
         "kind": "self",
-        "selector": ".sgs-nav-drawer .sgs-nav-menu__item:nth-child(5) .sgs-nav-menu__link"
+        "selector": ".sgs-nav-drawer .sgs-nav-drawer-menu__item:nth-child(5) .sgs-nav-drawer-menu__link"
       },
       {
         "name": "drawer-logo-link-returns-self",
@@ -75,27 +75,27 @@
       {
         "name": "bar-link-1-shop-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(1) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(1) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-2-our-story-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(2) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(2) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-3-send-to-ward-featured-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(3) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(3) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-4-gift-ideas-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(4) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(4) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-5-faqs-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(5) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(5) .sgs-nav-bar-menu__link"
       }
     ]
   },
@@ -106,27 +106,27 @@
       {
         "name": "bar-link-1-shop-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(1) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(1) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-2-our-story-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(2) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(2) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-3-send-to-ward-featured-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(3) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(3) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-4-gift-ideas-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(4) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(4) .sgs-nav-bar-menu__link"
       },
       {
         "name": "bar-link-5-faqs-returns-self",
         "kind": "self",
-        "selector": ".sgs-site-header .sgs-nav-menu__item:nth-child(5) .sgs-nav-menu__link"
+        "selector": ".sgs-site-header .sgs-nav-bar-menu__item:nth-child(5) .sgs-nav-bar-menu__link"
       }
     ]
   }

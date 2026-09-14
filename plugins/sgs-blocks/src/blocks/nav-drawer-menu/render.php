@@ -11,7 +11,7 @@
  * block, `sgs/nav-bar-menu`.
  *
  * Submenus (one level deep, MAX_SUBMENU_DEPTH = 1) render as native
- * `<details>` accordion rows via `sgs_nav_menu_render_items_drawer()`
+ * `<details>` accordion rows via `sgs_nav_drawer_menu_render_items()`
  * (`includes/nav-menu-markup.php`, SHARED with the bar block — untouched
  * here). A mega-typed item degrades to a plain link unless the operator
  * opted it into the accordion fallback via `megaDrawerFallbackIds`.
@@ -76,11 +76,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-border-featured-cs
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // nav-menu-trigger-css.php is deliberately NOT required — this block never
-// emits a burger/trigger, so sgs_nav_menu_trigger_css() is never called.
+// emits a burger/trigger, so sgs_nav_bar_menu_trigger_css() is never called.
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
 // renders its root block-private since D539 (see §5, inherited unchanged).
 
-if ( ! function_exists( 'sgs_nav_menu_typography_hover_rule' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 	/**
 	 * BLOCK-PRIVATE hover-typography emitter (Spec 41 FR-41-21, owner ruling 2).
 	 *
@@ -116,7 +116,7 @@ if ( ! function_exists( 'sgs_nav_menu_typography_hover_rule' ) ) {
 	 *                                   prefix's resolved treatment is not 'sweep'.
 	 * @return string CSS, or '' when nothing permitted is set.
 	 */
-	function sgs_nav_menu_typography_hover_rule( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' ): string {
+	function sgs_nav_shared_typography_hover_rule( array $attributes, string $prefix, string $selector, string $sweep_hover_colour = '' ): string {
 		if ( '' === $selector ) {
 			return '';
 		}
@@ -167,7 +167,7 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 	 * (`submenuAlign`/`submenuCaret`/`submenuCloseGrace`/`submenuAnimation`)
 	 * are BAR-only (measured, `.claude/reports/2026-09-14-nav-menu-split-
 	 * attribute-classification.md`) and this block never declares them —
-	 * `sgs_nav_menu_render_items_drawer()` (the function this block calls)
+	 * `sgs_nav_drawer_menu_render_items()` (the function this block calls)
 	 * takes no submenu-settings argument at all.
 	 */
 	class SGS_Nav_Drawer_Menu_Flattener {
@@ -327,7 +327,7 @@ if ( ! class_exists( 'SGS_Nav_Drawer_Menu_Flattener' ) ) {
 // CSS-keyword / length sanitisers — free-text attrs concatenated into raw CSS.
 // 1. Deterministic content-addressed uid (CSS scope).
 $anchor_val = isset( $block->parsed_block['attrs']['anchor'] ) ? (string) $block->parsed_block['attrs']['anchor'] : '';
-$uid        = 'sgs-nav-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );
+$uid        = 'sgs-nav-drawer-menu-' . substr( md5( wp_json_encode( $attributes ) . $anchor_val ), 0, 8 );
 $uid_sel    = '.' . $uid;
 
 // ── 2. Resolve the menu (one-source rule) + flatten to top-level links only. ──
@@ -340,7 +340,7 @@ $flat_items   = $flattener->flatten( $menu_blocks );
 // FR-41-30(b): the drawer sub-item marker is operator-chosen, resolved through
 // the same source-aware resolver as sgs/icon. The stored default
 // (`lucide`/`chevron-right`) reproduces the previously-hardcoded glyph exactly.
-$sgs_nm_sublink_marker = sgs_nav_menu_icon_markup(
+$sgs_nm_sublink_marker = sgs_nav_shared_icon_markup(
 	$attributes['sublinkMarkerIcon'] ?? null,
 	array(
 		'source' => 'lucide',
@@ -366,8 +366,8 @@ if ( ! in_array( $sgs_nm_marker_source, array( 'lucide', 'wp-icon', 'dashicon', 
 // `block.json::ancestor` guarantees a real `.sgs-nav-drawer` ancestor.
 // Left unrenamed deliberately — BEM root renaming is Step 3's scope, not
 // this scaffolding step's.
-$sgs_nm_marker_sel  = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink-marker';
-$sgs_nm_sublink_sel = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__sublink';
+$sgs_nm_marker_sel  = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-drawer-menu__sublink-marker';
+$sgs_nm_sublink_sel = '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-drawer-menu__sublink';
 
 $sgs_nm_marker_colour                  = (string) ( $attributes['sublinkMarkerColour'] ?? '' );
 $sgs_nm_marker_colour_hover            = (string) ( $attributes['sublinkMarkerColourHover'] ?? '' );
@@ -382,7 +382,7 @@ if ( '' !== $sgs_nm_marker_colour ) {
 	$sgs_nm_marker_css .= $sgs_nm_marker_sel . '{color:' . sgs_colour_value( $sgs_nm_marker_colour ) . ';}';
 }
 if ( '' !== $sgs_nm_marker_colour_current ) {
-	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker{color:'
+	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-drawer-menu__sublink-marker{color:'
 		. sgs_colour_value( $sgs_nm_marker_colour_current ) . ';}';
 }
 if ( '' !== $sgs_nm_marker_colour_hover ) {
@@ -390,7 +390,7 @@ if ( '' !== $sgs_nm_marker_colour_hover ) {
 		$sgs_nm_sublink_sel,
 		'color:' . sgs_colour_value( $sgs_nm_marker_colour_hover ),
 		':focus-visible',
-		' .sgs-nav-menu__sublink-marker'
+		' .sgs-nav-drawer-menu__sublink-marker'
 	);
 }
 
@@ -414,7 +414,7 @@ $sgs_nm_marker_grad_hover = sgs_icon_gradient_css(
 	$sgs_nm_marker_source,
 	$sgs_nm_marker_colour_hover_gradient,
 	$uid . '-smkh',
-	$sgs_nm_sublink_sel . ':hover .sgs-nav-menu__sublink-marker'
+	$sgs_nm_sublink_sel . ':hover .sgs-nav-drawer-menu__sublink-marker'
 );
 $sgs_nm_sublink_marker    = sgs_svg_inject_defs( $sgs_nm_sublink_marker, $sgs_nm_marker_grad_hover['defs'] );
 if ( '' !== $sgs_nm_marker_grad_hover['css'] ) {
@@ -422,7 +422,7 @@ if ( '' !== $sgs_nm_marker_grad_hover['css'] ) {
 		$sgs_nm_sublink_sel,
 		$sgs_nm_marker_grad_hover['css'],
 		':focus-visible',
-		' .sgs-nav-menu__sublink-marker'
+		' .sgs-nav-drawer-menu__sublink-marker'
 	);
 }
 if ( '' !== $sgs_nm_marker_grad_hover['fallback_rule'] ) {
@@ -434,11 +434,11 @@ $sgs_nm_marker_grad_current = sgs_icon_gradient_css(
 	$sgs_nm_marker_source,
 	$sgs_nm_marker_colour_current_gradient,
 	$uid . '-smkc',
-	$sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker'
+	$sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-drawer-menu__sublink-marker'
 );
 $sgs_nm_sublink_marker      = sgs_svg_inject_defs( $sgs_nm_sublink_marker, $sgs_nm_marker_grad_current['defs'] );
 if ( '' !== $sgs_nm_marker_grad_current['css'] ) {
-	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-menu__sublink-marker{'
+	$sgs_nm_marker_css .= $sgs_nm_sublink_sel . '[aria-current="page"] .sgs-nav-drawer-menu__sublink-marker{'
 		. $sgs_nm_marker_grad_current['css'] . ';}';
 }
 if ( '' !== $sgs_nm_marker_grad_current['fallback_rule'] ) {
@@ -463,7 +463,7 @@ $submenu_model_ctx = (string) ( $block->context['sgs/navDrawerSubmenuModel'] ?? 
 if ( ! in_array( $submenu_model_ctx, array( 'accordion', 'drill-down' ), true ) ) {
 	$submenu_model_ctx = 'accordion';
 }
-$items_html = sgs_nav_menu_render_items_drawer( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids );
+$items_html = sgs_nav_drawer_menu_render_items( $flat_items, $submenu_model_ctx, $uid, $featured_ids, $sgs_nm_sublink_marker, $mega_drawer_fallback_ids );
 
 // FR-41-36 full-fix (2026-09-13) — the drawer's own `drawerBg` attribute,
 // reached via the SAME real WP block-context channel as
@@ -519,7 +519,7 @@ $bar_data_attrs           .= $magnet_enabled ? ' data-magnet' : '';
 // style.css's structural accordion/drill-down rules key off both, and
 // nav-drilldown.js (view.js) reads the data attribute to decide whether to
 // enhance at all.
-$bar_class       = 'sgs-nav-menu__bar sgs-nav-menu__bar--drawer';
+$bar_class       = 'sgs-nav-drawer-menu__bar sgs-nav-drawer-menu__bar--drawer';
 $bar_data_attrs .= ' data-sgs-nav-submenu-model="' . esc_attr( $submenu_model_ctx ) . '"';
 
 $bar_html = sprintf(
@@ -532,19 +532,19 @@ $bar_html = sprintf(
 /*
  * ── Resolve the hover treatments ONCE, server-side (FR-41-26). ─────────────
  *
- * `sgs_nav_menu_resolved_treatments()` now takes an explicit `$block_name`
+ * `sgs_nav_shared_resolved_treatments()` now takes an explicit `$block_name`
  * second argument (fixed post-split) instead of hardcoding the old
  * `sgs/nav-menu` slug, so it looks up THIS block's own registered
  * `sweepEligibility` declaration + attribute defaults
  * (`src/blocks/nav-drawer-menu/block.json::supports.sgs.sweepEligibility`) —
  * no dependency on `sgs/nav-menu` remaining registered.
  */
-$sgs_nm_treatments = sgs_nav_menu_resolved_treatments( $attributes, 'sgs/nav-drawer-menu' );
+$sgs_nm_treatments = sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-drawer-menu' );
 
 // ── 4. Scoped CSS assembly (no-inline, Spec 32). ────────────────────────────
 $css  = '';
-$css .= sgs_nav_menu_item_state_css( $attributes, $uid_sel, $sgs_nm_treatments );
-$css .= sgs_nav_menu_submenu_css(
+$css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-drawer-menu', $sgs_nm_treatments );
+$css .= sgs_nav_shared_submenu_css(
 	$attributes,
 	$uid_sel,
 	$indicator_style,
@@ -553,6 +553,7 @@ $css .= sgs_nav_menu_submenu_css(
 	$sgs_tor_padding_tiers,
 	$sgs_tor_padding_desktop,
 	$sgs_tor_margin_desktop,
+	'sgs-nav-drawer-menu',
 	$sgs_nm_treatments,
 	'icon', // Trigger-mode param — this block never has a trigger; inherited literal ('icon' is also this shared helper's own default) matches the bar block's own hardcoded call.
 	$sgs_nm_drawer_bg_ctx,
@@ -574,10 +575,9 @@ if ( '' !== $css ) {
 
 // STOP-21: the block's own scoped `<style>` targets `.$uid …`, so the SAME
 // `$uid` MUST ride onto the rendered element as a CLASS or every scoped rule
-// above is a silent render no-op. `sgs-nav-menu` stays the stable BEM root
-// (unrenamed — Step 3's scope, not this scaffolding step's); `$uid` is the
-// per-instance scope.
-$nav_root_classes = array( 'sgs-nav-menu', $uid );
+// above is a silent render no-op. `sgs-nav-drawer-menu` is this block's own
+// BEM root (D1059 split, Step 3); `$uid` is the per-instance scope.
+$nav_root_classes = array( 'sgs-nav-drawer-menu', $uid );
 
 // This <nav> IS the navigation landmark, so the accessible name belongs here
 // — on the element carrying the role. Exactly one <nav> per instance and

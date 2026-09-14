@@ -33,7 +33,7 @@
  *
  * ⚠ The top-level root selector is `.wp-block-sgs-nav-bar-menu` — WordPress
  * derives that class from THIS block's own name (`sgs/nav-bar-menu`), not
- * from the shared `.sgs-nav-menu` BEM root still used for internal elements
+ * from the shared `.sgs-nav-bar-menu` BEM root still used for internal elements
  * (Step 3's job to rename; not done in this scaffolding step — see
  * render.php's own note on `$nav_root_classes`). The in-drawer drill-down
  * effect (`initDrillDown`) is DROPPED here — it only ever fired for the
@@ -63,7 +63,7 @@ function normalisePath( pathname ) {
 }
 
 /**
- * Mark the current-page link (if any) inside one `.sgs-nav-menu` bar.
+ * Mark the current-page link (if any) inside one `.sgs-nav-bar-menu` bar.
  *
  * @param {HTMLElement} root The `.wp-block-sgs-nav-bar-menu` root.
  */
@@ -72,7 +72,7 @@ function markCurrentPage( root ) {
 	// Sublinks are included deliberately (Bean, 2026-07-31) — a visitor
 	// sitting on a dropdown child's URL still gets it highlighted.
 	root.querySelectorAll(
-		'.sgs-nav-menu__link[data-sgs-nav-path], .sgs-nav-menu__sublink[data-sgs-nav-path]'
+		'.sgs-nav-bar-menu__link[data-sgs-nav-path], .sgs-nav-bar-menu__sublink[data-sgs-nav-path]'
 	).forEach(
 		( link ) => {
 			const path = normalisePath( link.dataset.sgsNavPath || '' );
@@ -92,13 +92,13 @@ let activeCleanups = [];
 
 /**
  * Wire the opt-in motion effects (Mega-Menu Build Spec §6 rows 2 & 4) for
- * one `.sgs-nav-menu__bar`, keyed on the data-attribute flags render.php
+ * one `.sgs-nav-bar-menu__bar`, keyed on the data-attribute flags render.php
  * emits only when an operator has switched the effect on.
  *
  * @param {HTMLElement} root The `.wp-block-sgs-nav-bar-menu` root.
  */
 function initBarEffects( root ) {
-	const bar = root.querySelector( '.sgs-nav-menu__bar' );
+	const bar = root.querySelector( '.sgs-nav-bar-menu__bar' );
 	if ( ! bar ) {
 		return;
 	}
@@ -108,7 +108,7 @@ function initBarEffects( root ) {
 	}
 
 	if ( bar.hasAttribute( 'data-magnet' ) ) {
-		bar.querySelectorAll( '.sgs-nav-menu__magnet-target' ).forEach(
+		bar.querySelectorAll( '.sgs-nav-bar-menu__magnet-target' ).forEach(
 			( el ) => activeCleanups.push( initMagnet( el ) )
 		);
 	}

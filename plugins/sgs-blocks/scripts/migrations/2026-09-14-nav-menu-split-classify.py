@@ -8,8 +8,8 @@ extensions — attach to every block automatically and are excluded.) Getting on
 simply loses a control, or keeps a control that does nothing.
 
 WHY NOT READ THE CODE: `render.php` forks the MARKUP deterministically
-(`sgs_nav_menu_render_items` vs `sgs_nav_menu_render_items_drawer`), but it calls its CSS
-emitters for BOTH forks. `sgs_nav_menu_trigger_css` runs for a drawer instance that renders no
+(`sgs_nav_bar_menu_render_items` vs `sgs_nav_drawer_menu_render_items`, post-D1059-split
+names), but it calls its CSS emitters for BOTH forks. `sgs_nav_bar_menu_trigger_css` runs for a drawer instance that renders no
 burger. "Which branch reads the attribute" would therefore call every burger attribute "both".
 
 THE METHOD, all mechanical:
@@ -210,10 +210,10 @@ def merge(results: list[dict]) -> dict:
 # Expected verdicts derived from render.php's STRUCTURE, not from this tool's output:
 #   burgerSize            — the burger is only emitted when not a drawer list (render.php
 #                           `$toggle_html = $sgs_nm_is_drawer_list ? '' : ...`)
-#   megaDrawerFallbackIds — passed only to sgs_nav_menu_render_items_drawer()
+#   megaDrawerFallbackIds — passed only to sgs_nav_drawer_menu_render_items()
 #   listColumns           — its CSS is scoped `.sgs-nav-drawer …`; proves forks render inside
 #                           their REAL ancestors (v1 rendered in isolation and scored it DEAD)
-#   burgerFontSize        — styles `.sgs-nav-menu__burger-text`, which only renders when the
+#   burgerFontSize        — styles `.sgs-nav-bar-menu__burger-text`, which only renders when the
 #                           trigger shows text; proves the enabler configuration ran (v1: DEAD)
 POSITIVE_CONTROLS = {'burgerSize': 'BAR', 'megaDrawerFallbackIds': 'DRAWER',
                      'listColumns': 'DRAWER', 'burgerFontSize': 'BAR'}
@@ -239,9 +239,9 @@ def preconditions(doc: dict) -> list[str]:
         # Structural: each fork must actually have rendered its own shape. A wrapper that
         # failed to provide context would render the bar shape twice and look "deterministic".
         bar_html, drw_html = c['baseline']['bar']['html'], c['baseline']['drawer']['html']
-        if 'sgs-nav-menu__bar--drawer' in bar_html or 'sgs-nav-menu__bar' not in bar_html:
+        if 'sgs-nav-drawer-menu__bar--drawer' in bar_html or 'sgs-nav-bar-menu__bar' not in bar_html:
             errs.append(f'config {cfg}: the bar fork did not render the bar shape')
-        if 'sgs-nav-menu__bar--drawer' not in drw_html:
+        if 'sgs-nav-drawer-menu__bar--drawer' not in drw_html:
             errs.append(f'config {cfg}: the drawer fork did not render the drawer shape')
         if 'sgs-nav-drawer' not in drw_html:
             errs.append(f'config {cfg}: the drawer fork is missing its real .sgs-nav-drawer ancestor')

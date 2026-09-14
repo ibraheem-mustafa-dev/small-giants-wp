@@ -138,7 +138,7 @@ export default function FeaturedPanel( {
 				}
 				__next40pxDefaultSize
 			/>
-			<p className="sgs-nav-menu__inspector-note">
+			<p className="sgs-nav-panel__inspector-note">
 				{ __(
 					'Applies to the items ticked under Settings → Featured items. Set a background to render them as a filled pill; leave it empty for a coloured label. The text colour is checked for contrast against the background and falls back to a readable one if it would be hard to read.',
 					'sgs-blocks'

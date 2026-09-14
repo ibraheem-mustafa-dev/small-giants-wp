@@ -673,14 +673,15 @@ if ( 'fade' === $sgs_nd_animate_from ) {
 // the wiring for that already exists and needs nothing new. The header burger
 // stays LIVE in the header row while the drawer is open (see the module
 // docstring of src/shared/nav-interactivity/store.js — it is BOTH burger and
-// ×), and `nav-menu/render.php::$toggle_html` already emits
-// `data-wp-bind--aria-expanded="state.isOpen"` on `.sgs-nav-menu__burger`, so
-// the open state is a live DOM attribute on that element throughout. A true
+// ×), and `nav-bar-menu/render.php::$toggle_html` already emits
+// `data-wp-bind--aria-expanded="state.isOpen"` on `.sgs-nav-bar-menu__burger`,
+// so the open state is a live DOM attribute on that element throughout. A true
 // burger→× morph is therefore a pure CSS rule keyed on
-// `.sgs-nav-menu__burger[aria-expanded="true"]` in sgs/nav-menu's own
-// stylesheet — no Interactivity-store change, no cross-block message passing.
-// Whether sgs/nav-menu should ship that rule is a styling decision on THAT
-// block; nothing in this file depends on the answer.
+// `.sgs-nav-bar-menu__burger[aria-expanded="true"]` in sgs/nav-bar-menu's own
+// stylesheet (D1059 split, 2026-09-14 — the burger is now bar-exclusive by
+// construction) — no Interactivity-store change, no cross-block message
+// passing. Whether sgs/nav-bar-menu should ship that rule is a styling
+// decision on THAT block; nothing in this file depends on the answer.
 //
 // The × button itself remains fixed, undeletable chrome in EVERY style (FR-36-6).
 // Spec 41 FR-41-12 / step 14a: `icon-and-text` is the FOURTH value.
@@ -693,7 +694,7 @@ $sgs_nd_close_style          = in_array( $attributes['closeStyle'] ?? 'separate-
 	: 'separate-x';
 
 // ── Close-button SIZE (closeSize, mirrors nav-menu's burgerSize mechanism —
-// nav-menu-trigger-css.php::sgs_nav_menu_trigger_css()'s own size block).
+// nav-menu-trigger-css.php::sgs_nav_bar_menu_trigger_css()'s own size block).
 // Default '44px' reproduces the CURRENT effective size exactly: style.css's
 // base `.sgs-nav-drawer__close` rule already carries min-width/min-height:44px
 // with no explicit width/height, so an untouched drawer renders byte-identical
@@ -796,7 +797,7 @@ $sgs_nd_close_label = trim( (string) ( $attributes['closeLabel'] ?? '' ) );
 // trigger both use -- never a bespoke lookup, and never a second hand-parsed call
 // to sgs_get_lucide_icon(). The declared default { lucide, x } therefore renders
 // byte-identically to the hardcoded sgs_get_lucide_icon( 'x' ) this replaces.
-$sgs_nd_close_icon = sgs_nav_menu_icon_markup(
+$sgs_nd_close_icon = sgs_nav_shared_icon_markup(
 	$attributes['closeIcon'] ?? null,
 	array(
 		'source' => 'lucide',

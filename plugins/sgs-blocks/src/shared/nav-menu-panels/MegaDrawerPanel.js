@@ -88,7 +88,7 @@ export default function MegaDrawerPanel( {
 				</div>
 			) ) }
 			{ megaItems.length > 0 && (
-				<p className="sgs-nav-menu__inspector-note">
+				<p className="sgs-nav-panel__inspector-note">
 					{ __(
 						'Ticked items show their own sub-links as a plain list in the nav drawer instead of the full mega-menu panel. The desktop bar always shows the full mega panel either way — this only affects the drawer.',
 						'sgs-blocks'

@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
+if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 	/**
 	 * Build the menu-button half of nav-menu's scoped <style>.
 	 *
@@ -26,9 +26,9 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 	 * @param string $trigger_mode Resolved `triggerMode` (icon|text|icon-and-text).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_trigger_css( array $attributes, string $uid_sel, array $treatments = array(), string $trigger_mode = 'icon' ): string {
+	function sgs_nav_bar_menu_trigger_css( array $attributes, string $uid_sel, array $treatments = array(), string $trigger_mode = 'icon' ): string {
 		$css         = '';
-		$burger_sel  = $uid_sel . ' .sgs-nav-menu__burger';
+		$burger_sel  = $uid_sel . ' .sgs-nav-bar-menu__burger';
 		$t_burger    = (string) ( $treatments['burgerColourHoverTreatment'] ?? 'swap' );
 		$t_burger_bg = (string) ( $treatments['burgerBgHoverTreatment'] ?? 'swap' );
 
@@ -52,7 +52,7 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 			'hover' => '',
 		);
 		if ( 'sweep' === $t_burger && '' !== $burger_colour_hover ) {
-			$burger_sweep = sgs_nav_menu_text_sweep_css(
+			$burger_sweep = sgs_nav_shared_text_sweep_css(
 				$burger_sel,
 				'' !== $burger_colour ? sgs_colour_value( $burger_colour ) : '',
 				sgs_colour_value( $burger_colour_hover )
@@ -85,7 +85,7 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 		$burger_bg          = isset( $attributes['burgerBg'] ) ? (string) $attributes['burgerBg'] : '';
 		$burger_bg_gradient = sgs_css_gradient_value( $attributes['burgerBgGradient'] ?? '' );
 		if ( '' !== $burger_bg ) {
-			$css .= $uid_sel . ' .sgs-nav-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
+			$css .= $uid_sel . ' .sgs-nav-bar-menu__burger{' . sgs_background_paint_decl( $burger_bg, $burger_bg_gradient ) . ';}';
 		}
 		// `burgerBgHoverTreatment` is a TWO-option row (none|swap): a single button
 		// is neither a repeated item row for the shared pill to slide between nor a
@@ -110,14 +110,14 @@ if ( ! function_exists( 'sgs_nav_menu_trigger_css' ) ) {
 
 		/*
 		 * Menu-button LABEL typography (Spec 41 Wave 2 J1). Scoped to the TEXT SPAN
-		 * (`.sgs-nav-menu__burger-text`), never the button itself ($burger_sel), so
+		 * (`.sgs-nav-bar-menu__burger-text`), never the button itself ($burger_sel), so
 		 * `icon-and-text` mode never accidentally resizes the icon SVG. Both the
 		 * font-family AND font-size inherit-when-blank escape hatches are opted in:
 		 * the burger label renders as a UA `<button>` (UA defaults ~13.3px/Arial),
 		 * not a heading tag governed by theme.json's own presets, so an unset value
 		 * must actively contest the UA default rather than stay silent.
 		 */
-		$burger_text_sel = $uid_sel . ' .sgs-nav-menu__burger-text';
+		$burger_text_sel = $uid_sel . ' .sgs-nav-bar-menu__burger-text';
 		$css            .= sgs_typography_css_rule( $attributes, 'burger', $burger_text_sel, '', true, true );
 
 		return $css;

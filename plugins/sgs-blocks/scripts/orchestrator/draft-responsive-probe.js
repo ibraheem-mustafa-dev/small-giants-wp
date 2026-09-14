@@ -68,9 +68,49 @@
  * per-width. Generalising this to every interactive state on every route is still unbuilt
  * follow-up work; this flag proves the mechanism, it does not enumerate the state space.
  *
+ * AUTOMATIC INTERACTION DETECTION (2026-09-14, generalising --click): `--click` proved the
+ * mechanism on ONE hand-typed selector -- it does not find OTHER interactive states, and a
+ * real survey of this exact draft found ~73 state-changing flags across three shapes: (A) a
+ * plain boolean toggle, (B) a single enum/string field with several derived comparison
+ * booleans (tabs, a mega-menu, a modal -- the majority shape), (C) a nested multi-step object
+ * reached only through several sequential interactions (the lens-configuration flow). Trigger
+ * wiring is inconsistent too -- most fire on click, at least one (the desktop mega-menu) fires
+ * on `onMouseEnter` only.
+ *
+ * `--auto-detect [--max-depth N]` (default N=2) drives this automatically:
+ *   1. DETECT -- scan the rendered DOM (never the source HTML/JS -- same "no parsing the
+ *      runtime's own source" discipline as the rest of this file) for plausible triggers:
+ *      `button`, `[role=button|switch|tab]`, and `a[href="#"]`/`a[href=""]` (a real external
+ *      href, `target=_blank`, a submit-typed control, or submit/payment-shaped text such as
+ *      "Pay now"/"Place order"/"Checkout" is classified UNSAFE and never clicked -- reported
+ *      instead in `skipped_for_safety` with the reason).
+ *   2. DRIVE -- click every safe candidate (plus a HOVER attempt for anything inside
+ *      `nav`/`header` or carrying `aria-haspopup`, to reach the hover-only mega-menu); diff a
+ *      lightweight structural signature (tag+text of every visible element) before/after. A
+ *      >50% change is classified `route-change-suspected` and skipped -- driving a full
+ *      route/page swap is explicitly out of scope (see ROUTE COVERAGE above); anything smaller
+ *      that changed is a genuine localised state and gets the full per-width capture.
+ *   3. RECURSE -- for each captured state, re-scan the newly-appeared subtree for further safe
+ *      triggers and drive those too (each on its OWN fresh page, replaying the path from
+ *      scratch, so sibling branches never contaminate each other), up to `--max-depth`. This is
+ *      what reaches shape (B)'s derived-boolean groups (every tab gets its own depth-1 attempt)
+ *      and makes a real attempt at shape (C)'s sequential steps -- but a genuinely deep flow
+ *      (the lens configurator) can exceed the depth cap or need an interaction this tool
+ *      doesn't drive (typing, dragging, picking a specific enum value before the next step
+ *      appears); when that happens it is reported as `depth-cap-reached`/`depth-budget-
+ *      exceeded`, NEVER silently dropped -- `--click` remains the manual escape hatch for
+ *      exactly that case (still works exactly as before -- this is additive).
+ *
+ * Output additions when `--auto-detect` is used: `report.auto_detect.states[]` (one entry per
+ * successfully driven state, same `elements`/`changed_properties` shape as the default-state
+ * report, labelled by the trigger path that reached it), `report.auto_detect.gaps[]` (every
+ * candidate the detector found but could not safely/automatically drive, each naming the
+ * element + reason), `report.auto_detect.skipped_for_safety[]`.
+ *
  * Usage:
  *   node draft-responsive-probe.js --draft <path|url> [--viewports 375,768,1440]
  *        [--out report.json] [--label <route-name>] [--click <selector>[,<selector>...]]
+ *        [--auto-detect] [--max-depth 2]
  *   node draft-responsive-probe.js --self-test
  */
 'use strict';
@@ -87,6 +127,8 @@ const OUT = arg('out', '');
 const LABEL = arg('label', 'draft');
 const CLICK = arg('click', '');
 const CLICK_SELECTORS = CLICK ? CLICK.split(',').map((s) => s.trim()).filter(Boolean) : [];
+const AUTO_DETECT = process.argv.includes('--auto-detect');
+const MAX_DEPTH = parseInt(arg('max-depth', '2'), 10);
 const SELF_TEST = process.argv.includes('--self-test');
 if (!SELF_TEST && !DRAFT) { console.error('ERROR: --draft <path|url> is required.'); process.exit(2); }
 
@@ -209,31 +251,12 @@ async function driveInteraction(page, clickSelectors) {
   return clicked;
 }
 
-async function probe(draftUrl, viewports, label, clickSelectors) {
-  const browser = await chromium.launch();
-  let clicked;
-  let byWidth;
-  try {
-    const page = await browser.newPage();
-    await page.goto(draftUrl, { waitUntil: 'networkidle' });
-    // driveInteraction can throw (a bad --click selector, by design -- fail loudly, never
-    // silently capture the wrong state) -- the browser must still close either way, or a
-    // failed run leaks a live Chromium process and hangs the caller. Found live: the
-    // negative-control self-test case threw here with `browser.close()` still below it,
-    // leaking a browser and hanging the whole script past its 100s self-test timeout.
-    clicked = clickSelectors && clickSelectors.length ? await driveInteraction(page, clickSelectors) : [];
-    byWidth = {};
-    for (const w of viewports) {
-      byWidth[w] = await captureAtWidth(page, w, true);
-    }
-  } finally {
-    await browser.close();
-  }
-
-  // Match elements across widths by their content key. An element present at every width
-  // is a genuine same-content comparison; present-at-some-widths-only is reported
-  // separately (structural change, not a property diff -- out of scope for this script,
-  // which measures RESPONSIVE VALUES, not structural presence).
+// Match elements across widths by their content key -- shared by the default-state probe and
+// every auto-detected interaction state. An element present at every width is a genuine
+// same-content comparison; present-at-some-widths-only is reported separately (structural
+// change, not a property diff -- out of scope for this script, which measures RESPONSIVE
+// VALUES, not structural presence).
+function summariseByWidth(byWidth, viewports) {
   const widthKeys = viewports.map((w) => String(w));
   const keySets = widthKeys.map((w) => new Set(byWidth[w].elements.map((e) => e.key)));
   const presentAtAll = keySets.reduce((acc, s) => new Set([...acc].filter((k) => s.has(k))));
@@ -280,6 +303,293 @@ async function probe(draftUrl, viewports, label, clickSelectors) {
   }
 
   return {
+    elements_total_at_narrowest: byWidth[widthKeys[0]].elements.length,
+    elements_present_at_all_widths: presentAtAll.size,
+    responsive_elements: results.length,
+    elements: results,
+  };
+}
+
+// ---------------------------------------------------------------------------------------
+// AUTOMATIC INTERACTION DETECTION -- see module docstring "AUTOMATIC INTERACTION DETECTION".
+// ---------------------------------------------------------------------------------------
+
+// In-page scan for plausible interactive triggers. Deliberately reads only the RENDERED DOM
+// (tag/role/aria-*/text/href) -- never the source HTML's `{{ }}` placeholders and never the
+// runtime's own JS (same discipline as the rest of this file). Risk classification is
+// text/attribute based so a submit- or payment-shaped control is never clicked blindly.
+const SCAN_SRC = `() => {
+  const RISKY_RE = /\\b(pay now|place order|checkout|submit|subscribe|sign up|sign in|log in|log out|register|delete account|remove account)\\b/i;
+  const SAFE_SELECTORS = 'button, [role="button"], [role="switch"], [role="tab"], a[href="#"], a[href=""]';
+  const norm = (t) => (t || '').replace(/\\s+/g, ' ').trim().slice(0, 80);
+  const out = [];
+  for (const el of document.querySelectorAll(SAFE_SELECTORS)) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) continue; // not rendered/visible
+    const tag = el.tagName.toLowerCase();
+    const text = norm(el.textContent);
+    const ariaLabel = el.getAttribute('aria-label') || '';
+    const href = el.getAttribute('href');
+    const type = (el.getAttribute('type') || '').toLowerCase();
+    const reasons = [];
+    if (tag === 'a' && href && href !== '#' && href !== '' && !href.toLowerCase().startsWith('javascript:')) {
+      reasons.push('external-looking href: "' + href + '"');
+    }
+    if (el.getAttribute('target') === '_blank') reasons.push('opens a new tab/window (target="_blank")');
+    if (type === 'submit') reasons.push('submit-typed control (type="submit")');
+    if (RISKY_RE.test(text) || RISKY_RE.test(ariaLabel)) {
+      reasons.push('text/aria-label looks like a submit or payment action: "' + (text || ariaLabel) + '"');
+    }
+    out.push({
+      tag, text, ariaLabel,
+      role: el.getAttribute('role') || null,
+      ariaExpanded: el.getAttribute('aria-expanded'),
+      ariaSelected: el.getAttribute('aria-selected'),
+      ariaChecked: el.getAttribute('aria-checked'),
+      ariaHaspopup: el.getAttribute('aria-haspopup'),
+      inNav: !!el.closest('nav, header'),
+      safe: reasons.length === 0,
+      skipReasons: reasons,
+    });
+  }
+  return out;
+}`;
+
+// A lightweight structural signature (tag + text of every visible element) used purely to
+// detect WHETHER an interaction changed anything and how much -- deliberately cheaper than
+// CAPTURE_SRC's full getComputedStyle walk, since this runs once per candidate attempted,
+// not once per state actually captured.
+const SIGNATURE_SRC = `() => {
+  const norm = (t) => (t || '').replace(/\\s+/g, ' ').trim().slice(0, 120);
+  const out = [];
+  for (const el of document.body.querySelectorAll('*')) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) continue;
+    const text = norm(el.textContent);
+    if (!text) continue;
+    out.push(el.tagName.toLowerCase() + '|' + text);
+  }
+  return out;
+}`;
+
+function describeTrigger(cand) {
+  const name = cand.text || cand.ariaLabel || `<${cand.tag}>`;
+  const role = cand.role ? ` [role=${cand.role}]` : '';
+  return `${cand.tag}${role} "${name}"`;
+}
+
+function pathLabel(path) {
+  return path.map((s) => describeTrigger(s.cand) + (s.action === 'hover' ? ' [hover]' : '')).join(' -> ');
+}
+
+// Symmetric-difference diff between two structural signatures -- `ratio` is how much of the
+// page's visible content changed (used to distinguish a localised state change, e.g. a drawer
+// opening, from what looks like a full route/page swap, which is out of scope here).
+function diffSignatures(before, after) {
+  const beforeSet = new Set(before);
+  const afterSet = new Set(after);
+  const added = after.filter((s) => !beforeSet.has(s));
+  const removed = before.filter((s) => !afterSet.has(s));
+  const union = new Set([...before, ...after]);
+  const ratio = union.size === 0 ? 0 : (added.length + removed.length) / union.size;
+  return { added, removed, ratio };
+}
+
+function sigText(sig) {
+  return sig.slice(sig.indexOf('|') + 1);
+}
+
+// Builds a Playwright locator from a SCAN_SRC candidate descriptor -- content-keyed (tag +
+// role + accessible name), not an injected id, so the SAME descriptor relocates its element
+// correctly on a completely fresh page load (a deterministic re-render of the same state
+// produces the same DOM order) -- this is what makes multi-step REPLAY (below) possible
+// without any DOM-mutation-order bookkeeping.
+function locatorFor(page, cand) {
+  const role = cand.role || (cand.tag === 'button' ? 'button' : cand.tag === 'a' ? 'link' : null);
+  const name = cand.text || cand.ariaLabel || undefined;
+  if (role) {
+    try {
+      return page.getByRole(role, name ? { name, exact: false } : undefined).first();
+    } catch (e) { /* fall through to tag-based locator below */ }
+  }
+  if (name) return page.locator(cand.tag).filter({ hasText: name }).first();
+  return page.locator(cand.tag).first();
+}
+
+// Replays a full interaction path (from page load) on a FRESH page -- every branch gets its
+// own clean state, so sibling explorations never contaminate each other. Returns the open
+// page on success (caller must close it) or { ok: false } if any step's locator vanished.
+async function replayPath(browser, draftUrl, path) {
+  const page = await browser.newPage();
+  await page.goto(draftUrl, { waitUntil: 'networkidle' });
+  for (const step of path) {
+    const loc = locatorFor(page, step.cand);
+    if ((await loc.count()) === 0) {
+      await page.close();
+      return { ok: false, reason: 'locator matched zero elements' };
+    }
+    try {
+      // A short, explicit timeout -- some real-draft candidates sit inside a CSS transition/
+      // animation loop (e.g. a hover-transform tile) and Playwright's actionability check
+      // ("element is not stable") never resolves within the default 30s, which would
+      // otherwise hang the whole run on one candidate. A failure here is reported as a gap,
+      // never allowed to crash the run or silently skip the rest of the queue.
+      if (step.action === 'hover') await loc.hover({ timeout: 5000 });
+      else await loc.click({ timeout: 5000 });
+    } catch (e) {
+      await page.close();
+      return { ok: false, reason: `${step.action} did not complete within 5s (${e.message.split('\n')[0]})` };
+    }
+    await page.waitForTimeout(250);
+  }
+  return { ok: true, page };
+}
+
+// The detection + driving pipeline itself. See module docstring "AUTOMATIC INTERACTION
+// DETECTION" for the full DETECT -> DRIVE -> RECURSE description.
+async function autoDetect(draftUrl, viewports, maxDepth) {
+  const browser = await chromium.launch();
+  const states = [];
+  const gaps = [];
+  const skippedForSafety = [];
+  let candidatesScanned = 0;
+
+  try {
+    const rootPage = await browser.newPage();
+    await rootPage.goto(draftUrl, { waitUntil: 'networkidle' });
+    const baselineSig = await rootPage.evaluate('(' + SIGNATURE_SRC + ')()');
+    const rootCandidates = await rootPage.evaluate('(' + SCAN_SRC + ')()');
+    await rootPage.close();
+    candidatesScanned = rootCandidates.length;
+
+    for (const c of rootCandidates) {
+      if (!c.safe) skippedForSafety.push({ trigger: describeTrigger(c), reasons: c.skipReasons });
+    }
+
+    const queue = [];
+    for (const c of rootCandidates.filter((c) => c.safe)) {
+      queue.push({ path: [{ cand: c, action: 'click' }], baselineSig });
+      // The hover-only mega-menu finding: also try hover for anything nav/header-scoped or
+      // carrying aria-haspopup -- a click-only drive would never reach it.
+      if (c.inNav || c.ariaHaspopup) queue.push({ path: [{ cand: c, action: 'hover' }], baselineSig });
+    }
+
+    const MAX_ATTEMPTS = 150; // disclosed budget, not a silent cap -- see the gap pushed below
+    let attempts = 0;
+
+    while (queue.length) {
+      if (attempts >= MAX_ATTEMPTS) {
+        gaps.push({
+          type: 'budget-exceeded',
+          trigger: null,
+          reason: `${queue.length} further candidate path(s) not attempted (safety cap of ${MAX_ATTEMPTS} total interaction attempts reached for this run)`,
+        });
+        break;
+      }
+      const item = queue.shift();
+      attempts += 1;
+      const label = pathLabel(item.path);
+
+      const { ok, page, reason: replayFailReason } = await replayPath(browser, draftUrl, item.path);
+      if (!ok) {
+        gaps.push({ type: 'trigger-not-reproducible', trigger: label, reason: `could not drive this trigger on replay -- ${replayFailReason}` });
+        continue;
+      }
+
+      const afterSig = await page.evaluate('(' + SIGNATURE_SRC + ')()');
+      const diff = diffSignatures(item.baselineSig, afterSig);
+
+      if (diff.ratio > 0.5) {
+        gaps.push({
+          type: 'route-change-suspected',
+          trigger: label,
+          reason: `this interaction changed ~${Math.round(diff.ratio * 100)}% of the page's visible content -- looks like a route/page swap rather than a same-route interactive state, out of scope for this probe (see module docstring "ROUTE COVERAGE")`,
+        });
+        await page.close();
+        continue;
+      }
+      if (diff.added.length === 0 && diff.removed.length === 0) {
+        // No observable effect (e.g. an already-open toggle, or a handler with no visible
+        // side effect) -- not a state, and not reported as a gap since nothing was missed.
+        await page.close();
+        continue;
+      }
+
+      // A genuine localised state change -- capture the full per-width responsive report,
+      // exactly like a manual --click state.
+      const byWidth = {};
+      for (const w of viewports) byWidth[w] = await captureAtWidth(page, w, false);
+      const summary = summariseByWidth(byWidth, viewports);
+      states.push({ trigger: label, depth: item.path.length, ...summary });
+
+      const depth = item.path.length;
+      const deeperCandidates = await page.evaluate('(' + SCAN_SRC + ')()');
+      const addedTexts = new Set(diff.added.map(sigText));
+      const newlyAppeared = deeperCandidates.filter((c) => addedTexts.has(c.text));
+
+      if (depth >= maxDepth) {
+        const stillSafe = newlyAppeared.filter((c) => c.safe);
+        if (stillSafe.length) {
+          gaps.push({
+            type: 'depth-cap-reached',
+            trigger: label,
+            reason: `reached this run's max depth (${maxDepth}); ${stillSafe.length} further trigger(s) inside this state were not explored (e.g. ${stillSafe.slice(0, 3).map(describeTrigger).join(', ')}) -- likely a multi-step flow (e.g. a configurator); drive it manually with --click`,
+          });
+        }
+      } else {
+        let queued = 0;
+        const PER_STATE_BUDGET = 5;
+        for (const nc of newlyAppeared) {
+          if (!nc.safe) {
+            skippedForSafety.push({ trigger: `${describeTrigger(nc)} (nested under ${label})`, reasons: nc.skipReasons });
+            continue;
+          }
+          if (queued >= PER_STATE_BUDGET) {
+            gaps.push({
+              type: 'depth-budget-exceeded',
+              trigger: label,
+              reason: `${newlyAppeared.length - queued} further nested trigger(s) inside this state were not attempted (per-state budget of ${PER_STATE_BUDGET})`,
+            });
+            break;
+          }
+          queued += 1;
+          queue.push({ path: [...item.path, { cand: nc, action: 'click' }], baselineSig: afterSig });
+        }
+      }
+
+      await page.close();
+    }
+  } finally {
+    await browser.close();
+  }
+
+  return { candidates_scanned: candidatesScanned, states, gaps, skipped_for_safety: skippedForSafety };
+}
+
+async function probe(draftUrl, viewports, label, clickSelectors) {
+  const browser = await chromium.launch();
+  let clicked;
+  let byWidth;
+  try {
+    const page = await browser.newPage();
+    await page.goto(draftUrl, { waitUntil: 'networkidle' });
+    // driveInteraction can throw (a bad --click selector, by design -- fail loudly, never
+    // silently capture the wrong state) -- the browser must still close either way, or a
+    // failed run leaks a live Chromium process and hangs the caller. Found live: the
+    // negative-control self-test case threw here with `browser.close()` still below it,
+    // leaking a browser and hanging the whole script past its 100s self-test timeout.
+    clicked = clickSelectors && clickSelectors.length ? await driveInteraction(page, clickSelectors) : [];
+    byWidth = {};
+    for (const w of viewports) {
+      byWidth[w] = await captureAtWidth(page, w, true);
+    }
+  } finally {
+    await browser.close();
+  }
+
+  const summary = summariseByWidth(byWidth, viewports);
+
+  return {
     label,
     draft: draftUrl,
     viewports,
@@ -287,10 +597,7 @@ async function probe(draftUrl, viewports, label, clickSelectors) {
     // for the default (closed/unclicked) state -- empty array means "default page state,
     // nothing clicked", matching every report this script produced before --click existed.
     interaction: { clicked },
-    elements_total_at_narrowest: byWidth[widthKeys[0]].elements.length,
-    elements_present_at_all_widths: presentAtAll.size,
-    responsive_elements: results.length,
-    elements: results,
+    ...summary,
   };
 }
 
@@ -301,6 +608,20 @@ async function main() {
     ? ` (interaction: clicked ${report.interaction.clicked.join(' -> ')})`
     : '';
   console.log(`draft-responsive-probe: ${report.responsive_elements} responsive element(s) of ${report.elements_present_at_all_widths} present at all ${VIEWPORTS.length} widths (${report.elements_total_at_narrowest} total at the narrowest width)${interactionNote}.`);
+  if (AUTO_DETECT) {
+    report.auto_detect = await autoDetect(DRAFT, VIEWPORTS, MAX_DEPTH);
+    const ad = report.auto_detect;
+    console.log(
+      `auto-detect: scanned ${ad.candidates_scanned} candidate trigger(s), drove ${ad.states.length} state(s), ` +
+      `skipped ${ad.skipped_for_safety.length} for safety, ${ad.gaps.length} gap(s) reported (max-depth=${MAX_DEPTH}).`
+    );
+    for (const s of ad.states) {
+      console.log(`  state: ${s.trigger} -- ${s.responsive_elements} responsive element(s)`);
+    }
+    for (const g of ad.gaps) {
+      console.log(`  gap [${g.type}]: ${g.trigger || '(run-level)'} -- ${g.reason}`);
+    }
+  }
   if (OUT) {
     fs.writeFileSync(OUT, JSON.stringify(report, null, 2), 'utf8');
     console.log(`Written: ${OUT}`);
@@ -324,6 +645,38 @@ async function selfTest() {
     <div id="cards"></div>
     <button id="open-drawer" onclick="window.__drawerOpen = true; render();">Open drawer</button>
     <div id="drawer"></div>
+
+    <!-- Risky-shaped control -- --auto-detect must classify this UNSAFE and never click it. -->
+    <button id="pay-now" onclick="window.__paidNeverShouldHappen = true; render();">Pay now</button>
+
+    <!-- Enum-derived-boolean shape (the majority real-draft shape: tabs / a mega-menu / a
+         modal -- one string field with several derived comparison booleans). Both members are
+         top-level SAFE candidates, so --auto-detect should drive EACH independently. -->
+    <div id="tabs">
+      <button id="tab-a" role="tab" aria-selected="true" onclick="window.__tab='a'; render();">Tab A</button>
+      <button id="tab-b" role="tab" aria-selected="false" onclick="window.__tab='b'; render();">Tab B</button>
+    </div>
+    <div id="tabpanel"></div>
+
+    <!-- Nested multi-step shape (mirrors the real lens-configuration flow): each step only
+         reveals the NEXT trigger, and the genuinely responsive payload sits behind a 3rd
+         step -- deeper than this run's default --max-depth (2), so the self-test proves BOTH
+         "reaches what the depth cap allows" AND "honestly reports what it couldn't reach". -->
+    <button id="step1" onclick="window.__step1 = true; render();">Open step 1</button>
+    <div id="step-area"></div>
+
+    <!-- Route-like shape -- a same-route responsive probe must not follow this: it should be
+         classified route-change-suspected and never treated as a captured state. -->
+    <button id="nav-away" onclick="window.__routed = true; render();">Go elsewhere</button>
+    <div id="mainarea"></div>
+
+    <!-- Hover-only trigger (mirrors the real draft's desktop mega-menu, which mounts on
+         onMouseEnter and has no click handler at all) -- --auto-detect must try HOVER for a
+         nav-scoped/aria-haspopup element, not just click. -->
+    <nav>
+      <a href="#" id="mega-trigger" aria-haspopup="true" onmouseenter="window.__megaOpen = true; render();">Menu</a>
+    </nav>
+    <div id="mega-panel"></div>
     <script>
       function render() {
         const w = window.innerWidth;
@@ -350,6 +703,45 @@ async function selfTest() {
             '<div style="padding:' + drawerPad + '">Drawer content</div>';
         } else {
           document.getElementById('drawer').innerHTML = '';
+        }
+
+        document.getElementById('tab-a').setAttribute('aria-selected', window.__tab === 'b' ? 'false' : 'true');
+        document.getElementById('tab-b').setAttribute('aria-selected', window.__tab === 'b' ? 'true' : 'false');
+        const tabPad = w < 700 ? '6px' : '18px';
+        document.getElementById('tabpanel').innerHTML = window.__tab === 'b'
+          ? '<div style="padding:' + tabPad + '">Tab B panel content</div>'
+          : '<div style="padding:20px">Tab A panel content</div>';
+
+        // 3-step nested reveal -- step1 reveals step2's trigger only, step2 reveals step3's
+        // trigger only, step3 reveals the actually-responsive final content.
+        let stepArea = '';
+        if (window.__step1) {
+          stepArea += '<button id="step2" onclick="window.__step2 = true; render();">Open step 2</button>';
+        }
+        if (window.__step1 && window.__step2) {
+          stepArea += '<button id="step3" onclick="window.__step3 = true; render();">Open step 3</button>';
+        }
+        if (window.__step1 && window.__step2 && window.__step3) {
+          const finalPad = w < 700 ? '9px' : '27px';
+          stepArea += '<div style="padding:' + finalPad + '">Nested final content</div>';
+        }
+        document.getElementById('step-area').innerHTML = stepArea;
+
+        const megaPad = w < 700 ? '11px' : '29px';
+        document.getElementById('mega-panel').innerHTML = window.__megaOpen
+          ? '<div style="padding:' + megaPad + '">Mega panel content</div>'
+          : '';
+
+        // Route-like swap -- hides most of the page and replaces it with unrelated content,
+        // simulating a same-page "route" change rather than a localised interactive state.
+        const ids = ['root', 'cards', 'tabs', 'tabpanel', 'step-area'];
+        if (window.__routed) {
+          document.getElementById('mainarea').innerHTML =
+            '<h1>Totally different page</h1><p>Alpha</p><p>Bravo</p><p>Charlie</p><p>Delta</p><p>Echo</p><p>Foxtrot</p><p>Golf</p><p>Hotel</p>';
+          ids.forEach(function (id) { document.getElementById(id).style.display = 'none'; });
+        } else {
+          document.getElementById('mainarea').innerHTML = '';
+          ids.forEach(function (id) { document.getElementById(id).style.display = ''; });
         }
       }
       window.addEventListener('resize', render);
@@ -398,7 +790,70 @@ async function selfTest() {
     }
     if (!threw) throw new Error('SELF-TEST FAILED (negative control): a --click selector matching zero elements must throw, not silently no-op');
 
-    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected, static element excluded, 4-card structural group detected, route-coverage --click proven, bad-selector negative control)');
+    // --- --auto-detect: boolean toggle + enum-derived-boolean (tabs) + risky-skip + route-
+    // change classification, at this run's default --max-depth (2). ---
+    const autoReport = await autoDetect(pathToFileURL(fixturePath).href, [375, 1440], 2);
+
+    const drawerState = autoReport.states.find((s) => s.trigger.includes('Open drawer'));
+    if (!drawerState) throw new Error('SELF-TEST FAILED: --auto-detect did not discover/drive the boolean-toggle "Open drawer" button');
+    const drawerContentEl = drawerState.elements.find((e) => e.key.includes('drawer content'));
+    if (!drawerContentEl || !drawerContentEl.changed_properties.includes('padding-top')) {
+      throw new Error('SELF-TEST FAILED: auto-detected drawer state did not capture the drawer content\'s responsive padding');
+    }
+
+    // Tab A is the DEFAULT selection (aria-selected="true" from page load), so clicking it is
+    // a genuine no-op -- correctly NOT reported as a state (the baseline capture already
+    // covers Tab A's content; --auto-detect must not spam a report with no-op clicks). Tab B
+    // is the reachable DERIVED state and must be captured -- this is the enum-derived-boolean
+    // shape (tabs / a mega-menu / a modal) proven for real.
+    const tabBState = autoReport.states.find((s) => s.trigger.includes('Tab B'));
+    if (!tabBState) throw new Error('SELF-TEST FAILED: --auto-detect did not drive "Tab B" (enum-derived-boolean shape)');
+    const tabBPanel = tabBState.elements.find((e) => e.key.includes('tab b panel content'));
+    if (!tabBPanel || !tabBPanel.changed_properties.includes('padding-top')) {
+      throw new Error('SELF-TEST FAILED: auto-detected Tab B state did not capture its panel\'s responsive padding');
+    }
+    const tabAState = autoReport.states.find((s) => s.trigger === 'button [role=tab] "Tab A"');
+    if (tabAState) throw new Error('SELF-TEST FAILED: clicking the already-selected default "Tab A" produced no DOM change and must not be reported as a driven state');
+
+    const megaHoverState = autoReport.states.find((s) => s.trigger.includes('Menu') && s.trigger.includes('[hover]'));
+    if (!megaHoverState) throw new Error('SELF-TEST FAILED: --auto-detect did not try HOVER on the nav-scoped aria-haspopup "Menu" trigger (the real draft\'s mega-menu is hover-only)');
+    const megaPanelEl = megaHoverState.elements.find((e) => e.key.includes('mega panel content'));
+    if (!megaPanelEl || !megaPanelEl.changed_properties.includes('padding-top')) {
+      throw new Error('SELF-TEST FAILED: auto-detected hover state did not capture the mega panel\'s responsive padding');
+    }
+
+    const payNowSkip = autoReport.skipped_for_safety.find((s) => s.trigger.includes('Pay now'));
+    if (!payNowSkip) throw new Error('SELF-TEST FAILED: "Pay now" must be classified unsafe and listed in skipped_for_safety');
+    const payNowState = autoReport.states.find((s) => s.trigger.includes('Pay now'));
+    if (payNowState) throw new Error('SELF-TEST FAILED (negative control): "Pay now" must NEVER be clicked/driven -- it appeared in states');
+
+    const routeGap = autoReport.gaps.find((g) => g.type === 'route-change-suspected' && g.trigger.includes('Go elsewhere'));
+    if (!routeGap) throw new Error('SELF-TEST FAILED: the route-like "Go elsewhere" swap must be classified route-change-suspected, not driven as a state');
+    const routeState = autoReport.states.find((s) => s.trigger.includes('Go elsewhere'));
+    if (routeState) throw new Error('SELF-TEST FAILED (negative control): a route-like full-page swap must NEVER be captured as an interactive state');
+
+    // Nested 3-step flow, max-depth=2: step1 -> step2 is reachable (depth 2), but the
+    // responsive payload behind step3 (depth 3) exceeds the cap -- must be an HONEST gap,
+    // never silently missing.
+    const step2State = autoReport.states.find((s) => s.trigger.includes('Open step 1') && s.trigger.includes('Open step 2'));
+    if (!step2State) throw new Error('SELF-TEST FAILED: nested step1 -> step2 (depth 2) should be reachable at max-depth=2');
+    const depthGap = autoReport.gaps.find((g) => g.type === 'depth-cap-reached' && g.trigger.includes('Open step 2'));
+    if (!depthGap) throw new Error('SELF-TEST FAILED: step3 (depth 3) must be reported as depth-cap-reached when max-depth=2, never silently dropped');
+    const step3State = autoReport.states.find((s) => s.trigger.includes('Open step 3'));
+    if (step3State) throw new Error('SELF-TEST FAILED: step3 should NOT be reachable at max-depth=2 -- if this fires, the depth cap is not being enforced');
+
+    // Same nested flow with --max-depth 3 -- the tool DOES reach it when given enough depth,
+    // proving the cap is the only thing standing between "gap" and "captured", not a hard
+    // architectural limit.
+    const autoReportDeep = await autoDetect(pathToFileURL(fixturePath).href, [375, 1440], 3);
+    const step3StateDeep = autoReportDeep.states.find((s) => s.trigger.includes('Open step 3'));
+    if (!step3StateDeep) throw new Error('SELF-TEST FAILED: with --max-depth 3 the nested step3 payload should be reached and captured');
+    const nestedFinalEl = step3StateDeep.elements.find((e) => e.key.includes('nested final content'));
+    if (!nestedFinalEl || !nestedFinalEl.changed_properties.includes('padding-top')) {
+      throw new Error('SELF-TEST FAILED: step3\'s responsive final content was not captured at --max-depth 3');
+    }
+
+    console.log('draft-responsive-probe.js self-test: PASS (responsive element detected, static element excluded, 4-card structural group detected, route-coverage --click proven, bad-selector negative control, --auto-detect: boolean toggle + derived-enum tab state [default no-op correctly unreported] + hover-only trigger + risky-skip + route-change classification + honest depth-cap gap + deeper reach at higher --max-depth)');
   } finally {
     fs.unlinkSync(fixturePath);
   }

@@ -92,7 +92,7 @@ import { resolveTextColourPreviewStyle, typographyPreviewStyle } from '../../uti
  * one.
  */
 const TEMPLATE = [
-	[ 'sgs/nav-menu', { gap: '4px' } ],
+	[ 'sgs/nav-drawer-menu', { gap: '4px' } ],
 	[ 'sgs/responsive-logo' ],
 	[ 'sgs/button' ],
 ];
@@ -873,7 +873,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ /* ⚠ FOUR values, and `burger-morph` is NOT a display mode — it is
 						   a GLYPH choice (a CSS-drawn two-bar span, no icon and no text).
 						   That is why this enum was EXTENDED rather than re-valued onto
-						   sgs/nav-menu's three-value triggerMode: a naive one-to-one
+						   sgs/nav-bar-menu's three-value triggerMode: a naive one-to-one
 						   rename would silently delete a shipped look.
 						   ⚠ The fourth LABEL is "Both", not "Icon and text". Measured:
 						   "Icon and text" is 13 characters, over Spec 35 Part O's

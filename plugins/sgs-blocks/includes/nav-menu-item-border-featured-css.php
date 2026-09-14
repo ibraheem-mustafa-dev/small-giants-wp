@@ -8,7 +8,7 @@
  * PHP cap (`~/.claude/rules/code-quality.md`; comment-heavy, so measured on
  * CODE LINES ONLY per the Ruling 7 addendum precedent, D722). This module
  * holds the two sections that were fully self-contained — no shared derived
- * state with the rest of `sgs_nav_menu_item_state_css()` beyond `$attributes`,
+ * state with the rest of `sgs_nav_shared_item_state_css()` beyond `$attributes`,
  * `$link_sel`, `$uid_sel` and the resolved `$t_border` treatment — so the
  * split needed no new plumbing. The FR-41-13 hover-persistence rescue block
  * stayed in `nav-menu-css.php` because it reads several OTHER modules'
@@ -28,19 +28,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'sgs_nav_menu_item_border_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 	/**
 	 * Build the item BORDER (three states + directional Sweep band) and the
 	 * independent item SEPARATOR (between-item vertical rule) CSS.
 	 *
 	 * @param array  $attributes Block attributes (verbatim render.php param).
-	 * @param string $link_sel   `.sgs-nav-menu__link` selector for this instance.
+	 * @param string $link_sel   `.{bem}__link` selector for this instance.
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
 	 * @param string $t_border   RESOLVED border hover treatment ('swap'/'none'/'sweep')
-	 *                           from `sgs_nav_menu_resolved_treatments()`.
+	 *                           from `sgs_nav_shared_resolved_treatments()`.
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_item_border_css( array $attributes, string $link_sel, string $uid_sel, string $t_border ): string {
+	function sgs_nav_shared_item_border_css( array $attributes, string $link_sel, string $uid_sel, string $t_border, string $bem_root ): string {
 		$css = '';
 
 		/*
@@ -202,7 +202,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_border_css' ) ) {
 		 * an operator can run both at once with different colours, or run this
 		 * one alone.
 		 *
-		 * BAR-ONLY BY CONSTRUCTION: gated on `.sgs-nav-menu__bar` NOT carrying the
+		 * BAR-ONLY BY CONSTRUCTION: gated on `.{bem}__bar` NOT carrying the
 		 * `--drawer` modifier (see nav-menu-submenu-css.php's own use of the same
 		 * modifier class to fork bar/drawer CSS). A vertical list has no
 		 * "adjacent item" on this axis, so the drawer's own instance of this
@@ -227,10 +227,10 @@ if ( ! function_exists( 'sgs_nav_menu_item_border_css' ) ) {
 		 * without new positioning maths" — is exactly what
 		 * `sgs_directional_sweep_css()` now supplies (any-angle background-
 		 * position maths, includes/sweep-css.php). The band still cannot live on
-		 * `.sgs-nav-menu__link::after` — that pseudo-element is already claimed by
+		 * `.{bem}__link::after` — that pseudo-element is already claimed by
 		 * the item border-bottom sweep above whenever BOTH treatments are
 		 * 'sweep' on the same row — so it renders on the <li>
-		 * (`.sgs-nav-menu__item::after`) instead, a DIFFERENT element with no
+		 * (`.{bem}__item::after`) instead, a DIFFERENT element with no
 		 * competing claim on either of its own pseudo-elements. No Current
 		 * state: a between-item rule is not itself "the current page".
 		 */
@@ -240,8 +240,8 @@ if ( ! function_exists( 'sgs_nav_menu_item_border_css' ) ) {
 		$item_separator_hover     = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
 		$item_separator_treatment = (string) ( $attributes['itemSeparatorHoverTreatment'] ?? 'swap' );
 		if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
-			$item_separator_sel    = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child) .sgs-nav-menu__link';
-			$item_separator_li_sel = $uid_sel . ' .sgs-nav-menu__bar:not(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__item:not(:last-child)';
+			$item_separator_sel    = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:last-child) .' . $bem_root . '__link';
+			$item_separator_li_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:last-child)';
 
 			if ( 'sweep' === $item_separator_treatment && '' !== $item_separator_hover ) {
 				// The static line is suppressed (transparent) and repainted by the
@@ -275,7 +275,7 @@ if ( ! function_exists( 'sgs_nav_menu_item_border_css' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_menu_featured_css' ) ) {
+if ( ! function_exists( 'sgs_nav_shared_featured_css' ) ) {
 	/**
 	 * Build the featured-item (FR-36-4) styling: LABEL or PILL resting form,
 	 * the republished `--sgs-nm-featured-*` custom properties a featured
@@ -285,7 +285,7 @@ if ( ! function_exists( 'sgs_nav_menu_featured_css' ) ) {
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
 	 * @return string CSS fragment (no wrapping <style> tag).
 	 */
-	function sgs_nav_menu_featured_css( array $attributes, string $uid_sel ): string {
+	function sgs_nav_shared_featured_css( array $attributes, string $uid_sel, string $bem_root ): string {
 		$css = '';
 
 		/*
@@ -314,7 +314,7 @@ if ( ! function_exists( 'sgs_nav_menu_featured_css' ) ) {
 		 * text #3a2e26 on primary #e68a95 = 5.28:1 PASS, so the draft's own pairing is
 		 * adopted verbatim — the fidelity fix and the a11y fix are the same fix.
 		 */
-		$featured_sel    = $uid_sel . ' .sgs-nav-menu__item--featured .sgs-nav-menu__link';
+		$featured_sel    = $uid_sel . ' .' . $bem_root . '__item--featured .' . $bem_root . '__link';
 		$featured_colour = isset( $attributes['featuredColour'] ) && '' !== $attributes['featuredColour']
 			? (string) $attributes['featuredColour']
 			: 'accent';
@@ -395,7 +395,7 @@ if ( ! function_exists( 'sgs_nav_menu_featured_css' ) ) {
 			//
 			// Deliberately flat-only (featuredColourGradient is NOT read here). The
 			// consumer of --sgs-nm-featured-colour, render.php's
-			// `.sgs-nav-menu__subitem--featured .sgs-nav-menu__sublink` rule, paints
+			// `.{bem}__subitem--featured .{bem}__sublink` rule, paints
 			// BOTH `color:var(--sgs-nm-featured-colour,…)` AND
 			// `background:var(--sgs-nm-featured-bg,…)` on the SAME selector, so
 			// background-clip:text would clip that background paint too --
