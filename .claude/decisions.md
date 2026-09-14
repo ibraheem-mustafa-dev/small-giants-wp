@@ -103,9 +103,14 @@ nothing inside the drawer. Every compensating rule traces back to the non-compli
 3. **Drawer nested submenu rows are transparent at rest** (background on hover only), matching both
    Claude Design nested drawers. Supersedes FR-41-36's nested `bg=surface` and the 2026-09-14 fixed
    cream surface.
-4. **Every drawer paint default is a zero-specificity `:where()` default**, never a hardcoded rule that
-   beats a client's setting — this is what fixes `itemColour` in the drawer. Owner: the adaptive
-   colours are "supposed to be a default not hardcoded".
+4. **Every drawer paint default is a GLOBAL PALETTE TOKEN, emitted as a zero-specificity `:where()`
+   default** — never a hardcoded value, never a rule that beats a client's setting (this is what fixes
+   `itemColour` in the drawer), and **never a colour derived or computed from the background**. Owner,
+   2026-09-14, correcting a misreading of "match" as "adapt": *"I NEVER SAID I WANTED
+   ADAPTATIONS/VARIATIONS OF THE BG COLOUR. I SAID THAT THE COLOURS SHOULD JUST MATCH WELL AND ITS EASIER
+   TO DO THAT WITH SURFACE AS YOUR BASE FILL RATHER THAN PRIMARY WHICH IS USUALLY A STRONGER COLOUR! WE GO
+   WITH GLOBAL TOKENS FOR THE DEFAULTS AND REMEMBER THAT NOTHING SHOULD BE HARD CODED!!!"* "Match" means
+   the tokens harmonise with the `surface` base; it is the reason for ruling 1.
 5. **No contrast enforcement by default** (owner, 2026-09-14: "shouldn't have contrast checks that
    enforce anything by default"). `itemSmartContrast` stays opt-in.
 6. **`sgs/nav-drawer-menu` does not offer `submenuMinWidth`, `submenuBorderRadius`, `submenuShadow` or
