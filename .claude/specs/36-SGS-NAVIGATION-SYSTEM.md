@@ -1,8 +1,8 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.3
-status: SIGNED-OFF (v2.4, 2026-09-10 — CORRECTION to the v2.3 amendment, no FR renumbered: v2.3 claimed Spec 41 satisfied FR-36-4's "active-trail" clause. It does not — `markCurrentPage` matches by EXACT path equality, so a parent whose CHILD page is current receives no marking at all. The claim is narrowed to current-page indication in all four places it appeared (companions entry, FR-36-4, FR-36-11, FR-36-28 + its index row), with active-trail recorded as open work and its shape named. The third state is also renamed `Active` → `current`, the framework's own existing vocabulary per `golden-controls.json::_meta.stateVocabulary.real` (D676/D678), and Spec 41's FR table is refreshed to its spec_version 0.2.0 contents. — v2.3, 2026-09-10 — PURELY ADDITIVE amendment, no FR renumbered, no existing content rewritten or dropped: **Spec 41** is named as the concrete mechanism satisfying FR-36-4's "distinct hover+focus states; active-trail … a visible style" and FR-36-11's colour-state floor, a pointer clause is appended to each of those two FRs, and one new requirement **FR-36-28** is appended in §6 with the index row and companion entry to match. Everything from v2.2 below is unchanged. — v2.2, design-council repairs 2026-09-09 — six repairs applied with no FR renumbering: the late-CSS A/B defined with a procedure + pass condition (§8); the Indus gate-2 TBD restructured to derive N from the draft at gate time (§8); a Bean's-eye pre-check rubric added under R-31-13, which it does NOT weaken (§8); the §1 Site-Info/logo defect RESOLVED as FR-36-22's first MUST (owner option A — Site Info as a middle resolution tier); FR-36-9's inverted hide-on-scroll dependency corrected and closed-by-design; a `Spec maturity: OUTLINE|DISPATCHABLE` field added to the six §4 FRs plus an index (spec readiness, explicitly NOT build status). Plus: every line-form code citation converted to symbol form, eight of them stale; `ResponsiveTriStateControl` mount count corrected 3→4 in three places; and the drawer-modality decision recorded as APPROVED-NOT-BUILT (non-modal `.show()` + z-index, header above panel; `aria-modal="true"` banned), with the consequent accuracy edits to FR-36-10 and FR-36-13. v2.1, Bean sign-off 2026-07-19 — the SINGLE canonical nav home; Phase 6 spec-purge + build-planning now unblocked). Council-driven integration 2026-07-19 — 7-persona adversarial council + fact-check: the former appended "PART TWO / §14–17" is now INTEGRATED into the body (utility pieces → §4 as FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner rulings applied: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker); over-engineered failure states removed (kept only mega-`object_id` resolution + the non-deletable drawer close); Nav Health stays Phase 3. Lineage: v2.0 added the utility pieces; v1.3 folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions (classic WP menus PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT Responsive-Visibility extension; labelCollapse is BUILT). Passed QC council + adversarial council + gap-analysis. Bean signed off 2026-07-19; Phase 6 (spec purge) + build-planning next.)
+spec_version: 2.4
+status: active
 owner: framework
 date: 2026-07-19
 companions:
@@ -648,7 +648,19 @@ symbol, lamalama a morphing glyph). New `sgs/nav-menu` attrs, all inspector-mani
 this PROMOTES `P-DRAWER-BURGER-MORPH-SYNC` from parked follow-on to a named build item (Bean's
 client-controllability rule makes it core). The drawer's own `closeStyle` stays on the drawer:
 trigger = nav-menu's, close chrome = the Menu drawer's.
-**Status:** `NOT-BUILT` — capability wave of the merged track.
+**Status:** `NOT-BUILT AS SPEC'D — SUPERSEDED BY A NARROWER SHAPE, corrected 2026-09-14.** This
+FR's exact attribute shape (`triggerStyle` enum incl. `word`/`symbol`/`word-burger`,
+`triggerOpenStyle` morph/swap enum, cross-block `store('sgs/nav')` state sync) was never built —
+`git log -S"triggerMagnetEnabled"`/`--follow BurgerPanel.js` confirm the attrs that actually
+shipped are `triggerMode` (`icon`/`text`/`icon-and-text`), `triggerIcon` (an `IconPicker`, not a
+style enum), `triggerLabel`, plus magnet-hover attrs — landed via Spec 41's 2026-09-11 build
+wave (FR-41-30(a)), not this FR. The burger↔X morph is BUILT but auto-gated to the default glyph
+(`sgs_nav_menu_burger_toggle_markup()`), not the operator-facing `triggerOpenStyle` enum this FR
+specified. **Net: real, useful trigger-presentation capability shipped, but not what this FR
+describes** — treat FR-36-27 as still open for its ORIGINAL shape (word/symbol trigger styles,
+explicit open-style choice, cross-block morph-sync state) rather than either "done" or "nothing
+happened". Whether to close FR-36-27 as superseded-by-Spec-41's-narrower-build, or keep it open
+for the remaining gap, is a call for Bean — not made here.
 **Done when:** all five attrs render + round-trip in the editor, the open-state morph/swap is
 live-verified with focus-return intact, and each attr appears in the Spec 35 manifest.
 - Follow-ons parked: `P-DRAWER-BURGER-MORPH-SYNC` (true cross-block morph = store state-wiring,
@@ -814,7 +826,7 @@ failure that policy exists to prevent.
 > — reuse that contract, never a second one. All bind the §10 constraints (no-inline, Part L controls,
 > converter-emittable, WCAG, perf, UK).
 
-#### Spec maturity index — read this before dispatching any §4 FR
+### Spec maturity index — read this before dispatching any §4 FR
 
 The six FRs in this section sit at **wildly uneven maturity** and nothing else in the document signals it.
 FR-36-26 is a dispatchable sub-spec (frozen attribute table, named sequential dispatches, definition of done,
@@ -1700,3 +1712,51 @@ named no file at all — unresolvable as written, yet sitting inside a list head
 **Fact-check correction:** `plugins/sgs-blocks/includes/class-product-templates-cpt.php::register_post_type` sets
 `show_in_nav_menus` to FALSE — it is NOT proof the mechanism works; `show_in_nav_menus:true` is to be proven by
 spike (§8 build notes), not this citation.
+
+## 14. Revision history
+
+**Moved out of the frontmatter `status:` field 2026-09-14** — it had accumulated the full
+amendment history as one run-on value, which meant anyone scanning the frontmatter for "is
+this doc locked, active, or still draft" had to read a paragraph-length changelog first to
+find out. The frontmatter now carries just the current status + version; this section is the
+full record, oldest first.
+
+- **v1.3** — folded the gap-analysis (3 graders, B ~3.9) + Bean's decisions: classic WP menus
+  PRIMARY / block menus → extras; bottom-tab-bar optional mobile mode; reuse the BUILT
+  Responsive-Visibility extension; labelCollapse is BUILT.
+- **v2.0** — added the utility pieces.
+- **2026-07-19, council-driven integration** — 7-persona adversarial council + fact-check: the
+  former appended "PART TWO / §14–17" integrated into the body (utility pieces → §4 as
+  FR-36-19..23; per-device → beside FR-36-8 as FR-36-24; structured-data-once → §11 as
+  FR-36-25; the §16 fold-in sharpenings merged into the FRs they amend; the §17 build-checklist
+  folded into §8). Applied: phasing of the pieces, honest build-vs-extend labels, the §1↔pieces
+  ownership fix, the FR-36-24 ownership split + lint gate, and the fact-check fixes. Owner
+  rulings: FR-36-15 stays HIGH-LEVEL (no converter sub-design, not a Phase-1 blocker);
+  over-engineered failure states removed (kept only mega-`object_id` resolution + the
+  non-deletable drawer close); Nav Health stays Phase 3.
+- **v2.1, Bean sign-off 2026-07-19** — the SINGLE canonical nav home; Phase 6 spec-purge +
+  build-planning unblocked.
+- **v2.2, design-council repairs 2026-09-09** — six repairs, no FR renumbering: the late-CSS A/B
+  defined with a procedure + pass condition (§8); the Indus gate-2 TBD restructured to derive N
+  from the draft at gate time (§8); a Bean's-eye pre-check rubric added under R-31-13 (does NOT
+  weaken it, §8); the §1 Site-Info/logo defect RESOLVED as FR-36-22's first MUST (owner option
+  A — Site Info as a middle resolution tier); FR-36-9's inverted hide-on-scroll dependency
+  corrected and closed-by-design; a `Spec maturity: OUTLINE|DISPATCHABLE` field added to the six
+  §4 FRs plus an index (spec readiness, explicitly NOT build status). Plus: every line-form code
+  citation converted to symbol form (eight were stale); `ResponsiveTriStateControl` mount count
+  corrected 3→4 in three places; drawer-modality decision recorded as APPROVED-NOT-BUILT
+  (non-modal `.show()` + z-index, header above panel; `aria-modal="true"` banned), with
+  consequent accuracy edits to FR-36-10 and FR-36-13.
+- **v2.3, 2026-09-10** — PURELY ADDITIVE, no FR renumbered, no existing content rewritten or
+  dropped: **Spec 41** named as the concrete mechanism satisfying FR-36-4's "distinct
+  hover+focus states; active-trail … a visible style" and FR-36-11's colour-state floor, a
+  pointer clause appended to each, and one new requirement **FR-36-28** appended in §6 with its
+  index row and companion entry.
+- **v2.4, 2026-09-10 — CORRECTION to the v2.3 amendment**, no FR renumbered: v2.3 claimed
+  Spec 41 satisfied FR-36-4's "active-trail" clause. It does not — `markCurrentPage` matches by
+  EXACT path equality, so a parent whose CHILD page is current receives no marking at all. The
+  claim is narrowed to current-page indication in all four places it appeared (companions entry,
+  FR-36-4, FR-36-11, FR-36-28 + its index row), with active-trail recorded as open work and its
+  shape named. The third state is also renamed `Active` → `current`, the framework's own
+  existing vocabulary per `plugins/sgs-blocks/scripts/consistency/golden-controls.json::_meta.stateVocabulary.real` (D676/D678), and
+  Spec 41's FR table is refreshed to its spec_version 0.2.0 contents.

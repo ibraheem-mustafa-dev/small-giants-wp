@@ -1,3 +1,101 @@
+# decisions.md — D-numbered architectural decision log (most recent first)
+
+## D1051 [ROUTINE] — D1050's dispatched audits returned: 2 more genuine stale claims found + corrected in Spec 36/41
+
+**2026-09-14.** Both read-only audit agents dispatched at D1050's end returned. I independently
+re-verified each finding against the live files myself before editing (never trust a subagent's
+claim without checking the exact grep/read it cites).
+
+**Spec 41 — FR-41-36's default-token table is stale relative to a same-day contrast fix.** The
+2026-09-14 QC-council submenu-colour root-cause work (the D1039-family fix that closed the
+runtime-contrast-check regression) changed `submenuLinkBg` (surface-alt → `surface`),
+`submenuLinkBgHover` (accent-light → `primary`), and `submenuColourHover` (accent → `text`,
+itself a SECOND same-day change on top of the 2026-09-13 "REVISED" note's own `accent` value) —
+verified directly against `block.json`'s own `"default"` values and
+`nav-menu-submenu-css.php`'s inline comment ("TOKEN CHANGED 2026-09-14... 'accent' → 'text'").
+Added a "REVISED 2026-09-14" table correcting the 3 stale cells, with each value's contrast
+justification cited from `block.json`'s own description fields. **Deliberately left open,** not
+guessed: whether this collapses the section's own "structural pairing" claim (desktop-submenu
+panel + drawer top-level sharing a `surface-alt` tier, separate from top-bar + drawer-nested
+sharing `surface`) — `itemBg` (a candidate for "drawer top-level"'s attribute) defaults to `""`,
+a different attribute again, and I did not trace far enough to state whether the pairing
+survives. Flagged in-doc as unresolved rather than asserted either way.
+
+**Spec 36 — FR-36-27's status was flatly wrong.** Marked `NOT-BUILT`, but Spec 41's 2026-09-11
+build wave (FR-41-30(a)) shipped real trigger-presentation capability — `triggerMode`/
+`triggerIcon`/`triggerLabel` + an auto-gated burger↔X morph — confirmed via
+`git log -S"triggerMagnetEnabled"` and `--follow BurgerPanel.js`. But it is NOT what FR-36-27
+specified: the FR wanted a `triggerStyle` enum (`word`/`symbol`/`word-burger`), an explicit
+`triggerOpenStyle` choice, and cross-block `store('sgs/nav')` morph-sync state — none of which
+exist. Corrected the status to name both facts plainly (real capability shipped, under a
+narrower/different shape than spec'd) rather than leaving a binary NOT-BUILT that undersells
+what exists, or flipping to BUILT which would oversell it. Left the close-vs-keep-open call to
+Bean, not decided here.
+
+**What was NOT changed:** the audits also confirmed several claims as genuinely accurate (Spec
+36's FR-36-4/11/28 pointers to Spec 41, FR-36-6 modality, FR-36-10, FR-36-13; Spec 41's citation
+format, FR-41-18/FR-41-20 out-of-scope status) — left untouched, no busywork edits to already-
+correct content.
+
+**Files:** `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md` (FR-36-27 status), `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` (FR-41-36 revised table + open-pairing-question flag).
+
+## D1050 [ROUTINE] (Bean-directed) — Doc-quality pass on decisions.md/Spec 36/Spec 41: fixed real drift, not the docscore number
+
+**2026-09-14.** Bean asked for the three docs docscore flagged below A- earlier this session to
+be dealt with, explicitly "not really bothered too much on improving score... I want this work
+to genuinely improve the quality and utility of our docs as tools." Ran docscore on all three
+first to see what it actually caught, then checked each finding against the real content
+instead of blindly "fixing" the number.
+
+**decisions.md — nearly everything docscore flagged was a false positive.** Its size (15,500+
+lines) is a previously locked, self-healing decision (see `.claude/CLAUDE.md`'s own note) — not
+touched. The "dead link" (`path.md`) and 5 of 6 "hedging phrases" (`kind of`) are literal
+example text/quoted prose inside entries describing a linter's own regex pattern, or a verbatim
+quote of something Bean said — correctly preserved as written, not "fixed". The 1 flagged
+"center" is a literal CSS `flex-wrap`/`justify-content` value in a quoted test result, exempt
+per UK-English rules. Only one genuine, cheap gap: no H1 title. Added one.
+
+**Spec 36 — one real structural bug, one real usability problem, both fixed.** A heading
+skipped H2→H4 (`#### Spec maturity index` under `## 4.`) — corrected to H3. Its frontmatter
+`status:` field had grown into a ~700-word run-on paragraph containing the ENTIRE amendment
+history since v1.3 — meaning anyone scanning frontmatter to check "is this locked, active, or
+draft" had to read a changelog first. Extracted the full history verbatim into a new `## 14.
+Revision history` section; frontmatter now reads `status: active` / `spec_version: 2.4` in two
+words instead of one paragraph. ("Active" not "locked" — checked against how every OTHER spec in
+this repo actually uses its `status:` field; nothing here uses "locked" and Spec 36 still has
+open FRs, e.g. FR-36-27.) The 2 "TBD" stub markers and 1 hedging phrase docscore flagged are both
+already-resolved historical quotes ("the previous wording... was exactly that" / a direct quote
+of Bean's own words) — left alone, correctly.
+
+**Spec 41 — the real find: two stale build-status claims that would have misled a future
+session, neither visible to docscore.** §0a ("build status... names what is built vs
+written-but-unbuilt, each with the command that proves it") is the section every session is
+meant to trust for current state, and two of its rows were wrong: (1) the sublink-marker colour
+row (FR-41-30(b)) was recorded as "still BUILT Normal-only... not yet built" in three separate
+places — verified live via `git grep` that `sublinkMarkerColourHover`/`Current`/`Gradient` and
+their Hover/Current-gradient siblings are fully declared in `block.json`, wired to
+`css:fill`/`css:fill-gradient`, mapped in `edit.js`'s colour-row config, AND read in `render.php`
+— the full state model shipped, the doc just hadn't caught up. (2) A "written but NOT built"
+table row said `check-ungated-paint-rules.py`'s WARN→HARD flip (G20c(f)) "ships WARN-ONLY until
+the flip step runs" — but D1048 already flipped it (`HARD_FAIL_BLOCKS: list[str] =
+["sgs/nav-menu"]`, confirmed by direct read of the script). Both corrected with the verifying
+command cited inline. A third row (FR-41-36's locked default colour scheme) was found to have an
+unreliable proof-command (its "returns nothing" claim is now false — one hit exists, but from an
+unrelated description string) — rather than guess which way it actually resolves, marked
+`status uncertain, flagged for verification` and handed to a dedicated audit rather than asserted
+either way. `status: draft` in the frontmatter was also wrong — this spec has been shipping and
+deploying live for over a day; corrected to `active`.
+
+**Method:** after the manual pass above, dispatched two parallel read-only audit agents
+(general-purpose, not scored) to sweep the REST of both specs' load-bearing build-status claims
+against live code — same method as `/doc-audit`, structured findings only, no auto-fix. Results
+pending at time of this entry; findings will be applied and this decision updated or a follow-up
+D-number added once they return.
+
+**Files:** `.claude/decisions.md` (H1 added), `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`
+(heading fix, frontmatter/changelog extraction), `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`
+(status field, 2 stale build-status corrections, 1 uncertain-status flag).
+
 ## D1049 [ROUTINE] (Bean-approved) — Nav-menu closeout Task D: added the missing STOP-CATALOGUE entry for the `colourRows` single-file gate constraint
 
 **2026-09-14.** Closes the last of the four small cleanup items from the LEDGER's
