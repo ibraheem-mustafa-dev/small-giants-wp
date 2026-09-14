@@ -73,6 +73,10 @@ def _render(
             sc_var_source_type = b.get("sc_var_hint", {}).get("source", "")
             if sc_var_source_type:
                 source_display = f"sc_var_hint ({sc_var_source_type})"
+        elif chosen_source == "dom_shape_hint":
+            dom_shape_evidence = b.get("dom_shape_hint", {}).get("evidence", "")
+            if dom_shape_evidence:
+                source_display = f"dom_shape_hint ({dom_shape_evidence})"
         section_rows.append(
             f"<tr>"
             f"<td><code>{bid}</code></td>"

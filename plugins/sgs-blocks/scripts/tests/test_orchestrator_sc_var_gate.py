@@ -55,6 +55,7 @@ _orch = _load_orchestrator()
 def _make_args(
     *,
     sc_var_min_confidence: float | None = None,
+    dom_shape_min_confidence: float | None = None,
     section: str = "section",
     mockup: Path | None = None,
     client: str = "test-client",
@@ -72,6 +73,7 @@ def _make_args(
         mode="production",
         auto_section=False,
         sc_var_min_confidence=sc_var_min_confidence,
+        dom_shape_min_confidence=dom_shape_min_confidence,
     )
 
 
@@ -103,6 +105,7 @@ def _make_voter_dict(
     selector: str = "section",
     class_signature: list[str] | None = None,
     sc_var_hint: dict | None = None,
+    dom_shape_hint: dict | None = None,
 ) -> dict:
     boundary: dict[str, Any] = {
         "boundary_id": boundary_id,
@@ -112,6 +115,8 @@ def _make_voter_dict(
     }
     if sc_var_hint is not None:
         boundary["sc_var_hint"] = sc_var_hint
+    if dom_shape_hint is not None:
+        boundary["dom_shape_hint"] = dom_shape_hint
     return {"boundaries": [boundary]}
 
 
@@ -363,6 +368,198 @@ class TestScVarTierGate:
         mock_subprocess.assert_not_called()
         per_section = result.get("per_section_results", [])
         assert per_section[0]["status"] == "unmatched-non-bem-compliant"
+
+
+# ---------------------------------------------------------------------------
+# 1b. dom_shape Tier (2026-09-14, "the 20 real gaps" follow-up)
+# ---------------------------------------------------------------------------
+
+class TestDomShapeTierGate:
+    def test_classless_boundary_with_dom_shape_hint_does_not_hard_halt(self, tmp_path: Path) -> None:
+        run_dir = tmp_path / "run-dom-shape-admit"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path)
+
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    dom_shape_hint={"block": "sgs/card-grid", "confidence": 0.45, "evidence": "3 near-identical siblings", "source": "dom_shape"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(dom_shape_min_confidence=0.0, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+        fake_convert = MagicMock(return_value={
+            "status": "complete", "block_name": "sgs/card-grid",
+            "block_markup": "<!-- wp:sgs/card-grid /-->", "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant", (
+            f"A classless boundary with a qualifying dom_shape_hint must not hard-halt. "
+            f"Got status={per_section[0]['status']!r}."
+        )
+        fake_convert.assert_called_once()
+
+    def test_below_threshold_still_hard_halts(self, tmp_path: Path) -> None:
+        run_dir = tmp_path / "run-dom-shape-below-threshold"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    dom_shape_hint={"block": "sgs/hero", "confidence": 0.2, "evidence": "test", "source": "dom_shape"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(dom_shape_min_confidence=0.5)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "A dom_shape_hint below --dom-shape-min-confidence must still hard-halt. "
+            f"Got status={per_section[0]['status']!r}."
+        )
+
+    def test_flag_omitted_still_hard_halts_even_with_a_strong_hint(self, tmp_path: Path) -> None:
+        """Genuinely opt-in: --dom-shape-min-confidence is None (omitted,
+        today's default) -- a boundary must hard-halt exactly as before this
+        Tier existed, no matter how confident its dom_shape_hint is."""
+        run_dir = tmp_path / "run-dom-shape-flag-omitted"
+        run_dir.mkdir()
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    dom_shape_hint={"block": "sgs/hero", "confidence": 0.5, "evidence": "test", "source": "dom_shape"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(dom_shape_min_confidence=None)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("subprocess.run") as mock_subprocess:
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        mock_subprocess.assert_not_called()
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] == "unmatched-non-bem-compliant", (
+            "Omitting --dom-shape-min-confidence must be a true no-op -- a boundary "
+            f"must still hard-halt. Got status={per_section[0]['status']!r}."
+        )
+
+    def test_no_class_ever_injected_for_dom_shape_tier(self, tmp_path: Path) -> None:
+        """dom_shape_hint's own 'card-grid' fallback names the REPEATED
+        GROUP's shape, not an individual item's identity -- the exact same
+        risk profile as sc_var_count (see the class-injection regression
+        note above). This Tier must never inject a class, full stop."""
+        run_dir = tmp_path / "run-dom-shape-no-inject"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path, tag="button")
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    dom_shape_hint={"block": "sgs/card-grid", "confidence": 0.5, "evidence": "test", "source": "dom_shape"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(dom_shape_min_confidence=0.0, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+        fake_convert = MagicMock(return_value={
+            "status": "complete", "block_name": "sgs/button",
+            "block_markup": "<!-- wp:sgs/button /-->", "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert):
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant"
+        fake_convert.assert_called_once()
+        _, call_kwargs = fake_convert.call_args
+        html_seen = call_kwargs.get("html", "")
+        assert "sgs-" not in html_seen, (
+            f"No class should ever be injected for the dom_shape Tier -- got html={html_seen!r}"
+        )
+
+    def test_sc_var_tier_takes_priority_over_dom_shape_when_both_present(self, tmp_path: Path) -> None:
+        """A boundary carrying BOTH hints must admit via the STRONGER sc_var
+        signal -- dom_shape's gate checks `not _cv2_eligible`, so it must
+        never re-fire (or override) once sc_var already admitted."""
+        run_dir = tmp_path / "run-both-hints-sc-var-wins"
+        run_dir.mkdir()
+        mockup_path = _write_mockup_html(tmp_path)
+        voter_path = run_dir / "voter.json"
+        voter_path.write_text(
+            json.dumps(
+                _make_voter_dict(
+                    class_signature=[],
+                    sc_var_hint={"block": "sgs/testimonial", "confidence": 0.4, "evidence": "test", "source": "sc_var_alias"},
+                    dom_shape_hint={"block": "sgs/card-grid", "confidence": 0.45, "evidence": "test", "source": "dom_shape"},
+                )
+            ),
+            encoding="utf-8",
+        )
+
+        args = _make_args(sc_var_min_confidence=0.0, dom_shape_min_confidence=0.0, mockup=mockup_path)
+        match_output = _make_match_output()
+
+        mock_hook = MagicMock()
+        mock_hook._is_sgs_bem_canonical = MagicMock(return_value=False)
+        fake_convert = MagicMock(return_value={
+            "status": "complete", "block_name": "sgs/testimonial",
+            "block_markup": "<!-- wp:sgs/testimonial /-->", "extracted_attributes": {},
+        })
+
+        with patch.object(_orch, "stage1_boundary_hook", return_value=mock_hook), \
+             patch("converter.entry.convert_section", fake_convert):
+            result = _orch.stage_4_5_6_7_8_extract(args, match_output, run_dir, {"theme_json": {}})
+
+        per_section = result.get("per_section_results", [])
+        assert per_section[0]["status"] != "unmatched-non-bem-compliant"
+        assert per_section[0].get("admitted_via_sc_var_gate") is True
+        assert per_section[0].get("admitted_via_dom_shape_gate") is False, (
+            "dom_shape must not also claim credit once sc_var already admitted this boundary."
+        )
 
 
 # ---------------------------------------------------------------------------

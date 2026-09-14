@@ -1509,7 +1509,12 @@ def _wp_blocks_match(description: str) -> dict:
     return result if "_error" not in result else {}
 
 
-def stage_2_match(boundary_output: dict, run_dir: Path, sc_var_min_confidence: float | None = None) -> dict:
+def stage_2_match(
+    boundary_output: dict,
+    run_dir: Path,
+    sc_var_min_confidence: float | None = None,
+    dom_shape_min_confidence: float | None = None,
+) -> dict:
     """Stage 2 -- import confidence-matrix.score_candidates and rank candidates per boundary.
 
     5.3.2 enhancement: after scoring, cross-check each match against wp-blocks.py match.
@@ -1607,11 +1612,42 @@ def stage_2_match(boundary_output: dict, run_dir: Path, sc_var_min_confidence: f
                     chosen_block = sc_var_hint["block"]
                     chosen_source = "sc_var_hint"
 
+            # dom_shape Tier (2026-09-14, "the 20 real gaps" follow-up) -- same shape as
+            # the sc_var cross-check above, one rung lower: fires only when sc_var_hint
+            # gave nothing usable either (bespoke sc-for var name, no slots.aliases hit,
+            # no repeat-count signal). Q1 Tier 2's dom_shape_classifier infers purely from
+            # DOM shape (sibling repetition, heading position, tag identity) -- weaker
+            # evidence, so it only wins when nothing stronger already claimed the boundary.
+            dom_shape_hint = boundary.get("dom_shape_hint")
+            dom_shape_confidence = 0.0
+            if (
+                dom_shape_min_confidence is not None
+                and chosen_source != "sc_var_hint"
+                and dom_shape_hint
+                and dom_shape_hint.get("block")
+                and dom_shape_hint.get("confidence", 0) >= dom_shape_min_confidence
+            ):
+                dom_shape_confidence = float(dom_shape_hint["confidence"])
+                current_best = max(
+                    cm_confidence,
+                    wp_top_score if chosen_source == "wp_blocks_cli" else 0.0,
+                    sc_var_confidence,
+                )
+                if dom_shape_confidence >= current_best:
+                    warnings.append(
+                        f"boundary={boundary['boundary_id']}: dom_shape_hint match "
+                        f"({dom_shape_hint['block']}, conf={dom_shape_confidence:.2f}) overrides "
+                        f"{chosen_source} ({chosen_block}, conf={current_best:.2f}) "
+                        f"-- DOM-shape inference, --dom-shape-min-confidence={dom_shape_min_confidence}"
+                    )
+                    chosen_block = dom_shape_hint["block"]
+                    chosen_source = "dom_shape_hint"
+
             matches.append({
                 "boundary_id": boundary["boundary_id"],
                 "section_id": section_id,
                 "block_name": chosen_block,
-                "confidence": max(cm_confidence, wp_top_score, sc_var_confidence),
+                "confidence": max(cm_confidence, wp_top_score, sc_var_confidence, dom_shape_confidence),
                 "alternatives": ranked[1:],
                 "ranked_candidates": ranked,
                 "wp_blocks_match": wp_top_block,
@@ -1972,6 +2008,40 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     reason="sc_var Tier — classless Claude Design boundary let through via sc_var_hint",
                 )
 
+            # dom_shape Tier (2026-09-14, "the 20 real gaps" follow-up) — same shape as
+            # the sc_var Tier above, one rung lower: fires only when neither Tier 0 nor
+            # the sc_var Tier already admitted this boundary. Q1 Tier 2's
+            # dom_shape_classifier.py infers purely from DOM shape (repeated siblings,
+            # heading position, tag identity) — no class, no sc-for var name needed.
+            # Same rule as the sc_var Tier's own hard-learned lesson (2026-09-14
+            # regression, see the class-injection removal note above): eligibility
+            # ONLY, NEVER an injected HTML class. The regression there was caused by
+            # injecting a synthesized group-shape name ("card-grid") onto a small/atomic
+            # element expecting composite child content it didn't have — dom_shape_hint
+            # carries the identical risk (its own "card-grid" fallback is a GROUP shape,
+            # not a per-item identity), so this gate copies the fix, not the mistake.
+            _cv2_eligible_via_dom_shape = False
+            _dom_shape_min_conf = getattr(args, "dom_shape_min_confidence", None)
+            _boundary_dom_shape_hint = boundary.get("dom_shape_hint")
+            if (
+                not _cv2_eligible
+                and _dom_shape_min_conf is not None
+                and _boundary_dom_shape_hint
+                and _boundary_dom_shape_hint.get("block")
+                and _boundary_dom_shape_hint.get("confidence", 0) >= _dom_shape_min_conf
+            ):
+                _cv2_eligible = True
+                _cv2_eligible_via_dom_shape = True
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_dom_shape_gate",
+                    boundary_id=boundary_id,
+                    dom_shape_hint=_boundary_dom_shape_hint,
+                    dom_shape_min_confidence=_dom_shape_min_conf,
+                    class_signature=_class_sig,
+                    reason="dom_shape Tier — classless boundary with no sc_var signal let through via dom_shape_hint",
+                )
+
         # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
         # matched the candidate slug. Per the 2026-05-14 retirement of
         # composer_fallback, the right response is to SURFACE the gap to the
@@ -2241,6 +2311,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                         # failed converter_v2 results so operator review can distinguish
                         # confident BEM-based matches from lower-confidence schema-variant hints.
                         "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
+                        "admitted_via_dom_shape_gate": _cv2_eligible_via_dom_shape,
                     })
                     continue
                 # Normalise to orchestrator per_section_results schema.
@@ -2309,6 +2380,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     # distinguish confident BEM-based matches from lower-confidence
                     # schema-variant hinting.
                     "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
+                    "admitted_via_dom_shape_gate": _cv2_eligible_via_dom_shape,
                 })
                 if _cv2_markup:
                     aggregate_markup_parts.append(_cv2_markup)
@@ -3190,6 +3262,23 @@ def main():
              "(TIER2_MAX_CONFIDENCE=0.5) and were never meant to auto-assign a block on "
              "their own; production use of this flag is a separate, later policy decision.",
     )
+    parser.add_argument(
+        "--dom-shape-min-confidence", type=float, default=None,
+        help="Opt-in Tier for a boundary with NO class_signature and NO usable sc_var_hint "
+             "(e.g. a repeated sc-for item whose var NAME gives no signal either) -- the "
+             "Q1 Tier 2 DOM-shape classifier (plugins/sgs-blocks/scripts/recogniser/"
+             "dom_shape_classifier.py) already infers a block from sibling-repetition / "
+             "heading-position / tag shape alone and is wired as an operator-review "
+             "annotation today (dom_shape_hint on the boundary). When set, a boundary "
+             "carrying a dom_shape_hint with confidence >= this value is let through the "
+             "same way sc_var_min_confidence lets an sc_var_hint through -- same shape, "
+             "same rule: eligibility ONLY, never an injected HTML class (the 2026-09-14 "
+             "sc_var Tier 4 regression proved class injection from a repeat-cardinality "
+             "guess corrupts unrelated small elements). Omit for today's default behaviour "
+             "(unchanged, zero risk). A LOW value (e.g. 0.0) is a deliberate TESTING knob; "
+             "production use is a separate, later policy decision -- same caveat as "
+             "--sc-var-min-confidence.",
+    )
     args = parser.parse_args()
 
     # Verification-run ergonomics (2026-06-07): a draft run is a dev/verification
@@ -3322,7 +3411,12 @@ def main():
     primary_conv = (boundary.get("convention_summary") or {}).get("primary", "?")
     print(f"[stage-1] voter: {bcount} boundaries, primary convention={primary_conv}")
 
-    match = stage_2_match(boundary, run_dir, sc_var_min_confidence=getattr(args, "sc_var_min_confidence", None))
+    match = stage_2_match(
+        boundary,
+        run_dir,
+        sc_var_min_confidence=getattr(args, "sc_var_min_confidence", None),
+        dom_shape_min_confidence=getattr(args, "dom_shape_min_confidence", None),
+    )
     if match.get("matches"):
         top = match["matches"][0]
         print(f"[stage-2] confidence-matrix top: {top['block_name']} (conf={top['confidence']:.2f}) across {len(match['matches'])} sections")
