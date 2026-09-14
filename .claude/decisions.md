@@ -1,5 +1,107 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1054 [ROUTINE] — Webflow vs Tailwind `w-`/`h-` class collision resolved via `/research-buddies` (2 rounds), not a patched regex
+
+**2026-09-14.** The Q1 Tier 1 rule shipped at D1053 below added a naive `("Webflow", re.compile(r"^w-"))`
+heuristic; a same-day `/qc-council` pass (see D1053) disclosed but deliberately did NOT fix it: it
+mislabels genuine Tailwind width/height utilities (`w-full`, `w-64`, `w-screen`) as "Webflow" —
+confirmed zero routing impact at the time, but a wrong metadata label. Bean asked for a proper
+`/research-buddies` pass rather than a blind regex patch.
+
+**Research verdict (2 rounds, Discussion 1, gap-analysis graded A — persisted to
+`C:/Users/Bean/.claude/memory/research/2026-09-14-webflow-vs-tailwind-class-detection.md`):**
+every real fingerprinting tool (pulled Wappalyzer's actual source) detects Webflow at the
+DOCUMENT level (`data-wf-site`/`data-wf-page` on `<html>`, generator meta) — never via
+class-name regex. Our pipeline already parses the full mockup document via BeautifulSoup at its
+entry point, so this is cheap to add. For the residual class-list case: both Webflow's and
+Tailwind's `w-`/`h-` vocabularies are independently closed and enumerable, and GitHub-verified
+against real 2014-2024 Webflow exports to have **zero real-world collision** — every apparent
+"collision" found was Tailwind vendored into a hybrid/rebuilt stack (e.g. Webflow form markup
+inside a Tailwind/Vue app), never genuine Webflow using a Tailwind sizing keyword as its own
+class. `w-node-...` (both raters initially hoped it was a cheap zero-wiring class-level signal)
+is confirmed to be an `id` ATTRIBUTE value, not a class — dropped from consideration.
+
+**Shipped**, commit `cb83ef301`:
+- `per-section-convention-voter.py::detect_source_builder()` — one document-level check per
+  page (`data-wf-site`/`page`/`domain`, generator meta, `tailwindcss.com` CDN script), threaded
+  through `build_boundary()` as a new `source_builder` field (mirrors the `data_slot` pattern
+  from D1053) and surfaced in `convention_summary` for observability.
+- `stage1_boundary_hook.py::classify_w_prefixed()` — resolves one `w-`/`h-`-prefixed class via
+  two closed vocabularies (`_W_WEBFLOW`; `_W_TAILWIND`, a real Python tuple of Tailwind's
+  documented sizing keywords, not a hand-typed regex alternation). **Precedence is deliberate
+  and tested:** per-class certainty (either list matching) ALWAYS outranks the page-level
+  `source_builder` hint — a Tailwind custom-code embed inside an otherwise-Webflow page (or vice
+  versa) classifies correctly section-by-section; a page-level flag overriding per-class
+  certainty would be a worse bug than the one being fixed. The residue (matches neither list)
+  falls back to `source_builder`, else defaults to "Webflow" (empirically justified — Tailwind
+  never emits a novel word-suffixed `w-`/`h-` class outside its own closed set).
+- `heuristic_classify()` now routes every `w-`/`h-` class through `classify_w_prefixed()` before
+  the generic `_HEURISTIC_PATTERNS` loop; the old disclosed-limitation `^w-` entry is gone.
+
+**Tests:** 5 new cases in `test_stage1_boundary_hook.py` (all 19 research-confirmed tokens as a
+durable regression, the residue default, the mixed-page precedence hard-constraint, end-to-end
+`heuristic_classify`/`enrich_boundary` wiring) + new `test_source_builder_detection.py` (document
+signal detection + a genuine mixed Webflow-base/Tailwind-embed page exercised end-to-end). All
+green.
+
+**Files:** `plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py`,
+`plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py`,
+`plugins/sgs-blocks/scripts/orchestrator/test_stage1_boundary_hook.py`,
+`plugins/sgs-blocks/scripts/recogniser/test_source_builder_detection.py` (new).
+
+## D1053 [ROUTINE] — BEM-recognition brainstorm Q1 Tier 1 + Tier 2 shipped; same-session `/qc-council` pass found + fixed 2 real defects
+
+**2026-09-14.** Built the two remaining ranked-menu items from
+`plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`'s "Question 1" (Q1 Tier 0
+and Q2 Tier 1 already shipped 2026-09-11, D1034/D1037) — Bean-directed, explicitly skipping the
+doc's own "measure Tier 0 first" gate as a deliberate choice, not an oversight. Q1 Tier 3 (visual
+clustering) stays out of scope — zero evidenced need.
+
+**Q1 Tier 1** (commit `d1d99e83c`) — `orchestrator/lingua_franca.py`: populated `_TAILWIND_UTILITY`/
+`_SHADCN`'s previously-empty `slot_map`s with real component tokens (card/dialog/badge/nav/footer/
+hero/accordion/tabs, shared via `_UTILITY_COMPONENT_SLOT_MAP`); added `_WEBFLOW`/`_ELEMENTOR_DIVI`
+as two new convention rules; wired `_SHADCN`'s `data_slot_attrs` flag (declared since the file's
+first version, never read until now) — a `data-slot` HTML attribute now threads through
+`per-section-convention-voter.py::build_boundary()` → `stage1_boundary_hook.py::enrich_boundary()`
+→ a new `_try_data_slot()` helper in `convert_class_signature()`, promoted to primary only when
+the class-token pass alone produced no genuine slot-map hit (the hashed/generated shadcn class
+case a class string carries zero signal for).
+
+**Q1 Tier 2** (commit `f7eef6d2c`) — new module `recogniser/dom_shape_classifier.py`: infers a
+LOW-confidence block identity from structural DOM shape (repeated siblings → card-grid; heading
+position → hero; button-shaped/`role=button` → cta; non-top-level bare landmark tag →
+header/footer) for the two sources Tier 0/1 can never reach (CSS Modules, styled-components —
+hashed classes with zero string signal). Two hard constraints, both structurally enforced: never
+fires on a partially-canonical element (`_any_class_already_canonical` — the ANY-not-ALL opposite
+of `stage1_boundary_hook`'s own fast-path check); never asserts identity as ground truth
+(confidence capped, lands only as an advisory `dom_shape_hint` via a new
+`leftover-bucket-router.py::route_dom_shape_hints()`, mirroring the R8 motion-signal precedent).
+
+**Incident, disclosed and fixed same session:** a `git commit` with an explicit 5-file pathspec
+still committed the WHOLE index (git's normal behaviour, not a bug) — a peer session's already-
+complete, legitimate archival of `phase-nav-menu-colour-state.md` to `plans/archive/` rode along.
+Restored defensively (`802fe41ac`), confirmed the peer's work was correct, reverted the restore
+(`c9223476e`). Net effect on that file: zero; nothing rewritten, both commits visible in history.
+
+**`/qc-council` pass** (commit `080d495dc`) found 2 real defects, both fixed and verified by
+direct code execution (not rater prose): (1) **HIGH** —
+`dom_shape_hint_for_gap_candidate()`'s first-child heading check passed `[]` instead of the
+child's real `class_signature`, letting a shape guess override an authored `sgs-hero__headline`
+class — the exact scenario Tier 2's constraint 1 exists to prevent; fixed via
+`collect_class_signature(children[0])`. (2) **MEDIUM, never live** — `_WEBFLOW`/`_ELEMENTOR_DIVI`
+were placed after `_BEM_BARE` in `RULES`, which is itself one of the broad rules the ordering
+claimed to protect against; confirmed empirically via `convert_class("w-nav")` with no hint
+returning `container`; fixed by moving both rules earlier. A third finding (the `^w-` heuristic
+also matching Tailwind's own sizing utilities) was disclosed, not fixed that pass — resolved
+properly via `/research-buddies`, see D1054 above.
+
+**Files:** `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`,
+`plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py`,
+`plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py`,
+`plugins/sgs-blocks/scripts/recogniser/dom_shape_classifier.py` (new),
+`plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py`, 4 test files (3 extended, 2 new:
+`test_dom_shape_classifier.py`, `test_dom_shape_hint_wiring.py`).
+
 ## D1052 [ROUTINE] (Bean-confirmed) — D1051's flagged "structural pairing" question resolved: separate instances, not a shared control, not a responsive-tier candidate
 
 **2026-09-14.** Bean caught that D1051's open flag ("does the desktop-submenu-panel /

@@ -69,7 +69,23 @@ Read in full: `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`, its ca
 - *Value:* immediate, and gives real measurement — running this against one real Bootstrap-ish or bare-BEM source tells you what fraction of non-BEM content the existing three real rules already rescue, before spending anything on Tier 2/3.
 - *Not this brainstorm's job:* the wiring fix itself is implementation, not design — flagged here only so it's visible as the obvious first rung, not designed in detail.
 
-**Tier 1 — fill in the weak rules (still string-only, no new capability class).**
+**Tier 1 — fill in the weak rules (still string-only, no new capability class). ✅ SHIPPED 2026-09-14 — D1053, commit `d1d99e83c`.**
+Bean-directed 2026-09-14: skipped the Recommendation section's own "measure Tier 0 first" gate as
+a deliberate choice, not an oversight. **Shipped exactly as scoped below** — `_TAILWIND_UTILITY`/
+`_SHADCN` slot-maps populated (shared `_UTILITY_COMPONENT_SLOT_MAP`), `data_slot_attrs` wired
+(new `data_slot` field threaded `per-section-convention-voter.py::build_boundary()` →
+`stage1_boundary_hook.py::enrich_boundary()` → `lingua_franca.py::_try_data_slot()`, promoted to
+primary only when the class-token pass produced no genuine hit), Webflow + Elementor/Divi added
+as new convention rules. **One follow-on fix needed, same session (D1053/D1054):** a same-day
+`/qc-council` pass found the Webflow/Elementor/Divi `RULES`-list ordering claim was false for the
+no-hint default path (never live in production, since `stage1_boundary_hook` always supplies a
+heuristic hint first) — fixed. A SECOND follow-on, resolved properly via `/research-buddies`
+rather than patched blind (D1054, commit `cb83ef301`): the naive Webflow heuristic pattern (`^w-`)
+collided with Tailwind's own `w-`/`h-` sizing utilities — replaced with a document-level primary
+signal (`data-wf-site`/generator-meta, per Wappalyzer's real detection method) plus two closed,
+GitHub-verified vocabularies for the class-list fallback (zero real collision found between
+them). Full research: `C:/Users/Bean/.claude/memory/research/
+2026-09-14-webflow-vs-tailwind-class-detection.md`.
 Concrete, bounded gaps in the existing architecture, each a data addition not a new mechanism:
 - Populate `_TAILWIND_UTILITY`'s and `_SHADCN`'s slot-maps with real component-name tokens (Tailwind component libraries and shadcn primitives do carry recognisable names even inside utility soup — `card`, `dialog`, `badge`, etc. — they're just not captured yet).
 - Wire the `data_slot_attrs` flag that `_SHADCN` already declares: read `data-slot="..."` attributes (shadcn's real identity signal, per its own convention) instead of relying on class names for that convention alone.
@@ -81,8 +97,25 @@ Concrete, bounded gaps in the existing architecture, each a data addition not a 
 - *Risk:* none for BEM drafts (same untouched fast path); low elsewhere since it only adds recognition where there is currently none.
 - *Value:* directly targets the conventions AI-builder output and scraped competitor pages are most likely to use — see the source-priority table added below for which sources actually matter most for THIS pipeline's real inputs.
 
-**Tier 2 — heuristic tag-role inference by DOM shape.**
-A genuinely new recognition path: infer block identity from structural signal instead of class name — heading level and position → hero/section-header candidate; `<button>`/anchor-styled-as-button → CTA; N near-identical sibling `<article>`/`<div>` nodes under one parent → card-grid; landmark tags (`<nav>`, `<header>`, `<footer>`) → header/footer, extending the walker's existing `SKIP_TOP_LEVEL_TAGS` precedent (R-31-3's permitted "atomic-tag swap" exception) rather than inventing a fourth kind of exception.
+**Tier 2 — heuristic tag-role inference by DOM shape. ✅ SHIPPED 2026-09-14 — D1053, commit `f7eef6d2c`.**
+Bean-directed, built directly alongside Tier 1 rather than waiting on measurement. New module
+`recogniser/dom_shape_classifier.py` implements all four signals below plus repeated-sibling
+detection (reusing Q2 Tier 1's `repeated_sibling_detector.detect_repeater_groups` directly, per
+that module's own design intent). **Both hard constraints below shipped as structural
+enforcement, not just documentation** — the "never consult when even partially canonical" gate
+is `_any_class_already_canonical()` (deliberately ANY not ALL); output only ever lands as an
+advisory `dom_shape_hint` via `leftover-bucket-router.py::route_dom_shape_hints()`, mirroring the
+R8 motion-signal precedent, never a block assignment. **A same-day `/qc-council` pass found one
+real, HIGH-severity violation of the first constraint** — the wiring's first-child heading check
+passed `[]` instead of the child's real `class_signature`, letting a shape guess override an
+authored `sgs-hero__headline` class; fixed same session (commit `080d495dc`), regression-guarded
+in `test_dom_shape_hint_wiring.py`. Landmark-tag detection extends the walker's existing
+`SKIP_TOP_LEVEL_TAGS` precedent by running entirely OUTSIDE the walker (at boundary-build/
+leftover-routing time, per R-31-3's "no 4th walker conditional" rule) rather than adding a new
+exception to it — infers block identity from structural signal instead of class name: heading
+level and position → hero/section-header candidate; `<button>`/anchor-styled-as-button → CTA; N
+near-identical sibling `<article>`/`<div>` nodes under one parent → card-grid; landmark tags
+(`<nav>`, `<header>`, `<footer>`) → header/footer.
 
 **Why Tier 2 matters more than Tier 0/1 for Claude-Code-authored sources specifically (added 2026-09-11).**
 Two real, common sources carry ZERO usable signal in the class string at all — Tier 0/1's whole
@@ -134,6 +167,13 @@ scraped page or two, a meaningful fraction of boundaries still hard-halt — tho
 Modules/styled-components finding above means Tier 2 has a concrete, real motivating case
 already, not just a speculative one. Do not start Tier 3 without first shipping and measuring
 Tier 2 — there is currently zero evidence it's needed.
+
+**Superseded 2026-09-14 (Bean-directed, deliberate override, not an oversight):** Tier 1 AND
+Tier 2 were both built the same session, explicitly skipping the "measure Tier 0 first" gate
+above. **The overdue measurement step this section calls for is STILL not done** — running
+Tier 0 against a real non-BEM source (e.g. the Mama's Munches PRODUCT draft's non-BEM hard-halt,
+carried in `LEDGER.md`'s "Prior work" section) remains open. Tier 3 is still correctly out of
+scope — nobody asked for it, zero evidenced need, unchanged from this recommendation.
 
 ### Explicit non-choice, for completeness
 

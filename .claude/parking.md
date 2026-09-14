@@ -48,10 +48,17 @@ section-BOUNDARY-DETECTION (sections not even being found) was fixed today, comm
 `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` — the detector now
 correctly finds all 8 of the page's real sections, verified via a fresh test-clone run. The core
 blocker is UNCHANGED: the draft's classes are still kebab-semantic, not SGS-BEM, so Stage 0 still
-hard-rejects them. Resolution path once Bean decides: rewrite the draft, or wire an existing-but-
-unused conversion mechanism into the accept/reject gate — see
-`.claude/plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md`, "Tier 0"
-recommendation, for the second option.
+hard-rejects them.
+
+**2026-09-14 note:** the BEM-recognition brainstorm's Tier 0 (gate wiring), Tier 1 (kebab-semantic
+slot-map fills + Webflow/Elementor/Divi), and Tier 2 (DOM-shape inference for classless sources)
+are ALL now shipped (`.claude/decisions.md` D1034/D1035/D1053/D1054) — but NOT yet re-run against
+this specific draft. Resolution path is now a re-test, not a design decision: `/sgs-clone` this
+draft fresh and check whether Tier 0's `primary_is_slot_map_hit` gate + Tier 1's fuller
+kebab-semantic slot_map now let more of its sections through, and whether Tier 2's DOM-shape
+classifier (repeated-sibling/heading/button/landmark) produces useful `dom_shape_hint`s on
+whatever still hard-halts. If sections still hard-reject after that, Bean's original decision
+(rewrite the draft vs. accept the gap) is still live and unresolved.
 
 *(Merged 2026-08-12 with the duplicate `P-PRODUCT-PAGE-MOCKUP-NOT-SGS-BEM`, parked 2026-06-03 —
 same file, same underlying issue. Superseded entry archived to `memory/parking-archive.md`.)*
