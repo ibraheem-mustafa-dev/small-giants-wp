@@ -1,5 +1,72 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1074 [ROUTINE] — Classless Repeater Recognition (Spec 44) taken through 3 adversarial-council
+rounds, each finding a new fundamental flaw; reverted to original pre-council design, parked
+
+**2026-09-14.** Bean asked to solve the harder version of the classless-recognition problem: not
+just admitting a repeated classless group into the converter (already shipped, D1073), but
+actually recognising WHICH child is the title/icon/price/link, reliably enough for a genuinely
+unedited Claude Design export to clone with zero manual fixes. Wrote Spec 44 v1.0.0 (a from-
+scratch recognition + assembly engine), ran a 6-persona `/adversarial-council` — NO-GO, real
+convergent findings (the trust gate measured completeness not correctness; auto-complete silently
+contradicted `dom_shape_classifier.py`'s own non-negotiable "never adopt as ground truth"
+constraint; the wiring cited a field that doesn't exist in the real code; the core attribute-
+selection mechanism doesn't work against the real DB shape; the spec's own citation of this
+session's earlier D1071 regression was subtly wrong).
+
+Revised to v2.0.0 fixing all of those. Ran a 2nd round (4 reviewers) — NO-GO again: two reviewers
+independently discovered v2.0.0 was reinventing (worse) an already-shipped mechanism
+(`array_content.py` + `array_item_schema`, FR-31-2.5/FR-31-2.5a, D258) that the design never
+checked for; a third found the new safety check could still be fooled by a mistake that affects
+every item in a group identically (the single most likely real failure, since a repeated group
+is by definition the same template repeated); a fourth found the D1071 citation was STILL wrong
+even after the first "fix."
+
+Revised to v3.0.0, bridging into the real existing `array_content.py` mechanism instead of
+rebuilding it. Ran a 3rd, lighter round (2 reviewers) — **both independently found the central
+safety claim was fabricated**: FR-31-2.5a's "reject non-matching groups, pick best signature
+match" is documented in Spec 31's prose as "BUILT + LANDED" but does not exist in the real code
+(`array_content.py`'s only real threshold is a `>=2` sibling-count gate; no group-level scoring
+function exists anywhere in the codebase). This was caught by actually reading the code, not
+trusting the spec's own claim about the code — the exact failure mode Bean had flagged earlier in
+the same session ("did you fact check... or just being more correct for the sake of it").
+
+**Outcome: reverted the spec file to its original v1.0.0 content (commit `ecd88386a`) at Bean's
+explicit direction** ("roll the spec back... so it's fresh") rather than attempting a 4th live
+rewrite. Nothing lost — all 3 council rounds' full findings remain in git history
+(`66e5e62a6`→`cbd3bb6bb`→`6db9f20b0`→`ecd88386a`), available to whoever picks this back up.
+**The real finding worth carrying forward is methodological, not a spec defect:** reliably
+identifying which piece of a repeated, classless block of content is which content field — in a
+way that catches a mistake that repeats identically across every item in the group, not just
+disagreement between items — is a genuinely unsolved problem in this codebase after three expert
+review rounds from different angles. Recommended next approach (not yet started): build and test
+a small real prototype against the actual Eye Care draft data, rather than attempting to fully
+solve it on paper first. Full narrative: this session's conversation transcript (not duplicated
+here — see the git log above for the exact revision trail instead of re-deriving it from memory).
+
+**Also fixed this session, real and load-bearing regardless of Spec 44's fate:** the two
+`dom_shape_classifier.py` prerequisite fixes both council rounds correctly identified as needed
+(per-classifier `Hint.source`, DB-verified `sgs/card-grid` slug) were designed but NOT applied to
+the shipped file — they were part of the reverted spec's design, not separately committed. Flagged
+here so a future session doesn't assume they already shipped.
+
+## D1073 [ROUTINE] — dom_shape_hint wired into the sc_var-style admission gate (the safe half of
+"the 20 real gaps" work); auto-complete/identity mapping NOT attempted (see D1074)
+
+**2026-09-14.** Extended the sc_var admission-gate pattern (D1071) to the DOM-shape classifier
+built earlier this session: a new opt-in `--dom-shape-min-confidence` flag lets a classless,
+pattern-detected repeated group (e.g. "4 near-identical siblings") past Stage 4's hard-halt gate,
+mirroring `--sc-var-min-confidence` exactly — eligibility only, never an injected HTML class (the
+same lesson D1071 already proved). Live-verified against the real Eye Care Birmingham draft: 13
+previously hard-halted boundaries now correctly reach the converter, baseline held exactly (414
+attrs, 17 complete blocks, zero regression). Honest finding: of those 13, only the ones that were
+always going to auto-skip (page chrome) produce real completions — the harder problem (mapping a
+classless child to the RIGHT content field, not just admitting the group) is what D1074 then spent
+3 council rounds on and reverted. Committed `50f174b4c`. Also this session: Tier A's bare
+`"card-grid"` fallback fixed to the real DB slug `sgs/card-grid` (`c184011f8`); operator-review.html
+extended to show `sc_var_hint`/`dom_shape_hint` provenance so a human reviewer can tell a genuine
+match from a low-confidence guess (`b09b78e26`, independently cross-model reviewed and approved).
+
 ## D1072 [ROUTINE] — Combined `/adversarial-council` on Spec 42+43 (NO-GO as written), specs
 revised to v2.1.0/v1.2.0, Phase 0 plan written
 

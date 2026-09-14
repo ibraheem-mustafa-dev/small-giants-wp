@@ -72,9 +72,21 @@ close this, it needs Bean's hands on a real device.
 `.claude/memory/session-2026-09-11-prior-work-closed.md`. Open residuals carried forward: R1's
 17-attribute conversion, the `tier_object_base()` 67-attribute over-match, header/footer (paused
 behind R8, see `.claude/prompts/2026-09-10-header-footer-implementation.md`), trust-bar pill
-padding (minor). Universal-pipeline upgrade (Claude Design `.dc.html`) Piece 1+2 shipped
-(D1057/D1058), outcome PARTIAL — `<sc-for>`/`<sc-if>` don't survive rendering, converter link
-not yet built.
+padding (minor).
+
+**Universal-pipeline upgrade (Claude Design `.dc.html`) — real converter wiring shipped this
+session (D1071/D1073), the harder "classless child identity" problem taken through 3 council
+rounds and parked (D1074).** Piece 1 (sc_var identity) + Piece 2 (responsive-value measurement)
+correlator shipped (D1057/D1058). This session: connected sc_var_hint AND dom_shape_hint into the
+real Stage 2/4 admission gate (D1071/D1073) — live-verified against the real Eye Care Birmingham
+draft, 414 real attrs / 17 complete blocks, zero regression, two independent cross-model reviews
+passed. Tier A naming bug fixed (`c184011f8`), review-page provenance visibility shipped
+(`b09b78e26`). **The harder problem — reliably mapping a classless repeated group's children to
+the RIGHT content field, not just admitting the group — is genuinely unsolved after 3 adversarial-
+council rounds, each finding a new fundamental flaw in the previous fix; see "Front C" below and
+D1074 for the full trail and the recommended next approach (prototype against real data, don't
+keep iterating on paper).** Route-coverage POC (`--click`) and Tier B (Haiku classifier) both
+shipped but Tier B's auto-wiring is blocked on a real Anthropic API key decision — see Front C.
 
 ## Blockers
 
@@ -128,6 +140,31 @@ Both specs revised: **Spec 42 → v2.1.0**, **Spec 43 → v1.2.0** (pricing rebu
 detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
 `/phase-planner` run when reached. **Next action: execute Phase 0.**
 
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074) — parked, not blocking
+
+**State recap (plain English):** the `/sgs-clone` pipeline can now correctly SEE classless
+content (a Claude Design export with zero CSS classes) and let it past the hard-halt gate — that
+part is shipped, tested, and live-verified. What it still can't do reliably is figure out WHICH
+piece of a repeated card/badge/chip is the title versus the price versus an icon, without any
+class names to go on. Three separate rounds of expert review, each fixing the previous round's
+problems, each found a NEW fundamental flaw underneath — including twice discovering the design
+was quietly built on an unverified claim (a spec document describing a mechanism that turned out
+not to exist in the actual code). Spec 44 was reverted to its original design rather than pushing
+a 4th live rewrite; nothing is lost, the full trail is in git history and D1074.
+
+**Next priority — do NOT resume by rewriting the spec again.** Recommended: build a small,
+disposable prototype directly against the real Eye Care Birmingham draft's actual repeated-group
+HTML (ticker badges, brand tiles, "why choose us" cards, filter chips, basket line items) and
+measure what a few real, simple matching rules actually get right/wrong — empirical evidence
+first, THEN write the spec from what was learned, rather than reasoning it out on paper across
+more council rounds. Read `.claude/decisions.md` D1074 in full before starting; it names the
+exact three fundamental flaws each round found, so the prototype can be designed to sidestep
+them from the start rather than rediscovering them a 4th time.
+
+**Separately open, not blocking:** Tier B (Haiku classifier) auto-wiring needs a real Anthropic
+API key decision from Bean — the pipeline scripts currently have no way to call an AI model
+themselves (checked directly, confirmed absent). Not urgent.
+
 ### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
 Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
 automated testing) still occurs now the duplicate-burger fix (D1047) has shipped. If it still
@@ -158,6 +195,18 @@ binding. **Add from this session:**
   findings; a citation that broke because of YOUR OWN commit needs either a real fix or an
   honest, scoped `[gates-ok:...]` disclosure naming it as caused-by-this-commit with a tracked
   follow-up — not silence.
+- **A spec document describing a mechanism as "BUILT + LANDED" is a claim, not proof it's real —
+  verify against the actual code before citing it as reusable, especially as a load-bearing
+  safety argument.** Twice this session (D1074), a design cited an existing-sounding mechanism
+  from spec prose (`FR-31-2.5a`'s "signature-scoring, reject below threshold") that turned out to
+  not exist anywhere in the real implementation when two independent reviewers actually read the
+  code. The fix isn't "trust the spec less" generally — it's "grep/read the actual consumer file
+  before treating a spec's prose description as a reusable, already-working mechanism."
+- **A safety check that only compares group members AGAINST EACH OTHER cannot catch a mistake
+  that affects every member identically** — and a repeated group, by definition, shares one
+  template, so a rule-table bug reproduces identically across every item. This is the single most
+  likely real failure mode for any "does this repeated content look right" check, and it's
+  invisible to any consistency-between-siblings signal, no matter how it's computed (D1074).
 
 ## Methodology guardrails (carried forward — all still true)
 
@@ -226,8 +275,7 @@ binding. **Add from this session:**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1072 as of the sibling Eye Care session's own last write to this file — re-check, don't trust
-  a cached number here).
+  D1074 as of this write — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **Nav-drawer visual diff:** `reports/visual-diff/nav-drawer-2026-09-14.md`, verdict PASS,
@@ -249,6 +297,7 @@ binding. **Add from this session:**
 |---|---|
 | **Nav-menu split — THE live front, next is Step 3+4 parallel** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/) (full Step 1-8 sequence + locked rulings); `decisions.md` D1059 (split architecture), D1060 (drawer colour defaults); `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` (current: BAR 32/DRAWER 9/BOTH 100/NO-EFFECT 12); `.claude/reports/2026-09-14-nav-menu-split-decisions-review.md` (agent A-F fact-checked findings) |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
+| **Classless repeater recognition — parked after 3 council rounds, D1074** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (reverted to original v1.0.0 design); `decisions.md` D1074 (the full 3-round trail + recommended next approach), D1073 (the shipped dom_shape admission gate) |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
