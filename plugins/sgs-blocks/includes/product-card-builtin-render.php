@@ -142,6 +142,12 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 					decoding="async"
 					<?php echo $sgs_pcard_decorative ? 'aria-hidden="true"' : ''; ?>
 				>
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+				echo sgs_product_card_brand_markup( $attributes );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+				echo sgs_product_card_saving_badge_markup( $attributes );
+				?>
 				<?php if ( '' !== $sgs_pcard_feat_badge ) : ?>
 					<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_pcard_feat_badge ); ?></span>
 				<?php endif; ?>
@@ -173,6 +179,9 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 				<div class="sgs-product-card__description"><?php echo wp_kses_post( $sgs_pcard_desc ); ?></div>
 				<?php
 			endif;
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_rating_markup( $attributes );
 
 			/*
 			 * Pack-size chooser — render the real, self-contained sgs/option-picker
@@ -237,6 +246,10 @@ if ( ! function_exists( 'sgs_product_card_builtin_render' ) ) {
 					<?php if ( '' !== $sgs_pcard_note ) : ?>
 						<span class="sgs-product-card__price-note"><?php echo esc_html( $sgs_pcard_note ); ?></span>
 					<?php endif; ?>
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+					echo sgs_product_card_swatches_markup( $attributes, $card_uid );
+					?>
 				</div>
 				<?php
 			endif;
@@ -321,5 +334,178 @@ if ( ! function_exists( 'sgs_product_card_resolve_element' ) ) {
 		return sgs_product_card_override_active( $attributes, $element, $typed_value )
 			? (string) $typed_value
 			: (string) $live_value;
+	}
+}
+
+if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
+
+	/**
+	 * Frame Card component: star rating + review-count row, or the zero-review
+	 * fallback line. Operator-authored (ratingValue/reviewCount) — not derived
+	 * from a live WooCommerce rating meta (out of scope for this build; see the
+	 * block's own CLAUDE.md history for the reasoning). Called from EVERY
+	 * render branch (typed + all 3 bound branches, R-31-9) so one control
+	 * governs the element everywhere it can appear.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Safe HTML, or '' when showRating is off.
+	 */
+	function sgs_product_card_rating_markup( array $attributes ) {
+		if ( empty( $attributes['showRating'] ) ) {
+			return '';
+		}
+
+		$review_count = isset( $attributes['reviewCount'] ) ? absint( $attributes['reviewCount'] ) : 0;
+
+		if ( 0 === $review_count ) {
+			return '<div class="sgs-product-card__rating sgs-product-card__rating--empty">'
+				. '<span class="sgs-product-card__rating-empty-text">' . esc_html__( 'No reviews yet', 'sgs-blocks' ) . '</span>'
+				. '</div>';
+		}
+
+		$rating_value = isset( $attributes['ratingValue'] ) ? (float) $attributes['ratingValue'] : 0.0;
+		$rating_value = max( 0.0, min( 5.0, $rating_value ) );
+		// Fixed 5-glyph star row — a visual approximation (no half-star clipping),
+		// coloured via ratingColour. The numeric value + review count carry the
+		// precise information for anyone who can't perceive the glyph fill.
+		$stars = str_repeat( '★', 5 );
+
+		/* translators: %s is the review count text, e.g. "(23)". */
+		$review_count_text = sprintf(
+			/* translators: %d is the number of reviews. */
+			_n( '(%d review)', '(%d reviews)', $review_count, 'sgs-blocks' ),
+			$review_count
+		);
+
+		return '<div class="sgs-product-card__rating">'
+			. '<span class="sgs-product-card__rating-stars" aria-hidden="true">' . esc_html( $stars ) . '</span>'
+			. '<span class="sgs-product-card__rating-text">'
+			. '<span class="sgs-sr-only">' . esc_html__( 'Rating:', 'sgs-blocks' ) . ' </span>'
+			. esc_html( number_format_i18n( $rating_value, 1 ) ) . ' '
+			. esc_html( $review_count_text )
+			. '</span>'
+			. '</div>';
+	}
+}
+
+if ( ! function_exists( 'sgs_product_card_brand_markup' ) ) {
+
+	/**
+	 * Frame Card component: brand wordmark overlaid on the product image.
+	 * Called from every render branch's media area (R-31-9) — one control
+	 * governs the element everywhere it can appear.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Safe HTML, or '' when showBrandOverlay is off / brandName is empty.
+	 */
+	function sgs_product_card_brand_markup( array $attributes ) {
+		if ( empty( $attributes['showBrandOverlay'] ) ) {
+			return '';
+		}
+		$brand_name = isset( $attributes['brandName'] ) ? sanitize_text_field( (string) $attributes['brandName'] ) : '';
+		if ( '' === $brand_name ) {
+			return '';
+		}
+		return '<span class="sgs-product-card__brand">' . esc_html( $brand_name ) . '</span>';
+	}
+}
+
+if ( ! function_exists( 'sgs_product_card_saving_badge_markup' ) ) {
+
+	/**
+	 * Frame Card component: independent saving/discount badge overlaid on the
+	 * media area — DISTINCT from the existing trial/featured tag (variantStyle-
+	 * keyed): this badge is orthogonal to variant and may appear alongside
+	 * either. Ground-truth position is bottom-left (Frame Card.dc.html,
+	 * `position:absolute;bottom:12px;left:12px`) — the design README's
+	 * "top-right" claim is stale prose and does not match the markup source;
+	 * savingBadgePosition defaults to 'bottom-left' and is operator-choosable.
+	 * Called from every render branch's media area (R-31-9).
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Safe HTML, or '' when showSavingBadge is off / savingLabel is empty.
+	 */
+	function sgs_product_card_saving_badge_markup( array $attributes ) {
+		if ( empty( $attributes['showSavingBadge'] ) ) {
+			return '';
+		}
+		$label = isset( $attributes['savingLabel'] ) ? sanitize_text_field( (string) $attributes['savingLabel'] ) : '';
+		if ( '' === $label ) {
+			return '';
+		}
+		$allowed_positions = array( 'top-left', 'top-right', 'bottom-left', 'bottom-right' );
+		$position           = isset( $attributes['savingBadgePosition'] ) ? sanitize_key( (string) $attributes['savingBadgePosition'] ) : 'bottom-left';
+		if ( ! in_array( $position, $allowed_positions, true ) ) {
+			$position = 'bottom-left';
+		}
+		return '<span class="sgs-product-card__saving-badge sgs-product-card__saving-badge--' . esc_attr( $position ) . '">' . esc_html( $label ) . '</span>';
+	}
+}
+
+if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
+
+	/**
+	 * Frame Card component: decorative colour-swatch row, capped at
+	 * swatchMaxVisible then collapsed into a '+N' pill. Reuses
+	 * sgs/option-picker's colour-chip technique (scoped CSS custom-property
+	 * VALUES, never inline `style=` — Spec 32) plus sgs_wcag_text_colour_for_bg()
+	 * for the +N pill's text contrast (mirrors option-picker/render.php's own
+	 * swatch-chip block). Each swatch's colour is DATA (colourSwatches[].colour),
+	 * not an operator styling property. Called from every render branch
+	 * (R-31-9).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $card_uid   Per-instance uid (also on the wrapper) — used to
+	 *                           build unique, collision-free per-swatch scoped
+	 *                           CSS anchors across multiple cards on one page.
+	 * @return string Safe HTML, or '' when colourSwatches is empty.
+	 */
+	function sgs_product_card_swatches_markup( array $attributes, string $card_uid = '' ) {
+		$items = isset( $attributes['colourSwatches'] ) && is_array( $attributes['colourSwatches'] ) ? $attributes['colourSwatches'] : array();
+		if ( empty( $items ) ) {
+			return '';
+		}
+
+		$max_visible = isset( $attributes['swatchMaxVisible'] ) ? max( 1, absint( $attributes['swatchMaxVisible'] ) ) : 4;
+		$visible     = array_slice( $items, 0, $max_visible );
+		$hidden      = max( 0, count( $items ) - count( $visible ) );
+
+		$scoped_css = '';
+		$dots_html  = '';
+		$i          = 0;
+
+		foreach ( $visible as $item ) {
+			$colour = isset( $item['colour'] ) ? sanitize_hex_color( (string) $item['colour'] ) : '';
+			if ( '' === $colour ) {
+				continue;
+			}
+			$label   = isset( $item['label'] ) ? sanitize_text_field( (string) $item['label'] ) : '';
+			$dot_id  = ( '' !== $card_uid ? $card_uid : 'sgs-pc' ) . '-swatch-' . (int) $i;
+			$i++;
+
+			// Colour chip technique mirrors option-picker/render.php's own swatch
+			// chip (~line 727-746): the swatch's own hue is a decorative DATA
+			// value, carried as CSS custom-property VALUES, never inline (Spec 32).
+			$scoped_css .= '#' . $dot_id . '{--sgs-pc-swatch-bg:' . esc_attr( $colour ) . ';}';
+
+			$dots_html .= '<span id="' . esc_attr( $dot_id ) . '" class="sgs-product-card__swatch"'
+				. ( '' !== $label ? ' title="' . esc_attr( $label ) . '" aria-label="' . esc_attr( $label ) . '"' : ' aria-hidden="true"' )
+				. '></span>';
+		}
+
+		if ( '' === $dots_html ) {
+			return '';
+		}
+
+		$more_html = '';
+		if ( $hidden > 0 ) {
+			/* translators: %d is the number of additional colour options not shown as swatches. */
+			$more_label = sprintf( __( '+%d more colours', 'sgs-blocks' ), $hidden );
+			$more_html  = '<span class="sgs-product-card__swatch-more" aria-label="' . esc_attr( $more_label ) . '">+' . (int) $hidden . '</span>';
+		}
+
+		$style_tag = '' !== $scoped_css ? '<style>' . wp_strip_all_tags( $scoped_css ) . '</style>' : '';
+
+		return $style_tag . '<div class="sgs-product-card__swatches">' . $dots_html . $more_html . '</div>';
 	}
 }

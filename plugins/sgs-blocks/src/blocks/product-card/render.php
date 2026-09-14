@@ -220,6 +220,45 @@ $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_c
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
 $sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
+// 'brand' typography targets the Frame Card brand overlay (image top-left).
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
+
+// ── Frame Card component colours: rating stars/text, brand overlay ───────
+// Both attrs resolve css:color via the default {prefix}Colour convention
+// (block.json's supports.sgs.elements.rating / .brand) — no gradient sibling
+// (small decorative text, deliberately scoped down; see block.json's own
+// _note on both elements). Emitted here, before the branch split, so BOTH
+// attrs apply to every render branch (typed + all 3 bound branches, R-31-9).
+$sgs_rating_colour = sgs_colour_value( $attributes['ratingColour'] ?? '' );
+if ( '' !== $sgs_rating_colour ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars,.' . $sgs_card_uid . ' .sgs-product-card__rating-text{color:' . $sgs_rating_colour . ';}';
+}
+$sgs_brand_colour = sgs_colour_value( $attributes['brandColour'] ?? '' );
+if ( '' !== $sgs_brand_colour ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__brand{color:' . $sgs_brand_colour . ';}';
+}
+
+// ── Frame Card saving badge (independent of variantStyle) — reuses the SAME
+// shared box helper the trial tag already uses (sgs_label_box_css_rule()),
+// mirroring the tag element's own background/padding/radius emission below.
+// Emitted here (shared, pre-branch-split) so one control governs the badge
+// across every render branch (R-31-9) — unlike the trial-tag box CSS, which
+// stays typed-mode-only because the trial tag itself only renders there.
+$sgs_saving_badge_radius_raw = $attributes['savingBadgeBorderRadius'] ?? '';
+$sgs_saving_badge_box_css    = sgs_label_box_css_rule(
+	array(
+		'padding'    => is_array( $attributes['savingBadgePadding'] ?? null ) ? $attributes['savingBadgePadding'] : array(),
+		'radius'     => ( 0.0 !== floatval( $sgs_saving_badge_radius_raw ) ) ? $sgs_saving_badge_radius_raw : '',
+		'background' => (string) ( $attributes['savingBadgeBackgroundColour'] ?? '' ),
+		'fullWidth'  => false,
+	),
+	'.' . $sgs_card_uid . ' .sgs-product-card__saving-badge'
+);
+$sgs_saving_badge_text_colour = sgs_colour_value( $attributes['savingBadgeTextColour'] ?? '' );
+if ( '' !== $sgs_saving_badge_text_colour ) {
+	$sgs_saving_badge_box_css .= '.' . $sgs_card_uid . ' .sgs-product-card__saving-badge{color:' . $sgs_saving_badge_text_colour . ';}';
+}
+$sgs_card_typo_css .= $sgs_saving_badge_box_css;
 
 // ── Text-colour gradient siblings: title / desc / price / priceNote ──────
 // Mirrors the tagTextColour/tagTextColourGradient triad below (D636 rollout)
@@ -911,6 +950,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
 			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_brand_markup( $attributes );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_saving_badge_markup( $attributes );
+			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 			<?php endif; ?>
@@ -927,6 +972,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 		<?php if ( '' !== $sgs_resolved_desc ) : ?>
 			<div class="product-desc"><?php echo wp_kses_post( $sgs_resolved_desc ); ?></div>
 		<?php endif; ?>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+		echo sgs_product_card_rating_markup( $attributes );
+		?>
 		<div class="price-row">
 			<?php if ( ! empty( $data['price_from_html'] ) ) : ?>
 				<div class="price price--from">
@@ -936,6 +985,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php elseif ( ! empty( $data['price_html'] ) ) : ?>
 				<div class="price"><?php echo wp_kses_post( $data['price_html'] ); ?></div>
 			<?php endif; ?>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
+			?>
 		</div>
 		<?php if ( '' !== $ro_permalink ) : ?>
 			<?php
@@ -1318,6 +1371,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				</div>
 			<?php endif; ?>
 
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_brand_markup( $attributes );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+			echo sgs_product_card_saving_badge_markup( $attributes );
+			?>
 			<?php if ( '' !== $sgs_badge_overlay ) : ?>
 				<?php // F7: featured badge overlays the media box (position:relative already on .product-card__media). ?>
 				<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
@@ -1381,6 +1440,11 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 				</div>
 				<?php endif; ?>
+
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+				echo sgs_product_card_rating_markup( $attributes );
+				?>
 
 				<?php
 				// ── 2b. Render option-picker blocks — one per axis ────────────────────
@@ -1457,6 +1521,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						data-wp-bind--hidden="context.discountHidden"
 						data-wp-text="context.discountLabel"
 					><?php echo esc_html( $discount_label ); ?></span>
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+					echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
+					?>
 				</div>
 				<p
 					class="price-note price-note--per-unit"
@@ -1763,6 +1831,12 @@ ob_start();
 		<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
 	</div>
 <?php endif; ?>
+<?php
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+echo sgs_product_card_brand_markup( $attributes );
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+echo sgs_product_card_saving_badge_markup( $attributes );
+?>
 <?php if ( '' !== $sgs_badge_overlay ) : ?>
 	<span class="sgs-product-card__tag sgs-product-card__tag--featured"><?php echo esc_html( $sgs_badge_overlay ); ?></span>
 <?php endif; ?>
@@ -1787,6 +1861,11 @@ ob_start();
 			<?php echo wp_kses_post( $sgs_resolved_desc ); ?>
 		</div>
 	<?php endif; ?>
+
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+	echo sgs_product_card_rating_markup( $attributes );
+	?>
 
 	<?php
 	/*
@@ -1871,6 +1950,10 @@ ob_start();
 				<?php echo wp_kses_post( $data['price_html'] ); ?>
 			</div>
 		<?php endif; ?>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
+		echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
+		?>
 	</div>
 
 	<?php if ( $add_to_cart_id > 0 ) : ?>

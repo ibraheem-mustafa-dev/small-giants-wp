@@ -35,7 +35,14 @@ import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
-import { BoxControl, NumberControl, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import {
+	BoxControl,
+	NumberControl,
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+	ToolsPanel,
+	ToolsPanelItem,
+} from '../../components/primitives';
 import { SGS_LENGTH_UNITS, sgsNormaliseLength, resolveTextColourPreviewStyle, linkColourPreviewCss } from '../../utils';
 
 /** Sentinel value for the "No product connected" option. */
@@ -703,6 +710,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		descLinkColourHoverGradient,
 		priceNoteColour,
 		priceNoteColourGradient,
+		// Frame Card component (Task 4, 2026-09-14) — operator-authored,
+		// applies to every render branch (R-31-9).
+		showRating,
+		ratingValue,
+		reviewCount,
+		ratingColour,
+		showBrandOverlay,
+		brandName,
+		brandColour,
+		showSavingBadge,
+		savingLabel,
+		savingBadgePosition,
+		savingBadgeBackgroundColour,
+		savingBadgeTextColour,
+		savingBadgePadding,
+		savingBadgeBorderRadius,
+		colourSwatches,
+		swatchMaxVisible,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
 		ctaColourBackground,
 		ctaColourBackgroundGradient,
@@ -1041,6 +1066,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} );
 	}
 
+	// Frame Card component (Task 4, 2026-09-14) — colour-swatch repeater.
+	// Mirrors the simple array-of-objects shape sgs/option-picker's own
+	// optionItems uses (key + label), with a colour value added. Each
+	// swatch's colour is DATA, not an operator styling property (see the
+	// block.json 'swatch' element's own note) — a plain colour input, not
+	// SgsColourPanel/DesignTokenPicker.
+	function onSwatchChange( index, field, value ) {
+		const next = ( colourSwatches || [] ).map( ( item, i ) =>
+			i === index ? { ...item, [ field ]: value } : item
+		);
+		setAttributes( { colourSwatches: next } );
+	}
+
+	function addSwatch() {
+		const list = colourSwatches || [];
+		setAttributes( {
+			colourSwatches: [
+				...list,
+				{ key: `swatch-${ list.length }`, label: '', colour: '#000000' },
+			],
+		} );
+	}
+
+	function removeSwatch( index ) {
+		setAttributes( {
+			colourSwatches: ( colourSwatches || [] ).filter(
+				( _, i ) => i !== index
+			),
+		} );
+	}
+
 	// Heading tag derived from headingLevel attr (allowlisted string, e.g. 'h3').
 	const ALLOWED_HEADING_LEVELS = [ 'h2', 'h3', 'h4', 'p' ];
 	const headingTag = ALLOWED_HEADING_LEVELS.includes( headingLevel )
@@ -1259,6 +1315,64 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			],
 		} );
 	}
+	// Frame Card component colours (Task 4, 2026-09-14) — apply in BOTH typed
+	// and bound modes, same as the CTA rows below: render.php emits the
+	// rating/brand/saving-badge markup + CSS from every branch (R-31-9).
+	colourRows.push(
+		{
+			key: 'rating',
+			label: __( 'Rating colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: ratingColour,
+					onChange: ( val ) => setAttributes( { ratingColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'brand',
+			label: __( 'Brand overlay colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: brandColour,
+					onChange: ( val ) => setAttributes( { brandColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'savingBadgeBackground',
+			label: __( 'Saving badge background colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: savingBadgeBackgroundColour,
+					onChange: ( val ) =>
+						setAttributes( { savingBadgeBackgroundColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'savingBadgeText',
+			label: __( 'Saving badge text colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: savingBadgeTextColour,
+					onChange: ( val ) => setAttributes( { savingBadgeTextColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		}
+	);
 	colourRows.push(
 		{
 			key: 'ctaBackground',
@@ -1758,6 +1872,236 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 
+				{ /* ── Frame Card content panel (Task 4, 2026-09-14) — rating,
+				     brand overlay, saving badge, colour swatches. Applies in
+				     BOTH typed and bound modes (render.php reads all of these
+				     attrs before the branch split, R-31-9), so this panel is
+				     shown unconditionally, unlike the isBuiltIn-gated panels
+				     below. Colours for these elements live in the Colour
+				     panel above (rating/brand/savingBadge rows). */ }
+				<PanelBody
+					title={ __( 'Rating, brand & saving badge', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Show rating', 'sgs-blocks' ) }
+						help={ __(
+							'Shows a star rating + review count, or "No reviews yet" when review count is 0.',
+							'sgs-blocks'
+						) }
+						checked={ !! showRating }
+						onChange={ ( v ) => setAttributes( { showRating: v } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ showRating && (
+						<>
+							<NumberControl
+								label={ __( 'Rating (0-5)', 'sgs-blocks' ) }
+								value={ ratingValue ?? 0 }
+								min={ 0 }
+								max={ 5 }
+								step={ 0.1 }
+								onChange={ ( v ) =>
+									setAttributes( {
+										ratingValue: parseFloat( v ) || 0,
+									} )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+							<NumberControl
+								label={ __( 'Review count', 'sgs-blocks' ) }
+								value={ reviewCount ?? 0 }
+								min={ 0 }
+								onChange={ ( v ) =>
+									setAttributes( {
+										reviewCount: parseInt( v, 10 ) || 0,
+									} )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+
+					<ToggleControl
+						label={ __( 'Show brand overlay', 'sgs-blocks' ) }
+						help={ __(
+							'Overlays a brand wordmark on the top-left corner of the product image.',
+							'sgs-blocks'
+						) }
+						checked={ !! showBrandOverlay }
+						onChange={ ( v ) =>
+							setAttributes( { showBrandOverlay: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ showBrandOverlay && (
+						<TextControl
+							label={ __( 'Brand name', 'sgs-blocks' ) }
+							value={ brandName || '' }
+							onChange={ ( v ) =>
+								setAttributes( { brandName: v } )
+							}
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) }
+
+					<ToggleControl
+						label={ __( 'Show saving badge', 'sgs-blocks' ) }
+						help={ __(
+							'An independent saving/discount badge (e.g. "Save £12") overlaid on the media area — separate from the trial/featured tag above and can appear alongside either.',
+							'sgs-blocks'
+						) }
+						checked={ !! showSavingBadge }
+						onChange={ ( v ) =>
+							setAttributes( { showSavingBadge: v } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ showSavingBadge && (
+						<>
+							<TextControl
+								label={ __( 'Saving badge text', 'sgs-blocks' ) }
+								value={ savingLabel || '' }
+								onChange={ ( v ) =>
+									setAttributes( { savingLabel: v } )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+							<ToggleGroupControl
+								label={ __( 'Saving badge position', 'sgs-blocks' ) }
+								help={ __(
+									'Default matches the Frame Card design source (bottom-left).',
+									'sgs-blocks'
+								) }
+								value={ savingBadgePosition || 'bottom-left' }
+								onChange={ ( v ) =>
+									setAttributes( { savingBadgePosition: v } )
+								}
+								isBlock
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								<ToggleGroupControlOption
+									value="top-left"
+									label={ __( 'Top left', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="top-right"
+									label={ __( 'Top right', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="bottom-left"
+									label={ __( 'Bottom left', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="bottom-right"
+									label={ __( 'Bottom right', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
+							<BoxControl
+								label={ __( 'Saving badge padding', 'sgs-blocks' ) }
+								values={ savingBadgePadding ?? {} }
+								onChange={ ( next ) =>
+									setAttributes( { savingBadgePadding: next } )
+								}
+								__next40pxDefaultSize
+							/>
+							<SgsLengthControl
+								label={ __( 'Saving badge border radius', 'sgs-blocks' ) }
+								value={ savingBadgeBorderRadius ?? '' }
+								units={ SGS_LENGTH_UNITS }
+								presets={ false }
+								onChange={ ( v ) =>
+									setAttributes( {
+										savingBadgeBorderRadius:
+											sgsNormaliseLength( v ),
+									} )
+								}
+							/>
+						</>
+					) }
+
+					<hr />
+
+					<p>
+						<strong>
+							{ __( 'Colour swatches', 'sgs-blocks' ) }
+						</strong>
+					</p>
+					<p style={ { fontSize: '12px', color: '#757575' } }>
+						{ __(
+							'Decorative colour options shown on the price row. Each swatch\'s colour is data, not a styling choice.',
+							'sgs-blocks'
+						) }
+					</p>
+					{ ( colourSwatches || [] ).map( ( item, index ) => (
+						<div
+							key={ index }
+							style={ {
+								display: 'flex',
+								alignItems: 'flex-end',
+								gap: '8px',
+								marginBottom: '8px',
+							} }
+						>
+							<TextControl
+								label={ __( 'Label', 'sgs-blocks' ) }
+								value={ item.label || '' }
+								onChange={ ( v ) =>
+									onSwatchChange( index, 'label', v )
+								}
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+							/>
+							<input
+								type="color"
+								aria-label={ __( 'Swatch colour', 'sgs-blocks' ) }
+								value={ item.colour || '#000000' }
+								onChange={ ( e ) =>
+									onSwatchChange(
+										index,
+										'colour',
+										e.target.value
+									)
+								}
+							/>
+							<Button
+								variant="secondary"
+								isDestructive
+								onClick={ () => removeSwatch( index ) }
+							>
+								{ __( 'Remove', 'sgs-blocks' ) }
+							</Button>
+						</div>
+					) ) }
+					<Button variant="secondary" onClick={ addSwatch }>
+						{ __( 'Add swatch', 'sgs-blocks' ) }
+					</Button>
+					{ ( colourSwatches || [] ).length > 0 && (
+						<NumberControl
+							label={ __( 'Max visible swatches', 'sgs-blocks' ) }
+							help={ __(
+								'Remaining swatches collapse into a "+N" pill.',
+								'sgs-blocks'
+							) }
+							value={ swatchMaxVisible ?? 4 }
+							min={ 1 }
+							onChange={ ( v ) =>
+								setAttributes( {
+									swatchMaxVisible:
+										parseInt( v, 10 ) || 4,
+								} )
+							}
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</PanelBody>
+
 				{ /* ── Typography panel (rule 41 merge, 2026-09-08) — was two
 				     panels ("Card style" + "Price style"), both gated on
 				     `isBuiltIn` and both holding nothing but TypographyControls
@@ -1852,6 +2196,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									// call, so this was the only missing piece.
 									showLineHeight: false,
 								},
+								{
+									key: 'brand',
+									label: __( 'Brand overlay', 'sgs-blocks' ),
+									prefix: 'brand',
+									showWeight: false,
+									showStyle: false,
+									showLineHeight: false,
+								},
 							] }
 						/>
 						{ isTrial && (
@@ -1912,6 +2264,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributes={ attributes }
 							setAttributes={ setAttributes }
 							prefix="priceFromLabel"
+							showWeight={ false }
+							showStyle={ false }
+							showLineHeight={ false }
+						/>
+					</PanelBody>
+				) }
+
+				{ /* Brand overlay typography (bound mode) — the typed-mode
+				     equivalent lives inside the Typography panel below
+				     (isBuiltIn). render.php emits the brand rule from the
+				     shared, pre-branch-split section, so bound mode needs its
+				     own mount, same reason priceFromLabel gets one above. */ }
+				{ isBound && (
+					<PanelBody
+						title={ __( 'Brand overlay typography', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TypographyControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							prefix="brand"
 							showWeight={ false }
 							showStyle={ false }
 							showLineHeight={ false }

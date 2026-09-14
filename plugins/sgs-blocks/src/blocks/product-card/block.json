@@ -60,6 +60,9 @@
 				],
 				"borderRadius": [
 					"borderRadius"
+				],
+				"savingBadgePadding": [
+					"savingBadgePadding"
 				]
 			},
 			"variantAttr": "variantStyle",
@@ -231,6 +234,48 @@
 					],
 					"prefix": "pill",
 					"_note": "Targets the real sgs/option-picker pill rendered inside the card (both typed and bound modes) — see render.php sgs_typography_css_rule( $attributes, 'pill', … )."
+				},
+				"rating": {
+					"label": "Rating & reviews",
+					"order": 13,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rating",
+					"_note": "Star row + review-count text (Frame Card component). Resolves css:color -> ratingColour via the default {prefix}Colour convention — no explicit attrMap needed (mirrors priceNote's own prefix-only declaration). Rendered by sgs_product_card_rating_markup() (product-card-builtin-render.php), called from every render branch (typed + all 3 bound branches) per R-31-9 — one control governs the element everywhere it can appear. No dedicated font-size attr exists for the review-count text — an honest gap, matching priceFromLabel's own precedent."
+				},
+				"brand": {
+					"label": "Brand overlay",
+					"order": 14,
+					"clusters": [
+						"text"
+					],
+					"prefix": "brand",
+					"_note": "Brand wordmark overlaid top-left on the product image (Frame Card component). brandColour resolves via the default {prefix}Colour convention; brandFontSize/Unit via the shared TypographyControls prefix. Rendered by sgs_product_card_brand_markup() (product-card-builtin-render.php), called from every render branch's media area per R-31-9."
+				},
+				"savingBadge": {
+					"label": "Saving badge",
+					"order": 15,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "savingBadge",
+					"attrMap": {
+						"css:background-color": "savingBadgeBackgroundColour",
+						"css:padding": "savingBadgePadding"
+					},
+					"_note": "Standalone saving/discount badge overlaid on the media area (Frame Card component) — DISTINCT from the existing 'tag' element (trial/featured, keyed to variantStyle): this badge is independent of variant and can appear alongside either. Mirrors 'tag''s own attrMap shape exactly (css:background-color + css:padding explicit; css:color resolves via the default {prefix}TextColour convention, same as tagTextColour). Rendered via the shared sgs_label_box_css_rule() helper (mirrors sgs/label + the existing trial-tag box), called from every render branch per R-31-9. Ground-truth position is bottom-left per the real Frame Card.dc.html markup (`bottom:12px;left:12px`) — the README's 'top-right' claim is stale prose, not the design source; savingBadgePosition defaults to 'bottom-left' and is operator-choosable."
+				},
+				"swatch": {
+					"label": "Colour swatches",
+					"order": 16,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "swatch",
+					"_note": "Decorative colour-swatch row (Frame Card component) — each swatch's own hue is DATA (colourSwatches[].colour), not an operator styling property, mirroring sgs/option-picker's swatch chip (which is likewise never operator-coloured). No dedicated colour/size attribute exists for the swatch ring itself — an honest gap, matching priceFromLabel's own precedent; the ring/size are fixed in style.css. Rendered via sgs_product_card_swatches_markup() (product-card-builtin-render.php) reusing option-picker's scoped-custom-property chip technique (render.php ~line 727-746) plus sgs_wcag_text_colour_for_bg() for contrast, called from every render branch per R-31-9."
 				},
 				"cta": {
 					"label": "Call to action",
@@ -1226,8 +1271,135 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"showRating": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show the star rating + review-count row (or a 'No reviews yet' line when reviewCount is 0). Operator-authored — not derived from a live WooCommerce rating meta. Applies to every render branch (typed + all 3 bound branches) per R-31-9."
+		},
+		"ratingValue": {
+			"type": "number",
+			"default": 0,
+			"role": "content",
+			"description": "Star rating, 0-5 (decimals allowed, e.g. 4.7). Displayed as a numeric label alongside a fixed 5-glyph star row (visual approximation, no partial-fill clipping)."
+		},
+		"reviewCount": {
+			"type": "number",
+			"default": 0,
+			"role": "content",
+			"description": "Review count shown next to the rating. 0 renders the 'No reviews yet' line instead of a star row, matching the Frame Card design's zero-review state."
+		},
+		"ratingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the filled star glyphs + the rating/review text. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"showBrandOverlay": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: overlay a brand wordmark on the top-left corner of the product image. Requires a non-empty brandName and a rendered image (typed mode) / real image (bound modes)."
+		},
+		"brandName": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Brand wordmark text overlaid on the product image when showBrandOverlay is true."
+		},
+		"brandColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour for the brand overlay text. Theme token slug or raw CSS colour. Empty = theme default."
+		},
+		"brandFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"brandFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"showSavingBadge": {
+			"type": "boolean",
+			"default": false,
+			"description": "Frame Card component: show an independent saving/discount badge (e.g. 'Save £12') on the media area. Distinct from the existing trial/featured tag — this badge is not tied to variantStyle and may appear alongside either."
+		},
+		"savingLabel": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Saving badge text (e.g. 'Save £12', '20% off'). Renders only when showSavingBadge is true and this is non-empty."
+		},
+		"savingBadgePosition": {
+			"type": "string",
+			"enum": [
+				"top-left",
+				"top-right",
+				"bottom-left",
+				"bottom-right"
+			],
+			"default": "bottom-left",
+			"description": "Corner of the media area the saving badge overlays. Defaults to bottom-left — the real Frame Card.dc.html markup position (`position:absolute;bottom:12px;left:12px`); the design README's prose says top-right, which is stale and does not match the design source."
+		},
+		"savingBadgeBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Saving badge background colour. Theme token slug or raw CSS colour. Empty = theme default (ink)."
+		},
+		"savingBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Saving badge text colour. Theme token slug or raw CSS colour. Empty = theme default (cream)."
+		},
+		"savingBadgePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the saving badge { top, right, bottom, left }. Rendered via the shared sgs_label_box_css_rule() helper, mirroring tagPadding. Empty = theme default (style.css)."
+		},
+		"savingBadgeBorderRadius": {
+			"type": [
+				"string",
+				"number"
+			],
+			"default": "",
+			"description": "Border radius for the saving badge as a CSS length (e.g. '4px'). Empty = the style.css default. Mirrors tagBorderRadius's shape."
+		},
+		"colourSwatches": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"key": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					},
+					"colour": {
+						"type": "string"
+					}
+				}
+			},
+			"description": "Frame Card component: decorative colour-swatch row (mirrors sgs/option-picker's optionItems shape — key + label — with a colour value added). Operator-authored; each swatch's colour is DATA, not a styling property. Empty array = no swatches rendered (matches the packSizes convention — no separate show toggle)."
+		},
+		"swatchMaxVisible": {
+			"type": "number",
+			"default": 4,
+			"role": "content",
+			"description": "Maximum number of colour swatches shown before collapsing the remainder into a '+N' pill. Matches the Frame Card design's 'four swatches maximum, then a +N pill'."
 		}
 	},
+	"styles": [
+		{
+			"name": "classic",
+			"label": "Classic",
+			"isDefault": true
+		},
+		{
+			"name": "frame-card",
+			"label": "Frame Card"
+		}
+	],
 	"usesContext": [
 		"postId"
 	],

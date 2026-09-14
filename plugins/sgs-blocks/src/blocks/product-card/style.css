@@ -1314,3 +1314,168 @@
 	border-radius: 6px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
+
+/*
+ * ── Frame Card component (Task 4, 2026-09-14) ───────────────────────────────
+ * Four new elements: rating/reviews, brand overlay, saving badge, colour
+ * swatches. Base rules below apply to BOTH style variations (Classic +
+ * Frame Card) — see the `.is-style-frame-card` block further down for the
+ * design-specific tuning. All four render on every branch's media/body
+ * markup (product-card-builtin-render.php's sgs_product_card_*_markup()
+ * helpers, called identically from typed + all 3 bound branches, R-31-9).
+ */
+
+/* Rating row — star glyphs + numeric label/review-count, or the zero-review line. */
+.sgs-product-card__rating {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.sgs-product-card__rating-stars {
+	color: var( --wp--preset--color--primary, #9c8b78 );
+	letter-spacing: 0.12em;
+}
+
+.sgs-product-card__rating-text {
+	color: var( --wp--preset--color--text-muted, #77716a );
+}
+
+.sgs-product-card__rating--empty .sgs-product-card__rating-empty-text {
+	font-size: 12px;
+	color: var( --wp--preset--color--text-muted, #a39c90 );
+}
+
+/*
+ * Brand overlay + saving badge both sit on the media box, so they need the
+ * SAME positioning context .sgs-product-card__media-wrap already provides
+ * (F7, above). The variable-configurator branch's own `.product-card__media`
+ * is already `position:relative` in this stylesheet's earlier rules, so
+ * both selectors are covered without a third rule.
+ */
+.sgs-product-card__brand {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	padding: 10px 12px;
+	max-width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var( --sgs-product-card-brand-font-size, 11px );
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var( --wp--preset--color--text, #141414 );
+	background: linear-gradient( 135deg, rgba( 255, 255, 255, 0.92 ) 0%, rgba( 255, 255, 255, 0.82 ) 62%, rgba( 255, 255, 255, 0 ) 100% );
+}
+
+.sgs-product-card__saving-badge {
+	position: absolute;
+	z-index: 1;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	background: var( --wp--preset--color--text, #141414 );
+	color: var( --wp--preset--color--text-inverse, #faf8f5 );
+}
+
+/*
+ * Padding default lives at specificity 0 (sanctioned overridable-default
+ * pattern, matches :where(.product-card) .sgs-product-card__description
+ * above) so the operator's savingBadgePadding attr — emitted by render.php
+ * as a `.{uid} .sgs-product-card__saving-badge` class rule via
+ * sgs_label_box_css_rule() — always wins on specificity alone.
+ */
+:where(.sgs-product-card__saving-badge) {
+	padding: 6px 10px;
+}
+
+.sgs-product-card__saving-badge--top-left {
+	top: 10px;
+	left: 10px;
+}
+
+.sgs-product-card__saving-badge--top-right {
+	top: 10px;
+	right: 10px;
+}
+
+.sgs-product-card__saving-badge--bottom-left {
+	bottom: 10px;
+	left: 10px;
+}
+
+.sgs-product-card__saving-badge--bottom-right {
+	bottom: 10px;
+	right: 10px;
+}
+
+/*
+ * Colour-swatch row — decorative dots (data-driven colour, never operator-
+ * styled — mirrors sgs/option-picker's own swatch chip). Sits on the SAME
+ * line as the price via flex on the price rows (both the typed
+ * .sgs-product-card__price-row and the bound .price-row already use
+ * `display:flex` — see the base rules above — `margin-left:auto` pushes
+ * this group to the right of that line without a layout change).
+ */
+.sgs-product-card__swatches {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-left: auto;
+	flex-shrink: 0;
+}
+
+.sgs-product-card__swatch {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var( --sgs-pc-swatch-bg, #d8d2c8 );
+	border: 1px solid rgba( 0, 0, 0, 0.15 );
+}
+
+.sgs-product-card__swatch-more {
+	font-size: 11px;
+	color: var( --wp--preset--color--text-muted, #5e584f );
+	border: 1px solid rgba( 0, 0, 0, 0.15 );
+	border-radius: 999px;
+	padding: 2px 6px;
+	line-height: 1.3;
+	white-space: nowrap;
+}
+
+/*
+ * ── "Frame Card" style variation (`is-style-frame-card`) ────────────────────
+ * Tunes the SAME markup/attributes toward sites/eye-care-ward-end's Frame
+ * Card design — square image with a taupe/cream placeholder tint, square
+ * corners throughout (the design is deliberately radius:0 almost
+ * everywhere), and a bottom-left saving badge matching the real
+ * Frame Card.dc.html markup (README's "top-right" is stale prose — see the
+ * block.json `savingBadge` element note). The default "Classic" style
+ * (`is-style-classic`, isDefault:true) emits NO extra rules here — it is
+ * the card's pre-existing look (Mama's Munches), unchanged.
+ */
+.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__media-wrap,
+.wp-block-sgs-product-card.is-style-frame-card .product-card__media {
+	aspect-ratio: 1 / 1;
+	background: #f3f0eb;
+}
+
+.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__brand {
+	border-radius: 0;
+}
+
+.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__saving-badge {
+	border-radius: 0;
+}
+
+.wp-block-sgs-product-card.is-style-frame-card .sgs-product-card__swatch {
+	border-radius: 50%;
+	width: 17px;
+	height: 17px;
+}
