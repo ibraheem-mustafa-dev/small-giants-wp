@@ -1,3 +1,23 @@
+## D1044 [ROUTINE] — Live-verification closeout of a stale plan-mode file (nav-drawer/nav-menu, 3 tasks, D1011/D1012 territory)
+
+**2026-09-14.** A prior session's plan (`~/.claude/plans/nav-drawer-track-delegated-snowglobe.md`, local-only, outside the repo, not re-readable) named 3 fixes as needing live proof, not just code-presence. Verified all 3 live on the sandybrown canary via two scratch fixture pages (`page_id` 3542/3543, deleted after use — non-modal drawer + real classic-menu submenu (`ref:112`, "T1 Dropdown Test") + `anchor:centred`), then deleted.
+
+**Task 1 — drawer sub-accordion structural fix.** PASS. `.sgs-nav-menu__accordion-row` is `position:relative;width:100%` (block, not flex) per `plugins/sgs-blocks/src/blocks/nav-menu/style.css::.sgs-nav-menu__accordion-row`. Live measured: open sublink `getBoundingClientRect()` = `{left:21.59, right:338.40, width:316.8}`, identical to the parent row's rect (no leftover-flex-space squeeze, no indent applied — cosmetic, not the bug). `scrollWidth === clientWidth === 360` on both the dialog and `document.documentElement` — no horizontal overflow. Screenshot confirms full-width accordion expansion.
+
+**Task 2 — scoped-CSS dead write.** PASS. `plugins/sgs-blocks/src/blocks/nav-drawer/render.php::$border_style` branch — no `$scoped_css` variable exists any more; `'none'` branch does `$css .= $root_sel . '{border-style:none;border-width:0;}'` (the correct accumulator). Live: set `borderStyle:"none"` via block attribute, computed `border-style:none; border-width:0px` confirmed on the rendered `<dialog>`.
+
+**Task 3 (D1011), 5 items — all PASS, one item's live-bubble path inconclusive (not FAIL):**
+- Item 1 (`modality` attribute) — PASS. `data-sgs-nav-modality="non-modal"` reflected live on the `<dialog>` when set.
+- Item 2 (`trapTab` scoped to modal-only) — PASS by code read (`store.js::onTab`, bound only inside the `showModal()` branch, D1012-dated comment) + live census: under non-modal, `inert` correctly wraps the site header, the OTHER (default) drawer, and the skip-link, while the triggering `nav-menu`'s own burger and the open dialog remain the only two live/non-inert regions — no trap, consistent with no hand-rolled `keydown` binding on that path. (No raw browser Tab-keypress tool was available to this session; verified via the `inert` boundary census instead of a literal keypress.)
+- Item 3 (explicit z-index scale) — PASS. Live computed: drawer `z-index:90`, its scrim `z-index:89`, site header `z-index:100` — matches `style.css` comments exactly.
+- Item 4 (non-modal ESC + no double-fire with mega-disclosure) — PARTIAL/INCONCLUSIVE on the live bubble-path specifically, not a FAIL. `document.dispatchEvent(Escape)` correctly closed the non-modal drawer (`store.js::onEsc` proven wired and functional). But dispatching the same event from *any* page element that bubbles (including a plain `<h1>` with no nav/mega involvement at all) failed to close it — an admin-session-wide interception unrelated to this code (confirmed by the h1 control: same failure with zero SGS markup in its ancestor chain). `wp user session destroy` did not clear the confound before session end. Code read confirms no `stopPropagation()` collision exists between `mega-disclosure.js`'s `triggerKeydown`/`panelKeydown` (neither calls it) and `store.js::onEsc`, so the item's design is sound; the live cross-bubble scenario needs re-testing in a logged-out session to fully close.
+- Item 5 (scrim gated to partial-width anchors) — PASS. Default (full-screen) anchor: no `[data-sgs-nav-scrim]` element at all. `anchor:{desktop:"centred"}`: scrim present, `z-index:89`.
+- ⚠ `aria-modal` — confirmed absent from both dialogs tested, and absent from `render.php`'s `<dialog>` markup generator (`sprintf` call at the `892:` line) by grep.
+
+**Net:** 3/3 tasks live-verified correct; only Task 3 item 4's cross-component bubble path is open (parked below), everything else closes clean. No code changes made this session — pure verification.
+
+**Parked:** `P-NAV-ESC-DOUBLE-FIRE-LIVE-RETEST` — retest item 4's live bubble path (mega open + non-modal drawer open + ESC) in a logged-out browser session; the admin-bar/editor JS confound must be eliminated first.
+
 ## D1043 [ROUTINE] — QC-council integration sweep over the whole nav-menu day found 2 real regressions, both fixed same-session
 
 **2026-09-13/14.** After the terminology redesign, smart-contrast flip, gradient unlock and
