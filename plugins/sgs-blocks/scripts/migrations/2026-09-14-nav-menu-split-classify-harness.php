@@ -144,7 +144,7 @@ $configs = array(
 		'burgerBg'                    => 'surface',
 		'burgerColourHover'           => 'accent',
 		'submenuColourHover'          => 'accent',
-		'submenuShadow'               => '0 4px 12px rgba(0,0,0,.3)', // -> submenuShadowColour
+		'submenuShadow'               => '0px 4px 12px 0px rgba(0,0,0,.3)', // -> submenuShadowColour; 4 lengths+px so sgs_shadow_value_composed() treats it as raw, not a preset slug
 		'itemSmartContrast'           => true,
 	) ),
 );

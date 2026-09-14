@@ -28,8 +28,8 @@ the run, the canary's nine nav PHP files were verified byte-identical to `main` 
 |---|---|---|
 | **BAR** | 32 | only the bar fork is affected |
 | **DRAWER** | 9 | only the drawer fork is affected |
-| **BOTH** | 96 | both forks are affected |
-| NO-EFFECT | 16 | no effect found under either configuration — see below |
+| **BOTH** | 100 | both forks are affected |
+| NO-EFFECT | 12 | no effect found under either configuration — see below |
 | DEAD-CSS | 0 | emits CSS matching nothing in either fork |
 | UNTESTED | 0 | the test value equalled the value already in force |
 
@@ -45,14 +45,30 @@ verify the mechanism.
 ### DRAWER (9)
 `listColumns`, `megaDrawerFallbackIds`, `sublinkMarkerColour`, `sublinkMarkerColourCurrent`, `sublinkMarkerColourCurrentGradient`, `sublinkMarkerColourGradient`, `sublinkMarkerColourHover`, `sublinkMarkerColourHoverGradient`, `sublinkMarkerIcon`
 
-### BOTH (96)
-`collapsePoint`, `featuredBg`, `featuredBgGradient`, `featuredBgHover`, `featuredBgHoverGradient`, `featuredColour`, `featuredColourGradient`, `featuredColourHover`, `featuredFontWeight`, `featuredFontWeightHover`, `featuredItemIds`, `featuredRadius`, `featuredRadiusHover`, `gap`, `itemBg`, `itemBgCurrent`, `itemBgCurrentGradient`, `itemBgGradient`, `itemBgHover`, `itemBgHoverGradient`, `itemBgHoverTreatment`, `itemBorderColour`, `itemBorderColourCurrent`, `itemBorderColourHover`, `itemBorderHoverTreatment`, `itemBorderStyle`, `itemBorderWidth`, `itemColour`, `itemColourCurrent`, `itemColourGradient`, `itemColourHover`, `itemColourHoverGradient`, `itemColourHoverTreatment`, `itemFontFamily`, `itemFontSize`, `itemFontStyle`, `itemFontWeight`, `itemFontWeightCurrent`, `itemFontWeightHover`, `itemLetterSpacing`, `itemLineHeight`, `itemMagnetEnabled`, `itemTextAlign`, `itemTextDecoration`, `itemTextDecorationHover`, `itemTextTransform`, `itemTextTransformHover`, `itemTextWrap`, `itemWritingMode`, `margin`, `navBg`, `navBgGradient`, `navBgHover`, `navColour`, `navColourGradient`, `navColourHover`, `navLabel`, `padding`, `sgsCustomCss`, `submenuBg`, `submenuBorderColour`, `submenuBorderColourGradient`, `submenuBorderRadius`, `submenuBorderStyle`, `submenuBorderWidth`, `submenuColour`, `submenuColourCurrent`, `submenuColourGradient`, `submenuColourHover`, `submenuColourHoverTreatment`, `submenuFontFamily`, `submenuFontSize`, `submenuFontStyle`, `submenuFontWeight`, `submenuFontWeightHover`, `submenuLetterSpacing`, `submenuLineHeight`, `submenuLinkBg`, `submenuLinkBgCurrent`, `submenuLinkBgGradient`, `submenuLinkBgHover`, `submenuLinkBgHoverTreatment`, `submenuLinkBorderColour`, `submenuLinkBorderColourHover`, `submenuLinkBorderStyle`, `submenuLinkBorderWidth`, `submenuMinWidth`, `submenuPadding`, `submenuShadow`, `submenuTextAlign`, `submenuTextDecoration`, `submenuTextDecorationHover`, `submenuTextTransform`, `submenuTextTransformHover`, `submenuTextWrap`, `submenuWritingMode`
+### BOTH (100)
+`collapsePoint`, `featuredBg`, `featuredBgGradient`, `featuredBgHover`, `featuredBgHoverGradient`, `featuredColour`, `featuredColourGradient`, `featuredColourHover`, `featuredFontWeight`, `featuredFontWeightHover`, `featuredItemIds`, `featuredRadius`, `featuredRadiusHover`, `gap`, `itemBg`, `itemBgCurrent`, `itemBgCurrentGradient`, `itemBgGradient`, `itemBgHover`, `itemBgHoverGradient`, `itemBgHoverTreatment`, `itemBorderColour`, `itemBorderColourCurrent`, `itemBorderColourHover`, `itemBorderHoverTreatment`, `itemBorderStyle`, `itemBorderWidth`, `itemColour`, `itemColourCurrent`, `itemColourGradient`, `itemColourHover`, `itemColourHoverGradient`, `itemColourHoverTreatment`, `itemFontFamily`, `itemFontSize`, `itemFontStyle`, `itemFontWeight`, `itemFontWeightCurrent`, `itemFontWeightHover`, `itemLetterSpacing`, `itemLineHeight`, `itemMagnetEnabled`, `itemTextAlign`, `itemTextColumns`, `itemTextDecoration`, `itemTextDecorationHover`, `itemTextTransform`, `itemTextTransformHover`, `itemTextWrap`, `itemWritingMode`, `margin`, `navBg`, `navBgGradient`, `navBgHover`, `navColour`, `navColourGradient`, `navColourHover`, `navLabel`, `padding`, `sgsCustomCss`, `submenuBg`, `submenuBgGradient`, `submenuBorderColour`, `submenuBorderColourGradient`, `submenuBorderRadius`, `submenuBorderStyle`, `submenuBorderWidth`, `submenuColour`, `submenuColourCurrent`, `submenuColourGradient`, `submenuColourHover`, `submenuColourHoverTreatment`, `submenuFontFamily`, `submenuFontSize`, `submenuFontStyle`, `submenuFontWeight`, `submenuFontWeightHover`, `submenuLetterSpacing`, `submenuLineHeight`, `submenuLinkBg`, `submenuLinkBgCurrent`, `submenuLinkBgGradient`, `submenuLinkBgHover`, `submenuLinkBgHoverTreatment`, `submenuLinkBorderColour`, `submenuLinkBorderColourHover`, `submenuLinkBorderStyle`, `submenuLinkBorderWidth`, `submenuMinWidth`, `submenuPadding`, `submenuShadow`, `submenuShadowColour`, `submenuTextAlign`, `submenuTextColumns`, `submenuTextDecoration`, `submenuTextDecorationHover`, `submenuTextTransform`, `submenuTextTransformHover`, `submenuTextWrap`, `submenuWritingMode`
 
-### NO-EFFECT (16) — placement by family is INFERENCE, not measurement
+### NO-EFFECT (12) — placement by family is INFERENCE, not measurement
 
 No CSS or markup change was observed under either configuration. That is **not** proof a control is
 dead: most need a paired value the enabler configuration did not set. The placement below follows each
 attribute's family and is unverified.
+
+**Updated 2026-09-14 (post Step-2.5 classifier fix).** Four attributes moved OUT of this bucket after
+two real bugs were found and fixed, verified by re-running the harness live (not inferred): (1)
+`itemTextColumns`/`submenuTextColumns` used a sentinel value of `default + 7`, but
+`helpers-typography.php`'s `column-count` emitter clamps to 1-6 server-side — an out-of-range sentinel
+was silently dropped before reaching CSS. (2) `submenuShadowColour`'s sentinel test never actually
+exercised its composition path, because `submenuShadow`'s test value (`'0 4px 12px rgba(0,0,0,.3)'`)
+failed `sgs_shadow_value_composed()`'s raw-shape regex (`/^(inset\s+)?-?[\d.]+px/i` — a bare `0` with no
+unit doesn't match), so it silently fell through to the preset-slug branch instead. Fixed sentinel:
+`'0px 4px 12px 0px rgba(0,0,0,.3)'` (4 lengths with units, matching `ShadowControl.js::buildShadow()`'s
+real output shape). (3) `submenuBgGradient` moved out for a different reason — its NO-EFFECT verdict was
+real at the time this report was first written, but D1060 Part A (commit `ed3b495de`) has since fixed
+the underlying gradient-fallback bug it was reporting, live on `main`. All three sentinel-bug fixes are
+in `scripts/migrations/2026-09-14-nav-menu-split-classify-sentinels.php` and
+`...-classify-harness.php`; full detail in each file's own docblock. All four now score **BOTH**, moved
+into that list above.
 
 | Attribute | Inferred placement |
 |---|---|
@@ -62,21 +78,30 @@ attribute's family and is unverified.
 | `itemLetterSpacingUnit` | BOTH (pairs with itemLetterSpacing) |
 | `itemLineHeightUnit` | BOTH (pairs with itemLineHeight) |
 | `itemSmartContrast` | BOTH (item family; acts only when contrast fails) |
-| `itemTextColumns` | BOTH (item typography) |
 | `itemTextIndent` | BOTH (item typography) |
-| `submenuBgGradient` | BOTH (pairs with submenuBg) |
 | `submenuFontSizeUnit` | BOTH (pairs with submenuFontSize) |
 | `submenuLetterSpacingUnit` | BOTH (pairs with submenuLetterSpacing) |
 | `submenuLineHeightUnit` | BOTH (pairs with submenuLineHeight) |
-| `submenuShadowColour` | BOTH (pairs with submenuShadow) |
-| `submenuTextColumns` | BOTH (submenu typography) |
 | `submenuTextIndent` | BOTH (submenu typography) |
 | `sweepAngle` | BOTH (item hover family) |
 
-⚠ `itemTextIndent`, `itemTextColumns`, `submenuTextIndent` and `submenuTextColumns` received valid
-values and emitted **nothing** in either configuration, with no obvious enabler. They are the strongest
-candidates for genuinely unwired controls. Check each one's emitter before migrating it, and do not
-delete any without asking.
+⚠ `itemTextIndent` and `submenuTextIndent` received valid values and emitted **nothing** in either
+configuration, with no obvious enabler. This matches D1060 ruling 8 (both text-indent controls are
+already known-unwired — `sgs_typography_css_rule()` needs a fourth argument neither call site passes)
+— consistent, not a new finding. They remain the strongest candidates for genuinely unwired controls
+among the remaining 12. Check each one's emitter before migrating it, and do not delete any without
+asking.
+
+**Root custom properties and cascade-timing — investigated, not applicable here.** Step 2.5 also asked
+whether the harness needs a cascade-aware, transition-safe computed-style check. Checked directly: this
+classifier does pure server-side PHP rendering (`WP_Block::render()`) and diffs raw CSS rule text — it
+never opens a browser, forces a pseudo-state, or reads `getComputedStyle()`, so the transition-timing
+defect (real, and already fixed, in a DIFFERENT browser-based cascade-audit script from earlier this
+session) cannot occur here. Separately checked whether a root-level custom-property SETTER rule (present
+in every render) could mask a fork-specific CONSUMER rule being absent — spot-checked `featuredRadius`/
+`featuredColour` (both custom-property-routed) and confirmed the harness's `matched` selector list
+already distinguishes the root setter from the real descendant consumer rule. No evidence either concern
+is currently producing a wrong verdict.
 
 ## Two verdicts that are structurally true and semantically wrong
 

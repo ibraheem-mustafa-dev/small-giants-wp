@@ -13,7 +13,7 @@
  * harness reports `sentinel_equals_baseline`, and the analyser reports those attributes as
  * UNTESTED rather than NO-EFFECT, so a generator bug cannot hide inside the no-effect bucket.
  *
- * FOUR BUGS FOUND IN THE FIRST VERSION, each now pinned by the rule order below:
+ * SIX BUGS FOUND, each now pinned by the rule order below:
  *   1. `padding` defaults to `{"desktop":{}}`; PHP decodes the inner `{}` as `[]`, and
  *      recursively perturbing an empty array returns the same empty array. The generator
  *      now falls through to a name-based shape whenever perturbing changes nothing.
@@ -23,6 +23,22 @@
  *      enums) fell through to a nonsense string. They now get real CSS values by name.
  *   4. The first-run report counted these as NO-EFFECT, which is indistinguishable from a
  *      genuinely dead control. Hence `sentinel_equals_baseline` above.
+ *   5. `itemTextColumns`/`submenuTextColumns` got `default + 7` from the generic number
+ *      branch. `helpers-typography.php`'s `column-count` emitter clamps to 1-6
+ *      (`absint()`, then `$columns >= 1 && $columns <= 6`) mirroring core's own
+ *      MIN/MAX_TEXT_COLUMNS — a value of 7 (or any out-of-range default+7) is silently
+ *      dropped before it ever reaches CSS, so both attributes scored a false NO-EFFECT.
+ *      Verified 2026-09-14 by running the harness live and reading the sentinel value back
+ *      out of the report (`7`, `NO-EFFECT`) before fixing.
+ *   6. `submenuShadow`'s sentinel was `'0 4px 12px rgba(0,0,0,.3)'` — valid CSS, but
+ *      `sgs_shadow_value_composed()` (`includes/helpers-tokens.php`) only treats a shape as
+ *      RAW when it matches `/^(inset\s+)?-?[\d.]+px/i` — a number immediately followed by
+ *      `px`. A bare `0` (no unit) fails that regex, so the sentinel fell through to the
+ *      PRESET-SLUG branch instead of the raw-CSS-plus-colour branch, and
+ *      `submenuShadowColour`'s composition path was never actually exercised by the test.
+ *      `ShadowControl.js::buildShadow()` always emits all four lengths with units
+ *      (`x y blur spread`, per the comment in `sgs_shadow_value_composed()`), so the
+ *      sentinel now matches what the real control actually produces.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -88,7 +104,7 @@ function sgs_probe_sentinel( string $name, array $schema, int $mega_id ) {
 		'submenuAnimation'      => 'slide-down',                  // none|fade|slide-down
 		'triggerIcon'           => array( 'source' => 'lucide', 'name' => 'star' ),
 		'sublinkMarkerIcon'     => array( 'source' => 'lucide', 'name' => 'star' ),
-		'submenuShadow'         => '0 4px 12px rgba(0,0,0,.3)',
+		'submenuShadow'         => '0px 4px 12px 0px rgba(0,0,0,.3)', // 4 lengths incl. px units, matching ShadowControl.js::buildShadow() — see file docblock item 6.
 		'sgsCustomCss'          => '.sgs-probe-custom{outline:3px solid red}',
 	);
 	if ( array_key_exists( $name, $php_enforced ) ) {
@@ -96,6 +112,14 @@ function sgs_probe_sentinel( string $name, array $schema, int $mega_id ) {
 	}
 	if ( preg_match( '/HoverTreatment$/', $name ) ) {
 		return 'none'; // allowed set is none|swap|sweep|highlight; the default is swap
+	}
+	// `column-count` is clamped server-side to 1-6 (helpers-typography.php, mirroring core's
+	// MIN/MAX_TEXT_COLUMNS) — a `default + 7` sentinel is silently dropped before it reaches
+	// CSS, scoring a false NO-EFFECT. Pick a value in-range that still differs from the
+	// (usually absent) default.
+	if ( preg_match( '/TextColumns$/', $name ) ) {
+		$in_range = is_numeric( $default ) ? (int) $default : 0;
+		return ( 4 === $in_range ) ? 5 : 4;
 	}
 
 	$type = $schema['type'] ?? null;
