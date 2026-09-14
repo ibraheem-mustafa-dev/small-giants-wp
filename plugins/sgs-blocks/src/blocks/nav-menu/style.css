@@ -65,8 +65,6 @@
  * scaleX() without solving the border-radius distortion some other way.
  */
 .sgs-nav-menu__indicator {
-	background-color: var(--wp--preset--color--accent, currentColor);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	height: 100%;
 	left: 0;
 	opacity: var(--sgs-nav-indicator-opacity, 0);
@@ -79,6 +77,25 @@
 		opacity 0.25s cubic-bezier(0.16, 0.84, 0.32, 1);
 	width: var(--sgs-nav-indicator-w, 0px);
 	z-index: 0;
+}
+
+/* Zero-specificity overridable defaults (G20c ungated-paint fix, 2026-09-14) —
+   mirrors the `:where(.sgs-nav-menu__burger svg)` pattern below. The fill is
+   ALREADY attribute-driven: render.php emits a higher-specificity
+   `.{uid} .sgs-nav-menu__indicator{background-color:…}` rule whenever
+   itemBgHover/itemBgHoverGradient is set (per
+   `block.json::supports.sgs.colourExemptions.indicator` — this element
+   deliberately carries no colour attribute of its own, it paints from the
+   `item` element's Hover swatch). Demoting this bare fallback to `:where()`
+   costs nothing (the uid-scoped rule was already winning on specificity) and
+   closes the ungated-paint census entry honestly rather than masking it.
+   border-radius has no attribute anywhere in this block — a genuinely
+   structural shape default, same category as the burger glyph sizing below —
+   so it is demoted for the same "never masks a future attr-driven rule"
+   reason, with no new control needed. */
+:where(.sgs-nav-menu__indicator) {
+	background-color: var(--wp--preset--color--accent, currentColor);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
 /*
@@ -184,7 +201,6 @@
 	align-items: center;
 	background: none;
 	border: none;
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	color: inherit;
 	cursor: pointer;
 	display: flex;
@@ -197,6 +213,14 @@
 	padding: 0;
 	transition: background-color var(--wp--custom--transition--fast, 150ms ease);
 	width: 44px;
+}
+
+/* Zero-specificity overridable default (G20c ungated-paint fix, 2026-09-14) —
+   no attribute governs the burger button's corner radius anywhere in this
+   block; a genuinely structural shape default, same category as the glyph
+   sizing rules below, demoted so it never masks a future attr-driven rule. */
+:where(.sgs-nav-menu__burger) {
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
 /*
@@ -302,12 +326,19 @@
 .sgs-nav-menu__burger-bar {
 	display: block;
 	width: 100%;
-	background: currentColor;
-	border-radius: 1px;
 	transition: transform 200ms ease, opacity 200ms ease;
 }
 
+/* `background`/`border-radius` moved here 2026-09-14 (G20c ungated-paint fix)
+   — `currentColor` already tracks the burger's own `color` (set by the
+   existing `burgerColour` attribute via `.sgs-nav-menu__burger{color:inherit}`
+   → render.php's scoped `css:color` rule), so this was never truly
+   uncontrolled paint, only mis-shaped for the detector; `border-radius` has
+   no attribute anywhere, same structural-default category as `height` above.
+   Zero-specificity so neither ever masks a future attr-driven rule. */
 :where(.sgs-nav-menu__burger-bar) {
+	background: currentColor;
+	border-radius: 1px;
 	height: 2px;
 }
 
@@ -623,9 +654,21 @@
  * Matching the same fallback chain here means a drawer's nested submenu now
  * always paints a real cream surface regardless of `drawerBg`, so its row
  * text no longer needs a runtime drawerBg-aware contrast computation to stay
- * legible (see the matching PHP fix). */
+ * legible (see the matching PHP fix).
+ *
+ * `background` MOVED to `nav-menu-submenu-css.php::sgs_nav_menu_submenu_css()`
+ * 2026-09-14 (G20c ungated-paint fix) — this file's own header comment says
+ * "Colour … are ALL attr-driven, emitted by render.php's #uid-scoped <style>.
+ * This file deliberately hardcodes none of them", and this declaration was a
+ * real breach of that: an attr-driven fallback chain hardcoded in plain CSS.
+ * The moved rule keeps the IDENTICAL selector (now uid-scoped, (0,5,0) vs the
+ * previous unscoped (0,4,0) — still the highest-specificity submenu-background
+ * rule in drill-enhanced mode, so the render is byte-identical) and the
+ * IDENTICAL fallback chain — see the PHP comment there for why this specific
+ * chain must not be swapped for the accordion-mode drawer rule's different
+ * one (`surface` + `color-mix`, `.sgs-nav-drawer {uid} .sgs-nav-menu__submenu`
+ * at (0,3,0)), which would silently change drill-mode's resting colour. */
 .sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu {
-	background: var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));
 	inset: 0;
 	overflow-y: auto;
 	position: absolute;
@@ -648,7 +691,6 @@
 	align-items: center;
 	background: none;
 	border: 0;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
 	color: inherit;
 	cursor: pointer;
 	display: flex;
@@ -658,6 +700,15 @@
 	padding: 0 16px;
 	text-align: start;
 	width: 100%;
+}
+
+/* Zero-specificity overridable default (G20c ungated-paint fix, 2026-09-14) —
+   a fixed decorative hairline under the JS-injected drill-down "Back" row
+   (nav-drilldown.js); no attribute governs it anywhere in this block, same
+   structural-chrome category as the other :where() defaults in this file.
+   Demoted so it never masks a future attr-driven rule. */
+:where(.sgs-nav-menu__drill-back-btn) {
+	border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
 }
 
 /*

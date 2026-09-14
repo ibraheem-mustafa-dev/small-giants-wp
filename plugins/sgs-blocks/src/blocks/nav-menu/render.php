@@ -66,8 +66,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-markup.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-treatments.php';
 require_once dirname( __DIR__, 3 ) . '/includes/sweep-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-item-border-featured-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-trigger-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/nav-menu-submenu-link-css.php';
 // class-sgs-container-wrapper.php is deliberately NOT required — this block
 // renders its root block-private since D539 (see §5). Re-adding the require
 // would reintroduce a dependency nothing uses.

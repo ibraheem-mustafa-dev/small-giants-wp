@@ -28,8 +28,8 @@ import metadata from './block.json';
 const SWEEP_ELIGIBILITY = metadata?.supports?.sgs?.sweepEligibility;
 
 /** Shared option fragments — translated once, reused by every selector below. */
-const TREATMENT_NONE = { value: 'none', label: __( 'None', 'sgs-blocks' ) };
-const TREATMENT_SWAP = { value: 'swap', label: __( 'Swap', 'sgs-blocks' ) };
+export const TREATMENT_NONE = { value: 'none', label: __( 'None', 'sgs-blocks' ) };
+export const TREATMENT_SWAP = { value: 'swap', label: __( 'Swap', 'sgs-blocks' ) };
 const TREATMENT_SWEEP = { value: 'sweep', label: __( 'Sweep', 'sgs-blocks' ) };
 const TREATMENT_HIGHLIGHT = {
 	value: 'highlight',
@@ -40,11 +40,15 @@ const TREATMENT_HIGHLIGHT = {
  * The two/three options a Sweep-eligible row offers, with `Sweep` OMITTED (never
  * disabled) when the declared predicate says the element cannot carry it.
  *
+ * Exported — SubmenuBurgerTreatments.js (split out 2026-09-14, file-size
+ * maintenance pass) reuses this verbatim for its own sweep-eligible rows
+ * rather than duplicating the eligibility-predicate call.
+ *
  * @param {Object} attributes Block attributes.
  * @param {string} treatment  The treatment attribute keying this row's entry.
  * @return {Array} Option objects for `TreatmentSelect`.
  */
-function sweepableOptions( attributes, treatment ) {
+export function sweepableOptions( attributes, treatment ) {
 	const eligibility = SWEEP_ELIGIBILITY;
 	return [
 		TREATMENT_NONE,
@@ -233,88 +237,8 @@ export function ItemSeparatorTreatment( { value, onChange, angle, onAngleChange 
 	);
 }
 
-/**
- * @param {Object}   root0                Props.
- * @param {string}   root0.value         The stored treatment value.
- * @param {Function} root0.onChange      Receives the next treatment value.
- * @param {Object}   [root0.attributes]  Block attributes — read ONLY by the declared
- *                                       Sweep-eligibility predicate, never written.
- * @return {Object} The node.
- */
-export function SubmenuTextTreatment( { value, onChange, attributes } ) {
-	return (
-		<TreatmentSelect
-			label={ __( 'Link text on hover', 'sgs-blocks' ) }
-			value={ value }
-			onChange={ onChange }
-			options={ sweepableOptions( attributes, 'submenuColourHoverTreatment' ) }
-		/>
-	);
-}
-
-/**
- * ⛔ Two options only, and that is a real boundary (FR-41-23): the sliding pill is an
- * ITEM-row mechanism needing siblings to slide between, and a per-link sweep-band on a
- * strictly vertical list has no referent. The third segment is dropped outright rather
- * than rendered disabled.
- *
- * @param {Object}   root0                Props.
- * @param {string}   root0.value         The stored treatment value.
- * @param {Function} root0.onChange      Receives the next treatment value.
- * @param {Object}   [root0.attributes]  Block attributes — read ONLY by the declared
- *                                       Sweep-eligibility predicate, never written.
- * @return {Object} The node.
- */
-export function SubmenuLinkBgTreatment( { value, onChange } ) {
-	return (
-		<TreatmentSelect
-			label={ __( 'Link background on hover', 'sgs-blocks' ) }
-			value={ value }
-			onChange={ onChange }
-			options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
-		/>
-	);
-}
-
-/**
- * ⚠ Writes `burgerColourHoverTreatment` — the ICON/TEXT colour's treatment. Its
- * eligibility reads `burgerBg` / `burgerBgGradient` / `burgerHoverColour` (the
- * button's BACKGROUND in both states), never `burgerColourHover`. §8.1 exists to keep
- * those two anagram-close names apart.
- *
- * @param {Object}   root0                Props.
- * @param {string}   root0.value         The stored treatment value.
- * @param {Function} root0.onChange      Receives the next treatment value.
- * @param {Object}   [root0.attributes]  Block attributes — read ONLY by the declared
- *                                       Sweep-eligibility predicate, never written.
- * @return {Object} The node.
- */
-export function BurgerIconTreatment( { value, onChange, attributes } ) {
-	return (
-		<TreatmentSelect
-			label={ __( 'Icon on hover', 'sgs-blocks' ) }
-			value={ value }
-			onChange={ onChange }
-			options={ sweepableOptions( attributes, 'burgerColourHoverTreatment' ) }
-		/>
-	);
-}
-
-/**
- * @param {Object}   root0                Props.
- * @param {string}   root0.value         The stored treatment value.
- * @param {Function} root0.onChange      Receives the next treatment value.
- * @param {Object}   [root0.attributes]  Block attributes — read ONLY by the declared
- *                                       Sweep-eligibility predicate, never written.
- * @return {Object} The node.
- */
-export function BurgerBgTreatment( { value, onChange } ) {
-	return (
-		<TreatmentSelect
-			label={ __( 'Button background on hover', 'sgs-blocks' ) }
-			value={ value }
-			onChange={ onChange }
-			options={ [ TREATMENT_NONE, TREATMENT_SWAP ] }
-		/>
-	);
-}
+// SubmenuTextTreatment, SubmenuLinkBgTreatment, BurgerIconTreatment and
+// BurgerBgTreatment moved to ./SubmenuBurgerTreatments.js (file-size
+// maintenance pass, 2026-09-14) — same "presentational `after` node, detector
+// never reads it" rationale as this file's own docblock; `sweepableOptions`/
+// `TREATMENT_NONE`/`TREATMENT_SWAP` above are exported for that file to reuse.

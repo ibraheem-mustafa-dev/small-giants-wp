@@ -35,8 +35,7 @@ import { __ } from '@wordpress/i18n';
 // another session, and a shared import line is unstageable independently of
 // that session's own uncommitted work. A separate line keeps this change
 // isolatable.
-import { PanelBody, TextControl, SelectControl } from '@wordpress/components';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
 import { Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -45,25 +44,22 @@ import {
 	TypographyControls,
 	fillRow,
 	textRow,
-	resolveColourToken,
 } from '../../components';
-import {
-	calculateRelativeLuminance,
-	calculateContrastRatio,
-	meetsWCAG_AA,
-} from '../../utils/wcag-contrast';
 import {
 	ItemTextTreatment,
 	ItemBgTreatment,
 	ItemBorderTreatment,
 	ItemSeparatorTreatment,
+} from './ColourRowExtras';
+import {
 	SubmenuTextTreatment,
 	SubmenuLinkBgTreatment,
 	BurgerIconTreatment,
 	BurgerBgTreatment,
-} from './ColourRowExtras';
+} from './SubmenuBurgerTreatments';
 import useNavMenuSource from './useNavMenuSource';
 import useDrawerNotice from './useDrawerNotice';
+import useItemHoverContrast from './useItemHoverContrast';
 import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
 import BurgerPanel from './BurgerPanel';
@@ -71,6 +67,7 @@ import DropdownSettingsPanel from './DropdownSettingsPanel';
 import BarPanel from './BarPanel';
 import TypographyPanel from './TypographyPanel';
 import ItemsPanel from './ItemsPanel';
+import ItemSeparatorPanel from './ItemSeparatorPanel';
 import SubmenuItemsPanel from './SubmenuItemsPanel';
 import DropdownStylePanel from './DropdownStylePanel';
 import EffectsPanel from './EffectsPanel';
@@ -166,21 +163,6 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	const blockProps = useBlockProps( { ref: contrastRefEl } );
 	const [ colourPalette ] = useSettings( 'color.palette' );
 
-	// ── Item hover-text readability check (FR-41-5, 2026-09-13) ─────────────
-	//
-	// UNCONDITIONAL — fires regardless of itemSmartContrast (that attribute now
-	// only gates the automatic colour SWAP in nav-menu-css.php; this warns
-	// every time, so an operator always knows their choice may be hard to read,
-	// whether or not they want it auto-corrected). Only checked against
-	// `itemColourHover` once the operator has actually set one — an untouched
-	// attribute stays '' in the stored attributes even though render.php
-	// default-closes it to 'accent' server-side (see nav-menu-css.php's own
-	// comment on that default-close), so this never fires against a value the
-	// operator never chose. Background is the hover fill if set, else falls
-	// back to the resting surface (itemBg/navBg) — the same surface that shows
-	// through when no hover background is set.
-	const [ itemHoverContrastNotice, setItemHoverContrastNotice ] = useState( null );
-
 	// ── The Colour panel (Spec 41 §9.6) ──────────────────────────────────
 	//
 	// D618/D609 — ONE grouped, SGS-OWNED colour panel (own PanelBody, mounted
@@ -226,38 +208,16 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 	// unconditional readability check declared above `colourRows`.
 	const itemHoverSurface = itemBgHover || itemSurface || '';
 
-	useEffect( () => {
-		if ( ! itemColourHover || ! itemHoverSurface ) {
-			setItemHoverContrastNotice( null );
-			return;
-		}
-
-		try {
-			const bgLuminance = calculateRelativeLuminance(
-				resolveColourToken( itemHoverSurface, colourPalette ) || itemHoverSurface,
-				contrastRefEl.current
-			);
-			const fgLuminance = calculateRelativeLuminance(
-				resolveColourToken( itemColourHover, colourPalette ) || itemColourHover,
-				contrastRefEl.current
-			);
-			const ratio = calculateContrastRatio( bgLuminance, fgLuminance );
-
-			if ( ! meetsWCAG_AA( ratio, false ) ) {
-				setItemHoverContrastNotice(
-					__(
-						'This hover colour may be hard to read against its background. Turn on “Keep text readable automatically” in the Accessibility panel (General tab) to have it corrected automatically, or choose a different colour.',
-						'sgs-blocks'
-					)
-				);
-			} else {
-				setItemHoverContrastNotice( null );
-			}
-		} catch ( error ) {
-			// Never throw on an unparseable colour — warn-only, fall back to no notice.
-			setItemHoverContrastNotice( null );
-		}
-	}, [ itemColourHover, itemHoverSurface, colourPalette ] );
+	// ── Item hover-text readability check (FR-41-5, 2026-09-13) ─────────────
+	// Extracted to useItemHoverContrast.js (file-size maintenance pass,
+	// 2026-09-14) — see that file's own docblock for the full rationale
+	// (unconditional, gated on an operator-set itemColourHover only).
+	const itemHoverContrastNotice = useItemHoverContrast( {
+		itemColourHover,
+		itemHoverSurface,
+		colourPalette,
+		contrastRefEl,
+	} );
 
 	// FR-41-30(b) RESOLVED 2026-09-11 — the sublink-marker colour row is
 	// revealed only once the operator picks a DIFFERENT icon than the
@@ -797,47 +757,16 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				/>
 
 				{ /* FR-41-37 (2026-09-13) — shape controls for the NEW bar-only
-				   vertical item separator. Mounted directly here (not a new
-				   ItemsPanel.js prop) to keep this whole feature inside edit.js,
-				   the one file this task is scoped to touch. Bar-only: omitted
-				   (not disabled) inside a drawer instance. */ }
+				   vertical item separator. Mounted directly here (ItemSeparatorPanel.js,
+				   split out 2026-09-14 for file-size — see that file's own docblock
+				   for why it stays a directly-mounted sibling, not a wrapper hop).
+				   Bar-only: omitted (not disabled) inside a drawer instance. */ }
 				{ ! isDrawerInstance && (
-					<PanelBody
-						title={ __( 'Item separator (bar)', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<TextControl
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-							label={ __( 'Width', 'sgs-blocks' ) }
-							value={ itemSeparatorWidth || '' }
-							onChange={ ( val ) =>
-								setAttributes( { itemSeparatorWidth: val || '' } )
-							}
-							help={ __(
-								'A CSS length, e.g. 1px. Empty clears the separator entirely.',
-								'sgs-blocks'
-							) }
-						/>
-						<SelectControl
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-							label={ __( 'Style', 'sgs-blocks' ) }
-							value={ itemSeparatorStyle || 'solid' }
-							options={ [
-								{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
-								{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-								{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
-							] }
-							onChange={ ( val ) => setAttributes( { itemSeparatorStyle: val } ) }
-						/>
-						<p className="components-base-control__help">
-							{ __(
-								'A vertical line between adjacent top-level bar items — independent of the underline above, with its own colour in the Colour panel.',
-								'sgs-blocks'
-							) }
-						</p>
-					</PanelBody>
+					<ItemSeparatorPanel
+						itemSeparatorWidth={ itemSeparatorWidth }
+						itemSeparatorStyle={ itemSeparatorStyle }
+						setAttributes={ setAttributes }
+					/>
 				) }
 
 				<SubmenuItemsPanel
