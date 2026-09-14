@@ -688,7 +688,18 @@ $burger_context_attr = wp_interactivity_data_wp_context(
 	)
 );
 
-$toggle_html = sgs_nav_menu_burger_toggle_markup(
+/*
+ * The burger toggle belongs to the real header/bar instance only. This same
+ * render.php also runs INTERNALLY to build the drawer's own embedded item
+ * list ($sgs_nm_is_drawer_list, set above at the bar/drawer rendering fork) —
+ * without this gate that re-entrant pass emitted a SECOND
+ * `[aria-label="Open menu"][aria-controls="…"]` button nested inside the
+ * drawer's own markup, a duplicate accessible element targeting the same
+ * dialog. `Sgs_Drawer_Render::note_burger()` above is UNAFFECTED by this
+ * gate (it stays unconditional) — it is a registry write, not markup, and is
+ * already documented as harmless on re-entry.
+ */
+$toggle_html = $sgs_nm_is_drawer_list ? '' : sgs_nav_menu_burger_toggle_markup(
 	$burger_context_attr,
 	$drawer_ref,
 	$burger_icon,
