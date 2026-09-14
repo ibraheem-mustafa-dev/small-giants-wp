@@ -1,16 +1,17 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.0.0
+spec_version: 1.1.0
 status: active
 owner: framework
 date: 2026-09-14
 companions:
-  - 27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (reuses sgs/option-picker's tile pricing + the
-    live WooCommerce variation/product-bindings layer — never duplicated)
-  - 42-SGS-FORM-CPT-AND-PRICING.md (a `sgs/choice-flow` terminal action that charges money
-    inherits every FR-42-9/10/11 security rule verbatim — server-authoritative pricing,
-    stable option IDs, revision-pinning)
+  - 27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md (owns ALL pricing security for this spec's
+    purchase path — the existing secure `/sgs/v1/cart/add-item` proxy is reused as-is,
+    never re-derived; see §3 correction below)
+  - 42-SGS-FORM-CPT-AND-PRICING.md (v2.0.0 — retired its own pricing sections in favour of
+    this spec; shares the `LinkControl` picker component and the reference-lifecycle
+    contract, built once, applied to both CPTs)
   - 32-COMPONENT-STYLING-TOKEN-CONTRACT.md (no inline `style=` on any new markup)
 derived_from:
   - .claude/prompts/2026-09-14-modal-cpt-form-frame-card-checkout-upgrade.md Task 3
@@ -25,6 +26,10 @@ derived_from:
   - The owner's follow-on requirement: the same block, in full-screen-modal mode via
     `sgs_modal` (built same session), also replaces Mama's Munches' cramped inline
     flavour/pack-size pickers with a sequential one-decision-per-screen flow
+  - The 2026-09-14 reconciliation against Spec 42's adversarial-council findings (v1.1.0):
+    confirmed `sgs/option-picker`'s live WC-bound mode already has stable option identity;
+    its typed/manual mode does not, and the eyewear worked example uses that typed mode —
+    FR-43-10a closes the gap at the right layer instead of Spec 42's original wrong one
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -93,14 +98,17 @@ add to a mailing list (reuse whatever list/webhook mechanism `sgs/form` already 
 this project's forms notify via N8N webhooks, never `wp_mail()`, per the root CLAUDE.md's
 naming/architecture rules; do not add a second notification path).
 
-**FR-43-5 — Real purchase.** Add to cart with a server-computed total. **Every security
-rule from Spec 42 §5–§8 applies here verbatim, unmodified**, because this is the exact
-"a flow can genuinely charge money" surface Spec 42 was written to protect: stable
-immutable option IDs (never a client-editable `value`/`label`), the client submits
-identifiers + quantities only, never a total; the server recomputes from the flow's
-pinned definition; a snapshot of the priced inputs is stored per submission (not a bare
-WordPress revision reference — see Spec 42 §M2/Cynic finding, which applies identically
-here: a WP revision does not reliably capture the object-shaped price data this needs).
+**FR-43-5 — Real purchase (corrected, v1.1.0).** Add to cart with a server-computed total
+— by calling Spec 27's **existing, already-shipped, already-secure**
+`/sgs/v1/cart/add-item` proxy directly, exactly the way `sgs/buybox`/`sgs/product-card`
+already do. Do **not** rebuild Spec 42 v1.0.0's retired pricing-security apparatus
+(bespoke tile-ID validation, revision-pinning, a new minor-unit currency contract) —
+that whole mechanism existed only because v1.0.0 assumed a NEW pricing system with no
+security precedent. This one has a precedent, and reusing it is strictly less work, not
+a compromise. The security property this buys for free: the server never trusts a
+client-submitted total (Spec 27's proxy already enforces this), and it prices against
+live WooCommerce data, never a WordPress revision (side-stepping the exact "a revision
+doesn't reliably capture the data" defect the adversarial council found in v1.0.0).
 
 ## 4. Delivery — inline or full-screen modal
 
@@ -148,6 +156,21 @@ directly — do not re-implement tile-with-price rendering a second time. WooCom
 variation-picker steps call Spec 27's existing product-bindings layer directly — do not
 re-implement variation resolution a second time.
 
+**FR-43-10a (adversarial-council correction, reconciling with Spec 42's own finding).**
+Checked directly against the code: `sgs/option-picker`'s **live WooCommerce-bound mode**
+already resolves against a real, stable, server-side `term_id` — the tile-ID gap Spec 42
+v1.0.0 had in `sgs/form-field-tiles` does **not** carry over to that mode. But its
+**typed/manual mode** (`optionItems: {key, label}`) has the exact same problem: `key` is
+a free-text string, editable, not guaranteed unique or immutable. The real eyewear-lens
+worked example (`{std:0, thin:+30, xthin:+60, ultra:+100}`) is exactly this typed shape —
+these price deltas aren't tied to real WooCommerce attribute terms today. **Requirement:**
+a priced tile step in `sgs/choice-flow` must either (a) bind to a real WooCommerce
+attribute/variation (inheriting the live mode's stable `term_id` for free), or (b) if
+typed/manual, gain a server-generated immutable `optionId` at creation time, never derived
+from `key`/`label`. Do not ship a priced typed tile without one or the other — this is
+the single highest-value fix carried forward from Spec 42's adversarial council, now
+applied at the correct layer.
+
 ## 7. Client-facing disambiguation
 
 **FR-43-11.** `sgs/form` and `sgs/choice-flow` need distinct, plain-English inserter
@@ -155,6 +178,13 @@ descriptions naming the actual behavioural difference (branches to different que
 vs. collects information in one flexible form) — not just distinct names — so a client
 building "which treatment suits you" doesn't reach for the wrong block by guessing from
 a name alone.
+
+## 7a. Known cross-cutting gap — shared with Spec 42, not resolved here
+
+**FR-43-14.** Same disclosed gap as Spec 42 FR-42-10: `sgs-clone-orchestrator.py`'s
+`--deploy-target` cannot create a new `sgs_choice_flow` post — a cloned draft containing
+a flow will still emit inline content, breaching the CPT-backed mandate for anything
+built via `/sgs-clone`. One follow-up fixes both CPTs; do not solve it twice.
 
 ## 8. Explicitly deferred, not invented
 
@@ -181,6 +211,8 @@ competitor-template research that spec already flagged as incomplete.
 | FR-43-8 | `sgs_choice_flow` CPT — mirrors Spec 42's `sgs_form` CPT decisions exactly |
 | FR-43-9 | One shared step engine (extend `sgs/form-step`), never a third parallel system |
 | FR-43-10 | Priced/variation steps call existing `option-picker`/Spec-27 code directly, never reimplemented |
+| FR-43-10a | Typed priced tiles need a real immutable `optionId`, not the free-text `key` |
 | FR-43-11 | Distinct plain-English inserter descriptions vs `sgs/form` |
 | FR-43-12 | Recommendation-matching rule: build-time call, keep simple |
 | FR-43-13 | Preset templates: explicitly deferred, same status as Spec 42 FR-42-20 |
+| FR-43-14 | Cloning pipeline can't create a flow CPT — shared gap with Spec 42, fix once |

@@ -1,5 +1,42 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1065 [ROUTINE] — Spec 42 v2.0.0 / Spec 43 v1.1.0: pricing security reconciled onto Spec 27's existing proxy
+
+**2026-09-14.** A 6-persona `/adversarial-council` pre-mortem on Spec 42 v1.0.0 (run
+directly after Spec 43 v1.0.0 shipped) found the pricing mechanism unbuildable as
+specified — every claim fact-checked directly against the code before acting on it:
+`sgs/form-field-tiles` has no stable tile ID (confirmed: `tiles[].items` is
+`{label, value, icon, iconSource, image}`, no `id`); the live submissions table stores
+money as `payment_amount decimal(10,2)` against the spec's own "integer minor units,
+never a float" rule; the payload contract promised "quantities" no field in the tree
+supports; and pinning a price to a WordPress *revision* is unsound — this project's own
+`build-deploy.py::NON_BLOCK_POST_TYPES` explicitly excludes `revision` from its
+data-integrity gate, and WordPress revisions don't reliably capture postmeta at all.
+FR-42-0's file citation was also wrong (`class-form-rest-api.php` named; the real fail-open
+`requireLogin` bug is in `class-form-rest-submission.php::handle_submission`) — confirmed
+independently by two of six personas, both citing the exact symbol.
+
+**Resolution, not a repair:** none of the retired mechanism needed fixing, because Spec 43
+(shipped hours earlier the same session) had already reframed pricing as
+`sgs/option-picker` tiles used inside a step wizard — and Spec 27's `sgs/product-card`/
+`sgs/buybox` already call a secure, live, server-authoritative `/sgs/v1/cart/add-item`
+proxy for exactly this. **Spec 42 v2.0.0 retires every pricing/running-total/purchase
+requirement in full** (kept only as historical record in the file's own `derived_from`);
+**Spec 43 v1.1.0's FR-43-5 now calls Spec 27's existing proxy directly** instead of
+Spec 42's original bespoke security system. One genuine new gap did carry over correctly:
+`sgs/option-picker`'s live WooCommerce-bound mode already has a stable `term_id`
+(verified: `get_term_meta( $attr_term->term_id, ... )` in its `render.php`), but its
+typed/manual mode (`optionItems: {key, label}`) has the identical free-text-identity
+problem `form-field-tiles` had — and the real eyewear worked example uses that typed
+mode. FR-43-10a requires a server-generated immutable `optionId` there.
+
+**Also disclosed, not resolved:** `sgs-clone-orchestrator.py --deploy-target` cannot
+create a new CPT post at all (hard-validated to `page:<id>`/`post:<id>` only) — a shared
+gap affecting both `sgs_form` and `sgs_choice_flow`'s "every form/flow is mandatory
+CPT-backed" rule for anything built via `/sgs-clone`. Recorded as FR-42-10/FR-43-14, one
+follow-up closes both. No code shipped — both specs remain design-only pending
+implementation planning.
+
 ## D1064 [ROUTINE] — Route-coverage proof-of-concept: `--click` interaction driving in `draft-responsive-probe.js`, closing D1061's second named gap
 
 **2026-09-14.** Follows D1061/D1062 -- the other named gap (Piece 2 only measuring one
