@@ -1437,8 +1437,21 @@ def _harvest_content_gaps(extract: dict) -> list[dict]:
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
 
-def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: bool, run_dir: Path) -> dict:
-    """Stage 1 -- delegate to per-section-convention-voter.py via subprocess."""
+def stage_1_boundary(
+    mockup_path: Path,
+    section_selector: str,
+    auto_section: bool,
+    run_dir: Path,
+    sc_var_cache_path: Path | None = None,
+) -> dict:
+    """Stage 1 -- delegate to per-section-convention-voter.py via subprocess.
+
+    `sc_var_cache_path` (2026-09-14, Bean-directed): threaded straight through to
+    the voter's own --sc-var-cache so already-committed Tier B classifications
+    resolve here. After enrichment, if any sc-for boundary is still unresolved,
+    stage_1_boundary hands off to _halt_for_tier_b() -- see that function for why
+    this is a HALT, not a subagent/API dispatch.
+    """
     started = now_iso()
     voter_out = run_dir / "voter.json"
     cmd = [
@@ -1446,6 +1459,8 @@ def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: boo
         "--mockup", str(mockup_path),
         "--out", str(voter_out),
     ]
+    if sc_var_cache_path is not None:
+        cmd.extend(["--sc-var-cache", str(sc_var_cache_path)])
     if auto_section:
         cmd.append("--auto-section")
         # 2026-09-14, "connect the pieces" follow-up — real bug found live:
@@ -1492,9 +1507,87 @@ def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: boo
         except Exception as exc:  # noqa: BLE001 - enrichment is advisory; soft-fail
             warnings.append(f"stage1_boundary_hook soft-failed: {exc}; raw boundaries preserved")
 
+    # Tier B halt (2026-09-14, Bean-directed): if a cache was supplied and any
+    # sc-for boundary is still genuinely unresolved after Tier A + the cache,
+    # stop the run here rather than silently converting without those
+    # boundaries. See _halt_for_tier_b()'s own docstring for why this is a
+    # HALT-and-resume, not a subagent dispatch or an API call.
+    if sc_var_cache_path is not None and output.get("boundaries"):
+        _maybe_halt_for_tier_b(output["boundaries"], sc_var_cache_path, run_dir)
+
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 1, "boundary", status, output, started, errors, warnings)
     return output
+
+
+def _maybe_halt_for_tier_b(boundaries: list[dict], sc_var_cache_path: Path, run_dir: Path) -> None:
+    """Halt the orchestrator process if Tier B classification is still needed.
+
+    2026-09-14, Bean-directed correction to the earlier "wire an API key so the
+    pipeline can call Haiku itself" design: the agent RUNNING this /sgs-clone
+    invocation is already a full Claude Code session -- there is no need for a
+    separate API call or subagent dispatch. sc_var_haiku_batch.py's own module
+    docstring already names "the calling session (a Claude Code session...)" as
+    the intended responder to its write-prompt/apply-response contract; this
+    function is what actually makes the pipeline STOP and hand control back to
+    that session instead of silently skipping Tier B, which is what happened
+    every time this flag was omitted before today.
+
+    Never calls an LLM itself, never spawns a subagent -- it writes a plain-text
+    prompt file and exits. The SAME session that invoked this orchestrator run
+    reads that file, answers it directly (no tool call needed -- it is already
+    reasoning in this process), writes the response, runs sc_var_haiku_batch.py
+    --apply-response to commit it to the cache, then re-invokes this exact
+    /sgs-clone command. Already-resolved boundaries never re-prompt (Piece 1's
+    own unresolved_sc_for_names() re-derives the unresolved set fresh each run).
+    """
+    sys.path.insert(0, str(RECOGNISER_DIR))
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location(
+        "sc_var_haiku_batch_for_halt", RECOGNISER_DIR / "sc_var_haiku_batch.py"
+    )
+    _batch = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_batch)
+    from recogniser import sc_var_classifier as _scv  # noqa: E402
+
+    cache = _scv.load_cache(sc_var_cache_path)
+    unresolved = _scv.unresolved_sc_for_names(boundaries, cache)
+    if not unresolved:
+        return  # nothing left to classify -- Tier A + the cache already covered everything
+
+    boundary_data = {"boundaries": boundaries}
+    boundary_json_path = run_dir / "stage1-boundaries-for-tier-b.json"
+    boundary_json_path.write_text(json.dumps(boundary_data, indent=2), encoding="utf-8")
+
+    prompt_path = run_dir / "tier-b-prompt.txt"
+    response_path = run_dir / "tier-b-response.txt"
+    items = _batch.build_batch_items(boundaries, cache)
+    valid_blocks = _batch._load_valid_blocks()
+    prompt = _batch.build_prompt(items, valid_blocks)
+    prompt_path.write_text(prompt, encoding="utf-8")
+
+    print(
+        "\n"
+        "======================================================================\n"
+        "  TIER B CLASSIFICATION NEEDED -- run halted, no conversion happened\n"
+        "======================================================================\n"
+        f"  {len(unresolved)} sc-for name(s) in this draft have no confident identity yet.\n"
+        f"  Prompt written to: {prompt_path}\n"
+        "\n"
+        "  Next steps (same session, no separate API call or subagent):\n"
+        f"  1. Read {prompt_path.name} and answer it directly -- you are already a\n"
+        "     capable model reasoning right now; just produce the JSON array it asks for.\n"
+        f"  2. Write your JSON answer to: {response_path}\n"
+        "  3. Commit it to the cache:\n"
+        f"     python {RECOGNISER_DIR / 'sc_var_haiku_batch.py'} \\\n"
+        f"       --boundary {boundary_json_path} --cache {sc_var_cache_path} \\\n"
+        f"       --apply-response {response_path}\n"
+        "  4. Re-run this exact /sgs-clone command -- already-resolved boundaries\n"
+        "     will not re-prompt.\n"
+        "======================================================================\n",
+        file=sys.stderr,
+    )
+    sys.exit(2)
 
 
 # ---------------------------------------------------------------------------
@@ -3279,6 +3372,24 @@ def main():
              "production use is a separate, later policy decision -- same caveat as "
              "--sc-var-min-confidence.",
     )
+    parser.add_argument(
+        "--sc-var-cache", type=Path, default=None,
+        help="Opt-in Tier B (2026-09-14, Bean-directed follow-up): the committed sc_var_hint "
+             "cache sidecar path (plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py's "
+             "load_cache/write_cache_entries format, e.g. sites/<client>/sc-var-hints.json). "
+             "When set: (1) passed straight through to per-section-convention-voter.py's own "
+             "--sc-var-cache, so Tier B classifications already committed to this file resolve "
+             "immediately, no different from a Tier A hit; (2) after Stage 1, if any sc-for "
+             "boundary is STILL unresolved (sc_var_classifier.unresolved_sc_for_names), the "
+             "orchestrator writes a ready-to-answer batch prompt and HALTS the run rather than "
+             "silently proceeding without those boundaries. The calling Claude Code session -- "
+             "the same agent already driving this /sgs-clone invocation, not a separate API "
+             "call or subagent -- reads that prompt directly and answers it inline (it is "
+             "already a capable model; sc_var_haiku_batch.py's own docstring names exactly this "
+             "as its intended responder), writes the answer via --apply-response, then re-runs "
+             "this exact command; Tier A/B already-resolved items never re-prompt. Omit for "
+             "today's default (Tier B fully skipped, zero behaviour change).",
+    )
     args = parser.parse_args()
 
     # Verification-run ergonomics (2026-06-07): a draft run is a dev/verification
@@ -3406,7 +3517,10 @@ def main():
         f"total={_css_stats.get('total_rules',0)} chrome-skipped={_css_stats.get('chrome_skipped',0)}"
     )
 
-    boundary = stage_1_boundary(args.mockup, args.section or "", args.auto_section, run_dir)
+    boundary = stage_1_boundary(
+        args.mockup, args.section or "", args.auto_section, run_dir,
+        sc_var_cache_path=args.sc_var_cache,
+    )
     bcount = len(boundary.get("boundaries", []))
     primary_conv = (boundary.get("convention_summary") or {}).get("primary", "?")
     print(f"[stage-1] voter: {bcount} boundaries, primary convention={primary_conv}")
