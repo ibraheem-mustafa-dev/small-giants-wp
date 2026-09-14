@@ -400,6 +400,24 @@
 			"type": "string",
 			"default": "sgs-nav-drawer"
 		},
+		"justifyContent": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "flex-start", "center", "flex-end", "space-between", "space-around" ]
+		},
+		"splitAfterItemId": {
+			"type": "string",
+			"default": ""
+		},
+		"splitSide": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "before", "after" ]
+		},
+		"showBurger": {
+			"type": "boolean",
+			"default": true
+		},
 		"featuredItemIds": {
 			"type": "array",
 			"default": [],

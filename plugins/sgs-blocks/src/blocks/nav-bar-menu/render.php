@@ -425,13 +425,52 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 );
 $flat_items   = $bar_renderer->flatten( $menu_blocks );
 
+/*
+ * ── 2b. Split-nav slicing (Step 6, D1059). ──────────────────────────────────
+ *
+ * `splitSide` + `splitAfterItemId` let two instances of this block share one
+ * menu — one instance renders everything up to and including a chosen
+ * top-level item, the other renders everything after it (e.g. either side of
+ * a centred logo in `sgs/site-header-row`).
+ *
+ * Keyed to `$flat_items[]['identifier']` — the SAME identifier scheme
+ * `featuredItemIds` already uses — never an index, because index-slicing
+ * silently drops items the client adds later.
+ *
+ * ⛔ Fail VISIBLE, not silent: an unresolvable id (item deleted from the menu
+ * since this attribute was set) falls through to the untouched, FULL
+ * `$flat_items` list — never an empty bar. The editor-side notice is what
+ * makes the drift visible to the operator (`SplitPanel.js`); this render path
+ * has no notice mechanism, so it defaults to showing everything rather than
+ * showing nothing.
+ */
+$sgs_nm_split_side = (string) ( $attributes['splitSide'] ?? '' );
+if ( in_array( $sgs_nm_split_side, array( 'before', 'after' ), true ) ) {
+	$sgs_nm_split_after_id = (string) ( $attributes['splitAfterItemId'] ?? '' );
+	$sgs_nm_split_index    = null;
+	if ( '' !== $sgs_nm_split_after_id ) {
+		foreach ( $flat_items as $sgs_nm_i => $sgs_nm_item ) {
+			if ( ( $sgs_nm_item['identifier'] ?? '' ) === $sgs_nm_split_after_id ) {
+				$sgs_nm_split_index = $sgs_nm_i;
+				break;
+			}
+		}
+	}
+	if ( null !== $sgs_nm_split_index ) {
+		$flat_items = 'before' === $sgs_nm_split_side
+			? array_slice( $flat_items, 0, $sgs_nm_split_index + 1 )
+			: array_slice( $flat_items, $sgs_nm_split_index + 1 );
+	}
+}
+
 // ── D1059 split: this block ALWAYS renders the flat bar. ────────────────────
 // The former runtime fork (`sgs/navDrawerSubmenuModel` context /
 // `$sgs_nm_is_drawer_list`) is gone by construction: the in-drawer
 // accordion/drill-down list is the separate `sgs/nav-drawer-menu` block,
 // which calls `sgs_nav_drawer_menu_render_items()` in its OWN render.php.
 // This block never receives drawer context and never needs to detect what it
-// is — it IS the bar.
+// is — it IS the bar. (`$flat_items` may be a SLICE of the full menu — see
+// §2b above — but the render path itself never forks on that.)
 $items_html = sgs_nav_bar_menu_render_items( $flat_items, $featured_ids, $uid, $bar_renderer->get_submenu() );
 
 if ( '' === $items_html ) {
@@ -443,16 +482,23 @@ $drawer_ref = isset( $attributes['drawerRef'] ) && '' !== $attributes['drawerRef
 	? sanitize_html_class( (string) $attributes['drawerRef'] )
 	: 'sgs-nav-drawer';
 
+// `showBurger` (Step 6, D1059) — the right-hand half of a split menu (§2b)
+// suppresses its own burger; the left-hand half keeps the real one. Default
+// TRUE so every pre-Step-6 instance (and a fresh single, unsplit instance)
+// is unaffected.
+$sgs_nm_show_burger = ! isset( $attributes['showBurger'] ) || (bool) $attributes['showBurger'];
+
 /*
  * ── "A burger asked for a drawer" (W2-a). ────────────────────────────────────
  *
- * The burger below is always emitted — CSS at `collapsePoint` decides whether it
- * is visible, so the button is in the DOM on every device tier. Record the id it
- * controls so Sgs_Drawer_Render can render the site's Active menu drawer at
- * `wp_footer` ONLY on pages that have something to open it. A page with no burger
- * keeps byte-identical output.
+ * When shown, the burger below is always emitted — CSS at `collapsePoint`
+ * decides whether it is visible, so the button is in the DOM on every device
+ * tier. Record the id it controls so Sgs_Drawer_Render can render the site's
+ * Active menu drawer at `wp_footer` ONLY on pages that have something to open
+ * it. A page with no burger (either no instance of this block, or every
+ * instance has `showBurger` off) keeps byte-identical output.
  */
-if ( class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
+if ( $sgs_nm_show_burger && class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
 	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
 }
 
@@ -528,11 +574,14 @@ $burger_context_attr = wp_interactivity_data_wp_context(
 	)
 );
 
-// The burger toggle is ALWAYS emitted by this block — it IS the bar, it never
-// runs as the drawer's own internal list (that is `sgs/nav-drawer-menu`'s job
-// now), so there is no gate here any more (contrast the pre-split
-// `$sgs_nm_is_drawer_list ? '' : …` fork).
-$toggle_html = sgs_nav_bar_menu_burger_toggle_markup(
+// The burger toggle used to be ALWAYS emitted by this block, back when only
+// one instance of it could ever exist on a page. Step 6 (D1059, split-nav)
+// makes that no longer true: two instances can share one menu either side of
+// a logo, and only ONE of them should own the burger — `$sgs_nm_show_burger`
+// (§3 above) is that gate. It never runs as the drawer's own internal list
+// (that is `sgs/nav-drawer-menu`'s job) — contrast the pre-split
+// `$sgs_nm_is_drawer_list ? '' : …` fork, which this is not a revival of.
+$toggle_html = $sgs_nm_show_burger ? sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_context_attr,
 	$drawer_ref,
 	$burger_icon,
@@ -541,7 +590,7 @@ $toggle_html = sgs_nav_bar_menu_burger_toggle_markup(
 	$burger_aria_attr,
 	$burger_magnet_attrs,
 	$burger_icon_is_default
-);
+) : '';
 
 // ── The <nav> landmark label (FR-36-10 / FR-36-11) ──────────────────────────
 // The landmark ITSELF is this block's root: the final `printf()` at the end of
@@ -573,6 +622,25 @@ if ( '' === $nav_label && $ref > 0 ) {
 }
 if ( '' === $nav_label ) {
 	$nav_label = __( 'Primary', 'sgs-blocks' );
+}
+
+/*
+ * Split-nav landmark-unique guard (Step 6, D1059). Two split instances of
+ * this block read the SAME `$ref` menu (§2b), so the fallback chain above —
+ * unaware of the split — would derive the IDENTICAL label for both: two
+ * `<nav>` landmarks with the same accessible name is an axe `landmark-unique`
+ * failure. Only auto-derived labels are qualified; an operator who typed
+ * their OWN `navLabel` already has full control to make the two distinct and
+ * that choice is never overridden.
+ */
+if ( '' === trim( (string) ( $attributes['navLabel'] ?? '' ) )
+	&& in_array( $sgs_nm_split_side, array( 'before', 'after' ), true )
+) {
+	$nav_label = 'before' === $sgs_nm_split_side
+		/* translators: %s: the auto-derived menu label, e.g. "Primary". */
+		? sprintf( __( '%s (first half)', 'sgs-blocks' ), $nav_label )
+		/* translators: %s: the auto-derived menu label, e.g. "Primary". */
+		: sprintf( __( '%s (second half)', 'sgs-blocks' ), $nav_label );
 }
 
 /*
@@ -633,7 +701,23 @@ $sgs_nm_treatments = sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-b
 // This block is never nested inside `sgs/nav-drawer` (no `sgs/navDrawerBg`
 // context — the drawer's own render path is `sgs/nav-drawer-menu` now), so
 // the drawer-bg-aware submenu contrast parameter is always ''.
-$css  = '';
+$css = '';
+
+/*
+ * `justifyContent` (Step 6, D1059) — a plain restore, not new plumbing:
+ * `style.css`'s `:where(.sgs-nav-bar-menu){justify-content:space-between}`
+ * was already written (D539) to yield to an attribute-driven rule at normal
+ * specificity the moment one exists. Whitelisted rather than merely
+ * `esc_attr()`'d — this concatenates straight into a raw `<style>` block, not
+ * an HTML attribute, and the value can arrive via a programmatic writer (the
+ * cloning converter, WP-CLI) that bypasses the editor's `enum` validation.
+ */
+$sgs_nm_justify_allowed = array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
+$sgs_nm_justify_content = (string) ( $attributes['justifyContent'] ?? '' );
+if ( in_array( $sgs_nm_justify_content, $sgs_nm_justify_allowed, true ) ) {
+	$css .= $uid_sel . '{justify-content:' . $sgs_nm_justify_content . '}';
+}
+
 $css .= sgs_nav_shared_item_state_css( $attributes, $uid_sel, 'sgs-nav-bar-menu', $sgs_nm_treatments );
 $css .= sgs_nav_bar_menu_trigger_css( $attributes, $uid_sel, $sgs_nm_treatments, $trigger_mode );
 $css .= sgs_nav_shared_submenu_css(

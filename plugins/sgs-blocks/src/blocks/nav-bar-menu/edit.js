@@ -87,6 +87,7 @@ import NavMenuNotices from './NavMenuNotices';
 import MenuSettingsPanel from './MenuSettingsPanel';
 import BurgerPanel from './BurgerPanel';
 import DropdownSettingsPanel from './DropdownSettingsPanel';
+import SplitPanel from './SplitPanel';
 import ListLayoutPanel from '../../shared/nav-menu-panels/ListLayoutPanel';
 import TypographyPanel from '../../shared/nav-menu-panels/TypographyPanel';
 import ItemsPanel from '../../shared/nav-menu-panels/ItemsPanel';
@@ -170,6 +171,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		featuredRadiusHover,
 		featuredFontWeight,
 		featuredFontWeightHover,
+		justifyContent,
+		splitAfterItemId,
+		splitSide,
+		showBurger,
 	} = attributes;
 
 	// listColumns is intentionally NOT destructured/read here — it is
@@ -599,6 +604,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuAlign={ submenuAlign }
 					submenuCaret={ submenuCaret }
 					submenuCloseGrace={ submenuCloseGrace }
+				/>
+
+				<SplitPanel
+					justifyContent={ justifyContent }
+					splitAfterItemId={ splitAfterItemId }
+					splitSide={ splitSide }
+					showBurger={ showBurger }
+					resolvedItems={ resolvedItems }
+					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
 

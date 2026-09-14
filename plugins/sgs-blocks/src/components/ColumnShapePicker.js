@@ -74,6 +74,26 @@
  *   mobile automatically, so an asymmetric desktop shape never reaches a phone.
  * · Shapes are `fr`, never px, so they stay fluid.
  *
+ * `auto` TRACKS (added 2026-09-14, nav-menu-split Step 6, D1059)
+ * ----------------------------------------------------------------
+ * A shape's `weights` array may hold the literal string `'auto'` alongside
+ * numeric `fr` weights — `SHAPES[3]` gains `['1fr','auto','1fr']` for the
+ * split-nav-either-side-of-a-centred-logo layout: the CSS Grid track keyword
+ * `auto`, so the middle column hugs its content's own width (the logo) while
+ * the two `1fr` columns share whatever space is left equally. A numeric count
+ * can never produce this — an `auto` member is not a weight, it opts OUT of
+ * the weighted-ratio system entirely for that one column. `weightsToTrack()`
+ * emits it as the bare keyword `auto` (no `fr` suffix); `weightsToRatio()`
+ * skips the percentage split when any member is `auto` (a content-sized
+ * column has no fixed ratio to report) and shows the literal track string
+ * instead. The diagram renders an `auto` member as a DASHED outline rather
+ * than a solid bar, at the same DIAGRAM_BAR_COLOUR contrast, so it reads as
+ * "fits its content" rather than "an equal proportional share".
+ * ⛔ Still governed by "DO NOT ADD SHAPES FROM TASTE" — this one shape was
+ * explicitly approved (`.claude\plans\our-new-draft-from-enchanted-karp.md`
+ * Step 6), not invented here; do not add further `auto` members without the
+ * same measured justification.
+ *
  * @package SGS\Blocks
  */
 
@@ -102,6 +122,11 @@ const SHAPES = {
 		{ key: 'wide-centre', weights: [ 1, 2, 1 ], name: __( 'Wide centre', 'sgs-blocks' ) },
 		{ key: 'wide-first', weights: [ 2, 1, 1 ], name: __( 'Wide first', 'sgs-blocks' ) },
 		{ key: 'wide-last', weights: [ 1, 1, 2 ], name: __( 'Wide last', 'sgs-blocks' ) },
+		{
+			key: 'fit-centre',
+			weights: [ 1, 'auto', 1 ],
+			name: __( 'Fit centre', 'sgs-blocks' ),
+		},
 	],
 	4: [
 		{ key: 'equal', weights: [ 1, 1, 1, 1 ], name: __( 'Equal', 'sgs-blocks' ) },
@@ -127,13 +152,26 @@ function shapesFor( count ) {
 	];
 }
 
-/** `[1,2,1]` -> `'1fr 2fr 1fr'`. The ONLY place a track string is produced. */
-export function weightsToTrack( weights ) {
-	return weights.map( ( w ) => `${ w }fr` ).join( ' ' );
+/** An `auto` member opts OUT of the weighted-ratio system for that column. */
+function isAutoWeight( w ) {
+	return 'auto' === w;
 }
 
-/** `[1,2,1]` -> `'25 / 50 / 25'` — the ratio a client reads off the label. */
+/** `[1,'auto',1]` -> `'1fr auto 1fr'`. The ONLY place a track string is produced. */
+export function weightsToTrack( weights ) {
+	return weights.map( ( w ) => ( isAutoWeight( w ) ? 'auto' : `${ w }fr` ) ).join( ' ' );
+}
+
+/**
+ * `[1,2,1]` -> `'25 / 50 / 25'` — the ratio a client reads off the label.
+ * A set containing `auto` has no fixed percentage split to report (a
+ * content-sized column's share of the row depends on its content, not a
+ * ratio), so the literal track string is shown instead — e.g. `1fr / auto / 1fr`.
+ */
 function weightsToRatio( weights ) {
+	if ( weights.some( isAutoWeight ) ) {
+		return weightsToTrack( weights ).split( ' ' ).join( ' / ' );
+	}
 	const total = weights.reduce( ( a, b ) => a + b, 0 );
 	return weights.map( ( w ) => Math.round( ( w / total ) * 100 ) ).join( ' / ' );
 }
@@ -214,7 +252,9 @@ function lcm( values ) {
  * 4, which is the size the control already is.
  */
 function barSpaceFor( shapes ) {
-	const totals = shapes.map( ( s ) => s.weights.reduce( ( a, b ) => a + b, 0 ) );
+	const totals = shapes.map( ( s ) =>
+		s.weights.reduce( ( a, w ) => a + ( isAutoWeight( w ) ? 1 : w ), 0 )
+	);
 	const unit = lcm( totals );
 	return unit * Math.max( 1, Math.ceil( DIAGRAM_BAR_SPACE_TARGET / unit ) );
 }
@@ -233,7 +273,7 @@ function barSpaceFor( shapes ) {
  * @param {number}   props.barSpace Total px of bar for the whole rendered set.
  */
 function ShapeDiagram( { weights, barSpace } ) {
-	const total = weights.reduce( ( a, b ) => a + b, 0 );
+	const total = weights.reduce( ( a, w ) => a + ( isAutoWeight( w ) ? 1 : w ), 0 );
 	const unit = barSpace / total;
 
 	return (
@@ -247,17 +287,33 @@ function ShapeDiagram( { weights, barSpace } ) {
 				pointerEvents: 'none',
 			} }
 		>
-			{ weights.map( ( w, i ) => (
-				<span
-					key={ i }
-					style={ {
-						flex: '0 0 auto',
-						width: unit * w,
-						background: DIAGRAM_BAR_COLOUR,
-						borderRadius: 1,
-					} }
-				/>
-			) ) }
+			{ /* `weights` is a fixed-shape literal per catalogue entry (never
+			     reordered/filtered), so the position IS a stable identity. */ }
+			{ weights.map( ( w, i ) =>
+				isAutoWeight( w ) ? (
+					<span
+						key={ i } // eslint-disable-line react/no-array-index-key -- see note above
+						style={ {
+							flex: '0 0 auto',
+							width: unit,
+							height: 16,
+							boxSizing: 'border-box',
+							border: `1.5px dashed ${ DIAGRAM_BAR_COLOUR }`,
+							borderRadius: 1,
+						} }
+					/>
+				) : (
+					<span
+						key={ i } // eslint-disable-line react/no-array-index-key -- see note above
+						style={ {
+							flex: '0 0 auto',
+							width: unit * w,
+							background: DIAGRAM_BAR_COLOUR,
+							borderRadius: 1,
+						} }
+					/>
+				)
+			) }
 		</span>
 	);
 }
