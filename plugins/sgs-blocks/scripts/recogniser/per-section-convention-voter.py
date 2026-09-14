@@ -523,6 +523,30 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         "source_builder": source_builder,
     }
 
+    # Universal-pipeline upgrade, Piece 1 (2026-09-14, research-buddies
+    # grounded): Claude Design `.dc.html` drafts carry ZERO classes -- the
+    # only identity signal for wrapped content is the nearest `<sc-for>`/
+    # `<sc-if>` ANCESTOR's binding variable name (these are tag names, not
+    # attributes -- see sc_var_classifier.py's module docstring). Attached
+    # unconditionally (cheap, no-op for every non-Claude-Design source) so
+    # leftover-bucket-router.py can enrich a gap entry with it later; the
+    # actual Hint is only ever computed below, gap-candidate-gated, same as
+    # Tier 2's dom_shape_hint.
+    _sc_wrapper = None
+    try:
+        _scripts_root = Path(__file__).resolve().parent.parent
+        if str(_scripts_root) not in sys.path:
+            sys.path.insert(0, str(_scripts_root))
+        from recogniser import sc_var_classifier as _scv
+        _sc_wrapper = _scv.nearest_sc_wrapper(node)
+    except Exception:
+        _sc_wrapper = None
+    if _sc_wrapper is not None:
+        boundary["sc_var_kind"] = _sc_wrapper["kind"]
+        boundary["sc_var_name"] = _sc_wrapper["var_name"]
+        if "hint_count" in _sc_wrapper:
+            boundary["sc_var_hint_count"] = _sc_wrapper["hint_count"]
+
     # Tier 2 (2026-09-14, BEM-recognition brainstorm doc Q1): only attempted
     # for sections BEM recognition already failed on -- never for a
     # confidently-matched section. Advisory only; leftover-bucket-router.py
@@ -531,6 +555,38 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         dom_shape_hint = dom_shape_hint_for_gap_candidate(node)
         if dom_shape_hint is not None:
             boundary["dom_shape_hint"] = dom_shape_hint
+
+    # Piece 1's Tier A (deterministic, no model call) -- `sc-if` is
+    # deliberately excluded (research-buddies finding: it names a boolean
+    # state flag, not a collection, so it is not a block-identity signal at
+    # all). Fingerprint computed here (cheap) even on a Tier A hit, so a
+    # later per-draft Haiku batch pass can key its committed cache the same
+    # way whether or not Tier A already resolved this boundary.
+    if fallback == "gap-candidate" and boundary.get("sc_var_kind") == "for":
+        try:
+            _scripts_root = Path(__file__).resolve().parent.parent
+            if str(_scripts_root) not in sys.path:
+                sys.path.insert(0, str(_scripts_root))
+            from recogniser import sc_var_classifier as _scv
+            children = node.find_all(True, recursive=False)
+            child_tag_skeleton = [c.name for c in children]
+            text_snippet = node.get_text(" ", strip=True)
+            boundary["sc_var_fingerprint"] = _scv.content_fingerprint(
+                var_name=boundary["sc_var_name"],
+                wrapped_tag=node.name,
+                child_tag_skeleton=child_tag_skeleton,
+                text_snippet=text_snippet,
+                sibling_var_names=[],
+            )
+            sc_var_hint = _scv.classify_sc_var_deterministic(
+                boundary["sc_var_name"],
+                boundary.get("sc_var_hint_count"),
+                class_signature,
+            )
+            if sc_var_hint is not None:
+                boundary["sc_var_hint"] = sc_var_hint.to_dict()
+        except Exception:
+            pass
 
     return boundary
 

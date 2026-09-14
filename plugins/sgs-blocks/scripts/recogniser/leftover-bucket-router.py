@@ -1138,6 +1138,38 @@ def route_dom_shape_hints(boundaries: list[dict], buckets: dict[str, list]) -> N
                 item["dom_shape_hint"] = hint
 
 
+def route_sc_var_hints(boundaries: list[dict], buckets: dict[str, list]) -> None:
+    """Universal-pipeline upgrade, Piece 1 (2026-09-14) -- fold each
+    boundary's pre-computed `sc_var_hint` (per-section-convention-voter.py
+    ::build_boundary, Claude Design `sc-for` variable-name Tier A) into the
+    matching `unrecognised_class`/`unrecognised_section` bucket item.
+
+    Identical shape to `route_dom_shape_hints` above (pure enrichment, never
+    a new bucket, never a block assignment) -- kept as a separate function
+    rather than merged into that one because the two hint sources have
+    different confidence semantics and different evidence text, and a
+    future Tier B (cached Haiku classification) hint only ever replaces
+    `sc_var_hint`, never `dom_shape_hint`.
+    """
+    hinted = [b for b in boundaries if b.get("sc_var_hint")]
+    if not hinted:
+        return
+    hints_by_boundary_id = {
+        b["boundary_id"]: b["sc_var_hint"] for b in hinted if b.get("boundary_id")
+    }
+    hints_by_section_id = {
+        b["section_id"]: b["sc_var_hint"] for b in hinted if b.get("section_id")
+    }
+    for bucket_name in ("unrecognised_class", "unrecognised_section"):
+        for item in buckets.get(bucket_name, []):
+            hint = (
+                hints_by_boundary_id.get(item.get("boundary_id"))
+                or hints_by_section_id.get(item.get("section_id"))
+            )
+            if hint is not None and "sc_var_hint" not in item:
+                item["sc_var_hint"] = hint
+
+
 def route(
     boundary: dict | None,
     match: dict | None,
@@ -1161,6 +1193,7 @@ def route(
     route_wrong_block_type(matches, boundaries, extract_dict, buckets)
     route_leaf_block_with_complex_subtree(matches, extract_dict, buckets)  # P-PHASE8-14
     route_dom_shape_hints(boundaries, buckets)  # Q1 Tier 2 wiring
+    route_sc_var_hints(boundaries, buckets)  # universal-pipeline Piece 1 wiring
 
     totals = {name: len(items) for name, items in buckets.items()}
     gap_level_totals = {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0}
