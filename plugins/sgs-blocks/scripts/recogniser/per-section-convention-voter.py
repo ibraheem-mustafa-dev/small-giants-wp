@@ -422,9 +422,16 @@ def dom_shape_hint_for_gap_candidate(node: Tag) -> dict | None:
             siblings=siblings,
         )
         if hint is None and children:
+            # BUG FIX (qc-council, 2026-09-14): this MUST be the first
+            # child's own real class_signature, not []. An empty list makes
+            # _any_class_already_canonical() trivially False regardless of
+            # what the child actually carries -- confirmed empirically to
+            # let classify_heading() fire on an element carrying a genuine
+            # authored sgs-hero__headline class, violating constraint 1
+            # (never override an authored identity, even partially).
             hint = dsc.classify_element(
                 _bs4_to_dom_dict(children[0]),
-                [],
+                collect_class_signature(children[0]),
                 is_first_child=True,
                 is_top_level=False,
             )

@@ -96,6 +96,19 @@ _HEURISTIC_PATTERNS = [
     # unambiguous -- tried BEFORE kebab-semantic's broad catch-all below,
     # which would otherwise misclassify `elementor-widget-button`/`w-nav`
     # as generic kebab-semantic and never reach the real rule's slot_map.
+    #
+    # ⚠ qc-council finding (2026-09-14, disclosed not fixed): `^w-` also
+    # matches genuine Tailwind width/height utilities (`w-full`, `w-1/2`,
+    # `w-64`, `w-screen`, `w-auto`) -- confirmed empirically these get
+    # heuristically mislabelled "Webflow" instead of "Tailwind utility".
+    # Traced through to the actual block-routing outcome: no case found
+    # where this changes the final `block` value (_WEBFLOW's slot_map is
+    # narrow enough that the outcome coincides with Tailwind's own
+    # container default either way) -- but `source_convention`/
+    # `convention_per_section` metadata is wrong for these classes. A real
+    # fix needs Tailwind's own bare-keyword heuristic set expanded to
+    # recognise sizing words (full/auto/screen/fit/etc.), which risks its
+    # own new edge cases -- deliberately deferred, not silently dropped.
     ("Webflow",          re.compile(r"^w-")),
     ("Elementor / Divi", re.compile(r"^(elementor-widget-|et_pb_)")),
     ("Tailwind utility", re.compile(r"^[a-z]+-[0-9]+|^(flex|grid|hidden|truncate)$")),

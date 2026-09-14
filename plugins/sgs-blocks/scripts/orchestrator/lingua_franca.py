@@ -223,17 +223,28 @@ _SGS_BEM_CANONICAL = {
 # bare-BEM tries to consume the same string.
 RULES: list[dict] = [
     _SGS_BEM_CANONICAL,
-    _BEM_BARE,
     # Webflow/Elementor/Divi have narrow, unambiguous prefixes (`w-`,
-    # `elementor-widget-`/`et_pb_`) -- tried before the broader
-    # Bootstrap/kebab-semantic/Tailwind/shadcn rules so a genuine slot_map
-    # hit here is never shadowed by an earlier rule's syntactic (but
-    # non-hit) match on the same lowercase-hyphenated token. Matters mainly
-    # for the no-hint default path; when `heuristic_classify` (or the
-    # production classifier) names the convention, convert_class already
-    # reorders RULES to try the hinted rule first regardless of this order.
+    # `elementor-widget-`/`et_pb_`) -- tried BEFORE every broader rule,
+    # _BEM_BARE included, so a genuine slot_map hit here is never shadowed
+    # by an earlier rule's syntactic (but non-hit) match on the same
+    # lowercase-hyphenated token. Matters mainly for the no-hint default
+    # path; when `heuristic_classify` (or the production classifier) names
+    # the convention, convert_class already reorders RULES to try the
+    # hinted rule first regardless of this order.
+    #
+    # qc-council correction (2026-09-14): this list originally placed these
+    # two AFTER _BEM_BARE, on the mistaken assumption that _BEM_BARE wasn't
+    # one of the "broader" rules being protected against. _BEM_BARE's own
+    # pattern matches almost any lowercase-hyphenated token (e.g. "w-nav",
+    # "elementor-widget-button") and shadowed the genuine hit in the
+    # no-hint path -- confirmed empirically: convert_class("w-nav") with no
+    # hint returned block="container" before this fix. Never live in
+    # production (stage1_boundary_hook.enrich_boundary always supplies a
+    # heuristic hint first), but the ordering now actually matches what
+    # this comment claims.
     _WEBFLOW,
     _ELEMENTOR_DIVI,
+    _BEM_BARE,
     _BOOTSTRAP,
     _KEBAB_SEMANTIC,
     _TAILWIND_UTILITY,
