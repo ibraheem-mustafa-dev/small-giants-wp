@@ -1,5 +1,43 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1075 [ROUTINE] — Tier B wired as an in-session halt-and-resume (no API key needed); route-
+coverage generalised to auto-detect + auto-drive interactive states
+
+**2026-09-14.** Bean corrected the earlier Tier B design: rather than wiring an Anthropic API key
+so the pipeline calls Haiku itself, the CC session already driving `/sgs-clone` IS a capable
+model — the pipeline should halt and hand the prompt back to it directly. Implemented: new
+`--sc-var-cache` flag on the orchestrator; after Stage 1, any still-unresolved sc-for boundary
+halts the run with a printed prompt path + exact next-step commands, rather than silently
+skipping Tier B. Live-verified full loop against the real Eye Care draft: halted naming 2 real
+"bagItems" boundaries, this session read and answered the real prompt directly, committed via
+`--apply-response`, re-ran the same command, it continued straight to completion, both boundaries
+now correctly carrying `sgs/cart` identity with real reasoning. Baseline held exactly (414 attrs,
+17 complete, zero regression). Commit `eeb1a26f9`.
+
+Also dispatched (via `/delegate`, Sonnet): generalising `draft-responsive-probe.js`'s `--click`
+proof-of-concept into a real `--auto-detect` interaction discoverer, covering the 3 mechanisms an
+earlier survey found this session (boolean toggle / enum-with-derived-booleans / nested multi-step
+object) plus hover-only triggers. Live-verified against the real draft: auto-discovered and drove
+the bag-drawer toggle and the hover-only mega-menu with zero manual selector; correctly refused to
+follow route-changing links; honestly reported the multi-step lens flow (behind a route change) as
+an out-of-reach gap rather than silently missing it. A real bug was found and fixed via live
+testing (locator building preferred visible text over `aria-label`, contradicting how a browser's
+own accessible-name computation actually works). Commits `fb2a23bc7` (the implementer's own fix)
+and the bulk of the feature, `782281040` — see the incident note below for why that attribution is
+wrong.
+
+**Incident, disclosed not silently passed over:** the bulk of the auto-detect feature (515 lines)
+was found to have landed inside `782281040`, a concurrent session's commit whose message is
+entirely about an unrelated nav-menu BEM split — a real recurrence of this project's own known
+"a shared git index can hold another track's staged files" failure class (see MEMORY.md
+`feedback_a_shared_git_index_can_hold_another_tracks_staged_files`). Verified directly: the
+content IS correct and present on `main` (confirmed via `git show --stat` + running the file's own
+self-test, which passes with every claimed capability), so nothing was lost — only the commit
+message misattributes the work. Not fixed by rewriting a shared, already-pushed commit (rebasing
+a commit another session may already be building on is a worse risk than a wrong commit message);
+disclosed here instead, per this project's own git-hygiene discipline. No action needed beyond
+this note unless a future session finds it confusing when reading `git log` for the nav-menu track.
+
 ## D1074 [ROUTINE] — Classless Repeater Recognition (Spec 44) taken through 3 adversarial-council
 rounds, each finding a new fundamental flaw; reverted to original pre-council design, parked
 
