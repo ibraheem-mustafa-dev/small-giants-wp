@@ -57,6 +57,26 @@ def test_no_sc_wrapper_leaves_fields_absent() -> None:
     print("  PASS  ordinary BEM section carries zero sc_var_* keys")
 
 
+def test_descendant_canonical_class_suppresses_hint_regression() -> None:
+    """Direct-repro finding (2026-09-14, caught via a light /qc pressure-test
+    of Piece 1, not a full qc-council dispatch -- see the pattern
+    dom_shape_classifier.py's constraint 1 / qc-council finding 1 already
+    established for the sibling Tier 2 mechanism): the section's OWN
+    top-level class_signature is not enough to gate the sc_var hint -- a
+    stray authored SGS-BEM class on a DESCENDANT must also suppress it, the
+    same as an authored class on the section root would."""
+    html = (
+        '<sc-for list="{{ megaTopBrands }}" as="b" hint-placeholder-count="10">'
+        '<section><div class="sgs-hero__headline">x</div></section></sc-for>'
+    )
+    b = _build(html, "section")
+    assert b["fallback_strategy"] == "gap-candidate", f"got {b['fallback_strategy']}"
+    assert b.get("sc_var_hint") is None, (
+        f"authored identity on a descendant was overridden by a shape guess: {b.get('sc_var_hint')}"
+    )
+    print("  PASS  descendant-canonical-class-regression: authored sgs-hero__headline (descendant) suppresses hint")
+
+
 def test_gap_candidate_sc_for_section_with_bespoke_name_gets_count_hint() -> None:
     """A classless, unrecognised section wrapped by sc-for with a bespoke
     (non-alias-matching) name and a repeat count must fall to fall to the
@@ -136,6 +156,7 @@ def main() -> int:
     print("Universal-pipeline upgrade Piece 1 -- sc_var_hint wiring")
     test_sc_for_wrapper_on_section_root_attaches_var_metadata()
     test_no_sc_wrapper_leaves_fields_absent()
+    test_descendant_canonical_class_suppresses_hint_regression()
     test_gap_candidate_sc_for_section_with_bespoke_name_gets_count_hint()
     test_sc_if_never_produces_a_block_identity_hint()
     test_route_sc_var_hints_enriches_matching_gap_bucket_item()

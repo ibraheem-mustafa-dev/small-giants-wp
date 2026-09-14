@@ -578,10 +578,20 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
                 text_snippet=text_snippet,
                 sibling_var_names=[],
             )
+            # qc-check finding (2026-09-14, direct repro before calling
+            # Piece 1 done): passing only the section's OWN top-level
+            # class_signature repeats qc-council's Tier 2 finding 1 -- a
+            # stray authored SGS-BEM class on a DESCENDANT (not the section
+            # root itself) must still suppress the hint, same as constraint
+            # 1 requires for dom_shape_hint. Whole-subtree scan, not just
+            # the section's own classes.
+            subtree_class_signature = list(class_signature)
+            for descendant in node.find_all(True):
+                subtree_class_signature.extend(collect_class_signature(descendant))
             sc_var_hint = _scv.classify_sc_var_deterministic(
                 boundary["sc_var_name"],
                 boundary.get("sc_var_hint_count"),
-                class_signature,
+                subtree_class_signature,
             )
             if sc_var_hint is not None:
                 boundary["sc_var_hint"] = sc_var_hint.to_dict()
