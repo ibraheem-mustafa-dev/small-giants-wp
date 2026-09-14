@@ -46,7 +46,6 @@
 					"reason": "The panel's border sits on the same structurally non-hoverable surface as its background, for the same reason: once the panel is open the pointer is always over an interactive CHILD. Per-state border colour inside the panel belongs to the LINK, whose own three-state family (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent) is where a pointer-driven change is actually perceivable. submenuBorderColour is therefore Normal-only (Spec 41 FR-41-9)."
 				}
 			},
-			"containerKind": "layout",
 			"collection": true,
 			"headerEssential": true,
 			"hideExtensions": [

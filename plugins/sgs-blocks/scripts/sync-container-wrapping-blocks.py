@@ -1139,8 +1139,17 @@ def main() -> int:
             # bar — the canonical nav block of the Spec 36 rebuild.
             # sgs/adaptive-nav (the block it superseded) was RETIRED 2026-07-22 (FR-37-21) —
             # deleted from the codebase and pruned from the DB by /sgs-update Stage 10.
-            # It keeps SGS_Container_Wrapper (genuine layout row), unlike its drawer sibling.
-            "sgs/nav-menu",
+            # SPLIT 2026-09-14 (D1059) into sgs/nav-bar-menu + sgs/nav-drawer-menu.
+            # sgs/nav-bar-menu inherits this slot: it is BLOCK-PRIVATE (D539, no
+            # SGS_Container_Wrapper) but still genuinely container-bearing on this
+            # script's own criterion (b) — Step 6 (2026-09-15) restored `justifyContent`,
+            # a real layout-orchestration attr that arranges the rendered item list.
+            # sgs/nav-drawer-menu does NOT belong here: it declares no layout-family
+            # attr at all (its Step 8 additions, splitAfterItemId/splitSide, are not
+            # arrangement attrs) — its old `containerKind:"layout"` override was a
+            # stale Step-2 scaffold copy-paste from the pre-split block, removed from
+            # its block.json rather than carried forward.
+            "sgs/nav-bar-menu",
             # sgs/brand-strip added 2026-07-20: detected layout-KIND since the Track-1 Spec 35
             # inspector rebuild gave it the grid/flex attr family. Detection was correct; the
             # roster simply had not been refreshed since that work landed.
