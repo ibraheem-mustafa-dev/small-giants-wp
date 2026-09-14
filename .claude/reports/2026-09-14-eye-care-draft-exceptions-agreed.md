@@ -32,12 +32,12 @@ Responsiveness is computed in JS (a `ResizeObserver` measures container width, d
 | Header, mega-menu, nav-drawer, trust ticker, floating WhatsApp button | `sgs_header`/`sgs_mega_menu`/`sgs_drawer` CPTs (all real, all shipped) | CPT exists. The walker currently just **drops** this content (`chrome_skipped`) — nothing routes it in. Routing is unbuilt. |
 | Footer | `sgs_footer` CPT | Same gap. |
 | Shop page | `archive-product.html` (Spec 30, shipped) | Destination exists. Detection + mapping into it is unbuilt. |
-| Product page shell | `single-product.html` + `sgs-pdp-*` parts (Spec 30, shipped) | Destination exists, but `sgs/product-card` itself is missing fields the draft needs — see Task 5. |
-| Cart / checkout / order confirmation | **None today** — no `cart.html`/`checkout.html` template exists; WooCommerce's own default renders unmanaged | Task 6 in the fresh-session prompt builds these. |
-| Size guide modal | **Agreed this session:** give `sgs/modal` a CPT (see below) | Not yet built — Task 2. |
+| Product page shell | `single-product.html` + `sgs-pdp-*` parts (Spec 30, shipped) | Destination exists, but `sgs/product-card` itself is missing fields the draft needs — see Task 4. |
+| Cart / checkout / order confirmation | **None today** — no `cart.html`/`checkout.html` template exists; WooCommerce's own default renders unmanaged | Task 5 in the fresh-session prompt builds these. |
+| Size guide modal | **Agreed this session:** give `sgs/modal` a CPT (see below) | Not yet built — Task 1. |
 | Lens configurator | `sgs/modal` + `sgs/form` (+ `sgs/form-step` + `sgs/form-field-tiles`) — a real, already-shipped combination | Missing only a running-total/price computation. Not a from-scratch build. |
 | Google reviews slider | `sgs/google-reviews` block — direct match | Home page only, not actually an exception. |
-| Frame Card component | No direct match yet | Task 5 closes this gap on `sgs/product-card`. |
+| Frame Card component | No direct match yet | Task 4 closes this gap on `sgs/product-card`. |
 
 **Genuinely universal-pipeline content** (no existing SGS destination, no cross-page sharing):
 Home's hero/shape-tiles/about-strip/four-reasons-panel, About, Help/FAQ, Contact.
@@ -86,7 +86,7 @@ nor in `sgs-booking` or `sgs-configurator-pro` — both of those plugins contain
 
 **Unverified loose thread:** `form/view.js::updateStepVisibility()` hides inactive steps via
 the `sgs-form-step--hidden` CSS class, not the `disabled` attribute. Whether that class sets
-`display:none` (correctly excluding hidden fields from submission) was not checked — Task 3 in
+`display:none` (correctly excluding hidden fields from submission) was not checked — Task 2 in
 the fresh-session prompt closes this.
 
 ## Lens configurator, corrected against the README
@@ -101,19 +101,21 @@ with slightly different commit behaviour depending on origin.
 Frame Card renders on Home, Shop, and both product-page recommendation rails — **not** the bag
 drawer, which uses separate hand-rolled markup (the README's "every grid and rail" claim
 overstates this by one surface). `sgs/product-card` is missing: swatch row, rating/review
-count, brand wordmark overlay, saving badge. Task 5 closes this on the existing block, shipping
+count, brand wordmark overlay, saving badge. Task 4 closes this on the existing block, shipping
 Frame Card's look and Mama's Munches' current look as two style variations of the same block.
 
-## Scheduled (Task 1 of the fresh-session prompt)
+## In progress (this session, not the fresh-session prompt)
 
 - Claude Design identity recognition (`sc-for`/`sc-if` attribute names, reusing the
-  `data_slot_attrs` build) and the draft-only render-and-measure primitive for responsive
-  values — both now Task 1, scoped to blank-canvas pages only (Home/About/Help/Contact for
-  this draft).
+  `data_slot_attrs` build shipped this session for shadcn) and a draft-only render-and-measure
+  primitive for responsive values, scoped to blank-canvas pages only (Home/About/Help/Contact
+  for this draft). Being built now, in parallel with the fresh-session prompt's 5 tasks —
+  neither track touches the other's files (see the prompt's own guardrail).
 
 ## Not yet designed (explicitly deferred, not forgotten)
 
 - The clone-time detector that recognises a draft section as header/footer/drawer/mega-menu/
   shop/product-shaped and routes it into the right CPT/template, instead of the walker's
-  current chrome-skip-and-discard. Real, named, unbuilt work — not covered by this session or
-  by the fresh-session prompt's Task 1 (which only covers the genuinely blank-canvas pages).
+  current chrome-skip-and-discard. Real, named, unbuilt work — not covered by this session's
+  in-progress pipeline work (which only covers the genuinely blank-canvas pages) or by the
+  fresh-session prompt's 5 tasks.
