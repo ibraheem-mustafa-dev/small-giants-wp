@@ -1099,6 +1099,45 @@ def route_motion_library_signals(motion_signals: list[dict] | None, buckets: dic
         buckets[bucket].append(_enrich_item(dict(item), bucket))
 
 
+def route_dom_shape_hints(boundaries: list[dict], buckets: dict[str, list]) -> None:
+    """Q1 Tier 2 (2026-09-14, BEM-recognition brainstorm doc) -- fold each
+    boundary's pre-computed `dom_shape_hint` (per-section-convention-voter.py
+    ::build_boundary, computed only for gap-candidate boundaries) into the
+    matching `unrecognised_class`/`unrecognised_section` bucket item.
+
+    PURE ENRICHMENT: attaches the hint as an extra field on an item that
+    already exists in one of those two buckets -- never creates a new
+    bucket, never a block assignment, never asserts identity. Matches the
+    R8 motion-signal precedent (`route_motion_library_signals` above) of
+    folding a pre-computed upstream signal into the existing bucket shape
+    rather than inventing a new schema -- but rides on the `--boundary`
+    file already passed into `route()` rather than needing a new CLI flag,
+    since the natural home for a per-boundary hint is the boundary dict
+    itself.
+    """
+    hinted = [b for b in boundaries if b.get("dom_shape_hint")]
+    if not hinted:
+        return
+    # unrecognised_section items key by boundary_id; unrecognised_class items
+    # (route_unrecognised_class's item shape) carry NO boundary_id at all,
+    # only section_id -- both lookups are needed, keyed by whichever
+    # identifier each bucket's items actually carry.
+    hints_by_boundary_id = {
+        b["boundary_id"]: b["dom_shape_hint"] for b in hinted if b.get("boundary_id")
+    }
+    hints_by_section_id = {
+        b["section_id"]: b["dom_shape_hint"] for b in hinted if b.get("section_id")
+    }
+    for bucket_name in ("unrecognised_class", "unrecognised_section"):
+        for item in buckets.get(bucket_name, []):
+            hint = (
+                hints_by_boundary_id.get(item.get("boundary_id"))
+                or hints_by_section_id.get(item.get("section_id"))
+            )
+            if hint is not None and "dom_shape_hint" not in item:
+                item["dom_shape_hint"] = hint
+
+
 def route(
     boundary: dict | None,
     match: dict | None,
@@ -1121,6 +1160,7 @@ def route(
     route_structural_mismatch(matches, extract_dict, buckets)
     route_wrong_block_type(matches, boundaries, extract_dict, buckets)
     route_leaf_block_with_complex_subtree(matches, extract_dict, buckets)  # P-PHASE8-14
+    route_dom_shape_hints(boundaries, buckets)  # Q1 Tier 2 wiring
 
     totals = {name: len(items) for name, items in buckets.items()}
     gap_level_totals = {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0}

@@ -172,6 +172,57 @@ def check_border_radius_shorthand_kept_and_absent_excluded() -> None:
     print("  PASS  finding-2: border-radius shorthand->longhand KEPT; absent box-shadow EXCLUDED")
 
 
+def check_dom_shape_hint_enriches_unrecognised_class() -> None:
+    """Q1 Tier 2 (2026-09-14): a boundary's pre-computed dom_shape_hint gets
+    folded onto its matching unrecognised_class item -- pure enrichment,
+    never a new bucket, never a block assignment."""
+    boundary = {
+        "boundaries": [
+            {
+                "boundary_id": "b9",
+                "section_id": "s9",
+                "selector": ".w-dyn-item-wrapper",
+                "class_signature": ["w-dyn-item-wrapper"],
+                "fallback_strategy": "gap-candidate",
+                "dom_shape_hint": {
+                    "block": "card-grid", "confidence": 0.5,
+                    "evidence": "4 near-identical siblings", "source": "dom_shape",
+                },
+            }
+        ]
+    }
+    result = mod.route(boundary=boundary, match=None, slot_list=None, extract=None)
+    items = result["leftover_buckets"]["unrecognised_class"]
+    assert items, f"expected an unrecognised_class item, got {result}"
+    for item in items:
+        assert item.get("dom_shape_hint", {}).get("block") == "card-grid", (
+            f"expected dom_shape_hint enrichment, got {item}"
+        )
+    print("  PASS  dom-shape-hint: enriched onto matching unrecognised_class item")
+
+
+def check_dom_shape_hint_absent_when_not_provided() -> None:
+    """A boundary WITHOUT a dom_shape_hint must never gain one -- proves the
+    enrichment is opt-in per boundary, never fabricated."""
+    boundary = {
+        "boundaries": [
+            {
+                "boundary_id": "b10",
+                "section_id": "s10",
+                "selector": ".unrelated",
+                "class_signature": ["unrelated-class"],
+                "fallback_strategy": "gap-candidate",
+            }
+        ]
+    }
+    result = mod.route(boundary=boundary, match=None, slot_list=None, extract=None)
+    items = result["leftover_buckets"]["unrecognised_class"]
+    assert items, f"expected an unrecognised_class item, got {result}"
+    for item in items:
+        assert "dom_shape_hint" not in item, f"unexpected dom_shape_hint on {item}"
+    print("  PASS  dom-shape-hint-absent: no hint fabricated when none was computed")
+
+
 def main() -> int:
     cases = [
         ("convention",    chunk_convention(),         "convention",    "unrecognised_class"),
@@ -208,8 +259,11 @@ def main() -> int:
     # 2026-07-09 silent-drop guards (Findings 1 & 2).
     check_variant_layout_not_excluded()
     check_border_radius_shorthand_kept_and_absent_excluded()
+    check_dom_shape_hint_enriches_unrecognised_class()
+    check_dom_shape_hint_absent_when_not_provided()
 
     print("\nROUTER-5A.1: PASS (4 gap levels routed + aggregation + silent-drop guards)")
+    print("ROUTER-TIER-2: PASS (dom_shape_hint enrichment + opt-in absence)")
     return 0
 
 

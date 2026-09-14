@@ -371,6 +371,68 @@ def collect_class_signature(node: Tag) -> list[str]:
     return [c for c in classes if c]
 
 
+def _bs4_to_dom_dict(el: "Tag") -> dict:
+    """Normalise a BeautifulSoup Tag to the duck-typed dict shape
+    dom_shape_classifier.py (Q1 Tier 2) expects: tag/classes/attrs keys."""
+    classes = el.get("class") or []
+    if isinstance(classes, str):
+        classes = classes.split()
+    return {"tag": el.name, "classes": list(classes), "attrs": dict(el.attrs)}
+
+
+def dom_shape_hint_for_gap_candidate(node: Tag) -> dict | None:
+    """Tier 2 (2026-09-14, BEM-recognition brainstorm doc Q1): for a section
+    whose BEM recognition already failed (fallback_strategy ==
+    'gap-candidate'), try a structural guess from the section's OWN shape --
+    never asserted as ground truth, only ever an advisory hint the caller
+    attaches to the boundary for leftover-bucket-router.py to enrich a gap
+    entry with (never a new bucket, never a block assignment).
+
+    Two structural signals checked, in priority order:
+      1. The section's OWN direct children as a repeated-sibling group (the
+         "N near-identical <div>/<article> nodes under one parent" case --
+         the parent here IS this unrecognised section).
+      2. Failing that, the section's first direct child's heading position
+         (a bare <h1>/<h2> as the very first thing inside an unrecognised
+         section is a hero/section-header candidate).
+
+    The section's OWN root is passed with is_top_level=True (constraint 3 --
+    a boundary built by this voter is, by construction, already a
+    top-level section in the walker's sense; R-31-3 exception #2
+    (SKIP_TOP_LEVEL_TAGS) already fully covers a bare landmark AT THIS
+    granularity, so classify_landmark_tag correctly never fires from here).
+
+    Soft-fails to None on any error -- an optional enrichment must never
+    break Stage 1 boundary building.
+    """
+    try:
+        _scripts_root = Path(__file__).resolve().parent.parent
+        if str(_scripts_root) not in sys.path:
+            sys.path.insert(0, str(_scripts_root))
+        from recogniser import dom_shape_classifier as dsc
+
+        children = node.find_all(True, recursive=False)
+        siblings = (
+            [_bs4_to_dom_dict(c) for c in children] if len(children) >= 2 else None
+        )
+        hint = dsc.classify_element(
+            _bs4_to_dom_dict(node),
+            collect_class_signature(node),
+            is_top_level=True,
+            siblings=siblings,
+        )
+        if hint is None and children:
+            hint = dsc.classify_element(
+                _bs4_to_dom_dict(children[0]),
+                [],
+                is_first_child=True,
+                is_top_level=False,
+            )
+        return hint.to_dict() if hint is not None else None
+    except Exception:  # noqa: BLE001 -- optional enrichment, never fatal
+        return None
+
+
 def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
                    run_dir: Path | None = None) -> dict:
     """Build a single boundary dict for one section node."""
@@ -397,7 +459,7 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         except Exception:
             pass
 
-    return {
+    boundary = {
         "boundary_id": f"b{idx}",
         "selector": selector,
         "section_id": section_id,
@@ -414,6 +476,17 @@ def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
         # for every other source -- harmless, `_try_data_slot()` no-ops on it.
         "data_slot": node.get("data-slot"),
     }
+
+    # Tier 2 (2026-09-14, BEM-recognition brainstorm doc Q1): only attempted
+    # for sections BEM recognition already failed on -- never for a
+    # confidently-matched section. Advisory only; leftover-bucket-router.py
+    # attaches it to the matching gap entry, never a block assignment.
+    if fallback == "gap-candidate":
+        dom_shape_hint = dom_shape_hint_for_gap_candidate(node)
+        if dom_shape_hint is not None:
+            boundary["dom_shape_hint"] = dom_shape_hint
+
+    return boundary
 
 
 def find_section_node(soup: BeautifulSoup, selector: str) -> Tag | None:
