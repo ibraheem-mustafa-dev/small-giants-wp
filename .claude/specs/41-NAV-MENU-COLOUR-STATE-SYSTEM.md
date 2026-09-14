@@ -497,16 +497,24 @@ documented contrast justification in `block.json` (11.86:1 for `text`-on-`surfac
 `text`-on-`primary`, 14.31:1 for `text`-on-`surface-alt`) — this is a deliberate WCAG fix, not
 drift in the code. **What's unreconciled is the DOC**, not the build.
 
-⚠ **Open question, NOT resolved here — flag for a dedicated check before trusting either way:**
-the "Governing principle — structural pairing" above claims the desktop-submenu-panel and the
-drawer's top-level menu share a "distinct" `surface-alt` tier, separate from the top-bar/
-drawer-nested-submenu "plain" tier. `submenuLinkBg` moving from `surface-alt` to `surface` for
-the desktop-submenu panel would put it in the SAME value as the drawer's nested submenu
-(`surface`) and, if "drawer top-level" turns out to share the same attribute pathway rather than
-a genuinely separate one, could mean the pairing has partially collapsed. This was NOT traced to
-a conclusion (would need `itemBg`'s drawer-context behaviour confirmed — its own `block.json`
-default is `""`/unset, which is a different attribute again) — do not assume either outcome
-until someone checks live computed styles on both surfaces side by side.
+**On the "structural pairing" question above (resolved 2026-09-14, Bean-confirmed) — not a
+collapse, no code gap.** The bar's dropdown panel and the drawer's nested/accordion submenu are
+**two separate `sgs/nav-menu` block instances** (one standalone in the header, one nested inside
+`sgs/nav-drawer` — `render.php` picks one render branch or the other per instance via
+`$block->context['sgs/navDrawerSubmenuModel']`, never both from one instance). Because they're
+separate instances, each already stores its **own independent value** of `submenuLinkBg`/`Hover`/
+`Current` — an operator CAN set the bar dropdown a different colour from the drawer's nested
+submenu today, per-instance, in the editor. What IS shared is the attribute **definition** (same
+name, same schema, same declared default) — that's the whole content of "defaults should be
+aligned": both instances start out matching because they share one `block.json` declaration, not
+because a control is locked between them. `$sublink_sel` "not bar/drawer-forked" (the code
+comment that originally raised this question) means the CSS-emitting code path doesn't special-
+case bar-vs-drawer within a single instance's own render — not that two different instances share
+one stored value. **No responsive/device-tier mechanism is involved or needed here either**: this
+framework has zero colour attributes using the Mobile/Tablet/Desktop tier suffix system anywhere
+(`SELECT ... WHERE attr_name LIKE '%Mobile' OR '%Tablet' OR '%Desktop'` against `block_attributes`
+returns zero colour rows) — that system is reserved for grid/spacing, and the bar/drawer split
+here is an instance boundary, not a viewport one.
 
 ### FR-41-37 — NEW: an independent vertical divider between top-level BAR items (2026-09-13)
 

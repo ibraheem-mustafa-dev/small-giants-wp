@@ -1,5 +1,25 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1052 [ROUTINE] (Bean-confirmed) — D1051's flagged "structural pairing" question resolved: separate instances, not a shared control, not a responsive-tier candidate
+
+**2026-09-14.** Bean caught that D1051's open flag ("does the desktop-submenu-panel /
+drawer-nested-submenu default drift collapse a shared attribute?") was itself based on a
+misreading. Checked `render.php` directly: the bar's dropdown and the drawer's nested/accordion
+submenu are **two separate `sgs/nav-menu` block instances** (one standalone in the header, one
+nested inside `sgs/nav-drawer`) — `render.php` picks one render branch per instance via
+`$block->context['sgs/navDrawerSubmenuModel']`, never both from a single instance. Each instance
+already stores its own independent `submenuLinkBg`/`Hover`/`Current` value; only the attribute
+**definition** (name/schema/default) is shared, which is exactly what "defaults should be
+aligned" means — not a locked shared control. Bean also asked whether this should instead be a
+device-tier (Mobile/Tablet/Desktop) responsive split — checked the `block_attributes` DB
+(`WHERE attr_name LIKE '%Mobile' OR '%Tablet' OR '%Desktop'`): zero colour attributes anywhere in
+the framework use that system; it's reserved for grid/spacing. The bar/drawer split here is an
+instance boundary, not a viewport one, so no responsive-tier mechanism applies or is missing.
+**No code gap, no build needed.** Corrected the spec's "open question" flag to state this
+plainly instead of leaving it unresolved.
+
+**File:** `.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` (§ following FR-41-36's revised table).
+
 ## D1051 [ROUTINE] — D1050's dispatched audits returned: 2 more genuine stale claims found + corrected in Spec 36/41
 
 **2026-09-14.** Both read-only audit agents dispatched at D1050's end returned. I independently
