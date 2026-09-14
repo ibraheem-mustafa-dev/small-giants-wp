@@ -1,0 +1,1079 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/nav-bar-menu",
+	"version": "0.1.0",
+	"title": "SGS Nav Bar Menu",
+	"category": "sgs-content",
+	"icon": "menu",
+	"description": "The site's primary navigation BAR — a flat horizontal row of real links on desktop; below the collapse point it becomes a burger that opens a separate sgs/nav-drawer-menu via the shared sgs/nav Interactivity store. Renders dropdowns and mega panels. Menu content comes from a native WordPress menu. Split from the former sgs/nav-menu (D1059) — the drawer's own accordion/drill-down list is now the separate sgs/nav-drawer-menu block.",
+	"keywords": [
+		"navigation",
+		"nav",
+		"menu",
+		"links",
+		"bar",
+		"burger",
+		"dropdown"
+	],
+	"textdomain": "sgs-blocks",
+	"supports": {
+		"anchor": true,
+		"customClassName": true,
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": false,
+			"text": false,
+			"gradients": false,
+			"__experimentalSkipSerialization": true
+		},
+		"sgs": {
+			"colourExemptions": {
+				"indicator": {
+					"rule": "states",
+					"reason": "style.css declares .sgs-nav-menu__indicator { pointer-events: none; } — the element is structurally unhoverable, the browser passes all pointer events through to whatever is underneath. It paints from the item Background row's own Hover swatch (itemBgHover / itemBgHoverGradient) under itemBgHoverTreatment === 'highlight' (Spec 41 FR-41-25), so its colour already carries that row's states rather than a parallel pair of its own."
+				},
+				"submenu-bg": {
+					"rule": "states",
+					"reason": "The submenu panel's visibility is a binary open/closed disclosure toggled by the trigger, not by pointer position over the panel itself — once open, the pointer is always over some interactive CHILD, never a hoverable moment on the panel background itself. The hoverable surface inside the panel is the LINK background, which carries its own full three-state family (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent, Spec 41 FR-41-9) — that is where a hover fill belongs, and it is declared there."
+				},
+				"submenu-border": {
+					"rule": "states",
+					"reason": "The panel's border sits on the same structurally non-hoverable surface as its background, for the same reason: once the panel is open the pointer is always over an interactive CHILD. Per-state border colour inside the panel belongs to the LINK, whose own three-state family (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent) is where a pointer-driven change is actually perceivable. submenuBorderColour is therefore Normal-only (Spec 41 FR-41-9)."
+				}
+			},
+			"containerKind": "layout",
+			"collection": true,
+			"headerEssential": true,
+			"hideExtensions": [
+				"clickEffects",
+				"parallax",
+				"spacing"
+			],
+			"elements": {
+				"wrapper": {
+					"label": "Nav wrapper",
+					"layer": "OUTER",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:background-color": "navBg",
+						"css:color": "navColour",
+						"css:color-gradient": "navColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "navBgHover",
+								"css:color": "navColourHover"
+							}
+						}
+					},
+					"_note": "The rendered <nav> (SGS_Container_Wrapper, composite-mirror rule R-31-9). Padding/margin ride the native spacing support; max-width is the flat attribute. navBg/navColour/navBgHover all write to the same bare $uid_sel wrapper selector (2026-08-28 fix — navBg previously only resolved via a hand-seeded attr-classification-overrides.json entry, not derivation; that override entry is now redundant, kept for now as a separate cleanup). The 12 ARRANGEMENT members (layer OUTER) — display/flex-direction/align-items/justify-content etc. — are honest GAPs: style.css:13-17 hardcodes `display:flex;align-items:center;justify-content:space-between` with no attribute behind any of it. Not fixed here — out of this task's scope (only STATE_WITHOUT_BASE cases are fixed).",
+					"_note_hover_nav": "navColourHover declared 2026-09-05: render.php:872-873 emits sgs_hover_state_rules( \"{$uid_sel}\", 'color:…', ':focus-visible' ) — the block ROOT, so it belongs on the wrapper element, not a descendant."
+				},
+				"bar": {
+					"label": "Item bar (flex row)",
+					"layer": "GRID",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:gap": "gap"
+					},
+					"_note": "The <ul class=\"sgs-nav-menu__bar\"> that actually arranges the item links — distinct from `wrapper`, which arranges the bar against the burger toggle-wrap. Remaining ARRANGEMENT members are honest GAPs (style.css:19-26 hardcodes `display:flex;flex-wrap:wrap` with no attribute). `css:grid-template-columns:count` is a pseudo-property destination tag (mirrors `css:color-gradient` — not a real CSS property, a manifest-level routing key) claiming `listColumns` as this element's grid COLUMN-COUNT destination for the converter's grid resolver (`db.attr_for_grid_column_count`), matching render.php:1603-1624's own target selector `.sgs-nav-menu__bar` for the in-drawer vertical-list column count. [nav-bar-menu split, 2026-09-14: the listColumns grid-column-count destination was DRAWER-only (targeted the in-drawer vertical list) and is dropped from this block's manifest along with the attribute itself.]"
+				},
+				"item": {
+					"label": "Nav item (resting)",
+					"order": 3,
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"border"
+					],
+					"prefix": "item",
+					"attrMap": {
+						"css:color": "itemColour",
+						"css:color-gradient": "itemColourGradient",
+						"css:background-color": "itemBg",
+						"css:background-image": "itemBgGradient",
+						"css:border-radius": "itemBorderRadius",
+						"css:border-color": "itemBorderColour",
+						"css:border-width": "itemBorderWidth",
+						"css:border-style": "itemBorderStyle",
+						"css:font-size": "itemFontSize",
+						"css:font-weight": "itemFontWeight",
+						"css:font-style": "itemFontStyle",
+						"css:line-height": "itemLineHeight",
+						"css:text-decoration": "itemTextDecoration",
+						"css:text-transform": "itemTextTransform"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "itemColourHover",
+								"css:color-gradient": "itemColourHoverGradient",
+								"css:background-color": "itemBgHover",
+								"css:background-image": "itemBgHoverGradient",
+								"css:border-color": "itemBorderColourHover",
+								"css:font-weight": "itemFontWeightHover",
+								"css:text-decoration": "itemTextDecorationHover",
+								"css:text-transform": "itemTextTransformHover"
+							}
+						},
+						"current": {
+							"attrMap": {
+								"css:color": "itemColourCurrent",
+								"css:background-color": "itemBgCurrent",
+								"css:background-image": "itemBgCurrentGradient",
+								"css:border-color": "itemBorderColourCurrent",
+								"css:font-weight": "itemFontWeightCurrent"
+							}
+						}
+					},
+					"_note": "The nav item LINK — every stateful control on this element targets the <a>, never the <li> (Spec 41 FR-41-1). Three states are declared: base, `hover` (render.php's `$hover_targets` = `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), so a visitor can distinguish WHERE THEY ARE from WHAT THEY ARE POINTING AT. The current-page state is operator-controllable through `itemColourCurrent` / `itemBgCurrent` / `itemFontWeightCurrent` (Spec 41 FR-41-1); `itemFontWeightCurrent` is the non-colour signal that satisfies WCAG 1.4.1 without relying on colour alone. `current` deliberately maps DIFFERENT attribute names from `hover`: the classifier's `extract-signatures.py::_record` is last-write-wins, so a state map byte-identical to `hover` silently overwrites the hover derivation and tags those attributes with a css_state they never render in. Every state member is EXPLICIT rather than left to the `{prefix}Suffix` convention — `css:font-weight`, `css:text-decoration` and `css:text-transform` each carry a base attribute AND a state sibling, and without an explicit entry per state both derive to the same (property, element, state=NULL) slot and collide on one routing destination. The base `css:font-weight` -> `itemFontWeight` entry is load-bearing for the same reason: a state entry with no base is the STATE_WITHOUT_BASE shape the manifest gate flags. `css:border-radius` -> `itemBorderRadius` is base-only — radius has no state on `SgsBorderControl` (Spec 41 FR-41-7)."
+				},
+				"indicator": {
+					"label": "Sliding indicator",
+					"order": 5,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {},
+					"_note": "The `.sgs-nav-menu__indicator` sliding pill, view.js-animated behind the active/hovered item. It is rendered under `itemBgHoverTreatment === 'highlight'` and paints from the item Background row's OWN Hover swatch — `itemBgHover` / `itemBgHoverGradient`, claimed by the `item` element's `states.hover` (Spec 41 FR-41-25) — so this element routes no attribute of its own: one picker, one property, three ways of applying it. `clusters: [\"fill\"]` is retained (not `[]`) because the forward-resolution pass only visits a cluster's members when the cluster is declared; with an empty attrMap the fill members are honest GAPs, ungated and correct, since this element has no controls of its own. `supports.sgs.colourExemptions.indicator` records why it carries no hover state: style.css declares `.sgs-nav-menu__indicator { pointer-events: none; }`, so the element is structurally unhoverable."
+				},
+				"item-separator": {
+					"label": "Item separator (bar)",
+					"order": 5.5,
+					"clusters": [
+						"border"
+					],
+					"prefix": "itemSeparator",
+					"attrMap": {
+						"css:border-right-color": "itemSeparatorColour",
+						"css:border-right-width": "itemSeparatorWidth",
+						"css:border-right-style": "itemSeparatorStyle"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-right-color": "itemSeparatorColourHover"
+							}
+						}
+					},
+					"_note": "FR-41-37 (2026-09-13) + follow-up (2026-09-14, directional sweep generalisation). The between-item vertical rule on the horizontal bar (nav-menu-css.php's item-separator block) -- a GENUINELY SEPARATE element from `item` (the link itself): this rule paints on the <li> (`.sgs-nav-menu__item::after` when Sweep is active) or via longhand border-right-* on the <a>'s existing border box otherwise, never the item's own itemBorderColour/itemBorderWidth family (see nav-menu-css.php's own comment distinguishing the two). Longhand border-right-* declared explicitly (not the `border-color`/`border-width` shorthand `item` uses) because a shorthand here would reset whatever the item's own underline/row-separator family already wrote on the SAME selector when Sweep is off. `itemSeparatorHoverTreatment`/`itemSeparatorSweepAngle` are declared `role:behaviour` (attr-classification-overrides.json) rather than routed through this manifest -- they are control-selector/parameter attrs, not paintable CSS values, matching the established pattern for itemBorderHoverTreatment/borderHoverAnimationDirection's sibling on the `item` element above."
+				},
+				"featured": {
+					"label": "Featured item",
+					"order": 6,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "featured",
+					"attrMap": {
+						"css:color": "featuredColour",
+						"css:color-gradient": "featuredColourGradient",
+						"css:background-color": "featuredBg",
+						"css:background-image": "featuredBgGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "featuredColourHover",
+								"css:background-color": "featuredBgHover",
+								"css:background-image": "featuredBgHoverGradient",
+								"css:border-radius": "featuredRadiusHover",
+								"css:font-weight": "featuredFontWeightHover"
+							}
+						}
+					},
+					"_note": "render.php:431-459. featuredFontWeightHover is a genuine hover-state weight change (only emitted when it differs from resting), declared under `text` cluster's css:font-weight member. featuredColourGradient added 2026-09-04 (mirrors burgerColourGradient's shape) -- explicit attrMap since css:color-gradient is not resolved by the default {prefix}Suffix convention, same reason burgerColourGradient needed one. Resting LABEL form only; PILL form and the submenu-inheritance custom property stay flat (see render.php comments). featuredBgGradient/featuredBgHoverGradient added 2026-09-06 (D958, Bean-directed preset-to-gradient upgrade) -- non-empty wins over the resolved featuredBg/featuredBgHover slug+hex; when active the pill foreground skips WCAG contrast-against-background maths (no single hex to test) and uses the operator's own flat colour instead (see render.php). The submenu-inheritance custom property stays hex-only, same scope boundary as featuredColourGradient above."
+				},
+				"burger": {
+					"label": "Burger toggle",
+					"order": 7,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "burger",
+					"attrMap": {
+						"css:width": "burgerSize",
+						"css:height": "burgerSize",
+						"css:color": "burgerColour",
+						"css:color-gradient": "burgerColourGradient",
+						"css:background-color": "burgerBg",
+						"css:background-image": "burgerBgGradient",
+						"css:font-size": "burgerFontSize",
+						"css:font-family": "burgerFontFamily",
+						"css:font-weight": "burgerFontWeight",
+						"css:text-transform": "burgerTextTransform",
+						"css:letter-spacing": "burgerLetterSpacing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "burgerColourHover",
+								"css:background-color": "burgerHoverColour"
+							}
+						}
+					},
+					"_note": "burgerColour is the icon TEXT colour (css:color, render.php:466-469); burgerHoverColour drives the button's HOVER background-color (render.php:479-482, was 470-473 pre-fix), which previously had no resting counterpart — a client could style the hover fill but never the button's own resting fill (STATE_WITHOUT_BASE, Spec 35 FR-35-5). Fixed 2026-07-21 by adding the `burgerBg` base attribute + inspector control (edit.js Burger panel, Normal state) so css:background-color now resolves at base too. Unset burgerBg renders byte-identical to before (style.css:73-88 `background:none` default). 2026-09-05: `css:color`->burgerColour (render.php:1189-1196), `css:background-color`->burgerBg (render.php:1210-1213) and `states.hover.css:color`->burgerColourHover (render.php:1199-1201, sgs_hover_state_rules on `:hover, :focus-visible`) declared EXPLICITLY. Two DB-consistency findings drove this: (a) burgerColour + burgerColourHover both derived to (color, burger, state=NULL), colliding on one routing slot -- the hover entry is what separates them; (b) burgerBg carried a rogue `css_property='background-color'` seed present in NEITHER the derived classifier layer NOR the overrides, so it would have vanished on the next reseed. The manifest is the durable source; the stray seed is not removed here because the attribute genuinely paints that property."
+				},
+				"sublink": {
+					"label": "Submenu link",
+					"order": 8,
+					"clusters": [
+						"text",
+						"fill",
+						"border"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:color": "submenuColour",
+						"css:color-gradient": "submenuColourGradient",
+						"css:background-color": "submenuLinkBg",
+						"css:background-image": "submenuLinkBgGradient",
+						"css:font-family": "submenuFontFamily",
+						"css:font-size": "submenuFontSize",
+						"css:font-weight": "submenuFontWeight",
+						"css:font-style": "submenuFontStyle",
+						"css:line-height": "submenuLineHeight",
+						"css:text-decoration": "submenuTextDecoration",
+						"css:text-transform": "submenuTextTransform",
+						"css:letter-spacing": "submenuLetterSpacing",
+						"css:text-align": "submenuTextAlign",
+						"css:border-color": "submenuLinkBorderColour",
+						"css:border-width": "submenuLinkBorderWidth",
+						"css:border-style": "submenuLinkBorderStyle"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "submenuColourHover",
+								"css:background-color": "submenuLinkBgHover",
+								"css:font-weight": "submenuFontWeightHover",
+								"css:text-decoration": "submenuTextDecorationHover",
+								"css:text-transform": "submenuTextTransformHover",
+								"css:border-color": "submenuLinkBorderColourHover"
+							}
+						},
+						"current": {
+							"attrMap": {
+								"css:color": "submenuColourCurrent",
+								"css:background-color": "submenuLinkBgCurrent"
+							}
+						}
+					},
+					"_note": "The submenu LINK — <a class=\"sgs-nav-menu__sublink\">, painted at render.php's own scoped `.sgs-nav-menu__sublink{...}` rule. It carries three states: base, `hover` (`sgs_hover_state_rules()` on `:hover, :focus-visible`) and `current` (`[aria-current=\"page\"]`), matching the bar item's own three-state model (Spec 41 FR-41-1 / FR-41-9). `\"prefix\": \"\"` is a deliberate, permanent opt-out from the `{prefix}Suffix` convention: a `submenu` prefix would wrongly claim submenuAlign/Caret/CloseGrace/MinWidth/Padding and the whole submenuBorder* family, which belong to the submenu PANEL (the `submenu-panel` element) rather than to this anchor. The `submenu`-prefixed typography attributes that DO belong to this anchor reach it through the explicit attrMap entries above, one per property — that is the resolution, not a prefix (Spec 41 FR-41-22c). With an empty prefix nothing here resolves by convention, so every member is explicit by necessity: each state's `css:color`, `css:background-color`, `css:font-weight`, `css:text-decoration` and `css:text-transform` names a DIFFERENT attribute from its base sibling, because without an explicit entry a base and its state sibling both derive to (property, sublink, state=NULL) and collide on one routing slot. `\"fill\"` is declared alongside `\"text\"` so the forward-resolution pass actually visits css:background-color / css:background-image and consults this attrMap; a cluster that is not declared is never iterated. submenuColourGradient is routed as a DIRECT declaration (sgs_text_colour_decl / sgs_resolve_text_colour_or_gradient) rather than a colour-valued custom property, because a `var(--x, …)` chain feeding a fixed `color:` declaration cannot switch to `background-image` for a gradient (survey.js's `paints-via-colour-valued-custom-property` refusal reason). [nav-bar-menu split, 2026-09-14: the sublinkMarker* fill/fill-gradient entries were DRAWER-only per the classification report (the marker's own CSS is scoped `.sgs-nav-drawer …`, so it never painted anything in the bar dropdown) — dropped along with the attributes.]"
+				},
+				"submenu-panel": {
+					"label": "Submenu panel",
+					"order": 9,
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
+					"prefix": "",
+					"attrMap": {
+						"css:background-color": "submenuBg",
+						"css:background-image": "submenuBgGradient",
+						"css:border-color": "submenuBorderColour",
+						"css:border-color-gradient": "submenuBorderColourGradient",
+						"css:border-width": "submenuBorderWidth",
+						"css:border-style": "submenuBorderStyle",
+						"css:border-radius": "submenuBorderRadius",
+						"css:box-shadow": "submenuShadow",
+						"css:box-shadow-color": "submenuShadowColour"
+					},
+					"_note": "The floating dropdown PANEL — <div class=\"sgs-nav-menu__submenu\"> — as distinct from the links inside it, which are the `sublink` element (Spec 41 FR-41-9). Base only: NO `states` key at all, because the panel has neither a hover nor a current state for any property. Its visibility is a binary open/closed disclosure toggled by the trigger; once open the pointer is always over an interactive CHILD, so a pointer-driven change on the panel surface itself is never perceivable — the hoverable surface inside the panel is the LINK background (submenuLinkBg / submenuLinkBgHover / submenuLinkBgCurrent on `sublink`). Recorded as `supports.sgs.colourExemptions.submenu-bg` and `.submenu-border`. `\"prefix\": \"\"` for the same reason `sublink` carries it: a `submenu` prefix would claim submenuColour* and the submenu typography family, which belong to the LINK. Every member is therefore explicit."
+				}
+			},
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"submenuPadding": [
+					"submenuPadding"
+				]
+			},
+			"_note_sweep_eligibility": "The ONE declarative source for the Sweep-treatment eligibility predicate, read by BOTH surfaces — edit.js decides whether to offer the Sweep segment, render.php decides whether to emit Sweep CSS — with neither re-deriving the rule (Spec 41 FR-41-26). It is NOT an `elements` entry and routes no CSS property; it sits beside colourExemptions / hideExtensions / boxFamilies. Three keys per row: `blockingBackgroundAttrs` (Sweep is withdrawn when ANY named attribute is non-empty, because background-clip:text clips the element's whole background-painting area to the glyph shapes — every state's background counts, not just the resting one), `blockingGradientAttrs` (the row's own text gradient writes background-image on the identical selector, so whichever loses is invisible) and `glyphGuard` (background-clip:text needs glyphs to grip; null means the element always has them). Every attribute named below must exist in `attributes` — a typo reads as permanently empty, so the predicate would always pass and the rule would silently cease to exist.",
+			"sweepEligibility": {
+				"itemColourHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [
+						"itemColourGradient"
+					],
+					"glyphGuard": null
+				},
+				"submenuColourHoverTreatment": {
+					"blockingBackgroundAttrs": [
+						"submenuLinkBg",
+						"submenuLinkBgHover",
+						"submenuLinkBgCurrent",
+						"submenuLinkBgGradient"
+					],
+					"blockingGradientAttrs": [
+						"submenuColourGradient"
+					],
+					"glyphGuard": null
+				},
+				"burgerColourHoverTreatment": {
+					"blockingBackgroundAttrs": [
+						"burgerBg",
+						"burgerBgGradient",
+						"burgerHoverColour"
+					],
+					"blockingGradientAttrs": [
+						"burgerColourGradient"
+					],
+					"glyphGuard": {
+						"attr": "triggerMode",
+						"disallowedValues": [
+							"icon"
+						]
+					}
+				},
+				"itemBorderHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [],
+					"glyphGuard": {
+						"attr": "itemBorderStyle",
+						"disallowedValues": [
+							"dashed",
+							"dotted",
+							"double",
+							"groove",
+							"ridge",
+							"inset",
+							"outset"
+						]
+					}
+				},
+				"itemSeparatorHoverTreatment": {
+					"blockingBackgroundAttrs": [],
+					"blockingGradientAttrs": [],
+					"glyphGuard": {
+						"attr": "itemSeparatorStyle",
+						"disallowedValues": [
+							"dashed",
+							"dotted"
+						]
+					}
+				}
+			}
+		}
+	},
+	"attributes": {
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {}
+		},
+		"ref": {
+			"type": "number",
+			"default": 0
+		},
+		"collapsePoint": {
+			"type": "number",
+			"default": 768
+		},
+		"drawerRef": {
+			"type": "string",
+			"default": "sgs-nav-drawer"
+		},
+		"featuredItemIds": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "string"
+			}
+		},
+		"navLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"gap": {
+			"type": "string",
+			"default": "8px"
+		},
+		"_note_nav_fill": "Nav CONTAINER surface (2026-07-28). The block previously had NO fill controls at all — only per-ITEM colours — so a client could never sit the bar on its own surface. Scope is deliberately SURFACE ONLY: border/radius/divider were built and then REMOVED the same day (Bean ruling) because the pill-nav and bordered-nav patterns that justify them are whole-HEADER treatments, and sgs/site-header already declares `color` + `__experimentalBorder` supports for exactly that. Do not re-add them here without a header-level reason. Defaults unset, so an untouched nav renders byte-identically. Because the drawer holds its OWN sgs/nav-menu instance, these also give fully independent drawer styling with no extra plumbing.",
+		"navBg": {
+			"type": "string",
+			"default": ""
+		},
+		"navColour": {
+			"type": "string",
+			"default": ""
+		},
+		"navColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the nav text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over navColour. Safe unconditionally -- navBg already paints on a separate ::after layer (sgs_block_background_layer_css()), never this same selector."
+		},
+		"navBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemColour": {
+			"type": "string",
+			"default": ""
+		},
+		"itemColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item text with a background-clip:text mechanism instead of a flat colour (D956 text-colour gradient rollout). Non-empty wins over itemColour. Safe unconditionally -- itemBg already paints on a ::before layer (D942 recipe item 1), never this same selector. See itemColourHoverGradient for the Hover-state sibling."
+		},
+		"itemBg": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the resting nav-item background via the same ::before layer as itemBg (D942 recipe item 1); non-empty wins over the flat itemBg colour, mirroring itemColourGradient's sibling-wins pattern."
+		},
+		"itemColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the Hover-state nav-item text, mirroring itemColourGradient's background-clip:text mechanism. Non-empty wins over itemColourHover. Offered in the editor ONLY while itemSmartContrast is OFF (the default) -- when itemSmartContrast is ON, itemColourHover auto-computes a safe solid colour for WCAG contrast against itemBgHover, which a gradient cannot meaningfully replace, so a stored value here is ignored by render.php while the swap is active rather than silently reappearing."
+		},
+		"itemBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"itemFontSizeUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"itemLineHeight": {
+			"type": "number"
+		},
+		"itemLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"featuredColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured bar item's LABEL-form text with a background-clip:text mechanism instead of a flat colour (mirrors burgerColourGradient). Non-empty wins over featuredColour. Resting LABEL form only (no featuredBg set) -- the PILL form (featuredBg set) keeps its WCAG-contrast-resolved flat foreground, and the submenu inheritance custom property (--sgs-nm-featured-colour) stays flat-only because its consumer paints a background on the same selector (see render.php)."
+		},
+		"featuredBg": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form background (background-image custom-property-gradient pattern, D958 upgrade from slug-only). Non-empty wins over the resolved featuredBg slug/hex. When active, the pill's foreground SKIPS the WCAG contrast-against-background computation (sgs_wcag_preferred_text_colour_for_bg() needs ONE background hex; a gradient has none) and uses the operator's own FLAT featuredColour/featuredColourHover choice instead -- never the gradient-capable text resolve, which would collide with this same background-image on the same selector (see render.php comment at the featured-item paint block, and featuredColourGradient's note above for the identical precedent on the flat-hex pill form). The submenu-inherited featured item (--sgs-nm-featured-bg custom property) is NOT extended to carry this gradient -- same documented scope boundary as featuredColourGradient's submenu gap above."
+		},
+		"featuredColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredBgHover": {
+			"type": "string",
+			"default": ""
+		},
+		"featuredBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the featured item's PILL-form :hover/:focus-visible background (mirrors featuredBgGradient, D958). Non-empty wins over the resolved featuredBgHover slug/hex. Same WCAG-skip rationale as featuredBgGradient: the hover foreground uses the operator's own flat featuredColourHover (falling back to featuredColour) rather than computing WCAG contrast against a gradient."
+		},
+		"featuredRadius": {
+			"type": "number",
+			"default": 8
+		},
+		"featuredRadiusHover": {
+			"type": "number"
+		},
+		"featuredFontWeight": {
+			"type": "number",
+			"default": 600
+		},
+		"featuredFontWeightHover": {
+			"type": "number"
+		},
+		"burgerColour": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerBg": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerSize": {
+			"type": "string",
+			"default": "44px"
+		},
+		"burgerFontSize": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 41 Wave 2 J1. Unset renders font-size:inherit (helpers-typography.php's sgs_typography_css_rule(), $inherit_font_size_when_blank) — inherits the theme's real body font-size rather than the UA <button> default (~13.3px)."
+		},
+		"burgerFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Spec 41 Wave 2 J1. Unset renders font-family:inherit ($inherit_font_family_when_blank) — inherits the theme's real body font rather than the UA default (Arial)."
+		},
+		"burgerFontWeight": {
+			"type": "string",
+			"default": "600"
+		},
+		"burgerTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": "uppercase"
+		},
+		"burgerLetterSpacing": {
+			"type": "object",
+			"default": {
+				"desktop": 0.05
+			},
+			"description": "Tier object mirroring submenuLetterSpacing's shape. Default resolves to 0.05em (see burgerLetterSpacingUnit)."
+		},
+		"burgerLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemMagnetEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"sgsCustomCss": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuAlign": {
+			"type": "string",
+			"enum": [
+				"start",
+				"center",
+				"end"
+			],
+			"default": "start"
+		},
+		"submenuCaret": {
+			"type": "boolean",
+			"default": true
+		},
+		"submenuCloseGrace": {
+			"type": "number",
+			"default": 170
+		},
+		"submenuBg": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuMinWidth": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"navBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"navColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"burgerBgGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"itemTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through",
+				"overline"
+			],
+			"default": ""
+		},
+		"itemLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"itemLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"itemTextAlign": {
+			"type": "string",
+			"enum": [
+				"",
+				"left",
+				"center",
+				"right",
+				"justify"
+			],
+			"default": ""
+		},
+		"itemTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"itemTextColumns": {
+			"type": "number"
+		},
+		"itemTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"itemWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"_note_three_state_model": "Spec 41: every stateful control on this block targets the LINK, in three states — Normal, Hover (:hover, :focus-visible) and Current ([aria-current=\"page\"]). The nav BAR keeps two states (navBg/navColour + their Hover siblings): a bar is never 'the current page'. The submenu PANEL keeps one (FR-41-9): its visibility is a binary open/closed disclosure, so the hoverable surface inside it is the LINK, which carries the full three-state family. Every new small string attribute below is declared WITHOUT a JSON enum and is validated in PHP instead: an out-of-enum stored value is silently coerced back to the block.json default with no error, which bites hardest via a programmatic writer (the cloning converter, a theme pattern) setting the attribute directly. The one exception is the pre-existing itemTextDecoration, which carries a real enum and keeps it — a disclosed asymmetry with its own hover sibling, not an oversight.",
+		"itemColourCurrent": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBgCurrent": {
+			"type": "string",
+			"default": ""
+		},
+		"itemBgCurrentGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the current-page nav item's background via the same ::before layer as itemBg; non-empty wins over the flat itemBgCurrent colour."
+		},
+		"itemBgHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "CSS gradient string painting the hovered nav item's background via the same ::before layer as itemBg; non-empty wins over the flat itemBgHover colour. It completes the row's three-state gradient set (itemBgGradient / this / itemBgCurrentGradient) and is what the Highlight treatment paints with when the operator picks a gradient (Spec 41 FR-41-25)."
+		},
+		"itemFontWeightCurrent": {
+			"type": "string",
+			"default": "600",
+			"description": "The non-colour current-page signal (Spec 41 FR-41-6), so the state is distinguishable without relying on colour alone. String, not number — matches itemFontWeight."
+		},
+		"itemTextDecorationHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemTextTransformHover": {
+			"type": "string",
+			"default": ""
+		},
+		"itemFontWeightHover": {
+			"type": "string",
+			"default": "",
+			"description": "String, not number — matches itemFontWeight and itemFontWeightCurrent. A weight change on hover can reflow the bar; the control's help text carries that caution."
+		},
+		"itemSmartContrast": {
+			"type": "boolean",
+			"default": false,
+			"description": "Opt-in AUTO-FIX: when ON, resolves the item's foreground automatically so it stays readable against whatever background the item is sitting on (Spec 41 FR-41-5). Default OFF (changed 2026-09-13, Bean-directed): an operator's explicit itemColourHover is now respected as-authored by default — no silent swap. The readability CHECK itself is unconditional and always warns in the editor inspector regardless of this setting; only the automatic colour SWAP is gated on it."
+		},
+		"itemBorderWidth": {
+			"type": "object",
+			"default": {
+				"bottom": "1px"
+			},
+			"description": "FR-41-36 locked default: bottom-only, 1px, always visible. On the horizontal bar this is the ITEM UNDERLINE â€” a bottom-edge text-indicator under one item's own label. On a vertical list (this same instance rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the identical bottom edge is geometrically a ROW SEPARATOR between two adjacent rows. One shared attribute family paints both, by design (2026-09-13 terminology pass) â€” see nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with itemSeparatorWidth, the independent NEW vertical divider between top-level bar items (FR-41-37)."
+		},
+		"itemBorderStyle": {
+			"type": "string",
+			"default": "solid"
+		},
+		"itemBorderRadius": {
+			"type": "object",
+			"default": {
+				"topLeft": "8px",
+				"topRight": "8px",
+				"bottomRight": "8px",
+				"bottomLeft": "8px"
+			},
+			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_shorthand(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
+		},
+		"itemBorderColour": {
+			"type": "string",
+			"default": "border-light",
+			"description": "FR-41-36 locked default: underline/row-separator colour at rest (bar: item underline; drawer: row separator — see itemBorderWidth's note)."
+		},
+		"itemBorderColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-36 locked default: underline/row-separator colour on hover."
+		},
+		"itemBorderColourCurrent": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-36 locked default: underline/row-separator colour on current/active — same colour as Hover; the absence of a bg fill is what distinguishes Current from Hover."
+		},
+		"itemColourHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the item TEXT colour changes on hover: none / swap / sweep. The Sweep option is offered and emitted only when supports.sgs.sweepEligibility.itemColourHoverTreatment passes (Spec 41 FR-41-26). PHP-validated, no JSON enum."
+		},
+		"itemBgHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the item BACKGROUND changes on hover: none / swap / highlight. 'highlight' renders the sliding pill, painting from itemBgHover / itemBgHoverGradient (Spec 41 FR-41-25). PHP-validated, no JSON enum."
+		},
+		"itemBorderHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the item BORDER colour changes on hover: none / swap / sweep. PHP-validated, no JSON enum."
+		},
+		"sweepAngle": {
+			"type": "number",
+			"default": 90,
+			"description": "Directional sweep angle (FR-41-37 follow-up, 2026-09-13) -- standard CSS gradient-angle degrees (0=to top, 90=to right, 180=to bottom, 270=to left), the same convention @wordpress/components's AnglePickerControl uses. Governs the item border/underline Sweep (itemBorderHoverTreatment==='sweep'). Default 90 reproduces the retired borderHoverAnimationDirection=left-to-right output pixel-for-pixel; 270 reproduces right-to-left. See includes/sweep-css.php."
+		},
+		"itemSeparatorWidth": {
+			"type": "string",
+			"default": "1px",
+			"description": "FR-41-37 (2026-09-13) — the NEW, independent vertical divider between adjacent TOP-LEVEL bar items (a right-edge rule), separate from itemBorderWidth (the item's own underline/row-separator). Genuinely distinct from FR-41-7's existing 'set itemBorderWidth.right for a vertical divider' option: that option shares itemBorderColour/Hover/Current with the bottom-edge underline (one colour family, two edges), so it cannot be styled independently — this attribute family can. Bar-only by construction (not rendered in-drawer, where a vertical list has no 'adjacent item' in that axis). No Current state — a between-item rule is not itself a page. Hover treatment (plain colour swap, or a directional sweep) is controlled by itemSeparatorHoverTreatment/itemSeparatorSweepAngle below, shipped as a follow-up the same day (see includes/sweep-css.php)."
+		},
+		"itemSeparatorStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "FR-41-37. solid / dashed / dotted / none. PHP-validated, no JSON enum."
+		},
+		"itemSeparatorColour": {
+			"type": "string",
+			"default": "border-light",
+			"description": "FR-41-37 — Normal-state colour, matching the same subtle default (border-light, not accent) the underline/row-separator family uses at rest, for one consistent visual language across all 4 separator contexts."
+		},
+		"itemSeparatorColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-37 — Hover-state colour, matching the underline/row-separator family's own Hover token."
+		},
+		"itemSeparatorHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "FR-41-37 follow-up (2026-09-13). How the item separator changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.itemSeparatorHoverTreatment passes. Default 'swap' preserves the original shipped behaviour (a plain border-right-color change) byte-for-byte. PHP-validated, no JSON enum."
+		},
+		"itemSeparatorSweepAngle": {
+			"type": "number",
+			"default": 180,
+			"description": "FR-41-37 follow-up (2026-09-13). Directional sweep angle for the item separator (same convention as sweepAngle -- CSS gradient-angle degrees). Default 180 (to bottom) is a sensible vertical default for a right-edge divider; shown only when itemSeparatorHoverTreatment is 'sweep'. See includes/sweep-css.php."
+		},
+		"submenuColourCurrent": {
+			"type": "string",
+			"default": "text",
+			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` (dark brown) token (2026-09-14 root-cause fix, QC council finding): the prior empty default fell through to a hardcoded `primary-dark` fallback measuring only 2.35:1 against the current-row background — well under WCAG AA's 4.5:1 floor. `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette and 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths). Chosen as a fixed default token, not a runtime contrast computation, per Bean's ruling that defaults should not depend on a contrast-check mechanism."
+		},
+		"submenuLinkBg": {
+			"type": "string",
+			"default": "surface",
+			"description": "Normal-state submenu row background. Defaults to the palette's cream `surface` token (2026-09-14 root-cause fix, QC council finding: the drawer's nested submenu had no reliable opaque background of its own, so its row text was checked for contrast against the DRAWER's own arbitrary `drawerBg` instead of a real paint surface). Giving the row an explicit, deterministic background means the drawer no longer needs a runtime drawerBg-aware contrast computation to stay legible — the row always paints its own cream surface regardless of what colour the surrounding drawer uses. `text` (dark brown) on `surface` measures 11.86:1 (WCAG AA). Shared by both the bar's dropdown panel and the drawer's nested/accordion submenu (one attribute family, FR-41-36) — verified not to visually regress the bar dropdown, whose panel already defaults to a near-identical surface-alt/surface token chain."
+		},
+		"submenuLinkBgHover": {
+			"type": "string",
+			"default": "primary",
+			"description": "Hover-state submenu row background. Defaults to the brand's `primary` pink fill (2026-09-14 root-cause fix, QC council finding: the prior `accent-light` default paired with the also-default `accent` hover TEXT colour produced a same-hue-family combination measuring only 1.35:1 — near-invisible hover text, worst on the drawer where the row had no opaque background of its own to separate the two accents visually). `submenuColourHover` now default-closes to `text` (dark brown) at the PHP layer (nav-menu-submenu-css.php), which measures 5.28:1 against this `primary` fill (WCAG AA) — a clear, on-brand hover signal distinct from both the cream Normal state and the pink-tint Current state."
+		},
+		"submenuLinkBgCurrent": {
+			"type": "string",
+			"default": "surface-alt",
+			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt` (2026-09-14 correction — was `surface-pink`, a token that exists ONLY in the Mama's Munches per-client theme-snapshot.json, not in the framework's own theme.json; on any other site it resolved to an undefined CSS variable with no fallback, painting nothing. `surface-alt` is a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list). Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette, 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths)."
+		},
+		"submenuLinkBgGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Normal-state gradient sibling of submenuLinkBg; non-empty wins over the flat colour."
+		},
+		"submenuLinkBorderWidth": {
+			"type": "object",
+			"default": {
+				"bottom": "1px"
+			},
+			"description": "FR-41-36 (C1) — the submenu ROW's own row-separator border (a horizontal line between two adjacent rows, both in the bar's dropdown panel AND a drawer's nested/accordion-expanded submenu — same mechanism, same selector), distinct from submenuBorderWidth (the PANEL's outer border). Defaults to a bottom-only 1px so an untouched dropdown/drawer-nested row shows the universal always-visible separator (2026-09-13 terminology pass — was called \"item-divider\")."
+		},
+		"submenuLinkBorderStyle": {
+			"type": "string",
+			"default": "solid"
+		},
+		"submenuLinkBorderColour": {
+			"type": "string",
+			"default": "border-light",
+			"description": "FR-41-36 (C1) — Normal-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table."
+		},
+		"submenuLinkBorderColourHover": {
+			"type": "string",
+			"default": "accent",
+			"description": "FR-41-36 (C1) — Hover/Current-state row-separator colour token, locked by Spec 41 §FR-41-36's colour table. No separate Current colour: the spec's table gives this row only Normal/Hover language for the separator."
+		},
+		"submenuColourHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the submenu LINK text colour changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.submenuColourHoverTreatment passes. PHP-validated, no JSON enum."
+		},
+		"submenuLinkBgHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the submenu LINK background changes on hover: none / swap. Two options only — there is no Highlight on this row. PHP-validated, no JSON enum."
+		},
+		"submenuAnimation": {
+			"type": "string",
+			"default": "fade",
+			"description": "The submenu panel's open animation: none / fade / slide-down. PHP-validated, no JSON enum. FR-41-1 (F1) locked default: fade — a pure-opacity transition with no directional assumption, safe regardless of overflow-flip repositioning, and degrades cleanly under prefers-reduced-motion."
+		},
+		"submenuTopOffset": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"submenuBorderStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "The submenu panel's corner radius — the same FLAT corner object shape as itemBorderRadius (topLeft / topRight / bottomRight / bottomLeft, CSS length strings, read by sgs_corner_object_shorthand()). Its default stays EMPTY: the panel already renders its own radius from --sgs-nm-submenu-radius with a token fallback, so there is no behaviour here for a default to preserve."
+		},
+		"submenuBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuBorderColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Normal-state gradient sibling of submenuBorderColour; non-empty wins over the flat colour."
+		},
+		"submenuShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "The shadow's colour. The name is fixed by ShadowControl.js::shadowAttrKeys, which composes it as <base>Colour."
+		},
+		"submenuFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "A {desktop,tablet,mobile} TIER OBJECT, mirroring itemFontSize. There are deliberately no submenuFontSizeTablet / submenuFontSizeMobile siblings: TypographyControls and sgs_typography_css_rule() both branch on whether the stored value is an object and keep all three tiers inside this one attribute, so flat tier keys would have zero writers and zero readers."
+		},
+		"submenuFontSizeUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuLineHeight": {
+			"type": "number"
+		},
+		"submenuLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextDecoration": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"submenuLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"submenuTextAlign": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextWrap": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextColumns": {
+			"type": "number"
+		},
+		"submenuTextIndent": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuWritingMode": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextDecorationHover": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuTextTransformHover": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuFontWeightHover": {
+			"type": "string",
+			"default": "",
+			"description": "String, not number — matches submenuFontWeight."
+		},
+		"triggerMode": {
+			"type": "string",
+			"default": "icon",
+			"description": "What the menu button shows: icon / text / icon-and-text. PHP-validated, no JSON enum."
+		},
+		"triggerLabel": {
+			"type": "string",
+			"default": "Menu"
+		},
+		"triggerIcon": {
+			"type": "object",
+			"default": {
+				"source": "lucide",
+				"name": "menu"
+			}
+		},
+		"triggerMagnetEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"triggerMagnetRadius": {
+			"type": "number",
+			"default": 120,
+			"description": "Pull radius in pixels, 20-400 — the range matches fx-magnet.js's own clamp."
+		},
+		"triggerMagnetStrength": {
+			"type": "number",
+			"default": 24,
+			"description": "Pull strength, 2-80 — the range matches fx-magnet.js's own clamp."
+		},
+		"burgerColourHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the menu button's ICON/TEXT colour changes on hover: none / swap / sweep. Sweep is offered and emitted only when supports.sgs.sweepEligibility.burgerColourHoverTreatment passes. Governs burgerColour / burgerColourHover (the icon colour), NOT burgerHoverColour (the button's hover BACKGROUND) — the two names are anagram-close and govern different properties. PHP-validated, no JSON enum."
+		},
+		"burgerBgHoverTreatment": {
+			"type": "string",
+			"default": "swap",
+			"description": "How the menu button's BACKGROUND changes on hover: none / swap. Two options only. Governs burgerBg / burgerHoverColour. PHP-validated, no JSON enum."
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}

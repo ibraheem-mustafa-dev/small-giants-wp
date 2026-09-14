@@ -84,10 +84,16 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 	 * `blockingBackgroundAttrs`/`blockingGradientAttrs` referent since the band isn't
 	 * a `background-clip:text` glyph sweep.
 	 *
-	 * @param array $attributes Block attributes as handed to render.php.
+	 * @param array  $attributes Block attributes as handed to render.php.
+	 * @param string $block_name The registered block slug whose `block.json`
+	 *                           declares the `sweepEligibility` rows + attribute
+	 *                           defaults to read (e.g. `sgs/nav-bar-menu` or
+	 *                           `sgs/nav-drawer-menu`) -- each caller passes its
+	 *                           OWN slug so the lookup resolves against its own
+	 *                           registered type, never a shared/hardcoded one.
 	 * @return array<string,string> Resolved treatment per attribute name.
 	 */
-	function sgs_nav_menu_resolved_treatments( array $attributes ): array {
+	function sgs_nav_menu_resolved_treatments( array $attributes, string $block_name = 'sgs/nav-bar-menu' ): array {
 		$resolved = array(
 			'itemColourHoverTreatment'    => 'swap',
 			'itemBgHoverTreatment'        => 'swap',
@@ -101,7 +107,7 @@ if ( ! function_exists( 'sgs_nav_menu_resolved_treatments' ) ) {
 		$type        = null;
 		$eligibility = array();
 		if ( class_exists( 'WP_Block_Type_Registry' ) ) {
-			$type = WP_Block_Type_Registry::get_instance()->get_registered( 'sgs/nav-menu' );
+			$type = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
 		}
 		if ( $type && isset( $type->supports['sgs']['sweepEligibility'] ) && is_array( $type->supports['sgs']['sweepEligibility'] ) ) {
 			$eligibility = $type->supports['sgs']['sweepEligibility'];

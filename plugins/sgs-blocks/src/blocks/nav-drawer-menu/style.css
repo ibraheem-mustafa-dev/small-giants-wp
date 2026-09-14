@@ -1,0 +1,281 @@
+/**
+ * SGS Nav Drawer Menu (sgs/nav-drawer-menu) — frontend + editor structural
+ * styles.
+ *
+ * Trimmed from nav-menu/style.css (D1059 split, 2026-09-14). Classes match
+ * render.php exactly — still the SAME BEM root (`.sgs-nav-menu__*`, unchanged
+ * on purpose: BEM-root renaming is Step 3's scope, not this scaffolding
+ * step's). Dropped in full, each for a measured reason:
+ *   - the burger button / toggle-wrap / burger↔X morph rules — this block
+ *     never renders a burger;
+ *   - the `justify-content` bar-alignment default + `.sgs-nav-menu__bar`'s
+ *     `flex-wrap` (a horizontal-row concern) — replaced below with the
+ *     drawer's own always-vertical-list shape;
+ *   - the submenu OPEN-ANIMATION rules (fade/slide-down keyframes) — bar-only
+ *     by the ORIGINAL file's own comment: "the drawer fork's accordion is
+ *     native `<details>` and never renders `.sgs-nav-menu__submenu-wrap` at
+ *     all";
+ *   - the sticky-header dropdown-panel reparent fix
+ *     (`[data-sgs-nav-fixed]`) — a BAR-only mega/dropdown-panel stacking
+ *     rescue; the drawer's own `<dialog>` already promotes to the top layer.
+ * Structural rules only — colour / hover / typography / featured-item are
+ * ALL attr-driven, emitted by render.php's #uid-scoped <style> (Spec 32
+ * no-inline). This file deliberately hardcodes none of them.
+ */
+
+/* Root nav element. Always a vertical list — no `align-items:center` /
+   `justify-content:space-between` row-alignment default (that governed the
+   bar's horizontal row; this block has no such row). */
+.sgs-nav-menu {
+	display: block;
+}
+
+.sgs-nav-menu__bar {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+/*
+ * Sliding nav indicator — the Highlight pill (`itemBgHoverTreatment:
+ * 'highlight'`). Structural shape/motion only, inherited unchanged from the
+ * bar block's own style.css — see that file's own comment for the
+ * scaleX()-vs-width rationale (border-radius distortion at narrow widths).
+ */
+.sgs-nav-menu__indicator {
+	height: 100%;
+	left: 0;
+	opacity: var(--sgs-nav-indicator-opacity, 0);
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	transform: translateX(var(--sgs-nav-indicator-x, 0));
+	transition: transform 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
+		width 0.38s cubic-bezier(0.16, 0.84, 0.32, 1),
+		opacity 0.25s cubic-bezier(0.16, 0.84, 0.32, 1);
+	width: var(--sgs-nav-indicator-w, 0px);
+	z-index: 0;
+}
+
+/* Zero-specificity overridable defaults (mirrors the bar block's own
+   G20c ungated-paint fix) — the fill is attribute-driven (render.php emits
+   a higher-specificity uid-scoped rule whenever itemBgHover/itemBgHoverGradient
+   is set); this element deliberately carries no colour attribute of its own
+   (block.json::supports.sgs.colourExemptions.indicator). */
+:where(.sgs-nav-menu__indicator) {
+	background-color: var(--wp--preset--color--accent, currentColor);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* Magnet label (opt-in via `itemMagnetEnabled`, BOTH-classified). */
+[data-magnet] .sgs-nav-menu__magnet-target {
+	display: inline-block;
+	transform: translateX(var(--magnet-x, 0px));
+	transition: transform 0.2s ease-out;
+}
+
+.sgs-nav-menu__item {
+	display: block;
+	position: relative;
+	z-index: 1;
+}
+
+.sgs-nav-menu__link {
+	align-items: center;
+	box-sizing: border-box;
+	color: inherit;
+	display: flex;
+	min-height: 44px;
+	padding: 8px 12px;
+	text-decoration: none;
+	transition: background-color var(--wp--custom--transition--fast, 150ms ease),
+		color var(--wp--custom--transition--fast, 150ms ease);
+}
+
+/*
+ * `nowrap` has nothing to wrap into in a vertical list — inherited from the
+ * bar block's own drawer-specific fix (2026-09-09/-10), which this block IS
+ * unconditionally now (no `:where(.sgs-nav-menu__bar--drawer)` scoping
+ * needed — every instance of THIS block is that case). Specificity stays
+ * 0,1,0 so the operator's own `itemTextWrap` control (render.php, 0,2,0)
+ * still wins when set.
+ */
+.sgs-nav-menu__link,
+.sgs-nav-menu__sublink {
+	overflow-wrap: break-word;
+	white-space: normal;
+}
+
+.sgs-nav-menu__link:focus:not(:focus-visible) {
+	color: inherit;
+	text-decoration: none;
+}
+
+.sgs-nav-menu :focus-visible {
+	outline: 2px solid var( --sgs-focus-color, currentColor );
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__link,
+	.sgs-nav-menu__indicator,
+	[data-magnet] .sgs-nav-menu__magnet-target {
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ * IN-DRAWER NESTED SUBMENU — accordion (native) + drill-down (JS-enhanced).
+ * Spec 36 FR-36-6. Markup: render.php's sgs_nav_menu_render_items_drawer().
+ * Structural only — colour/fill/hover/current-page/featured styling for
+ * `.sgs-nav-menu__submenu` / `-sublink` reuses the SAME rules the dropdown
+ * already has (render.php's #uid-scoped <style>), because the accordion's
+ * nested <ul> is that identical class, not a new one.
+ * ═══════════════════════════════════════════════════════════════════════
+ */
+
+.sgs-nav-menu__item--drawer {
+	width: 100%;
+}
+
+/*
+ * Split parent-link from expander (FR-36-6): the link takes the full row
+ * width, the expander is a distinct 44px touch target OVERLAID top-right —
+ * never a flex sibling of the link. Inherited verbatim from the bar block's
+ * own style.css — see that file's history comment for why `display:contents`
+ * and a wrapping flex row were both tried and rejected before this shape.
+ */
+.sgs-nav-menu__accordion-row {
+	position: relative;
+	width: 100%;
+}
+
+.sgs-nav-menu__accordion-row > .sgs-nav-menu__link {
+	padding-inline-end: 56px;
+}
+
+.sgs-nav-menu__accordion {
+	display: block;
+}
+
+.sgs-nav-menu__accordion-summary {
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	min-height: 44px;
+	min-width: 44px;
+	position: absolute;
+	inset-inline-end: 0;
+	top: 0;
+}
+
+.sgs-nav-menu__accordion-summary::-webkit-details-marker {
+	display: none;
+}
+
+.sgs-nav-menu__accordion-summary::marker {
+	content: "";
+}
+
+.sgs-nav-menu__accordion[open] > .sgs-nav-menu__accordion-summary .sgs-nav-menu__caret {
+	transform: rotate(180deg);
+}
+
+.sgs-nav-menu__accordion-summary:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentColor);
+	outline-offset: -2px;
+}
+
+/* Accordion mode (default): the submenu <ul> simply flows open/closed with
+ * native <details> — no extra CSS needed beyond the shared submenu/sublink
+ * rules it already inherits from render.php's own #uid-scoped <style>. */
+
+/*
+ * Drill-down mode: `nav-drilldown.js` marks the bar `[data-drill-enhanced]`
+ * once it has actually wired up the slide behaviour — everything below is
+ * gated on that flag so the plain `<details>` accordion (this file's rules
+ * above) is the WHOLE experience with no JS.
+ */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] {
+	overflow: hidden;
+	position: relative;
+}
+
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-menu__item {
+	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+}
+
+/*
+ * `:not(:has(… [open]))` — see the bar block's own comment for the live
+ * pointer-intercept bug this excludes (a `transform` on the open item's own
+ * row would drag its child `.sgs-nav-menu__submenu` off-screen alongside it).
+ */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced].sgs-nav-menu__bar--drill-active > .sgs-nav-menu__item:not(:has(.sgs-nav-menu__accordion[open])) {
+	transform: translateX(-100%);
+}
+
+/* The sub-panel becomes a full-size overlay sliding in from the right.
+ * ⛔ NO hardcoded `background-color` here (Spec 32 no-inline-styling —
+ * this file's own header says "this file deliberately hardcodes none of
+ * them"). render.php's shared `sgs_nav_menu_submenu_css()` call (in
+ * `includes/nav-menu-submenu-css.php`, untouched by this split) already
+ * emits the uid-scoped equivalent with the same fallback chain — see that
+ * file's own G20c-fix comment. Duplicating it in static CSS here would be
+ * the exact hardcoded-fallback bug that fix removed. */
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu {
+	inset: 0;
+	overflow-y: auto;
+	position: absolute;
+	transform: translateX(100%);
+	transition: transform var(--wp--custom--transition--medium, 250ms) ease;
+	z-index: 2;
+}
+
+.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu.is-active {
+	transform: translateX(0);
+}
+
+/* The Back row — JS-injected only (drill-down mode), first child of the
+ * now-visible sub-panel. Absent entirely in accordion mode / no-JS. */
+.sgs-nav-menu__drill-back {
+	margin: 0;
+}
+
+.sgs-nav-menu__drill-back-btn {
+	align-items: center;
+	background: none;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	font: inherit;
+	font-weight: 600;
+	min-height: 44px;
+	padding: 0 16px;
+	text-align: start;
+	width: 100%;
+}
+
+:where(.sgs-nav-menu__drill-back-btn) {
+	border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.sgs-nav-menu__drill-back-btn__arrow {
+	margin-inline-end: 8px;
+}
+
+.sgs-nav-menu__drill-back-btn:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, currentColor);
+	outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-nav-menu__bar--drawer[data-drill-enhanced] > .sgs-nav-menu__item,
+	.sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__submenu {
+		transition-duration: 0.01ms !important;
+	}
+}
