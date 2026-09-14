@@ -18,6 +18,9 @@ sgs-theme/
 │   │                         #   search.html — search results page
 │   │                         #   archive-product.html — WooCommerce shop archive (Spec 30, D213)
 │   │                         #   single-product.html  — WooCommerce PDP (Spec 30, D210)
+│   │                         #   cart.html, checkout.html, order-confirmation.html —
+│   │                         #     WooCommerce cart/checkout/thank-you (Spec 30 FR-30-4
+│   │                         #     scope correction — see decisions.md)
 ├── parts/                    # Template parts:
 │   │                         #   header (default + shrink + sticky + transparent)
 │   │                         #   footer (default + minimal)
@@ -26,6 +29,9 @@ sgs-theme/
 │   │                         #   sgs-pdp-buybox.html      — PDP buybox part (Spec 30, D210)
 │   │                         #   sgs-pdp-content.html     — PDP description/tabs part (Spec 30, D210)
 │   │                         #   sgs-pdp-gallery.html     — PDP gallery part (Spec 30, D210)
+│   │                         #   sgs-cart-content.html    — Cart page content (Spec 30 FR-30-4 correction)
+│   │                         #   sgs-checkout-content.html — Checkout page content (Spec 30 FR-30-4 correction)
+│   │                         #   sgs-order-confirmation-content.html — Thank-you page content (Spec 30 FR-30-4 correction)
 ├── patterns/                 # Block patterns:
 │   │                         #   header: header-centred, header-full, header-minimal,
 │   │                         #     header-search-bar-above, header-search-bar-below,

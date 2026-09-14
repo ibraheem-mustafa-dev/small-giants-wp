@@ -1,0 +1,57 @@
+<!-- Order-confirmation (thank-you) page content. Same reconciliation reasoning as
+     sgs-cart-content.html / sgs-checkout-content.html. The `woocommerce/order-
+     confirmation-*` block tree below is WooCommerce's OWN default "blockified"
+     order-confirmation template (copied verbatim from
+     woocommerce/templates/templates/blockified/order-confirmation.html on WC
+     11.1.0) — status, totals, shipping/billing address columns, downloads and
+     additional-fields all ship native Block Editor inspector controls already.
+     Composed here, not rebuilt. The `wp:pattern` references below resolve to
+     WooCommerce's own registered heading patterns (Totals/Downloads/Shipping/
+     Billing/Additional-Fields headings) — not SGS patterns. -->
+
+<!-- wp:woocommerce/order-confirmation-status {"fontSize":"large"} /-->
+
+<!-- wp:woocommerce/order-confirmation-summary /-->
+
+<!-- wp:woocommerce/order-confirmation-totals-wrapper {"align":"wide"} -->
+<!-- wp:pattern {"slug":"woocommerce/order-confirmation-totals-heading"} /-->
+
+<!-- wp:woocommerce/order-confirmation-totals {"lock":{"remove":true}} /-->
+<!-- /wp:woocommerce/order-confirmation-totals-wrapper -->
+
+<!-- wp:woocommerce/order-confirmation-downloads-wrapper {"align":"wide"} -->
+<!-- wp:pattern {"slug":"woocommerce/order-confirmation-downloads-heading"} /-->
+
+<!-- wp:woocommerce/order-confirmation-downloads {"lock":{"remove":true}} /-->
+<!-- /wp:woocommerce/order-confirmation-downloads-wrapper -->
+
+<!-- wp:columns {"align":"wide","className":"wc-block-order-confirmation-address-wrapper"} -->
+<div class="wp-block-columns alignwide wc-block-order-confirmation-address-wrapper">
+	<!-- wp:column -->
+	<div class="wp-block-column">
+		<!-- wp:woocommerce/order-confirmation-shipping-wrapper {"align":"wide"} -->
+		<!-- wp:pattern {"slug":"woocommerce/order-confirmation-shipping-heading"} /-->
+
+		<!-- wp:woocommerce/order-confirmation-shipping-address {"lock":{"remove":true}} /-->
+		<!-- /wp:woocommerce/order-confirmation-shipping-wrapper -->
+	</div>
+	<!-- /wp:column -->
+
+	<!-- wp:column -->
+	<div class="wp-block-column">
+		<!-- wp:woocommerce/order-confirmation-billing-wrapper {"align":"wide"} -->
+		<!-- wp:pattern {"slug":"woocommerce/order-confirmation-billing-heading"} /-->
+
+		<!-- wp:woocommerce/order-confirmation-billing-address {"lock":{"remove":true}} /-->
+		<!-- /wp:woocommerce/order-confirmation-billing-wrapper -->
+	</div>
+	<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
+<!-- wp:woocommerce/order-confirmation-additional-fields-wrapper {"align":"wide"} -->
+<!-- wp:pattern {"slug":"woocommerce/order-confirmation-additional-fields-heading"} /-->
+<!-- wp:woocommerce/order-confirmation-additional-fields /-->
+<!-- /wp:woocommerce/order-confirmation-additional-fields-wrapper -->
+
+<!-- wp:woocommerce/order-confirmation-additional-information /-->

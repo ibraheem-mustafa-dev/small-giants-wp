@@ -1,0 +1,14 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- WIDTH MODEL. Same reasoning as single-product.html/archive-product.html:
+     `<main>` is STRUCTURE, stating contentWidth:"full" explicitly so it passes width
+     through rather than falling to block.json's "normal" default. -->
+<!-- wp:sgs/container {"tagName":"main","anchor":"main","contentWidth":{"desktop":"full"},"flexWrap":"wrap"} -->
+
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"flexDirection":"column","padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"}} -->
+		<!-- wp:template-part {"slug":"sgs-cart-content"} /-->
+	<!-- /wp:sgs/container -->
+
+<!-- /wp:sgs/container -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

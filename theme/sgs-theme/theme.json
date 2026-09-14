@@ -610,6 +610,21 @@
       "area": "uncategorized",
       "name": "sgs-archive-toolbar",
       "title": "Archive: Toolbar"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-cart-content",
+      "title": "Cart: Content"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-checkout-content",
+      "title": "Checkout: Content"
+    },
+    {
+      "area": "uncategorized",
+      "name": "sgs-order-confirmation-content",
+      "title": "Order Confirmation: Content"
     }
   ],
   "customTemplates": [
