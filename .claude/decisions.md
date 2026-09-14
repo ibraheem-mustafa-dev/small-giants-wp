@@ -1,5 +1,52 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1072 [ROUTINE] — Combined `/adversarial-council` on Spec 42+43 (NO-GO as written), specs
+revised to v2.1.0/v1.2.0, Phase 0 plan written
+
+**2026-09-14.** Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse-Red-Team/
+Support-Realist) on Spec 42 (`sgs_form` CPT) + Spec 43 (`sgs/choice-flow`) together, per Bean's
+"Front B" instruction. Grades: Cynic D+, Competitor D+, Spec-Lawyer C-, Ship-PM C-, Abuse C+,
+Support C+. Verdict presented as NO-GO-as-written (not because the direction was wrong, but
+because several "already there to reuse" claims didn't survive a code check); Bean chose
+"revise specs first, then `/phase-planner`" from a 3-option menu.
+
+**Convergent finding (3+ personas independently):** Spec 43's flagship eyewear pricing example
+rested on a false premise — `sgs/option-picker` has zero pricing code (grepped, confirmed by
+both the Cynic and Ship-PM personas independently against live source), so the "reuse
+option-picker's tile-pricing mechanism verbatim" claim underpinning FR-43-10/10a had nothing to
+reuse. **Bean corrected the real mechanism mid-revision:** `sgs/buybox` + `sgs/product-card`
+already run a full, live, server-authoritative per-variation pricing engine —
+`Product_Manifest` (`plugins/sgs-blocks/includes/class-product-manifest.php`) +
+`sgs_configurator_mode_price()` (`includes/helpers-configurator-pricing.php`) — the exact system
+Mama's Munches' flavour/pack-size picker already runs on. This is the real reuse target, not
+option-picker. Spec 43 v1.2.0 rebuilds FR-43-10/10a on it, collapsing the old "priced tile step"
+and "WC variation-picker step" into one step type, and resolves the Competitor/Abuse-Red-Team
+convergent security gap (a client-summed price-delta model) as a side effect: since every priced
+step must resolve to a real WC variation, WooCommerce's own attribute-match validation (already
+enforced by the existing `/sgs/v1/cart/add-item` proxy) rejects an incomplete/skipped axis
+rather than under-pricing it — no new abuse-mitigation code was needed once the premise was
+corrected.
+
+**Other MUST-FIX items closed in the same revision pass:** Spec 42 FR-42-0 (fail-open
+`requireLogin`) — picked "refuse outright" over a silent default; FR-42-1/2/3 (capability name,
+`custom-fields`, revisions cap) — all three "decide here, not in the ticket" items were
+previously left unresolved despite the spec's own text demanding a decision; now committed as
+literal values. FR-42-7 split into 7a (blocking, cheap — trashed-form degrade) / 7b (should-fix,
+post-v1 — the unbounded Gutenberg-#33234-race reproduction was gating the whole programme on an
+open-ended proof). FR-42-9 (mandatory rebuild) narrowed to hand-authored content only and
+reshaped into a resumable per-form ledger rather than one unattended batch. FR-42-13 added,
+disclosing that the "mandatory reuse for analytics/A-B-testing" justification (Spec 42 §9) has
+zero analytics requirements anywhere in either spec — flagged, not silently implied as
+delivered. Three broken/contradictory FR cross-references fixed (a citation to a nonexistent
+"FR-42-20"; a mis-cited FR-42-8; an index row asserting Spec 43's purchase path uses "Spec 42's
+full security rule set" three sections after Spec 42 explicitly retired that rule set).
+
+**Output:** `specs/42-SGS-FORM-CPT-AND-PRICING.md` v2.1.0, `specs/43-SGS-CHOICE-FLOW.md` v1.2.0,
+`plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` (Phase 0 — the FR-42-0 fix — fully
+detailed and ready to execute, ~5 min; Phases 1-5 scoped as a roadmap in the same doc, each to
+get its own `/phase-planner` run when reached, per this project's low-speculative-planning
+discipline). LEDGER.md Front B section updated to reflect closure.
+
 ## D1071 [ROUTINE] — Nested `sc-for` boundary detection (pure static parsing) closes D1066's remaining gap; 0 -> 414 real attributes extracted from the Ward End Eye Care draft
 
 **2026-09-14.** Follows D1066-D1068. Bean asked two direct questions that reframed this pass:

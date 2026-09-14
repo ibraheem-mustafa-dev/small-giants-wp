@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.1.0
+spec_version: 1.2.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -29,7 +29,22 @@ derived_from:
   - The 2026-09-14 reconciliation against Spec 42's adversarial-council findings (v1.1.0):
     confirmed `sgs/option-picker`'s live WC-bound mode already has stable option identity;
     its typed/manual mode does not, and the eyewear worked example uses that typed mode —
-    FR-43-10a closes the gap at the right layer instead of Spec 42's original wrong one
+    FR-43-10a closed the gap at the right layer instead of Spec 42's original wrong one
+  - **The 2026-09-14 combined `/adversarial-council` run (6 personas) on Spec 42+43 together,
+    corrected by the owner mid-revision (v1.2.0):** the council (independently, the Cynic and
+    Ship-PM verifying the same code) found that `sgs/option-picker` has NO pricing mechanism
+    at all — FR-43-10a's "reuse verbatim" premise doesn't hold, and the typed/manual `key`
+    identity gap it tried to close was a real problem with no real fix target. **The owner's
+    correction: `sgs/buybox` + `sgs/product-card` already have a full, live, server-authoritative
+    per-variation pricing engine** (`Product_Manifest` / `class-product-manifest.php` +
+    `sgs_configurator_mode_price()` / `includes/helpers-configurator-pricing.php`) — the exact
+    mechanism Mama's Munches' flavour/pack-size picker already runs on. v1.2.0 replaces the
+    typed-tile pricing route entirely: every priced step in a `sgs/choice-flow` resolves ONE
+    WooCommerce attribute axis of a single variable product via this existing manifest, exactly
+    as `sgs/buybox` does today — never `option-picker`'s free-text typed mode. This collapses
+    FR-43-1's "priced tile step" and "WC variation-picker step" into ONE step type, and resolves
+    the Cynic/Competitor/Abuse-Red-Team convergent finding that the eyewear worked example had
+    no real server-side price authority — it now has the same one Mama's Munches already ships.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -61,6 +76,20 @@ have repeated this project's own documented failure pattern (WooCommerce itself 
 four overlapping "assemble an order" plugins and had to publish a disambiguation doc
 just to explain which one to use — not a model to copy for a solo-maintained framework).
 
+**v1.2.0 correction (owner-directed, post-`/adversarial-council`):** the eyewear
+thickness/finish surcharges are **real WooCommerce attribute axes on a single variable
+product, priced via real variations** — structurally identical to Mama's Munches'
+flavour × pack-size picker, just presented as sequential steps instead of inline pickers.
+This is not a new pricing capability to build: it is `sgs/buybox`'s existing
+`Product_Manifest` (`includes/class-product-manifest.php`) + configurator pricing
+helpers (`includes/helpers-configurator-pricing.php`, `sgs_configurator_mode_price()`)
+— already shipped, already server-authoritative, already tax-aware, already attested
+per FR-28-16 — used inside a step wizard instead of on one page. A priced step therefore
+resolves ONE attribute axis of the manifest per step; the terminal price is simply the
+live price of the fully-resolved variation combination, read the same way `sgs/buybox`
+reads it today. This retires the earlier idea of a second, typed/free-text tile-pricing
+route through `sgs/option-picker` — see FR-43-10/FR-43-10a below.
+
 ## 2. Step types (mixed freely within one flow)
 
 **FR-43-1:** a `sgs/choice-flow-step` (or a repurposed `sgs/form-step`, decide at build
@@ -68,12 +97,16 @@ time based on which shares more cleanly — see §6) can be any of:
 
 - **Plain question** — multiple-choice options, no price. The qualification/recommendation
   use case (dentist/fitness "which service suits you").
-- **Priced tile step** — reuses `sgs/option-picker`'s existing tile rendering + pricing
-  mechanism verbatim. The eyewear lens-surcharge use case.
-- **WooCommerce variation-picker step** — reuses Spec 27's live product/variation data,
-  one attribute resolved per step (e.g. step 1 = flavour, step 2 = pack size). The Mama's
-  Munches use case: replaces a cramped inline pill-picker with a full-screen,
-  one-decision-per-screen sequence.
+- **Priced WooCommerce-variation step (v1.2.0: merges the old "priced tile" and
+  "WC variation-picker" step types into one — they were always the same mechanism).**
+  Resolves ONE WooCommerce attribute axis per step, reading `sgs/buybox`'s existing
+  `Product_Manifest` for live combo pricing — one attribute resolved per step (e.g. step
+  1 = flavour, step 2 = pack size; or step 1 = lens thickness, step 2 = finish/tint).
+  Covers BOTH the Mama's Munches use case (replaces a cramped inline pill-picker with a
+  full-screen, one-decision-per-screen sequence) AND the eyewear lens-surcharge use case
+  (thickness/finish modelled as real WC attribute terms on one variable product — see §6
+  FR-43-10). Renders each step's options via `sgs/option-picker`'s tile UI, bound to that
+  step's manifest-derived axis, not its typed/free-text mode.
 - **Plain data-capture step** — reuses `sgs/form`'s existing field blocks (text, file
   upload) unchanged. The prescription/eye-test-upload use case — explicitly does **not**
   affect price; a flow can freely mix priced and unpriced steps.
@@ -85,30 +118,60 @@ distinct from `sgs/form`'s existing per-FIELD `conditionalField`/`conditionalOpe
 purpose). Default (no map, or answer not matched) is "advance to the next step in order" —
 so a flow with zero branching behaves identically to a plain linear wizard.
 
+**FR-43-2a (adversarial-council MUST-FIX, editor-time integrity).** On publish/save, the
+editor validates every `nextStepMap` entry against the flow's own step tree: a target ID
+that doesn't resolve to a live step in the same flow blocks publish with a named error
+(never a silent fall-through to "advance in order" — that hides a broken branch from the
+client who just built it); a routing cycle with no terminal exit is flagged the same way.
+This is a straightforward integrity check against the block's own attribute tree — cheap
+to build, and it is the difference between a client seeing a red editor warning and a real
+site visitor getting stranded mid-flow with no error at all (Support Realist finding).
+
+**FR-43-2b (adversarial-council note — largely closed by FR-43-10's correction).** Because
+every priced step now resolves to a real WooCommerce attribute axis (FR-43-10), a
+`nextStepMap` path that skips a priced step cannot produce an under-priced purchase the way
+a client-summed "answer deltas" model could have: WooCommerce's own variation resolution
+requires every attribute on the product to be matched to a real, purchasable variation, and
+the existing `/sgs/v1/cart/add-item` proxy already validates the submitted attribute set
+against `get_attributes()` server-side (per Spec 27) — an incomplete or skipped axis simply
+fails to resolve to a purchasable variation and the add-to-cart call is rejected, not
+under-priced. No new abuse-mitigation FR is needed for this path as a result of the
+FR-43-10 correction.
+
 ## 3. Terminal actions (pick one per flow instance, or expose all three as configurable)
 
 **FR-43-3 — Recommendation result.** A plain result screen — text, optionally driven by a
 simple scoring/matching rule across prior answers (e.g. "most answers pointed to X" —
 the exact matching-rule shape is a build-time decision, not specified further here; keep
-it simple, a weighted-tag match is enough for v1, no formula/expression engine — same
-boundary Spec 42 FR-42-8 already drew for pricing).
+it simple, a weighted-tag match is enough for v1, no formula/expression engine — deferred
+in full at FR-43-12 below, corrected citation (v1.2.0): the earlier text cited a
+now-nonexistent "Spec 42 FR-42-8" boundary — FR-42-8 is Spec 42's cache/nonce contract and
+has nothing to do with pricing or scoring; there is no live Spec 42 FR to point at here).
 
 **FR-43-4 — Email-capture handoff.** Collect an email, send the result to it, optionally
 add to a mailing list (reuse whatever list/webhook mechanism `sgs/form` already has —
 this project's forms notify via N8N webhooks, never `wp_mail()`, per the root CLAUDE.md's
-naming/architecture rules; do not add a second notification path).
+naming/architecture rules; do not add a second notification path). **Rate-limiting inherits
+from `sgs/form`'s existing `rateLimit` config, applied per-flow-instance** (Competitor +
+Cynic MISSING finding — a quiz-style lead-capture terminal with no spam defence is an open
+relay for lead-list poisoning and N8N webhook cost amplification); this is validated
+against FR-42-8's now-cache-independent config lookup, not the vulnerable transient path.
 
-**FR-43-5 — Real purchase (corrected, v1.1.0).** Add to cart with a server-computed total
+**FR-43-5 — Real purchase (corrected, v1.2.0).** Add to cart with a server-computed total
 — by calling Spec 27's **existing, already-shipped, already-secure**
 `/sgs/v1/cart/add-item` proxy directly, exactly the way `sgs/buybox`/`sgs/product-card`
-already do. Do **not** rebuild Spec 42 v1.0.0's retired pricing-security apparatus
-(bespoke tile-ID validation, revision-pinning, a new minor-unit currency contract) —
-that whole mechanism existed only because v1.0.0 assumed a NEW pricing system with no
-security precedent. This one has a precedent, and reusing it is strictly less work, not
-a compromise. The security property this buys for free: the server never trusts a
-client-submitted total (Spec 27's proxy already enforces this), and it prices against
-live WooCommerce data, never a WordPress revision (side-stepping the exact "a revision
-doesn't reliably capture the data" defect the adversarial council found in v1.0.0).
+already do, passing the fully-resolved variation's attribute set the same way `sgs/buybox`
+does today. **No proxy change is needed and none should be built** — because every priced
+step resolves to a real WC variation (FR-43-10), the terminal step's selections ARE a
+normal `variation[]` attribute payload, identical in shape to what `sgs/buybox` already
+sends. There is no surcharge/delta field to add, because there is no value flowing through
+this call that isn't already a real, live WooCommerce price. Do **not** rebuild Spec 42
+v1.0.0's retired pricing-security apparatus (bespoke tile-ID validation, revision-pinning,
+a new minor-unit currency contract, or a new server-side surcharge-resolution mechanism) —
+that whole mechanism existed only because v1.0.0 (and this spec's own v1.1.0) assumed a NEW
+pricing system with no security precedent. It isn't needed: this reuses a precedent that
+already prices against live WooCommerce data, never a WordPress revision and never a
+client-submitted delta of any kind.
 
 ## 4. Delivery — inline or full-screen modal
 
@@ -120,56 +183,83 @@ card, a CTA, anywhere) references the flow the same way a modal trigger referenc
 `sgs_choice_flow` post type (same picker mechanism as Spec 42 FR-42-4 — do not build a
 third bespoke picker).
 
-**FR-43-7 (Mama's Munches case, explicit acceptance criterion).** A variable product with
-many flavour/pack-size combinations gets a `sgs/choice-flow` with one WooCommerce
-variation-picker step per attribute (flavour, then pack size), opened full-screen via
-`sgs_modal` from a "Choose options" button, replacing the inline pill-picker UI. This is
-a **sequential, one-decision-per-screen** presentation — confirmed by the owner, not a
-single screen with all pickers together — even though nothing about flavour/pack-size
-selection is conditionally dependent between steps. The step engine does not require
-branching to be *used* for this case, only *available*.
+**FR-43-7 (Mama's Munches case — demoted to post-v1, Ship-PM MUST-FIX).** A variable
+product with many flavour/pack-size combinations gets a `sgs/choice-flow` with one priced
+WooCommerce-variation step per attribute (flavour, then pack size — the same step type as
+FR-43-1's merged priced step, now used with zero branching), opened full-screen via
+`sgs_modal`, replacing the inline pill-picker UI. This is a **sequential,
+one-decision-per-screen** presentation — confirmed by the owner, not a single screen with
+all pickers together. **Scope correction:** this is explicitly a UX/presentation preference,
+not a capability gap — the spec's own text already says "nothing about flavour/pack-size
+selection is conditionally dependent between steps," meaning it exercises none of
+`sgs/choice-flow`'s defining mechanism (FR-43-2 branching) and depends on the WC-variation
+step type, `sgs_modal` delivery, AND the priced-step mechanism all existing first. It is
+**not** part of the v1 acceptance criteria (see §10 Phasing) — if the current inline
+pill-picker is genuinely too cramped, that is a CSS fix available this week, independent of
+this spec's timeline.
 
 ## 5. CPT — `sgs_choice_flow`
 
-**FR-43-8.** Mirrors Spec 42's `sgs_form` CPT decision exactly, for the same reason: the
-owner's ruling that every reusable flow is mandatory CPT-backed, no opt-out, for
-consistent analytics/testing across a site (Spec 42 §13). Same identity model (slug-keyed,
-`resolve_choice_flow()` mirroring `resolve_form()`/`resolve_modal()`), same capability
-decision requirement (a named capability, not inherited `edit_theme_options` — Spec 42
-FR-42-1), same `custom-fields`/`revisions` decisions made explicitly rather than
-inherited (Spec 42 FR-42-2/FR-42-3).
+**FR-43-8 (values committed, v1.2.0 — was "same requirement to decide", now "same decided
+values").** Mirrors Spec 42's `sgs_form` CPT decisions exactly, using the SAME literal
+values, not a parallel decision: capability = `edit_sgs_forms` (Spec 42 FR-42-1 — one
+capability governs both CPTs, not two separate ones, since both are framework-level
+"who can build a reusable flow" questions); `custom-fields` skipped, settings stay root
+block attributes (FR-42-2); `revisions` retention cap = 10 (FR-42-3). Same identity model
+(slug-keyed, `resolve_choice_flow()` mirroring `resolve_form()`/`resolve_modal()`), same
+disclosed analytics gap (FR-42-13 applies here identically — the mandatory-reuse
+justification is equally unbuilt for flows).
 
-## 6. Shared engine — build once, reuse three times
+## 6. Step engine + pricing — what's genuinely new vs. genuinely reused (v1.2.0 retitled — see FR-43-9's correction below; this is no longer "one shared engine, three consumers")
 
-**FR-43-9.** The step container/navigation/progress-bar/session-persistence mechanism is
-**not** a new engine. Extend `sgs/form-step`'s existing shape (or extract its step-runtime
-into a shared primitive both `sgs/form` and `sgs/choice-flow` consume — decide whichever
-is the smaller diff at build time) with FR-43-2's `nextStepMap` addition. Do not build a
-third parallel multi-step system. This project's own binding rule (R-31-9, "universal
-mechanisms, no per-block hyperfocus") and `THE-MIGRATION-METHOD.md`'s "settle the target
-shape first" both apply directly — the target shape is: one step engine, three consumers
-(`sgs/form`, `sgs/choice-flow`, and Spec 27's configurator where relevant), each adding
-only what's genuinely different about its own terminal behaviour.
+**FR-43-9 (rewritten, adversarial-council MUST-FIX — Cynic and Ship-PM independently
+verified the same code fact).** `sgs/form-step` has no step runtime to extend — it is a
+render.php marker div (`.sgs-form-step` + data attrs) queried by its PARENT. The real step
+engine (878 lines: `updateStepVisibility`, `saveStepState`/`restoreStepState`,
+`evaluateCondition`/`applyConditionalLogic`, validation, submit) lives unexported inside
+`sgs/form`'s own `view.js`, fused to `sgs/form-review`. **Decided (v1.2.0), not deferred to
+build time:** `sgs/choice-flow` gets its OWN, small Interactivity-API store (step index,
+`nextStepMap` resolution, session persistence) — it does NOT attempt to extend or share
+`sgs/form/view.js`'s engine in v1. Accept the resulting ~150-200 lines of duplicated
+navigation/persistence logic as the v1 cost. Revisit extraction into a genuinely shared
+primitive only once both `sgs/form` and `sgs/choice-flow` exist and the real overlap is
+observable, not asserted in advance. `sgs/choice-flow` continues to reuse `sgs/form-step`
+as an inert STEP MARKER (it already is one) and reuses `sgs/form`'s field blocks unchanged
+for plain data-capture steps (FR-43-1) — those are genuine, already-built reuse; only the
+step-navigation runtime itself is net-new. **Spec 27's configurator is dropped from the
+"consumers" count** — nothing in either spec commits it to adopting step semantics, and
+counting a third, uncommitted consumer to justify an abstraction is how a two-consumer
+sharing decision gets over-engineered for a consumer that never arrives.
 
-**FR-43-10.** Priced tile steps call `sgs/option-picker`'s existing render/pricing code
-directly — do not re-implement tile-with-price rendering a second time. WooCommerce
-variation-picker steps call Spec 27's existing product-bindings layer directly — do not
-re-implement variation resolution a second time.
+**FR-43-10 (rewritten, v1.2.0).** A priced step calls `sgs/buybox`'s existing manifest +
+pricing mechanism directly — `Product_Manifest::build_manifest()` (or its equivalent public
+entry point) for the live combo data, `sgs_configurator_mode_price()` /
+`sgs_configurator_format_minor()` for display — and renders its options via
+`sgs/option-picker`'s tile UI **bound to that manifest data** (the option-picker's existing
+WC-bound mode, which already resolves against a real, stable, server-side `term_id` — see
+FR-43-10a). Do not re-implement manifest building, price computation, or tile rendering a
+second time; do not re-implement variation resolution a second time. A `sgs/choice-flow`
+priced step is, mechanically, one axis of a `sgs/buybox` instance split across screens —
+the same manifest, the same pricing helpers, the same option-picker binding mode, reused
+verbatim, not rebuilt.
 
-**FR-43-10a (adversarial-council correction, reconciling with Spec 42's own finding).**
-Checked directly against the code: `sgs/option-picker`'s **live WooCommerce-bound mode**
-already resolves against a real, stable, server-side `term_id` — the tile-ID gap Spec 42
-v1.0.0 had in `sgs/form-field-tiles` does **not** carry over to that mode. But its
-**typed/manual mode** (`optionItems: {key, label}`) has the exact same problem: `key` is
-a free-text string, editable, not guaranteed unique or immutable. The real eyewear-lens
-worked example (`{std:0, thin:+30, xthin:+60, ultra:+100}`) is exactly this typed shape —
-these price deltas aren't tied to real WooCommerce attribute terms today. **Requirement:**
-a priced tile step in `sgs/choice-flow` must either (a) bind to a real WooCommerce
-attribute/variation (inheriting the live mode's stable `term_id` for free), or (b) if
-typed/manual, gain a server-generated immutable `optionId` at creation time, never derived
-from `key`/`label`. Do not ship a priced typed tile without one or the other — this is
-the single highest-value fix carried forward from Spec 42's adversarial council, now
-applied at the correct layer.
+**FR-43-10a (rewritten, v1.2.0 — supersedes the v1.1.0 typed/manual fallback entirely).**
+The v1.1.0 text proposed a fallback for `sgs/option-picker`'s typed/manual mode
+(`optionItems: {key, label}`, free-text `key`, no server price authority) via a
+server-generated `optionId`. **That fallback is withdrawn.** Checked directly against the
+code (`plugins/sgs-blocks/includes/helpers-configurator-pricing.php`,
+`includes/class-product-manifest.php`): `sgs/option-picker` itself has no pricing
+mechanism of its own to fall back to — the price authority was always `sgs/buybox`'s
+manifest, not option-picker. **Requirement (replacing the old (a)/(b) either-or): every
+priced step in `sgs/choice-flow` MUST bind to a real WooCommerce attribute/variation via
+the manifest (option-picker's WC-bound mode, inheriting its stable `term_id` for free).
+Typed/manual pricing is not a supported path for `sgs/choice-flow` and must not ship.**
+This means the eyewear lens flow requires lens thickness and finish/tint to exist as real
+WooCommerce attribute terms with real per-variation pricing on the underlying product —
+a catalogue-setup task (creating the attributes and variations in WooCommerce), not a new
+block-engine capability. State this precondition to whoever builds the first real
+`sgs/choice-flow` purchase instance; it is cheap (WooCommerce's own attribute/variation UI)
+but it is a real prerequisite step, not something the block conjures from a typed price map.
 
 ## 7. Client-facing disambiguation
 
@@ -194,25 +284,57 @@ call, not specified further here — keep it simple for v1.
 
 **FR-43-13.** Preset starter flows (a ready-made "which treatment" template, a ready-made
 lens-builder template) are explicitly out of scope for this spec, same open-brainstorm
-status as Spec 42 FR-42-20 — do not invent a field-by-field template without the
-competitor-template research that spec already flagged as incomplete.
+status as Spec 42 FR-42-12 (corrected citation, v1.2.0 — was mis-cited as a nonexistent
+"FR-42-20"; Spec 42's index stops at FR-42-13) — do not invent a field-by-field template
+without the competitor-template research that spec already flagged as incomplete.
 
-## 9. Requirement index
+## 9. Phasing (added v1.2.0, Ship-PM MUST-FIX — the single biggest missing thing in the
+original document: 14 FRs presented as a flat list with no MVP line)
+
+**Phase 0 — this week, ~1hr, zero dependency on the rest of either spec.** Spec 42
+FR-42-0 (fail-open fix) only. Deploy, verify on the canary.
+
+**Phase 1 — `sgs_form` CPT, no mandatory rebuild yet.** Spec 42 FR-42-1/2/3 (decided
+values above), FR-42-4/5, FR-42-7a, FR-42-8. New forms are CPT-backed; existing ones keep
+working unchanged.
+
+**Phase 2 — `sgs/choice-flow`, plain-question step + recommendation terminal only.**
+FR-43-1 (plain-question step type only), FR-43-2/FR-43-2a, FR-43-3, FR-43-8, FR-43-11, its
+own IAPI store (FR-43-9). **This alone ships a complete, sellable feature — a "which
+service suits you" qualification quiz — touching zero WooCommerce, zero pricing, zero
+modal, and zero of `sgs/form`'s existing engine.** It is the natural first slice and was
+not named as one anywhere in v1.1.0.
+
+**Phase 3 — priced WC-variation steps + real purchase.** FR-43-1's priced step type,
+FR-43-10/FR-43-10a, FR-43-5, FR-43-4's rate-limit note. Requires the target product's
+lens/flavour/etc. attributes to already exist as real WooCommerce variations (FR-43-10a's
+catalogue-setup precondition).
+
+**Phase 4 — modal delivery + Mama's Munches acceptance criterion.** FR-43-6, FR-43-7
+(explicitly not part of v1 — see FR-43-7's own text).
+
+**Phase 5 — everything else, independently deferrable, no fixed order.** Spec 42 FR-42-9
+(mandatory rebuild, only after Phase 1 proves stable and the instance count is known),
+FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (analytics).
+
+## 10. Requirement index (v1.2.0)
 
 | FR | One-line |
 |---|---|
-| FR-43-1 | Four mixed step types in one flow: plain question, priced tile, WC variation-picker, plain data-capture |
+| FR-43-1 | Three step types in one flow (v1.2.0: merged the old "priced tile" + "WC variation-picker" into one) — plain question, priced WC-variation, plain data-capture |
 | FR-43-2 | `nextStepMap` — per-step answer-based routing, the one new mechanism |
+| FR-43-2a | Editor-time validation: dangling target / cycle blocks publish — decided |
+| FR-43-2b | Skip-a-priced-step abuse path — resolved as a side effect of FR-43-10's correction, no new FR needed |
 | FR-43-3 | Terminal: recommendation result screen |
-| FR-43-4 | Terminal: email-capture lead-gen handoff (N8N webhook, not `wp_mail()`) |
-| FR-43-5 | Terminal: real purchase — Spec 42's full security rule set applies verbatim |
+| FR-43-4 | Terminal: email-capture lead-gen handoff (N8N webhook, not `wp_mail()`) + inherited rate-limit |
+| FR-43-5 | Terminal: real purchase via Spec 27's `/sgs/v1/cart/add-item` proxy, unmodified — corrected citation, no bespoke security apparatus |
 | FR-43-6 | Delivery: inline or full-screen via `sgs_modal`, `flowRef` + `LinkControl`, same picker as Spec 42 |
-| FR-43-7 | Mama's Munches acceptance criterion: sequential WC variation steps via modal |
-| FR-43-8 | `sgs_choice_flow` CPT — mirrors Spec 42's `sgs_form` CPT decisions exactly |
-| FR-43-9 | One shared step engine (extend `sgs/form-step`), never a third parallel system |
-| FR-43-10 | Priced/variation steps call existing `option-picker`/Spec-27 code directly, never reimplemented |
-| FR-43-10a | Typed priced tiles need a real immutable `optionId`, not the free-text `key` |
+| FR-43-7 | Mama's Munches: demoted to Phase 4, explicitly not a v1 acceptance criterion |
+| FR-43-8 | `sgs_choice_flow` CPT — same literal capability/cache/revision values as Spec 42, not a parallel decision |
+| FR-43-9 | Own small IAPI store, decided now — `sgs/form-step` has no runtime to extend, `sgs/form/view.js`'s engine stays block-private in v1 |
+| FR-43-10 | Priced steps bind to real WC variations via `sgs/buybox`'s existing manifest — corrected, no new pricing system |
+| FR-43-10a | Typed/manual pricing withdrawn as a path; WC-binding is the only supported route |
 | FR-43-11 | Distinct plain-English inserter descriptions vs `sgs/form` |
 | FR-43-12 | Recommendation-matching rule: build-time call, keep simple |
-| FR-43-13 | Preset templates: explicitly deferred, same status as Spec 42 FR-42-20 |
+| FR-43-13 | Preset templates: explicitly deferred, same status as Spec 42 FR-42-12 |
 | FR-43-14 | Cloning pipeline can't create a flow CPT — shared gap with Spec 42, fix once |

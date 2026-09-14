@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 42
-spec_version: 2.0.0
+spec_version: 2.1.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -31,6 +31,16 @@ derived_from:
     setup is analytics tracking and testing"
   - The 2026-09-14 owner decision: migration is a full mandatory rebuild, no deprecation
     path — "we don't do deprecations and are pre-live" (consistent with D270)
+  - The 2026-09-14 combined `/adversarial-council` run (6 personas) on Spec 42+43 together —
+    v2.1.0 closes the convergent MUST-FIX findings: three "decide here" items that were
+    never actually decided (FR-42-1/2/3), a fail-open fix left as an unpicked either/or
+    (FR-42-0), a defensive-engineering project mis-scoped as a single blocking item
+    (FR-42-7), a mandatory rebuild with no rollback/count/narrowed-scope story (FR-42-9),
+    and the analytics/A-B-testing claim used to justify "mandatory" while zero analytics
+    requirements exist anywhere (Competitor persona, FR-42-13). Two personas (the Cynic,
+    verifying code directly; the Ship-PM, independently verifying the same files)
+    additionally found that Spec 43's reuse claims about this project's own blocks don't
+    hold — see Spec 43 v1.2.0 for the corresponding fixes there.
 ---
 
 # Spec 42 — `sgs_form` CPT (v2.0.0 — pricing moved out to Spec 43)
@@ -94,8 +104,10 @@ The existing `{prefix}sgs_form_submissions` table stores `form_id varchar(100)`.
   validate `post_status === 'publish'`, fail closed (render nothing / a clear editor notice)
   if unresolved.
 - **A slug rename must be blocked, or redirected via a stored previous-slug map** — an
-  unguarded rename silently orphans every historical submission's join. Pick one before
-  build; do not leave it emergent.
+  unguarded rename silently orphans every historical submission's join. **Decided
+  (v2.1.0):** block the rename outright once a form has ≥1 submission (a single
+  `wp_insert_post_data` filter check against the submissions table — no second durable
+  store to maintain). A form with zero submissions may still be renamed freely.
 
 ## 3. CPT registration
 
@@ -103,22 +115,24 @@ Merge into the SAME shared `register_post_type()` args array in `class-sgs-block
 used by header/footer/drawer/mega-menu (`public: false`, `show_in_rest: true`). **Three
 decisions must be made explicitly, not inherited silently:**
 
-- **FR-42-1 — Capability.** A NEW named capability (e.g. `edit_sgs_forms`), NOT the inherited
-  `edit_theme_options`. Name the capability, the exact roles it's granted to, and its grant
-  path (activation hook / `add_cap()`) in the same commit that registers the CPT — leaving
-  this as "e.g." rather than a committed identifier, as v1.0.0 did, is exactly the kind of
-  gap the spec-lawyer pass on Spec 43's sibling review flagged as guaranteeing two
-  divergent builds.
-- **FR-42-2 — `custom-fields` support.** Declare it explicitly (this repo has already shipped
-  this exact gap once — 2026-06-02, product-card meta, recorded in
-  `plugins/sgs-blocks/CLAUDE.md`; `register_meta( ..., 'show_in_rest' => true )` silently
-  no-ops without it) — **or** state plainly that all form settings live as `sgs/form` root
-  block attributes instead and skip `custom-fields` entirely. Pick one in this document, not
-  in the implementation ticket.
+- **FR-42-1 — Capability. DECIDED (v2.1.0), no longer "e.g."**: the capability is literally
+  `edit_sgs_forms`. Granted to `administrator` and `editor` only (never `author`/
+  `contributor` — this CPT's config can gate a form's own auth requirement, so an
+  over-broad grant is a real access-control risk, not just tidiness). Grant path: a single
+  `add_cap()` call in the plugin's own activation hook (mirroring how every other shared
+  capability in this codebase is granted — no filter, no runtime check-and-add). Bean's own
+  admin account holds `administrator` and therefore has this capability automatically; no
+  separate grant step is needed for the framework owner.
+- **FR-42-2 — `custom-fields` support. DECIDED (v2.1.0):** skip `custom-fields` entirely.
+  All form settings (including `requireLogin`, `rateLimit`) live as `sgs/form` root block
+  attributes, exactly as they do today — this avoids re-deriving the exact
+  `register_meta( ..., 'show_in_rest' => true )` gap this repo has already shipped once
+  (2026-06-02, product-card meta).
 - **FR-42-3 — `revisions`.** Stays ON (the shared default). No longer load-bearing for
   pricing (that requirement moved to Spec 43) — it's a plain editorial history feature now.
-  Still needs a retention cap stated here (a number or a time-box) so it doesn't bloat
-  unbounded, matching every other shared CPT's discipline.
+  **Retention cap DECIDED (v2.1.0): 10 revisions**, via a `wp_revisions_to_keep` filter
+  scoped to `post_type === 'sgs_form'` (and `sgs_choice_flow` — see Spec 43 FR-43-8),
+  matching this project's existing per-post-type revision-cap pattern.
 
 ## 4. The picker — WordPress's own `LinkControl`, not a bespoke REST widget
 
@@ -167,31 +181,57 @@ log of exactly this class of failure, not registration bugs:
 [trashing the definition renders an orphaned error card everywhere it's embedded](https://github.com/WordPress/gutenberg/issues/14127),
 and [a self-referencing block crashes the editor](https://github.com/WordPress/gutenberg/issues/21117).
 
-**FR-42-7:** before ship, explicitly test and document behaviour for: (a) the referenced
-`sgs_form` post trashed while embed points still reference its slug — embed points must
-degrade to a clear, named-in-copy state ("This form is no longer available — check
-Forms in wp-admin"), never a raw PHP error; (b) a delete-guard — refuse (or warn hard) when
-trashing a form that has live embed points, rather than allowing a silent orphan; (c) the
-save-race shape from Gutenberg #33234 reproduced against this mechanism and confirmed NOT
-to reproduce (or fixed if it does) before this ships. **Spec 43's `sgs_choice_flow` needs
-the identical contract — build/test it once, apply to both CPTs, do not re-derive it.**
+**FR-42-7a (Blocking — split from the old FR-42-7, Ship-PM MUST-FIX).** The referenced
+`sgs_form` post trashed/missing while an embed still references its slug degrades to a
+clear, named copy state, never a raw PHP error. Two audiences, two messages (Support
+Realist finding — a single wp-admin-vocabulary message shown to a public visitor is a dead
+end): (i) **public-visitor-facing** — a generic, site-configurable fallback ("This form
+isn't available right now — please email/call us instead"), never technical vocabulary;
+(ii) **editor-only** (shown only to a logged-in user with `edit_sgs_forms`) — the concrete
+next action, e.g. "This form reference is broken — go to Forms → find `<slug>` →
+republish, or unlink this block." This is the whole of FR-42-7a's scope: `resolve_form()`
+returning null plus these two notices. Cheap, and it is what actually blocks the mandatory
+rebuild (FR-42-9/FR-42-11) — not the items in FR-42-7b below.
+
+**FR-42-7b (Should-fix, post-v1 — split from the old FR-42-7, Ship-PM MUST-FIX).** A
+delete-guard (refuse trashing a form/flow with live embed points — refuse, not "warn
+hard": a non-coder client will click through a warning without registering it) enforced at
+the `wp_trash_post`/`before_delete_post` hook level (not the admin-UI action alone, so
+WP-CLI/REST deletes are covered too — Spec-Lawyer finding), plus reproducing the
+Gutenberg #33234 save-race shape against this specific mechanism. **Demoted from Blocking
+because this project's own reference model differs from `wp_block` in the way that
+matters**: `sgs_form`/`sgs_choice_flow` embeds resolve by SLUG STRING (§2), not post ID,
+and carry no inner content of their own to be silently overwritten — #33234's actual
+failure (a load-order race that overwrites the reusable block's OWN post content) has no
+obvious route through a slug-keyed, contentless reference. Confirming that in ~15 minutes
+is the first task under this FR; only build the delete-guard hook and the fuller race test
+matrix once that's confirmed, not before.
+
+**Spec 43's `sgs_choice_flow` needs the identical contract — build/test it once, apply to
+both CPTs, do not re-derive it.**
 
 ## 7. Ship immediately, standalone — the fail-open bug (§1)
 
-**FR-42-0 (highest priority, no dependency on the rest of this spec):** fix
-`plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit`'s
-`requireLogin` resolution so it
-**fails closed** (defaults to `true`, or refuses the submission outright — pick one and
-state it here, not in the ticket) when its config lookup is missing, rather than failing
-open to `false`. This is a live security defect on the canary today, independent of
-whether the CPT work ever ships.
+**FR-42-0 (highest priority, no dependency on the rest of this spec). DECIDED (v2.1.0):**
+fix `plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit`'s
+`requireLogin` resolution to **refuse the submission outright** (HTTP 503 / "please try
+again shortly") when its config lookup cannot be resolved — never silently default
+`requireLogin` to `true` or `false` and proceed. Refusing rather than defaulting-true was
+chosen because a silent default-true has its own failure mode (every legitimate logged-in
+submitter on a cache-warm page gets rejected as if logged out, with nobody noticing why);
+refusing outright fails loudly and is trivially distinguishable from "the form is fine." No
+implementer discretion is intended here — refuse, don't guess. This is a live security
+defect on the canary today, independent of whether the CPT work ever ships.
 
 ## 8. Caching + nonce contract
 
-**FR-42-8:** any page carrying an `sgs/form`-embed is excluded from full-page cache, OR the
-nonce/config lookup is made genuinely cache-independent (reads the durable CPT definition
-directly rather than a render-time transient — which §7's fix already requires). State
-which approach is taken here, not in the implementation ticket.
+**FR-42-8. DECIDED (v2.1.0):** the nonce/config lookup is made genuinely cache-independent
+— it reads the durable `sgs_form` CPT definition directly at submit time (via
+`resolve_form()`, §2) rather than a render-time transient. This is the same fix FR-42-0
+already requires (refuse rather than guess when resolution fails), so no separate
+cache-exclusion rule is needed: a form-carrying page may stay fully cacheable, because the
+security-relevant read happens at submission time against the durable post, never against
+anything the page cache could serve stale.
 
 ## 9. Migration — mandatory, full rebuild, no deprecation path
 
@@ -200,10 +240,26 @@ no "simple form stays inline" exception. Reasoning given: a genuinely one-off fo
 and the whole point of a unified form setup is consistent analytics tracking and A/B testing
 across every form on a site, which an opt-out path would fragment.
 
-**FR-42-9:** existing `sgs/form` instances are rebuilt through the new CPT-backed system in
-one pass — this project runs no block-deprecation machinery (D270) and the framework is
-pre-production with no live client content to protect, so a rebuild rather than a migration
-shim is the correct and cheap path.
+**FR-42-9 (narrowed, Ship-PM + Support Realist MUST-FIX).** Existing **hand-authored
+editor** `sgs/form` instances are rebuilt through the new CPT-backed system — this project
+runs no block-deprecation machinery (D270) and the framework is pre-production with no live
+client content to protect, so a rebuild rather than a migration shim is the correct and
+cheap path. Two corrections to how "mandatory, one pass" is executed:
+
+- **Scope is narrowed to hand-authored content, explicitly, now** — not content produced
+  via `/sgs-clone`, because FR-42-10 (below) discloses the clone pipeline cannot create the
+  CPT this mandate requires; a mandate that cannot be satisfied by one of its two content
+  sources is not "decided", it's stalled on an unowned blocker. The clone-pipeline gap gets
+  its own follow-up (FR-42-10, unchanged) and is not this FR's problem to solve.
+- **Count before rebuilding, and run it as a per-form ledger, not one unattended batch.**
+  Before the rebuild starts: run `wp post list`/a DB query against the canary (and any
+  client sites) for actual `sgs/form` block instances — this is one command, and it turns
+  "however many forms exist" (FR-42-11's own phrase) from a fear into a number. Rebuild
+  form-by-form against a status ledger (pending/migrated/failed) with a submit-test gate per
+  form before moving to the next, resumable from the last completed form — never as a single
+  unattended pass with no partial-failure story. A rebuild that dies halfway must leave a
+  visible, checkable state (which forms are done), not a silent half-migrated site that only
+  the client notices.
 
 ## 10. Known cross-cutting gap — not resolved here, disclosed honestly
 
@@ -231,20 +287,37 @@ item**, not a settled requirement of this spec. This research pass did not find 
 field-by-field breakdown for any single competitor's template (a genuine, named research
 gap) — a follow-up session must complete that research before any preset ships.
 
-## 13. Requirement index (FR-42-0 through FR-42-12)
+**FR-42-13 (added v2.1.0, Competitor MUST-FIX).** §9's justification for making CPT-backed
+reuse *mandatory* rather than opt-in is "consistent analytics tracking and A/B testing
+across every form on a site" — and this spec, as it stood through v2.0.0, contained zero
+analytics or A/B requirements. That is a real gap: the policy imposes real friction (every
+form is now a two-object edit, per FR-42-9's own honest cost) in exchange for a stated
+benefit nothing in this document delivers. **Disclosed and explicitly deferred, same status
+as FR-42-12** — a minimal analytics surface (impression/start/submit events keyed to
+`form_id` + a `form_schema_version` stamp, so historical submissions aren't silently
+compared across incompatible form edits) is real, scoped-but-unbuilt follow-up work, not
+invented here. Until it ships, §9's justification is aspirational, not delivered — say so
+plainly rather than implying the benefit already exists.
+
+## 13. Requirement index (FR-42-0 through FR-42-13, v2.1.0)
 
 | FR | One-line | Priority |
 |---|---|---|
-| FR-42-0 | Fix fail-open `requireLogin` bug — `plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit` | Ship now, standalone |
-| FR-42-1 | Named `sgs_form` capability, roles + grant path committed here | Blocking |
-| FR-42-2 | `custom-fields` support decision, made here not deferred | Blocking |
-| FR-42-3 | `revisions` retention cap, plain editorial history only | Blocking |
+| FR-42-0 | Fix fail-open `requireLogin` bug — refuse outright on unresolved config, decided | Ship now, standalone |
+| FR-42-1 | `sgs_form` capability = `edit_sgs_forms`, admin+editor only, `add_cap()` on activation — decided | Blocking |
+| FR-42-2 | `custom-fields` skipped entirely; settings stay root block attributes — decided | Blocking |
+| FR-42-3 | `revisions` retention cap = 10, via `wp_revisions_to_keep` — decided | Blocking |
 | FR-42-4 | `LinkControl`-based picker, slug-keyed, shared component with Spec 43 | Blocking |
 | FR-42-5 | Picker shows type badge, not bare title | Should-fix |
 | FR-42-6 | Client-side draft resumption (non-pricing) | Should-fix |
-| FR-42-7 | Orphan/delete-guard/save-race contract, built once for both CPTs | Blocking |
-| FR-42-8 | Cache/nonce contract for form-carrying pages, decided here | Blocking |
-| FR-42-9 | Mandatory full rebuild, no deprecation shim | Decision recorded |
+| FR-42-7a | Trashed/missing-form embed degrade — two audiences, two messages | Blocking |
+| FR-42-7b | Delete-guard (hook-level) + Gutenberg #33234 race check | Should-fix, post-v1 |
+| FR-42-8 | Cache/nonce contract — cache-independent lookup at submit time — decided | Blocking |
+| FR-42-9 | Mandatory rebuild, narrowed to hand-authored content, per-form ledger + resume, count-first | Decision recorded |
 | FR-42-10 | Cloning pipeline can't create a form/flow CPT — disclosed, unresolved | Known gap |
-| FR-42-11 | CPT/picker/lifecycle proven before the mandatory rebuild runs at scale | Sequencing |
+| FR-42-11 | CPT/picker/lifecycle proven (FR-42-7a's test artefact) before the mandatory rebuild runs at scale | Sequencing |
 | FR-42-12 | Presets stay an open brainstorm, not invented here | Explicitly deferred |
+| FR-42-13 | Analytics/A-B testing (the stated reuse-mandate justification) is unbuilt — disclosed | Explicitly deferred |
+
+Slug-rename policy (§2): renames blocked once a form has ≥1 submission — decided, no FR
+number needed (a data-model rule, not a build item).

@@ -39,17 +39,20 @@ the drawer PANEL rule, but a SEPARATE, pre-existing list-reset rule
 value is set — the control isn't actually wired to a default yet. Flag this to whoever does
 Step 2.5/Step 2 scaffold.
 
-**Everything else this file used to lead with (Ward End Eye Care Spec 42/43, the Spec 41
-nav-menu colour/state Waves A-C programme, R8 motion, BEM-recognition) is unchanged from the
-last handoff and CLOSED or PARKED exactly as before** — see "Prior work (closed)" and "Front B"
-below for the pointers; nothing in those tracks moved this session.
+**Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
+programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
+exactly as before** — see "Prior work (closed)" and "Front B" below for the pointers; nothing in
+those tracks moved this session. **Spec 42/43 DID move this session — see Front B below,
+council-closed, no longer parked.**
 
 ## Prior work (closed / parked) — pointer only, full narrative in memory or decisions.md
 
-**Ward End Eye Care Spec 42/43 (form CPT + choice-flow) — spec-only, PARKED pending a combined
-adversarial-council pass Bean asked for.** Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` +
-`specs/43-SGS-CHOICE-FLOW.md` in full before touching; FR-42-0 (fail-open `requireLogin` bug) is
-independently ship-ready any time. See "Front B" below for the orchestration plan.
+**Ward End Eye Care Spec 42/43 (form CPT + choice-flow) — council-closed this session, ready to
+build (D1072).** No longer parked. Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) +
+`specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) in full before touching; Phase 0 (FR-42-0, the fail-open
+`requireLogin` bug fix) is fully detailed and ready to execute now —
+`plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`. See "Front B" below for the full
+council result and the Phase 1-5 roadmap.
 
 **Ward End Eye Care Tasks 1/2/4/5 — FULLY CLOSED this session (D1067/D1069/D1070, CSS fix
 `153f8ec1d`).** QC-closed all four (D1067: PASS or PASS-WITH-GAPS); two doc-rot comments fixed
@@ -100,18 +103,26 @@ framework-injected attributes reach both new blocks. Full step sequence (Steps 3
 rename, pattern migration, reseed+build+retire, the split-nav feature, the badge, the drawer's
 two tiers): `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/).
 
-### Front B — Spec 42/43 combined adversarial-council (Bean-directed, independent of Front A)
-**What:** run `/adversarial-council` on Spec 42 + Spec 43 together (a single combined
-pre-mortem — they've been reconciled pairwise but never pre-mortemed as a merged whole).
-Resolve every valid finding — fix in the specs directly for cheap/clear items, escalate to Bean
-for genuine policy calls. Then `/strategic-plan` the real build, sequenced per Spec 42 §11.
-**Why:** Bean's own explicit instruction — the reconciliation itself (pricing moved 42→43, the
-shared CPT-lifecycle contract, the shared cloning-pipeline gap) is new surface a per-spec-alone
-council never saw. **Orchestration:** 6-persona parallel dispatch (Cynic/Competitor/
-Spec-Lawyer/Ship-PM/Abuse/Support-Realist), fact-check every finding against real code before
-accepting, present GO/NO-GO to Bean before `/strategic-plan`. **Depends on:** none — specs are
-complete and reconciled. **Acceptance:** a GO or a NO-GO with a named, resolvable fix list,
-confirmed with Bean, before any code for either CPT.
+### Front B — Spec 42/43 combined adversarial-council — CLOSED THIS SESSION (D1072)
+**Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
+Spec 42+43 together, verdict NO-GO-as-written, Bean chose "revise specs first" from the menu.**
+Grades: Cynic D+, Competitor D+, Spec-Lawyer C-, Ship-PM C-, Abuse C+, Support C+. Convergent
+finding: Spec 43's flagship eyewear pricing example rested on a false reuse claim
+(`sgs/option-picker` has no pricing mechanism at all — verified live by 2 personas independently).
+**Bean corrected the real mechanism mid-fix:** `sgs/buybox`'s existing `Product_Manifest` +
+`sgs_configurator_mode_price()` (the same system Mama's Munches' flavour/pack-size picker
+already runs on) IS the real, live, server-authoritative pricing engine — not option-picker.
+Both specs revised: **Spec 42 → v2.1.0** (FR-42-0 picked "refuse outright"; FR-42-1/2/3
+capability/custom-fields/revisions-cap all committed as literal values; FR-42-7 split into
+7a-blocking/7b-post-v1; FR-42-9 narrowed to hand-authored content + per-form ledger; FR-42-13
+added disclosing the unbuilt analytics justification). **Spec 43 → v1.2.0** (pricing rebuilt
+on the real `sgs/buybox` manifest, collapsing "priced tile"+"WC variation-picker" into one step
+type; FR-43-9 step-engine decided now — own small IAPI store, `sgs/form-step` has no runtime to
+extend; FR-43-7 Mama's Munches demoted out of v1; added a Phasing §9; fixed 3 broken/
+contradictory FR cross-references). Phase plan written:
+`.claude/plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` — Phase 0 (FR-42-0 fix)
+fully detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
+`/phase-planner` run when reached. **Next action: execute Phase 0.**
 
 ### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
 Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
@@ -212,7 +223,7 @@ genuinely valid is the tell; purge caches manually over SSH (`wp cache flush` +
 |---|---|
 | **Nav-menu split — THE live front** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/) (full Step 1-8 sequence + locked rulings); `decisions.md` D1059 (split architecture), D1060 (drawer colour defaults); `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` (BAR/DRAWER/BOTH classification); `.claude/reports/2026-09-14-nav-menu-split-decisions-review.md` (agent A-F fact-checked findings) |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
-| **Form CPT — spec-only, next step is Front B above** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.0.0) |
+| **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | **Choice-flow (quiz/configurator/variation-picker) — spec-only** | `specs/43-SGS-CHOICE-FLOW.md` (v1.1.0) |
 | Spec 41 nav-menu colour/state (Waves A-C, DONE/archived) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
