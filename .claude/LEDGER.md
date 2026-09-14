@@ -89,14 +89,22 @@ routed theme patterns, a reseeded DB (old block pruned), a clean `npm run build`
 live canary content (real header migrated, 22 dead QA fixtures deleted, Bean-directed). Nothing
 here is pending — do not re-run Steps 1-5.
 
-**Next: Step 6 — the split-nav feature itself (the original Eye Care request this whole split
-exists for), then Step 7 (badge) + Step 8 (drawer two-tier).** Into `nav-bar-menu` only:
-`ColumnShapePicker` needs to learn an `auto` track (currently numeric `fr` weights only, `auto`
-structurally unreachable — a real component-architecture change to a 341-line file that says "DO
-NOT ADD SHAPES FROM TASTE", not a rename); restore `justifyContent`; add `splitAfterItemId` +
-`splitSide` + `showBurger`; distinct `navLabel`s per instance. Full detail + locked rulings +
-verification checklist: the plan file above — **read it in full first, it is dense and each step
-depends on the last.**
+**Step 6 DONE (`b54c9b347`, 2026-09-15).** `ColumnShapePicker` learned an `auto` track
+(`SHAPES[3]` gains `1fr auto 1fr` "Fit centre"); `nav-bar-menu` gained `justifyContent`
+(restored, style.css's D539 `:where()` already yielded), `splitAfterItemId`+`splitSide`
+(item-identifier-keyed, unresolvable-id fails to the FULL menu + editor notice, never silent),
+`showBurger`, and auto-derived `navLabel` disambiguation per split side. `npm run build` clean.
+**Visual-diff gate scope-skipped for nav-bar-menu** (disclosed) — all new attrs default to
+byte-identical prior output, but live capture is blocked by a NEW pre-existing finding below.
+Next: Step 7 (badge), then Step 8 (drawer two-tier).
+
+**NEW BLOCKER found while deploying Step 6: `sgs/nav-drawer-menu` has 179 "rogue" DB
+`css_property` seeds.** `build-deploy.py`'s F6 DB-consistency scanner (`sgs-update-v2.py`) fails
+the deploy: submenu typography/marker attrs (e.g. `submenuFontStyle`, `sublinkMarkerColourHover`)
+have a `css_property` row in the live DB with no matching entry in
+`css-property-classifications.json`/`attr-classification-overrides.json` — would vanish on next
+reseed. Left over from Step 5's reseed (`a04ccf942`), NOT caused by Step 6 (nav-bar-menu only
+touched). **Deploy to sandybrown is BLOCKED for nav-drawer-menu-bearing pages** — not yet fixed.
 
 **`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT` (still PARTIAL) had its Step 3 citation
 drift fixed AND live-verified** — confirmed the bug is structurally unchanged post-split: only
@@ -105,10 +113,10 @@ drift fixed AND live-verified** — confirmed the bug is structurally unchanged 
 parameterized. The underlying bug is still unfixed — only its doc citations were touched.
 
 **Spec 36/41 citation drift RECURRED after Step 3's renames** (e.g.
-`sgs_nav_menu_resolved_treatments` → `sgs_nav_shared_resolved_treatments`) — 7 gating
-`CITE-SYMBOL` findings, disclosed via `[gates-ok:spec-drift]` on `782281040`, not yet re-fixed.
-Same small mechanical class as the two prior fixes (`3b335757d`, `b6c335924`). Separately, Spec
-36's dozens of bare `sgs/nav-menu` prose mentions (ungated) remain untouched — bigger job.
+`sgs_nav_menu_resolved_treatments` → `sgs_nav_shared_resolved_treatments`) — now 13 gating
+`CITE-SYMBOL` findings on Spec 41 (re-disclosed on `b54c9b347`), not yet re-fixed. Same
+mechanical class as the two prior fixes (`3b335757d`, `b6c335924`). Spec 36's bare `sgs/nav-menu`
+prose mentions (ungated) also remain untouched — bigger job.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
