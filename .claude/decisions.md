@@ -1,5 +1,40 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1070 [ROUTINE] — `sgs_modal`/`modalRef` mechanism live-proven end-to-end on a generic test post
+
+**2026-09-14.** Follow-up to D1067 (mechanism built + QC'd) / D1069 (the "6 real trigger
+locations" migration premise was false — no live eye-care build exists yet to hold real size-
+guide content). Bean confirmed the size guide genuinely is Ward End Eye Care content and there
+is no client confusion, but also confirmed there's no live site to migrate real content on yet
+— so this session proved the MECHANISM itself live, using a generic placeholder post, rather
+than waiting on that build.
+
+**What was done, on the sandybrown canary:**
+- Created canonical `sgs_modal` CPT post **ID 3546** ("Mechanism Proof Modal (Task 1 verify)"),
+  `post_status=publish`, content = one `sgs/heading` + one `sgs/text` block (generic placeholder
+  copy — deliberately NOT eye-care-specific; that's the real client's job once its build exists).
+- Set page **1595** ("F3 Oracle sgs-modal" — the one existing bare `sgs/modal` instance D1069
+  found) to `modalRef: 3546`.
+- Created a second, independent trigger location, page **3548** ("[GATE — DO NOT DELETE]
+  sgs_modal mechanism proof — 2nd trigger"), its own `sgs/modal` instance also set to
+  `modalRef: 3546`.
+
+**Live verification (Playwright/curl against real rendered HTML, not assertions):**
+1. Both trigger pages rendered the SAME `.sgs-modal__inner` content ("Shared modal content
+   proof") sourced from post 3546 — confirmed `resolve_modal()`'s `get_post()` + post_type +
+   `publish`-status gate all pass and `do_blocks( $referenced_modal->post_content )` renders.
+2. Edited post 3546's content ONCE (new heading "EDITED — propagation verified 2026-09-14").
+   Reloaded both trigger pages WITHOUT touching either page's own `post_content` — both
+   immediately reflected the edit. This is the plan's own original verify criterion ("open at
+   least 2 of the 6 pages... confirm both reflect the edit"), satisfied with 2 independent
+   locations instead of the nonexistent 6.
+
+**This is NOT a substitute for the real Ward End Eye Care migration.** Once that client's build
+exists, the actual size-guide content needs its own `sgs_modal` post and its own real trigger
+locations — this proves the plumbing works, not that the eye-care migration is done. No plugin/
+theme source files were touched; this was canary content/DB work only (`wp post create`/`wp post
+update` over SSH), so no commit was made.
+
 ## D1069 [ROUTINE] — D1067 correction: Task 1's "6 real trigger locations" claim was unverified and false
 
 The follow-up agent dispatched to migrate `sgs_modal`'s 6 live trigger points (footer, product
