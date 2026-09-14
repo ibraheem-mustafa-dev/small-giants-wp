@@ -856,7 +856,7 @@
 		"itemSeparatorWidth": {
 			"type": "string",
 			"default": "1px",
-			"description": "FR-41-37 (2026-09-13) — the NEW, independent vertical divider between adjacent TOP-LEVEL bar items (a right-edge rule), separate from itemBorderWidth (the item's own underline/row-separator). Genuinely distinct from FR-41-7's existing 'set itemBorderWidth.right for a vertical divider' option: that option shares itemBorderColour/Hover/Current with the bottom-edge underline (one colour family, two edges), so it cannot be styled independently — this attribute family can. Bar-only by construction (not rendered in-drawer, where a vertical list has no 'adjacent item' in that axis). No Current state and no Sweep: a between-item rule is not itself a page, and the bottom-edge sweep geometry (offset against the padding box) does not translate to a right-edge line without new positioning maths — shipped as a plain Hover colour swap only; sweep is flagged as separate future work if wanted."
+			"description": "FR-41-37 (2026-09-13) — the NEW, independent vertical divider between adjacent TOP-LEVEL bar items (a right-edge rule), separate from itemBorderWidth (the item's own underline/row-separator). Genuinely distinct from FR-41-7's existing 'set itemBorderWidth.right for a vertical divider' option: that option shares itemBorderColour/Hover/Current with the bottom-edge underline (one colour family, two edges), so it cannot be styled independently — this attribute family can. Bar-only by construction (not rendered in-drawer, where a vertical list has no 'adjacent item' in that axis). No Current state — a between-item rule is not itself a page. Hover treatment (plain colour swap, or a directional sweep) is controlled by itemSeparatorHoverTreatment/itemSeparatorSweepAngle below, shipped as a follow-up the same day (see includes/sweep-css.php)."
 		},
 		"itemSeparatorStyle": {
 			"type": "string",
@@ -885,20 +885,23 @@
 		},
 		"submenuColourCurrent": {
 			"type": "string",
-			"default": ""
+			"default": "text",
+			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` (dark brown) token (2026-09-14 root-cause fix, QC council finding): the prior empty default fell through to a hardcoded `primary-dark` fallback that measures only 2.35:1 against the new `surface-pink` current-row background — well under WCAG AA's 4.5:1 floor. `text` on `surface-pink` measures 8.40:1 (verified via wcag-contrast.js maths). Chosen as a fixed default token, not a runtime contrast computation, per Bean's ruling that defaults should not depend on a contrast-check mechanism."
 		},
 		"submenuLinkBg": {
 			"type": "string",
-			"default": ""
+			"default": "surface",
+			"description": "Normal-state submenu row background. Defaults to the palette's cream `surface` token (2026-09-14 root-cause fix, QC council finding: the drawer's nested submenu had no reliable opaque background of its own, so its row text was checked for contrast against the DRAWER's own arbitrary `drawerBg` instead of a real paint surface). Giving the row an explicit, deterministic background means the drawer no longer needs a runtime drawerBg-aware contrast computation to stay legible — the row always paints its own cream surface regardless of what colour the surrounding drawer uses. `text` (dark brown) on `surface` measures 11.86:1 (WCAG AA). Shared by both the bar's dropdown panel and the drawer's nested/accordion submenu (one attribute family, FR-41-36) — verified not to visually regress the bar dropdown, whose panel already defaults to a near-identical surface-alt/surface token chain."
 		},
 		"submenuLinkBgHover": {
 			"type": "string",
-			"default": "accent-light",
-			"description": "FR-41-36 (D3) locked default: desktop submenu row hover background tint. Revised 2026-09-13 (Bean-directed): no longer bg-tint-only — submenuColourHover now default-closes to 'accent' at the PHP layer (nav-menu-submenu-css.php), mirroring itemColourHover's own default-closing pattern, so hover carries a real text-colour signal alongside this tint."
+			"default": "primary",
+			"description": "Hover-state submenu row background. Defaults to the brand's `primary` pink fill (2026-09-14 root-cause fix, QC council finding: the prior `accent-light` default paired with the also-default `accent` hover TEXT colour produced a same-hue-family combination measuring only 1.35:1 — near-invisible hover text, worst on the drawer where the row had no opaque background of its own to separate the two accents visually). `submenuColourHover` now default-closes to `text` (dark brown) at the PHP layer (nav-menu-submenu-css.php), which measures 5.28:1 against this `primary` fill (WCAG AA) — a clear, on-brand hover signal distinct from both the cream Normal state and the pink-tint Current state."
 		},
 		"submenuLinkBgCurrent": {
 			"type": "string",
-			"default": ""
+			"default": "surface-pink",
+			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-pink`, a light pink tint (2026-09-14 root-cause fix) — visually distinct from both the cream Normal row and the solid `primary` Hover fill, so the three states read as three genuinely different surfaces rather than shades of the same one. Paired with `submenuColourCurrent`'s `text` default: 8.40:1 (WCAG AA)."
 		},
 		"submenuLinkBgGradient": {
 			"type": "string",

@@ -607,9 +607,25 @@
 
 /* The sub-panel becomes a full-size overlay sliding in from the right, over
  * the same physical space the top-level list occupies (the bar is already
- * `position:relative` — see `.sgs-nav-menu__bar` above). */
+ * `position:relative` — see `.sgs-nav-menu__bar` above).
+ *
+ * FALLBACK FIXED 2026-09-14 (QC-council root-cause fix) — was `inherit`, which
+ * let the panel's real background become whatever the surrounding drawer's
+ * OWN `drawerBg` happened to be (any operator-chosen colour, default
+ * `'primary'` pink) whenever `--sgs-nm-submenu-bg` was unset — the opposite of
+ * every other consumer of that custom property, which all fall back to the
+ * theme's cream token chain (see the accordion-mode panel rule in
+ * `nav-menu-submenu-css.php::sgs_nav_menu_submenu_css`,
+ * `background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt,
+ * var(--wp--preset--color--surface, #fff)))`). This is the "not using the
+ * drawer submenu's item bg attribute properly" bug: drill-down mode is the
+ * ONLY submenu context that never resolved to a real, deterministic surface.
+ * Matching the same fallback chain here means a drawer's nested submenu now
+ * always paints a real cream surface regardless of `drawerBg`, so its row
+ * text no longer needs a runtime drawerBg-aware contrast computation to stay
+ * legible (see the matching PHP fix). */
 .sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu {
-	background: var(--sgs-nm-submenu-bg, inherit);
+	background: var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));
 	inset: 0;
 	overflow-y: auto;
 	position: absolute;

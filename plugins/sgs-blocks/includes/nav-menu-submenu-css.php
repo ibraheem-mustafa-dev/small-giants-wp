@@ -587,45 +587,34 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 */
 
 		/*
-		 * FR-41-36 FULL FIX (2026-09-13, superseding the `color:inherit` placeholder
-		 * documented above) — `drawerBg` is now genuinely reachable from THIS file:
-		 * `sgs/nav-menu` declares `usesContext: ["sgs/navDrawerBg"]` and
-		 * `sgs/nav-drawer` maps it via `providesContext: {"sgs/navDrawerBg":
-		 * "drawerBg"}` — the identical channel `sgs/navDrawerSubmenuModel` already
-		 * proves works for this exact parent/child pair (nav-menu/render.php reads
-		 * both off `$block->context`). render.php resolves the slug and passes it in
-		 * as `$drawer_bg_slug`.
+		 * FR-41-36 REDESIGN (2026-09-14, QC-council root-cause fix — supersedes the
+		 * 2026-09-13 runtime-computed version documented above from 2026-09-13
+		 * through 2026-09-14) — the drawer's nested submenu row previously had NO
+		 * opaque background of its own by default: the drill-down-mode panel rule
+		 * (style.css `.sgs-nav-menu__bar--drawer[data-drill-enhanced] … .submenu`)
+		 * fell back to `inherit` rather than the token chain the accordion-mode
+		 * panel rule already used, so the row's real backdrop was whatever colour
+		 * `drawerBg` happened to be (default `'primary'` pink) — hence the runtime
+		 * `sgs_wcag_preferred_text_colour_for_bg( $drawer_bg_slug, … )` computation
+		 * this comment used to describe.
 		 *
-		 * The check below reuses `sgs_wcag_preferred_text_colour_for_bg()` — the same
-		 * helper nav-drawer's own render.php already uses for `drawerFgHex` — rather
-		 * than reinventing contrast maths. It is NOT a rare-edge-case guard:
-		 * `drawerBg` defaults to `'primary'` (nav-drawer/render.php), so an
-		 * unmodified drawer pairs `primary` text with a `primary` background by
-		 * default — an unconditional "just default to primary" shortcut would
-		 * reintroduce the exact invisible-text bug this override exists to prevent,
-		 * on the FRAMEWORK DEFAULT, not an edge case.
+		 * That gap is now closed at its source, not compensated for here:
+		 * `submenuLinkBg` (block.json) defaults to `'surface'` (cream) and the
+		 * drill-down panel rule's fallback now matches the accordion-mode chain
+		 * (see style.css) — so a drawer's nested submenu row ALWAYS paints a real,
+		 * deterministic cream surface regardless of what `drawerBg` the operator
+		 * picked. Once the backdrop is fixed rather than arbitrary, the text
+		 * colour no longer needs a per-instance contrast computation to stay
+		 * legible — it can be a plain default token, exactly like every other
+		 * drawer text element already uses (Bean, 2026-09-14: "shouldn't have
+		 * contrast checks that enforce anything by default").
 		 *
-		 * When `primary` clears 4.5:1 against the resolved `drawerBg`, the TOKEN
-		 * wins (kept as `var()`, so it still tracks a live palette/style-variation
-		 * change for free — matching FR-41-36's "same token as the bar" intent).
-		 * When it fails, degrade to the same binary `#000`/`#fff` safe pairing
-		 * `drawerFgHex` itself degrades to. If either hex cannot be resolved (no
-		 * context reached — this instance is not nested in a real nav-drawer, or a
-		 * non-hex palette entry), fall back to `color:inherit`, the pre-fix value's
-		 * own safe floor.
+		 * `text` (dark brown) on `surface` (cream) measures 11.86:1 (WCAG AA),
+		 * verified via wcag-contrast.js's own luminance/ratio maths. The operator's
+		 * own `submenuColour` still wins below (same specificity, later source
+		 * order — see the comment at the original site of this rule).
 		 */
-		$sgs_nm_drawer_sublink_colour_decl = 'color:inherit';
-		if ( '' !== $drawer_bg_slug ) {
-			$sgs_nm_drawer_bg_hex = sgs_resolve_palette_hex( $drawer_bg_slug, '' );
-			$sgs_nm_primary_hex   = sgs_resolve_palette_hex( 'primary', '' );
-			if ( '' !== $sgs_nm_drawer_bg_hex && '' !== $sgs_nm_primary_hex ) {
-				$sgs_nm_drawer_sublink_fg           = sgs_wcag_preferred_text_colour_for_bg( $sgs_nm_drawer_bg_hex, $sgs_nm_primary_hex );
-				$sgs_nm_drawer_sublink_colour_decl = ( $sgs_nm_drawer_sublink_fg === $sgs_nm_primary_hex )
-					? 'color:var(--wp--preset--color--primary, currentColor)'
-					: 'color:' . $sgs_nm_drawer_sublink_fg;
-			}
-		}
-		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{' . $sgs_nm_drawer_sublink_colour_decl . ';}';
+		$css .= $uid_sel . ' :where(.sgs-nav-menu__bar--drawer) .sgs-nav-menu__sublink{color:var(--wp--preset--color--text, inherit);}';
 		// D956 — submenuColourGradient is the gradient sibling (778879732 rollout,
 		// Phase 3); routed as a direct decl (not the custom-property chain above)
 		// because a `var(--x, …)` fed into a fixed `color:` declaration cannot
@@ -634,26 +623,25 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$submenu_colour_hover    = (string) ( $attributes['submenuColourHover'] ?? '' );
 
 		/*
-		 * FR-41-36 REVISED (Bean-directed, 2026-09-13) — desktop submenu hover is
-		 * no longer bg-tint-only. The locked table originally paired the hover
-		 * ROW's `accent-light` background tint (`submenuLinkBgHover`'s own
-		 * block.json default) with an UNSET text colour ("text=primary is
-		 * retained"), on the reasoning that the bg tint alone was signal enough.
-		 * Bean reviewed that outcome and ruled it insufficient: an operator who
-		 * never touches `submenuColourHover` gets NO text-colour change at all on
-		 * hover, unlike every other row family in this component (item, featured,
-		 * burger all default-close to a real hover colour). This mirrors
-		 * `nav-menu-css.php`'s own `$item_colour_hover = 'accent'` default-closing
-		 * pattern verbatim — same token, same "skip only when the resolved
-		 * treatment is 'none'" guard, same reasoning (WordPress core's ambient
-		 * `:root :where(a:hover)` rule has ZERO specificity and stops matching the
-		 * instant the pointer leaves the literal <a>, so an unset hover colour is
-		 * not "no change", it is an invisible/unreliable one). The bg tint default
-		 * is untouched; this ADDS a text default alongside it, it does not
-		 * replace it.
+		 * FR-41-36 REVISED (2026-09-13) — desktop submenu hover is no longer
+		 * bg-tint-only; an unset `submenuColourHover` default-closes to a real
+		 * text colour alongside the row's hover background tint, same reasoning
+		 * as `nav-menu-css.php`'s own `$item_colour_hover` default-closing
+		 * pattern (an unset hover colour under WordPress core's zero-specificity
+		 * ambient `a:hover` rule is not "no change", it is invisible/unreliable).
+		 *
+		 * TOKEN CHANGED 2026-09-14 (QC-council root-cause fix): 'accent' → 'text'.
+		 * The close-token must pair with whatever `submenuLinkBgHover` actually
+		 * resolves to, and `submenuLinkBgHover` itself default-changed the same
+		 * day from `'accent-light'` to `'primary'` (see block.json) — the two
+		 * `accent` family defaults produced a same-hue 1.35:1 near-invisible
+		 * combination (verified via wcag-contrast.js maths), worst on the drawer
+		 * where the row previously had no opaque background to separate them.
+		 * `text` (dark brown) on the new `primary` fill measures 5.28:1 (WCAG
+		 * AA) — a fixed default pairing, not a runtime contrast computation.
 		 */
 		if ( '' === $submenu_colour_hover && 'none' !== $t_sub_text ) {
-			$submenu_colour_hover = 'accent';
+			$submenu_colour_hover = 'text';
 		}
 
 		$submenu_colour_current  = (string) ( $attributes['submenuColourCurrent'] ?? '' );
@@ -710,9 +698,12 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * was dead-but-firing — declared in that rule's `var()` and written
 		 * NOWHERE in the tree, so it could only ever render its own hardcoded
 		 * fallback. Writing it from `submenuColourCurrent` makes the rule
-		 * attribute-driven and keeps `var(--wp--preset--color--primary-dark,
-		 * currentColor)` as the unset fallback, so an untouched nav renders
-		 * identically.
+		 * attribute-driven; the unset-fallback token below is `text` (2026-09-14
+		 * root-cause fix — was `primary`, which measures only 2.35:1 against the
+		 * new `surface-pink` Current-row background; `text` measures 8.40:1).
+		 * `submenuColourCurrent` now defaults to `text` in block.json, so this
+		 * branch fires unconditionally in practice; the fallback remains as the
+		 * safety floor for an explicitly-cleared value.
 		 */
 		if ( '' !== $submenu_colour_current ) {
 			$css .= $uid_sel . '{--sgs-nm-submenu-current-colour:' . sgs_colour_value( $submenu_colour_current ) . ';}';
@@ -731,7 +722,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * unchanged; only the emission position moved.
 		 */
 		$css .= $uid_sel . ' .sgs-nav-menu__sublink[aria-current="page"]{'
-			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--primary, currentColor));}';
+			. 'color:var(--sgs-nm-submenu-current-colour, var(--wp--preset--color--text, currentColor));}';
 
 		if ( '' !== $sublink_sweep['hover'] ) {
 			$css .= $sublink_sweep['hover'];
