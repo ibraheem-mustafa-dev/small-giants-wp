@@ -406,13 +406,19 @@ function sigText(sig) {
 // without any DOM-mutation-order bookkeeping.
 function locatorFor(page, cand) {
   const role = cand.role || (cand.tag === 'button' ? 'button' : cand.tag === 'a' ? 'link' : null);
-  const name = cand.text || cand.ariaLabel || undefined;
+  // `aria-label`, when present, OVERRIDES visible text in the browser's own accessible-name
+  // computation -- so `getByRole` (which matches by accessible name) must prefer it too.
+  // Found live against the real draft: `button[aria-label="Bag"]` renders visible text "Bag 0"
+  // (a dynamic item-count badge appended to the label) -- matching on that VISIBLE text failed
+  // every replay, because the button's real accessible name is "Bag", not "Bag 0". Text stays
+  // the fallback for `hasText` (below), which genuinely does match visible text.
+  const ariaName = cand.ariaLabel || cand.text || undefined;
   if (role) {
     try {
-      return page.getByRole(role, name ? { name, exact: false } : undefined).first();
+      return page.getByRole(role, ariaName ? { name: ariaName, exact: false } : undefined).first();
     } catch (e) { /* fall through to tag-based locator below */ }
   }
-  if (name) return page.locator(cand.tag).filter({ hasText: name }).first();
+  if (cand.text) return page.locator(cand.tag).filter({ hasText: cand.text }).first();
   return page.locator(cand.tag).first();
 }
 
