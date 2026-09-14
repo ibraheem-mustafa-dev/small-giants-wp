@@ -113,7 +113,8 @@ QA Gate — Fail-closed behaviour verified live, not just in PHPUnit
 ## far ahead of execution, per this project's own low-time-estimate + no-speculative-build
 ## discipline)
 
-**Phase 1 — `sgs_form` CPT, no mandatory rebuild.** Spec 42 FR-42-1/2/3 (capability
+**Phase 1 — `sgs_form` CPT, no mandatory rebuild. Full 8-step execution plan written:**
+`plans/2026-09-15-phase-1-sgs-form-cpt.md` — ready to execute. Spec 42 FR-42-1/2/3 (capability
 `edit_sgs_forms`, no `custom-fields`, 10-revision cap — all already decided, zero
 ambiguity to plan around), FR-42-4/5 (`LinkControl` picker), FR-42-7a (trashed-form
 degrade, two audiences), FR-42-8 (cache-independent lookup — same code path as Phase 0's
