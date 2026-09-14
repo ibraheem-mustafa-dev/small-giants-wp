@@ -1,5 +1,45 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1063 [ROUTINE] — Spec 43: `sgs/choice-flow` replaces the "quiz vs configurator" split from D1056/Spec 42
+
+**2026-09-14.** A same-day `/research-council` + `/adversarial-council` pass on Spec 42
+surfaced a follow-on architecture question (the eyewear lens flow "matches the new quiz
+block's format" per the owner) that needed its own research pass. A second
+`/research-council` initially concluded: build TWO separate block families (a lead-gen
+quiz vs Spec 27's WooCommerce configurator), bridged by a link. **The owner rejected this
+outright and corrected the premise** — the lens flow's priced thickness/finish options
+are `sgs/option-picker`'s existing tile-pricing mechanism used inside a step wizard, not
+WooCommerce's flat "product add-ons" shape the council had guessed from a category label
+rather than the real draft code. Full spec:
+[`specs/43-SGS-CHOICE-FLOW.md`](specs/43-SGS-CHOICE-FLOW.md); research record (including
+the superseded two-block conclusion, kept for the process, not as authority):
+[`.claude/memory/research/2026-09-14-sgs-choice-flow-architecture.md`](../../../.claude/memory/research/2026-09-14-sgs-choice-flow-architecture.md)
+in global CC memory.
+
+**Corrected architecture:** ONE block family (`sgs/choice-flow`, CPT `sgs_choice_flow`,
+mirroring Spec 42's `sgs_form` CPT decisions exactly). Each step is one of four mixed
+types — plain question, priced tile (reuses `sgs/option-picker` verbatim), WooCommerce
+variation-picker (reuses Spec 27's product-bindings verbatim), or plain data-capture
+(reuses `sgs/form`'s existing field blocks) — with a new per-step `nextStepMap` attribute
+for answer-based branching, distinct from `sgs/form`'s existing flat per-field
+conditional-show/hide logic (unchanged). Ends in a recommendation, an email-capture
+handoff, or a real purchase — the purchase path inherits Spec 42's full pricing-security
+rule set verbatim (stable option IDs, server-authoritative total, no bare WP-revision
+pin). Delivered inline or full-screen via the `sgs_modal` CPT (Task 1, same session).
+
+**New requirement surfaced after the council closed, direct from the owner:** the same
+block also replaces Mama's Munches' cramped inline flavour/pack-size picker with a
+full-screen, **sequential**, one-decision-per-screen flow via `sgs_modal` — confirmed
+explicitly as sequential steps, not a single bigger screen, even though nothing here is
+conditionally branching.
+
+**Naming:** `sgs/choice-flow` — the owner explicitly rejected naming around competitor
+collision-avoidance (the council's "funnel vs flow, which collides less" framing) as
+irrelevant; the name is owner-chosen on pure function.
+
+**No code shipped this session — spec only.** FR-43-9 requires the step engine to extend
+`sgs/form-step`'s existing mechanism, never a third parallel multi-step system.
+
 ## D1062 [ROUTINE] — Shipped Piece 1's Tier B (Haiku batch classifier), closing one of D1061's two named gaps
 
 **2026-09-14.** New: `plugins/sgs-blocks/scripts/recogniser/sc_var_haiku_batch.py`. Threads an
