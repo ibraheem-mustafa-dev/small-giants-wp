@@ -12,20 +12,15 @@ for the full evidence trail. Short version:
     ancestor wrapper -- `<sc-for>`/`<sc-if>` are TAG NAMES, not attributes on
     the target element, so this signal lives on an ANCESTOR, unlike
     `data-slot` (shadcn/Radix, Tier 1), which is a same-element attribute.
-  - Verified via real cross-draft GitHub search: `reasons`/`featured`/
-    `ticker`/`marquee` recur for the same semantic section type across dozens
-    of independent Claude Design drafts -- a genuine (if undocumented)
-    emergent convention, NOT draft-author noise. Compound/prefixed names
-    (`megaTopBrands`, `shapeTiles`) do NOT recur -- treated as bespoke.
   - `slot_synonyms` is dead (retired D99); its successor `slots.aliases` is
     AUTHORITATIVE (real BEM-class identity, consumed by
-    `converter/db/db_lookup.py::equivalent_block_for`). Seeding Claude
-    Design's free-text names into it would make generic English words start
-    resolving real client BEM classes -- so this module only ever READS
-    `slots.aliases`, never writes to it, and every hint it produces is capped
-    at `TIER2_MAX_CONFIDENCE` (mirrored from `dom_shape_classifier.py`) and
-    routed as pure enrichment via `leftover-bucket-router.py`, never a block
-    assignment.
+    `converter/db/db_lookup.py::equivalent_block_for`). This module queries
+    `slots.aliases` to match sc-for variable names against known block aliases.
+    Compound/prefixed names (`megaTopBrands`, `shapeTiles`) do NOT appear in
+    the aliases table -- treated as bespoke, no hint.
+  - Every hint this module produces is capped at `TIER2_MAX_CONFIDENCE`
+    (mirrored from `dom_shape_classifier.py`) and routed as pure enrichment
+    via `leftover-bucket-router.py`, never a block assignment.
   - `sc-if value="{{ name }}"` names a boolean STATE flag (`menuOpen`,
     `hasImg`), not a collection -- explicitly OUT OF SCOPE for block-identity
     classification. Only `sc-for` is handled here.
