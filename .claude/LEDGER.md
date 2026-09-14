@@ -110,20 +110,17 @@ shipped but Tier B's auto-wiring is blocked on a real Anthropic API key decision
   `class-sgs-nav-menu-source.php` (Step 3 owns it, see above) — verified zero other file overlap
   via the survey's per-kind file breakdown before approving this as a safe parallel pair.
 
-Then Step 5 (reseed via `sgs-update-v2.py` in full — Stage 1 already ran once this session for
-the two new blocks, but the FULL 13-stage run including Stage 9's prune of the retired
-`sgs/nav-menu` row across both DBs still needs to happen), Step 6 (the actual split-nav feature —
-`ColumnShapePicker` learns `auto`, `justifyContent` restored, `splitAfterItemId`/`splitSide`/
-`showBurger` added — this is what delivers the original Eye Care request), Step 7 (the SOON
-badge), Step 8 (the drawer's two-tier look, reusing Step 6's split control). Full detail,
-locked rulings, and the "Explicitly rejected" approaches list: the plan file (see Human Summary
-above for the path) — **read it in full before starting a fresh session on this track**, every
-step depends on the state the previous one left.
+Then Step 5 (reseed via `sgs-update-v2.py` in FULL — Stage 1 already ran once for the two new
+blocks, but Stage 9's prune of the retired `sgs/nav-menu` row across both DBs still needs to
+happen), Step 6 (the split-nav feature itself — delivers the original Eye Care request), Step 7
+(the SOON badge), Step 8 (drawer two-tier). Full detail + locked rulings: the plan file (path
+above) — **read it in full before starting a fresh session**, every step depends on the last.
 
-**Known residual, not yet actioned:** Spec 36 also cites the deleted `src/blocks/nav-menu/`
-path (8 BLOCK-DIR + 7 CITE-SYMBOL findings, confirmed via `lint-spec-drift.py --check` after
-Spec 41's fix landed) — already tracked as its own line item in the plan's "Docs to update"
-list ("Spec 36 — two nav blocks; the split + badge are nav requirements"), not yet started.
+**Spec 36's citation drift — DONE, commit `b6c335924`.** Its 8 flagged citations fixed the same
+way as Spec 41's; `lint-spec-drift.py --check` now returns zero BLOCK-DIR/CITE-SYMBOL findings for
+either spec. **Still NOT done:** dozens of bare `sgs/nav-menu` prose mentions throughout Spec 36
+(ungated, no path citation) still describe the pre-split block — separate, larger work, tracked
+in the plan's "Docs to update" list.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
@@ -282,9 +279,10 @@ binding. **Add from this session:**
   source_sha `804a8c2024799d5b`. **Nav-bar-menu/nav-drawer-menu have NO visual-diff report yet**
   — deliberately scoped-bypassed this session (`SGS_VISUAL_GATE_SKIP`) because neither block is
   built/deployed yet; write a real one once Step 5 deploys them.
-- **Spec 41 nav-menu citations:** fully fixed, `lint-spec-drift.py --check` returns zero
-  findings for that file as of commit `3b335757d`. Spec 36 still has the same class of finding
-  (untouched, separately tracked).
+- **Spec 41 + Spec 36 nav-menu path citations:** both fully fixed, `lint-spec-drift.py --check`
+  returns zero BLOCK-DIR/CITE-SYMBOL findings for either file (`3b335757d`, `b6c335924`). Spec
+  36's broader bare-prose `sgs/nav-menu` mentions (not path citations, ungated) are still
+  untouched — separately tracked.
 - **Parity figures — STALE the moment a new commit lands on the tool; re-run before quoting.**
   Last full run (page 3448): STRUCTURE 93% (324/348), LAYOUT 75% (579/773), PAINT+TYPE 89%
   (1260/1412), CONTENT 100% (234/234). Re-run
