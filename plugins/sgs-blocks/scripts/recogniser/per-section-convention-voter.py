@@ -769,6 +769,40 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
     }
 
 
+SGS_BOUNDARY_ID_ATTR = "data-sgs-boundary-id"
+
+
+def write_tagged_mockup(mockup_path: Path, out_path: Path) -> int:
+    """Write a copy of the mockup with `data-sgs-boundary-id="bN"` injected onto
+    each `--auto-section`-detected boundary's root element, in the SAME order
+    `vote(auto_section=True)` assigns `boundary_id`s (both call
+    `auto_detect_sections()` on a fresh parse of the same file -- BS4's parse
+    of identical bytes is deterministic, so the Nth node here IS boundary
+    `bN`'s node, by construction, no cross-stage state needed).
+
+    Real bug this exists to fix (2026-09-14, "connect the pieces" follow-up):
+    Stage 4 of the orchestrator re-parses the mockup independently and looks
+    up each boundary's element by `id` (falls back to a SYNTHETIC id like
+    "section-2" that is never a real DOM attribute) then by `tag + class`.
+    For a CLASSLESS Claude Design boundary neither ever matches uniquely --
+    verified live: `soup.find('section', class_=None)` returns the FIRST
+    `<section>` regardless of which boundary is being looked up, so every
+    classless boundary beyond the first of its tag silently re-resolves to
+    the WRONG element's content, not merely "extracts nothing". This tag
+    survives that re-parse because it's now literally IN the HTML.
+
+    Returns the number of boundaries tagged.
+    """
+    html = mockup_path.read_text(encoding="utf-8")
+    soup = BeautifulSoup(html, "html.parser")
+    count = 0
+    for idx, (node, _selector) in enumerate(auto_detect_sections(soup), start=1):
+        node[SGS_BOUNDARY_ID_ATTR] = f"b{idx}"
+        count += 1
+    out_path.write_text(str(soup), encoding="utf-8")
+    return count
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument("--mockup", type=Path, required=True, help="Path to mockup HTML file")
@@ -782,6 +816,16 @@ def main(argv: list[str] | None = None) -> int:
             "written by sc_var_haiku_batch.py --apply-response) -- when "
             "given, a Tier A miss on an sc-for boundary falls back to this "
             "committed Haiku classification before giving up."
+        ),
+    )
+    parser.add_argument(
+        "--tagged-mockup-out", type=Path, default=None,
+        help=(
+            "--auto-section only. Write a copy of the mockup with "
+            "data-sgs-boundary-id attributes injected (see write_tagged_mockup) "
+            "so a downstream stage can re-locate each boundary's real HTML "
+            "element without relying on class/id, which a classless boundary "
+            "doesn't have."
         ),
     )
     args = parser.parse_args(argv)
@@ -808,6 +852,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[voter] wrote {args.out}")
     else:
         print(payload)
+
+    if args.tagged_mockup_out is not None:
+        if not args.auto_section:
+            sys.exit("ERROR: --tagged-mockup-out requires --auto-section")
+        args.tagged_mockup_out.parent.mkdir(parents=True, exist_ok=True)
+        tagged_count = write_tagged_mockup(args.mockup, args.tagged_mockup_out)
+        print(f"[voter] wrote {tagged_count} tagged boundary element(s) to {args.tagged_mockup_out}")
+
     return 0
 
 

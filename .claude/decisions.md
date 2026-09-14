@@ -1,5 +1,86 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1066 [ROUTINE] — First real end-to-end dry run of `/sgs-clone` against a Claude Design draft; wired Piece 1 identity into the converter's recognition gate + fixed a real element-relocation bug it exposed
+
+**2026-09-14.** Follows D1057-D1064. Everything built this session (Piece 1, Piece 2, the
+correlator, Tier B, route coverage) had never actually been run through the real conversion
+pipeline. It was diagnostic/enrichment infrastructure sitting beside the converter, not wired
+into it. Bean asked what's next; the answer was to run it for real rather than guess.
+
+**Dry run against the real Ward End Eye Care draft, findings verified from the actual pipeline
+artefacts, not assumed:** 31 boundaries (all `--auto-section` finds — top-level only), all 31
+`fallback_strategy: gap-candidate`, **0 attributes extracted, 2,914 leftover entries** --
+`status: "unmatched-non-bem-compliant"` for every section. Root cause read directly from
+`sgs-clone-orchestrator.py`: Stage 4's extraction gate requires a real BEM `class_signature`
+(or the existing D1034/"Tier 0" `lingua_franca` escape hatch); Piece 1's `sc_var_hint` was
+never consulted by it at all -- it only ever reached `leftover-buckets.json` as an
+operator-review annotation.
+
+**Bean's directive:** lower the confidence bar for testing AND wire both pieces in properly at
+the right stage, rather than either silently weakening the confidence-cap policy or leaving
+the mechanism unbuilt. Sequenced as recognition first (this decision), responsive-value
+extraction (Piece 2 into attributes) as separate follow-up.
+
+**Built, mirroring the existing D1034 Tier-0 pattern exactly rather than inventing a new
+bypass:**
+1. **Stage 2 (`stage_2_match`)** -- new opt-in `sc_var_min_confidence` cross-check, same shape
+   as the existing wp-blocks override. A classless boundary's confidence-matrix pick is
+   meaningless (uniformly `sgs/container` at 0.30 in the real run); `sc_var_hint`'s real DB
+   block slug wins outright when the flag is set and the hint clears the threshold.
+2. **Stage 4 (`stage_4_5_6_7_8_extract`)** -- new "sc_var Tier" eligibility branch, structurally
+   identical to Tier 0: `not _cv2_eligible and sc_var_min_confidence is not None and
+   sc_var_hint.confidence >= threshold` admits the boundary instead of hard-halting.
+3. **New CLI flag `--sc-var-min-confidence`** (default `None` = today's behaviour, zero risk to
+   every non-Claude-Design clone). A low value (e.g. `0.0`) is an explicit, visible testing
+   knob -- Piece 1's hints are deliberately capped low-confidence and were never meant to
+   auto-admit a boundary on their own; this makes crossing that line a per-run, opt-in choice
+   rather than a silent policy change baked into the gate.
+
+**Second real bug found and fixed via live verification (not fixture-only), before it could
+silently corrupt output:** even with recognition fixed, Stage 4 re-locates each boundary's HTML
+element in an independent re-parse of the mockup, by `id` then `tag+class`. For a classless
+boundary there is no real `id` (the boundary's `section_id` is a synthetic label like
+`"section-2"`, never a DOM attribute) and no class. Verified live:
+`soup.find('section', class_=None)` always returns the FIRST `<section>`, regardless of which
+boundary is being looked up -- every classless boundary beyond the first of its tag would have
+silently re-resolved to the WRONG element's content and been converted as if it were correct.
+**Fixed:** `per-section-convention-voter.py::write_tagged_mockup()` writes a copy of the mockup
+with `data-sgs-boundary-id="bN"` injected onto each `--auto-section`-detected boundary's root
+element (same deterministic order `vote()` already assigns `boundary_id`s in -- no cross-stage
+state needed). Stage 1 now produces this via a new `--tagged-mockup-out` voter flag; Stage 4
+prefers it for `_sec_el` lookup (stripping the attribute before the converter ever sees it) and
+falls back to the pre-existing id/class chain when no tagged copy exists -- fully backward
+compatible.
+
+**Verified, not just unit-tested:** ran Stage 2 + Stage 4 directly (real converter, not mocked)
+against a real `sc-for` item ("thumbs", `slots.aliases` hit) -- Stage 2 correctly overrode the
+generic `sgs/container` pick with the real `sgs/info-box` slug (`chosen_source: "sc_var_hint"`).
+Stage 4 then returned `status: "empty"` -- the load-bearing finding that closes this session
+honestly: **nested `sc-for` items (where the real repeat-content identity lives) have NO
+relocation mechanism at all yet.** `write_tagged_mockup()` only tags `--auto-section`'s
+top-level boundaries via `auto_detect_sections()`, which never recurses into `sc-for`/`sc-if`
+wrappers. Piece 1's OWN structural coverage gap (confirmed earlier this session: 0 of 31
+top-level boundaries ever carry `sc_var_kind='for'` at all in a real run) compounds with this
+new relocation gap -- the two pieces of infrastructure that are now genuinely wired together
+still can't reach the content they were built for, because nothing walks INTO the wrappers to
+find it in the first place.
+
+**Regression discipline:** all 19 pre-existing `sgs-clone-orchestrator.py` tests still pass
+unchanged. 6 new tests added (`test_orchestrator_sc_var_gate.py`) -- positive admit, below-
+threshold negative control, flag-omitted negative control (load-bearing: proves the whole
+mechanism is a true no-op when the flag isn't passed), no-hint negative control, and the
+tagged-mockup relocation fix's own proof (second boundary resolves its own element, not the
+first's) + attribute-stripping check.
+
+**Still open, named not hidden (three, growing more precise with each real run):**
+1. Nested `sc-for`/`sc-if` boundary detection -- `--auto-section` needs to walk INTO wrappers,
+   not just top-level DOM landmarks, or Piece 1's identity signal has nothing to attach to and
+   Stage 4's relocation has nothing to tag.
+2. Piece 2 (responsive values) -> attribute extraction -- explicitly deferred as the bigger,
+   separate piece per Bean's own sequencing call this session.
+3. Tier A's own `"card-grid"` fallback value isn't a real DB block slug (D1062's named
+   observation) -- still unfixed, still out of scope for this pass.
+
 ## D1065 [ROUTINE] — Spec 42 v2.0.0 / Spec 43 v1.1.0: pricing security reconciled onto Spec 27's existing proxy
 
 **2026-09-14.** A 6-persona `/adversarial-council` pre-mortem on Spec 42 v1.0.0 (run

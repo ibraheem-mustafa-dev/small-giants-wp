@@ -1448,6 +1448,17 @@ def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: boo
     ]
     if auto_section:
         cmd.append("--auto-section")
+        # 2026-09-14, "connect the pieces" follow-up — real bug found live:
+        # Stage 4 re-parses args.mockup independently and re-locates each
+        # boundary's element by id/class; for a classless boundary neither
+        # ever matches uniquely (verified: BS4's tag-only find() always
+        # returns the FIRST match of that tag, so every classless boundary
+        # beyond the first of its tag silently resolved to the WRONG
+        # element's content). This tagged copy carries a
+        # data-sgs-boundary-id attribute per boundary, in the same order
+        # write_tagged_mockup() derives deterministically, so Stage 4 can
+        # find each boundary's REAL element without relying on class/id.
+        cmd.extend(["--tagged-mockup-out", str(run_dir / "tagged-mockup.html")])
     else:
         cmd.extend(["--section", section_selector])
 
@@ -1498,12 +1509,21 @@ def _wp_blocks_match(description: str) -> dict:
     return result if "_error" not in result else {}
 
 
-def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
+def stage_2_match(boundary_output: dict, run_dir: Path, sc_var_min_confidence: float | None = None) -> dict:
     """Stage 2 -- import confidence-matrix.score_candidates and rank candidates per boundary.
 
     5.3.2 enhancement: after scoring, cross-check each match against wp-blocks.py match.
     When the two disagree by > 0.3 confidence, favour the wp-blocks result (it has
     the SGS pattern DB behind it) and log a warning for operator review.
+
+    `sc_var_min_confidence` (2026-09-14, "connect the pieces" follow-up): opt-in third
+    cross-check, same shape as the wp-blocks one above. For a classless Claude Design
+    boundary, confidence-matrix has nothing to key on and its "top" pick is a low,
+    non-discriminating default (sgs/container) -- Piece 1's sc_var_hint is the only
+    real signal available, so unlike the wp-blocks override (which requires a >0.3
+    margin against a MEANINGFUL confidence-matrix score), any sc_var_hint at or above
+    the threshold wins outright. `None` (the default) disables this entirely -- zero
+    behaviour change for every existing caller.
     """
     started = now_iso()
     errors: list[str] = []
@@ -1552,11 +1572,33 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
                 chosen_block = wp_top_block
                 chosen_source = "wp_blocks_cli"
 
+            # sc_var_hint cross-check (opt-in, see docstring) -- attached to the boundary by
+            # per-section-convention-voter.py, not scored by confidence-matrix at all.
+            sc_var_hint = boundary.get("sc_var_hint")
+            sc_var_confidence = 0.0
+            if (
+                sc_var_min_confidence is not None
+                and sc_var_hint
+                and sc_var_hint.get("block")
+                and sc_var_hint.get("confidence", 0) >= sc_var_min_confidence
+            ):
+                sc_var_confidence = float(sc_var_hint["confidence"])
+                current_best = max(cm_confidence, wp_top_score if chosen_source == "wp_blocks_cli" else 0.0)
+                if sc_var_confidence >= current_best:
+                    warnings.append(
+                        f"boundary={boundary['boundary_id']}: sc_var_hint match "
+                        f"({sc_var_hint['block']}, conf={sc_var_confidence:.2f}) overrides "
+                        f"{chosen_source} ({chosen_block}, conf={current_best:.2f}) "
+                        f"-- Claude Design sc-for identity, --sc-var-min-confidence={sc_var_min_confidence}"
+                    )
+                    chosen_block = sc_var_hint["block"]
+                    chosen_source = "sc_var_hint"
+
             matches.append({
                 "boundary_id": boundary["boundary_id"],
                 "section_id": section_id,
                 "block_name": chosen_block,
-                "confidence": max(cm_confidence, wp_top_score),
+                "confidence": max(cm_confidence, wp_top_score, sc_var_confidence),
                 "alternatives": ranked[1:],
                 "ranked_candidates": ranked,
                 "wp_blocks_match": wp_top_block,
@@ -1883,6 +1925,37 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     reason="Tier 0 — non-canonical class_signature let through via primary_sgs_bem",
                 )
 
+            # sc_var Tier (2026-09-14, "connect the pieces" follow-up) — same shape as
+            # Tier 0 above, for a Claude Design boundary that has NO class_signature at
+            # all (zero classes, so Tier 0's lingua_franca path can never fire either).
+            # Piece 1's sc_var_hint (plugins/sgs-blocks/scripts/recogniser/
+            # sc_var_classifier.py) is the only identity signal available. Opt-in via
+            # --sc-var-min-confidence (None = disabled, today's behaviour unchanged) --
+            # Piece 1's hints are deliberately capped low-confidence and were never meant
+            # to auto-admit a boundary on their own; this flag makes that policy decision
+            # explicit and visible per-run rather than silently baked in here.
+            _cv2_eligible_via_sc_var = False
+            _sc_var_min_conf = getattr(args, "sc_var_min_confidence", None)
+            _boundary_sc_var_hint = boundary.get("sc_var_hint")
+            if (
+                not _cv2_eligible
+                and _sc_var_min_conf is not None
+                and _boundary_sc_var_hint
+                and _boundary_sc_var_hint.get("block")
+                and _boundary_sc_var_hint.get("confidence", 0) >= _sc_var_min_conf
+            ):
+                _cv2_eligible = True
+                _cv2_eligible_via_sc_var = True
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_sc_var_gate",
+                    boundary_id=boundary_id,
+                    sc_var_hint=_boundary_sc_var_hint,
+                    sc_var_min_confidence=_sc_var_min_conf,
+                    class_signature=_class_sig,
+                    reason="sc_var Tier — classless Claude Design boundary let through via sc_var_hint",
+                )
+
         # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
         # matched the candidate slug. Per the 2026-05-14 retirement of
         # composer_fallback, the right response is to SURFACE the gap to the
@@ -1966,7 +2039,14 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 # Read section HTML from the mockup (same source as legacy extract.py).
                 # The boundary selector identifies which top-level element to extract.
                 from bs4 import BeautifulSoup as _BS4
-                _mockup_html = args.mockup.read_text(encoding="utf-8")
+                # 2026-09-14, "connect the pieces" follow-up — prefer the tagged copy
+                # Stage 1 wrote (see stage_1_boundary's --tagged-mockup-out call) when
+                # it exists. It's byte-identical to args.mockup except for one added
+                # data-sgs-boundary-id attribute per boundary, so using it for CSS
+                # lift too is safe and avoids maintaining two separate parses.
+                _tagged_mockup_path = run_dir / "tagged-mockup.html"
+                _mockup_source_path = _tagged_mockup_path if _tagged_mockup_path.exists() else args.mockup
+                _mockup_html = _mockup_source_path.read_text(encoding="utf-8")
                 _soup = _BS4(_mockup_html, "html.parser")
                 # Extract inline CSS for variation-CSS lifting.
                 _style_blocks = [t.get_text() for t in _soup.find_all("style")]
@@ -1997,10 +2077,22 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                             f"{boundary_id}: variation CSS read soft-failed ({_exc})"
                         )
                 # Find the section element matching the boundary selector.
-                # Prefer ID-based lookup; fall back to class-based CSS selector.
+                # Prefer the tagged data-sgs-boundary-id (unambiguous by construction --
+                # see write_tagged_mockup); then ID-based lookup; then class-based CSS
+                # selector. Real bug this ordering fixes: for a classless boundary,
+                # neither id nor class ever matched uniquely -- id fell back to a
+                # SYNTHETIC label ("section-2") that is never a real DOM attribute, and
+                # a bare tag+class lookup with no class returns BS4's FIRST match of
+                # that tag regardless of which boundary is being looked up. Every
+                # classless boundary beyond the first of its tag silently re-resolved
+                # to the WRONG element's content -- not merely "extracts nothing".
                 _sec_el = None
+                if _tagged_mockup_path.exists():
+                    _sec_el = _soup.find(attrs={"data-sgs-boundary-id": boundary_id})
+                    if _sec_el is not None:
+                        del _sec_el["data-sgs-boundary-id"]  # pipeline bookkeeping, not real draft markup
                 _sec_id = boundary.get("section_id") or ""
-                if _sec_id:
+                if _sec_el is None and _sec_id:
                     _sec_el = _soup.find(id=_sec_id)
                 if _sec_el is None and section_selector:
                     # Strip the leading tag name if present (e.g. "section.sgs-hero" → "sgs-hero")
@@ -3042,6 +3134,20 @@ def main():
              "colours against that snapshot's palette, so a stale one silently mis-paints. "
              "Use this ONLY for extract-only / diagnostic runs. (default: False — gate runs)",
     )
+    parser.add_argument(
+        "--sc-var-min-confidence", type=float, default=None,
+        help="Opt-in Tier for Claude Design (.dc.html) drafts: a boundary with no BEM "
+             "class_signature at all normally hard-halts as 'unmatched-non-bem-compliant' "
+             "(see stage_4_5_6_7_8_extract's D1034 Tier 0 gate). When set, a boundary "
+             "carrying a Piece 1 sc_var_hint (plugins/sgs-blocks/scripts/recogniser/"
+             "sc_var_classifier.py) with confidence >= this value is let through instead, "
+             "mirroring the existing lingua_franca Tier 0 pattern. Omit for today's default "
+             "behaviour (unchanged, zero risk to non-Claude-Design clones). A LOW value "
+             "(e.g. 0.0) is a deliberate TESTING knob to prove the recognition path end to "
+             "end -- Piece 1's hints are deliberately capped low-confidence "
+             "(TIER2_MAX_CONFIDENCE=0.5) and were never meant to auto-assign a block on "
+             "their own; production use of this flag is a separate, later policy decision.",
+    )
     args = parser.parse_args()
 
     # Verification-run ergonomics (2026-06-07): a draft run is a dev/verification
@@ -3174,7 +3280,7 @@ def main():
     primary_conv = (boundary.get("convention_summary") or {}).get("primary", "?")
     print(f"[stage-1] voter: {bcount} boundaries, primary convention={primary_conv}")
 
-    match = stage_2_match(boundary, run_dir)
+    match = stage_2_match(boundary, run_dir, sc_var_min_confidence=getattr(args, "sc_var_min_confidence", None))
     if match.get("matches"):
         top = match["matches"][0]
         print(f"[stage-2] confidence-matrix top: {top['block_name']} (conf={top['confidence']:.2f}) across {len(match['matches'])} sections")
