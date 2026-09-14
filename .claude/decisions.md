@@ -1,5 +1,51 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1056 [ROUTINE] — Spec 42: `sgs_form` CPT mandatory, one signed pricing delta, revision-pinned
+
+**2026-09-14.** A `/research-council` run (1 deep-dive researcher, 4-reviewer council —
+Research Analyst/Sceptic/Optimiser/User Advocate, all four independently REQUEST REVISION,
+Council Head synthesis) vetted the originally-briefed `sgs_form` CPT + tile-pricing redesign.
+Full spec: [`specs/42-SGS-FORM-CPT-AND-PRICING.md`](specs/42-SGS-FORM-CPT-AND-PRICING.md).
+
+**Live defect found, independent of the whole redesign (FR-42-0):** `src/blocks/form/render.php`
+writes a form's `requireLogin`/`rateLimit` security config into a 24-hour transient at
+render time; the submit handler reads that same transient and **fails OPEN to
+`requireLogin=false`** if it's missing — silently possible on any page served from the
+LiteSpeed page cache (the canary runs it). Not yet fixed this session — flagged as the
+highest-priority follow-up, ship-ready, no dependency on the rest of this spec.
+
+**Council's real justification for the CPT, found by reading this repo's own code (not
+"everything else here is a CPT" pattern-matching, which the council explicitly rejected):**
+the server has no durable place to look up what a form is — the CPT is that durable
+definition, and `form_id` stays the existing `varchar(100)` slug (the CPT's `post_name`),
+so historical submissions and the existing `formId` block attribute need zero migration.
+
+**Picker:** WordPress's native `LinkControl` (filtered `subtype: 'sgs_form'`), not a bespoke
+REST-backed `ComboboxControl` — reuses the exact interaction every SGS editor-user has
+already met in the Navigation block, zero new REST surface.
+
+**Pricing:** one signed `priceDelta` per tile + one `basePrice` wrapper attribute replaces
+the originally-proposed two-mode ("flat-add"/"base-replace") design — strictly less
+mechanism for the same worked lens-configurator example. Percentage/formula pricing
+explicitly deferred, not built. The running total is a **display artefact with no authority
+anywhere** — the client submits tile IDs + quantities only, never a total (OWASP Business
+Logic Security Cheat Sheet); the server recomputes from the form's **pinned revision ID**
+stored on the submission, closing a price-versioning race that exists only when pricing and
+a revisioned CPT are combined (neither feature alone has this bug).
+
+**Owner decisions (override the council's own "ship additively" recommendation):**
+(1) every form goes through the CPT-backed system, no "simple form stays inline" exception
+— "it's not often you need a unique form... one of the main purposes of a unified form setup
+is analytics tracking and testing." (2) migration is a full mandatory rebuild of every
+existing `sgs/form` instance, no deprecation shim — "we don't do deprecations and are
+pre-live," consistent with D270.
+
+**Explicitly deferred, not invented:** preset starter patterns (Contact/Booking/Multi-step
+configurator) — FR-42-20 — the research pass found no competitor plugin's field-by-field
+template breakdown via web search; a follow-up session must complete that research before
+any preset ships. **No code shipped this session** — spec only; FR-42-19 sequences the CPT
+to ship first, alone, pricing second.
+
 ## D1055 [ROUTINE] — FR-30-4 scope correction: real cart/checkout/order-confirmation templates replace "styling only"
 
 **2026-09-14.** FR-30-4 (Spec 30, [`.claude/specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md`](specs/30-SGS-WOOCOMMERCE-PAGE-TYPES.md))
