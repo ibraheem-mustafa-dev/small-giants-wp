@@ -886,7 +886,7 @@
 		"submenuColourCurrent": {
 			"type": "string",
 			"default": "text",
-			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` (dark brown) token (2026-09-14 root-cause fix, QC council finding): the prior empty default fell through to a hardcoded `primary-dark` fallback that measures only 2.35:1 against the new `surface-pink` current-row background — well under WCAG AA's 4.5:1 floor. `text` on `surface-pink` measures 8.40:1 (verified via wcag-contrast.js maths). Chosen as a fixed default token, not a runtime contrast computation, per Bean's ruling that defaults should not depend on a contrast-check mechanism."
+			"description": "Current-page ('you are here') submenu row text colour. Defaults to the `text` (dark brown) token (2026-09-14 root-cause fix, QC council finding): the prior empty default fell through to a hardcoded `primary-dark` fallback measuring only 2.35:1 against the current-row background — well under WCAG AA's 4.5:1 floor. `text` against `submenuLinkBgCurrent`'s `surface-alt` default measures 14.31:1 on the framework's default palette and 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths). Chosen as a fixed default token, not a runtime contrast computation, per Bean's ruling that defaults should not depend on a contrast-check mechanism."
 		},
 		"submenuLinkBg": {
 			"type": "string",
@@ -900,8 +900,8 @@
 		},
 		"submenuLinkBgCurrent": {
 			"type": "string",
-			"default": "surface-pink",
-			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-pink`, a light pink tint (2026-09-14 root-cause fix) — visually distinct from both the cream Normal row and the solid `primary` Hover fill, so the three states read as three genuinely different surfaces rather than shades of the same one. Paired with `submenuColourCurrent`'s `text` default: 8.40:1 (WCAG AA)."
+			"default": "surface-alt",
+			"description": "Current-page ('you are here') submenu row background. Defaults to `surface-alt` (2026-09-14 correction — was `surface-pink`, a token that exists ONLY in the Mama's Munches per-client theme-snapshot.json, not in the framework's own theme.json; on any other site it resolved to an undefined CSS variable with no fallback, painting nothing. `surface-alt` is a real framework token every theme.json defines — a subtly raised/alt surface, the same convention a 'currently selected row' uses in an ordinary list). Visually distinct from both the cream Normal row (`surface`) and the solid `primary` Hover fill, while staying closer in tone to Normal than Hover — the standard 'you are here, but not being pointed at' affordance. Paired with `submenuColourCurrent`'s `text` default: 14.31:1 on the framework's default palette, 12.55:1 on Mama's Munches (both WCAG AA, verified via wcag-contrast.js maths)."
 		},
 		"submenuLinkBgGradient": {
 			"type": "string",

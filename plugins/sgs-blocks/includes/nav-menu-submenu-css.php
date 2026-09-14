@@ -274,7 +274,30 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		$submenu_top_offset = sgs_css_length_value( $attributes['submenuTopOffset'] ?? '' );
 		$submenu_wrap_top   = '' !== $submenu_top_offset ? 'calc(100% + ' . $submenu_top_offset . ')' : '100%';
 
-		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));box-shadow:var(--sgs-nm-submenu-shadow, var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1)));}';
+		/*
+		 * SHADOW FIX (2026-09-14, Bean-directed) — `box-shadow` used to sit on
+		 * this exact rule, on the exact same element as `overflow-y:auto`. Per
+		 * CSS's overflow-clip behaviour an element clips its OWN box-shadow
+		 * the moment its `overflow` is anything but `visible` — proven live on
+		 * the canary: forcing the panel open showed a flat, shadow-less edge
+		 * against the header even with a real box-shadow value computed. The
+		 * `overflow-y:auto` cannot move (it is this element's own scroll for
+		 * a tall panel); the shadow moves instead, from `box-shadow` to
+		 * `filter:drop-shadow()` — a filter effect, which paints on the
+		 * element's rendered bitmap BEFORE the overflow clip is applied, so
+		 * it is never clipped by the same element's own overflow.
+		 *
+		 * Default is a bare `none`, not a theme shadow preset (was
+		 * `var(--wp--preset--shadow--raised, 0 4px 12px rgba(0,0,0,.1))` —
+		 * a real, always-on shadow value regardless of the `submenuShadow`
+		 * attribute's own empty default, the second half of the same bug:
+		 * an untouched nav rendered a shadow it never asked for, on top of
+		 * the shadow being invisible where it rendered). `--sgs-nm-submenu-
+		 * filter` is written below ONLY when `submenuShadow` is non-empty, so
+		 * a fresh install now genuinely ships no shadow until an operator
+		 * opts in.
+		 */
+		$css .= $uid_sel . ' .sgs-nav-menu__submenu-wrap{position:absolute;top:' . $submenu_wrap_top . ';left:var(--sgs-mm-overflow-left, 0);max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;border-radius:var(--sgs-nm-submenu-radius, var(--wp--custom--border-radius--medium, 8px));filter:var(--sgs-nm-submenu-filter, none);}';
 
 
 		/*
@@ -395,6 +418,13 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 			(string) ( $attributes['submenuShadow'] ?? '' ),
 			(string) ( $attributes['submenuShadowColour'] ?? '' )
 		);
+		// `filter:drop-shadow()`, not `box-shadow` — see the SHADOW FIX comment
+		// on the `.submenu-wrap` rule above. Written ONLY when submenuShadow is
+		// non-empty, so the rule's own `var(--sgs-nm-submenu-filter, none)`
+		// fallback is what an untouched nav actually renders.
+		$sgs_nm_submenu_filter = '' !== $sgs_nm_submenu_shadow
+			? 'drop-shadow(' . sgs_shadow_value_to_drop_shadow( $sgs_nm_submenu_shadow ) . ')'
+			: '';
 
 		$sgs_nm_panel_vars = '';
 		if ( null !== $sgs_nm_submenu_border_w && '' !== $sgs_nm_submenu_border_w ) {
@@ -406,8 +436,8 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		if ( null !== $sgs_nm_submenu_radius_shorthand && '' !== $sgs_nm_submenu_radius_shorthand ) {
 			$sgs_nm_panel_vars .= '--sgs-nm-submenu-radius:' . $sgs_nm_submenu_radius_shorthand . ';';
 		}
-		if ( '' !== $sgs_nm_submenu_shadow ) {
-			$sgs_nm_panel_vars .= '--sgs-nm-submenu-shadow:' . $sgs_nm_submenu_shadow . ';';
+		if ( '' !== $sgs_nm_submenu_filter ) {
+			$sgs_nm_panel_vars .= '--sgs-nm-submenu-filter:' . $sgs_nm_submenu_filter . ';';
 		}
 		if ( '' !== $sgs_nm_panel_vars ) {
 			$css .= $uid_sel . '{' . $sgs_nm_panel_vars . '}';
@@ -699,8 +729,12 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * NOWHERE in the tree, so it could only ever render its own hardcoded
 		 * fallback. Writing it from `submenuColourCurrent` makes the rule
 		 * attribute-driven; the unset-fallback token below is `text` (2026-09-14
-		 * root-cause fix — was `primary`, which measures only 2.35:1 against the
-		 * new `surface-pink` Current-row background; `text` measures 8.40:1).
+		 * root-cause fix — was `primary`, which measured only 2.35:1 against the
+		 * Current-row background). `submenuLinkBgCurrent`'s default was itself
+		 * corrected the same day (`surface-pink` -> `surface-alt`, a real
+		 * framework token — `surface-pink` existed only in the Mama's Munches
+		 * per-client snapshot); `text` on the current `surface-alt` default
+		 * measures 14.31:1 (framework palette) / 12.55:1 (Mama's Munches).
 		 * `submenuColourCurrent` now defaults to `text` in block.json, so this
 		 * branch fires unconditionally in practice; the fallback remains as the
 		 * safety floor for an explicitly-cleared value.

@@ -732,6 +732,53 @@ function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string {
 }
 
 /**
+ * Convert a composed `box-shadow` value (from `sgs_shadow_value_composed()`)
+ * into the argument `filter: drop-shadow()` accepts.
+ *
+ * `drop-shadow()` takes `<length>{2,3} <color>?` — offset-x, offset-y, an
+ * optional blur, and an optional colour. It has NO spread-radius slot at all
+ * (CSS Filter Effects Level 1 / Backdrop), unlike `box-shadow`'s 4-length
+ * shape. `ShadowControl.js::buildShadow()` always emits all four numbers
+ * (`x y blur spread`, spread defaulting to 0 rather than being omitted), so a
+ * composed value coming from an operator's custom shadow is "0px 4px 12px
+ * 0px rgba(...)" — syntactically invalid inside `drop-shadow()` even when
+ * spread is 0, because the function still receives 4 lengths. This strips
+ * the 4th (spread) length when present so the remaining "x y blur colour"
+ * is valid. Every theme.json shadow PRESET (subtle/raised/floating/glow) is
+ * already spread-free (`settings.shadow.presets`), so a bare preset slug —
+ * resolved by `sgs_shadow_value()` to `var(--wp--preset--shadow--{slug})` —
+ * never matches the 4-length pattern below and passes through unchanged.
+ *
+ * Known, disclosed limitation: an operator-set spread value has no
+ * drop-shadow equivalent and is silently dropped. Used only where
+ * `box-shadow` would be invisible anyway because the target element clips
+ * its own box-shadow via `overflow` (nav-menu's `.submenu-wrap`, which needs
+ * `overflow-y:auto` for its own scroll) — `filter` effects are NOT clipped
+ * by the same element's own overflow, which is the whole reason for the
+ * swap.
+ *
+ * @param string $shadow_value Composed box-shadow value ('' passes through).
+ * @return string drop-shadow()-safe value (no spread), or the input unchanged
+ *                when it isn't a raw 4-length shape.
+ */
+function sgs_shadow_value_to_drop_shadow( string $shadow_value ): string {
+	if ( '' === $shadow_value ) {
+		return '';
+	}
+
+	if ( preg_match(
+		'/^(-?[\d.]+px)\s+(-?[\d.]+px)\s+([\d.]+px)\s+([\d.]+px)\s+(.+)$/',
+		$shadow_value,
+		$matches
+	) ) {
+		// Group 4 is the spread length being dropped; group 5 is the colour.
+		return $matches[1] . ' ' . $matches[2] . ' ' . $matches[3] . ' ' . $matches[5];
+	}
+
+	return $shadow_value;
+}
+
+/**
  * Validate a CSS gradient value for safe emission into a scoped rule / custom
  * property.
  *
