@@ -75,6 +75,14 @@
 	}
 }
 
+/* Conditionally-hidden field — display:none removes from layout entirely.
+   Mirrors .sgs-form-step--hidden below; applyConditionalLogic() in view.js
+   also disables the inputs so they are excluded from validation/submission,
+   but that alone leaves the field wrapper visible — this rule hides it. */
+.sgs-form-field--hidden {
+	display: none;
+}
+
 /* Steps span full width inside the form grid */
 .sgs-form-step {
 	grid-column: 1 / -1;
