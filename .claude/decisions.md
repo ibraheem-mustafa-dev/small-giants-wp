@@ -16,7 +16,7 @@
 
 **Net:** 3/3 tasks live-verified correct; only Task 3 item 4's cross-component bubble path is open (parked below), everything else closes clean. No code changes made this session — pure verification.
 
-**Parked:** `P-NAV-ESC-DOUBLE-FIRE-LIVE-RETEST` — retest item 4's live bubble path (mega open + non-modal drawer open + ESC) in a logged-out browser session; the admin-bar/editor JS confound must be eliminated first.
+**Still needed:** retest item 4's live bubble path (mega open + non-modal drawer open + ESC) in a logged-out browser session; the admin-bar/editor JS confound must be eliminated first. Not yet parked.
 
 ## D1043 [ROUTINE] — QC-council integration sweep over the whole nav-menu day found 2 real regressions, both fixed same-session
 

@@ -59,9 +59,9 @@ Ran as two parallel subagent lanes per owner ruling 7: **Lane 5** (13→14→14a
 
 **Deviations from the original plan text, all disclosed at the point they happened:**
 - `render.php`'s PHP module count is **6 files**, not the 4 from Step 8 — Steps 15/16 added genuinely new logic (not refactor) that needed two more modules (`nav-menu-treatments.php`, `nav-menu-trigger-css.php`) to stay under the 300-code-line cap. This is expected growth from real new work, not a cap violation.
-- `edit.js` is **625 lines**, not ≤250 — `colourRows` (detector constraint, owner ruling 3) and the panel mounts cannot leave the file. Bean asked (2026-09-11) for research into whether other blocks with colour rows have a pattern nav-menu is missing — **research dispatched, result pending, no further action taken yet.**
+- `edit.js` is **625 lines**, not ≤250 — `colourRows` (detector constraint, owner ruling 3) and the panel mounts cannot leave the file.
 
-### Open thread — RESOLVED 2026-09-11 (design only; build still pending)
+### Open thread — RESOLVED 2026-09-11, BUILT
 
 **`sublink-marker` colour row — design question CLOSED, owner ruled.** Originally exempted from the
 Hover/Current state requirement (Normal-only, `colourExemptions` entry drafted but reasoning was
@@ -75,8 +75,11 @@ rebuilt). It needs **one new additive `SgsColourPanel` row-descriptor key** for 
 reveal — not a `fillRow3`/`textRow3` fork. Confirmed buildable by the 2026-09-11 adversarial council.
 **Do not add a `colourExemptions.sublink-marker` entry — that approach is superseded.** Full mechanism
 recorded at Spec 41's FR-41-30(b) ✅ RESOLVED block (`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`,
-beneath its ⚠ OPEN note, kept as history) and §12 item 8. **Still needs to be BUILT** as part of Step
-13's territory (or a small follow-up to it) — this closes the design question, not the implementation.
+beneath its ⚠ OPEN note, kept as history) and §12 item 8. **BUILT** — confirmed live at
+`plugins/sgs-blocks/src/blocks/nav-menu/edit.js::sublinkMarkerIconIsCustom` (gates a `textRow()` call
+with the marker colour attrs) and `block.json` (declares all six `css:fill`/`css:fill-gradient` routes:
+`sublinkMarkerColour`, `sublinkMarkerColourGradient`, `sublinkMarkerColourHover`,
+`sublinkMarkerColourHoverGradient`, `sublinkMarkerColourCurrent`, `sublinkMarkerColourCurrentGradient`).
 
 **Also recorded in Spec 41 today (2026-09-11), not otherwise tracked in this plan:**
 - **§0a.4 — adversarial council review, verdict GO conditional.** Two pre-real-client-deploy fixes

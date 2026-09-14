@@ -223,14 +223,15 @@ FR-41-16 · FR-41-21 · FR-41-22 · FR-41-23 · FR-41-24 · FR-41-25 · FR-41-26
 FR-41-30 · FR-41-31 · FR-41-33 · FR-41-35 · **FR-41-37** (the vertical divider itself — live-verified
 on the canary 2026-09-13; its own §'s "PARTIALLY BUILT" tag refers only to the desktop-submenu-hover
 text-colour default it revised alongside, not to the divider capability, which is fully built) ·
-**FR-41-38** (directional sweep generalisation — `sgs_directional_sweep_css()`)
+**FR-41-38** (directional sweep generalisation — `sgs_directional_sweep_css()`) · **FR-41-13** (the
+parent-stays-hovered fix — shipped `99aa0aae0`, 2026-09-11; 5 real selectors, mouse + keyboard,
+bar + drawer, in `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_menu_item_state_css`)
 (`plugins/sgs-blocks/scripts/check-ungated-paint-rules.py`).
 
 ### 0a.3 Written but NOT built — each with the command that proves it
 
 | Not built | Proof |
 |---|---|
-| **FR-41-13** — the four "parent stays in its Hover state while its own dropdown is hovered" rules (mouse + keyboard, per fork) | `grep -rn "submenu-root:hover\|accordion-row:hover\|submenu-root:has\|accordion-row:has" plugins/sgs-blocks/includes/nav-menu-*.php plugins/sgs-blocks/src/blocks/nav-menu/` returns nothing |
 | ⛔ **FR-41-34 — WITHDRAWN 2026-09-11, not merely pending** — the migration notice (`_sgs_nav_menu_migration_notice` post meta + the dismissible `Notice`). Deliberately not built: no stored content anywhere uses the shape it would migrate. See FR-41-34's WITHDRAWN box + `.claude/decisions.md` D1036 | `grep -rn "_sgs_nav_menu_migration_notice" plugins/sgs-blocks/` returns nothing (and never will — withdrawn, not queued) |
 | ⛔ **G5a's stored-content migration — WITHDRAWN 2026-09-11, same reasoning one level up** (no stored content exists to carry forward at all) | every OTHER live-canary gate (G6–G10, G13–G20c) remains post-deploy work; nothing is deployed to the canary from this phase yet |
 | **FR-41-35's WARN → HARD flip (G20c(f))** | the detector ships WARN-ONLY until the flip step runs |
@@ -255,13 +256,17 @@ architect **B+**, accessibility **C-**, Gutenberg internals **B+**, maintainabil
 before Wave C work starts (`.claude/plans/phase-nav-menu-colour-state.md`'s Wave C, steps 18-27, may
 proceed unblocked):
 
-**(a) The submenu panel's `box-shadow` is clipped invisible.** Census #9
-(§8's fate table, `{uid} .sgs-nav-menu__submenu{…box-shadow…}`) emits a real, attribute-driven
-shadow — but the panel selector it paints (`.sgs-nav-menu__submenu`) sits *inside*
-`.sgs-nav-menu__submenu-wrap` (FR-41-1's DOM table), and that wrapper carries `overflow-y:auto`, which
-clips any shadow the inner element casts. **Needs the shadow moved to the non-clipping wrapper
-element, or an inner-scroller/outer-shadow-box split, before deploy.** Not yet fixed — a Wave C /
-pre-deploy item, not a design question.
+**(a) The submenu panel's `box-shadow` was clipped invisible — the wrapper-move fix shipped;
+a separate overflow-clipping issue was found afterwards and is being fixed separately.**
+Census #9 (§8's fate table, `{uid} .sgs-nav-menu__submenu{…box-shadow…}`) emitted a real,
+attribute-driven shadow on the inner panel selector (`.sgs-nav-menu__submenu`), clipped by its
+ancestor `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto`. **Fixed in commit `99aa0aae0`
+(2026-09-11)** — the shadow moved to `.sgs-nav-menu__submenu-wrap` itself
+(`plugins/sgs-blocks/includes/nav-menu-submenu-css.php`), matching border-radius added. ⚠ **A
+separate, newer clipping problem was found on 2026-09-14:** `.sgs-nav-menu__submenu-wrap` still
+carries `overflow-y:auto` (`plugins/sgs-blocks/includes/nav-menu-submenu-css.php`), which as of
+this writing still clips the box-shadow now painted on that same element. This is being
+investigated/fixed separately — see `.claude/decisions.md` for the fixing commit once it lands.
 
 **(b) CONFIRMED CORRECT, no action needed — recorded so it is not re-litigated:** the previously
 suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked directly against
@@ -274,9 +279,11 @@ states — no parallel builder family exists.**
 - The `hideExtensions` claim (§1.2) is confirmed accurate.
 - The §12 "border-row-helper" tension is resolved: no `borderRow.js` exists, and per this project's
   own CLAUDE.md rule, none should be built.
-- **FR-41-13** (the parent-stays-hovered fix) is **reconfirmed genuinely unbuilt** by live grep — it
-  is already correctly scheduled as a Wave C item (§0a.3). No plan change needed; this is the council
-  independently re-verifying the same finding, not a new one.
+- **FR-41-13** (the parent-stays-hovered fix) — **BUILT.** Shipped in commit `99aa0aae0` (2026-09-11),
+  the same day as this council review; the review's grep was run before that commit landed. Live code
+  confirms 5 real selectors in
+  `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_menu_item_state_css` (mouse + keyboard, bar +
+  drawer).
 
 ---
 
@@ -4579,13 +4586,15 @@ deliberately did not bump).
 2. **NEW §0a.4 — adversarial council review (2026-09-11), verdict GO conditional.** Five personas
    (design-systems architect B+, accessibility C-, Gutenberg internals B+, maintainability/blast-radius
    A-, CSS-pattern cynic B-). Two conditions before real-client deploy: (a) the submenu panel's
-   `box-shadow` is clipped invisible by `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — not yet
-   fixed; (b) the suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked
+   `box-shadow` was clipped invisible by `.sgs-nav-menu__submenu-wrap`'s `overflow-y:auto` — fixed in
+   commit `99aa0aae0` (2026-09-11) by moving the shadow onto the wrapper; a separate overflow-clipping
+   issue on that same wrapper was found 2026-09-14 and is being fixed separately (see §0a.4's fixes
+   section); (b) the suspected parallel `fillRow3`/`textRow3`/`borderRow3` builder approach was checked
    and does NOT exist — FR-41-2(a)'s additive extension is confirmed correct, no action needed. Also
    confirmed accurate with no fixes needed: all three `colourExemptions` entries, the `hideExtensions`
    claim, and the §12 "border-row-helper" tension (already resolved, no `borderRow.js`, none should be
-   built). FR-41-13 reconfirmed genuinely unbuilt, already correctly scheduled as a Wave C item — no
-   plan change.
+   built). FR-41-13 was reconfirmed genuinely unbuilt at the time of this review, but shipped later
+   the same day in commit `99aa0aae0` (2026-09-11) — see §0a.2/§0a.3, corrected 2026-09-14.
 3. **NEW FR-41-36 — locked default colour scheme for item/submenu/drawer states.** Design-council-
    researched, owner-approved. Pins the actual default token values (`primary`/`accent`/`surface`/
    `surface-alt`/`border-light` family) across top bar, desktop submenu, drawer top-level and drawer

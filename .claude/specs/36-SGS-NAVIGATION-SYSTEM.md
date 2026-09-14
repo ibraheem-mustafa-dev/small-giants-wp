@@ -372,10 +372,12 @@ inherit-from-bar); the inspector shows *which menu is bound* (bar vs drawer). **
 scalars in the 2026-07-28 desktop-variant migration; the old names are gone from block.json and must not be
 cited.
 
-#### Modality — MOVE TO NON-MODAL. Approved 2026-09-09, NOT YET BUILT.
+#### Modality — MOVE TO NON-MODAL. Approved 2026-09-09, BUILT.
 
-**Status:** `APPROVED — NOT BUILT`. Owner-approved direction, ~3h of work, not scheduled here. Live build
-status single-sources to `.claude/LEDGER.md`.
+**Status:** `APPROVED — BUILT`. Shipped in commit `98ac44b95` (2026-09-10), live-verified on the sandybrown
+canary 2026-09-14 (`.claude/decisions.md` D1044). The default remains `modal` (`showModal()`) —
+non-modal is opt-in via the `modality` attribute, not the new default. Live build status
+single-sources to `.claude/LEDGER.md`.
 
 **The direction.** The drawer moves from `showModal()` to **`.show()` plus an explicit z-index scale that
 puts the header ABOVE the drawer panel**, with author-managed background inertness (the `inert` attribute,
@@ -1057,8 +1059,8 @@ descriptive anchor text.
 > control 2026-07-23: the canary HOMEPAGE, which renders no `sgs/nav-menu` at all, reports the
 > **identical five violations**. Their real cause is two unnamed `<main>` elements
 > (`landmark-no-duplicate-main` + `landmark-main-is-top-level` fire alongside). `sgs/nav-menu`
-> contributes zero axe violations. The theme-level duplicate `<main>` is a separate, still-open
-> defect — see `parking.md`.
+> contributes zero axe violations. The theme-level duplicate `<main>` was a separate defect;
+> it has since been resolved.
 >
 > ⚠ **Still owed:** `axe` on the OPEN drawer. The `nav-qa/axe-run.mjs --open` run timed out on
 > `locator.click` (harness actionability, not a page defect — the burger opens correctly under a
@@ -1628,9 +1630,16 @@ piece is intrinsically responsive (min-content ≤ container at every breakpoint
   the whole structure + the rich content. **Scope the moat honestly:** plain crawlable links are table-stakes;
   the differentiator is server-rendered *rich mega content* (no AJAX) + **AI-auto-generation of the whole nav
   from a sitemap** (the un-copyable weapon — §0; Phase 3, Opp 1).
-- **Semantic + descriptive:** `<nav>` landmarks + unique labels; real `<ul>/<li>/<a>`; descriptive anchor text.
-- **Schema:** ships schema-friendly markup for `SiteNavigationElement` (+ `BreadcrumbList`); JSON-LD emission
-  owned by `seo-schema` (no schema in blocks); must not block it.
+- **Semantic + descriptive — BUILT:** `<nav>` landmarks + unique labels; real `<ul>/<li>/<a>`; descriptive
+  anchor text. The block's root IS a `<nav>` element with a computed `aria-label`
+  (`plugins/sgs-blocks/src/blocks/nav-menu/render.php`).
+- **Schema — split by status, do not conflate:**
+  - **`BreadcrumbList` JSON-LD — BUILT.** Emitted by `plugins/sgs-blocks/src/blocks/breadcrumbs/render.php`
+    (the `'@type' => 'BreadcrumbList'` emission).
+  - **`SiteNavigationElement` JSON-LD — NOT BUILT, no owner yet assigned.** Confirmed zero hits for
+    "SiteNavigationElement" anywhere in `plugins/` or `theme/`. The block ships schema-FRIENDLY
+    MARKUP only (the semantic `<nav>` above); JSON-LD emission — when it is built — is owned by
+    `seo-schema` (no schema in blocks); the block must not block it.
 - **hreflang forward-note:** when multilingual lands (Phase 3), emit per-language `hreflang` on the switcher
   (cheap to plan now, expensive to retrofit).
 - **Parity, no cloaking:** bar/drawer may use different menus but every link in either is crawlable.
