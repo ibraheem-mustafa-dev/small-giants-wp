@@ -637,7 +637,7 @@ reaches the frontend, and no `display` is added to the dialog's base rule, so ST
 Deliberately NOT given its own FR-ID: this is an editor-UX correction inside FR-36-6's existing scope (the drawer
 block's own behaviour), not a new capability.
 
-### FR-36-27 — Burger trigger presentation (added 2026-07-29, gate DP4 — NOT-BUILT)
+### FR-36-27 — Burger trigger presentation (added 2026-07-29, gate DP4 — NOT-BUILT AS SPEC'D, corrected 2026-09-14 — see Status line below)
 
 The trigger the operator gets today is burger-glyph-only with colour/bg/hover/size attrs; the
 references make the trigger a designed element (studionamma renders the word "MENU", fantasy a
