@@ -8,91 +8,89 @@ last_updated: 2026-09-14
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**Spec 41 nav-menu: Waves A+B+C (steps 1-23) DONE, deployed, and live-verified.** Wave C's
-own live-verification sweep (Steps 22/23) found + fixed 4 real defects same-session (D1038).
-Then Bean did a full hands-on review of the live result and reported ~26 issues in one
-message (D1039) — root-caused, solution-designed, and shipped: the large majority of that
-register, PLUS a further ~1.5 days of follow-on work not yet written into the register file
-itself — a terminology/architecture redesign splitting "underline" from "separator" (FR-41-37),
-flipping the smart-contrast auto-fix to opt-in by default, a hover-gradient toggle for item
-text, generalising the hover-sweep effect to any angle, fixing the drawer's `listColumns`
-reading order, and a same-day sticky-header dropdown-stacking fix (dropdown now reparents to
-`<body>` on open so it can't be clipped by a sticky header's own stacking context). A
-`/qc-council` diagnostic pass on top of all this found and fixed 2 further regressions
-(ancestor-current + keyboard-focus highlight lost during the body-reparent; submenu colours
-defaulting off a runtime contrast check instead of a fixed per-state default).
+**Ward End Eye Care 5-task session + Spec 42/43 architecture — DONE, 2026-09-14 (D1056/D1063/D1065),
+a separate parallel track from the nav-menu work below.** All 5 tasks from
+`.claude/prompts/2026-09-14-modal-cpt-form-frame-card-checkout-upgrade.md` shipped and pushed:
+Task 1 `sgs_modal` CPT + per-trigger picker (commit `ce9ccb46c`); Task 2 fixed a real bug where
+`sgs/form-field-hidden`'s conditional-visibility attributes were declared but never wired up
+(commit `ad2914dd8`); Task 4 extended `sgs/product-card` with Frame Card's missing fields —
+swatch row, rating, brand overlay, saving badge — as a new style variation, Mama's Munches'
+look untouched (commit `0a93cbec9`); Task 5 built real `cart.html`/`checkout.html`/
+`order-confirmation.html` templates wrapping WooCommerce's own blocks (commits `76ea52ab9`,
+`ef6ac7af2`, fixed-forward by a sibling session in `b5a529e02` for a core-blocks gate miss).
 
-**Both previously-open decision items have now been resolved and shipped (2026-09-14):**
-Bean picked colour attributes directly on `sgs/responsive-logo` (not a reintroduced head-row
-wrapper) for the drawer-logo colour work — `backgroundColour`/`backgroundColourGradient`/
-`backgroundColourHover`/`backgroundColourHoverGradient` added, mirroring `sgs/brand-strip`,
-commit `46fbdb5a0` (D1045), live-verified, parking entry archived. Click-outside-to-close for
-touch devices was approved and built directly — a document-level click listener in
-`mega-disclosure.js` now closes an open dropdown/mega panel on an outside tap, commit
-`6f7dc3867` (D1046). A third, previously-unrecorded defect was also found and fixed same
-session: `sgs/nav-menu`'s drawer re-render pass was emitting a hidden duplicate "Open menu"
-burger; gated to the real header/bar pass only, commit `ab9e5f893` (D1047), live-verified
-exactly one such element exists at both mobile and desktop widths. Everything else previously
+**Task 3 (the form/pricing architecture) went through two full `/research-council` runs plus a
+6-persona `/adversarial-council` pre-mortem, and the design changed twice on real evidence —
+this is the one part of this track still spec-only, no code shipped.** Spec 42
+(`sgs_form` CPT) v1.0.0's pricing mechanism was found unbuildable by the adversarial council
+(no stable tile ID, a money-type mismatch against the live schema, revision-pinning resting on
+a WordPress mechanism this project's own `build-deploy.py` already excludes from its integrity
+gate). Rather than repair it, the pricing work moved in full to a NEW spec — **Spec 43,
+`sgs/choice-flow`** — after Bean corrected the premise: the real eyewear lens flow is
+`sgs/option-picker`'s tile-pricing mechanism used inside a step wizard, not a form-pricing
+feature, and the SAME block also replaces Mama's Munches' cramped inline variation picker with
+a sequential full-screen `sgs_modal` flow. Spec 43's purchase path now calls Spec 27's
+**already-shipped** secure `/sgs/v1/cart/add-item` proxy directly instead of inventing new
+pricing security. **Spec 42 v2.0.0 / Spec 43 v1.1.0 are both fully reconciled against each
+other and against the adversarial council's findings** — see `specs/42-*.md` and
+`specs/43-*.md`, and D1056/D1063/D1065 for the full decision trail. **Next step, per Bean's own
+direction: a FRESH adversarial-council pass on Spec 42+43 TOGETHER as one solution, after
+context is compacted, before implementation planning starts.** No code for Spec 42/43 has been
+written yet — both are design-only. One real, disclosed, unresolved gap affects both: the
+cloning pipeline (`sgs-clone-orchestrator.py`) cannot create a new CPT post at all, only target
+an existing page — so a cloned draft with a form/flow will still emit inline content today,
+breaching the "every form/flow is CPT-backed" mandate for anything built via `/sgs-clone`
+(FR-42-10/FR-43-14).
+
+**Spec 41 nav-menu: Waves A+B+C (steps 1-23) DONE, deployed, and live-verified.** Wave C's
+live-verification sweep found+fixed 4 defects (D1038). Bean's ~26-point live review (D1039)
+was root-caused and shipped — large majority of the register, plus ~1.5 days of follow-on
+work: underline/separator split (FR-41-37, `ced102333`), smart-contrast opt-in
+(`cce38999d`), hover-gradient toggle (`08d0df5af`), hover-sweep angle generalisation +
+drawer `listColumns` fix (`af8f9759a`), sticky-header dropdown reparent-to-body
+(`92002dcae`). A `/qc-council` pass found+fixed 2 regressions from that reparent
+(ancestor-current/focus highlight, `e62ce1bf2`; submenu colour default, `d9f90b875`). Full
+narrative: `decisions.md` D1038-D1048, this file's own memory snapshot.
+
+**Both previously-open decision items resolved and shipped (2026-09-14):** drawer-logo
+colour attributes on `sgs/responsive-logo` mirroring `sgs/brand-strip`, commit `46fbdb5a0`
+(D1045); click-outside-to-close for touch, commit `6f7dc3867` (D1046); a third defect found
++fixed same session — duplicate hidden "Open menu" burger, commit `ab9e5f893` (D1047).
+Everything else previously
 listed here as open (L1 burger→drawer typography mirror, the drawerRef collision bug, and
 current-page state-hierarchy propagation) has also since shipped.
 
-**Wave C steps 25 and 26 — the plan's last two open items — are now CLOSED (2026-09-14,
-D1048).** The 7 ungated-paint findings were fixed and the 4 oversized files were split, both in
-commit `87c4302c2` (zero visual diff by construction, verified via `--survey` → 0 censused/12
-scanned and a green 99/99 gate chain); `check-ungated-paint-rules.py` was then flipped from
-WARN-ONLY to HARD-FAIL scoped to `sgs/nav-menu` only, commit `85ff36489`, verified both
-directions (a planted violation fails the build, a clean tree passes). Step 25's sign-off was
-**conversational, not the plan's originally-specified formal merged-report artefact** — Bean
-gave explicit direct sign-off in conversation, informed by his own extensive live testing across
-the whole nav-menu day, but the formal `spec-41-gates.md` merge + structured 3-viewport
-presentation was never produced. `plans/phase-nav-menu-colour-state.md` is now fully done,
-superseded or withdrawn end to end and has been archived to
-`plans/archive/phase-nav-menu-colour-state.md` (its hidden-decisions annex alongside it).
+**Wave C steps 25 and 26 — the plan's last two open items — are now CLOSED (D1048).** 7
+ungated-paint findings fixed + 4 oversized files split (`87c4302c2`, zero visual diff by
+construction); `check-ungated-paint-rules.py` flipped WARN→HARD-FAIL scoped to `sgs/nav-menu`
+(`85ff36489`). Step 25's sign-off was conversational (Bean's direct live-testing sign-off),
+not the plan's originally-specified formal merged-report artefact. Plan fully archived to
+`plans/archive/phase-nav-menu-colour-state.md`.
 
-**Still genuinely open — do not treat as closed:** a real, reproducible-but-intermittent
-click-reliability issue on the drawer's own burger button (2 of 3 real clicks failed to open
-the drawer in one test session) — the duplicate-burger fix (D1047) is a genuine, separate defect
-fix and is NOT proven to be the root cause of this intermittent issue; Bean needs to retest live
-and report back whether the freeze/unresponsive behaviour still occurs. The D1044 ESC/
-mega-disclosure bubble-path retest triggered an unexpected page navigation when tested via a
-synthetic keydown dispatch — still flagged inconclusive, not confirmed safe, needs a follow-up
-session with real keyboard input. File-size drift on `ColourRowExtras.js` (320 lines) and
-`edit.js` (892 lines) is unaddressed beyond the split already done in `87c4302c2` — both still
-exceed the ≤250 cap, `edit.js` deliberately (its `colourRows` array must stay in-file per owner
-ruling 3, see D1048). A small living-doc gap step 27's own audit named is also still open: the
-`colourRows` ATOMICITY / two-corpus-blindness STOP-CATALOGUE entry (S4) it called out as a new
-structural defence to add was NOT added this session (`specs/README.md` row 41's staleness was
-fixed in this same session, alongside repointing its citation to the archived plan).
+**Still genuinely open:** only the drawer-burger click-reliability issue (Task A below) —
+the duplicate-burger fix (D1047) is a separate proven defect, NOT proven to be this issue's
+root cause. Everything else this paragraph used to list (ESC retest, file-size drift, STOP
+S4 entry) is now closed — see Tasks B/C/D below.
 
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
 
-## Prior work (closed) — clone-fidelity closeout + R8 motion recognition
+## Prior work (closed) — pointer only, full narrative in memory
 
-**Fully closed, swept to `.claude/memory/session-2026-09-11-prior-work-closed.md` for the full
-narrative (11-defect closeout D1015, R1/R9/R10 D1018, R8 motion recognition D1021-D1026/D1032
-7/13 real-world coverage).** Still genuinely open from that track, carried forward: R1's real
-17-attribute conversion (measured, not built — `reports/2026-09-10-r1-rescoped-worklist.md`);
-the `tier_object_base()` 67-attribute over-match (latent, needs fix-or-park decision);
-header/footer (paused behind R8, unchanged); trust-bar pill padding gap (minor).
+**Clone-fidelity closeout + R8 motion:** fully closed, swept to
+`.claude/memory/session-2026-09-11-prior-work-closed.md`. Still open, carried forward: R1's
+real 17-attribute conversion (`reports/2026-09-10-r1-rescoped-worklist.md`); the
+`tier_object_base()` 67-attribute over-match (needs fix-or-park); header/footer (paused behind
+R8); trust-bar pill padding (minor).
 
-**BEM-recognition brainstorming decision — Q1 Tier 1 + Tier 2 SHIPPED 2026-09-14 (D1053/D1054;**
-see the Pointers table row below**). The Mama's Munches PRODUCT draft's non-BEM hard-halt itself
-is STILL open** — Tier 1/2 shipping doesn't retroactively re-run that draft through the pipeline;
-someone still needs to `/sgs-clone` it fresh and confirm it now converts (or still hard-halts and
-why). The doc's own "measure Tier 0 first" gate also remains undone (Bean deliberately skipped it
-to build Tier 1+2 directly, per D1053) — genuinely open work, not closed by the Tier 1/2 ship.
+**BEM-recognition — Q1 Tier 1+2 SHIPPED (D1053/D1054).** Still open: the Mama's Munches PRODUCT
+draft's non-BEM hard-halt needs a fresh `/sgs-clone` to confirm Tier 1/2 actually fixes it;
+Tier 0's own "measure first" gate remains deliberately skipped (D1053).
 
-**Universal-pipeline upgrade (Claude Design `.dc.html` support) — Piece 1 + Piece 2 SHIPPED
-2026-09-14 (D1057/D1058), a SEPARATE mechanism from the BEM tier system above.**
-`sc_var_classifier.py` (identity, advisory-only, never writes `slots.aliases`) +
-`draft-responsive-probe.js` (draft-only responsive-value extraction — `computed-parity.js`
-needs both `--draft`+`--clone`, can't be reused). Real finding: `<sc-for>`/`<sc-if>` do NOT
-survive rendering — the two tools read different DOMs and are NOT yet linked; that
-correlation, route coverage beyond one page, and Piece 1's Tier B (Haiku classifier, only
-scaffolded) are open/named, not built. **CODE SHIPPED, outcome partial** — both primitives
-work standalone; the linked mechanism a converter could actually consume does not exist yet.
-
+**Universal-pipeline upgrade (Claude Design `.dc.html`) — Piece 1+2 SHIPPED (D1057/D1058),
+outcome PARTIAL.** `sc_var_classifier.py` + `draft-responsive-probe.js` both work standalone;
+`<sc-for>`/`<sc-if>` do not survive rendering and the two tools are not yet linked — the
+converter-consumable mechanism doesn't exist yet.
 
 ## Blockers
 
@@ -100,6 +98,20 @@ work standalone; the linked mechanism a converter could actually consume does no
 
 ## THE FRONT — what to pick up next
 
+**Two independent fronts exist right now — pick the one the session is actually continuing.**
+
+### Front 1 — Spec 42/43 (form CPT + choice-flow), owned by the Ward End Eye Care track
+Next step is explicitly Bean-directed: compact the session, then run a FRESH
+`/adversarial-council` on Spec 42 + Spec 43 **together as one solution** (not separately —
+they were already reconciled against each other once, but never pre-mortemed as a combined
+whole). Resolve every valid point the fresh council raises, THEN `/strategic-plan` the actual
+build — sequencing matters (Spec 42 §11 / Spec 43's shared CPT-lifecycle contract should land
+before either CPT goes live). Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` and
+`specs/43-SGS-CHOICE-FLOW.md` in full first — both are dense, reconciled documents, not a
+quick skim. FR-42-0 (the fail-open `requireLogin` security bug) is independently ship-ready and
+does not need to wait for any of this — fix it whenever convenient regardless of sequencing.
+
+### Front 2 — Spec 41 nav-menu, superseded or withdrawn
 **Spec 41 nav-menu — the whole plan (Waves A/B/C, all steps) is now DONE, superseded or
 withdrawn.** Steps 25 and 26, the last two open items, closed 2026-09-14 (D1048). The plan is
 archived: `plans/archive/phase-nav-menu-colour-state.md`'s "Execution Progress Log" has the full
@@ -107,36 +119,42 @@ step history if needed, but the real front now is the post-review fix register b
 few genuinely-open items in the Human Summary above (drawer-burger click reliability, the ESC
 bubble-path retest, and the two small doc/file-size loose ends).
 
-**Bean's live review + fix register — `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`
-was the intake doc.** The large majority of its ~26 points are now root-caused and shipped —
-including all four items this LEDGER previously listed as "deliberately not built" (L1 burger→
-drawer close-button typography mirror, `7c0d11a50`; G6 `drawerRef` collision auto-rename,
-`74121a5f1`; the orphaned-palette-slug `currentColor` fallback, `7c0d11a50`; E2 state-hierarchy
-propagation, `daa87be8d`) — plus a further ~1.5 days of follow-on work the register file itself
-does not yet describe: a terminology/architecture redesign splitting "underline" from
-"separator" (`ced102333`, FR-41-37), the smart-contrast auto-fix flipped to opt-in
-(`cce38999d`), a hover-gradient toggle for item text (`08d0df5af`), the hover-sweep effect
-generalised to any angle + the drawer `listColumns` reading-order fix (`af8f9759a`), and a
-same-day fix for a sticky-header dropdown-stacking bug — the dropdown now reparents to
-`<body>` on open (`92002dcae`) so a sticky header's own stacking context can't clip it, with two
-regressions this reparent introduced (ancestor-current/keyboard-focus highlight lost,
-`e62ce1bf2`; submenu colours defaulting off a runtime check instead of a fixed per-state
-default, `d9f90b875`) caught by a same-session `/qc-council` diagnostic pass and fixed same-day.
-**The register file has not been re-read/updated against this later work — check it against
-git log before trusting its own "not yet built" list.**
-
-**Both previously-open decision items shipped 2026-09-14 (see Human Summary above for
-detail; D1045/D1046/D1047), and Wave C steps 25/26 also closed the same day (D1048).**
-Genuinely open now: the intermittent drawer-burger click-reliability issue (needs Bean's live
-retest), the D1044 ESC bubble-path retest (inconclusive, needs real-keyboard follow-up), residual
-file-size drift on `ColourRowExtras.js`/`edit.js` (D1048 already split `nav-menu-css.php`/
-`nav-menu-submenu-css.php` and part of `edit.js`/`ColourRowExtras.js`, but both remain over cap),
-and the STOP-CATALOGUE S4 entry step 27 named but never added.
+**Bean's live review + fix register (full history already in the Human Summary above and
+`decisions.md` — not repeated here):** intake doc
+`.claude/reports/2026-09-12-nav-menu-visual-review-register.md`, itself stale against later
+commits per the Human Summary's own note. Genuinely open now: the intermittent drawer-burger
+click-reliability issue (needs Bean's live retest — Task A below), the D1044 ESC bubble-path
+retest (inconclusive), residual file-size drift on `ColourRowExtras.js`/`edit.js` (owner-ruled
+acceptable, D1048), and the STOP-CATALOGUE S4 entry step 27 named but never added (now added,
+see Task D).
 
 ## Next-session orchestration plan
 
-**State recap (updated 2026-09-14, D1049):** three of the four cleanup items are now closed.
-Only Task A remains, and it needs Bean specifically — no further orchestration possible.
+### Ward End Eye Care track (Front 1) — orchestration for the next session
+
+**What:** run `/adversarial-council` on Spec 42 + Spec 43 together (a single combined
+pre-mortem, not two separate ones — they've already been reconciled pairwise, the gap is a
+holistic view of the merged solution). Resolve every valid finding — fix in the specs directly
+for anything cheap/clear, escalate to Bean only for genuine policy calls (mirroring how the
+first adversarial-council pass on Spec 42 alone was handled). Then `/strategic-plan` the real
+build, sequenced per Spec 42 §11.
+**Why:** Bean's own explicit instruction — the combined pre-mortem is a genuinely different
+question from two separate ones, since the reconciliation itself (pricing moving from 42 to 43,
+the shared CPT-lifecycle contract, the shared cloning-pipeline gap) is new surface a
+per-spec-alone council never saw.
+**Orchestration:** 6-persona parallel dispatch (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/
+Support-Realist — same roster as the first pass), fact-check every finding against the real
+code before accepting it (do not relay unverified claims), synthesise with convergence-
+weighting, present GO/NO-GO to Bean before `/strategic-plan`.
+**Depends on:** none — specs are complete and reconciled. **Acceptance:** a GO decision (or a
+NO-GO with a named, resolvable fix list) reached and confirmed with Bean before any code is
+written for either CPT.
+**Also queued, independent of the above:** FR-42-0 (fail-open `requireLogin` bug,
+`class-form-rest-submission.php::handle_submit`) — ship whenever convenient, no dependency.
+
+### Nav-menu track (Front 2) — state recap (updated 2026-09-14, D1049)
+Three of the four cleanup items are now closed. Only Task A remains, and it needs Bean
+specifically — no further orchestration possible.
 
 ### Task A — Bean retests the drawer-burger click issue (STILL OPEN)
 **What:** confirm live whether the intermittent click-miss (2/3 real clicks failed to open the
@@ -147,20 +165,10 @@ not another Playwright run (automated testing already hit its ceiling here).
 **Depends on:** none. **Acceptance:** Bean reports pass/fail; if fail, dispatch a fresh
 `/systematic-debugging` investigation with his exact repro steps (browser, device, close path used).
 
-### Task B — real-keyboard ESC/mega-disclosure retest — CLOSED, no action
-Already clean on 5 configurations per D1044. Confirmed still correct 2026-09-14 — no work done.
-
-### Task C — file-size drift on `ColourRowExtras.js` / `edit.js` — CLOSED, no action
-`ColourRowExtras.js` (244 lines) is at cap; `edit.js`'s overage is a documented owner ruling
-(colourRows must stay in-file for the golden-colour-control gate to see it), now formally
-recorded as STOP-CATALOGUE E25 (see Task D). Confirmed still correct — no split attempted.
-
-### Task D — add the `colourRows` atomicity STOP-CATALOGUE entry — DONE 2026-09-14 (D1049)
-Added `.claude/STOP-CATALOGUE.md` E25 (`STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-SPLIT-LITERAL-
-ARRAY`), bulleted-style so the floor extractor counts it. `handoff-preflight.py --check`
-confirmed 280 → 281 STOPs before/after. Cross-referenced from `edit.js`'s own docblock. Done
-directly inline (not delegated — the task was small enough that a subagent round-trip cost more
-than doing it), avoiding the session's own recurring subagent-backgrounding failure mode.
+### Tasks B/C/D — all CLOSED, no action needed
+B: real-keyboard ESC/mega-disclosure retest, clean on 5 configs (D1044). C: file-size drift on
+`ColourRowExtras.js`/`edit.js`, both an accepted owner ruling. D: `colourRows` atomicity
+STOP-CATALOGUE E25 added (D1049), 280→281 STOPs confirmed by `handoff-preflight.py --check`.
 
 ### Remaining
 Only Task A needs anyone's attention, and it needs Bean, not a subagent. No dependency graph
@@ -178,11 +186,9 @@ told explicitly to run it synchronously, not backgrounded** — recurred 6x in o
 (`feedback_subagent_backgrounding_causes_premature_completion_claim.md`); its own "completed"
 status plus "I'll wait for X" language means check `git status` before trusting it.
 
-**Process note for whoever dispatches multi-agent work next:** two implementation agents this
-session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
-instead of stopping and reporting back. No harm resulted, but every future multi-agent brief
-on this shared worktree must state explicitly: "if the deploy gate blocks on a file outside
-your scope, STOP and report back — never add it to your own payload." Full lesson:
+**Process note:** every multi-agent brief on this shared worktree must state explicitly "if
+the deploy gate blocks on a file outside your scope, STOP and report back — never add it to
+your own payload." Full lesson:
 `C:/Users/Bean/.claude/memory/learning/2026-09-12-payload-must-not-bundle-a-siblings-unsigned-off-work.md`.
 
 Five shared framework components were safely extended earlier in this phase (D1028); a
@@ -265,7 +271,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1058** — verify with
+- **D-ceiling:** **D1066** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -303,3 +309,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 | Goals + exit criteria | `goals.md` |
 | Structural defences (STOP catalogue + ritual) | `STOP-CATALOGUE.md` (uncapped, D101) |
 | Colour + border helper registries | `plugins/sgs-blocks/CLAUDE.md` |
+| **Form CPT — spec-only, next combined-council step is Front 1 above** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.0.0 — pricing retired to Spec 43) |
+| **Choice-flow (quiz/configurator/variation-picker, one block) — spec-only** | `specs/43-SGS-CHOICE-FLOW.md` (v1.1.0 — reuses Spec 27's secure add-to-cart proxy) |
+| Ward End Eye Care draft audit + CPT inventory (grounding for the whole 5-task session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
+| Research trail for the 42/43 architecture (superseded interim conclusion kept for the record) | `.claude/memory/research/2026-09-14-sgs-form-cpt-and-tile-pricing-architecture.md`, `.../2026-09-14-sgs-choice-flow-architecture.md` (global CC memory) |

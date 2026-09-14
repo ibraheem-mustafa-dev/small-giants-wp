@@ -94,7 +94,7 @@ supports; and pinning a price to a WordPress *revision* is unsound — this proj
 `build-deploy.py::NON_BLOCK_POST_TYPES` explicitly excludes `revision` from its
 data-integrity gate, and WordPress revisions don't reliably capture postmeta at all.
 FR-42-0's file citation was also wrong (`class-form-rest-api.php` named; the real fail-open
-`requireLogin` bug is in `class-form-rest-submission.php::handle_submission`) — confirmed
+`requireLogin` bug is in `class-form-rest-submission.php::handle_submit`) — confirmed
 independently by two of six personas, both citing the exact symbol.
 
 **Resolution, not a repair:** none of the retired mechanism needed fixing, because Spec 43
