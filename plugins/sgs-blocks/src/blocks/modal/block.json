@@ -128,6 +128,11 @@
 		"root": ".wp-block-sgs-modal"
 	},
 	"attributes": {
+		"modalRef": {
+			"type": "number",
+			"default": 0,
+			"description": "ID of a published sgs_modal post whose content replaces this instance's own InnerBlocks inside the dialog. 0 (default) means use this block's own content — the original, un-referenced shape."
+		},
 		"triggerText": {
 			"type": "string",
 			"default": "Open Modal"

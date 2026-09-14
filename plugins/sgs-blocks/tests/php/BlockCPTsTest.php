@@ -106,6 +106,20 @@ if ( ! function_exists( 'get_posts' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_post' ) ) {
+	/**
+	 * Test stub for get_post(). Shares $GLOBALS['sgs_test_posts'] (keyed by ID)
+	 * with TemplatePartSeederTest.php's identical stub, so both behave the same
+	 * whichever file PHPUnit's alphabetical load order declares it first.
+	 *
+	 * @param int $id Post ID.
+	 * @return \WP_Post|null
+	 */
+	function get_post( int $id ) {
+		return $GLOBALS['sgs_test_posts'][ $id ] ?? null;
+	}
+}
+
 if ( ! function_exists( 'register_block_pattern' ) ) {
 	/**
 	 * Test stub for register_block_pattern(). Records every registered pattern.
@@ -188,6 +202,7 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 			$GLOBALS['sgs_test_get_posts_return']    = array();
 			$GLOBALS['sgs_test_get_posts_args']      = array();
 			$GLOBALS['sgs_test_submenus']            = array();
+			$GLOBALS['sgs_test_posts']               = array();
 			\Wp_Options_Stub::$user_can              = true;
 		}
 
@@ -402,6 +417,119 @@ if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 		public function test_cpt_slug_constants(): void {
 			$this->assertSame( 'sgs_header', Sgs_Block_CPTs::HEADER_CPT );
 			$this->assertSame( 'sgs_footer', Sgs_Block_CPTs::FOOTER_CPT );
+			$this->assertSame( 'sgs_modal', Sgs_Block_CPTs::MODAL_CPT );
+		}
+
+		// ── Test 8: sgs_modal CPT registered alongside the other three ──────────
+		// (Task 1, 2026-09-14 — shared modal content, sgs/modal's modalRef.)
+
+		public function test_register_post_types_registers_modal_cpt(): void {
+			Sgs_Block_CPTs::register_post_types();
+
+			$this->assertArrayHasKey(
+				Sgs_Block_CPTs::MODAL_CPT,
+				$GLOBALS['sgs_test_registered_cpts'],
+				'sgs_modal CPT must be registered'
+			);
+
+			$modal_obj = get_post_type_object( Sgs_Block_CPTs::MODAL_CPT );
+			$this->assertNotNull( $modal_obj );
+			$this->assertSame(
+				'edit_theme_options',
+				$modal_obj->cap->read,
+				'sgs_modal: cap->read must be edit_theme_options (Council M1 pattern)'
+			);
+		}
+
+		// ── Test 9: sgs_modal is NOT queried for derived block patterns ──────────
+
+		public function test_modal_posts_do_not_register_block_patterns(): void {
+			// The get_posts() STUB is naive — it returns whatever the test sets on
+			// $GLOBALS['sgs_test_get_posts_return'] regardless of the query's own
+			// post_type filter, unlike real WordPress. So this proves the CORRECT
+			// thing given that limitation: the query args register_patterns_from_cpts()
+			// actually SENDS never ask for MODAL_CPT at all — real WordPress would
+			// therefore never return a modal post here in the first place, per the
+			// class docblock (a modal is resolved BY REFERENCE, it has no
+			// template-part slot for a derived pattern to point at).
+			Sgs_Block_CPTs::register_patterns_from_cpts();
+
+			$this->assertNotContains(
+				Sgs_Block_CPTs::MODAL_CPT,
+				$GLOBALS['sgs_test_get_posts_args']['post_type'] ?? array(),
+				'register_patterns_from_cpts() must not query sgs_modal posts at all'
+			);
+		}
+
+		// ── Test 10: Modals submenu registered under SGS menu ────────────────────
+
+		public function test_modals_submenu_registered_under_sgs_menu(): void {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$src = (string) file_get_contents( __DIR__ . '/../../includes/class-sgs-block-cpts.php' );
+
+			$this->assertStringContainsString(
+				"'edit.php?post_type=' . self::MODAL_CPT",
+				$src,
+				'register_submenus() Modals menu_slug must target sgs_modal list table'
+			);
+			$this->assertStringContainsString(
+				"'Modals'",
+				$src,
+				'register_submenus() must register the "Modals" submenu title'
+			);
+		}
+
+		// ── Test 11-14: resolve_modal() fail-closed resolution ───────────────────
+
+		public function test_resolve_modal_returns_null_for_zero_ref(): void {
+			$this->assertNull( Sgs_Block_CPTs::resolve_modal( 0 ) );
+		}
+
+		public function test_resolve_modal_returns_null_when_post_missing(): void {
+			// setUp() already reset sgs_test_posts to an empty array, so ID 999
+			// simply isn't there — the stub's ?? null returns null, unresolved.
+			$this->assertNull( Sgs_Block_CPTs::resolve_modal( 999 ) );
+		}
+
+		public function test_resolve_modal_returns_null_for_wrong_post_type(): void {
+			$GLOBALS['sgs_test_posts'][42] = new \WP_Post(
+				array(
+					'ID'          => 42,
+					'post_type'   => 'page',
+					'post_status' => 'publish',
+				)
+			);
+			$this->assertNull( Sgs_Block_CPTs::resolve_modal( 42 ) );
+		}
+
+		public function test_resolve_modal_returns_null_for_unpublished_post(): void {
+			$GLOBALS['sgs_test_posts'][43] = new \WP_Post(
+				array(
+					'ID'          => 43,
+					'post_type'   => Sgs_Block_CPTs::MODAL_CPT,
+					'post_status' => 'draft',
+				)
+			);
+			$this->assertNull( Sgs_Block_CPTs::resolve_modal( 43 ) );
+		}
+
+		public function test_resolve_modal_returns_post_for_valid_published_reference(): void {
+			$post                           = new \WP_Post(
+				array(
+					'ID'           => 44,
+					'post_type'    => Sgs_Block_CPTs::MODAL_CPT,
+					'post_status'  => 'publish',
+					'post_title'   => 'Size Guide',
+					'post_content' => '<!-- wp:heading --><h2>Sizing</h2><!-- /wp:heading -->',
+				)
+			);
+			$GLOBALS['sgs_test_posts'][44] = $post;
+
+			$resolved = Sgs_Block_CPTs::resolve_modal( 44 );
+
+			$this->assertNotNull( $resolved );
+			$this->assertSame( 44, $resolved->ID );
+			$this->assertSame( 'Size Guide', $resolved->post_title );
 		}
 	}
 }

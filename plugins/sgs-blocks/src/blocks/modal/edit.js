@@ -1,16 +1,18 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
+import { useEntityRecords } from '@wordpress/core-data';
 import {
 	PanelBody,
 	SelectControl,
 	TextControl,
 	ToggleControl,
 	RangeControl,
+	Notice,
 } from '@wordpress/components';
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -52,6 +54,7 @@ const TEMPLATE = [
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
+		modalRef,
 		triggerText,
 		triggerStyle,
 		triggerColour,
@@ -84,6 +87,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( {
 		className: `sgs-modal ${ modalPreviewScope }`,
 	} );
+
+	// modalRef (Task 1, 2026-09-14) — lets one sgs/modal instance open a
+	// `sgs_modal` post's content instead of its own InnerBlocks, so the same
+	// content can be opened from any number of trigger instances across the
+	// site. Only PUBLISHED posts are offered — an unpublished one wouldn't
+	// resolve on the frontend either (render.php / Sgs_Block_CPTs::resolve_modal()
+	// applies the same status check), so offering it here would be a picker
+	// option that silently renders nothing. Mirrors useNavMenuSource.js's
+	// useEntityRecords( 'postType', … ) + manual-options-array shape.
+	const { records: modalPosts, isResolving: isResolvingModals } = useEntityRecords(
+		'postType',
+		'sgs_modal',
+		{ per_page: -1, status: [ 'publish' ], context: 'edit' }
+	);
+	const modalRefOptions = [
+		{
+			label: __( "This block's own content (below)", 'sgs-blocks' ),
+			value: 0,
+		},
+		...( modalPosts || [] ).map( ( post ) => ( {
+			label: post.title?.rendered || __( '(untitled modal)', 'sgs-blocks' ),
+			value: post.id,
+		} ) ),
+	];
+	const referencedModalPost = ( modalPosts || [] ).find( ( post ) => post.id === modalRef );
+	// A non-zero modalRef whose post is missing from the published list above
+	// — trashed, unpublished, or deleted since this block last saved — degrades
+	// the same way render.php does: nothing is rendered from the reference, and
+	// this notice tells the operator why rather than showing a silently-empty
+	// dialog.
+	const modalRefIsDangling = 0 !== modalRef && ! isResolvingModals && ! referencedModalPost;
 
 	// Mirrors render.php's dialog rules: max-width variant class + the
 	// modalBackground colour rule on `.sgs-modal__dialog`. modalBackground's
@@ -241,6 +275,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			   previously have shown as "unset"). */ }
 			<InspectorControls>
 				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
+					{ /* modalRef (Task 1, 2026-09-14) — placed first: it decides
+					   whether the "Modal content" section further down the canvas
+					   is this instance's own InnerBlocks or a read-only summary of
+					   a shared sgs_modal post, so an operator needs to see this
+					   choice before anything content-shaped below it. */ }
+					<SelectControl
+						label={ __( 'Modal content', 'sgs-blocks' ) }
+						help={ __(
+							'Point several triggers at the same modal content — edit it once on its own screen (SGS admin menu -> Modals) and every trigger stays in sync.',
+							'sgs-blocks'
+						) }
+						value={ modalRef }
+						options={ modalRefOptions }
+						onChange={ ( val ) =>
+							setAttributes( { modalRef: Number( val ) || 0 } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					{ modalRefIsDangling && (
+						<Notice status="warning" isDismissible={ false }>
+							{ __(
+								'The referenced modal is missing, unpublished, or was deleted. This trigger will open an empty dialog until a valid modal is chosen above.',
+								'sgs-blocks'
+							) }
+						</Notice>
+					) }
 					<TextControl
 						label={ __( 'Button text', 'sgs-blocks' ) }
 						value={ triggerText }
@@ -538,15 +599,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</span>
 				</div>
 
-				<div className="sgs-modal__editor-preview">
-					<p className="sgs-modal__editor-hint">
-						{ __(
-							'⬇ Modal content (not visible on frontend until button is clicked):',
-							'sgs-blocks'
-						) }
-					</p>
-					<div { ...innerBlocksProps } />
-				</div>
+				{ /* modalRef (Task 1, 2026-09-14) — 0 (the original shape) keeps
+				   this instance's own editable InnerBlocks exactly as before;
+				   a non-zero reference REPLACES that editable area with a
+				   read-only summary, because the real content now lives on
+				   the referenced sgs_modal post's own edit screen and editing
+				   it here would silently do nothing on the frontend (render.php
+				   only ever reads the referenced post's content in that mode). */ }
+				{ 0 === modalRef ? (
+					<div className="sgs-modal__editor-preview">
+						<p className="sgs-modal__editor-hint">
+							{ __(
+								'⬇ Modal content (not visible on frontend until button is clicked):',
+								'sgs-blocks'
+							) }
+						</p>
+						<div { ...innerBlocksProps } />
+					</div>
+				) : (
+					<div className="sgs-modal__editor-preview sgs-modal__editor-preview--referenced">
+						<p className="sgs-modal__editor-hint">
+							{ referencedModalPost
+								? sprintf(
+										/* translators: %s: title of the referenced modal post. */
+										__(
+											'⬇ Content: "%s" — edit it on its own screen (SGS admin menu -> Modals), not here.',
+											'sgs-blocks'
+										),
+										referencedModalPost.title?.rendered ||
+											__( '(untitled modal)', 'sgs-blocks' )
+								  )
+								: __(
+										'⬇ This trigger points at a modal that no longer resolves — pick another above.',
+										'sgs-blocks'
+								  ) }
+						</p>
+					</div>
+				) }
 			</div>
 		</>
 	);

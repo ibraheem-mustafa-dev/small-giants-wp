@@ -41,6 +41,21 @@ $overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
 $overlay_colour_hover          = (string) ( $attributes['overlayColourHover'] ?? '' );
 $overlay_colour_hover_gradient = (string) ( $attributes['overlayColourHoverGradient'] ?? '' );
 
+// modalRef (Task 1, 2026-09-14) — when set, this instance's dialog content is
+// the REFERENCED `sgs_modal` post's own content, not this instance's own
+// InnerBlocks. Resolution is fail-closed by construction, same shape as
+// Sgs_Mega_Menu_CPT::resolve_panel_for_menu_item(): a missing, trashed, or
+// wrong-post-type reference degrades to null and $content (this instance's
+// own InnerBlocks — empty in reference mode, since edit.js hides that
+// template once a reference is chosen) is used unchanged, never a fatal and
+// never a broken dialog.
+$modal_ref        = absint( $attributes['modalRef'] ?? 0 );
+$referenced_modal = null;
+if ( 0 !== $modal_ref && class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
+	$referenced_modal = \SGS\Blocks\Sgs_Block_CPTs::resolve_modal( $modal_ref );
+}
+$dialog_inner_html = null !== $referenced_modal ? (string) do_blocks( $referenced_modal->post_content ) : $content;
+
 // Generate unique ID for this modal instance.
 $modal_id = 'sgs-modal-' . wp_unique_id();
 
@@ -209,7 +224,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 		</button>
 
 		<div class="sgs-modal__inner">
-			<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $dialog_inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is core-trusted block HTML; do_blocks() output is the same provenance (see class-sgs-drawer-render.php). ?>
 		</div>
 	</dialog>
 </div>

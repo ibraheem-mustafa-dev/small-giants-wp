@@ -19,6 +19,13 @@
 	color: var(--wp--preset--color--text-muted, #6b6b6b);
 }
 
+/* modalRef (Task 1, 2026-09-14) — referenced-content mode has no editable
+   InnerBlocks area to frame, so the border reads solid rather than the
+   "drop content here" dashed style above. */
+.sgs-modal__editor-preview--referenced {
+	border-style: solid;
+}
+
 .sgs-modal__content-preview {
 	background-color: var(--wp--preset--color--surface, #fff);
 	padding: var(--wp--preset--spacing--40, 2rem);

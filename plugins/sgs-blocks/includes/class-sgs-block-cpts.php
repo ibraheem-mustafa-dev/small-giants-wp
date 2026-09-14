@@ -51,6 +51,25 @@ final class Sgs_Block_CPTs {
 	 */
 	public const DRAWER_CPT = 'sgs_drawer';
 
+	/**
+	 * Post type slug for modal content entries (Task 1, 2026-09-14).
+	 *
+	 * A modal's CONTENT (the InnerBlocks that appear inside the dialog panel)
+	 * gets its own edit screen, same reasoning as the drawer above: on a real
+	 * client draft the same size-guide modal opens from six different places
+	 * (footer, product page x2, Help/FAQ, header mega-menu, mobile nav
+	 * drawer), and before this CPT that content had to be pasted into all six
+	 * `sgs/modal` instances separately — six copies to keep in sync by hand.
+	 * A `sgs/modal` block instance now OPTIONALLY points at a published
+	 * `sgs_modal` post via its `modalRef` attribute; when set, render.php
+	 * resolves and renders that post's content instead of the instance's own
+	 * InnerBlocks (see {@see resolve_modal()}). The block's own InnerBlocks
+	 * shape stays fully available (default `modalRef` is 0) — this is an
+	 * ADDITIVE capability, not a replacement, so every existing `sgs/modal`
+	 * instance keeps working unchanged.
+	 */
+	public const MODAL_CPT = 'sgs_modal';
+
 	/** Block pattern category slug for header patterns. */
 	private const HEADER_CAT = 'sgs-headers';
 
@@ -209,6 +228,35 @@ final class Sgs_Block_CPTs {
 				)
 			)
 		);
+
+		\register_post_type(
+			self::MODAL_CPT,
+			array_merge(
+				$shared,
+				array(
+					'label'       => \__( 'Modals', 'sgs-blocks' ),
+					'labels'      => array(
+						'name'               => \__( 'Modals', 'sgs-blocks' ),
+						'singular_name'      => \__( 'Modal', 'sgs-blocks' ),
+						'add_new'            => \__( 'Add New', 'sgs-blocks' ),
+						'add_new_item'       => \__( 'Add New Modal', 'sgs-blocks' ),
+						'edit_item'          => \__( 'Edit Modal', 'sgs-blocks' ),
+						'new_item'           => \__( 'New Modal', 'sgs-blocks' ),
+						'view_item'          => \__( 'View Modal', 'sgs-blocks' ),
+						'search_items'       => \__( 'Search Modals', 'sgs-blocks' ),
+						'not_found'          => \__( 'No modals found.', 'sgs-blocks' ),
+						'not_found_in_trash' => \__( 'No modals found in Trash.', 'sgs-blocks' ),
+					),
+					'description' => \__( 'Reusable modal content, opened by a Modal block trigger from anywhere on the site — edit once, every trigger pointing at it updates together.', 'sgs-blocks' ),
+					// NO `template` arg — same reason as all three CPTs above
+					// (FR-37-7, 2026-07-24): a registration template makes a new
+					// post non-empty and suppresses WordPress's native "Choose a
+					// pattern" starter modal. A `sgs_modal` post is plain content
+					// (a heading + text, a form, an image — whatever the operator
+					// needs inside the dialog), so an empty start is correct here too.
+				)
+			)
+		);
 	}
 
 	/**
@@ -228,6 +276,12 @@ final class Sgs_Block_CPTs {
 	 * pattern. Drawer STARTER patterns are ordinary theme pattern files scoped
 	 * `Post Types: sgs_drawer` (see theme/sgs-theme/patterns/drawer-scratch.php),
 	 * which is the mechanism the native starter-picker modal reads.
+	 *
+	 * MODAL_CPT is excluded for the same underlying reason as DRAWER_CPT: a
+	 * `sgs_modal` post is resolved BY REFERENCE from a `sgs/modal` block's
+	 * `modalRef` attribute (see {@see resolve_modal()}), not swapped into a
+	 * template-part slot, so it has no `blockTypes` target for a derived
+	 * pattern to point at.
 	 */
 	public static function register_patterns_from_cpts(): void {
 		// numberposts=-1 is intentional: operators hold a tiny number of custom
@@ -268,9 +322,9 @@ final class Sgs_Block_CPTs {
 	}
 
 	/**
-	 * Add "Advanced Headers" and "Advanced Footers" submenus under the SGS
-	 * top-level menu. Both link to the built-in post-type list table —
-	 * no custom screen required.
+	 * Add "Advanced Headers", "Advanced Footers", "Menu drawers" and "Modals"
+	 * submenus under the SGS top-level menu. All link to the built-in
+	 * post-type list table — no custom screen required.
 	 */
 	public static function register_submenus(): void {
 		\add_submenu_page(
@@ -299,5 +353,49 @@ final class Sgs_Block_CPTs {
 			'edit.php?post_type=' . self::DRAWER_CPT,
 			''
 		);
+
+		\add_submenu_page(
+			Sgs_Admin_Menu::MENU_SLUG,
+			\__( 'Modals', 'sgs-blocks' ),
+			\__( 'Modals', 'sgs-blocks' ),
+			'edit_theme_options',
+			'edit.php?post_type=' . self::MODAL_CPT,
+			''
+		);
+	}
+
+	/**
+	 * Resolve a `sgs/modal` block's `modalRef` attribute to the published
+	 * `sgs_modal` post it names, or null when there is no valid target.
+	 *
+	 * Mirrors {@see Sgs_Mega_Menu_CPT::resolve_panel_for_menu_item()} — same
+	 * fail-closed shape (never a fatal, never an empty-panel render): a
+	 * trashed, missing, or wrong-post-type reference degrades to null and the
+	 * caller (`sgs/modal`'s render.php) falls back to the block instance's
+	 * own InnerBlocks content instead.
+	 *
+	 * @param int $modal_ref The `modalRef` attribute value (a `sgs_modal` post ID, or 0 for "no reference").
+	 * @return \WP_Post|null The published modal-content post, or null.
+	 */
+	public static function resolve_modal( int $modal_ref ): ?\WP_Post {
+		if ( $modal_ref <= 0 ) {
+			return null;
+		}
+
+		$post = \get_post( $modal_ref );
+
+		if ( ! $post instanceof \WP_Post ) {
+			return null;
+		}
+
+		if ( self::MODAL_CPT !== $post->post_type ) {
+			return null;
+		}
+
+		if ( 'publish' !== $post->post_status ) {
+			return null;
+		}
+
+		return $post;
 	}
 }
