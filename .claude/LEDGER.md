@@ -8,31 +8,21 @@ last_updated: 2026-09-14
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE — Steps 1-5 all
-shipped, verified, live-content-safe.** The single `sgs/nav-menu` block (one 156-attribute schema
-rendering both the header bar and the drawer accordion) is now two real, separate blocks —
-`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with fully separated CSS/PHP namespaces, the theme
-patterns migrated to route to the right one, the DB reseeded and the old block pruned, and the
-live canary's content fixed to match (real header migrated, 22 dead QA fixtures deleted). Build
-passes clean end to end. This unblocks the Eye Care split-nav-either-side-of-logo header and the
-drawer's two-tier badge design from the original request — **but those features (Steps 6-8) are
-NOT built yet.** Full architecture + evidence: `decisions.md` D1059 (the split), D1060 (drawer
-colour defaults), D1076 (Steps 3-5 close-out); plan:
-`C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not
-under the project's own `.claude/plans/`).
+**THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE, ALL 8 STEPS,
+INCLUDING THE NEW FEATURES.** The single `sgs/nav-menu` block is now two real, separate blocks —
+`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with separated CSS/PHP namespaces, migrated theme
+patterns, reseeded DB, matching live canary content, AND the split-nav-either-side-of-logo layout
++ SOON badge + drawer two-tier split the whole track existed to deliver. Build passes clean end
+to end on every commit. Full architecture + evidence: `decisions.md` D1059/D1060/D1076; plan:
+`C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level, not under the
+project's own `.claude/plans/`).
 
-**Commit sequence across both sessions:** `ed3b495de` (Part A) → `5626e8c82` (Step 2.5) →
-`80f78f511` (Step 2) → `3b335757d` (Spec 41 fix) → `b6c335924` (Spec 36 fix) → `782281040`
-(Step 3+4) → `a04ccf942` (Step 5). D1076 has the full Step 3-5 detail, including a disclosed
-recurrence of the "shared git index" failure class (no data lost, confirmed).
+**Commit sequence:** `ed3b495de` → `5626e8c82` → `80f78f511` → `3b335757d` → `b6c335924` →
+`782281040` → `a04ccf942` → `b54c9b347` (Step 6) → `31886a2ea` (Step 7) → `c149de5b4` (Step 8).
 
-**Next — Steps 6-8, the actual new features (deliberately deferred to a fresh session, Bean's
-call).** Step 6 is the split-nav layout itself — `ColumnShapePicker` needs to learn an `auto`
-track option (currently only numeric `fr` weights; this is a real component-architecture change to
-a carefully-designed 341-line file, not a rename), restore `justifyContent`, add
-`splitAfterItemId`/`splitSide`/`showBurger`. Step 7 is the SOON badge. Step 8 is the drawer's
-two-tier look. Full detail + locked rulings + verification checklist: the plan file above — **read
-it in full before starting**, it is dense and each step depends on the last.
+**One real blocker survives (Step 5 debt, found deploying Step 6) — see Front A: `sgs/nav-drawer-menu`
+has 179 rogue DB `css_property` seeds blocking any canary deploy that touches it.** Needs its own
+session. Not the nav-menu-split track's own work to re-open — it's a Step 5 reseed gap.
 
 **Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
 programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
@@ -82,41 +72,34 @@ halt-and-resume (D1075).** Full detail in "Front C" below — not duplicated her
 
 ## THE FRONT — what to pick up next
 
-### Front A — nav-menu split (D1059/D1060), THE SPLIT ITSELF IS DONE — next is Steps 6-8
-**Steps 1-5 all shipped, verified, pushed (D1076 has full detail).** `sgs/nav-bar-menu` and
-`sgs/nav-drawer-menu` are two real blocks with fully separated BEM/PHP namespaces, correctly
-routed theme patterns, a reseeded DB (old block pruned), a clean `npm run build`, and matching
-live canary content (real header migrated, 22 dead QA fixtures deleted, Bean-directed). Nothing
-here is pending — do not re-run Steps 1-5.
+### Front A — nav-menu split (D1059/D1060) — ALL 8 STEPS DONE
+`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` fully split (BEM/PHP namespaces, patterns, DB
+reseeded, live canary content). Steps 6-8 (`b54c9b347`, `31886a2ea`, `c149de5b4`, 2026-09-15) —
+`ColumnShapePicker` gained an `auto` track (`1fr auto 1fr` "Fit centre"); `nav-bar-menu` gained
+`justifyContent`, `splitAfterItemId`+`splitSide`+`showBurger`; `nav-drawer-menu` gained
+`splitAfterItemId`+`splitSide` (two-tier). Both split-capable blocks disambiguate auto-derived
+`navLabel` per side (landmark-unique). Step 7: both blocks repurpose the operator's menu-item
+"Description" field as free-text badge copy ("SOON") via a new shared `sgs_nav_shared_badge_html()`
+— tinted chip on the bar, bare letter-spaced word in the drawer; real visually-hidden text (not
+CSS content) keeps the accessible name "Label (Badge)"; 24-char cap. Also fixed:
+`aria-disabled="true"` on the drawer's URL-less `__link--label` span. `npm run build` clean on
+every commit. **Visual-diff gate scope-skipped on all three** (disclosed each time) — Step 6/8
+attrs default byte-identical, Step 7 is genuinely new-visual but capture is blocked by the
+blocker below. Whole track: read it as CLOSED — no more nav-menu-split steps pending.
 
-**Step 6 DONE (`b54c9b347`, 2026-09-15).** `ColumnShapePicker` learned an `auto` track
-(`SHAPES[3]` gains `1fr auto 1fr` "Fit centre"); `nav-bar-menu` gained `justifyContent`
-(restored, style.css's D539 `:where()` already yielded), `splitAfterItemId`+`splitSide`
-(item-identifier-keyed, unresolvable-id fails to the FULL menu + editor notice, never silent),
-`showBurger`, and auto-derived `navLabel` disambiguation per split side. `npm run build` clean.
-**Visual-diff gate scope-skipped for nav-bar-menu** (disclosed) — all new attrs default to
-byte-identical prior output, but live capture is blocked by a NEW pre-existing finding below.
-Next: Step 7 (badge), then Step 8 (drawer two-tier).
+**STANDING BLOCKER (Step 5 debt, found while deploying Step 6): `sgs/nav-drawer-menu` has 179
+"rogue" DB `css_property` seeds** — `build-deploy.py`'s F6 scanner (`sgs-update-v2.py`) fails the
+deploy: submenu typography/marker attrs (e.g. `submenuFontStyle`) have no matching entry in
+`css-property-classifications.json`/`attr-classification-overrides.json`, would vanish on next
+reseed. NOT caused by Steps 6-8. **Deploy to sandybrown BLOCKED for nav-drawer-menu pages** —
+needs its own session; also blocks live-verifying Step 7's badge on the canary.
 
-**NEW BLOCKER found while deploying Step 6: `sgs/nav-drawer-menu` has 179 "rogue" DB
-`css_property` seeds.** `build-deploy.py`'s F6 DB-consistency scanner (`sgs-update-v2.py`) fails
-the deploy: submenu typography/marker attrs (e.g. `submenuFontStyle`, `sublinkMarkerColourHover`)
-have a `css_property` row in the live DB with no matching entry in
-`css-property-classifications.json`/`attr-classification-overrides.json` — would vanish on next
-reseed. Left over from Step 5's reseed (`a04ccf942`), NOT caused by Step 6 (nav-bar-menu only
-touched). **Deploy to sandybrown is BLOCKED for nav-drawer-menu-bearing pages** — not yet fixed.
+**`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** (still PARTIAL) — citation drift
+fixed + live-verified post-split, bug itself still unfixed.
 
-**`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT` (still PARTIAL) had its Step 3 citation
-drift fixed AND live-verified** — confirmed the bug is structurally unchanged post-split: only
-`nav-bar-menu` can be page-embedded (`nav-drawer-menu` carries `ancestor:["sgs/nav-drawer"]`),
-`$uid_sel` scoping and `nav-menu-submenu-css.php`'s selector pattern are identical, just
-parameterized. The underlying bug is still unfixed — only its doc citations were touched.
-
-**Spec 36/41 citation drift RECURRED after Step 3's renames** (e.g.
-`sgs_nav_menu_resolved_treatments` → `sgs_nav_shared_resolved_treatments`) — now 13 gating
-`CITE-SYMBOL` findings on Spec 41 (re-disclosed on `b54c9b347`), not yet re-fixed. Same
-mechanical class as the two prior fixes (`3b335757d`, `b6c335924`). Spec 36's bare `sgs/nav-menu`
-prose mentions (ungated) also remain untouched — bigger job.
+**Spec 36/41 citation drift** — 13 gating `CITE-SYMBOL` findings on Spec 41 (Step-3-rename drift,
+re-disclosed each nav-menu-split commit through `c149de5b4`), not yet re-fixed. Spec 36's bare
+`sgs/nav-menu` prose mentions (ungated) also untouched — bigger job.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
