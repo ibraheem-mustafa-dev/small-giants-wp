@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-09-08 10:49:50 UTC
+# Stage 3 Style Variation Sync — 2026-09-14 23:47:27 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 8 | Missing: 5 | Inserted: 0 | Skipped: 173 | Conflicts: 130
+Snapshots found: 7 | Missing: 6 | Inserted: 0 | Skipped: 140 | Conflicts: 124
 
 ## Per-client results
 
@@ -12,16 +12,7 @@ _(theme-snapshot.json not found)_
 
 ### eye-care-ward-end
 
-Inserted: 0 | Skipped: 31 | Conflicts: 8
-
-- CONFLICT: color-text (framework='#1a1a1a', client='#0D1B2A') → inserted as eye-care-ward-end-color-text
-- CONFLICT: color-accent-text (framework='#7A6B00', client='#92400E') → inserted as eye-care-ward-end-color-accent-text
-- CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as eye-care-ward-end-color-success
-- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as eye-care-ward-end-font-size-small
-- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as eye-care-ward-end-font-size-medium
-- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as eye-care-ward-end-font-size-large
-- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as eye-care-ward-end-font-size-x-large
-- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as eye-care-ward-end-font-size-xx-large
+_(theme-snapshot.json not found)_
 
 ### helping-doctors
 
@@ -68,13 +59,11 @@ Inserted: 0 | Skipped: 17 | Conflicts: 13
 
 ### mamas-munches
 
-Inserted: 0 | Skipped: 29 | Conflicts: 24
+Inserted: 0 | Skipped: 27 | Conflicts: 26
 
 - CONFLICT: color-accent (framework='#C9A84C', client='#f5d050') → inserted as mamas-munches-color-accent
-- CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
-- CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border-subtle
 - CONFLICT: color-primary (framework='#0D1B2A', client='#e68a95') → inserted as mamas-munches-color-primary
-- CONFLICT: color-primary-text (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-primary-text
 - CONFLICT: color-primary-dark (framework='#060D14', client='#c56a7a') → inserted as mamas-munches-color-primary-dark
 - CONFLICT: color-surface (framework='#FFFFFF', client='#fbf3dc') → inserted as mamas-munches-color-surface
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#fff9f0') → inserted as mamas-munches-color-surface-alt
@@ -82,9 +71,13 @@ Inserted: 0 | Skipped: 29 | Conflicts: 24
 - CONFLICT: color-text (framework='#1a1a1a', client='#3a2e26') → inserted as mamas-munches-color-text
 - CONFLICT: color-text-inverse (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-text-inverse
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#6b5c50') → inserted as mamas-munches-color-text-muted
+- CONFLICT: color-border (framework='#C9A84C', client='#e8d5c0') → inserted as mamas-munches-color-border
+- CONFLICT: color-cookie-brown (framework='#8B6F4E', client='#8b6f4e') → inserted as mamas-munches-color-cookie-brown
+- CONFLICT: color-primary-text (framework='#FFFFFF', client='#fffaf5') → inserted as mamas-munches-color-primary-text
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#3A2E26') → inserted as mamas-munches-color-footer-bg
 - CONFLICT: color-accent-light (framework='#F0E4C3', client='#FEF3C7') → inserted as mamas-munches-color-accent-light
+- CONFLICT: font-size-regular (framework='16px', client='15px') → inserted as mamas-munches-font-size-regular
 - CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, sans-serif') → inserted as mamas-munches-font-family-body
 - CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-heading
 - CONFLICT: font-family-display (framework="Fraunces, 'DM Serif Display', Georgia, serif", client='Fraunces, serif') → inserted as mamas-munches-font-family-display

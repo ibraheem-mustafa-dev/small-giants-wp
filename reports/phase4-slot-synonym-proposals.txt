@@ -1,7 +1,7 @@
-# Slot Synonym Auto-Seed Proposals — 2026-09-08 10:49:50 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-09-14 23:47:27 UTC
 
 ## Summary
-Unmapped rows: 64 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 3 | No match (low confidence): 61
+Unmapped rows: 64 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 2 | No match (low confidence): 62
 
 ## High confidence (auto-updated)
 
@@ -9,7 +9,6 @@ _(none)_
 
 ## Medium confidence (manual review required)
 
-- slot='drawer' → sgs/nav-drawer (contains match — review before accepting)
 - slot='feature' → sgs/feature-grid (prefix match — review before accepting)
 - slot='content' → sgs/table-of-contents (contains match — review before accepting)
 
@@ -45,6 +44,7 @@ _(none)_
 - slot='showArrows' (no SGS block matches)
 - slot='showDate' (no SGS block matches)
 - slot='split' (no SGS block matches)
+- slot='drawer' (ambiguous — 2 contains matches, no auto-seed)
 - slot='imageAlt' (no SGS block matches)
 - slot='letterSpacing' (no SGS block matches)
 - slot='hideOn' (no SGS block matches)
@@ -68,9 +68,9 @@ _(none)_
 - slot='size' (no SGS block matches)
 - slot='position' (no SGS block matches)
 - slot='header' (ambiguous — 2 contains matches, no auto-seed)
-- slot='bar' (no SGS block matches)
+- slot='bar' (ambiguous — 2 contains matches, no auto-seed)
 - slot='__form_instance__' (no SGS block matches)
-- slot='nav' (multiple prefix matches: sgs/nav-drawer, sgs/nav-menu)
+- slot='nav' (multiple prefix matches: sgs/nav-bar-menu, sgs/nav-drawer, sgs/nav-drawer-menu)
 - slot='progress' (no SGS block matches)
 - slot='slot' (no SGS block matches)
 - slot='ribbon' (no SGS block matches)

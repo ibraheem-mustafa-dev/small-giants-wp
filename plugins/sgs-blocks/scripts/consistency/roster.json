@@ -1075,7 +1075,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 11,
+        "paintDeclarations": 12,
         "replacedCoreSupports": [
           "anchor",
           "ariaLabel",

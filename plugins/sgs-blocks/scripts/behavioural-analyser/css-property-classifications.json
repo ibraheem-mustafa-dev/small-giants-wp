@@ -5436,6 +5436,15 @@
       }
     },
     {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "justifyContent",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
       "slug": "sgs/nav-drawer",
       "attr": "anchor",
       "fields": {
@@ -5593,7 +5602,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColour",
       "fields": {
         "css_property": "fill",
@@ -5601,7 +5610,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColourCurrent",
       "fields": {
         "css_property": "fill",
@@ -5610,7 +5619,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColourHover",
       "fields": {
         "css_property": "fill",
@@ -7173,6 +7182,22 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "brandColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "brandFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "brand"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "cardMaxWidth",
       "fields": {
         "css_property": "max-width",
@@ -7451,6 +7476,22 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "price-note"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ratingColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "rating-text"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "css_element": "saving-badge"
       }
     },
     {
@@ -15007,6 +15048,820 @@
       }
     },
     {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "burger",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerHoverColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "burger",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "burgerTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "burger"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "featured",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredBgHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "featured",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "featured"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "featured",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredFontWeightHover",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "featured",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "featuredRadiusHover",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "featured",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "gap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "bar"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgCurrent",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgCurrentGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "item",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBgHoverGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderColourCurrent",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColourCurrent",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemColourHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemFontWeightCurrent",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemFontWeightHover",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorColour",
+      "fields": {
+        "css_property": "border-right-color",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorColourHover",
+      "fields": {
+        "css_property": "border-right-color",
+        "css_element": "item-separator",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorStyle",
+      "fields": {
+        "css_property": "border-right-style",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemSeparatorWidth",
+      "fields": {
+        "css_property": "border-right-width",
+        "css_element": "item-separator"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextDecorationHover",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "itemTextTransformHover",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "navBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "navBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "navColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "navColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "navColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuColourCurrent",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuFontWeightHover",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBgCurrent",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBgGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuLinkBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "submenu-panel"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextDecorationHover",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "sublink"
+      }
+    },
+    {
+      "slug": "sgs/nav-bar-menu",
+      "attr": "submenuTextTransformHover",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "sublink",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/nav-drawer",
       "attr": "borderColourGradient",
       "fields": {
@@ -15117,109 +15972,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerBg",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerBgGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerColourGradient",
-      "fields": {
-        "css_property": "color-gradient",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "burger",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerFontFamily",
-      "fields": {
-        "css_property": "font-family",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerFontSize",
-      "fields": {
-        "css_property": "font-size",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerFontWeight",
-      "fields": {
-        "css_property": "font-weight",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerHoverColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "burger",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerLetterSpacing",
-      "fields": {
-        "css_property": "letter-spacing",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerSize",
-      "fields": {
-        "css_property": "height,width",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "burgerTextTransform",
-      "fields": {
-        "css_property": "text-transform",
-        "css_element": "burger"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredBg",
       "fields": {
         "css_property": "background-color",
@@ -15228,7 +15981,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredBgGradient",
       "fields": {
         "css_property": "background-image",
@@ -15236,7 +15989,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredBgHover",
       "fields": {
         "css_property": "background-color",
@@ -15246,7 +15999,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredBgHoverGradient",
       "fields": {
         "css_property": "background-image",
@@ -15255,7 +16008,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredColour",
       "fields": {
         "css_property": "color",
@@ -15264,7 +16017,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -15272,7 +16025,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredColourHover",
       "fields": {
         "css_property": "color",
@@ -15282,7 +16035,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredFontWeightHover",
       "fields": {
         "css_property": "font-weight",
@@ -15291,7 +16044,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "featuredRadiusHover",
       "fields": {
         "css_property": "border-radius",
@@ -15300,7 +16053,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "gap",
       "fields": {
         "css_property": "gap",
@@ -15309,7 +16062,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBg",
       "fields": {
         "css_property": "background-color",
@@ -15318,7 +16071,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBgCurrent",
       "fields": {
         "css_property": "background-color",
@@ -15328,7 +16081,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBgCurrentGradient",
       "fields": {
         "css_property": "background-image",
@@ -15337,7 +16090,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBgGradient",
       "fields": {
         "css_property": "background-image",
@@ -15345,7 +16098,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBgHover",
       "fields": {
         "css_property": "background-color",
@@ -15355,7 +16108,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBgHoverGradient",
       "fields": {
         "css_property": "background-image",
@@ -15364,7 +16117,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -15373,7 +16126,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderColourCurrent",
       "fields": {
         "css_property": "border-color",
@@ -15383,7 +16136,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -15393,7 +16146,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -15401,7 +16154,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -15409,7 +16162,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -15417,7 +16170,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemColour",
       "fields": {
         "css_property": "color",
@@ -15426,7 +16179,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemColourCurrent",
       "fields": {
         "css_property": "color",
@@ -15436,7 +16189,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -15444,7 +16197,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemColourHover",
       "fields": {
         "css_property": "color",
@@ -15454,7 +16207,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemColourHoverGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -15463,7 +16216,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontSize",
       "fields": {
         "css_property": "font-size",
@@ -15471,7 +16224,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontStyle",
       "fields": {
         "css_property": "font-style",
@@ -15479,7 +16232,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -15487,7 +16240,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontWeightCurrent",
       "fields": {
         "css_property": "font-weight",
@@ -15496,7 +16249,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemFontWeightHover",
       "fields": {
         "css_property": "font-weight",
@@ -15505,7 +16258,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemLineHeight",
       "fields": {
         "css_property": "line-height",
@@ -15513,40 +16266,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "attr": "itemSeparatorColour",
-      "fields": {
-        "css_property": "border-right-color",
-        "css_element": "item-separator"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "itemSeparatorColourHover",
-      "fields": {
-        "css_property": "border-right-color",
-        "css_element": "item-separator",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "itemSeparatorStyle",
-      "fields": {
-        "css_property": "border-right-style",
-        "css_element": "item-separator"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "itemSeparatorWidth",
-      "fields": {
-        "css_property": "border-right-width",
-        "css_element": "item-separator"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemTextDecoration",
       "fields": {
         "css_property": "text-decoration",
@@ -15554,7 +16274,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemTextDecorationHover",
       "fields": {
         "css_property": "text-decoration",
@@ -15563,7 +16283,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -15571,7 +16291,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemTextTransformHover",
       "fields": {
         "css_property": "text-transform",
@@ -15580,7 +16300,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "listColumns",
       "fields": {
         "css_property": "grid-template-columns:count",
@@ -15589,7 +16309,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -15598,7 +16318,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navBg",
       "fields": {
         "css_property": "background-color",
@@ -15608,7 +16328,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navBgHover",
       "fields": {
         "css_property": "background-color",
@@ -15619,7 +16339,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navColour",
       "fields": {
         "css_property": "color",
@@ -15629,7 +16349,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -15638,7 +16358,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "navColourHover",
       "fields": {
         "css_property": "color",
@@ -15649,7 +16369,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -15658,7 +16378,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColourCurrentGradient",
       "fields": {
         "css_property": "fill-gradient",
@@ -15667,7 +16387,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColourGradient",
       "fields": {
         "css_property": "fill-gradient",
@@ -15675,7 +16395,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "sublinkMarkerColourHoverGradient",
       "fields": {
         "css_property": "fill-gradient",
@@ -15684,7 +16404,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBg",
       "fields": {
         "css_property": "background-color",
@@ -15693,7 +16413,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBgGradient",
       "fields": {
         "css_property": "background-image",
@@ -15701,7 +16421,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -15710,7 +16430,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -15718,15 +16438,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "attr": "submenuBorderRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "submenu-panel"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -15734,7 +16446,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -15742,7 +16454,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuColour",
       "fields": {
         "css_property": "color",
@@ -15751,7 +16463,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuColourCurrent",
       "fields": {
         "css_property": "color",
@@ -15761,7 +16473,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -15769,7 +16481,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuColourHover",
       "fields": {
         "css_property": "color",
@@ -15779,7 +16491,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -15787,7 +16499,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuFontSize",
       "fields": {
         "css_property": "font-size",
@@ -15795,7 +16507,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuFontStyle",
       "fields": {
         "css_property": "font-style",
@@ -15803,7 +16515,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -15811,7 +16523,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuFontWeightHover",
       "fields": {
         "css_property": "font-weight",
@@ -15820,7 +16532,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -15828,7 +16540,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLineHeight",
       "fields": {
         "css_property": "line-height",
@@ -15836,7 +16548,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBg",
       "fields": {
         "css_property": "background-color",
@@ -15845,7 +16557,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBgCurrent",
       "fields": {
         "css_property": "background-color",
@@ -15855,7 +16567,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBgGradient",
       "fields": {
         "css_property": "background-image",
@@ -15863,7 +16575,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBgHover",
       "fields": {
         "css_property": "background-color",
@@ -15873,7 +16585,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -15882,7 +16594,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBorderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -15892,7 +16604,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -15900,7 +16612,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuLinkBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -15908,23 +16620,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "attr": "submenuShadow",
-      "fields": {
-        "css_property": "box-shadow",
-        "css_element": "submenu-panel"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
-      "attr": "submenuShadowColour",
-      "fields": {
-        "css_property": "box-shadow-color",
-        "css_element": "submenu-panel"
-      }
-    },
-    {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -15932,7 +16628,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextDecoration",
       "fields": {
         "css_property": "text-decoration",
@@ -15940,7 +16636,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextDecorationHover",
       "fields": {
         "css_property": "text-decoration",
@@ -15949,7 +16645,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -15957,7 +16653,7 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
+      "slug": "sgs/nav-drawer-menu",
       "attr": "submenuTextTransformHover",
       "fields": {
         "css_property": "text-transform",
@@ -16821,6 +17517,23 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "savingBadgeBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "savingBadgePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "savingBadge"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "tagBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -17400,6 +18113,42 @@
       "attr": "textColourHoverGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "backgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "backgroundColourHoverGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "wrapper",
         "css_state": "hover"
       }

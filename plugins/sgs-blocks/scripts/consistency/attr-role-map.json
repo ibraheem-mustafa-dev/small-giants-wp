@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 7657,
+    "row_count": 7663,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4176,6 +4176,7 @@
     "sgs/nav-bar-menu::itemTextTransformHover": "typography",
     "sgs/nav-bar-menu::itemTextWrap": "typography",
     "sgs/nav-bar-menu::itemWritingMode": "select-from-enum",
+    "sgs/nav-bar-menu::justifyContent": "layout",
     "sgs/nav-bar-menu::margin": "layout",
     "sgs/nav-bar-menu::navBg": "color",
     "sgs/nav-bar-menu::navBgGradient": "colour-gradient",
@@ -4187,6 +4188,9 @@
     "sgs/nav-bar-menu::padding": "layout",
     "sgs/nav-bar-menu::ref": "technical",
     "sgs/nav-bar-menu::sgsCustomCss": null,
+    "sgs/nav-bar-menu::showBurger": "boolean-visibility",
+    "sgs/nav-bar-menu::splitAfterItemId": "enum-class-probe",
+    "sgs/nav-bar-menu::splitSide": "enum-mode",
     "sgs/nav-bar-menu::submenuAlign": "enum-mode",
     "sgs/nav-bar-menu::submenuAnimation": "motion",
     "sgs/nav-bar-menu::submenuBg": "color",
@@ -4311,6 +4315,8 @@
     "sgs/nav-drawer-menu::padding": "layout",
     "sgs/nav-drawer-menu::ref": "technical",
     "sgs/nav-drawer-menu::sgsCustomCss": null,
+    "sgs/nav-drawer-menu::splitAfterItemId": "enum-class-probe",
+    "sgs/nav-drawer-menu::splitSide": "enum-mode",
     "sgs/nav-drawer-menu::sublinkMarkerColour": "color",
     "sgs/nav-drawer-menu::sublinkMarkerColourCurrent": "color",
     "sgs/nav-drawer-menu::sublinkMarkerColourCurrentGradient": "colour-gradient",
