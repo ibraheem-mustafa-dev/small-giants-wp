@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 83,
+    "count": 84,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -399,7 +399,7 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": true,
+        "styling": false,
         "colour": true,
         "link": false,
         "media": false,
@@ -1061,6 +1061,32 @@
       }
     },
     {
+      "slug": "sgs/nav-bar-menu",
+      "title": "SGS Nav Bar Menu",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": "core/navigation",
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": true,
+        "media": false,
+        "animation": true
+      },
+      "qualifies": {
+        "paintDeclarations": 11,
+        "replacedCoreSupports": [
+          "anchor",
+          "ariaLabel",
+          "inserter",
+          "interactivity",
+          "spacing",
+          "typography"
+        ]
+      }
+    },
+    {
       "slug": "sgs/nav-drawer",
       "title": "SGS Nav Drawer",
       "category": "sgs-interactive",
@@ -1080,29 +1106,22 @@
       }
     },
     {
-      "slug": "sgs/nav-menu",
-      "title": "SGS Nav Menu",
+      "slug": "sgs/nav-drawer-menu",
+      "title": "SGS Nav Drawer Menu",
       "category": "sgs-content",
       "tier": "block",
-      "replaces": "core/navigation",
+      "replaces": null,
       "has_render_php": true,
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": false,
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 11,
-        "replacedCoreSupports": [
-          "anchor",
-          "ariaLabel",
-          "inserter",
-          "interactivity",
-          "spacing",
-          "typography"
-        ]
+        "paintDeclarations": 5,
+        "replacedCoreSupports": []
       }
     },
     {
@@ -1240,7 +1259,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 40,
+        "paintDeclarations": 50,
         "replacedCoreSupports": []
       }
     },
@@ -1335,7 +1354,7 @@
       "replaces": "core/site-logo",
       "has_render_php": true,
       "surfaces": {
-        "styling": false,
+        "styling": true,
         "colour": true,
         "link": true,
         "media": true,
@@ -1684,7 +1703,7 @@
         "animation": true
       },
       "qualifies": {
-        "paintDeclarations": 8,
+        "paintDeclarations": 9,
         "replacedCoreSupports": []
       }
     },

@@ -1286,7 +1286,17 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
+			"attr": "navBg",
+			"fields": {
+				"css_property": "background-color",
+				"css_layer": "OUTER",
+				"role": "color",
+				"css_element": "wrapper"
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
 			"attr": "navBg",
 			"fields": {
 				"css_property": "background-color",
@@ -2424,7 +2434,7 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
 			"attr": "submenuCloseGrace",
 			"fields": {
 				"role": "behaviour"
@@ -2515,7 +2525,14 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
+			"attr": "ref",
+			"fields": {
+				"role": "technical"
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
 			"attr": "ref",
 			"fields": {
 				"role": "technical"
@@ -3273,7 +3290,7 @@
 			"_why": "2026-09-07, Task 3 (two-state link colour). Genuinely paints color on `{selector} a` via sgs_link_colour_css(), called from render.php as sgs_link_colour_css( $attributes, 'description', $description_sel ). Same dynamic-key scanning gap as sgs/collapsible-text.linkColour above."
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-drawer-menu",
 			"attr": "sublinkMarkerColour",
 			"fields": {
 				"role": "color",
@@ -3282,7 +3299,7 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
 			"attr": "collapsePoint",
 			"fields": {
 				"role": "styling",
@@ -3291,7 +3308,7 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
 			"attr": "featuredFontWeight",
 			"fields": {
 				"role": "typography",
@@ -3300,7 +3317,16 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "featuredFontWeight",
+			"fields": {
+				"role": "typography",
+				"css_property": "font-weight",
+				"css_element": "featured"
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
 			"attr": "featuredItemIds",
 			"fields": {
 				"role": "styling",
@@ -3310,7 +3336,17 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "featuredItemIds",
+			"fields": {
+				"role": "styling",
+				"css_property": "display,max-width,min-width",
+				"css_element": "bar",
+				"css_layer": "GRID"
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
 			"attr": "featuredRadius",
 			"fields": {
 				"role": "visual",
@@ -3319,7 +3355,25 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "featuredRadius",
+			"fields": {
+				"role": "visual",
+				"css_property": "border-radius",
+				"css_element": "featured"
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemLetterSpacing",
+			"fields": {
+				"role": "typography",
+				"css_property": "letter-spacing",
+				"css_element": "link"
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
 			"attr": "itemLetterSpacing",
 			"fields": {
 				"role": "typography",
@@ -3360,7 +3414,7 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
 			"attr": "submenuBgGradient",
 			"fields": {
 				"role": "colour-gradient",
@@ -3369,7 +3423,16 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "submenuBgGradient",
+			"fields": {
+				"role": "colour-gradient",
+				"css_property": "background-image",
+				"css_element": "submenu-panel"
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
 			"attr": "itemSeparatorHoverTreatment",
 			"fields": {
 				"role": "behaviour",
@@ -3377,7 +3440,7 @@
 			}
 		},
 		{
-			"slug": "sgs/nav-menu",
+			"slug": "sgs/nav-bar-menu",
 			"attr": "itemSeparatorSweepAngle",
 			"fields": {
 				"role": "behaviour",
@@ -3414,6 +3477,70 @@
 			"fields": {
 				"role": "behaviour",
 				"_reason": "2026-09-14 (Frame Card task 4). Caps how many colour-swatch dots render before collapsing into a '+N' pill -- a display-threshold CONFIGURATION value, not a paintable CSS value (mirrors the existing 'Rating'-suffix behaviour role fix for sgs/star-rating.maxRating in this same file's migrations/2026-08-01-rating-speed-suffix-role.py entry)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemColourHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemColourHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBgHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBgHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "itemBorderHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBorderHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "burgerBgHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
+			}
+		},
+		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "burgerColourHoverTreatment",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-09-14 (nav-menu-split Step 5 DB-consistency follow-up). Same shape as the pre-existing itemSeparatorHoverTreatment: a pure treatment-selector enum (none/swap/sweep or none/swap) governing WHICH hover mechanism paints, not a paintable CSS value itself. 'behaviour' is the established role for this exact control-selector class (precedent: itemBorderHoverTreatment, itemColourHoverTreatment, submenuColourHoverTreatment, burgerColourHoverTreatment, all originally sgs/nav-menu, now split across sgs/nav-bar-menu and sgs/nav-drawer-menu)."
 			}
 		}
 	]

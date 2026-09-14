@@ -538,7 +538,7 @@
       }
     }
   },
-  "sgs/nav-menu": {
+  "sgs/nav-bar-menu": {
     "core/navigation": {
       "__unstableLocation": {
         "reason": "WP core experimental/unstable internal attr; explicitly marked unstable by WP itself, not a capability to match.",
