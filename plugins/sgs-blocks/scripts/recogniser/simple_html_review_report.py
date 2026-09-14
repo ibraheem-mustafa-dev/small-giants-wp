@@ -65,6 +65,14 @@ def _render(
         m = match_by_boundary.get(bid, {})
         extracted, total, pct, open_slots = _coverage_for_section(bid, slot_list or {}, extract or {})
         verdict_class = "pass" if pct >= 80 else ("warn" if pct >= 50 else "fail")
+        # Build the Source column value: look up chosen_source from the match record.
+        # When chosen_source == 'sc_var_hint', also show the source type (sc_var_alias, sc_var_count, or sc_var_model).
+        chosen_source = m.get("chosen_source", "confidence_matrix")
+        source_display = chosen_source
+        if chosen_source == "sc_var_hint":
+            sc_var_source_type = b.get("sc_var_hint", {}).get("source", "")
+            if sc_var_source_type:
+                source_display = f"sc_var_hint ({sc_var_source_type})"
         section_rows.append(
             f"<tr>"
             f"<td><code>{bid}</code></td>"
@@ -74,6 +82,7 @@ def _render(
             f"<td class=\"{verdict_class}\">{pct}%</td>"
             f"<td>{extracted}/{total}</td>"
             f"<td>{len(open_slots)}</td>"
+            f"<td><code>{json.dumps(source_display, ensure_ascii=False)}</code></td>"
             f"</tr>"
         )
 
@@ -141,8 +150,8 @@ def _render(
 
   <h2>Per-section verdicts</h2>
   <table>
-    <thead><tr><th>Boundary</th><th>Section</th><th>Block</th><th>Confidence</th><th>Coverage</th><th>Filled/Total</th><th>Open</th></tr></thead>
-    <tbody>{''.join(section_rows) or '<tr><td colspan="7"><em>No boundaries.</em></td></tr>'}</tbody>
+    <thead><tr><th>Boundary</th><th>Section</th><th>Block</th><th>Confidence</th><th>Coverage</th><th>Filled/Total</th><th>Open</th><th>Source</th></tr></thead>
+    <tbody>{''.join(section_rows) or '<tr><td colspan="8"><em>No boundaries.</em></td></tr>'}</tbody>
   </table>
 
   <h2>Extracted attributes</h2>

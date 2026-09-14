@@ -2235,6 +2235,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                         # Content-gap observability channel (2026-07-31) — whatever
                         # the content pass recorded before this failure fired.
                         "content_gaps": result.get("content_gaps", []),
+                        # Admission-path observability (2026-09-14) — true when this boundary
+                        # was admitted to conversion purely via sc_var_hint gate, with no
+                        # genuine Tier-0 slot-map match. Appears on both successful and
+                        # failed converter_v2 results so operator review can distinguish
+                        # confident BEM-based matches from lower-confidence schema-variant hints.
+                        "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
                     })
                     continue
                 # Normalise to orchestrator per_section_results schema.
@@ -2297,6 +2303,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     "content_gaps": result.get("content_gaps", []),
                     "class_signature": _class_sig,
                     "converter_v2": True,
+                    # Admission-path observability (2026-09-14) — true when this boundary
+                    # was admitted to conversion purely via sc_var_hint gate, with no
+                    # genuine Tier-0 slot-map match. Used for operator review to
+                    # distinguish confident BEM-based matches from lower-confidence
+                    # schema-variant hinting.
+                    "admitted_via_sc_var_gate": _cv2_eligible_via_sc_var,
                 })
                 if _cv2_markup:
                     aggregate_markup_parts.append(_cv2_markup)
