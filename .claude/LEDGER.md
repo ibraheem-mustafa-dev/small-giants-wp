@@ -117,6 +117,67 @@ file-size drift on `ColourRowExtras.js`/`edit.js` (D1048 already split `nav-menu
 `nav-menu-submenu-css.php` and part of `edit.js`/`ColourRowExtras.js`, but both remain over cap),
 and the STOP-CATALOGUE S4 entry step 27 named but never added.
 
+## Next-session orchestration plan
+
+**State recap:** the nav-menu/nav-drawer track is functionally done and archived. Four small
+items remain, none blocking, none urgent — this is cleanup, not a new phase.
+
+### Task A — Bean retests the drawer-burger click issue
+**What:** confirm live whether the intermittent click-miss (2/3 real clicks failed to open the
+drawer in automated testing) still occurs now the duplicate-burger fix (D1047) has shipped.
+**Why:** D1047 is a proven, separate defect fix — NOT proven to be this issue's root cause.
+**Orchestration:** inline, no subagent — this needs Bean's own hands on a real device/browser,
+not another Playwright run (automated testing already hit its ceiling here).
+**Depends on:** none. **Acceptance:** Bean reports pass/fail; if fail, dispatch a fresh
+`/systematic-debugging` investigation with his exact repro steps (browser, device, close path used).
+
+### Task B — real-keyboard ESC/mega-disclosure retest, second attempt
+**What:** the D1044 retest already fixed its own methodology (real Playwright keyboard input
+instead of `document.dispatchEvent`) and returned CLEAN on 5 configurations — this is genuinely
+closed, not open. (Corrected from an earlier LEDGER draft that still listed it open — see D1044
+in decisions.md for the full clean result.) No action needed unless Bean disputes it live.
+
+### Task C — file-size drift on `ColourRowExtras.js` / `edit.js`
+**What:** both still exceed the 250-line JS cap after D1048's split.
+**Why:** `ColourRowExtras.js` (244 lines, effectively at cap already) needs no further action.
+`edit.js` (821 lines) is DELIBERATELY over cap — its `colourRows` array must stay in-file for
+`scripts/inspector-scan/rules/31-golden-colour-control.js` to see it (owner ruling 3). This is a
+closed architectural decision, not residual drift — do not re-attempt splitting it further
+without first re-reading that rule and confirming it's changed.
+**Orchestration:** none needed — Bean should be told this is closed, not delegate it.
+
+### Task D — add the `colourRows` atomicity / two-corpus-blindness STOP-CATALOGUE entry
+**What:** step 27's own audit named a new structural-defence entry that documents why
+`colourRows` must stay a single literal array (the golden-colour-control gate can't see across
+files) — never added.
+**Why:** without it, a future session may re-attempt the `edit.js` split and silently blind that
+gate again.
+**Orchestration:**
+- Execution: delegated (subagent) — Sonnet, single-agent.
+- Dispatch pattern: single `wp-sgs-developer` dispatch.
+- Brief: read `.claude/STOP-CATALOGUE.md`'s D101 carry-forward ritual in full first (uncapped,
+  3275 lines — grep for structure, don't read blind), draft ONE new entry in the existing
+  format documenting the golden-colour-control single-file-visibility constraint, run the
+  carry-forward count-check (entries after ≥ entries before), then `handoff-preflight.py --check`.
+- Depends on: none. Parallel with: Task A (different files).
+- /qc gate after: no — mechanical doc addition, the carry-forward count-check IS the gate.
+- **Acceptance:** `handoff-preflight.py --check` passes with the STOP count one higher than
+  today's baseline (280 → 281), and `edit.js`'s own docblock cross-references the new entry.
+
+### Dependency graph
+```
+Task A (Bean, inline) ---- independent
+Task D (subagent, Sonnet) ---- independent, can run any time
+Tasks B and C: already closed / closed-by-decision — no work needed
+```
+
+### Methodology guardrails
+See "Methodology guardrails (carried forward — all still true)" above — unchanged, still binding.
+Add one from this session: **a subagent given a deploy/gate-sweep/long-verification brief must be
+told explicitly to run it synchronously, not backgrounded** — recurred 6x in one session
+(`feedback_subagent_backgrounding_causes_premature_completion_claim.md`); its own "completed"
+status plus "I'll wait for X" language means check `git status` before trusting it.
+
 **Process note for whoever dispatches multi-agent work next:** two implementation agents this
 session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
 instead of stopping and reporting back. No harm resulted, but every future multi-agent brief
