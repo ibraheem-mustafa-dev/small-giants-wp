@@ -1,5 +1,23 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1069 [ROUTINE] — D1067 correction: Task 1's "6 real trigger locations" claim was unverified and false
+
+The follow-up agent dispatched to migrate `sgs_modal`'s 6 live trigger points (footer, product
+page ×2, help/FAQ, header mega-menu, mobile nav drawer, per D1067/the original plan) checked the
+premise against the live sandybrown site before acting, rather than trusting it. It's false:
+`sandybrown` is Mama's Munches (a food brand), has zero posts/templates/parts containing
+`sgs/modal` beyond one bare test scratch page (1595), and zero content anywhere matching "size
+guide". `sites/eye-care-ward-end/CLAUDE.md` confirms that client is still pre-design with no
+live WordPress install at all — the "6 real trigger locations" cannot exist as live content
+because there is no build to hold them. The claim in D1067 and the original 5-task plan was
+never verified against a real site before being written down and carried forward as fact.
+
+**Correction:** the `sgs_modal` CPT + `modalRef` mechanism (commit `ce9ccb46c`) is complete and
+correct — nothing to fix there. There is no live migration to perform because there is no
+real content to migrate yet. This closes Task 1 as DONE-WITH-NO-TARGET rather than
+incomplete — re-open only if/when the eye-care build actually starts and real modal content
+exists to point at.
+
 ## D1068 [ROUTINE] — Fixed Tier B's block vocabulary: was querying the wrong DB table, silently excluding 181 real blocks including `sgs/cart` and `sgs/card-grid`
 
 **2026-09-14.** Bean caught this directly from the D1066 gap list -- asked why real, existing
