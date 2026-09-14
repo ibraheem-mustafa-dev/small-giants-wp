@@ -257,6 +257,7 @@ function scheduleIntentOpen( ctx, root, delay ) {
 		ctx.isOpen = true;
 		state.openMegaId = ctx.megaId;
 		syncTriangleWatcher();
+		syncOutsideClickWatcher();
 		repositionPanel( root );
 	}, delay );
 }
@@ -628,6 +629,76 @@ function revertReparent( megaId ) {
 	syncFixedScrollWatcher();
 }
 
+/**
+ * Close the currently-open disclosure when a click lands outside both its
+ * root and its panel — the missing dismissal path on touch devices (P-NAV
+ * gap confirmed 2026-09-14: a full-directory grep of this directory found no
+ * existing click-outside listener anywhere). Without this, once a panel is
+ * open on touch the ONLY way to dismiss it is re-tapping the same trigger —
+ * ESC is unavailable and there is no hover to leave.
+ *
+ * Deliberately `closest()`-based rather than a stored root/panel reference —
+ * mirrors `rootFor()`'s own idiom above. A click landing inside ANY
+ * `[data-wp-interactive="sgs/mega"]` root is treated as "inside" regardless
+ * of WHICH disclosure that root belongs to: clicking a different trigger
+ * while this one is open is a legitimate "switch dropdown" interaction
+ * already handled by the existing single-open mechanism (`watchOpenState`
+ * above), not by this listener, so doing nothing here for that click is
+ * correct, not a gap. A REPARENTED panel (`reparentPanelIfNeeded()`) is no
+ * longer a DOM descendant of its root once moved to `<body>`, so it is
+ * checked separately via the same `[data-sgs-mega-panel][data-sgs-nav-fixed]`
+ * marker pair that function already sets — no new state needed.
+ *
+ * Bubble-phase `click`, matching the drawer's own `onBackdropClick` idiom in
+ * `store.js`, NOT `pointerdown`: a trigger's own `data-wp-on--click` handler
+ * runs first (target-to-root, before this document-level listener reaches
+ * the end of the SAME bubble), so by the time this runs on a tap that just
+ * OPENED a panel, `ctx.isOpen`/`state.openMegaId` are already set and the
+ * trigger itself is inside its own root — `closest()` finds it and this
+ * function returns early. That ordering is what prevents the open-then-
+ * immediately-closes-itself race: this listener never sees "outside" on the
+ * very click that opened the panel.
+ *
+ * @param {MouseEvent} event The document-level click event.
+ */
+function onOutsideClick( event ) {
+	const target = event.target;
+	if (
+		target.closest &&
+		( target.closest( '[data-wp-interactive="sgs/mega"]' ) ||
+			target.closest( '[data-sgs-mega-panel][data-sgs-nav-fixed]' ) )
+	) {
+		return;
+	}
+	if ( state.openMegaId ) {
+		state.openMegaId = null;
+		syncTriangleWatcher();
+		syncOutsideClickWatcher();
+	}
+}
+
+/** The currently-attached document-level outside-click listener, or null. */
+let outsideClickHandler = null;
+
+/**
+ * Attach/detach the document-level outside-click listener, gated strictly on
+ * whether ANY disclosure is open — mirrors `syncTriangleWatcher()`'s and
+ * `syncFixedScrollWatcher()`'s idempotent attach/detach shape above. Called
+ * at every call site that already calls `syncTriangleWatcher()` (the two
+ * share the exact same gating condition — `state.openMegaId` truthy/falsy —
+ * so they are kept in lock-step rather than introducing a second, divergent
+ * source of truth for "is anything open").
+ */
+function syncOutsideClickWatcher() {
+	if ( state.openMegaId && ! outsideClickHandler ) {
+		outsideClickHandler = onOutsideClick;
+		document.addEventListener( 'click', outsideClickHandler );
+	} else if ( ! state.openMegaId && outsideClickHandler ) {
+		document.removeEventListener( 'click', outsideClickHandler );
+		outsideClickHandler = null;
+	}
+}
+
 /** Move keyboard focus to the first focusable element inside the open panel. */
 function focusFirstInPanel( root ) {
 	const panel = root.querySelector( '[data-sgs-mega-panel]' );
@@ -663,6 +734,7 @@ const { state } = store( 'sgs/mega', {
 			ctx.isOpen = true;
 			state.openMegaId = ctx.megaId;
 			syncTriangleWatcher();
+			syncOutsideClickWatcher();
 			repositionPanel( rootFor( ref ) );
 		},
 
@@ -673,6 +745,7 @@ const { state } = store( 'sgs/mega', {
 			if ( state.openMegaId === ctx.megaId ) {
 				state.openMegaId = null;
 				syncTriangleWatcher();
+				syncOutsideClickWatcher();
 			}
 		},
 
@@ -691,11 +764,13 @@ const { state } = store( 'sgs/mega', {
 				if ( state.openMegaId === ctx.megaId ) {
 					state.openMegaId = null;
 					syncTriangleWatcher();
+					syncOutsideClickWatcher();
 				}
 			} else {
 				ctx.isOpen = true;
 				state.openMegaId = ctx.megaId;
 				syncTriangleWatcher();
+				syncOutsideClickWatcher();
 				repositionPanel( root );
 				focusFirstInPanel( root );
 			}
@@ -764,6 +839,7 @@ const { state } = store( 'sgs/mega', {
 				if ( state.openMegaId === ctx.megaId ) {
 					state.openMegaId = null;
 					syncTriangleWatcher();
+					syncOutsideClickWatcher();
 				}
 			}, grace );
 		},
@@ -782,6 +858,7 @@ const { state } = store( 'sgs/mega', {
 				ctx.isOpen = ! ctx.isOpen;
 				state.openMegaId = ctx.isOpen ? ctx.megaId : null;
 				syncTriangleWatcher();
+				syncOutsideClickWatcher();
 				if ( ctx.isOpen ) {
 					repositionPanel( root );
 					focusFirstInPanel( root );
@@ -795,6 +872,7 @@ const { state } = store( 'sgs/mega', {
 					ctx.isOpen = true;
 					state.openMegaId = ctx.megaId;
 					syncTriangleWatcher();
+					syncOutsideClickWatcher();
 					repositionPanel( root );
 				}
 				focusFirstInPanel( root );
@@ -806,6 +884,7 @@ const { state } = store( 'sgs/mega', {
 				ctx.isOpen = false;
 				state.openMegaId = null;
 				syncTriangleWatcher();
+				syncOutsideClickWatcher();
 			}
 		},
 
@@ -824,6 +903,7 @@ const { state } = store( 'sgs/mega', {
 				ctx.isOpen = false;
 				state.openMegaId = null;
 				syncTriangleWatcher();
+				syncOutsideClickWatcher();
 				focusTrigger( root );
 				return;
 			}
@@ -840,6 +920,7 @@ const { state } = store( 'sgs/mega', {
 					ctx.isOpen = false;
 					state.openMegaId = null;
 					syncTriangleWatcher();
+					syncOutsideClickWatcher();
 					// Let focus continue naturally to the next/previous element
 					// outside the panel; only sync the disclosure state.
 				}
@@ -917,6 +998,7 @@ if ( typeof window !== 'undefined' ) {
 		activePanelRect = null;
 		state.openMegaId = null;
 		syncTriangleWatcher();
+		syncOutsideClickWatcher();
 		// Defensive, ahead of the reactive watchOpenState path above: a
 		// bfcache restore replays the JS heap exactly as frozen (see the
 		// module docblock), so a panel reparented to <body> when the
