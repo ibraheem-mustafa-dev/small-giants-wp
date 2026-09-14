@@ -1,3 +1,57 @@
+## D1048 [ROUTINE] (Bean-approved) — Wave C steps 25/26 closed: last 7 ungated-paint findings fixed, 4 oversized files split, WARN gate flipped to HARD on `sgs/nav-menu`
+
+**2026-09-14.** Closes the last two open items on the phase plan (Wave C steps 25 and 26) — the
+plan itself is now fully done, superseded or withdrawn end to end and is archived in this same
+session to `.claude/plans/archive/phase-nav-menu-colour-state.md` (its hidden-decisions annex
+alongside it, `.claude/plans/archive/phase-nav-menu-colour-state-hidden-decisions.md`).
+
+**Step 26's precondition (the 7 findings) fixed first, commit `87c4302c2`.** Root-caused, zero
+visual diff by construction: indicator background + border-radius, burger border-radius, and
+burger-bar background + border-radius were demoted to `:where()` (each was already
+attribute-driven or a genuine structural default matching the file's existing idiom, so `:where()`
+correctly drops their specificity without changing what paints); the drill-down submenu background
+moved out of the block's global `style.css` into the uid-scoped `nav-menu-submenu-css.php` emitter
+(same selector, same fallback chain, now properly per-instance scoped instead of a global
+override); the drill-back-button border was likewise demoted to `:where()`. Verified with
+`check-ungated-paint-rules.py --survey --block sgs/nav-menu` → 0 censused / 12 scanned, and the
+full `scripts/run-gates.py --tier all` chain green (99/99).
+
+**Same commit also split the 4 files flagged oversized by Wave C's step 20 re-audit** (zero
+behaviour change, existing per-directory naming convention followed): `nav-menu-css.php` →
++`nav-menu-item-border-featured-css.php`; `nav-menu-submenu-css.php` →
++`nav-menu-submenu-link-css.php`; `ColourRowExtras.js` → +`SubmenuBurgerTreatments.js`; `edit.js`
+→ +`ItemSeparatorPanel.js` + `useItemHoverContrast.js`. **`edit.js` itself still stays over its
+250-line cap by a documented, Bean-relevant owner ruling** (ruling 3 in the plan's §Resolved
+judgement calls): its `colourRows` array must stay physically in-file because
+`scripts/inspector-scan/rules/31-golden-colour-control.js` only resolves row/state counts from a
+literal array visible in `edit.js` or `src/components/` — moving or generating it blinds that
+gate. Re-confirmed still correct this session, not something to "fix" further.
+
+**Step 26 — `check-ungated-paint-rules.py` flipped from WARN-ONLY to HARD-FAIL for `sgs/nav-menu`
+only, commit `85ff36489`.** Bean-approved (per the plan's owner ruling 4 — scope read from
+`gates.json` config, not a dict in the script, R-31-1). Verified BOTH directions before landing:
+a deliberately reintroduced test violation made `--check` exit 1 with the finding printed;
+reverting it and re-running confirmed exit 0 with zero findings on `sgs/nav-menu`. Every other
+block in the framework is unaffected and still only warns.
+
+**Step 25 (Bean's visual sign-off, R-31-13) closed via a conversational sign-off, not the plan's
+originally-specified formal artefact.** The plan's own pass condition asked for a merged
+`.claude/verify/spec-41-gates.md` (concatenating the two lane files from steps 22/23) plus a
+structured 375/768/1440px presentation with the four FR-41-17a residual risks named explicitly,
+followed by an explicit yes/no. That formal merged-report artefact was never produced. Instead,
+Bean gave explicit direct sign-off in conversation today, informed by his own extensive live
+testing and reporting across the whole nav-menu day (D1039, D1042, D1043, D1044, D1046, D1047).
+Recorded here as what it actually was — a conversational sign-off given the depth of Bean's own
+hands-on verification — not overclaimed as the plan's formal artefact.
+
+**Still genuinely open, carried to `LEDGER.md`, not closed by this entry:** the intermittent
+drawer-burger click-reliability issue (Bean's own live retest pending); the D1044 ESC/
+mega-disclosure bubble-path retest (inconclusive, needs real-keyboard follow-up); and two small
+living-doc gaps step 27's own audit named but did not fix — `specs/README.md` row 41's stale
+version/status text (corrected in this same session as part of repointing its citation to the
+archived plan) and the `colourRows` ATOMICITY / two-corpus-blindness STOP-CATALOGUE entry (S4)
+step 27 called out as a new structural defence to add — NOT added this session, still open.
+
 ## D1047 [ROUTINE] — Duplicate burger button inside the drawer's own re-entrant render pass, fixed
 
 **2026-09-14.** `plugins/sgs-blocks/src/blocks/nav-menu/render.php` renders `sgs/nav-menu`

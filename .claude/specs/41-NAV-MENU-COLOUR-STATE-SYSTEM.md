@@ -181,7 +181,7 @@ framework**, because it needs no new shared component at all.
 ⚠ **This is a MID-BUILD spec. Read this section before reading any FR as a description of shipped
 code.** Most of the build has landed; a named minority is written and unbuilt. ⛔ **Do not cache a
 step count, a percentage or a D-number here — that drifts.** Step-level live status is
-single-sourced to **`.claude/plans/phase-nav-menu-colour-state.md`**; project-wide status to
+single-sourced to **`.claude/plans/archive/phase-nav-menu-colour-state.md`**; project-wide status to
 `.claude/LEDGER.md`.
 
 ### 0a.1 ⛔ `render.php` is NO LONGER the block's single emitter — it is SIX PHP files
@@ -253,7 +253,7 @@ architect **B+**, accessibility **C-**, Gutenberg internals **B+**, maintainabil
 **A-**, CSS-pattern cynic **B-**.
 
 **Verdict: GO, conditional on two fixes landing before anything ships to a real client site** — not
-before Wave C work starts (`.claude/plans/phase-nav-menu-colour-state.md`'s Wave C, steps 18-27, may
+before Wave C work starts (`.claude/plans/archive/phase-nav-menu-colour-state.md`'s Wave C, steps 18-27, may
 proceed unblocked):
 
 **(a) The submenu panel's `box-shadow` was clipped invisible — the wrapper-move fix shipped;
@@ -4655,7 +4655,7 @@ history table):
 
 **0.4.7 (2026-09-11)** — eleventh revision. A **build-plan ruling pass**: the owner ruled on all
 seven Key Judgement Calls raised by the phase plan
-(`.claude/plans/phase-nav-menu-colour-state.md`), and two of the seven change what THIS spec says.
+(`.claude/plans/archive/phase-nav-menu-colour-state.md`), and two of the seven change what THIS spec says.
 Nothing else in the body is touched, nothing is renumbered, and no 0.4.0–0.4.6 design decision is
 reopened. The other five rulings live in the plan alone because they are execution decisions
 (detector enforcement scope, migration-test method, lane parallelism, file-splitting criteria) or

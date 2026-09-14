@@ -36,19 +36,33 @@ exactly one such element exists at both mobile and desktop widths. Everything el
 listed here as open (L1 burger→drawer typography mirror, the drawerRef collision bug, and
 current-page state-hierarchy propagation) has also since shipped.
 
-**Still genuinely open — do not treat as closed:** Wave C's own steps 25 (Bean's formal
-3-viewport visual sign-off, per the plan's own pass condition) and 26 (flip a WARN gate to
-HARD — re-confirmed unsafe twice today, `sgs/nav-menu` itself still carries 7 ungated-paint
-findings) have NOT been done. Live testing today also surfaced a real, reproducible-but-
-intermittent click-reliability issue on the drawer's own burger button (2 of 3 real clicks
-failed to open the drawer in one test session) — the duplicate-burger fix above is a genuine,
-separate defect fix and is NOT proven to be the root cause of this intermittent issue; Bean
-needs to retest live and report back whether the freeze/unresponsive behaviour still occurs.
-The D1044 ESC/mega-disclosure bubble-path retest triggered an unexpected page navigation when
-tested via a synthetic keydown dispatch — still flagged inconclusive, not confirmed safe,
-needs a follow-up session with real keyboard input. File-size drift on `ColourRowExtras.js`,
-`edit.js`, `nav-menu-css.php` and `nav-menu-submenu-css.php` (all over their caps) is also
-still unaddressed.
+**Wave C steps 25 and 26 — the plan's last two open items — are now CLOSED (2026-09-14,
+D1048).** The 7 ungated-paint findings were fixed and the 4 oversized files were split, both in
+commit `87c4302c2` (zero visual diff by construction, verified via `--survey` → 0 censused/12
+scanned and a green 99/99 gate chain); `check-ungated-paint-rules.py` was then flipped from
+WARN-ONLY to HARD-FAIL scoped to `sgs/nav-menu` only, commit `85ff36489`, verified both
+directions (a planted violation fails the build, a clean tree passes). Step 25's sign-off was
+**conversational, not the plan's originally-specified formal merged-report artefact** — Bean
+gave explicit direct sign-off in conversation, informed by his own extensive live testing across
+the whole nav-menu day, but the formal `spec-41-gates.md` merge + structured 3-viewport
+presentation was never produced. `plans/phase-nav-menu-colour-state.md` is now fully done,
+superseded or withdrawn end to end and has been archived to
+`plans/archive/phase-nav-menu-colour-state.md` (its hidden-decisions annex alongside it).
+
+**Still genuinely open — do not treat as closed:** a real, reproducible-but-intermittent
+click-reliability issue on the drawer's own burger button (2 of 3 real clicks failed to open
+the drawer in one test session) — the duplicate-burger fix (D1047) is a genuine, separate defect
+fix and is NOT proven to be the root cause of this intermittent issue; Bean needs to retest live
+and report back whether the freeze/unresponsive behaviour still occurs. The D1044 ESC/
+mega-disclosure bubble-path retest triggered an unexpected page navigation when tested via a
+synthetic keydown dispatch — still flagged inconclusive, not confirmed safe, needs a follow-up
+session with real keyboard input. File-size drift on `ColourRowExtras.js` (320 lines) and
+`edit.js` (892 lines) is unaddressed beyond the split already done in `87c4302c2` — both still
+exceed the ≤250 cap, `edit.js` deliberately (its `colourRows` array must stay in-file per owner
+ruling 3, see D1048). A small living-doc gap step 27's own audit named is also still open: the
+`colourRows` ATOMICITY / two-corpus-blindness STOP-CATALOGUE entry (S4) it called out as a new
+structural defence to add was NOT added this session (`specs/README.md` row 41's staleness was
+fixed in this same session, alongside repointing its citation to the archived plan).
 
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
@@ -70,11 +84,12 @@ decision); header/footer (paused behind R8, unchanged); trust-bar pill padding g
 
 ## THE FRONT — what to pick up next
 
-**Spec 41 nav-menu Waves A/B/C (steps 1-23) are DONE.** Steps 24 (withdrawn, D1036) and 25
-(Bean's formal sign-off) remain in the original plan but are superseded by the live review
-below, which is a more thorough real-world check than step 25 would have been in isolation.
-Plan: `plans/phase-nav-menu-colour-state.md`'s "Execution Progress Log" has the full step
-history if needed, but the real front now is the post-review fix register, not the plan.
+**Spec 41 nav-menu — the whole plan (Waves A/B/C, all steps) is now DONE, superseded or
+withdrawn.** Steps 25 and 26, the last two open items, closed 2026-09-14 (D1048). The plan is
+archived: `plans/archive/phase-nav-menu-colour-state.md`'s "Execution Progress Log" has the full
+step history if needed, but the real front now is the post-review fix register below, plus the
+few genuinely-open items in the Human Summary above (drawer-burger click reliability, the ESC
+bubble-path retest, and the two small doc/file-size loose ends).
 
 **Bean's live review + fix register — `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`
 was the intake doc.** The large majority of its ~26 points are now root-caused and shipped —
@@ -95,11 +110,12 @@ default, `d9f90b875`) caught by a same-session `/qc-council` diagnostic pass and
 git log before trusting its own "not yet built" list.**
 
 **Both previously-open decision items shipped 2026-09-14 (see Human Summary above for
-detail; D1045/D1046/D1047).** Genuinely open now: Wave C steps 25/26 (formal sign-off + WARN→
-HARD gate flip), the intermittent drawer-burger click-reliability issue (needs Bean's live
-retest), the D1044 ESC bubble-path retest (inconclusive, needs real-keyboard follow-up), and
-file-size drift on `ColourRowExtras.js`/`edit.js`/`nav-menu-css.php`/
-`nav-menu-submenu-css.php`.
+detail; D1045/D1046/D1047), and Wave C steps 25/26 also closed the same day (D1048).**
+Genuinely open now: the intermittent drawer-burger click-reliability issue (needs Bean's live
+retest), the D1044 ESC bubble-path retest (inconclusive, needs real-keyboard follow-up), residual
+file-size drift on `ColourRowExtras.js`/`edit.js` (D1048 already split `nav-menu-css.php`/
+`nav-menu-submenu-css.php` and part of `edit.js`/`ColourRowExtras.js`, but both remain over cap),
+and the STOP-CATALOGUE S4 entry step 27 named but never added.
 
 **Process note for whoever dispatches multi-agent work next:** two implementation agents this
 session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
@@ -188,7 +204,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1047** — verify with
+- **D-ceiling:** **D1048** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -211,7 +227,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | R8 motion-recognition design (settled, references only) | `plans/archive/2026-09-10-r8-motion-recognition-brainstorm.md` |
 | R8 execution plan (DONE, archived — reference only) | `plans/archive/phase-r8-motion-recognition.md` |
-| **Spec 41 nav-menu colour/state — THE FRONT. Waves A/B/C (steps 1-23) done; the post-review fix register (see "THE FRONT" above) is now the real front, not the plan's own step count** | `.claude/reports/2026-09-12-nav-menu-visual-review-register.md` (intake — stale against the latest commits, see "THE FRONT"); `plans/phase-nav-menu-colour-state.md`'s "Execution Progress Log" is ALSO stale (last updated 2026-09-11, predates the register work); spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
+| **Spec 41 nav-menu colour/state — THE FRONT. Whole plan (Waves A/B/C, all steps) DONE/superseded/withdrawn, archived 2026-09-14; the post-review fix register (see "THE FRONT" above) is the real front, not the plan's own step count** | `.claude/reports/2026-09-12-nav-menu-visual-review-register.md` (intake — stale against the latest commits, see "THE FRONT"); `plans/archive/phase-nav-menu-colour-state.md`'s "Execution Progress Log" is ALSO stale (last updated 2026-09-11, predates the register work); spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
