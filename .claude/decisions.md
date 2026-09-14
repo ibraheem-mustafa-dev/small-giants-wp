@@ -1,3 +1,187 @@
+## D1043 [ROUTINE] — QC-council integration sweep over the whole nav-menu day found 2 real regressions, both fixed same-session
+
+**2026-09-13/14.** After the terminology redesign, smart-contrast flip, gradient unlock and
+sweep generalisation below all shipped in one day, ran `/qc-council` not as a fix-shape
+validator (its usual role) but as a post-hoc regression sweep over the day's combined diff —
+a novel use of the skill, checking whether the pieces still held together once stacked.
+Found two real defects and one stale doc line:
+
+1. **Drawer submenu hover text was near-invisible** (accent text on accent-light background,
+   1.35:1 contrast) — root cause was two compounding default choices, not a missing runtime
+   contrast check: the drill-down submenu panel fell back to `inherit` for its own background
+   instead of the theme's cream token chain every other submenu context uses, and
+   `submenuLinkBgHover`/`submenuColourHover` both defaulted into the same accent hue family
+   regardless of context. Per Bean's ruling, fixed by correcting the DEFAULTS rather than
+   adding a new contrast branch (commit `d9f90b875`): `submenuLinkBg`/`submenuLinkBgHover`/
+   `submenuLinkBgCurrent` now default to deterministic opaque surfaces (surface / primary /
+   surface-pink) across bar and drawer alike, `submenuColourHover` moved from accent to text
+   (5.28:1), `submenuColourCurrent` moved from primary to text (8.40:1), and the now-unneeded
+   runtime `sgs_wcag_preferred_text_colour_for_bg()` call was removed from the drawer's
+   Normal-text path. All ratios verified against `wcag-contrast.js`'s own maths.
+2. **The sticky-header dropdown-reparent fix (D1042 below) broke the "current page is inside
+   this open dropdown" ancestor highlight while the panel was open** (it self-corrected on
+   close). Root cause: `nav-menu-css.php::` two `:has(ul.sgs-nav-menu__submenu ...)` rules
+   anchor on `.sgs-nav-menu__submenu-root`, which the reparent moves out from under, so
+   `:has()` can no longer see the (now off-DOM-branch) descendant. Fixed in commit
+   `e62ce1bf2` by mirroring both facts (current-page ancestor, keyboard-focus ancestor) onto
+   `.submenu-root` itself as `data-sgs-nav-has-current`/`data-sgs-nav-has-focus` for the
+   duration of the reparent, OR'd into the existing selectors via `:is()`. The drawer/accordion
+   fork is untouched — its submenu never reparents.
+3. **Doc-only staleness** — `block.json::itemSeparatorWidth`'s description still described the
+   pre-sweep-generalisation behaviour; corrected inline in the same doc-drift pass as this
+   entry, not a separate commit.
+
+Verification fixtures built and kept as permanent regression proof: a `listColumns` 2-col/3-col
+proof page (post 3540, confirmed PASS) for the drawer reading-order fix in D1041, plus the
+dedicated fixtures cited in each fix's own commit message above.
+
+---
+
+## D1042 [ROUTINE] — Sticky-header stacking fix + gradient/sibling-attribute sweep
+
+**2026-09-13/14.** Three further nav-menu fixes shipped between the terminology redesign
+(D1041) and the QC-council sweep above:
+
+- **Gradient-on-hover unlocked (`08d0df5af`).** `GradientCapableColourControl.js` gated its
+  Solid/Gradient toggle on a row-level `gradientCapable` flag rather than on whether the
+  ACTIVE state actually supplies an `onGradientChange` handler — `sgs/nav-menu`'s item-text
+  row wires gradient for Normal but not Hover/Current, so opening the toggle on those tabs
+  called `undefined(...)`. This was a genuinely pre-existing crash (9 days old, since the
+  control's original build), not something this session's changes introduced; fixed by
+  gating per active state, which protects every other `textRow()`/`fillRow()` row with the
+  same partial-gradient shape, not just nav-menu. With `itemSmartContrast` now default-OFF
+  (below), item-text hover no longer needs a flat colour for its auto-contrast maths, so a new
+  `itemColourHoverGradient` sibling was added, live-gated on `itemSmartContrast`'s current
+  value. A same-shape census across all 38 `edit.js` files using `textRow()`/`fillRow()` with
+  a gradient attribute found one more accidental omission — `nav-drawer`'s
+  `toggleCloseColour` row had Normal-state gradient wired but no Hover sibling, confirmed via
+  git history as accidental rather than a deliberate exemption like nav-menu's — fixed in
+  `29e6d6adc` (`toggleCloseColourHoverGradient`). A second candidate (`process-steps`'
+  `numberBackground` row) was investigated and left alone: it renders through
+  `DesignTokenPicker` directly, which already gates its own gradient toggle per-state, so it
+  was never vulnerable. Full census: `.claude/reports/2026-09-13-gradient-toggle-sibling-sweep.md`.
+
+- **Smart-contrast flipped from auto-fix to advisory-only (`cce38999d`).** `itemSmartContrast`
+  defaulted ON, silently overriding an operator's explicit `itemColourHover` with a computed
+  WCAG-safe colour whenever it failed contrast against the resolved hover background — this
+  turned out to be the real explanation behind an earlier "my hover colour isn't applying"
+  report. Flipped the default to OFF: an explicit hover colour now always renders as-authored,
+  and the auto-fix swap stays available as an explicit opt-in. The editor now shows an
+  unconditional advisory Notice under the item text-colour row whenever the current hover
+  combination fails contrast, regardless of the toggle. Server-side branches live-verified via
+  `wp-json/wp/v2/block-renderer` against the canary; the editor-side Notice was not visually
+  confirmed this session — Playwright got stuck on an unresolvable `beforeunload` dialog with
+  no dialog-handling tool available, disclosed in `reports/visual-diff/nav-menu-2026-09-13.md`.
+
+- **Hover sweep generalised to any angle (`af8f9759a`).** Replaced the hard-coded horizontal
+  bottom-edge sweep with a shared angle-driven primitive
+  (`plugins/sgs-blocks/includes/sweep-css.php::sgs_directional_sweep_css()`) — a
+  `linear-gradient(<angle>deg)` at 200%×200% background-size, endpoints computed from the
+  angle's sin/cos — reproducing the retired `borderHoverAnimationDirection` left-to-right/
+  right-to-left output pixel-for-pixel at 90°/270°, and extended to a new
+  `sweepAngle`/preset-dropdown control. The old attribute was removed from `block.json`
+  outright per D293 (no version bumps/deprecations pre-production); a defensive PHP-only read
+  keeps a pre-existing saved post's chosen direction working. Same commit also fixed
+  `sgs/nav-drawer`'s `listColumns` reading order — it rendered row-major
+  ("interleaving" across columns) instead of column-major, against the reference site's
+  confirmed DOM order (`P-NAV-MENU-LISTCOLUMNS-READING-ORDER`); fixed via
+  `grid-auto-flow:column` plus an explicit computed row count.
+
+- **Sticky-header dropdown-overlap fix (`92002dcae`).** A page-embedded `sgs/nav-menu`'s open
+  dropdown was capped below the sticky header regardless of its own z-index, because
+  `sgs/container`'s load-bearing child-lift rule gives `.entry-content`
+  `position:relative;z-index:1`, capping every descendant's stacking context below the
+  header's `z-index:100`. Fixed with a disclosure-scoped body-reparent
+  (`plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js`) mirroring
+  `nav-drawer`'s existing D323 reparent mechanism minus its dialog machinery: once the panel's
+  position has settled, it moves to `<body>` and freezes at its already-computed screen
+  position via CSS custom properties, escaping the capped stacking context. No scroll-lock, no
+  focus trap, no backdrop. Header-placed instances are untouched by construction — the fix
+  only triggers for a disclosure sitting outside `.sgs-site-header`. Live-verified on the
+  canary (page 2091): reparented panel is `body`'s last child, `position:fixed`,
+  `z-index:101`, wins the hit-test; header's own dropdown regression-checked unchanged.
+
+---
+
+## D1041 [ROUTINE] — Bean-designed underline/separator terminology split + new vertical bar-item separator (FR-41-37)
+
+**2026-09-12/13.** Bean redesigned the shared `itemBorderWidth`/`Colour` family's naming: the
+single mechanism previously called "item divider" splits into two distinct concepts —
+"underline" (the horizontal bar's own bottom-edge hover/current text-indicator, bar-only,
+relabel-only, zero functional change) and "separator" (a line between adjacent items, the same
+concept applied identically across drawer main-list rows, drawer submenu rows, and bar submenu
+rows). Alongside the relabel, shipped a genuinely NEW, independent attribute family
+(`itemSeparatorWidth`/`Style`/`Colour`/`ColourHover`) for a vertical divider between adjacent
+TOP-LEVEL bar items — a control that didn't exist before — defaulting to visible
+(border-light rest / accent hover) to match the framework's established separator language.
+No sweep animation on the new control initially (the sweep geometry was bottom-edge-specific
+at ship time; generalised to any angle including the new separator in D1042 above).
+
+Shipped in `ced102333` (code) + `5e71c3146` (spec: FR-41-36 terminology rename + new FR-41-37,
+`.claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`) + `797e7f8a5` (a separately-found, finished
+but uncommitted doc edit adding FR-36-28 pointing `.claude/specs/36-SGS-NAVIGATION-SYSTEM.md`
+at Spec 41 as the concrete colour-state mechanism, and correcting an earlier overclaim that
+Spec 41 satisfies FR-36-4's active-trail clause — it doesn't; `markCurrentPage` matches by
+exact path equality only). Extended the css-property/cluster-coverage schema
+(`golden.js` mechanism map, `cluster-member-sets.json`, `setting-registry.json`) with
+`border-right-*` longhand entries so the new separator's colour attributes resolve through the
+existing conformance gates, mirroring the `outline-width`/`box-shadow-color` precedent for a
+genuinely new CSS mechanism with no prior model member.
+
+**Left OPEN, flagged for Bean's decision, not silently resolved:**
+- **Drawer-logo-autoderive** — the original design doc's target (a "head strip" wrapper for
+  deriving the drawer's logo colour) no longer exists post-rebuild. Needs Bean to pick: (a)
+  colour attributes directly on the logo block, or (b) reintroduce a head-row wrapper.
+- **Click-outside-to-close on the horizontal dropdown** — confirmed real, pre-existing (not
+  caused by any of this week's work), a touch-usability gap. Bean has not yet said build-now
+  vs backlog.
+
+---
+
+## D1040 [ROUTINE] — Follow-up wave closes 4 items D1039 had left flagged for Bean, including the framework-wide orphaned-slug fix
+
+**2026-09-12/13.** Between D1039's session and the terminology redesign (D1041), a follow-up
+wave picked up several items D1039 explicitly deferred rather than silently resolved:
+
+- **Orphaned palette-slug fallback (`7c0d11a50`)** — the item D1039 flagged as needing Bean's
+  sign-off before touching the shared colour helper (335 call sites across 73 files at the
+  time). `sgs_colour_value()` (PHP) and its JS mirror `colourVar()` wrap any non-CSS-colour
+  string as a design-token slug with no check that the slug is still registered — renaming or
+  deleting a palette entry left every block using it with an unresolved `var()` and no
+  fallback, which is invalid CSS, so the browser drops the whole declaration and the colour
+  disappears with no error anywhere. Fixed by adding a `, currentColor` fallback to both the
+  PHP and JS resolvers (kept in parity via the existing `check-colour-preview-resolver.js`
+  contract gate), so an orphaned slug degrades to the element's own text colour instead of
+  vanishing. Paired with a new discovery tool, `wp sgs audit-colour-tokens`
+  (`class-sgs-colour-audit-cli-commands.php`), which walks every post's parsed blocks against
+  a DB-generated snapshot of colour-typed attributes and reports any stored slug no longer
+  present in the live palette. Live-verified on the canary: a `burgerBg:"secondary"` fixture
+  (post 3488) that previously resolved to invisible now resolves to its own text colour, and
+  the audit command lists that exact fixture and slug.
+- **`nav-drawer` `drawerRef` collision (G6, `74121a5f1`)** — D1039 flagged the drawer's
+  `drawerRef` defaulting to an unscoped literal that silently collides with the site's global
+  header drawer. Added collision-detection in `edit.js` that auto-renames to a unique ref on
+  insert, persisting correctly; live-verified on test page 3522 with two colliding drawers.
+- **E1/E2 drawer-submenu fixes (`daa87be8d`)** — 3 of 4 issues from the register's drawer-
+  submenu investigation: the current-page colour rule now emits before the hover rule (was
+  136 lines after it, so hover lost the specificity tie it was meant to win); the drawer
+  submenu panel's background fallback now resolves to the FR-41-36-locked `surface` token
+  instead of a pre-existing, never-reconciled `color-mix` tint; and a parent nav item now
+  shows the same Current-page treatment when its own submenu contains the current page, via a
+  `:has()` extension of the existing FR-41-13 pattern (direct hover/focus on the parent still
+  wins via an explicit `:not()` guard). The 4th symptom (defaulting `submenuColourHover` to
+  match item text) was deliberately NOT implemented — FR-41-36 explicitly locks the desktop
+  submenu's Hover state as background-tint-only, so implementing it would have overridden an
+  owner-ruled decision rather than fixed a bug.
+- **`nav-drawer` close-button typography (L1, `74121a5f1`)** — mirrors `nav-menu`'s
+  `burgerFontSize`/`burgerSize` mechanism onto the drawer's close button, which previously had
+  hardcoded CSS and zero inspector controls. Defaults reproduce the prior hardcoded values
+  exactly, so an untouched drawer renders unchanged.
+
+Full register with before/after evidence: `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`.
+
+---
+
 ## D1039 [ROUTINE] — Bean's live nav-menu review: 26-issue register, root-caused, ~18 real defects fixed same-session
 
 **2026-09-12.** Bean did a full live review of the deployed Spec 41 nav-menu rebuild against

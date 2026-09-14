@@ -293,10 +293,14 @@
   CSS must NOT be named `style.css` — `wp-scripts` routes that to the FRONTEND bundle; use `editor.css`.
 - **Feedback file:** [feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_fork_that_renames_identifiers_inherits_none_of_the_original_behaviour.md)
 
-### [2026-08-18] A silently-disabled detector returns zero findings, which reads as a clean tree
-- **Pattern key:** `a-negative-control-catches-the-detector-that-stopped-detecting`
-- **What happened:** Two bugs made rules return ZERO findings without crashing, throwing, or failing a
-  lint — indistinguishable from success. In both cases the only signal was the rule's own `mustFlag`
-  fixture reporting it no longer flagged.
-- **The rule:** a rule that cannot fail is not a rule. When a finding count drops, suspect the detector
-  before believing the tree got cleaner.
+### [2026-09-13] `git stash` in a subagent recurred a second time on a shared worktree, this time from the orchestrator's own omission
+- **Pattern key:** `no-git-stash-in-subagents`
+- **Evidence:** three parallel nav-menu fix agents each ran `git stash`/`pop` once for a WPCS
+  baseline compare; all three self-caught and reverted, no data loss. Root cause was on the
+  dispatching side, not the subagents': none of the four dispatch prompts that session pasted
+  the verbatim safety-gate block, on the assumption the standing git-hygiene rule was "known".
+- **Rule:** treat "about to send an Agent tool call on a shared git worktree" itself as the
+  trigger — paste the full safety-gate block (no reset/restore/checkout--/clean/stash/rm/mv/
+  revert/rebase; read-only git only) into every such dispatch prompt, every time, not just
+  when git-specific language already appears in the task description.
+- **Feedback file:** [feedback_no_git_stash_in_subagents.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_git_stash_in_subagents.md)

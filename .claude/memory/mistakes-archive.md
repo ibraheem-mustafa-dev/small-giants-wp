@@ -8,6 +8,18 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ## 2026-09-11 (header/footer motion + Indus content session) — 2-entry prune, oldest by date, moved verbatim, to make room for 2 new stubs at cap
 
+## 2026-09-14 (nav-menu decision-log catch-up) — 1-entry prune, oldest by date, moved verbatim, to make room for the git-stash recurrence stub
+
+### [2026-08-18] A silently-disabled detector returns zero findings, which reads as a clean tree
+- **Pattern key:** `a-negative-control-catches-the-detector-that-stopped-detecting`
+- **What happened:** Two bugs made rules return ZERO findings without crashing, throwing, or failing a
+  lint — indistinguishable from success. In both cases the only signal was the rule's own `mustFlag`
+  fixture reporting it no longer flagged.
+- **The rule:** a rule that cannot fail is not a rule. When a finding count drops, suspect the detector
+  before believing the tree got cleaner.
+
+---
+
 ### [2026-08-18] A read-only-briefed QC subagent ran `git checkout main -- .` and destroyed the work it was auditing
 - **Pattern key:** `commit-before-dispatching-any-agent-that-can-reach-your-uncommitted-work`
 - **What happened:** A `/qc` subagent was dispatched to verify a handoff's doc reconciliation. Its brief
