@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-12
+last_updated: 2026-09-14
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -11,23 +11,24 @@ last_updated: 2026-09-12
 **Spec 41 nav-menu: Waves A+B+C (steps 1-23) DONE, deployed, and live-verified.** Wave C's
 own live-verification sweep (Steps 22/23) found + fixed 4 real defects same-session (D1038).
 Then Bean did a full hands-on review of the live result and reported ~26 issues in one
-message — colour defaults, a hover-state regression, submenu interactivity, the dropdown
-chevron's architecture, burger typography/scroll, and several missing test configurations.
+message (D1039) — root-caused, solution-designed, and shipped: the large majority of that
+register, PLUS a further ~1.5 days of follow-on work not yet written into the register file
+itself — a terminology/architecture redesign splitting "underline" from "separator" (FR-41-37),
+flipping the smart-contrast auto-fix to opt-in by default, a hover-gradient toggle for item
+text, generalising the hover-sweep effect to any angle, fixing the drawer's `listColumns`
+reading order, and a same-day sticky-header dropdown-stacking fix (dropdown now reparents to
+`<body>` on open so it can't be clipped by a sticky header's own stacking context). A
+`/qc-council` diagnostic pass on top of all this found and fixed 2 further regressions
+(ancestor-current + keyboard-focus highlight lost during the body-reparent; submenu colours
+defaulting off a runtime contrast check instead of a fixed per-state default).
 
-**That review is now fully processed: root-caused, solution-designed, and ~18 fixes are
-shipped, committed, and live on the canary** (D1039, full detail in
-`.claude/reports/2026-09-12-nav-menu-visual-review-register.md`). Three of Bean's own points
-needed a second or third investigation pass before landing on the right answer — worth
-knowing this rebuild's verification is genuinely thorough, not just "looked green once."
-
-**Four items are deliberately NOT built yet — they need Bean's decision, not more
-investigation:** mirroring the burger fix onto the drawer's close button (low-risk, just
-ran out of session time); a real architectural bug where an unnamed nav-drawer silently
-opens the wrong (site-global) drawer; a framework-wide (335 call-site) silent-failure mode
-where a renamed/deleted palette colour vanishes with no warning; and Bean's own new
-requirement that the current-page state should visually bubble up to a top-level parent
-item (a genuinely new feature, not a bug). See "THE FRONT" below for exactly what to do
-with each.
+**Two items are deliberately NOT built — they need Bean's decision, not more investigation:**
+auto-deriving the drawer logo's colours from the header row (the original design's target
+wrapper no longer exists post-rebuild, needs Bean to pick a new mechanism); and click-outside-
+to-close on the horizontal dropdown for touch devices (confirmed real, pre-existing gap, no
+build-now-vs-backlog call made yet). See "THE FRONT" below for detail. Everything else
+previously listed here as open (L1 burger→drawer typography mirror, the drawerRef collision
+bug, and current-page state-hierarchy propagation) has since shipped.
 
 **Prior track (clone-fidelity closeout + R8 motion) is fully done** — see "Prior work (closed)"
 below for the record; not the front any more.
@@ -56,29 +57,31 @@ Plan: `plans/phase-nav-menu-colour-state.md`'s "Execution Progress Log" has the 
 history if needed, but the real front now is the post-review fix register, not the plan.
 
 **Bean's live review + fix register — `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`
-is the single source of truth for this.** ~18 real defects found, root-caused (some needed 2-3
-investigation passes to get right — read the register's "Wave 1.5" section before assuming a
-verdict is final), solution-designed, and shipped same-session. Commits: `fc98d531a`,
-`44c661bfa`, `10670bf82`, `8f9b25c1d`, `154ef2f54`, `e73c91dff`.
+was the intake doc.** The large majority of its ~26 points are now root-caused and shipped —
+including all four items this LEDGER previously listed as "deliberately not built" (L1 burger→
+drawer close-button typography mirror, `7c0d11a50`; G6 `drawerRef` collision auto-rename,
+`74121a5f1`; the orphaned-palette-slug `currentColor` fallback, `7c0d11a50`; E2 state-hierarchy
+propagation, `daa87be8d`) — plus a further ~1.5 days of follow-on work the register file itself
+does not yet describe: a terminology/architecture redesign splitting "underline" from
+"separator" (`ced102333`, FR-41-37), the smart-contrast auto-fix flipped to opt-in
+(`cce38999d`), a hover-gradient toggle for item text (`08d0df5af`), the hover-sweep effect
+generalised to any angle + the drawer `listColumns` reading-order fix (`af8f9759a`), and a
+same-day fix for a sticky-header dropdown-stacking bug — the dropdown now reparents to
+`<body>` on open (`92002dcae`) so a sticky header's own stacking context can't clip it, with two
+regressions this reparent introduced (ancestor-current/keyboard-focus highlight lost,
+`e62ce1bf2`; submenu colours defaulting off a runtime check instead of a fixed per-state
+default, `d9f90b875`) caught by a same-session `/qc-council` diagnostic pass and fixed same-day.
+**The register file has not been re-read/updated against this later work — check it against
+git log before trusting its own "not yet built" list.**
 
-**Four items deliberately NOT built — pick up next, in this order:**
-1. **L1 — mirror the burger typography fix onto the nav-drawer close button.** Lowest risk,
-   proposal already written (`.claude/reports/2026-09-12-nav-menu-wave2-cluster4-burger-solutions.md`
-   §L1), same mechanical pattern as the already-shipped burger fix. Just dispatch it.
-2. **G6 — `nav-drawer`'s `drawerRef` defaults to an unscoped literal**, so any drawer without
-   an explicit unique ref silently opens the site's GLOBAL header drawer instead of its own.
-   Real architectural bug, not something Bean originally reported — found testing mega-menus
-   in a drawer. Proposal exists (`...cluster5-architecture-solutions.md` §G6) but needs Bean's
-   sign-off on the collision-detection approach before building.
-3. **Orphaned palette slug** — `sgs_colour_value()` (framework-wide, 335 call sites, 73 files)
-   silently renders transparent if a client's chosen colour is later renamed/deleted from the
-   palette. Proposal exists (same doc, §orphaned-slug) but needs Bean's sign-off before
-   touching a helper this widely shared.
-4. **E2 — state-hierarchy propagation.** Bean's own new requirement: the current-page's state
-   should visually bubble up to its top-level parent item so a visitor can tell which menu
-   contains the current page without hovering. Genuinely new feature, real prior art already
-   identified (FR-41-13's `:has()` pattern extends directly), but needs Bean's decision on
-   the propagated-state visual treatment before any code is written.
+**Two items remain genuinely open — need Bean's decision, not more investigation:**
+1. **Drawer-logo auto-derive.** Auto-deriving the drawer-head logo's colours from the header
+   row was designed against a head-row wrapper that no longer exists post-rebuild. Needs Bean
+   to choose between colour attributes on the logo block itself vs reintroducing a wrapper —
+   see `.claude/parking.md` `P-UIMAX-DRAWER-LOGO-AUTODERIVE` for the original design.
+2. **Click-outside-to-close on the horizontal dropdown, touch devices only.** Confirmed real
+   during the latest `/qc-council` pass — not yet written up in any report. Needs Bean's
+   build-now-vs-backlog call.
 
 **Process note for whoever dispatches multi-agent work next:** two implementation agents this
 session each bundled a DIFFERENT sibling's uncommitted work into their own deploy `--payload`
@@ -167,7 +170,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 
 - **Branch:** `main`. **Do not trust a SHA written here** — run `git rev-parse --short HEAD`.
   150+ sessions share this tree.
-- **D-ceiling:** **D1032** — verify with
+- **D-ceiling:** **D1039** — verify with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1`
 - **Canary:** sandybrown, WP 7.1. Fresh-clone verification page **3448**
   (`/fresh-clone-verification-mamas-munches-homepage-re-clone/`) — this session's fix target.
@@ -190,7 +193,7 @@ trust-bar padding). Header/footer is still paused behind this phase — read
 | BEM-recognition + template-detection brainstorm (NOT yet actioned) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | R8 motion-recognition design (settled, references only) | `plans/archive/2026-09-10-r8-motion-recognition-brainstorm.md` |
 | R8 execution plan (DONE, archived — reference only) | `plans/archive/phase-r8-motion-recognition.md` |
-| **Spec 41 nav-menu colour/state — THE FRONT, Waves A+B closed (17/27 steps)** | `plans/phase-nav-menu-colour-state.md` — read "Execution Progress Log" first (spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`) |
+| **Spec 41 nav-menu colour/state — THE FRONT. Waves A/B/C (steps 1-23) done; the post-review fix register (see "THE FRONT" above) is now the real front, not the plan's own step count** | `.claude/reports/2026-09-12-nav-menu-visual-review-register.md` (intake — stale against the latest commits, see "THE FRONT"); `plans/phase-nav-menu-colour-state.md`'s "Execution Progress Log" is ALSO stale (last updated 2026-09-11, predates the register work); spec: `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` |
 | Header/footer spec | `specs/37-HEADER-FOOTER-BUILDER.md` |
 | Header/footer stalled strategic plan | `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
