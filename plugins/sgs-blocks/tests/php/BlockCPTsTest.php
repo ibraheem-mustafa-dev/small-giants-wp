@@ -15,6 +15,13 @@
  *   5. Draft CPT posts do NOT register patterns
  *   6. Submenus appear under SGS menu (add_submenu_page called with correct args)
  *   7. REST read by subscriber → 403 proved by capability map
+ *   8. sgs_modal CPT registered after init fires
+ *   9. sgs_modal posts do NOT register block patterns (resolved by modalRef, not blockTypes)
+ *   10. resolve_modal() returns null for a zero/missing ref
+ *   11. resolve_modal() returns null when the referenced post is missing
+ *   12. resolve_modal() returns null for the wrong post type
+ *   13. resolve_modal() returns null for an unpublished post
+ *   14. resolve_modal() returns the post for a valid published reference
  *
  * Run with: vendor/bin/phpunit tests/php/BlockCPTsTest.php
  *

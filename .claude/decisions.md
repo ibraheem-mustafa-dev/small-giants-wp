@@ -1,5 +1,52 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1067 [ROUTINE] — QC council closes Tasks 1/2/4/5 (Ward End Eye Care 5-task session): all PASS or PASS-WITH-GAPS, one real gap dispatched as a follow-up
+
+Ran 4 independent QC subagents (`wp-sgs-developer`), one per committed task, against the real
+diffs (`ce9ccb46c` Task 1, `ad2914dd8` Task 2, `0a93cbec9` Task 4, `76ea52ab9`+ Task 5) — each
+checked security, the no-inline-styling contract (Spec 32), universal-branch-coverage (R-31-9),
+and the plan's own verify criteria.
+
+**Task 2 (form-field-hidden) — PASS, no gaps.** Traced end-to-end: the fix genuinely closes the
+bug (`FormData` excludes `disabled` inputs; `applyConditionalLogic()` now finds the field because
+`field_open()` wires the same `.sgs-form-field` + `data-conditional-*` shape as
+`form-field-tiles`). Found a SEPARATE pre-existing bug, not in this task's scope: no CSS rule for
+`.sgs-form-field--hidden` exists anywhere, so a conditionally-disabled field elsewhere (not this
+one — a hidden INPUT has no visible box either way) stays visually on the page even though it's
+correctly excluded from submission. Parked as `P-FORM-HIDDEN-FIELD-DISCLOSURE-CSS`.
+
+**Task 4 (product-card Frame Card fields) — PASS WITH MINOR GAPS, fixed inline.** Universal
+branch coverage genuinely verified (all 4 render branches call the same markup functions).
+Colour-swatch reuse of option-picker's mechanism confirmed real, not reinvented.
+`SgsColourPanel` discipline holds (0 raw pickers). Found one doc-rot claim — a docblock and a
+block.json `_note` both asserted the swatch markup calls `sgs_wcag_text_colour_for_bg()` for the
+'+N' pill's contrast; it doesn't, and doesn't need to (the pill has no background fill, so no
+colour-on-colour clash exists). Fixed both comments same session — no code change needed.
+
+**Task 5 (cart/checkout templates) — PASS WITH DISCLOSED RISK, no action.** Width-model shell,
+part composition, cart-proxy non-interference, and the D1055 decision record all confirmed
+correct. The order-confirmation template's filename claim (matching WooCommerce Blocks' real
+slug) could not be independently re-verified by the QC agent (no vendored WC source in-repo to
+check against) — the original build's own account says it was checked live against the
+sandybrown WC 11.1.0 install, not guessed. Flagged as unverified-by-QC, not confirmed-wrong; no
+further action taken this session.
+
+**Task 1 (sgs_modal CPT) — PASS WITH ONE REAL BLOCKER, dispatched as a follow-up.** All the
+plumbing (CPT registration, `modalRef` picker, render-time resolution, test coverage) is correct
+and matches the header/footer/drawer CPT precedent exactly. But the plan's requirement 4 — create
+one canonical `sgs_modal` post and repoint the 6 real trigger locations (footer, product page
+×2, help/FAQ, header mega-menu, mobile nav drawer) to reference it — was never attempted; no
+migration script or canonical post exists. The bug the task was built to fix (6 duplicated copies
+of the size-guide content) is therefore still live. Dispatched a follow-up `wp-sgs-developer`
+agent same session to do the live migration (mechanical — the plumbing is already built and
+tested); also fixed a stale test-coverage docblock in `BlockCPTsTest.php` (listed only tests
+1-7, the 7 new modal tests 8-14 were undocumented there).
+
+**Why [ROUTINE], not [INCIDENT]:** no shipped code was found broken or insecure — every gap was
+either a disclosed doc-rot fix, a separately-scoped pre-existing bug, or an incomplete-but-safe
+requirement (the modal mechanism defaults to the old inline content when `modalRef` is unset, so
+its absence caused no regression).
+
 ## D1066 [ROUTINE] — First real end-to-end dry run of `/sgs-clone` against a Claude Design draft; wired Piece 1 identity into the converter's recognition gate + fixed a real element-relocation bug it exposed
 
 **2026-09-14.** Follows D1057-D1064. Everything built this session (Piece 1, Piece 2, the

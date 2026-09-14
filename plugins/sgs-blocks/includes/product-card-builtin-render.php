@@ -448,9 +448,12 @@ if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
 	 * Frame Card component: decorative colour-swatch row, capped at
 	 * swatchMaxVisible then collapsed into a '+N' pill. Reuses
 	 * sgs/option-picker's colour-chip technique (scoped CSS custom-property
-	 * VALUES, never inline `style=` — Spec 32) plus sgs_wcag_text_colour_for_bg()
-	 * for the +N pill's text contrast (mirrors option-picker/render.php's own
-	 * swatch-chip block). Each swatch's colour is DATA (colourSwatches[].colour),
+	 * VALUES, never inline `style=` — Spec 32). The '+N' pill has no
+	 * background fill (border + muted text only — see style.css
+	 * .sgs-product-card__swatch-more), so there is no colour-on-colour
+	 * contrast to solve here; sgs_wcag_text_colour_for_bg() is NOT called
+	 * (unlike option-picker/render.php's swatch-chip block, whose pill text
+	 * sits on top of the swatch colour itself). Each swatch's colour is DATA (colourSwatches[].colour),
 	 * not an operator styling property. Called from every render branch
 	 * (R-31-9).
 	 *

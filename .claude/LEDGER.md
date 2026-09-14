@@ -51,6 +51,14 @@ adversarial-council pass Bean asked for.** Read `specs/42-SGS-FORM-CPT-AND-PRICI
 `specs/43-SGS-CHOICE-FLOW.md` in full before touching; FR-42-0 (fail-open `requireLogin` bug) is
 independently ship-ready any time. See "Front B" below for the orchestration plan.
 
+**Ward End Eye Care Tasks 1/2/4/5 (sgs_modal CPT, form-field-hidden fix, product-card Frame
+Card fields, cart/checkout templates) — QC-closed this session (D1067).** All four PASS or
+PASS-WITH-GAPS; two doc-rot comments fixed inline; a separately-scoped pre-existing bug
+(`.sgs-form-field--hidden` has no CSS rule, so a disabled conditional field stays visually on
+the page) recorded in D1067 for whoever next touches `sgs/form`'s conditional-logic system.
+Task 1's one real gap — the 6 live trigger points were never repointed to `modalRef` — is being
+closed by a dispatched follow-up agent; check its outcome before treating Task 1 as fully done.
+
 **Spec 41 nav-menu colour/state — Waves A/B/C (steps 1-23) fully DONE, deployed, live-verified,
 plan archived to `plans/archive/phase-nav-menu-colour-state.md`.** Full decision trail
 `decisions.md` D1038-D1049. Only one genuinely open item survives from that programme: the

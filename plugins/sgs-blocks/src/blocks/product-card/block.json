@@ -275,7 +275,7 @@
 						"layout"
 					],
 					"prefix": "swatch",
-					"_note": "Decorative colour-swatch row (Frame Card component) — each swatch's own hue is DATA (colourSwatches[].colour), not an operator styling property, mirroring sgs/option-picker's swatch chip (which is likewise never operator-coloured). No dedicated colour/size attribute exists for the swatch ring itself — an honest gap, matching priceFromLabel's own precedent; the ring/size are fixed in style.css. Rendered via sgs_product_card_swatches_markup() (product-card-builtin-render.php) reusing option-picker's scoped-custom-property chip technique (render.php ~line 727-746) plus sgs_wcag_text_colour_for_bg() for contrast, called from every render branch per R-31-9."
+					"_note": "Decorative colour-swatch row (Frame Card component) — each swatch's own hue is DATA (colourSwatches[].colour), not an operator styling property, mirroring sgs/option-picker's swatch chip (which is likewise never operator-coloured). No dedicated colour/size attribute exists for the swatch ring itself — an honest gap, matching priceFromLabel's own precedent; the ring/size are fixed in style.css. Rendered via sgs_product_card_swatches_markup() (product-card-builtin-render.php) reusing option-picker's scoped-custom-property chip technique (render.php ~line 727-746), called from every render branch per R-31-9. The '+N' pill has no background fill (border + muted text only), so unlike option-picker's own pill it needs no sgs_wcag_text_colour_for_bg() contrast call."
 				},
 				"cta": {
 					"label": "Call to action",
