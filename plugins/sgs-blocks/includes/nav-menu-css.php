@@ -507,6 +507,21 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	 * parent would have kept showing the propagated Current paint underneath.
 	 * The `:not()` pair sidesteps the arithmetic entirely: while the link is
 	 * itself hovered or focus-visible, this rule simply does not match.
+	 *
+	 * ⚠ BAR FORK ONLY — `[data-sgs-nav-has-current]` `:has()` rescue
+	 * (2026-09-14, sticky-header reparent regression). `mega-disclosure.js`'s
+	 * `reparentPanelIfNeeded()` moves the bar's `[data-sgs-mega-panel]`
+	 * (containing `ul.sgs-nav-menu__submenu`) to `<body>` while a page-embedded
+	 * dropdown is open, which breaks `:has()` above for exactly that long — the
+	 * `<ul>` is no longer a DOM descendant of `.submenu-root` to check. JS
+	 * mirrors the same fact onto `.submenu-root` itself (which never moves) as
+	 * `data-sgs-nav-has-current`, set/cleared for the duration of the reparent
+	 * only — see `attachAncestorFlagWatcher()`/`detachAncestorFlagWatcher()` in
+	 * `mega-disclosure.js`. The DRAWER fork never reparents (its submenu `<ul>`
+	 * carries `data-sgs-drill-panel`, not `[data-sgs-mega-panel]` —
+	 * `reparentPanelIfNeeded()`'s `root.querySelector('[data-sgs-mega-panel]')`
+	 * finds nothing for it), so `$sgs_nm_ancestor_drawer_sel` below needs no
+	 * equivalent fallback.
 	 */
 	$sgs_nm_ancestor_current_decls = array();
 	if ( '' !== $item_colour_current ) {
@@ -521,8 +536,18 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 	}
 	$sgs_nm_ancestor_current_decl_str = implode( ';', $sgs_nm_ancestor_current_decls );
 
+	/*
+	 * `:is( :has(…), [data-sgs-nav-has-current] )` — a single compound
+	 * selector, NOT a comma-joined pair, deliberately: `$sgs_nm_ancestor_bar_sel`
+	 * gets `::before` appended directly below (`$sgs_nm_ancestor_bar_sel .
+	 * '::before'`), and appending a pseudo-element to a top-level comma list
+	 * only attaches it to the LAST selector in the string — the exact trap
+	 * already recorded for this file. `:is()` keeps the OR internal so
+	 * `::before` still applies to both the `:has()` match and the reparent
+	 * fallback.
+	 */
 	$sgs_nm_submenu_has_current = 'ul.sgs-nav-menu__submenu a[aria-current="page"]';
-	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .sgs-nav-menu__submenu-root:has(' . $sgs_nm_submenu_has_current . ') > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
+	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .sgs-nav-menu__submenu-root:is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
 	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .sgs-nav-menu__accordion-row:has(' . $sgs_nm_submenu_has_current . ') > .sgs-nav-menu__link:not(:hover):not(:focus-visible)';
 
 	if ( '' !== $sgs_nm_ancestor_current_decl_str ) {
@@ -1040,8 +1065,23 @@ if ( ! function_exists( 'sgs_nav_menu_item_state_css' ) ) {
 		// Keyboard half — bar fork.
 		//
 		// Wave 2 M2 (2026-09-12): same caret pairing as the mouse half above.
-		$bar_keyboard_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) > .sgs-nav-menu__link';
-		$bar_keyboard_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:has( ul.sgs-nav-menu__submenu :focus-visible ) .sgs-nav-menu__caret svg';
+		//
+		// ⚠ `:is( :has(…), [data-sgs-nav-has-focus] )` is the same reparent-safe
+		// `:has()` rescue as the current-page ancestor rule above (2026-09-14)
+		// — while `reparentPanelIfNeeded()` has moved the bar's panel to
+		// `<body>`, `:has( ul.sgs-nav-menu__submenu :focus-visible )` can no
+		// longer see the focus-visible descendant, so `mega-disclosure.js`
+		// mirrors that LIVE fact onto `.submenu-root` itself (via a
+		// `focusin`/`focusout` listener on the moved panel, kept in sync for
+		// as long as the reparent lasts) as `data-sgs-nav-has-focus`. `:is()`,
+		// not a comma-joined pair, because `$bar_keyboard_sel` gets `::before`
+		// appended directly below — a pseudo-element appended to a top-level
+		// comma list only attaches to the LAST selector, the exact trap
+		// already recorded for this file. Drawer fork needs no equivalent —
+		// its submenu never reparents (see the note above the current-page
+		// rule).
+		$bar_keyboard_sel       = $uid_sel . ' .sgs-nav-menu__submenu-root:is( :has( ul.sgs-nav-menu__submenu :focus-visible ), [data-sgs-nav-has-focus] ) > .sgs-nav-menu__link';
+		$bar_keyboard_caret_sel = $uid_sel . ' .sgs-nav-menu__submenu-root:is( :has( ul.sgs-nav-menu__submenu :focus-visible ), [data-sgs-nav-has-focus] ) .sgs-nav-menu__caret svg';
 		if ( '' !== $link_decl_str ) {
 			$css .= $bar_keyboard_sel . ',' . $bar_keyboard_caret_sel . '{' . $link_decl_str . ';}';
 		}

@@ -445,9 +445,69 @@ function repositionPanel( root ) {
  * `<body>` forever, since it is a normal in-flow part of the page for the
  * vast majority of instances (the header placement never reparents at all).
  *
- * @type {Map<string,{panel:HTMLElement,originalParent:Node,originalNextSibling:Node|null}>}
+ * @type {Map<string,{panel:HTMLElement,root:HTMLElement,originalParent:Node,originalNextSibling:Node|null,focusHandler:Function}>}
  */
 const reparentedPanels = new Map();
+
+/**
+ * `:has()` ancestor-highlight rescue (P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT
+ * follow-up, 2026-09-14). `reparentPanelIfNeeded()` below moves the panel
+ * (the `[data-sgs-mega-panel]` wrap, containing `ul.sgs-nav-menu__submenu`)
+ * OUT of `.sgs-nav-menu__submenu-root` while open — but two `nav-menu-css.php`
+ * rules key off that exact containment via `:has(ul.sgs-nav-menu__submenu …)`
+ * anchored on the still-in-place `.sgs-nav-menu__submenu-root`: the
+ * current-PAGE ancestor highlight (`a[aria-current="page"]` descendant, a
+ * STATIC per-page-load fact) and the keyboard-focus ancestor highlight
+ * (`:focus-visible` descendant, a LIVE fact that changes as focus moves).
+ * `:has()` cannot see a descendant that is no longer a descendant, so both
+ * rules go dark for exactly as long as the panel is reparented.
+ *
+ * Fix: while reparented, mirror each fact onto `root` (which never moves) as
+ * a data-attribute CSS can key on directly instead of `:has()`. The static
+ * fact is computed once at reparent-time; the live one is kept in sync via a
+ * `focusin`/`focusout` listener on the panel for the duration of the
+ * reparent, then torn down in `revertReparent()`. Both flags are removed on
+ * revert — once the panel returns to the DOM, `:has()` alone is authoritative
+ * again, so leaving a stale flag behind would risk shadowing a future,
+ * genuinely-different `:has()` result.
+ *
+ * One shared mechanism for both `nav-menu-css.php` rules and both the
+ * bar-hover and keyboard-focus open paths (this fires from the same
+ * `reparentPanelIfNeeded()` call regardless of how the panel was opened).
+ *
+ * @param {HTMLElement} panel The reparented panel.
+ * @param {HTMLElement} root  The disclosure root (`.sgs-nav-menu__submenu-root`).
+ * @return {Function} The `focusin`/`focusout` handler to remove on revert.
+ */
+function attachAncestorFlagWatcher( panel, root ) {
+	if ( panel.querySelector( 'a[aria-current="page"]' ) ) {
+		root.setAttribute( 'data-sgs-nav-has-current', '' );
+	}
+	const syncFocusFlag = () => {
+		const focused =
+			panel.contains( document.activeElement ) &&
+			document.activeElement.matches( ':focus-visible' );
+		root.toggleAttribute( 'data-sgs-nav-has-focus', focused );
+	};
+	panel.addEventListener( 'focusin', syncFocusFlag );
+	panel.addEventListener( 'focusout', syncFocusFlag );
+	syncFocusFlag();
+	return syncFocusFlag;
+}
+
+/**
+ * Reverse `attachAncestorFlagWatcher()` — drop both flags and the listener.
+ *
+ * @param {HTMLElement} panel       The panel being un-reparented.
+ * @param {HTMLElement} root        The disclosure root.
+ * @param {Function}    focusHandler The handler returned by the attach call.
+ */
+function detachAncestorFlagWatcher( panel, root, focusHandler ) {
+	panel.removeEventListener( 'focusin', focusHandler );
+	panel.removeEventListener( 'focusout', focusHandler );
+	root.removeAttribute( 'data-sgs-nav-has-current' );
+	root.removeAttribute( 'data-sgs-nav-has-focus' );
+}
 
 /**
  * True when this disclosure sits inside page content rather than the site
@@ -521,10 +581,16 @@ function reparentPanelIfNeeded( root, panel, megaId ) {
 		return;
 	}
 	const rect = panel.getBoundingClientRect();
+	// Snapshot the `:has()` ancestor facts onto `root` BEFORE the move, while
+	// the panel is still a descendant and both facts are still cheap/correct
+	// to read straight off the live DOM (see `attachAncestorFlagWatcher()`).
+	const focusHandler = attachAncestorFlagWatcher( panel, root );
 	reparentedPanels.set( megaId, {
 		panel,
+		root,
 		originalParent: panel.parentNode,
 		originalNextSibling: panel.nextSibling,
+		focusHandler,
 	} );
 	// CSS-var VALUES only (Spec 32 no-inline) — style.css's
 	// `[data-sgs-nav-fixed]` rule reads these two and switches the panel to
@@ -551,7 +617,8 @@ function revertReparent( megaId ) {
 		return;
 	}
 	reparentedPanels.delete( megaId );
-	const { panel, originalParent, originalNextSibling } = rec;
+	const { panel, root, originalParent, originalNextSibling, focusHandler } = rec;
+	detachAncestorFlagWatcher( panel, root, focusHandler );
 	if ( originalParent ) {
 		originalParent.insertBefore( panel, originalNextSibling );
 	}
