@@ -105,7 +105,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// 4g. Mega-menu disclosure — caret rotation + panel positioning (U9). The
 		// trigger is a <button>, not an <a>, so it needs a minimal reset to inherit
 		// the bar link's look rather than the browser's default button chrome.
-		$css .= $uid_sel . ' .sgs-nav-menu__mega-trigger{background:none;border:0;font:inherit;cursor:pointer;}';
+		//
+		// D1060 (2026-09-14): wrapped in :where(). The trigger also carries
+		// .sgs-nav-menu__link, and this reset is written AFTER the item rules at the
+		// same (0,2,0) specificity — so its `background:none`, `border:0` and
+		// `font:inherit` shorthands wiped the client's item background (and gradient),
+		// item border and item typography on every mega item. As a zero-specificity
+		// default it still beats the browser's own button styles.
+		$css .= ':where(' . $uid_sel . ' .sgs-nav-menu__mega-trigger){background:none;border:0;font:inherit;cursor:pointer;}';
 		
 		/*
 		 * Caret flips when the disclosure opens. Bean, 2026-09-10: the flip used to
@@ -234,7 +241,14 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		// independent surface-alt/surface/#fff token chain (the "white lip" bug).
 		// Only engages when submenuBg itself is untouched — an explicit submenuBg
 		// always wins, exactly as before.
-		if ( '' === $sgs_nm_submenu_bg_source && '' !== (string) ( $attributes['submenuLinkBg'] ?? '' ) ) {
+		//
+		// D1060 (2026-09-14): submenuBgGradient must be untouched too. submenuLinkBg
+		// defaults to 'surface', so without this check the fallback fired in the
+		// DEFAULT state and replaced an explicit panel gradient with
+		// submenuLinkBgGradient (default ''). Owner rule: a gradient is ignored only
+		// when auto contrast adaptation is on.
+		if ( '' === $sgs_nm_submenu_bg_source && '' === $sgs_nm_submenu_bg_source_gradient
+			&& '' !== (string) ( $attributes['submenuLinkBg'] ?? '' ) ) {
 			$sgs_nm_submenu_bg_source          = (string) $attributes['submenuLinkBg'];
 			$sgs_nm_submenu_bg_source_gradient = (string) ( $attributes['submenuLinkBgGradient'] ?? '' );
 		}
@@ -502,8 +516,11 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * rule in `nav-menu/style.css` for why they were deliberately made to
 		 * differ.
 		 */
+		// D1060 (2026-09-14): longhands, not the `background:` shorthand — the
+		// shorthand reset background-image to none and cancelled submenuBgGradient.
 		$css .= $uid_sel . ' .sgs-nav-menu__bar--drawer[data-drill-enhanced] .sgs-nav-menu__accordion .sgs-nav-menu__submenu{'
-			. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));}';
+			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)));'
+			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);}';
 
 		// Normal-only, by FR-41-9: no `hover`, no `current`, and no `suppress_edges`
 		// key at all. Emits nothing when neither colour attribute is set, so the
@@ -645,7 +662,7 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_css' ) ) {
 		 * (style.css `.sgs-nav-menu__bar--drawer[data-drill-enhanced] … .submenu`)
 		 * fell back to `inherit` rather than the token chain the accordion-mode
 		 * panel rule already used, so the row's real backdrop was whatever colour
-		 * `drawerBg` happened to be (default `'primary'` pink) — hence the runtime
+		 * `drawerBg` happened to be (its default at the time, `'primary'`) — hence the runtime
 		 * `sgs_wcag_preferred_text_colour_for_bg( $drawer_bg_slug, … )` computation
 		 * this comment used to describe.
 		 *

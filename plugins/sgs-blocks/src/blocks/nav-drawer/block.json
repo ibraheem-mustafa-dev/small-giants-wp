@@ -254,7 +254,7 @@
 		},
 		"drawerBg": {
 			"type": "string",
-			"default": "primary"
+			"default": "surface"
 		},
 		"ariaLabel": {
 			"type": "string",
@@ -472,7 +472,7 @@
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
-			"drawerBg": "primary"
+			"drawerBg": "surface"
 		}
 	}
 }

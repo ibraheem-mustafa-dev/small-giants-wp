@@ -713,7 +713,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
+								showTextIndent: false, // D1060: never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},
@@ -729,7 +729,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 								showTextAlign: true,
 								showTextWrap: true,
 								showTextColumns: true,
-								showTextIndent: true,
+								showTextIndent: false, // D1060: never emitted for nav links; attr kept
 								showWritingMode: true,
 								showHover: true,
 							},

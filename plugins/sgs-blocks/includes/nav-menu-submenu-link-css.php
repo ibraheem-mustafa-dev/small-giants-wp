@@ -352,10 +352,17 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		 * ~line 331) — an untouched SGS-theme install now shows the token
 		 * background instead of an ad-hoc currentColor tint; a non-SGS theme with
 		 * no `surface` token renders exactly as before.
+		 *
+		 * D1060 (2026-09-14): `background-color` + `background-image` replace the
+		 * `background:` shorthand, which reset `background-image` to `none` and so
+		 * cancelled `submenuBgGradient` in the drawer. `padding:0` is no longer
+		 * forced here: at (0,3,0) it beat `submenuPadding`'s (0,2,0) rule, and the
+		 * base panel rule in nav-menu-submenu-css.php already defaults padding to 0.
 		 */
 		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__submenu{box-shadow:none;min-width:0;'
 			. ( $sgs_nm_submenu_border_box ? '' : 'border:0;' )
-			. 'background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface, color-mix(in srgb, currentColor 6%, transparent)));border-radius:0;padding:0;margin:0;}';
+			. 'background-color:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface, color-mix(in srgb, currentColor 6%, transparent)));'
+			. 'background-image:var(--sgs-nm-submenu-bg-gradient, none);border-radius:0;margin:0;}';
 		// CENSUS #2 — KEPT. This is the drawer's resting sub-item INDENT, not a
 		// stateful rule: the marker icon's 12px padding + 14px icon + 8px gap is
 		// measured against the 32px indent this border occupies (see the note
@@ -373,9 +380,15 @@ if ( ! function_exists( 'sgs_nav_menu_submenu_link_css' ) ) {
 		// colour the link/subtoggle resolve to inside the drawer, rather than
 		// relying on inheritance alone reaching the SVG unchanged. Mirrors the
 		// bar's own paired-selector fix in nav-menu-css.php's colour emission.
-		$css .= '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle,'
+		//
+		// D1060 (2026-09-14): wrapped in :where() — a DEFAULT, not an override. At
+		// (0,3,0) it beat itemColour's own (0,2,0) rule, so a client's item colour
+		// never reached the drawer. The caret still matches the link: when
+		// itemColour is set, nav-menu-css.php writes the link and the caret svg in
+		// the same declaration; when unset, this zero-specificity inherit applies.
+		$css .= ':where(.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__subtoggle,'
 			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__link,'
-			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__caret svg{color:inherit;}';
+			. '.sgs-nav-drawer ' . $uid_sel . ' .sgs-nav-menu__caret svg){color:inherit;}';
 		/*
 		 * ⛔ FR-41-15 census #3 — DELETED, and its STATIC TWIN in `style.css`
 		 * (`.sgs-nav-menu__item--drawer + .sgs-nav-menu__item--drawer`, census #10)

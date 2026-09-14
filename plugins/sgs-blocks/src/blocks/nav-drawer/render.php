@@ -165,11 +165,11 @@ $text_align_map = array(
 	'right'  => 'end',
 );
 
-// ── Background (drawerBg, slug, default 'primary') + WCAG-computed foreground
+// ── Background (drawerBg, slug, default 'surface' — D1060) + WCAG-computed foreground
 // (D339): the background stays a theme-linked var() so a palette change recolours
 // it; the foreground is computed from the LIVE resolved hex each render so the
 // pairing is always ≥ 4.5:1 with zero config.
-$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attributes['drawerBg'] ) : 'primary';
+$drawer_bg_slug = isset( $attributes['drawerBg'] ) ? sanitize_html_class( $attributes['drawerBg'] ) : 'surface';
 $drawer_bg_hex  = '' !== $drawer_bg_slug ? sgs_resolve_palette_hex( $drawer_bg_slug, '' ) : '';
 $drawer_fg_hex  = ( '' !== $drawer_bg_hex ) ? sgs_wcag_text_colour_for_bg( $drawer_bg_hex ) : '';
 
