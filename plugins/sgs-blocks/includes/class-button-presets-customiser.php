@@ -242,16 +242,28 @@ function effective_value( string $preset, string $role ): string {
 	return '';
 }
 
-require_once __DIR__ . '/class-button-preset-setting.php';
-require_once __DIR__ . '/class-button-preset-control.php';
-
 /**
  * Register the panel, its three sections and its eighteen settings/controls.
+ *
+ * `Button_Preset_Setting`/`Button_Preset_Control` extend `\WP_Customize_Setting`/
+ * `\WP_Customize_Control`, which core only loads at `setup_theme` — AFTER
+ * `plugins_loaded`, when this file's own top-level code already ran. Requiring
+ * the two class files here, inside the `customize_register` callback itself,
+ * guarantees both parent classes are already defined by the time PHP parses
+ * the child class declarations below. Requiring them at the top of this file
+ * (the previous approach) always ran during plugin bootstrap, before
+ * `WP_Customize_Setting`/`WP_Customize_Control` existed — the `class_exists()`
+ * guards in both files therefore always failed, the child classes were never
+ * declared on any request, and `customize_register` fatalled on `new
+ * Button_Preset_Setting( ... )` the moment a real Customiser screen fired it.
  *
  * @param \WP_Customize_Manager $wp_customize Customiser manager.
  * @return void
  */
 function register( \WP_Customize_Manager $wp_customize ): void {
+	require_once __DIR__ . '/class-button-preset-setting.php';
+	require_once __DIR__ . '/class-button-preset-control.php';
+
 	$wp_customize->register_control_type( __NAMESPACE__ . '\\Button_Preset_Control' );
 
 	$wp_customize->add_panel(
