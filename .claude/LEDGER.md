@@ -75,45 +75,24 @@ halt-and-resume (D1075).** Full detail in "Front C" below — not duplicated her
 
 ## THE FRONT — what to pick up next
 
-### Front A — nav-menu split (D1059/D1060) — FULLY DONE + DEPLOYED + LIVE-VERIFIED
-`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` fully split, all 8 steps shipped (`b54c9b347`,
-`31886a2ea`, `c149de5b4`, 2026-09-15) — split-nav layout (`ColumnShapePicker` `auto` track,
-`justifyContent`, `splitAfterItemId`/`splitSide`/`showBurger`), SOON badge (shared
-`sgs_nav_shared_badge_html()`, real visually-hidden text for the accessible name, 24-char cap),
-drawer two-tier split. **The Step 5 blocker (179 rogue `sgs/nav-drawer-menu` DB `css_property`
-seeds) is RESOLVED** (`e219265d2` + `71a23fe4b`) — root cause was `sync-container-wrapping-blocks.py`'s
-ground-truth roster still naming the deleted `sgs/nav-menu`; fixed + re-ran `/sgs-update` in full;
-`db-consistency/run.py --check` (build-deploy.py's F6 gate) now exits 0. Two more pre-existing,
-unrelated-to-nav gate failures found+fixed while getting a clean deploy (`0b5593dc9`): stale
-`sgs/nav-menu` fixtures in `converter/tests/test_variant_detect.py` (renamed to
-`sgs/nav-drawer-menu`, matching live DB truth), and a stale product-card assertion (unrelated,
-predates this session — `colourSwatches` gained a `label` field in `0a93cbec9`).
+### Front A — nav-menu split (D1059/D1060) — FULLY DONE + DEPLOYED + LIVE-VERIFIED, re-audited 2026-09-15
+`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` split (all 8 steps), deployed to sandybrown
+(`1376084dd`), live-verified. Two real pre-existing bugs found+fixed live (item-border shadow
+default + a dead CSS branch). Full narrative swept to `memory/session-2026-09-15.md` — read it for
+commit hashes and evidence.
 
-**DEPLOYED to sandybrown (`1376084dd`) and LIVE-VERIFIED via Playwright** — homepage nav renders
-unchanged (regression-safe), and a scratch test page proved every new capability actually works:
-badge renders + correct accessible name, split-before/after render the right item subsets,
-unresolvable split id correctly falls back to the FULL menu, drawer two-tier split works. Scratch
-page + test menu-item edit deleted/reverted after verification.
+**Re-audited against the plan's own checklist 2026-09-15** after Bean directly challenged the
+"fully closed" claim — found and closed 5 real residuals: `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`
+RESOLVED (structural `ancestor` restriction on `nav-bar-menu/block.json`, not the CSS-mirroring
+patch it was tracking); `P-NAV-HOVER-TYPOGRAPHY-CONTROLS` RESOLVED (was a detector false-positive —
+`PREFIXED_HELPER_SUFFIXES` missing a registration, not a real missing-control gap; 12 stale
+baseline entries cleaned); Spec 37 FR-37-42 heading fixed; Spec 00 §3.1 gained the
+`sgs/form-field-*` counter-example; STOP-CATALOGUE.md gained `E26`. Detail on all 5:
+`memory/session-2026-09-15.md` + `memory/parking-archive.md`.
 
-**Two REAL bugs found live, fixed, redeployed, re-verified (`439321df6` + `1376084dd`) — neither
-Steps 6-8's own work, both much older:** (1) `itemBorderWidth`'s FR-41-36 "always visible" 1px
-default read as a stray shadow under every nav item at rest (Bean-flagged on the real homepage) —
-changed to `{}` (off) on both blocks. (2) That alone didn't fix it: a DEAD `elseif` branch in
-`nav-menu-item-border-featured-css.php` (dead until today, because width was never previously
-empty on a live instance) painted `border-style:solid` with no width whenever width was cleared —
-which CSS resolves to the browser's ~3px default border, not none. Branch removed. Both
-live-confirmed via computed-style capture on the real homepage: `border-bottom: 0px none`.
-
-Whole track: read as CLOSED. No more nav-menu-split steps, no more known blockers, deploy is
-current and verified.
-
-**`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** (still PARTIAL) + new
-**`P-NAV-HOVER-TYPOGRAPHY-CONTROLS`** (6 pre-existing orphaned Hover attrs, baselined not built) —
-both residual, both genuinely pre-existing, neither blocking anything.
-
-**Spec 36/41 citation drift** — 13 gating `CITE-SYMBOL` findings on Spec 41 (Step-3-rename drift,
-re-disclosed on every nav-menu-split commit through `1376084dd`), not yet re-fixed. Spec 36's bare
-`sgs/nav-menu` prose mentions (ungated) also untouched — bigger job.
+**Still genuinely open:** Spec 36/41 citation drift — 13 gating `CITE-SYMBOL` findings on Spec 41
+(Step-3-rename drift, re-disclosed on every nav-menu-split commit through `1376084dd`), plus
+Spec 36's bare ungated `sgs/nav-menu` prose mentions — bigger job, not yet started.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
