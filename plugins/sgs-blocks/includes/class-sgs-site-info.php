@@ -48,7 +48,7 @@ final class Sgs_Site_Info {
 	 * opening_hours.fri, opening_hours.sat, opening_hours.sun,
 	 * socials.facebook, socials.instagram, socials.twitter, socials.linkedin,
 	 * socials.youtube, socials.tiktok, socials.whatsapp, socials.google,
-	 * copyright, tagline, vat_number, registered_office
+	 * copyright, tagline, vat_number, registered_office, maps_cid
 	 */
 
 	/**
@@ -79,6 +79,7 @@ final class Sgs_Site_Info {
 		'vat_number'        => 'personal',
 		'copyright'         => 'public',
 		'tagline'           => 'public',
+		'maps_cid'          => 'public',
 	);
 
 	/**
@@ -133,6 +134,7 @@ final class Sgs_Site_Info {
 				'copyright'         => $text,
 				'tagline'           => $text,
 				'vat_number'        => $text,
+				'maps_cid'          => array( __CLASS__, 'sanitise_maps_cid' ),
 			),
 			// Opening hours — all days use plain-text sanitiser.
 			\array_fill_keys( \array_map( fn( $d ) => "opening_hours.{$d}", $days ), $text ),
@@ -439,6 +441,19 @@ final class Sgs_Site_Info {
 	 */
 	private static function sanitise_address( $raw ): string {
 		return \wp_kses( (string) $raw, array( 'br' => array() ) );
+	}
+
+	/**
+	 * Sanitise a Google Maps CID — digits only.
+	 *
+	 * Matches the legacy Business Details sanitiser so a lifted value round-trips
+	 * unchanged.
+	 *
+	 * @param  mixed $raw Raw CID value to sanitise.
+	 * @return string Digits-only CID string.
+	 */
+	private static function sanitise_maps_cid( $raw ): string {
+		return (string) \preg_replace( '/[^0-9]/', '', \sanitize_text_field( (string) $raw ) );
 	}
 
 	/**

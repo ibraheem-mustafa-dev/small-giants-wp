@@ -58,8 +58,17 @@ final class Sgs_Site_Info_Admin {
 	}
 
 	/**
-	 * Register the page under the SGS top-level menu (FR-S5-1). Slug resolves
-	 * at admin.php?page=sgs-site-info. Parent menu is registered by
+	 * Register the page under the SGS top-level menu (FR-S5-1). The submenu
+	 * slug is deliberately `Sgs_Admin_Menu::MENU_SLUG` (NOT `self::PAGE_SLUG`)
+	 * — a submenu whose own slug matches its parent's slug is the WordPress
+	 * convention for making that submenu the page WordPress renders when an
+	 * operator clicks the top-level "SGS" item directly, replacing WP's own
+	 * auto-generated blank first item. Because the slug matches the parent,
+	 * WordPress does not add a second row to the sidebar for it — the URL
+	 * remains admin.php?page=sgs. `self::PAGE_SLUG` stays the internal key
+	 * used to register/render the Settings API sections (add_settings_section,
+	 * add_settings_field, do_settings_sections) — that key is independent of
+	 * the URL slug. Parent menu is registered by
 	 * {@see Sgs_Admin_Menu::add_menu()} at admin_menu priority 5; this method
 	 * runs at the default priority 10, so the parent exists by the time
 	 * add_submenu_page is called.
@@ -70,7 +79,7 @@ final class Sgs_Site_Info_Admin {
 			\__( 'SGS Site Info', 'sgs-blocks' ),
 			\__( 'Site Info', 'sgs-blocks' ),
 			self::CAP,
-			self::PAGE_SLUG,
+			Sgs_Admin_Menu::MENU_SLUG,
 			array( __CLASS__, 'render_page' )
 		);
 	}
@@ -130,6 +139,19 @@ final class Sgs_Site_Info_Admin {
 			array(
 				'label_for' => 'sgs_site_info_address',
 				'key'       => 'address',
+			)
+		);
+		\add_settings_field(
+			'sgs_site_info_maps_cid',
+			\__( 'Google Maps CID', 'sgs-blocks' ),
+			array( $fields, 'render_input_field' ),
+			self::PAGE_SLUG,
+			'sgs_site_info_contact',
+			array(
+				'label_for'   => 'sgs_site_info_maps_cid',
+				'key'         => 'maps_cid',
+				'type'        => 'text',
+				'description' => \__( 'Digits-only CID from your Google Business Profile URL.', 'sgs-blocks' ),
 			)
 		);
 
@@ -240,7 +262,7 @@ final class Sgs_Site_Info_Admin {
 		}
 
 		// 1. Flat well-known scalar keys.
-		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office' ) as $key ) {
+		foreach ( array( 'phone', 'email', 'support_email', 'address', 'copyright', 'tagline', 'vat_number', 'registered_office', 'maps_cid' ) as $key ) {
 			if ( \array_key_exists( $key, $raw ) ) {
 				Sgs_Site_Info::set( $key, $raw[ $key ] );
 			}
@@ -330,7 +352,7 @@ final class Sgs_Site_Info_Admin {
 		\wp_safe_redirect(
 			\add_query_arg(
 				array(
-					'page'       => self::PAGE_SLUG,
+					'page'       => Sgs_Admin_Menu::MENU_SLUG,
 					'sgs-status' => 'reset',
 				),
 				\admin_url( 'admin.php' )
@@ -415,14 +437,17 @@ final class Sgs_Site_Info_Admin {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Enqueue the repeater JS + CSS on this admin page only. Hook suffix for
-	 * sub-pages of a custom top-level menu follows the pattern
-	 * {toplevel-slug}_page_{submenu-slug} — here `sgs_page_sgs-site-info`.
+	 * Enqueue the repeater JS + CSS on this admin page only. Because this
+	 * page's submenu slug equals the parent's own slug (see add_menu()),
+	 * WordPress resolves its hook suffix as `toplevel_page_{slug}` — the
+	 * same shape as any top-level page — rather than the usual
+	 * `{toplevel-slug}_page_{submenu-slug}` pattern used by every OTHER SGS
+	 * submenu.
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 */
 	public static function maybe_enqueue_assets( string $hook ): void {
-		if ( Sgs_Admin_Menu::MENU_SLUG . '_page_' . self::PAGE_SLUG !== $hook ) {
+		if ( 'toplevel_page_' . Sgs_Admin_Menu::MENU_SLUG !== $hook ) {
 			return;
 		}
 		$version = defined( 'SGS_BLOCKS_VERSION' ) ? \SGS_BLOCKS_VERSION : '0.1.1';

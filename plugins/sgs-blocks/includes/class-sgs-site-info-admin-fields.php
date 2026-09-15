@@ -156,6 +156,7 @@ final class Sgs_Site_Info_Admin_Fields {
 			'tagline',
 			'vat_number',
 			'registered_office',
+			'maps_cid',
 			'socials',
 			'opening_hours',
 		);

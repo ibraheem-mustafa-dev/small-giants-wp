@@ -30,9 +30,6 @@ require_once __DIR__ . '/inc/colour-helpers.php';
 // + header-behaviour.js + header-editor-panel.js) was RETIRED 2026-07-14 to remove
 // the duplicate --sgs-header-height publisher + competing position rules.
 
-// Business details settings page (Settings > Business Details).
-require_once __DIR__ . '/inc/class-business-details.php';
-
 /**
  * Remove WordPress emoji scripts and styles.
  *

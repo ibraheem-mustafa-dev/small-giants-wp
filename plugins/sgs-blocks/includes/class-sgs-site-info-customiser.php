@@ -190,7 +190,7 @@ final class Sgs_Site_Info_Customiser {
 					'description' => \__( 'Edit social links, opening hours, and custom fields. <a href="%s" target="_blank">Open Site Info settings →</a>', 'sgs-blocks' ),
 					'section'     => 'sgs_site_info',
 					'priority'    => 60,
-					'admin_url'   => \admin_url( 'admin.php?page=sgs-site-info' ),
+					'admin_url'   => \admin_url( 'admin.php?page=' . Sgs_Admin_Menu::MENU_SLUG ),
 				)
 			)
 		);
