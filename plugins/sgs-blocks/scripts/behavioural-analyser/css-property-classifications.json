@@ -1222,6 +1222,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "cardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "cardRadius",
       "fields": {
         "css_property": "border-radius",
