@@ -1,14 +1,14 @@
 ---
 doc_type: spec
 spec_id: 36
-spec_version: 2.4
+spec_version: 2.5
 status: active
 owner: framework
 date: 2026-07-19
 companions:
   - 37-HEADER-FOOTER-BUILDER.md (the header the nav plugs INTO; nav → header dependency only; FR-S9-8 (Spec 37 §3.8) labelCollapse/per-tier visibility is BUILT; formerly 17-HEADER-FOOTER-ARCHITECTURE.md)
   - .claude/plans/archive/2026-07-18-P2-builder-ux-design-gate.md (LOCKED header/footer builder; ResponsiveTriStateControl is DESIGNED-not-built there)
-  - 41-NAV-MENU-COLOUR-STATE-SYSTEM.md — the CONCRETE MECHANISM for FR-36-4's "distinct hover+focus states" and FR-36-11's colour-state floor. Owns the 3-state (Normal/Hover/current) colour model on `sgs/nav-menu`, the 3-state PHP emitters, the retirement of `hoverStyle`, the 3-state per-side item border + hover colour animation, the submenu panel/link split + open animation + top offset, the menu-trigger icon/text mode, the parent-stays-hovered fix and the indicator-suppression rule. ⛔ It does NOT implement active-trail — see FR-41-20. See FR-36-28.
+  - 41-NAV-MENU-COLOUR-STATE-SYSTEM.md — the CONCRETE MECHANISM for FR-36-4's "distinct hover+focus states" and FR-36-11's colour-state floor. Owns the 3-state (Normal/Hover/current) colour model on `sgs/nav-bar-menu` + `sgs/nav-drawer-menu` (post-D1059 split; was `sgs/nav-menu` before 2026-09-14/15), the 3-state PHP emitters, the retirement of `hoverStyle`, the 3-state per-side item border + hover colour animation, the submenu panel/link split + open animation + top offset, the menu-trigger icon/text mode, the parent-stays-hovered fix and the indicator-suppression rule. ⛔ It does NOT implement active-trail — see FR-41-20. See FR-36-28.
   - 32 (no-inline) · 35 (Part L controls + Part G native mechanisms incl. templateLock:contentOnly + the Responsive-Visibility extension) · 31 §13 + 33 Part 2 (converter — built AFTER the nav passes its test gate; see FR-36-15)
   - seo-schema / seo-technical skills own schema JSON-LD emission
 supersedes:
@@ -69,12 +69,20 @@ behaviours (sticky/transparent/shrink/hide-on-scroll), and the CPT editing home 
 binding + starter-picker. The nav adapts to these. Schema JSON-LD → `seo-schema` (FR-36-17).
 
 **Superseded/replaced (REFERENCE-ONLY):** `sgs/adaptive-nav`, old `sgs/nav-menu`, `sgs/mega-menu`,
-`sgs/mobile-nav`. New `sgs/nav-menu` is a from-scratch rebuild under the same slug; old-shape posts are
-re-cloned, not migrated (D270). Spec 34 DELETED in Phase 6.
+`sgs/mobile-nav`. The from-scratch rebuild under the `sgs/nav-menu` slug (old-shape posts re-cloned, not
+migrated, D270) is now ITSELF superseded: `sgs/nav-menu` was **split into two separate blocks,
+`sgs/nav-bar-menu` (flat bar + dropdown/mega, lives in a header row) and `sgs/nav-drawer-menu`
+(accordion/drill-down, lives inside `sgs/nav-drawer`)** on 2026-09-14/15 (D1059/D1060) — the block name is
+now the disambiguator that used to require a bar/drawer context note on every shared attribute.
+`sgs/nav-menu` no longer exists as a registered block. Spec 34 DELETED in Phase 6. ⛔ Below this line, most
+`sgs/nav-menu` prose mentions describe the single PRE-split block as it existed when each FR was
+authored — read them as history unless the passage has been updated in place (several have,
+migrate-on-touch). Current architecture: `.claude/decisions.md` D1059/D1060, `.claude/LEDGER.md` Front A.
 
 **Footer menus cannot use the native WP core menu** — `core/navigation` is on the banned-core-block
-list (`sgs/nav-menu` declares it in `block-replacements.json`, restored 2026-07-23 after a gap
-opened when `sgs/adaptive-nav` was deleted at D362). **Footer menus are served by FR-36-26.**
+list (`sgs/nav-bar-menu` declares it in `block-replacements.json`, restored 2026-07-23 after a gap
+opened when `sgs/adaptive-nav` was deleted at D362; the claim moved from `sgs/nav-menu` to
+`sgs/nav-bar-menu` at the 2026-09-14/15 split). **Footer menus are served by FR-36-26.**
 
 **Non-goals — DEFERRED to Phase 3 (§7):** the **block-based `wp_navigation` menu system** (classic menus
 are the primary/MVP path; block-menu support is a follow-on extra — Bean 2026-07-18, "not essential, not
@@ -137,20 +145,22 @@ carrying a fake "verified" badge).
 The nav renders from a **native WordPress menu the operator picks** — **primary/MVP = classic menus**
 (*Appearance → Menus*, `nav_menu` terms rendered via `wp_get_nav_menu_items()`), which Bean uses and which
 reliably supports the mega-attach (FR-36-5). **Block-based `wp_navigation` support is a Phase-3 extra**
-(§7). `sgs/nav-menu` walks the chosen menu in render.php to emit its OWN scoped SGS markup — never a bespoke
-store. **Menu picker + default:** each `sgs/nav-menu` instance picks a menu; the resolution default is a
-**registered theme menu location** (classic `register_nav_menus`), else the site's first/most-recent menu —
-NOT `get_nav_menu_locations()` misused on a block menu (a v1.2 error). **Bar↔drawer menu source:** the
-drawer's `sgs/nav-menu` instance DEFAULTS to inherit-from-bar (`menu:"inherit-from-bar"` → both render the
+(§7). `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` each walk the chosen menu in their own render.php to
+emit their OWN scoped SGS markup — never a bespoke store. **Menu picker + default:** each instance picks a
+menu; the resolution default is a **registered theme menu location** (classic `register_nav_menus`), else
+the site's first/most-recent menu — NOT `get_nav_menu_locations()` misused on a block menu (a v1.2 error).
+**Bar↔drawer menu source:** the drawer's `sgs/nav-drawer-menu` instance DEFAULTS to inherit-from-bar
+(`menu:"inherit-from-bar"` → both render the
 same menu, no drift, faithful clone); a **different mobile menu is the explicit per-device override**
 (`menu:<id>`). Neither instance reads the other's state (see FR-36-24 for the ownership of this override).
 
 ### FR-36-2 — Block + CPT + plumbing roster
 | Part | Type | Responsibility |
 |---|---|---|
-| `sgs/nav-menu` | block (dynamic) | The menu. On a header row: a horizontal **bar** with dropdown/mega triggers (desktop); **below its collapse point it renders the operator's chosen collapse mode** — burger→drawer, "More" overflow, or bottom-tab-bar (FR-36-8) — NOT an inline list. Inside a drawer: a vertical **accordion/drill-down list**. May ship pre-set flavours via `registerBlockVariation`. |
+| `sgs/nav-bar-menu` | block (dynamic) | The menu on a header row: a horizontal **bar** with dropdown/mega triggers (desktop); **below its collapse point it renders the operator's chosen collapse mode** — burger→drawer, "More" overflow, or bottom-tab-bar (FR-36-8) — NOT an inline list. Post-D1059 split (2026-09-14): block-private root, no longer wraps in `SGS_Container_Wrapper` (D539) — see FR-36-13. May ship pre-set flavours via `registerBlockVariation`. |
+| `sgs/nav-drawer-menu` | block (dynamic), `"ancestor": ["sgs/nav-drawer"]` | The menu inside a drawer: a vertical **accordion/drill-down list**, chosen via `submenuModel` context published by `sgs/nav-drawer`. Structurally cannot be inserted anywhere else (editor-enforced by its `ancestor` constraint). |
 | `sgs_mega_menu` | **CPT** (block-based, container-like) | A rich mega panel = a per-client editable, block-based post (any SGS blocks + container settings), edited in its own findable admin screen. **Attached to a menu item the normal WP way** (add it to the menu in Appearance → Menus like a page — FR-36-5). Rendered at the item's real position; also inside the drawer on mobile. KIND = section/layout (keeps `SGS_Container_Wrapper`). |
-| `sgs/nav-drawer` | block (dynamic) | The off-canvas **container** the burger opens. A chrome top row (× close, optional logo, optional heading/label/text/button slot) above ONE InnerBlocks body seeded with `sgs/nav-menu`. A full-screen **modal** `<dialog showModal>` (top-layer → survives a transformed header ancestor). No child blocks; no header-row import (FR-36-6, D1009). |
+| `sgs/nav-drawer` | block (dynamic) | The off-canvas **container** the burger opens. A chrome top row (× close, optional logo, optional heading/label/text/button slot) above ONE InnerBlocks body seeded with `sgs/nav-drawer-menu`. A full-screen **modal** `<dialog showModal>` (top-layer → survives a transformed header ancestor). No child blocks; no header-row import (FR-36-6, D1009). |
 | Shared nav plumbing | `viewScriptModule` + a `@wordpress/interactivity` `store('sgs/nav')` (PUBLIC API — the established SGS pattern; NOT a block, NOT core-nav internals) | One open/close/focus/`inert`/intent-timing utility for the disclosure (dropdown + mega) + dialog (drawer) surfaces. Framework-reusable. |
 | `sgs/cart` (extend) | block (dynamic) | Header cart — count badge (Phase-1 fix) + mini-cart preview/flyout/drawer (Phase-2 build). FR-36-19. |
 | `sgs/product-search` / `filter-search` (extend) | block (dynamic) | Predictive search combobox — the ARIA combobox is ALREADY shipped (a genuine extend). FR-36-20. Phase 2. |
@@ -261,7 +271,7 @@ columns; each child block is internally `templateLock:'all'` (fixed shape, edita
   never targets a draft/auto-draft. The top-level trigger link (e.g. "Brands") resolves to the mega post's own
   permalink (or `#` when the panel is purely a container — operator choice).
 - **Inline authoring affordance (the non-coder gap):** selecting a mega-linked menu item inside the
-  `sgs/nav-menu` editor edits its referenced `sgs_mega_menu` panel IN PLACE via `<ServerSideRender>`; "create
+  `sgs/nav-bar-menu` editor edits its referenced `sgs_mega_menu` panel IN PLACE via `<ServerSideRender>`; "create
   new panel" spawns the CPT record transparently and back-references it. The CPT stays the storage layer the
   client **never sees directly** (resolves the "findable admin screen" 3-screen friction). `templateLock:
   "contentOnly"` on the panel.
@@ -333,16 +343,17 @@ band; everything else in it is optional. Three elements, all attribute-driven (N
   floating ×) is DELETED as part of that work — the row occupies that space legitimately instead.
 
 ⛔ **THE CHROME ROW REPLACES THE SEEDED BLOCKS — it does not sit above them.** `plugins/sgs-blocks/src/blocks/nav-drawer/edit.js::TEMPLATE`
-currently seeds
-`TEMPLATE = [ sgs/nav-menu, sgs/responsive-logo, sgs/button ]`. When the chrome row lands, **`sgs/responsive-logo`
-and `sgs/button` are REMOVED from that template** — their roles become the row's logo element and free slot.
-Leaving them produces a drawer with two logos and two CTAs, one of each in chrome and one still droppable in
-the body. **Done-check (a build passing every other gate can still fail this one):** after the change,
-`edit.js`'s `TEMPLATE` contains `sgs/nav-menu` ONLY, and the logo / free-slot markup appears in `render.php`'s
-printed chrome, never inside `useInnerBlocksProps` output. Assert both; no existing gate covers this.
+seeds `TEMPLATE = [ sgs/nav-drawer-menu, sgs/responsive-logo, sgs/button ]` (updated post-D1059 split,
+2026-09-14/15 — was `sgs/nav-menu` before the split; verified live in the current `edit.js`). When the chrome
+row lands, **`sgs/responsive-logo` and `sgs/button` are REMOVED from that template** — their roles become the
+row's logo element and free slot. Leaving them produces a drawer with two logos and two CTAs, one of each in
+chrome and one still droppable in the body. **Done-check (a build passing every other gate can still fail this
+one):** after the change, `edit.js`'s `TEMPLATE` contains `sgs/nav-drawer-menu` ONLY, and the logo / free-slot
+markup appears in `render.php`'s printed chrome, never inside `useInnerBlocksProps` output. Assert both; no
+existing gate covers this.
 
 **2. The body** — the single InnerBlocks region, `templateLock:false` (client patterns may use `contentOnly`).
-Ships `sgs/nav-menu` with the primary menu preselected on every new drawer. Everything beyond that is ordinary
+Ships `sgs/nav-drawer-menu` with the primary menu preselected on every new drawer. Everything beyond that is ordinary
 blocks — `sgs/container` rows exactly as on a normal page (Bean's standing position (A)). There is NO
 `allowedBlocks` restriction and none is to be added.
 
@@ -364,7 +375,7 @@ to delete — this is strictly stronger than a `templateLock`/`lock:{remove}` fl
 the editor JS ONLY and which a Code-Editor or REST write bypasses entirely. **Any future design that moves the ×
 inside a block — including a child block of the drawer — downgrades this to "cannot be removed via the toolbar
 or List View" and MUST amend this clause rather than inherit its wording.** Structure beyond the × (the body's
-required `sgs/nav-menu` seed) is enforced at the CPT layer server-side (`save_post`/`wp_insert_post_data`
+required `sgs/nav-drawer-menu` seed) is enforced at the CPT layer server-side (`save_post`/`wp_insert_post_data`
 re-injection), not by a block lock, for the same reason.
 
 **Menu source:** its own picker (FR-36-1; defaults to
@@ -419,20 +430,23 @@ top-layer promotion or `::backdrop`. See both.
 (2026-09-08). No `showHeader`/`headerRows` attribute or markup has ever existed in block.json, edit.js or
 render.php. It was the likely source of the long-standing "the drawer has no top row" confusion — the spec
 described a feature that would have produced that look, and nobody had checked it was absent. The chrome top
-row above replaces it. Header rows are NOT imported into the drawer in any form. **Submenu — BUILT** (this
-session, superseding the "wired but Phase-1-inert" note that stood here previously): `sgs/nav-drawer`
-publishes its `submenuModel` attribute to descendants via block.json `providesContext`
-(`sgs/navDrawerSubmenuModel`), which `sgs/nav-menu` declares via `usesContext` and reads in render.php to
-select a SECOND renderer (`SGS_Nav_Menu_Bar_Renderer::render_items_drawer()`) distinct from the flat bar's
-`render_items()` — the header/footer bar's existing dropdown/mega markup is completely untouched. Both
-`accordion` and `drill-down` share IDENTICAL server markup: a real nested `<details name="sgs-nav-menu-
+row above replaces it. Header rows are NOT imported into the drawer in any form. **Submenu — BUILT** (built
+pre-split, then carried through the 2026-09-14/15 nav-menu split intact): `sgs/nav-drawer` publishes its
+`submenuModel` attribute to descendants via block.json `providesContext` (`sgs/navDrawerSubmenuModel`), which
+`sgs/nav-drawer-menu` declares via `usesContext` and reads in its own render.php
+(`$block->context['sgs/navDrawerSubmenuModel']`) to choose between its two submenu markup shapes —
+`accordion` or `drill-down` — via `sgs_nav_drawer_menu_render_items()` (`includes/nav-menu-markup.php`).
+Post-split this is no longer one block selecting between a bar renderer and a drawer renderer —
+`sgs/nav-bar-menu`'s own dropdown/mega markup (`SGS_Nav_Menu_Bar_Renderer` in its own render.php) is a
+completely separate block with no context dependency at all. Both `accordion` and `drill-down` share
+IDENTICAL server markup: a real nested `<details name="sgs-nav-drawer-menu-
 accordion-{uid}">` **exclusive accordion** per item with children (✅VERIFIED — Chrome/Edge/Firefox/Safari 17+
 all honour `<details name>` exclusivity; degrades to independent, still-functional `<details>` on older
 engines, never to a broken menu), split parent-link from expander (a real `<a>` beside the `<summary>` toggle
 when the parent has its own URL; a plain label when it does not). `drill-down` layers a JS-only progressive
-enhancement (`src/shared/effects/nav-drilldown.js`, wired from `nav-menu/view.js`'s existing
+enhancement (`src/shared/effects/nav-drilldown.js`, wired from `nav-drawer-menu/view.js`'s existing
 `initBarEffects()`) that intercepts the `<summary>` click, slides the tapped submenu in as a full-size
-sub-panel over the top-level list (CSS `transform`, `nav-menu/style.css`), injects a Back button (its label
+sub-panel over the top-level list (CSS `transform`, `nav-drawer-menu/style.css`), injects a Back button (its label
 read from a `data-sgs-nav-back-label` attribute render.php already translated server-side — the JS module
 carries no hardcoded English), and returns focus to the `<summary>` on Back. With NO JS, `drill-down`'s
 fallback IS the accordion — proven, not just declared.
@@ -524,7 +538,7 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
      >   same string, so without this mark two `<dialog id="sgs-nav-drawer">` elements would ship —
      >   a duplicate id, silently. The block behaviour (modal, focus, motion, close) is otherwise
      >   **byte-identical**; nothing in FR-36-6/14/16 changed.
-     > - **`sgs/nav-menu` records which drawer id its burger controls** into a per-request registry,
+     > - **`sgs/nav-bar-menu` records which drawer id its burger controls** into a per-request registry,
      >   so the Active drawer renders only on pages that actually have a burger. A page with no
      >   burger keeps byte-identical output.
      > - **FR-36-9a's warning was taught about the Active drawer.** Once the panel is site-wide, an
@@ -546,8 +560,9 @@ instances); `animateFrom` reduced to `auto|fade` with per-anchor motion defaults
   3. **`drawerRef` re-types from DOM-id string to a drawer-post reference** with a picker ("Which
      menu panel does this burger open?" + inline create). FR-36-9a's dangling-ref warning survives,
      now firing on a deleted/draft post instead of a typo'd string.
-  4. **nav-menu stays a BLOCK** — its content home is the classic menu, its edit surface is the
-     header CPT; a nav-menu CPT would triple-indirect. Its trigger presentation upgrades: FR-36-27.
+  4. **The nav-menu blocks stay BLOCKS** (both `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`
+     post-D1059 split) — their content home is the classic menu, their edit surface is the
+     header CPT; a nav-menu CPT would triple-indirect. Trigger presentation upgrades: FR-36-27.
   5. **Controllability contract:** every reference-derived property has exactly one home — CPT
      content/attrs, inspector attrs (Spec 35-manifested), or theme tokens. A value with no home is a
      build defect (gate DP5).
@@ -570,7 +585,7 @@ Full measured write-up: `.claude/reports/2026-07-28-nav-drawer-desktop-variant-r
 - **ONE block with VARIANTS, not two blocks.** Every production system checked does this (WP core
   Navigation `overlayMenu`; Bricks *"contains both your desktop & mobile menu"*; Webflow, GOV.UK,
   Elementor). The documented failure mode is not one-vs-two but **one block whose two modes cannot
-  diverge** (Gutenberg #39142). We are already immune: the drawer holds its OWN `sgs/nav-menu`
+  diverge** (Gutenberg #39142). We are already immune: the drawer holds its OWN `sgs/nav-drawer-menu`
   instance with its own uid + inspector, so the two modes diverge cleanly.
 - **The variant axis is WHAT THE PANEL ATTACHES TO** — not its size:
   `full-screen` (viewport) · `header-attached` (the header) · `trigger-anchored` (the burger button) ·
@@ -642,7 +657,7 @@ block's own behaviour), not a new capability.
 
 The trigger the operator gets today is burger-glyph-only with colour/bg/hover/size attrs; the
 references make the trigger a designed element (studionamma renders the word "MENU", fantasy a
-symbol, lamalama a morphing glyph). New `sgs/nav-menu` attrs, all inspector-manifested:
+symbol, lamalama a morphing glyph). New `sgs/nav-bar-menu` attrs (burger is bar-only post-D1059 split), all inspector-manifested:
 `triggerStyle` (`burger`|`word`|`word-burger`|`symbol`) · `triggerLabel` (default "Menu") ·
 `triggerSymbol` (shared `IconPicker`) · `triggerOpenStyle` (`morph-x`|`swap-label`|`unchanged`) ·
 `triggerOpenLabel` (default "Close"). Open-state sync is cross-block state in `store('sgs/nav')` —
@@ -701,7 +716,7 @@ the target page). "Crawlable without JS" ≠ "every panel opens without JS."
   the overflow is measured client-side via `ResizeObserver`; **with no JS all items simply show/wrap**);
   (c) **bottom-tab-bar** — a fixed mobile bar of 3–5 icon+label items in the thumb zone (safe-area-inset for
   notched phones), active-state highlighted. The operator picks per site.
-- **Burger→drawer association:** `sgs/nav-menu` carries `drawerRef` (target drawer anchor/ID → `aria-controls`);
+- **Burger→drawer association:** `sgs/nav-bar-menu` carries `drawerRef` (target drawer anchor/ID → `aria-controls`);
   unset → the single drawer; multiple → explicit pick; a dangling `drawerRef` → editor Notice + burger
   no-op-with-warning (FR-36-9a). **⚠ AMENDED 2026-07-29 (gate, signed): `drawerRef` re-types to a
   "Menu drawer" POST reference with a picker control once FR-37-43 lands** — the DOM-id string form
@@ -745,7 +760,7 @@ form of (a)/(b). ⚠ **Corrected 2026-09-09** — this line previously read "DES
 BUILT. Adopt this control; never invent a parallel per-tier switcher (R-31-9).
 
 **Menu case (the one-menu-source default):** the bar and the drawer DEFAULT to ONE shared menu (the drawer's
-`sgs/nav-menu` inherits-from-bar — no drift, faithful clone), with a deliberate per-device override available
+`sgs/nav-drawer-menu` inherits-from-bar — no drift, faithful clone), with a deliberate per-device override available
 (a different mobile menu). This per-device-content capability IS the override, so FR-36-1's "may use different
 menus" is an explicit opt-in, not the default.
 
@@ -795,7 +810,9 @@ an admin Notice listing referencing items; (4) deleting a menu item leaves no or
 independent, reusable CPT); (5) §8 includes an integrity sweep. These are **error states**, distinct from
 FR-36-12's informational a11y notices.
 
-**Clause (2) — `✅ BUILT 2026-07-27` (`sgs/nav-menu` edit.js), and WIDENED past what this clause named.**
+**Clause (2) — `✅ BUILT 2026-07-27` (originally `sgs/nav-menu` edit.js; the `drawerRef` control this
+clause covers now lives on `sgs/nav-bar-menu` edit.js post-D1059 split), and WIDENED past what this clause
+named.**
 Cross-spec change: Spec 37 FR-37-26 amended in the SAME commit per Spec 37 §1.2's both-specs-same-commit
 boundary rule (the drawer is this spec's; the header CPT the notice fires inside is Spec 37's).
 The clause anticipated only a *dangling* ref — a `drawerRef` pointing at a drawer that does not exist. The
@@ -989,8 +1006,8 @@ links"; they differ only in where the links come from and whether the result is 
 
 #### The shape: extend `sgs/icon-list`. No new block, no compound.
 `sgs/icon-list` gains a **heading**, a **marker set**, the shared **`TypographyControls`** family,
-and a **`source` toggle** (`typed` | `menu`). `sgs/nav-menu` is UNCHANGED and keeps the site
-navigation role (bar + drawer).
+and a **`source` toggle** (`typed` | `menu`). `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` are UNCHANGED and
+keep the site navigation role (bar + drawer respectively).
 
 **Why a `source` attribute and NOT a compound block swapping child blocks (decided — do not
 re-litigate):** swapping InnerBlocks on a toggle is fragile in Gutenberg AND destroys whatever the
@@ -1054,14 +1071,23 @@ it; the semantic HTML is what actually earns the SEO and AI-crawl benefit. Keep 
 Inherited free from FR-36-17, NOT restated as new work: server-rendered, no AJAX, no lazy-load,
 descriptive anchor text.
 
-> `sgs/nav-menu`'s root has always been a `<nav>` with `navLabel` on it
-> (`SGS_Container_Wrapper::render(..., array('tag' => 'nav', ...))`). One `<nav>` per instance,
-> one label — verified live on `/t1-nav/` (`navCount: 2`, `nested: false` on both). A 2026-07-23
-> same-day fix that added a second nested `<nav>` was a REGRESSION and has been reverted — do
-> not re-apply it. That fix was built on a false diagnosis reached via
+> `sgs/nav-menu`'s root has always been a `<nav>` with `navLabel` on it, at the time this note was
+> written emitted via `SGS_Container_Wrapper::render(..., array('tag' => 'nav', ...))`. One `<nav>`
+> per instance, one label — verified live on `/t1-nav/` (`navCount: 2`, `nested: false` on both). A
+> 2026-07-23 same-day fix that added a second nested `<nav>` was a REGRESSION and has been reverted —
+> do not re-apply it. That fix was built on a false diagnosis reached via
 > `grep -c "<nav" nav-menu/render.php` returning 0 — the `<nav>` tag is emitted from
 > `class-sgs-container-wrapper.php`, a file the grep never read
 > (`STOP-A-GREP-PATTERN-THAT-CANNOT-MATCH-PROVES-NOTHING`).
+>
+> ⚠ **Mechanism superseded 2026-08-09 (D539), then carried through the 2026-09-14/15 split.** Neither
+> successor block uses `SGS_Container_Wrapper` any more — both `sgs/nav-bar-menu/render.php` and
+> `sgs/nav-drawer-menu/render.php` build their own `<nav %1$s>` root directly via
+> `get_block_wrapper_attributes()` and a plain `printf( '<nav %1$s>%2$s</nav>', ... )`
+> (`render.php`'s own comment: "This block used to render through SGS_Container_Wrapper with kind
+> 'layout'. It no longer does."). One `<nav>` per instance, one label, still holds — verified live for
+> both blocks this session — the ROOT CAUSE described above (the narrative below this note) is
+> unaffected by the mechanism change.
 >
 > **The one REAL bug in this area — found by the same live test, now fixed.** `navLabel` defaulted to
 > `'Primary'` in `block.json`, so `$nav_label` was never empty and the `wp_get_nav_menu_object()`
@@ -1073,11 +1099,11 @@ descriptive anchor text.
 >
 > **Also corrected: the axe attribution.** This note claimed the framework-wide `region` /
 > `landmark-unique` violations were caused by the missing nav landmark. They are not. Negative
-> control 2026-07-23: the canary HOMEPAGE, which renders no `sgs/nav-menu` at all, reports the
-> **identical five violations**. Their real cause is two unnamed `<main>` elements
-> (`landmark-no-duplicate-main` + `landmark-main-is-top-level` fire alongside). `sgs/nav-menu`
-> contributes zero axe violations. The theme-level duplicate `<main>` was a separate defect;
-> it has since been resolved.
+> control 2026-07-23: the canary HOMEPAGE, which at the time rendered no `sgs/nav-menu` at all (the
+> single pre-split block), reports the **identical five violations**. Their real cause is two unnamed
+> `<main>` elements (`landmark-no-duplicate-main` + `landmark-main-is-top-level` fire alongside). The
+> nav block (now `sgs/nav-bar-menu` / `sgs/nav-drawer-menu`) contributes zero axe violations. The
+> theme-level duplicate `<main>` was a separate defect; it has since been resolved.
 >
 > ⚠ **Still owed:** `axe` on the OPEN drawer. The `nav-qa/axe-run.mjs --open` run timed out on
 > `locator.click` (harness actionability, not a page defect — the burger opens correctly under a
@@ -1186,7 +1212,8 @@ second resolver (R-31-9). Heading default resolves from the menu's own name via
 `wp_get_nav_menu_object( $menuRef )->name`, with an operator-entered `heading` overriding it
 **stickily** — a later menu rename must never silently replace it. Then the per-type table in
 FR-36-26a: conditional `<nav>`, `aria-labelledby` pointing at the rendered heading's id, and
-`aria-current` computed CLIENT-SIDE in `view.js` (reuse `nav-menu/view.js`'s approach — LiteSpeed
+`aria-current` computed CLIENT-SIDE in `view.js` (reuse `nav-bar-menu/view.js`'s / `nav-drawer-menu/view.js`'s
+`markCurrentPage` approach, identical in both post-D1059 split — LiteSpeed
 would cache one page's answer for every page, FR-36-11).
 *Files:* the same three, plus a `view.js`.
 
@@ -1207,7 +1234,8 @@ Then `nav-qa/axe-run.mjs` clean on that page.
 
 **Out of scope for these two dispatches, recorded so it is not silently absorbed:** the FR-36-26b
 converter recognition step (Part 2's problem — only the ROUTING is declared, not the detection), and
-any change to `sgs/nav-menu`, which keeps the bar/drawer role untouched.
+any change to `sgs/nav-menu` (now `sgs/nav-bar-menu` / `sgs/nav-drawer-menu` post-D1059 split), which
+keeps each block's own role untouched.
 
 **BUILT + LIVE-VERIFIED 2026-07-23 (D374).** Both dispatches shipped as spec'd (`bf312016` +
 `d08d3149`). Notes for future readers:
@@ -1241,7 +1269,8 @@ the API call.** A `.show()` drawer that inerts the background, moves focus in, c
 focus to its trigger is fully on the DIALOG side of this gate; `showModal()` is one implementation of that
 contract, and per FR-36-6's approved modality direction it is not the one the drawer is moving to. ⛔ Do not
 add `aria-modal="true"` under either — see FR-36-6. Mega = a bigger
-disclosure sharing `sgs/nav-menu`'s contract. **This is the ONE a11y gate every §4 interactive piece reuses**
+disclosure sharing `sgs/nav-bar-menu`'s dropdown contract (dropdowns/mega are bar-only post-D1059 split).
+**This is the ONE a11y gate every §4 interactive piece reuses**
 (cart/search `displayMode` auto-swaps between the two patterns) — never a second contract.
 
 ### FR-36-11 — WCAG (2.1 AA + 2.2 wins)
@@ -1279,7 +1308,14 @@ Editor/admin a11y feedback = a passive Notice, never a gate. (The *operator-faci
 Nothing renders as inline `style="…"`: native supports flip to scoped serialisation
 (`__experimentalSkipSerialization` + `wp_style_engine_get_styles(...,['selector'=>"#uid"])` into the scoped
 `<style>`); box-object attrs; responsive tiers + `:hover` in stylesheet rules; custom bps → `sgsCustomCss`.
-`sgs/nav-menu` (bar) keeps the scoped `SGS_Container_Wrapper`.
+⚠ **Stale as of D539 (2026-08-09).** `sgs/nav-bar-menu` (renamed from `sgs/nav-menu` at the 2026-09-14/15
+split) no longer keeps a scoped `SGS_Container_Wrapper` — it was measured to contribute zero live
+arrangement CSS (justifyContent/flexDirection/flexWrap/alignItems/the grid family all frozen at empty
+defaults) and only 3 of its ~24 declared wrapper attrs were reachable by a client, so it was moved to a
+BLOCK-PRIVATE root (own `<nav %1$s>` printed directly via `get_block_wrapper_attributes()`), matching every
+other content-KIND composite under D294. No-inline-styling compliance is unaffected — it still emits zero
+inline `style=""`, just without the wrapper mechanism. `sgs/nav-drawer-menu` was block-private from its own
+scaffold at the split (never used the wrapper).
 
 **`<dialog>` exception — `sgs/nav-drawer` is content-KIND BLOCK-PRIVATE, not a wrapper composite** (D294,
 Bean-approved; built + live 2026-07-20). The drawer's root element must BE the `<dialog>`.
@@ -1344,7 +1380,8 @@ in the Advanced tab is a Spec 35 Part F anti-pattern present on all 81 blocks �
 
 ### FR-36-28 — Nav colour-state system → Spec 41 (added 2026-09-10)
 
-**The `sgs/nav-menu` colour, state and control system is specified in
+**The `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` colour, state and control system (shared, post-D1059
+split) is specified in
 [`41-NAV-MENU-COLOUR-STATE-SYSTEM.md`](41-NAV-MENU-COLOUR-STATE-SYSTEM.md).** That spec is the
 concrete mechanism satisfying FR-36-4's "distinct hover+focus states" and the colour half of
 FR-36-11, and it sits under FR-36-14's control-completeness contract rather than beside it.
@@ -1419,8 +1456,9 @@ must be fixed before any Part 2 work is scheduled.
 
 Each phase ships something demoable + has a pre-registered exit gate (Bean's eye + §8) before the next. The
 utility pieces (§4) + cross-cutting FRs are phased INTO this plan so a solo builder knows the sequence.
-- **Phase 1 (MVP) — Mama's end-to-end (classic menu):** `sgs/nav-menu` flat bar + burger → `sgs/nav-drawer`
-  full-screen modal accordion + the shared utility + converter-emit of those two + FR-36-17 crawlability;
+- **Phase 1 (MVP) — Mama's end-to-end (classic menu):** flat bar + burger (now `sgs/nav-bar-menu`) →
+  `sgs/nav-drawer` full-screen modal accordion (now `sgs/nav-drawer-menu` inside it) + the shared
+  utility + converter-emit of those two + FR-36-17 crawlability;
   **plus the cart badge fix (`role="status"`, FR-36-19) + logo basics (FR-36-22).** NO mega CPT, NO
   safe-triangle (flat bar has no submenus), NO priority+/bottom-tab, NO mini-cart drawer. **Gate-1** (Mama's
   live + drawer a11y + crawl + Bean's eye) is the pre-registered exit.
@@ -1613,8 +1651,10 @@ Its one live contract (mega-panel `templateLock`) moved to **FR-36-5**. Everythi
 
 ### FR-36-15 — Emittable by construction (DP6); the clone pipeline is built AFTER the nav, not before
 Write a **classic `nav_menu`** (the primary path — `wp_update_nav_menu_item()`; add a `nav_menu_item`
-targeting each `sgs_mega_menu` post — the native association, no map); write `sgs/nav-menu` with
-mode/style/`drawerRef` attrs; write one `sgs_mega_menu` CPT post per rich panel (block tree; template by draft
+targeting each `sgs_mega_menu` post — the native association, no map); write `sgs/nav-bar-menu` with
+mode/style/`drawerRef` attrs for the header placement, and `sgs/nav-drawer-menu` for the drawer placement
+(post-D1059 split — was one `sgs/nav-menu` write before 2026-09-14/15); write one `sgs_mega_menu` CPT post
+per rich panel (block tree; template by draft
 layout) + render at real position; write `sgs/nav-drawer`. **Per-client scoping:** emitted `sgs_mega_menu`
 posts + starter packs carry a per-client title/slug prefix (no collisions). **Degradation:** an un-mappable
 draft nav construct is logged skipped-with-reason (Rule 4). All native SGS blocks; no inline styles; no banned
@@ -1686,8 +1726,8 @@ entered once".
 ## 12. Open sub-decisions — RESOLVED (Bean's veto at sign-off)
 | # | Question | Resolution |
 |---|---|---|
-| a | Burger home | On `sgs/nav-menu` (collapsed), opens the drawer via `drawerRef` |
-| b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default). ⚠ **Amended D1009** — the × close and the optional logo/free-slot are CHROME (attributes), never template blocks; the body seeds `sgs/nav-menu` only. See FR-36-6 |
+| a | Burger home | On `sgs/nav-bar-menu` (collapsed), opens the drawer via `drawerRef` |
+| b | Drawer content / menu | Full modal container; own menu picker (inherit-from-bar default). ⚠ **Amended D1009** — the × close and the optional logo/free-slot are CHROME (attributes), never template blocks; the body seeds `sgs/nav-drawer-menu` only. See FR-36-6 |
 | c | Collapse modes | Three operator-chosen: burger→drawer, priority+, **bottom-tab-bar**. ⚠ **Re-corrected 2026-09-09** — an earlier same-day edit claimed safe-triangle does not ship. It does: the geometric triangle is layered in front of the 170 ms close-grace bridge, which is the fallback. Both are built. See FR-36-4 for the proving command |
 | d | Mega association | **Native menu (Appearance → Menus)** — add the CPT like a page; item carries the post ID (no map/ID); resolved by `object_id`/`get_post()` |
 | e | Drawer modality | **Moving to NON-MODAL** — `.show()` + an explicit z-index scale with the header ABOVE the drawer panel, background inertness author-managed. **Status: `APPROVED 2026-09-09 — NOT BUILT`** (~3h). Grounded in live DOM measurement of 15 references: 14/15 keep the trigger visible and topmost, and 7/7 of the full-viewport primaries lift the header by z-index — which `showModal()`'s top-layer promotion makes structurally impossible. ⛔ `aria-modal="true"` must NOT be added; it would hide the deliberately-live burger from assistive tech. ⚠ Also corrected 2026-09-09 — the "Show header" per-row toggle was NEVER BUILT and is WITHDRAWN; header rows are not imported into the drawer in any form. Full record + the measurement table: FR-36-6 |
@@ -1770,3 +1810,23 @@ full record, oldest first.
   shape named. The third state is also renamed `Active` → `current`, the framework's own
   existing vocabulary per `plugins/sgs-blocks/scripts/consistency/golden-controls.json::_meta.stateVocabulary.real` (D676/D678), and
   Spec 41's FR table is refreshed to its spec_version 0.2.0 contents.
+- **v2.5, 2026-09-15 — the deferred "bigger job" from the D1059/D1060 nav-menu split's own
+  citation-fix pass (`b6c335924`, path citations only).** `sgs/nav-menu` no longer exists as a
+  registered block (split into `sgs/nav-bar-menu` + `sgs/nav-drawer-menu`, 2026-09-14/15); this
+  version rewrites the architecture description (§1 Superseded/replaced, §2 FR-36-1/FR-36-2's
+  roster table, §3 FR-36-5/6/27, §5 FR-36-10, §6 FR-36-13, §7 phasing, §8 acceptance table, §9
+  FR-36-15) to name the correct current block per passage, rather than leaving bare ungated
+  `sgs/nav-menu` prose that the citation-drift gate cannot see (no `file::symbol` form, so
+  `lint-spec-drift.py` never flagged it — caught only because Bean directly challenged an earlier
+  "fully closed" claim on the split track and the plan's own "Docs to update" checklist named
+  this gap explicitly). Two substantive corrections beyond renaming, both verified against live
+  code before writing: (1) FR-36-6's submenu-context paragraph previously described ONE block
+  selecting between a bar renderer and a drawer renderer via `usesContext` — post-split this is
+  two separate blocks, only `sgs/nav-drawer-menu` reads `sgs/navDrawerSubmenuModel` context at
+  all, `sgs/nav-bar-menu`'s dropdown/mega markup has no context dependency; (2) FR-36-2's roster
+  table and FR-36-13 previously said the bar block "keeps the scoped `SGS_Container_Wrapper`" —
+  false since D539 (2026-08-09), confirmed via the block's own render.php comment ("This block
+  used to render through SGS_Container_Wrapper... It no longer does") — both blocks are
+  block-private roots. Genuinely historical passages (dated proof-events, explicitly-marked
+  "Historical" sections, past-tense decision narratives) were left as accurate history rather
+  than rewritten, with the block name still noted for clarity where cheap to do so.
