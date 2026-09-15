@@ -66,8 +66,8 @@ behind R8, see `.claude/prompts/2026-09-10-header-footer-implementation.md`), tr
 padding (minor).
 
 **Universal-pipeline upgrade (Claude Design `.dc.html`) — converter wiring shipped (D1071/D1073),
-classless-repeater recognition parked after 3 council rounds (D1074), Tier B rewired as a
-halt-and-resume (D1075).** Full detail in "Front C" below — not duplicated here.
+Tier B rewired as a halt-and-resume (D1075). Spec 44 reworked v2.0.0→v2.3.0 across 3 council
+rounds (D1081), designed but not yet built or re-verified.** Full detail in "Front C" below.
 
 ## Blockers
 
@@ -90,9 +90,14 @@ baseline entries cleaned); Spec 37 FR-37-42 heading fixed; Spec 00 §3.1 gained 
 `sgs/form-field-*` counter-example; STOP-CATALOGUE.md gained `E26`. Detail on all 5:
 `memory/session-2026-09-15.md` + `memory/parking-archive.md`.
 
-**Still genuinely open:** Spec 36/41 citation drift — 13 gating `CITE-SYMBOL` findings on Spec 41
-(Step-3-rename drift, re-disclosed on every nav-menu-split commit through `1376084dd`), plus
-Spec 36's bare ungated `sgs/nav-menu` prose mentions — bigger job, not yet started.
+**Spec 41's 13 gating `CITE-SYMBOL` findings — FIXED 2026-09-15** (`e30cefcad`): all 13 stale
+`sgs_nav_menu_*`/`.sgs-nav-menu__*` citations rewritten to the real post-split names, verified
+against the actual code before writing. `lint-spec-drift.py --check`: 13 gating → 0 gating.
+
+**Still genuinely open:** Spec 36's dozens of bare, ungated `sgs/nav-menu` prose mentions
+throughout its architecture description (§2-4, block table, phasing section) — no path citation,
+so the gate never flags them, but they still describe the single pre-split block. Bigger job
+(a real rewrite of that prose, not a mechanical citation fix), not yet started.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
@@ -109,32 +114,52 @@ Both specs revised: **Spec 42 → v2.1.0**, **Spec 43 → v1.2.0** (pricing rebu
 detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
 `/phase-planner` run when reached. **Next action: execute Phase 0.**
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081)
 
-**State recap:** the pipeline can SEE classless content and let it past the hard-halt gate
-(shipped, live-verified). Can't yet reliably tell WHICH piece of a repeated card is the
-title/price/icon. Three council rounds on Spec 44, each finding a new flaw, reverted rather
-than a 4th rewrite (D1074) — full trail in git history. Tier B's auto-classification is SOLVED
-(D1075, halt-and-resume, no API key needed — that blocker is gone, remove stale notes).
+**State recap 2026-09-15 (superseded the "parked" framing — Spec 44 is DESIGNED again, at
+v2.3.0):** `.claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md` went through THREE
+`/adversarial-council` rounds tonight (5/6 NO-GO, then 3/3 NO-GO, then a scope correction from
+Bean) — full trail D1081. Root mechanism now: **Stage A (structure-first, matches a repeated
+group's rendered STRUCTURE — not field names — against a real block's source, but only AFTER
+narrowing candidates by parent context: repetition-context via `repeated_sibling_detector.py`
++ the parent's own declared composite shape via `block_attributes`)**, falling back to
+**Stage B (DB-fact elimination against `array_item_schema`/`block_attributes`)**. Auto-complete
+gate (FR-44-1): exact parent-narrowed structural match, OR first-occurrence-per-client forced
+review. New sibling DB table `block_render_repeaters` for render-time (non-attribute) repeaters
+like `sgs/buybox`'s WooCommerce-driven gallery. **NOT YET BUILT. NOT YET re-verified by a
+council pass since v2.3.0** — do not assume v2.3.0 is GO; the pattern tonight was every prior
+revision had a real flaw found on the next pass.
 
-**Next priority — start with `.claude/reports/2026-09-14-classless-recognition-next-design-
-attempt.md` (6 threads, esp. Thread 6), NOT a blank prototype.** Strongest lead: Thread 6
-(D1078) — a DATABASE table of declared schemas missed real answers that direct source/live-page
-inspection found immediately (some answers aren't even SGS blocks — WooCommerce natives).
-**Bean's own idea, not yet designed:** recognise a PARENT/composite structure first,
-descendants inherit identity from their known position in that structure — no per-field
-guessing. §3's "recommended shape" predates this, needs re-thinking not building as written.
-Also still strong: DB-fact elimination (Thread 3, 6/8 groups to one block) + the
-JS-construction signal (`.claude/reports/2026-09-14-claude-design-draft-field-identity-
-schema.md`). Next session: `/brainstorming` fresh, reading the design doc first.
+**Scope correction, important for next session:** page-level routing (which real page/template
+a whole draft route becomes) is OUT OF SCOPE for Spec 44 entirely — moved to a separate,
+already-planned "template/CPT side of the cloning pipeline" (Bean's framing, imminent, not
+designed yet). Also surfaced: cloning a template-destination page should write the draft's
+design into the site's own SHARED theme template file (so one product-page clone styles every
+product) — confirmed nothing in the pipeline writes to `theme/sgs-theme/templates/` today.
+Real, new, unbuilt capability for that future track, not Spec 44.
 
-**Also fixed:** Tier A's fabricated docstring claim — corrected (`372ed8ce1`). **`items`/
-`thumbs`: identities KNOWN (D1078), code fix still open.** `thumbs` → `sgs/buybox`'s
-thumbnail-strip. `items` → **WooCommerce's native Product Filter blocks** +
-`sgs/filter-search` (NOT `sgs/option-picker` — that first guess was ALSO wrong, caught by
-Bean live-inspecting the real shop page; no DB table reaches a non-SGS native-block answer).
-`sc_var_classifier.py`'s alias table still wrongly resolves both to `sgs/info-box` — a
-small, separate, not-yet-done fix.
+**Corrections carried forward (D1078, re-verified tonight, do not re-litigate):** `thumbs` →
+`sgs/buybox`'s real thumbnail strip. `items`/filter panel → **WooCommerce's native Product
+Filter blocks** + `sgs/filter-search` (NOT `sgs/option-picker`). "Top brands" framework gap →
+**no gap**, `sgs/brand-strip` already covers it (D1031's `media:null` empty-state fix). `sc_var_
+classifier.py`'s alias table still wrongly resolves `items`/`thumbs` to `sgs/info-box` — small,
+separate, not-yet-done fix.
+
+**Standing rule captured tonight:** narrow by parent context (page/repetition/composite shape)
+BEFORE comparing a leaf item's own structural shape against a block roster — a leaf-only
+matcher can't tell apart two blocks deliberately built to render identically (`sgs/buybox` vs
+`sgs/product-card`'s thumbnail strip, confirmed same session). Full lesson:
+`C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
+
+**Next priority:** get a verification pass on Spec 44 v2.3.0 before building (given tonight's
+pattern), then build Stage A/B behind the two default-off flags it specifies
+(`--classless-match`, `--classless-auto-complete`). Remaining named track items (Bean's list,
+all separate from Spec 44 itself): **responsiveness work** — ALREADY DESIGNED, read
+`.claude/plans/2026-09-14-connect-sc-var-identity-to-responsive-values.md` (do not re-design);
+**rule-table extension** — the Tailwind/shadcn/Webflow/Elementor/Divi convention-rule work,
+planned before Spec 44 existed (locate the plan file next session — not yet re-found this
+session); **one-off classless content** — still explicitly deferred, no sibling/composite to
+check a guess against, genuinely different problem from repeated-group recognition.
 
 ### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
 Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
@@ -277,7 +302,7 @@ binding. **Add from this session:**
 |---|---|
 | **Nav-menu split — SPLIT DONE (Steps 1-5), next is Step 6-8 (new features)** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/) (full Step 1-8 sequence + locked rulings); `decisions.md` D1059 (split architecture), D1060 (drawer colour defaults), D1076 (Steps 3-5 close-out); `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` (BAR 32/DRAWER 9/BOTH 100/NO-EFFECT 12) |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
-| **Classless repeater recognition — start here next session** | `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md` (read FIRST); `.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md`; `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (reverted to v1.0.0); `decisions.md` D1074 (3-round failure trail), D1077 (new evidence + what's still fabricated-vs-real) |
+| **Classless repeater recognition — start here** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.0, DESIGNED not built); `decisions.md` D1081 (3-round trail); Front C above |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
