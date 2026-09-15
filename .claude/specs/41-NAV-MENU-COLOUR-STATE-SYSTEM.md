@@ -236,7 +236,7 @@ on the canary 2026-09-13; its own §'s "PARTIALLY BUILT" tag refers only to the 
 text-colour default it revised alongside, not to the divider capability, which is fully built) ·
 **FR-41-38** (directional sweep generalisation — `sgs_directional_sweep_css()`) · **FR-41-13** (the
 parent-stays-hovered fix — shipped `99aa0aae0`, 2026-09-11; 5 real selectors, mouse + keyboard,
-bar + drawer, in `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_menu_item_state_css`)
+bar + drawer, in `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css`)
 (`plugins/sgs-blocks/scripts/check-ungated-paint-rules.py`).
 
 ### 0a.3 Written but NOT built — each with the command that proves it
@@ -300,7 +300,7 @@ states — no parallel builder family exists.**
 - **FR-41-13** (the parent-stays-hovered fix) — **BUILT.** Shipped in commit `99aa0aae0` (2026-09-11),
   the same day as this council review; the review's grep was run before that commit landed. Live code
   confirms 5 real selectors in
-  `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_menu_item_state_css` (mouse + keyboard, bar +
+  `plugins/sgs-blocks/includes/nav-menu-css.php::sgs_nav_shared_item_state_css` (mouse + keyboard, bar +
   drawer).
 
 ---
@@ -418,8 +418,8 @@ its own `render.php`.** No single descendant selector covers both:
 
 | Block | Emitted by | Called from | Structure |
 |---|---|---|---|
-| **`sgs/nav-bar-menu`** (dropdown) | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items` | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` | `li.sgs-nav-menu__item--has-submenu` › `div.sgs-nav-menu__submenu-root` › **`.sgs-nav-menu__link`** (an `<a>` with a sibling `button.sgs-nav-menu__subtoggle`, or a `<button>` carrying both classes) + `div.sgs-nav-menu__submenu-wrap` › `ul.sgs-nav-menu__submenu` › `li.sgs-nav-menu__subitem` › `a.sgs-nav-menu__sublink` |
-| **`sgs/nav-drawer-menu`** (accordion / drill-down) | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items_drawer` | `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php` | `li.sgs-nav-menu__item--has-submenu` › `div.sgs-nav-menu__accordion-row` › **`.sgs-nav-menu__link`** (an `<a>`, or a `<span class="…__link …__link--label">` when the parent has no URL) + `details.sgs-nav-menu__accordion` › `summary.sgs-nav-menu__accordion-summary` + `ul.sgs-nav-menu__submenu[data-sgs-drill-panel]` › `a.sgs-nav-menu__sublink` |
+| **`sgs/nav-bar-menu`** (dropdown) | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items` | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` | `li.sgs-nav-bar-menu__item--has-submenu` › `div.sgs-nav-bar-menu__submenu-root` › **`.sgs-nav-bar-menu__link`** (an `<a>` with a sibling `button.sgs-nav-bar-menu__subtoggle`, or a `<button>` carrying both classes) + `div.sgs-nav-bar-menu__submenu-wrap` › `ul.sgs-nav-bar-menu__submenu` › `li.sgs-nav-bar-menu__subitem` › `a.sgs-nav-bar-menu__sublink` |
+| **`sgs/nav-drawer-menu`** (accordion / drill-down) | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_drawer_menu_render_items` | `plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php` | `li.sgs-nav-drawer-menu__item--has-submenu` › `div.sgs-nav-drawer-menu__accordion-row` › **`.sgs-nav-drawer-menu__link`** (an `<a>`, or a `<span class="…__link …__link--label">` when the parent has no URL) + `details.sgs-nav-drawer-menu__accordion` › `summary.sgs-nav-drawer-menu__accordion-summary` + `ul.sgs-nav-drawer-menu__submenu[data-sgs-drill-panel]` › `a.sgs-nav-drawer-menu__sublink` |
 
 Three facts that follow, all load-bearing:
 
@@ -580,7 +580,7 @@ text-colour signal is weaker than every OTHER row family in this component (top 
 item and burger trigger all default-close their hover text colour). The desktop-submenu **Hover**
 cell above is revised accordingly: **text now defaults to `accent`**, alongside the existing
 `accent-light` background tint (`submenuLinkBgHover`'s block.json default, unchanged). Built in
-`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css` — `submenuColourHover` default-closes to
+`plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css` — `submenuColourHover` default-closes to
 `'accent'` at the PHP layer (mirrors `plugins/sgs-blocks/includes/nav-menu-css.php`'s own `$item_colour_hover = 'accent'`
 pattern verbatim: same token, same "skip only when the resolved hover TREATMENT is `'none'`" guard).
 An operator's own explicit `submenuColourHover` choice still overrides, exactly as before. Every
@@ -1512,8 +1512,8 @@ beside the other panel-level behaviours.
 > | Control | `plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js` — a `ToolsPanelItem` wrapping the three-option `ToggleGroupControl`, `hasValue`/`onDeselect` both keyed on `'none'` (gated `showSizingControls`, bar `true` / drawer `false`) |
 > | Storage | `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json::attributes.submenuAnimation`, `"type":"string"`, default `"none"`, **no JSON `enum`** (FR-41-8's reasoning) |
 > | Validation | `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` — the renderer's constructor reduces `$attributes['submenuAnimation']` to `$submenu['animation']` via `in_array( …, array( 'fade', 'slide-down' ), true ) ? … : 'none'`, so an out-of-vocabulary stored value degrades to `none` rather than reaching the markup |
-> | Markup | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_menu_render_items` — the wrap's class is `'sgs-nav-menu__submenu-wrap'` plus `' sgs-nav-menu__submenu-wrap--' . $submenu['animation']` **only when it is not `none`**, so the default emits byte-identical markup |
-> | Paint | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-menu__submenu-wrap--fade` / `::.sgs-nav-menu__submenu-wrap--slide-down` → `@keyframes sgs-nav-menu-submenu-fade-in` / `sgs-nav-menu-submenu-slide-down-in` |
+> | Markup | `plugins/sgs-blocks/includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items` — the wrap's class is `'sgs-nav-bar-menu__submenu-wrap'` plus `' sgs-nav-bar-menu__submenu-wrap--' . $submenu['animation']` **only when it is not `none`**, so the default emits byte-identical markup |
+> | Paint | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-bar-menu__submenu-wrap--fade` / `::.sgs-nav-bar-menu__submenu-wrap--slide-down` → `@keyframes sgs-nav-bar-menu-submenu-fade-in` / `sgs-nav-bar-menu-submenu-slide-down-in` |
 >
 > ⛔ **It is a CSS `animation`, not a `transition`, and that choice is load-bearing — do not
 > "simplify" it.** The trigger is still the pre-existing binary `display:none → block` toggle on the
@@ -1912,7 +1912,7 @@ now in the same panel (0.4.1), there is only one place to say it.
 > | 8 | DELETE | gone; a ⛔ comment stands in its place at `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` recording why, so it is not re-added |
 > | 9 | CONVERT | `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` — see the corrected per-declaration table below |
 > | 10 | DELETE | gone from `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css` (D1059 moved this drawer-only rule's file into the split-off drawer block) |
-> | 11 | KEEP | `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-menu__drill-back-btn`, unchanged (D1059: drawer-only, lives in the drawer block's own `style.css` post-split) |
+> | 11 | KEEP | `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-drawer-menu__drill-back-btn`, unchanged (D1059: drawer-only, lives in the drawer block's own `style.css` post-split) |
 > | *(bar current-page colour)* | CONVERT | `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` — `--sgs-nm-submenu-current-colour` now has a real writer, from `submenuColourCurrent` |
 > | *(bar current-page weight)* | CONVERT | `plugins/sgs-blocks/includes/nav-menu-css.php` + `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` — reads `itemFontWeightCurrent` under FR-41-6's never-lighter guard |
 
@@ -2059,7 +2059,7 @@ judgement call the next reader has to re-make:
 | `render.php` — `.sgs-nav-menu__mega-trigger` — `background:none;border:0;font:inherit;cursor:pointer` | It **removes** paint rather than adding any. The F3b silent-override class requires a competing *value*; `none`/`0` is the absence of one. Deleting it would restore the UA's default button chrome on an element that must read as a nav item — a regression with no control to replace it | A stateful colour row (FR-41-23) ever targeting `.sgs-nav-menu__mega-trigger`. Its `background:none` IS the shorthand, so the moment a Sweep gradient paints on this element the reset destroys it exactly as census #4 does. Today no row targets it |
 | `render.php` — `.sgs-nav-menu__subtoggle` — `…background:none;border:0;padding:0;cursor:pointer;color:inherit` | Identical reasoning: a `<button>` reset, not a paint. It is chrome (the dropdown expander), not a text/icon colour row in FR-41-23's roster, so nothing paints a `background-image` here for the shorthand to reset | Same condition. ⚠ **This one is closer than the mega-trigger**: FR-41-30 gives the sublink marker an Icon Picker, and if an icon-colour row with Sweep is ever scoped to the subtoggle, this reset enters the census that same day |
 | `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-menu__indicator` — `background-color: var(--wp--preset--color--accent, currentColor)` (D1059: `itemBgHover`/`itemBgHoverGradient`-driven, BOTH forks — the identical rule is mirrored unchanged at `plugins/sgs-blocks/src/blocks/nav-drawer-menu/style.css::.sgs-nav-menu__indicator`) | **Attribute-driven with a token default**, and the writer exists: `render.php` emits `{uid} .sgs-nav-menu__indicator{…}` from `indicatorColour` at (0,2,0), beating this (0,1,0) rule. It is also the `background-color` LONGHAND, so it cannot reset a sweep's `background-image`; and the element only exists at all under `indicatorStyle: 'pill'` — the markup is its gate | The scoped writer being removed, or FR-41-25's Highlight fold leaving the indicator element rendered with no attribute-driven fill |
-| `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-menu__burger` — `background: none; border: none; border-radius: var(--wp--custom--border-radius--medium, 8px)` (D1059: burger-family attributes are BAR-only — the bar block's own `style.css` is the sole surviving location) | Button reset again for the first two. The `border-radius` is a token-defaulted SHAPE, not a state paint, and no operator attribute in this spec's scope claims the burger's radius (FR-41-33 splits border colour/width/style/radius for ITEMS, not the menu button) | A burger border-radius attribute being added — at which point this becomes a hardcoded default overriding it |
+| `plugins/sgs-blocks/src/blocks/nav-bar-menu/style.css::.sgs-nav-bar-menu__burger` — `background: none; border: none; border-radius: var(--wp--custom--border-radius--medium, 8px)` (D1059: burger-family attributes are BAR-only — the bar block's own `style.css` is the sole surviving location) | Button reset again for the first two. The `border-radius` is a token-defaulted SHAPE, not a state paint, and no operator attribute in this spec's scope claims the burger's radius (FR-41-33 splits border colour/width/style/radius for ITEMS, not the menu button) | A burger border-radius attribute being added — at which point this becomes a hardcoded default overriding it |
 | `style.css` — `@supports not (background-color: color-mix(…)) { .sgs-nav-menu__burger:hover }` — `background-color: rgba(128, 128, 128, 0.12)` | **Already named and accepted as a residual at FR-41-17a(c)** (0.4.4) — a legacy-browser rescue for the burger's ordinary hover, longhand, (0,1,0), beaten by every uid-scoped operator rule, and no attribute controls it. ⛔ Do NOT delete it | Nothing in this spec. It is cross-referenced here only so a future census does not re-discover it as new |
 | `style.css` — `@media (forced-colors: active) { .sgs-nav-menu__burger }` — `border: 1px solid ButtonText` | A WCAG forced-colors rule using a system-colour keyword, active only in a mode where the UA has already neutralised every operator colour. Removing it fails the a11y requirement it exists for | Nothing. It must stay |
 | `style.css` — `.sgs-nav-menu__bar--drawer[data-drill-enhanced] … .sgs-nav-menu__submenu` — `background: var(--sgs-nm-submenu-bg, inherit)` | **Attribute-driven** (`--sgs-nm-submenu-bg` has a real writer from `submenuBg`) with a fallback of `inherit`, not a hardcoded colour. It is structurally load-bearing: the drill-down sub-panel is `position:absolute; inset:0` over the top-level list, so it must be opaque or the list shows through. It paints the PANEL, not a link, so no text sweep is on this selector | A submenu-panel GRADIENT attribute. This is the `background` shorthand, so a panel `background-image` would be reset by it |
@@ -2109,7 +2109,7 @@ verified only against the attribute list of the day it was written**; a deletion
 same spec can falsify it silently, and nothing re-checks a row marked NO CHANGE. The fate below is
 the real, current, verified one.
 
-| Declaration in `{uid} .sgs-nav-menu__submenu{…}` | Fate (verified in `plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_menu_submenu_css`, 2026-09-11) |
+| Declaration in `{uid} .sgs-nav-bar-menu__submenu{…}` | Fate (verified in `plugins/sgs-blocks/includes/nav-menu-submenu-css.php::sgs_nav_shared_submenu_css`, 2026-09-11) |
 |---|---|
 | `background:var(--sgs-nm-submenu-bg, var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface, #fff)))` | **ATTRIBUTE-DRIVEN, and SPLIT SHORTHAND → LONGHANDS as built.** `--sgs-nm-submenu-bg` has a real writer from `submenuBg`, emitted inside an empty-guard so an unset attribute writes **no property at all** and the rule's own token fallback applies. ⚑ **As built it is now two declarations** — `background-color:var(--sgs-nm-submenu-bg, …)` plus `background-image:var(--sgs-nm-submenu-bg-gradient, none)` — written by the shared `sgs_custom_property_gradient_decls( 'sgs-nm-submenu-bg', … )`, which emits the gradient sibling only when `submenuBgGradient` is set. ⚠ **This supersedes §8.5 item 2's "no gradient on the submenu PANEL background"**: the panel DOES carry a Normal-state gradient (`submenuBgGradient`), adopted to match the shared fill-custom-property-gradient end shape every other background row in the codebase uses. Still Normal-only — no hover, no current. The chained `surface-alt → surface → #fff` fallback is deliberate and stays (the 2026-07-31 fix for a panel that painted literal white on a client whose surface token is `#fbf3dc`). |
 | `min-width:var(--sgs-nm-submenu-min-width, 200px)` | **NO CHANGE — attribute-driven.** Writer verified: emitted from `submenuMinWidth` through the same empty-guarded custom-property block. Listed only so this table is exhaustive per-declaration rather than per-interesting-declaration. |
@@ -2634,7 +2634,7 @@ need. Verified, not assumed: PHP already reads `supports.sgs.*` in this codebase
 (`plugins/sgs-blocks/src/blocks/nav-bar-menu/index.js` and
 `plugins/sgs-blocks/src/blocks/nav-drawer-menu/index.js` each `import metadata from './block.json'`,
 so both are proven to bundle). The PHP reader,
-`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_menu_resolved_treatments`, now takes
+`plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_resolved_treatments`, now takes
 an explicit `$block_name` parameter instead of a hardcoded `'sgs/nav-menu'` lookup — each block's own
 `render.php` passes its own slug (`sgs_nav_menu_resolved_treatments( $attributes, 'sgs/nav-bar-menu' )`
 / `'sgs/nav-drawer-menu'`), so the ONE-DECLARATIVE-SOURCE contract this section states now holds
@@ -4336,8 +4336,8 @@ it.** `sgs_nav_menu_typography_hover_rule()` is a BOTH-fork helper (its two call
 `submenu`, both BOTH-family), so the split gave each new block its own file-local copy rather than
 choosing one owner: it is now defined identically, each inside its own required
 `function_exists()` guard, at
-`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::sgs_nav_menu_typography_hover_rule` and
-`plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php::sgs_nav_menu_typography_hover_rule`.
+`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::sgs_nav_shared_typography_hover_rule` and
+`plugins/sgs-blocks/src/blocks/nav-drawer-menu/render.php::sgs_nav_shared_typography_hover_rule`.
 The "block-private, not a shared helper" ruling above still holds — it is just private to two
 blocks instead of one, which is the intended shape of a BOTH-fork block-private helper post-split,
 not a regression from it. ⚠ **Its two CALLERS live in other files** — `plugins/sgs-blocks/includes/nav-menu-css.php`
