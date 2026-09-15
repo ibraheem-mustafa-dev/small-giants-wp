@@ -4324,3 +4324,37 @@ it universal there, not suppressed), and a genuinely new vertical divider betwee
 top-level horizontal bar items. Distinct from "underline" (the bar's own hover/current text
 indicator), which was the source of a naming collision this same session resolved. Full detail:
 `.claude/reports/2026-09-12-nav-menu-visual-review-register.md`, `.claude/reports/2026-09-13-nav-menu-divider-terminology-standardisation.md`, commit `ced102333`.
+
+## P-SPEC41-BEM-PROSE-REWRITE — CLOSED 2026-09-15
+
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+
+Spec 36's ungated `sgs/nav-menu` prose (dozens of bare mentions with no `file::symbol` citation, so
+`lint-spec-drift.py`'s gate never flagged them) got a full rewrite to the post-D1059-split block
+names (`sgs/nav-bar-menu`/`sgs/nav-drawer-menu`) this session (`98cfb3358`, v2.5). Spec
+41 — the nav colour/state mechanism spec, 5395 lines — has the SAME problem at far larger scale:
+`grep -c "sgs-nav-menu__\|sgs_nav_menu_" .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` returns
+**125 occurrences** (131 before this session's fixes) of the stale pre-split BEM prefix/function-name family, almost none in gated
+`file::symbol` form.
+
+A same-session `/handoff` QC pass caught and fixed 4 specific instances that sat directly beside
+already-corrected prose (a self-contradictory "Owns" table with 7 wrong function names, a
+self-contradicting inline code example, two stale cross-file citations) — those 4 are FIXED. The
+other 125 occurrences are genuinely untouched pre-existing debt, same category as Spec 36's before
+its rewrite, not something this session claimed to have closed.
+
+**Closed 2026-09-15 — the full pass ran.** Read the whole 5408-line document end to end and, for
+every `sgs-nav-menu__` / `sgs_nav_menu_` / bare `sgs/nav-menu` mention, verified the current
+BEM/function-name shape against the live code (`plugins/sgs-blocks/src/blocks/nav-bar-menu/`,
+`nav-drawer-menu/`, `plugins/sgs-blocks/includes/nav-menu-*.php`) and either rewrote the prose to
+the correct current architecture (two blocks, `$bem_root`-parameterised shared helpers, renamed
+`sgs_nav_shared_*`/`sgs_nav_bar_menu_*`/`sgs_nav_drawer_menu_*` functions) or left it untouched
+where it was genuinely historical record — the FR-41-15 hardcoded-rule census (lines ~2028-2108,
+documenting exact pre-split selectors of rules since deleted/converted, with commit hashes and
+dates), the §3 "Retiring `hoverStyle`" section (explicitly flagged "HISTORY, not a live citation"),
+and the withdrawn FR-41-34/G5a/G20b migration-notice content (never built, explicitly marked
+WITHDRAWN 2026-09-11). Live-stale mention count dropped from 168 (measured fresh at dispatch start,
+not the 125/131 cached above) to 0 outside those intentionally-historical sections.
+`lint-spec-drift.py --check` passes with 0 gating findings (3 pre-existing advisory FR-ORPHAN
+findings unrelated to this spec). Commit: see `.claude/decisions.md` / git log for the commit that
+lands this closure.
