@@ -1066,7 +1066,8 @@ Gate: the resting state must still meet 4.5:1 (WCAG 1.4.3) and `#d4a73c` must me
 |---|---|---|---|---|
 | `sgs/site-header` | BUILT + LIVE (P1) | section | `SGS_Container_Wrapper` | `sgs-layout` |
 | `sgs/site-footer` | BUILT + LIVE (P3) | section | `SGS_Container_Wrapper` | `sgs-layout` |
-| `sgs/nav-menu` | BUILT + LIVE (replaced `sgs/adaptive-nav`, DELETED at Spec 36 Phase-1 close 2026-07-20) | layout | `SGS_Container_Wrapper` + nav logic | `sgs-layout` |
+| `sgs/nav-bar-menu` | BUILT + LIVE (split from `sgs/nav-menu` at D1059, 2026-09-14/15; `sgs/nav-menu` itself replaced `sgs/adaptive-nav`, DELETED at Spec 36 Phase-1 close 2026-07-20) | block-private root (D539, 2026-08-09 — no longer `SGS_Container_Wrapper`) | own render.php + nav logic | `sgs-layout` |
+| `sgs/nav-drawer-menu` (`"ancestor":["sgs/nav-drawer"]`) | BUILT + LIVE (same D1059 split — the drawer's accordion/drill-down fork) | block-private root, never used `SGS_Container_Wrapper` | own render.php + nav logic | `sgs-layout` |
 | `sgs/nav-drawer` (replaced `sgs/mobile-nav`, DELETED at D336 2026-07-14) | BUILT + LIVE; see Spec 36 for the current drawer contract | — (Popover/dialog, `containerMirror: false` — excluded from the container-mirror roster, same as `sgs/modal`) | own render.php | (unchanged) |
 
 - **`sgs/site-header`** — header shell: 3 optional named rows (top utility strip / middle primary row with logo+nav+CTA / bottom message row), each independently configurable; an empty row emits zero output (no wrapper, no padding-bleed). Typed element palette (logo, adaptive-nav, search, cart, account, button/CTA, contact, social, HTML, widget-area) — not freeform.

@@ -61,9 +61,9 @@ close this, it needs Bean's hands on a real device.
 
 **Clone-fidelity closeout + R8 motion + BEM-recognition:** fully closed/shipped, swept to
 `.claude/memory/session-2026-09-11-prior-work-closed.md`. Open residuals carried forward: R1's
-17-attribute conversion, the `tier_object_base()` 67-attribute over-match, header/footer (paused
-behind R8, see `.claude/prompts/2026-09-10-header-footer-implementation.md`), trust-bar pill
-padding (minor).
+17-attribute conversion, the `tier_object_base()` 67-attribute over-match, Mama's branded
+header/footer authoring — **R8 shipped, READY not paused** (corrected 2026-09-15; see
+`.claude/prompts/2026-09-10-header-footer-implementation.md`), trust-bar pill padding (minor).
 
 **Universal-pipeline upgrade (Claude Design `.dc.html`) — converter wiring shipped (D1071/D1073),
 Tier B rewired as a halt-and-resume (D1075). Spec 44 reworked v2.0.0→v2.3.0 across 3 council
@@ -90,15 +90,16 @@ baseline entries cleaned); Spec 37 FR-37-42 heading fixed; Spec 00 §3.1 gained 
 `sgs/form-field-*` counter-example; STOP-CATALOGUE.md gained `E26`. Detail on all 5:
 `memory/session-2026-09-15.md` + `memory/parking-archive.md`.
 
-**Spec 41's 13 gating `CITE-SYMBOL` findings — FIXED 2026-09-15** (`e30cefcad`): all 13 stale
-`sgs_nav_menu_*`/`.sgs-nav-menu__*` citations rewritten to the real post-split names, verified
-against the actual code before writing. `lint-spec-drift.py --check`: 13 gating → 0 gating.
+**Spec 41's 13 gating `CITE-SYMBOL` findings — FIXED** (`e30cefcad`): stale `sgs_nav_menu_*`/
+`.sgs-nav-menu__*` citations rewritten to the real post-split names, verified against code first.
 
-**Spec 36's ungated `sgs/nav-menu` prose — FIXED 2026-09-15** (`98cfb3358`, v2.5): rewrote every
-current-architecture passage across §1-9 to name the correct block, verified against live code, plus 2
-mechanism corrections (submenu-context is drawer-only, not a bar/drawer selector; the bar block
-dropped `SGS_Container_Wrapper` at D539, not "keeps" it). Historical passages left as history.
-**Whole nav-menu-split track now genuinely closed** — nothing known outstanding.
+**Spec 36's ungated `sgs/nav-menu` prose — FIXED** (`98cfb3358`, v2.5): rewrote every
+current-architecture passage §1-9 to the correct block, plus 2 mechanism corrections (submenu-context
+is drawer-only; bar block dropped `SGS_Container_Wrapper` at D539). History left as history.
+
+**Doc sweep 2026-09-15:** `sgs/nav-menu` rename applied across specs 00/01/02/33/37/38 + README +
+goals.md; 2 plans archived; 3 prompts removed (1 saved as a parking entry); listColumns
+reading-order verified + archived.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
@@ -156,7 +157,7 @@ matcher can't tell apart two blocks deliberately built to render identically (`s
 pattern), then build Stage A/B behind the two default-off flags it specifies
 (`--classless-match`, `--classless-auto-complete`). Remaining named track items (Bean's list,
 all separate from Spec 44 itself): **responsiveness work** — ALREADY DESIGNED, read
-`.claude/plans/2026-09-14-connect-sc-var-identity-to-responsive-values.md` (do not re-design);
+`.claude/plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md` (do not re-design);
 **rule-table extension** — the Tailwind/shadcn/Webflow/Elementor/Divi convention-rule work,
 planned before Spec 44 existed (locate the plan file next session — not yet re-found this
 session); **one-off classless content** — still explicitly deferred, no sibling/composite to
@@ -307,8 +308,8 @@ binding. **Add from this session:**
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |
-| Header/footer motion + Indus branded content (paused behind R8) | `.claude/prompts/2026-09-10-header-footer-implementation.md` |
-| BEM-recognition + template-detection (Tier 0/1/2 shipped; Tier 3 out of scope) | `plans/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
+| Mama's branded header/footer authoring — R8 shipped, ready not paused | `.claude/prompts/2026-09-10-header-footer-implementation.md` |
+| BEM-recognition + template-detection (Tier 0/1/2 shipped; Tier 3 out of scope) — ARCHIVED | `plans/archive/2026-09-10-bem-recognition-and-template-detection-brainstorm.md` |
 | Per-draft accepted design differences | `sites/mamas-munches/accepted-differences.md` |
 | Cloning pipeline spec + binding rules | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` |
 | Clone-fidelity measurement | `specs/20-CLONE-FIDELITY-MEASUREMENT.md` |

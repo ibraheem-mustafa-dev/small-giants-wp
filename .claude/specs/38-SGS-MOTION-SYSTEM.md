@@ -1053,7 +1053,8 @@ placement**. Nothing from the roster is dropped; §3 carries the per-capability 
   between a magnetic button and a hover state.
 
  **Not a new mechanism — a generalisation of a shipped one.** `src/shared/effects/magnet.js`
-  has shipped since the mega-menu build, driving `sgs/nav-menu`'s label nudge (±8px, X-axis, only
+  has shipped since the mega-menu build, driving `sgs/nav-bar-menu`'s (split from `sgs/nav-menu` at
+  D1059, 2026-09-14/15 — the burger/magnet mechanism is bar-only) label nudge (±8px, X-axis, only
   while the pointer is over the label itself). This FR generalises that file rather than replacing
   it: the new `createMagnet( el, opts )` core is byte-identical in its no-options behaviour, so
   `nav-menu` is untouched by this build.

@@ -560,7 +560,7 @@ The off-canvas drawer joins the CPT family this spec owns. **Admin name: "Menu d
 exactly — same class, same admin submenu shape, same "Set as active" row action (FR-37-2), same
 preview-before-active (FR-37-41), revisions for free. A drawer post's content is the existing
 `sgs/nav-drawer` block markup unchanged; the block becomes the render vehicle. **Scope model:
-site-wide Active default + per-burger override** via `sgs/nav-menu`'s re-typed `drawerRef` post
+site-wide Active default + per-burger override** via `sgs/nav-bar-menu`'s (split from `sgs/nav-menu` at D1059, 2026-09-14/15) re-typed `drawerRef` post
 picker (behaviour side: Spec 36 FR-36-9a). The drawer renders once per page from the
 active/referenced post — the duplicate-id class dies by construction.
 **Starters:** the 7 retired `variantPreset` looks become "Menu drawer" starter patterns served by
@@ -591,7 +591,7 @@ Active pointer and its render path ship; nothing is removed, re-typed or migrate
 - **Render path — the one genuinely new mechanism.** A drawer owns no `core/template-part` slot
   (it is a `<dialog>` sibling of `sgs/site-header` in all 8 header patterns), so there is no
   `pre_render_block` hook to mirror. `Sgs_Drawer_Render` renders it on **`wp_footer` priority 5**,
-  lazily: `sgs/nav-menu` records "a burger asked for a drawer" into a request registry, and only
+  lazily: `sgs/nav-bar-menu` (split from `sgs/nav-menu` at D1059, 2026-09-14/15) records "a burger asked for a drawer" into a request registry, and only
   then does the Active post render. Ordering is **proven, not assumed** — the CSS registry's
   whole-page output buffer opens at `template_redirect` 0 and closes after all of `wp_footer`, so
   the drawer's scoped CSS still reaches the `<head>`.
@@ -1221,7 +1221,7 @@ The **blind-tester arm (a real non-coder, screen-recorded) remains outstanding**
 authoritative half.
 
 > **Finding 1 (drawer content) — the reachable half is now BUILT 2026-07-27; the FAIL verdict STANDS.**
-> `sgs/nav-menu` gained a conditional warning notice + a one-click fix (Spec 36 **FR-36-9a clause 2**,
+> `sgs/nav-bar-menu` (split from `sgs/nav-menu` at D1059, 2026-09-14/15) gained a conditional warning notice + a one-click fix (Spec 36 **FR-36-9a clause 2**,
 > amended in the same commit per §1.2's both-specs-same-commit boundary rule — the drawer is Spec 36's,
 > the header CPT the notice fires inside is this spec's). It covers both the *dangling* `drawerRef` the
 > clause named and the **no-drawer-at-all** case this test actually hit: *"Add the mobile menu"* inserts
@@ -1438,7 +1438,7 @@ copy/paste**, never the editor's `clientId`.
 **The guardrail is declarative, not a hardcoded list (R-31-1).** The framework has no block-slug →
 role/criticality lookup (verified: `slots` holds one `logo` row; `roles` classifies role-names not
 blocks). So `supports.sgs.headerEssential: true` is declared on `sgs/responsive-logo`,
-`sgs/nav-menu` and `sgs/cart`. The editor picker reads it via `wp.blocks.getBlockType()`;
+`sgs/nav-bar-menu` (split from `sgs/nav-menu` at D1059, 2026-09-14/15) and `sgs/cart`. The editor picker reads it via `wp.blocks.getBlockType()`;
 `sgs_resolve_row_shrink_hide_target()` re-checks it server-side against `WP_Block_Type_Registry`.
 Protecting a new critical block later is one block.json flag.
 The picker ALSO excludes children lacking `supports.anchor` — WP silently discards an undeclared

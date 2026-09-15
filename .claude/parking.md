@@ -218,6 +218,40 @@ matches.
 
 ## Framework: blocks, theme, specs
 
+### P-FX-PER-EFFECT-BLOCK-COMPATIBILITY — motion-effects panel is all-or-nothing per block, needs per-effect opt-in
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+
+Recovered from an orphaned next-session prompt (`.claude/prompts/2026-09-10-fx-selective-effect-offering.md`,
+never actioned, now deleted — this entry is its permanent home) rather than let the idea disappear
+with the file. Found 2026-09-10 while redesigning the (pre-split) nav-menu inspector: a block
+currently gets its whole "Scroll & effects" panel — every effect sharing its `requires` token — or
+none of them, with no way to offer just ONE compatible effect. `sgs/nav-bar-menu` (post-split;
+`sgs/nav-menu` at the time this was found) genuinely qualifies as a `cursor-field` emitter, but the
+only switch (`supports.sgs.fx.motionSurface: true`) drags in 8 unrelated effects
+(`generative-background`/`grid-dots`/`morph`/`motion-path`/`particles`/`scrub`/`wave-gradient`/
+`magnet`) — `generate-fx-qualifying-blocks.py`'s own docstring names it as one of 11 blocks its
+current containment rule (`creates_panel=0` on `surface`-requiring effects) was measured and
+written to keep panel-free.
+
+**What "done" looks like:** (1) a per-block, per-effect compatibility declaration — most likely a
+DB table (`fx_block_effects`, following R-31-1's DB-first rule, no hardcoded dicts) mapping
+`block_slug` → `effect_slug` → `compatible: true/false`+reason; (2) a one-time compatibility pass
+across the real block library (~83 blocks × ~13 effects — design judgment, not a mechanical audit;
+nav-bar-menu is the worked example: `magnet` yes, `cursor-field` maybe-off-by-default, the other 7
+surface effects no); (3) retire the current `requires`/`creates_panel` mechanism ONLY once the new
+table is live and doing its job, never before (removing the old rule first reopens the "13 panels
+where none makes sense" regression it currently prevents); (4) migrate `fx.js`'s effect picker to
+read the new per-block list instead of the blanket `SHIPPED_EFFECTS` roster; (5) re-verify every
+existing shipped effect still reaches every block that currently, correctly, has it (e.g.
+`sgs/container` → `cursor-field`/`pin-scrub`/`horizontal-panel`/`draw`).
+
+**Not in scope:** don't scope down to just nav-bar-menu (it's the motivating example, not the
+target); don't add new effects, only make existing ones individually selectable; don't weaken the
+"13 panels where none makes sense" principle — satisfy it more precisely, per-effect.
+
+**Trigger:** a dedicated motion-system session — this is framework-wide architecture work (Spec 38
+territory), not a small tweak.
+
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 
@@ -452,7 +486,7 @@ Research-backed conclusion: persistent bottom CTA/cart/sale bars belong in the e
 ### P-HEADER-SIMPLICITY-FINDINGS — operator-simplicity test failed; 2 findings + the blind-tester arm still owed
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-07-26
 
-The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-menu` now warns and one-click-fixes a burger with no panel to open). RESIDUAL SCOPE, after the 2026-08-19 header-completeness session:
+The FR-37-26 automated-proxy simplicity test failed on drawer content (since addressed — `sgs/nav-bar-menu` (renamed from `sgs/nav-menu` at the 2026-09-14/15 split) now warns and one-click-fixes a burger with no panel to open). RESIDUAL SCOPE, after the 2026-08-19 header-completeness session:
 
 1. **Canvas-click selection — STILL OPEN.** Selecting the header block by clicking in the canvas is a hidden blocker; it only selects via List View. Untouched by that session.
 2. **The blind-tester arm — STILL OPEN, and it is the authoritative half.** A real non-coder, screen-recorded, has never been run. The automated proxy is not a substitute.
@@ -632,33 +666,6 @@ so a closed-panel shot is reported VACUOUS rather than saved; capture real menu-
 clone-first would only reproduce the rejected half-clone with more steps. This entry is therefore
 NOT queued work; it is the standard the clone must meet when the system is complete. Task 5 must
 not be re-presented to Bean until every defect above is fixed.
-
-### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-29
-
-`nav-menu`'s in-drawer `listColumns` grid uses `grid-auto-flow: row`, so a 7-item menu lays out
-ACROSS the columns instead of down them. Measured live on fixture page 1922 at 1440: menu order is
-Home · Work · Services · Approach · Studio · Plans · News, but column 1 reads Home · Services ·
-Studio · News and column 2 reads Work · Approach · Plans. Keyboard and screen-reader order are
-correct (they follow the DOM) — it is the VISUAL reading order that diverges, and the reference
-design (studionamma) splits sequentially 4+3.
-
-⚠ **DOWNGRADED TO UNDECIDED (2026-07-29, D411) — this is NOT a live recommendation to change a
-shared block.** The finding assumed readers scan DOWN columns. **Bean's counter stands:** with a
-row-wise grid, reading ACROSS rows already yields the menu order, and authoring the menu as rows of
-2 gives a correct pattern either way. There is also **no ground truth** — the reference capture for
-this exact variant (studionamma) failed, so what the reference actually does is unverified.
-
-**2026-09-14 — IMPLEMENTED, verification pending.** Bean re-triggered this on new evidence: the
-reference site's real DOM order confirmed the sequential column-major "4+3" split. Fixed in
-`af8f9759a` — `nav-menu-submenu-css.php`'s `listColumns` emission now adds `grid-auto-flow:column`
-plus an explicit `grid-template-rows:repeat(ceil(itemCount/columns), …)` (item count threaded
-through from `render.php`'s `count($flat_items)`), so the grid genuinely splits sequentially rather
-than relying on `column` flow's own unbounded auto-wrap. ⚠ **NOT yet live-verified** — deploy to the
-sandybrown canary was blocked this session by a concurrent sibling session's uncommitted work in the
-same plugin (mega-disclosure.js + nav-menu style.css). Remaining trigger: deploy `af8f9759a`, then
-Playwright-verify a multi-item drawer list with `listColumns` set reads sequentially down columns
-("4+3"), not across rows, before closing this entry.
 
 ### P-PRODUCT-PAGE-REDESIGN — product page design does not line up with the cloned draft
 **Status:** DEFERRED · **Bucket:** framework · **Parked:** 2026-06-14

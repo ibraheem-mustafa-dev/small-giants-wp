@@ -18,7 +18,7 @@ derived_from:
   - The 2026-09-10 round-3 adversarial council (10 confirmed Tier 1/Tier 2 defects), the owner's
     universal colour-reuse rule, his /research-check on underline-vs-border, and his border-colour
     placement ruling — all folded into 0.4.1 as ONE harmonised design, not a stack of patches
-  - .claude/plans/2026-09-10-fx-selective-effect-offering-design-gate.md (the future work
+  - .claude/parking.md P-FX-PER-EFFECT-BLOCK-COMPATIBILITY (the dangling plan-file citation was never real; converted to a parking entry 2026-09-15) (the future work
     FR-41-32 defers to)
   - The 2026-09-10 owner correction to 0.4.1 — "keep all, just don't make underline this
     central control that you initially were doing and treating it as the divider" — folded in
@@ -336,7 +336,7 @@ byte-identically by default (§11 G1).
 | **A hover trio on TYPOGRAPHY** — ⚑ **NO LONGER OUT OF SCOPE (0.4.2).** `TypographyControls`' `showHover` flag IS adopted on both targets, and all six attributes are declared. See FR-41-6 and FR-41-21. | *(row kept as a tombstone so a 0.4.1 reader does not conclude the capability is still refused)* |
 | **A hover trio on the CURRENT state** (`itemTextDecorationCurrent` and any `…TransformCurrent` / `…WeightCurrent` beyond `itemFontWeightCurrent`) | Not offered. `TypographyControls` models resting + hover only, so a Current trio has no shared control at all, and Current already carries its own non-colour signal (`itemFontWeightCurrent`, FR-41-6). |
 | **`itemBorderColourGradient`** (a gradient ring on the ITEM border) | Cut on a pseudo-element budget, not on merit — `sgs_border_states_css()`'s ring path needs `::before`, and `::before` on `.sgs-nav-menu__link` already renders the item background. See FR-41-7. The submenu PANEL border keeps its gradient (`submenuBorderColourGradient`) because nothing competes for `.sgs-nav-menu__submenu::before`. |
-| **Cursor-reactive field** (and the other eight `motionSurface` effects) | Structurally eligible, deliberately not offered — the only current mechanism would bundle eight unrelated effects onto a functional navigation element. Revisit after the design gate at `.claude/plans/2026-09-10-fx-selective-effect-offering-design-gate.md` lands. See FR-41-32. |
+| **Cursor-reactive field** (and the other eight `motionSurface` effects) | Structurally eligible, deliberately not offered — the only current mechanism would bundle eight unrelated effects onto a functional navigation element. Revisit after the design gate at `.claude/parking.md P-FX-PER-EFFECT-BLOCK-COMPATIBILITY (the dangling plan-file citation was never real; converted to a parking entry 2026-09-15)` lands. See FR-41-32. |
 
 ### 1.3 The three states — definition and vocabulary
 
@@ -3061,7 +3061,7 @@ decorative effects onto a functional navigation element is exactly what that rul
 prevent.
 
 **(c) Revisit after the design gate lands.**
-`.claude/plans/2026-09-10-fx-selective-effect-offering-design-gate.md` will build a proper
+`.claude/parking.md P-FX-PER-EFFECT-BLOCK-COMPATIBILITY (the dangling plan-file citation was never real; converted to a parking entry 2026-09-15)` will build a proper
 per-block/per-effect selection system. When it does, this decision should be re-taken on merit
 rather than inherited.
 
@@ -5297,7 +5297,7 @@ two equal-specificity transitions silently fight. **Folded in FR-41-32** as an e
 NOT-OFFERED entry: cursor-field genuinely qualifies structurally, and is deliberately not offered
 because the only current mechanism would bundle eight unrelated effects onto a functional
 navigation element — revisit after the design gate at
-`.claude/plans/2026-09-10-fx-selective-effect-offering-design-gate.md`.
+`.claude/parking.md P-FX-PER-EFFECT-BLOCK-COMPATIBILITY (the dangling plan-file citation was never real; converted to a parking entry 2026-09-15)`.
 
 **Three new gates** — G16 (the relocated readability toggle still acts, not just renders), G17 (the
 magnet costs zero bytes when off), G18 (exactly one writer per border-colour attribute) — plus a

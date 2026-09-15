@@ -7,6 +7,45 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-15 — 1 entry RESOLVED: nav-drawer 2-column listColumns reading order, live-verified
+
+### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order (ARCHIVED)
+**Status was:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-29 · **Resolved:** 2026-09-15
+
+`nav-menu`'s in-drawer `listColumns` grid uses `grid-auto-flow: row`, so a 7-item menu lays out
+ACROSS the columns instead of down them. Measured live on fixture page 1922 at 1440: menu order is
+Home · Work · Services · Approach · Studio · Plans · News, but column 1 reads Home · Services ·
+Studio · News and column 2 reads Work · Approach · Plans. Keyboard and screen-reader order are
+correct (they follow the DOM) — it is the VISUAL reading order that diverges, and the reference
+design (studionamma) splits sequentially 4+3.
+
+⚠ **DOWNGRADED TO UNDECIDED (2026-07-29, D411) — this is NOT a live recommendation to change a
+shared block.** The finding assumed readers scan DOWN columns. **Bean's counter stands:** with a
+row-wise grid, reading ACROSS rows already yields the menu order, and authoring the menu as rows of
+2 gives a correct pattern either way. There is also **no ground truth** — the reference capture for
+this exact variant (studionamma) failed, so what the reference actually does is unverified.
+
+**2026-09-14 — IMPLEMENTED, verification pending.** Bean re-triggered this on new evidence: the
+reference site's real DOM order confirmed the sequential column-major "4+3" split. Fixed in
+`af8f9759a` — `nav-menu-submenu-css.php`'s `listColumns` emission now adds `grid-auto-flow:column`
+plus an explicit `grid-template-rows:repeat(ceil(itemCount/columns), …)` (item count threaded
+through from `render.php`'s `count($flat_items)`), so the grid genuinely splits sequentially rather
+than relying on `column` flow's own unbounded auto-wrap. ⚠ **NOT yet live-verified** — deploy to the
+sandybrown canary was blocked this session by a concurrent sibling session's uncommitted work in the
+same plugin (mega-disclosure.js + nav-menu style.css). Remaining trigger: deploy `af8f9759a`, then
+Playwright-verify a multi-item drawer list with `listColumns` set reads sequentially down columns
+("4+3"), not across rows, before closing this entry.
+
+**RESOLUTION (2026-09-15):** live-verified on the sandybrown canary via a scratch test page
+(`sgs/nav-bar-menu` + `sgs/nav-drawer-menu`, real 7-item menu `poc-two-column-editorial`,
+`listColumns:2`). Computed grid confirmed `grid-auto-flow:column`,
+`grid-template-rows:repeat(4,...)` (= `ceil(7/2)`); DOM + visual order confirmed exactly the target
+4+3 sequential split (column 1: Home/Work/Services/Approach; column 2: Studio/Plans/News), no
+interleaving. The fix survived both the 2026-09-14 file-size split (emission logic moved from
+`nav-menu-submenu-css.php` to `nav-menu-submenu-link-css.php`, same logic) and the 2026-09-14/15
+nav-menu block split (D1059) intact — selector is now `.sgs-nav-drawer-menu__bar`. Scratch page
+deleted after verification, no trace left on the canary.
+
 ## 2026-09-15 — 1 entry RESOLVED: page-embedded nav-bar-menu dropdown stacking, eliminated structurally (ancestor restriction supersedes the reparent-CSS-scoping fix)
 
 > ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
