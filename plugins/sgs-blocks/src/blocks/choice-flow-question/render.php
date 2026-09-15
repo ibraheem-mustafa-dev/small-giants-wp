@@ -39,6 +39,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// This block previously called no shared helper of its own, so it never
+// needed render-helpers.php — added when the help-toggle markup moved to
+// the shared sgs_render_info_toggle() (includes/helpers-info-toggle.php).
+// Without this require, that call is an undefined-function FATAL the
+// moment any option carries help text (caught live, 2026-09-15).
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $question       = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
 $options        = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
 $options_layout = isset( $attributes['layout'] ) && 'list' === $attributes['layout'] ? 'list' : 'grid';
