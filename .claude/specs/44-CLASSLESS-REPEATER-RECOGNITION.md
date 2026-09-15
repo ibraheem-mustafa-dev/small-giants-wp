@@ -2,9 +2,10 @@
 
 **doc_type:** spec
 **spec_id:** 44
-**spec_version:** 2.1.0
-**Status:** DESIGNED — not yet built (v2.0.0 reviewed by 6-persona `/adversarial-council`,
-2026-09-15, 5 of 6 NO-GO; this revision fixes the load-bearing findings — see §0.1)
+**spec_version:** 2.2.0
+**Status:** DESIGNED — not yet built. v2.0.0 and v2.1.0 each failed a council
+review (5/6 NO-GO, then 3/3 NO-GO). This revision fixes the root cause both
+rounds kept circling — see §0.2.
 **Date:** 2026-09-15
 
 ## 0. What changed since v1.0.0 (read this first)
@@ -42,6 +43,33 @@ revision:
 Two lower-severity findings (no described review workflow; no stated scope
 percentage) are addressed as short additions (§7, §2) rather than mechanism
 changes — the council itself rated these as real but not load-bearing.
+
+### 0.2 What changed since v2.1.0 — the actual root cause
+
+A lighter three-reviewer follow-up on v2.1.0 found the fix attempt introduced a
+real error (a `sourceMode` claim that doesn't exist on the real block — corrected
+in §4.4) and, more importantly, exposed a design flaw underneath both earlier
+revisions: **Stage A compared a repeated item's shape against the ENTIRE block
+roster, with nothing narrowing the field first.** Two real blocks
+(`sgs/buybox`, `sgs/product-card`) render deliberately identical thumbnail-strip
+markup — checked leaf-shape-only, they're indistinguishable no matter how the
+matching vocabulary grows.
+
+The fix is not a bigger vocabulary or a collision-rejection gate (both v2.1.0
+attempts). It's sequencing: **narrow candidates by the item's PARENT context —
+which page it's on, and whether it's a singleton or one of many repeated
+siblings — before ever comparing leaf shape** (§4.1, §4.3). `sgs/buybox` is
+always a singleton on a single-product page; `sgs/product-card` is always one of
+many grid siblings. That separates them before the thumbnail strip is ever
+examined, using a detector this pipeline already has
+(`repeated_sibling_detector.py`) plus the page-context signal already designed
+in §4.5. Captured as a standing rule:
+`C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
+
+This also resolves two smaller v2.1.0 gaps as a side effect, not a separate
+patch: clause (a)'s "two independent mechanisms" reachability problem, and
+clause (c)'s missing client parameter — both restated cleanly in the corrected
+§3.
 
 ## 1. Problem (plain English)
 
@@ -90,79 +118,102 @@ required pieces.
 
 ## 3. FR-44-1 — Auto-complete trust gate
 
-A classless-group match auto-completes the clone ONLY when ALL of the following
-hold:
+A classless-group match auto-completes the clone only when both hold:
 
-**(a) A real correctness signal exists** — EITHER two independent mechanisms agree
-on the same block/destination (structure-first match, §4, and DB-fact elimination,
-§5, both land on the same candidate), OR a single mechanism produces a genuine
-exact STRUCTURAL match (§3.1) against real source.
+**(a) A genuine, parent-narrowed exact structural match** (§3.1). Stage A never
+compares a leaf item's shape against the full block roster — it first narrows to
+the small set of candidates consistent with the item's PARENT context (§4.1,
+§4.3), then checks for an exact structural match within that narrowed set. A
+partial match, or a match against more than one surviving candidate, is not
+"exact" and falls to review like any unresolved case.
 
-**(b) The match is unique across the full candidate roster, not just plausible.**
-Stage A's structure matcher runs against every seeded block/route, not a
-pre-narrowed shortlist (closes the ordering ambiguity in §4.4/§5 — Stage A always
-evaluates the whole roster). If two or more blocks/routes produce an equally clean
-match, that is NOT clause (a)'s "exact match" — it's a tie, and it falls to review
-like any other unresolved case. `/sgs-update` must run a collision census across
-`block_render_repeaters` and reject a seed that introduces a roster-wide duplicate
-structural signature without a documented disambiguating signal (§10).
+**(b) The specific (block-or-route, match-type) pattern has been seen before, for
+THIS client.** The first time a given pattern is used to auto-complete against a
+NEW client's draft, it is forced to review once — a one-time human look, not a
+per-item gate — recorded per `client_slug` in the audit log (§7). This closes the
+risk §6 already documents happening once this session: a live, human-caught
+near-miss on the exact reasoning path this mechanism now automates. Once a
+pattern has cleared review for a client, later occurrences for the SAME client
+auto-complete under (a) alone.
 
-**(c) The specific (block-or-route, match-type) pattern has been seen before, for
-THIS client.** The first time any given pattern is used to auto-complete against a
-NEW client's draft, it is forced to review once, regardless of match quality — a
-one-time human look, not a per-item gate. This directly closes the risk this
-spec's own §6 documents happening once already in this session (a live,
-human-caught near-miss on the exact same reasoning path this mechanism now
-automates). Once a pattern has cleared review once for a client, later occurrences
-of the SAME pattern for the SAME client auto-complete normally under (a)/(b).
+*(v2.1.0 carried a third clause — "two independent mechanisms agree" — as an
+alternative to (a). Dropped here: Stage B only runs when Stage A finds nothing,
+so the two mechanisms could never actually agree; keeping unreachable prose in a
+trust gate is worse than removing it.)*
 
-Anything that fails (a), (b), or (c) falls to operator review, via the real,
-existing review surface (§7) — never silently dropped (Rule 4).
+Anything that fails (a) or (b) falls to operator review, via the real, existing
+review surface (§7) — never silently dropped (Rule 4).
 
-### 3.1 What "exact structural match" means (clause a, corrected)
+### 3.1 What "exact structural match" means, and why parent-narrowing comes first
 
-**Not a field-NAME match — a rendered-structure match.** A draft's data model and a
-block's real PHP variable names will essentially never share literal field names
-(confirmed while re-deriving the worked example below — see §4.1). What has to
-match exactly is the STRUCTURE: element role sequence, the presence/absence of a
-per-item conditional state (e.g. image-or-text-fallback), the presence of a
-click/select action per item, and any per-item highlighted/current-state indicator
-— matched between the draft's markup shape (via Thread 1's signal set, §5.2) and
-the block's REAL rendered markup shape (derived per §4.3). A "3 of 5 structural
-markers match" result is a PARTIAL match and never satisfies clause (a) — every
-structural marker present in the block's real rendering must have a corresponding
-marker in the draft's group, and vice versa.
+**Narrow by parent context before comparing the leaf item's own shape.** Two
+blocks can be deliberately built to render identical leaf markup — confirmed
+this session: `sgs/buybox` and `sgs/product-card` share a byte-identical
+thumbnail-strip pattern by design. No amount of leaf-shape detail tells them
+apart, because the difference was never IN the leaf. It's in the parent: `sgs/buybox`
+is always a singleton on a single-product page; `sgs/product-card` is always one
+of many repeated siblings in a grid. Stage A checks this first, using signals the
+pipeline already has — §4.5's page-context read, and
+`converter/services/repeated_sibling_detector.py`'s existing singleton-vs-repeated
+check — before it ever looks at a thumbnail's shape. This routinely narrows the
+field to one candidate before leaf matching starts, which is what makes leaf
+matching safe to trust at all.
+
+**The leaf check itself is a rendered-structure match, not a field-NAME match.**
+A draft's data model and a block's real PHP variable names essentially never
+share literal names (confirmed while deriving the worked example, §4.1). What
+must match exactly is structure: the element-role sequence, the presence or
+absence of a per-item conditional state (e.g. image-or-text-fallback), a
+click/select action per item, and any current-state indicator — matched between
+the draft's markup shape (Thread 1's signal set, §5.2) and the parent-narrowed
+candidate's real rendered markup shape (§4.3). Every structural marker present in
+one must have a corresponding marker in the other; a partial match never
+satisfies (a).
 
 ## 4. Stage A (PRIMARY) — structure-first matching against real source
 
 ### 4.1 The principle, and the corrected worked example
 
-Don't identify a repeated group's fields one at a time. Recognise the whole
-subtree's identity first by matching its rendered STRUCTURE (§3.1) against a KNOWN
-composite's real, complete implementation — then every child inherits its identity
-from its known position in that real implementation.
+Don't identify a repeated group's fields one at a time, and don't match a leaf
+item's shape against the whole roster. Narrow by parent context first (§3.1),
+then recognise the narrowed candidate's whole subtree by matching its rendered
+STRUCTURE against its real, complete implementation — every child then inherits
+its identity from its known position in that implementation.
 
-**Corrected worked example — `sgs/buybox`'s thumbnail gallery.** Re-derived
-directly against `gallery-col.php` after the council found the original v2.0.0
-description overstated it as a field-name match. The real per-thumbnail loop
-(`gallery-col.php`, the `foreach ( $buybox_def_gallery as $buybox_thumb_idx =>
-$buybox_thumb )` block) exposes exactly two real data fields per item — `url`,
-`alt` — plus two computed-from-index attributes that are NOT fields (`data-index`
-is the loop index itself; `aria-label` is a hardcoded
-`sprintf(__('Image %d'))` string, not a per-item value). The draft's `thumbs`
-group (`Eye Care Birmingham.dc.html`, the `thumbs = views.map(...)` construction)
-has a click action (`t.pick`), a label (`t.label`), and an image-or-text-fallback
-conditional (`t.hasImg`/`t.img`/`t.noImg`).
+**Worked example — `sgs/buybox`'s thumbnail gallery — re-derived twice against
+the real file, corrected both times.** The per-thumbnail loop
+(`gallery-col.php`, `foreach ( $buybox_def_gallery as $buybox_thumb_idx =>
+$buybox_thumb )`) exposes four real per-item fields — `url`, `alt`, `w`, `h` —
+plus two computed, non-field attributes: `data-index` (the loop index) and
+`aria-label` (a hardcoded `sprintf(__('Image %d'))` string). The image itself is
+UNCONDITIONAL inside this loop — there is no per-item image-or-fallback branch
+here; the block's no-image SVG state belongs to the separate main-image element
+above the strip, not to any individual thumbnail. The draft's `thumbs` group
+(`Eye Care Birmingham.dc.html`, `thumbs = views.map(...)`) has a click action
+(`t.pick`), a label (`t.label`), and an image-or-text-fallback conditional
+(`t.hasImg`/`t.img`/`t.noImg`).
 
-**What genuinely matches, stated honestly:** the STRUCTURE — a strip of buttons,
-one per item, each with a click-to-select action, each showing either an image or
-a text fallback, one item visually marked as current/selected. That structural
-shape is real, verified, and matches `gallery-col.php`'s actual rendered markup
-(button role, `data-index` action-target, `aria-current`, conditional image vs. the
-block's separate no-image state). **What does NOT match, and the spec must stop
-claiming it does:** literal field names (`url`/`alt` vs. `img`/`label`) — these
-were never going to align, and clause (a) as corrected in §3.1 doesn't require them
-to.
+**Read leaf-only, against the whole roster, this collides with
+`sgs/product-card`**, which renders an identical thumbnail loop by deliberate
+design (documented in `gallery-col.php`'s own comment) — the flaw both earlier
+revisions of this spec missed. **Parent-narrowed, the collision never happens:**
+`sgs/buybox` is a singleton on a single-product page; `sgs/product-card` is
+always one of many repeated grid siblings (`repeated_sibling_detector.py`) on a
+shop/archive page (§4.5). Narrowed to the single-product page's singleton
+content, `sgs/buybox` is the only surviving candidate — `sgs/product-card` never
+enters the comparison.
+
+**What this means for auto-completion, stated honestly rather than declared a
+win:** with the collision resolved, the leaf check still finds the match is
+partial, not exact — the draft's image-or-fallback conditional
+(`t.hasImg`/`t.noImg`) has no counterpart in the block's own thumbnail loop
+(genuinely unconditional there). Per §3.1, a partial match doesn't satisfy clause
+(a) even against a single surviving candidate. So this specific group does NOT
+auto-complete under this spec — it's correctly identified as `sgs/buybox` with
+high confidence (only one candidate survives narrowing, and the structure that
+DOES match is exact), but it routes to review rather than completing silently,
+which is the right outcome for a group whose leaf shape doesn't fully align, not
+a shortfall in the mechanism.
 
 ### 4.2 New DB table — `block_render_repeaters`
 
@@ -181,23 +232,38 @@ shared table risks those rows being misread as editor-attribute rows they aren't
 CREATE TABLE block_render_repeaters (
     block_slug   TEXT NOT NULL,
     role         TEXT NOT NULL,   -- STRUCTURAL role per §3.1: 'action-trigger', 'image-or-fallback', 'current-state-indicator', 'label' — not a literal field key
-    role_order   INTEGER,
+    role_order   INTEGER NOT NULL,  -- position within the loop; disambiguates a role that occurs more than once per item (e.g. two labels)
     source_file  TEXT NOT NULL,    -- e.g. 'gallery-col.php'
     source_sha   TEXT NOT NULL,    -- sha256 of the resolved source (via render_emits' own source-resolution path), so a row that no longer matches its source is detectable, not silently stale
-    PRIMARY KEY (block_slug, role)
+    PRIMARY KEY (block_slug, role, role_order)
 );
 ```
 
-Note the schema change from v2.0.0: `field_key`/`field_order` (named-field
-columns, appropriate for `array_item_schema`'s editor-attribute rows) are replaced
-with `role`/`role_order` (structural-role columns, per §3.1's corrected match
-definition) — this table was never going to hold literal field names reliably,
-since the source is PHP-rendered structure, not a declared schema.
+Schema change from v2.0.0: `field_key`/`field_order` (named-field columns,
+appropriate for `array_item_schema`'s editor-attribute rows) become
+`role`/`role_order` (structural-role columns, per §3.1) — this table was never
+going to hold literal field names reliably, since its source is PHP-rendered
+structure, not a declared schema. `role_order` sits in the primary key, not just
+as a sort column, so a repeater with two occurrences of the same role (e.g. a
+name AND a count both reading as `label`) stays representable — this was a real
+gap in the first version of this table, caught by re-checking against
+`sgs/brand-strip`'s own two-label shape (§5.3).
 
-### 4.3 Seeding — source-derived, never a hand-declared block.json key
+### 4.3 Matching order: narrow the parent, then seed and check the leaf
 
-Two sub-steps, both derived from the block's real PHP source, never a hand-typed
-Python dict (R-31-1):
+**Step 0 — narrow candidates by parent context, before any leaf-level work.**
+For a repeated group, compute two facts, both already available: (i) which real
+page/template the content sits on (§4.5's route read); (ii) whether the group's
+own parent element is a singleton or itself one of many repeated siblings
+(`converter/services/repeated_sibling_detector.py`, unchanged, reused as-is).
+Together these narrow the candidate block list from the full roster to the small
+set consistent with that page + repetition context — routinely one block. Only
+this narrowed set is checked against §3.1's leaf-structure rule; a block outside
+it is never considered, regardless of how similar its leaf shape looks.
+
+**Steps 1-2 — seeding the narrowed candidates' real structural shape**, both
+derived from the block's real PHP source, never a hand-typed Python dict
+(R-31-1):
 
 1. **Detection** — does this block even have a render-time repeater? A source-scan
    for a `foreach` over a plain (non-attribute-backed) array in the block's
@@ -241,33 +307,40 @@ block attribute." A render-time repeater has no attribute to copy into — routi
 it through that function is a category error. A new, separate function owns this
 case:
 
-`recognise_render_time_repeater(draft_group, all_seeded_blocks) -> RenderMatchResult`
+`recognise_render_time_repeater(draft_group, client_slug) -> RenderMatchResult`
 
-**Exact call site (named, per the council's finding that this was previously
-unspecified):** runs at the SAME orchestrator stage that already admits a
+Takes `client_slug`, not a candidate list — §4.3 Step 0 does the narrowing
+internally (page context + singleton-vs-repeated), so the caller never has to
+assemble or pass a shortlist. `client_slug` is what makes FR-44-1(b)'s
+per-client first-look check possible: the function queries the audit log (§7)
+for prior occurrences of this (block, pattern) pair for this specific client
+before deciding whether a match can auto-complete.
+
+**Exact call site:** runs at the SAME orchestrator stage that already admits a
 `dom_shape_classifier.py`-flagged boundary — `sgs-clone-orchestrator.py`'s
 extraction stage, BEFORE that boundary would otherwise be handed to
 `converter.entry.convert_section` (which would fail on classless content, exactly
 as proven this session: 13 admitted, 0 completed under the old dom-shape-only
-gate). When a boundary matches per FR-44-1, this function's result is used
-INSTEAD of calling `convert_section` for that boundary — `recognise_section()`,
-`build_block_markup()`, and `converter/walk.py` are never invoked for a
-Stage-A-matched boundary, and are therefore genuinely unchanged (§8), because this
-is a parallel decision made at the orchestrator layer, not a modification to what
-those functions return.
+gate). When a boundary matches, this function's result is used INSTEAD of calling
+`convert_section` for that boundary — `recognise_section()`, `build_block_markup()`,
+and `converter/walk.py` are never invoked for a Stage-A-matched boundary, and are
+therefore genuinely unchanged (§8), because this is a parallel decision at the
+orchestrator layer, not a modification to what those functions return.
 
-`all_seeded_blocks` (renamed from v2.0.0's `candidate_blocks` per FR-44-1(b) —
-Stage A always evaluates the full seeded roster, never a pre-narrowed shortlist).
-
-On a match satisfying FR-44-1 in full, the group is classified as natively-sourced
-via a real, cheat-gate-legal emission: the emitted block markup carries
-`sourceMode='wc-product'` (buybox's real, already-legitimate mode per
-`check_bound_emit.py`'s permitted list — `wc-product`/`sgs-cpt`/`typed`), not a
-bare skip. A conservation record is logged with a PER-FIELD disposition, not a
-bare count (Rule 4 requires this): each draft field is recorded as
-`transferred | natively-sourced-by <block> | skipped: <reason>` — including the
-group's own CSS explicitly recorded as `skipped: styling transfer out of scope,
-§2` rather than left unmentioned.
+**What gets emitted — corrected.** A prior revision of this spec claimed the
+markup should carry `sourceMode='wc-product'`, describing it as buybox's real
+mode. Checked directly against `buybox/block.json`: false — buybox has no
+`sourceMode` attribute at all, and inventing one would be an undeclared attribute
+(the same trap named elsewhere in this project's own rules). The correct
+emission is simpler: the recognised composite (e.g. `sgs/buybox`) is emitted
+NORMALLY, with whatever real attributes it already takes — the render-time
+repeater itself needs no attribute, because the block already renders it from
+live data with no block-side input. Nothing new is invented for this slot; it's
+just correctly left unwritten. A conservation record is logged with a PER-FIELD
+disposition, not a bare count (Rule 4 requires this): each draft field is
+recorded as `transferred | natively-sourced-by <block> (no attribute needed) |
+skipped: <reason>` — including the group's own CSS explicitly recorded as
+`skipped: styling transfer out of scope, §2` rather than left unmentioned.
 
 ### 4.5 Page-context detector (designed together, built as its own pass — §9)
 
@@ -339,7 +412,7 @@ plugin." The framework-generic destination KINDS (`sgs_header`,
 this project's other DB-first tables are — via `dbschema/capture_seed_data.py`'s
 `--check` drift gate (repointing away from v2.0.0's citation of the retired
 `slot_synonyms` table; the live equivalent name-matching mechanism is
-`slots`/`roles` + `db_lookup.py::load_slot_aliases`, and this table follows the
+`slots`/`roles` + `db_lookup.py::_slot_synonyms`, and this table follows the
 same registration discipline, not that specific retired table).
 
 ## 5. Stage B (FALLBACK) — DB-fact elimination
@@ -411,7 +484,7 @@ regardless of sequencing.
   `sgs/option-picker` (which only shared similar attribute vocabulary) — this
   was a live, human-caught near-miss this session (the DB-check on
   `option-picker`'s attributes "looked like a confirmation" before the real page
-  was checked), which is precisely why FR-44-1(c)'s forced-first-review exists.
+  was checked), which is precisely why FR-44-1(b)'s forced-first-review exists.
 - The "top brands" framework gap → no gap; `sgs/brand-strip` already covers it.
   See §5.3.
 - Full trail: `.claude/decisions.md` D1074, D1078.
@@ -421,7 +494,12 @@ regardless of sequencing.
 Every classless-group decision — Stage A structure match, Stage B elimination
 result, auto-completed or fell to review — is written to a durable, append-only,
 git-tracked log (`plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl`,
-NOT inside per-run `pipeline-state/<run>/`).
+NOT inside per-run `pipeline-state/<run>/`), one line per decision, each carrying
+`client_slug`, the matched block/pattern, and the outcome. This log is also the
+named store FR-44-1(b) reads: before auto-completing, `recognise_render_time_repeater`
+scans it for a prior row with the same `client_slug` and the same (block,
+match-type) pattern — a small, linear scan, since it's scoped per client, not a
+new index or table.
 
 **The review surface is real and already exists — name it, don't invent a new
 one.** This pipeline already generates `pipeline-state/<run>/operator-review.html`
@@ -450,10 +528,12 @@ moment.
 - The existing `dom_shape`/`sc_var` eligibility gates — unchanged.
 - One-off (non-repeated) classless sections, and styling transfer — out of scope
   (§2).
-- `converter/walk.py`'s three permitted exceptions — Pass 1 (§4.2-4.4) adds none
-  and changes none. Pass 2's chrome-routing (§4.5) extends exception 2's gate
-  condition (same exception, wider eligibility, real outcome instead of discard);
-  Pass 2's non-chrome page-context routing is flagged explicitly in §4.5 as
+- The three permitted walker exceptions (R-31-3; exception 2, the chrome-skip,
+  lives in `converter/entry.py::_convert_section_body`, not `converter/walk.py`
+  — corrected citation) — Pass 1 (§4.2-4.4) adds none and changes none. Pass 2's
+  chrome-routing (§4.5) extends exception 2's gate condition (same exception,
+  wider eligibility, real outcome instead of discard); Pass 2's non-chrome
+  page-context routing is flagged explicitly in §4.5 as
   needing Bean's design-gate sign-off before build, not silently asserted safe.
 
 ## 9. Build sequencing (designed together, built in two passes)
@@ -471,15 +551,27 @@ Both passes are designed in this document now so the shared shape (FR-44-1's
 trust gate) doesn't get retrofitted later; only the BUILD order is staged, and
 Pass 2 does not begin until its one open design-gate question is resolved.
 
+**Rollout, ships default-off.** Pass 1 lands behind a new flag,
+`--classless-match`, off by default — mirroring this project's existing
+opt-in flags for comparable mechanisms (`--dom-shape-min-confidence`,
+`--sc-var-min-confidence`). Auto-completion (FR-44-1) stays off behind a second
+flag, `--classless-auto-complete`, until at least one real client draft has run
+review-only and the review queue has been checked by hand. Turning either flag
+off is the rollback path if a real run misbehaves — no code revert needed.
+
 ## 10. Test plan
 
+- Unit tests for parent-narrowing (§4.3 Step 0): assert `sgs/buybox` and
+  `sgs/product-card` — a real, documented pair sharing an identical thumbnail
+  structure — are correctly separated by page + repetition context BEFORE leaf
+  matching runs, and that a group's leaf shape is only ever checked against the
+  narrowed candidate(s), never the full roster.
 - Unit tests for the Stage A structure matcher: real fixtures for buybox's
-  thumbnail gallery (using the CORRECTED structural definition, §4.1) and the
-  shop filter panel; a negative control where a group is close-but-partial (per
-  §3.1, some but not all structural markers present), asserting it does NOT
-  auto-complete; a COLLISION negative control (two seeded blocks/routes sharing
-  an identical structural signature), asserting FR-44-1(b) routes it to review,
-  not to either candidate.
+  thumbnail gallery (using the corrected worked example, §4.1 — this fixture
+  should assert the group does NOT auto-complete, since its leaf match is
+  partial) and the shop filter panel; a negative control where a group is
+  close-but-partial (per §3.1) even after narrowing, asserting it does NOT
+  auto-complete.
 - Unit tests for `block_render_repeaters` seeding: (a) a render-time row
   SURVIVES a full `/sgs-update` reseed; (b) a block with an ordinary
   non-repeater `foreach` seeds ZERO rows (§4.3's negative control); (c) mutating
@@ -493,9 +585,10 @@ Pass 2 does not begin until its one open design-gate question is resolved.
   from the Eye Care draft's `isPage(...)` enumeration (all nine: `home`, `shop`,
   `product`, `lenses`, `about`, `help`, `contact`, `checkout`, `done`), asserting
   correct CPT/template destinations and correct fallthrough for `home`.
-- FR-44-1(c) test: simulate a new client's first occurrence of a previously-seen
+- FR-44-1(b) test: simulate a new client's first occurrence of a previously-seen
   pattern; assert it is forced to review once regardless of match quality, and
-  that a second occurrence for the SAME client auto-completes normally.
+  that a second occurrence for the SAME client auto-completes under clause (a)
+  alone.
 - Live verification (this project's hard rule): re-run against the real Eye Care
   Birmingham draft, confirm the previously-admitted-but-failed boundaries (the
   actual command + run-id that produced this session's 13-admitted/0-completed
@@ -543,3 +636,5 @@ Pass 2 does not begin until its one open design-gate question is resolved.
 | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` | The pre-existing CPT/template routing gap §4.5 closes |
 | This session's first `/adversarial-council` run (2026-09-15) | The `block_render_repeaters` sibling-table decision, 5/5 unanimous — transcript in this session's conversation, no separate written artefact yet (flagged by the second council pass as a citation gap; if this matters at build time, capture it to a report) |
 | This session's second `/adversarial-council` run (2026-09-15) | The v2.0.0 review that produced this v2.1.0 revision — 6 personas, 5 NO-GO, findings listed in §0.1 |
+| This session's third `/adversarial-council` run (2026-09-15) | The v2.1.0 lighter follow-up — 3 personas, still NO-GO, findings listed in §0.2 (the parent-narrowing fix and the corrected `sourceMode` claim) |
+| `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md` | The standing rule captured from §0.2's fix, for future recognition-mechanism design work |
