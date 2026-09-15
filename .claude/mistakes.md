@@ -4,6 +4,10 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-15] Compared a repeated item's leaf structural shape against the whole block roster instead of narrowing by parent context first
+- **Pattern key:** `narrow-by-parent-context-before-leaf-structural-match`
+- **Feedback file:** [feedback_narrow_by_parent_context_before_leaf_match.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_narrow_by_parent_context_before_leaf_match.md)
+
 ### [2026-09-14] Labelled a real draft "WooCommerce product add-ons shape" from a competitor survey, not the actual code
 - **Pattern key:** `verify-real-artifact-before-market-category-label`
 - **Feedback file:** [feedback_verify_the_real_artifact_before_applying_a_market_category_label.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_the_real_artifact_before_applying_a_market_category_label.md)
@@ -249,19 +253,6 @@
 ### [2026-08-28] A taxonomy-routing "bug" was WooCommerce's Enable Archives toggle, not a template mismatch
 - **Pattern key:** `a-live-defect-can-be-wp-config-not-code`
 - **Feedback file:** [feedback_a_live_defect_can_be_wp_config_not_code.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_live_defect_can_be_wp_config_not_code.md)
-
-### [2026-08-19] A crash masked a second, older defect — every check I ran was crash-shaped and passed
-- **Pattern key:** `a-crash-masks-every-defect-behind-it`
-- **What happened:** Clicking "Gradient" crashed every SGS block (empty string -> `gradientParser.parse()`
-  returns `[]` instead of throwing, so the forked `try/catch` never fired). I fixed it and verified live:
-  no throw, no error boundary, clean console, component mounted, brand-correct control points. All passed.
-  Bean then sent a screenshot: the gradient panel was visibly broken — no bar, `TYPE` truncated to "L.",
-  collapsed popover — a three-day-old defect nobody had ever seen, because the crash fired first.
-- **The rule:** **A crash is an opaque cover over everything downstream of it.** While it fires, no defect
-  on the surface it guards has ever been observed by anyone. Fixing it does not complete the work — it is
-  the FIRST chance to inspect that surface. Treat newly-reachable code as entirely unverified and check how
-  it LOOKS, not just that it no longer throws. `CRASHED: false` is not "it works".
-- **Feedback file:** [feedback_a_crash_masks_every_defect_behind_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_crash_masks_every_defect_behind_it.md)
 
 
 ### [2026-09-13] `git stash` in a subagent recurred a second time on a shared worktree, this time from the orchestrator's own omission

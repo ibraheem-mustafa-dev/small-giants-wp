@@ -6,6 +6,23 @@ under any name — see `.claude/reports/2026-08-12-doc-audit-register.md` §5).
 
 ---
 
+## 2026-09-15 (classless-recognition track) — 1-entry prune, oldest by date, moved verbatim, to make room for the new parent-context-before-leaf-match stub
+
+### [2026-08-19] A crash masked a second, older defect — every check I ran was crash-shaped and passed
+- **Pattern key:** `a-crash-masks-every-defect-behind-it`
+- **What happened:** Clicking "Gradient" crashed every SGS block (empty string -> `gradientParser.parse()`
+  returns `[]` instead of throwing, so the forked `try/catch` never fired). I fixed it and verified live:
+  no throw, no error boundary, clean console, component mounted, brand-correct control points. All passed.
+  Bean then sent a screenshot: the gradient panel was visibly broken — no bar, `TYPE` truncated to "L.",
+  collapsed popover — a three-day-old defect nobody had ever seen, because the crash fired first.
+- **The rule:** **A crash is an opaque cover over everything downstream of it.** While it fires, no defect
+  on the surface it guards has ever been observed by anyone. Fixing it does not complete the work — it is
+  the FIRST chance to inspect that surface. Treat newly-reachable code as entirely unverified and check how
+  it LOOKS, not just that it no longer throws. `CRASHED: false` is not "it works".
+- **Feedback file:** [feedback_a_crash_masks_every_defect_behind_it.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_a_crash_masks_every_defect_behind_it.md)
+
+---
+
 ## 2026-09-14 (nav-menu/nav-drawer track handoff) — 1-entry prune, oldest by date, moved verbatim, to make room for the new subagent-backgrounding stub
 
 ### [2026-08-19] A forked component renamed all 17 CSS classes and inherited zero of core's styling

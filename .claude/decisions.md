@@ -1,5 +1,60 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1081 [ROUTINE] — Spec 44 reworked v2.0.0 → v2.3.0 across three `/adversarial-council`
+rounds; root mechanism changed to parent-narrowed structural matching; page routing moved
+entirely out of scope
+
+**2026-09-15.** Fresh session, read `.claude/reports/2026-09-14-classless-recognition-next-
+design-attempt.md` (six threads from the prior session) and rewrote Spec 44 from scratch as
+v2.0.0: Stage A (structure-first match against real block/page source, primary) falling back
+to Stage B (DB-fact elimination, the strongest result from last session). Ran
+`/adversarial-council` (6 personas) — **5 of 6 NO-GO.** Convergent + fatal findings: the
+flagship worked example (`sgs/buybox`'s thumbnail gallery, claimed a "field-for-field match")
+didn't survive opening the real file — two of three matching signals were a loop index and a
+hardcoded string, not fields; the DB-schema fork's citation (`slot_synonyms`) pointed at a
+table retired months ago; neither the render-time consumer nor the page-context detector named
+where in the real pipeline they ran; the auto-complete trust gate still let a single mechanism
+complete with zero human check on a brand-new client, the exact hole Round 1 of the ORIGINAL
+v1.0.0 review (D1074) had closed.
+
+Fixed to v2.1.0: corrected the buybox example to an honest STRUCTURAL match (not field names),
+named exact call sites, fixed the citation, added a roster-wide uniqueness requirement + a
+forced first-look on any pattern seen for the first time on a new client. A lighter 3-persona
+follow-up found the fix introduced a NEW error (claimed `sourceMode='wc-product'` for buybox —
+that block has no `sourceMode` at all, belongs to `sgs/product-card`) and, more importantly,
+found the real worked example still didn't hold up: `sgs/buybox` and `sgs/product-card` render
+byte-identical thumbnail-strip markup by deliberate design (documented in the block's own
+source comment), so matching a leaf item's shape against the whole 206-block roster is an
+unresolvable collision no vocabulary widening fixes.
+
+**Fixed to v2.2.0 by sequencing, not vocabulary:** narrow candidates by the item's PARENT
+context (repetition — singleton vs. repeated sibling, via the already-shipped
+`repeated_sibling_detector.py` — plus the parent's own declared composite shape via
+`block_attributes`) BEFORE ever comparing leaf shape. `sgs/buybox` is always a singleton;
+`sgs/product-card` is always a repeated grid sibling; they never actually collide once narrowed.
+Captured as a standing rule:
+`C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
+
+**Then Bean corrected a scope assumption carried since v2.0.0, closing the spec at v2.3.0:**
+page-level routing (the "shop page → WooCommerce blocks" case, originally planned as this
+spec's "Pass 2") was never actually a second pass of THIS mechanism. Each draft route (`shop`,
+`product`, `home`...) clones as its own separate run against its own destination — there's
+never a single walk where some content converts normally and other content needs routing away
+mid-page, so the walker-exception design-gate question this spec kept raising never actually
+arises under how the pipeline runs. Page routing (and a related, genuinely new insight — cloning
+a template-destination page should write the draft's design into the site's own SHARED theme
+template file, so one product-page clone styles every product; confirmed nothing in the
+pipeline writes to `theme/sgs-theme/templates/` today) both move to a separate, already-planned
+"template/CPT side of the cloning pipeline" (Bean's framing) — not this spec.
+
+**Outcome:** Spec 44 v2.3.0 committed (`61a5fd273`), scope simplified to Stage A + Stage B for
+repeated content within a single page clone. NOT yet re-verified by a council pass since v2.3.0
+— do not treat it as GO without one, given every prior revision this session had a real flaw
+found on the next pass. Also corrected in this cycle: last session's "top brands, no matching
+block" finding was wrong — `sgs/brand-strip` already covers it (§5.3, D1031's `media:null`
+empty-state fix). Commits: `4a3d2ae40` (v2.0.0), `79867c2ce` (v2.1.0), `a32f157c3` (v2.2.0),
+`61a5fd273` (v2.3.0).
+
 ## D1080 [INCIDENT] — `scripts/check-rest-route-require.py` built + dispatched same-day (D1079
 follow-up); its first `--survey` found 2 MORE live unfixed instances, also fixed same-day
 
