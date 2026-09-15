@@ -218,59 +218,6 @@ matches.
 
 ## Framework: blocks, theme, specs
 
-### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
-**Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-31 · **Reopened:** 2026-09-14
-
-The z-index/stacking half of this item (a page-embedded `sgs/nav-bar-menu`'s dropdown — this block
-was `sgs/nav-menu` before the 2026-09-14 split, D1059/D1076; only the bar fork can be
-page-embedded, since `nav-drawer-menu` carries `"ancestor":["sgs/nav-drawer"]` — painted over by
-the sticky header) IS genuinely fixed — `mega-disclosure.js::reparentPanelIfNeeded()` moves the
-open panel to `<body>` and repositions it via `position:fixed`, live-verified on canary page 2091.
-That evidence stands; do not re-litigate it. See full history: `memory/parking-archive.md`
-("2026-09-14 — page-embedded nav-menu dropdown stacking").
-
-**What the "RESOLVED" close missed, found the same day by a different investigation. Re-verified
-live 2026-09-14 post-split — the bug is unchanged, only the paths/names are:** the reparent moves
-`[data-sgs-mega-panel]` (the `<ul class="sgs-nav-bar-menu__submenu">` and everything in it) out
-from under the block's `.{uid}` scoping class, which lives on the root `<nav>` and never moves
-(`plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php::$uid_sel` — confirmed still
-`'sgs-nav-bar-menu-' . substr(md5(...),0,8)`). Every plain `.{uid} .sgs-nav-bar-menu__submenu...`
--scoped rule in `nav-menu-submenu-css.php` (confirmed still scoping every declaration as
-`$uid_sel . ' .' . $bem_root . '__submenu...'`, param name changed from a hardcoded literal to
-`$bem_root`, mechanism identical) (background-colour,
-background-image, sublink padding, current-page styling — not just the two `:has()`
-ancestor-highlight rules already patched the same day) stops matching the instant the panel moves.
-Live-confirmed on canary page 2091: the header's own dropdown (never reparents) renders a correct
-cream panel (`rgb(251, 243, 220)`); the page-embedded instance's reparented panel renders fully
-transparent (`rgba(0, 0, 0, 0)`), with its links floating unstyled over whatever's behind them.
-
-**Minimal fix shape (not built):** mirror the `.{uid}` class onto the reparented panel at
-move-time (same pattern as the already-shipped `attachAncestorFlagWatcher` snapshot/restore for
-the `:has()` fix), stripped again in `revertReparent()`. Needs verifying this restores every
-affected rule, not just background.
-
-**Trigger:** whoever picks up this item next — needs a build task, not more investigation.
-
-### P-NAV-HOVER-TYPOGRAPHY-CONTROLS — 6 declared Hover attrs have no editor control
-**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
-
-`itemFontWeightHover` / `itemTextDecorationHover` / `itemTextTransformHover` /
-`submenuFontWeightHover` / `submenuTextDecorationHover` / `submenuTextTransformHover` are declared
-in both `nav-bar-menu/block.json` and `nav-drawer-menu/block.json` but have no control in either
-block's `edit.js` and are read by no `render.php`/`save.js`/`view.js`/shared include/theme
-pattern — confirmed via `audit-block-file-consistency.py --check` (14 findings: 6×2 blocks + 2
-bar-only `_note_*` doc-attrs, the latter an established, already-elsewhere-baselined convention).
-Verified pre-existing via `git show 80f78f511^:.../nav-menu/block.json` — present, identically
-orphaned, in the ORIGINAL pre-split `sgs/nav-menu`; not introduced or worsened by the
-nav-menu-split project (Steps 1-8) or by anything in this session. Accepted into
-`block-file-consistency-baseline.json` (2026-09-15, `--update-baseline`) rather than fixed, so it
-does not block deploy — this needs a properly-scoped build session (6 new hover-typography
-controls, following `TypographyPanel.js`'s existing per-state pattern and the
-`31-golden-colour-control.js` inspector-scan conventions), not a bolt-on fix.
-
-**Trigger:** whoever next does nav-menu typography/Spec-41-hover work — build the 6 controls or
-delete the 6 attrs, whichever the live design intent turns out to need.
-
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 

@@ -7,6 +7,134 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-15 — 1 entry RESOLVED: page-embedded nav-bar-menu dropdown stacking, eliminated structurally (ancestor restriction supersedes the reparent-CSS-scoping fix)
+
+> ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
+> **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-31 · **Reopened:** 2026-09-14
+>
+> The z-index/stacking half of this item (a page-embedded `sgs/nav-bar-menu`'s dropdown — this block
+> was `sgs/nav-menu` before the 2026-09-14 split, D1059/D1076; only the bar fork can be
+> page-embedded, since `nav-drawer-menu` carries `"ancestor":["sgs/nav-drawer"]` — painted over by
+> the sticky header) IS genuinely fixed — `mega-disclosure.js::reparentPanelIfNeeded()` moves the
+> open panel to `<body>` and repositions it via `position:fixed`, live-verified on canary page 2091.
+> That evidence stands; do not re-litigate it.
+>
+> **What the "RESOLVED" close missed, found the same day by a different investigation. Re-verified
+> live 2026-09-14 post-split — the bug is unchanged, only the paths/names are:** the reparent moves
+> `[data-sgs-mega-panel]` (the `<ul class="sgs-nav-bar-menu__submenu">` and everything in it) out
+> from under the block's `.{uid}` scoping class, which lives on the root `<nav>` and never moves.
+> Every plain `.{uid} .sgs-nav-bar-menu__submenu...`-scoped rule in `nav-menu-submenu-css.php`
+> (background-colour, background-image, sublink padding, current-page styling) stops matching the
+> instant the panel moves. Live-confirmed on canary page 2091: the header's own dropdown (never
+> reparents) renders a correct cream panel (`rgb(251, 243, 220)`); the page-embedded instance's
+> reparented panel renders fully transparent (`rgba(0, 0, 0, 0)`), with its links floating unstyled
+> over whatever's behind them.
+>
+> **Minimal fix shape (not built):** mirror the `.{uid}` class onto the reparented panel at
+> move-time, stripped again in `revertReparent()`.
+
+**Resolution, 2026-09-15 — different fix shape, not the CSS-mirroring patch above.** Bean asked
+the better question mid-investigation: why does `sgs/nav-bar-menu` allow insertion into page
+content at all, when the CSS-scoping bug only exists because that placement is possible? Checked
+every real usage across `theme/sgs-theme/patterns/header-*.php` (7 patterns: centred, full,
+minimal, scratch, search-bar-above, search-bar-below, search-icon) — `sgs/nav-bar-menu` is a
+direct child of `sgs/site-header-row` in every single one, never page content. `sgs/site-header-row`
+itself already carries `"parent":["sgs/site-header"]` (editor-enforced immediate-parent
+restriction). A canary DB query confirmed zero real page-content instances exist anywhere on the
+live site (`wp db query "SELECT ID,post_title,post_type,post_status FROM wp_posts WHERE
+post_content LIKE '%wp:sgs/nav-bar-menu%'"` → only the Header template part (2671) and one of its
+revisions) — the ONLY page-content instance that ever existed was the QA test page built
+specifically to reproduce this bug (canary page 2091, `/t1-dropdown-verify/`; already deleted
+before this session, confirmed via `wp post get 2091` → "Could not find the post").
+
+Added `"ancestor": ["sgs/site-header-row"]` to `plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`
+(mirroring `nav-drawer-menu/block.json::ancestor` → `["sgs/nav-drawer"]`, the same pattern already
+used to make the drawer's placement structural in Step 2 of the nav-menu-split project). Built
+(`npm run build`, all gates green including the motion-bundle-budget and shader-source checks),
+deployed to sandybrown via `build-deploy.py --target sandybrown --blocks-only --skip-build
+--payload plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`, OPcache purged manually (the
+deploy script's own automated purge/verify probes failed on a stale LOCAL Python `certifi` bundle
+— `curl -sI` returned `200 OK` and `openssl s_client | openssl x509 -noout -dates` showed the real
+cert valid to Dec 2026, confirming DEPLOYED-BUT-BROKEN was a false alarm, not a real outage,
+matching the established `feedback_deployed_but_broken_can_be_a_local_cert_store_false_alarm`
+pattern).
+
+Live-verified in the actual block editor via `wp.data.select('core/block-editor')`:
+`canInsertBlockType('sgs/nav-bar-menu')` at a page's content root → `false` (insertion blocked);
+the same call scoped to the Header template part's existing `sgs/site-header-row` parent
+`clientId` → `true` (header placement fully unaffected, zero regression). Frontend-verified the
+header's own dropdown still opens correctly post-deploy: `aria-expanded` flips to `true`, zero
+console errors, and the submenu `<ul class="sgs-nav-bar-menu__submenu">` (the element that
+actually carries the background, not its `-wrap` parent) computes `rgb(251, 243, 220)` — correct
+cream, matching pre-deploy.
+
+**`mega-disclosure.js::reparentPanelIfNeeded()` was KEPT, not removed** — read the whole file
+(1009 lines) and confirmed every caller of the reparent family (`reparentPanelIfNeeded`,
+`revertReparent`, `needsStackingFix`, `attachAncestorFlagWatcher`/`detachAncestorFlagWatcher`,
+`syncFixedScrollWatcher`) exists solely to serve the page-content stacking case, gated by the
+single condition `needsStackingFix()` → `!root.closest('.sgs-site-header')` — no other purpose,
+no in-header edge case depends on it (viewport-edge repositioning is handled entirely by the
+separate, unrelated `repositionPanel()` function via CSS custom properties). Kept anyway because
+the `ancestor`/`parent` restriction is an EDITOR-INSERTER guard only — it does not stop render.php
+from rendering a misplaced instance created via direct `post_content` editing, WP-CLI, REST, or a
+content-migration script. If that ever happened with the mechanism deleted, the result would be a
+regression to the ORIGINAL, WORSE bug (panel invisible entirely behind the header, non-functional)
+rather than today's lesser, non-reproducible-in-practice one. Cheap, self-contained, single-gated
+code with no maintenance cost — the conservative call given explicit instruction not to remove
+without certainty.
+
+Superseded the CSS-mirroring fix shape recorded above — that patch is no longer needed since the
+bug class it would have fixed can no longer be created through the editor. Confirmed no other
+document references the deleted canary page 2091 outside historical record (`.claude/decisions.md`,
+this archive, `memory/session-2026-07-31-track1-session2.md`, the 2026-09-13 proposal report) —
+all appropriately historical, none live-linked.
+
+## 2026-09-15 — 1 entry RESOLVED: nav hover-typography "missing controls" was a detector false-positive
+
+> ### P-NAV-HOVER-TYPOGRAPHY-CONTROLS — 6 declared Hover attrs have no editor control
+> **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+>
+> `itemFontWeightHover` / `itemTextDecorationHover` / `itemTextTransformHover` /
+> `submenuFontWeightHover` / `submenuTextDecorationHover` / `submenuTextTransformHover` are declared
+> in both `nav-bar-menu/block.json` and `nav-drawer-menu/block.json` but have no control in either
+> block's `edit.js` and are read by no `render.php`/`save.js`/`view.js`/shared include/theme
+> pattern — confirmed via `audit-block-file-consistency.py --check` (14 findings: 6×2 blocks + 2
+> bar-only `_note_*` doc-attrs, the latter an established, already-elsewhere-baselined convention).
+> Verified pre-existing via `git show 80f78f511^:.../nav-menu/block.json` — present, identically
+> orphaned, in the ORIGINAL pre-split `sgs/nav-menu`; not introduced or worsened by the
+> nav-menu-split project (Steps 1-8) or by anything in this session. Accepted into
+> `block-file-consistency-baseline.json` (2026-09-15, `--update-baseline`) rather than fixed, so it
+> does not block deploy — this needs a properly-scoped build session (6 new hover-typography
+> controls, following `TypographyPanel.js`'s existing per-state pattern and the
+> `31-golden-colour-control.js` inspector-scan conventions), not a bolt-on fix.
+>
+> **Trigger:** whoever next does nav-menu typography/Spec-41-hover work — build the 6 controls or
+> delete the 6 attrs, whichever the live design intent turns out to need.
+
+**Resolution evidence, 2026-09-15:** this was a DETECTOR FALSE-POSITIVE, not a real missing-control
+gap — the controls were always correctly wired. Direct code reading confirmed both
+`nav-bar-menu/edit.js` and `nav-drawer-menu/edit.js` mount `<TypographyControls>` with
+`showHover: true` on both the `item` and `submenu` targets, and both blocks' `render.php` declare
+`sgs_nav_shared_typography_hover_rule( array $attributes, string $prefix, string $selector,
+string $sweep_hover_colour = '' )`, genuinely called from `includes/nav-menu-css.php` (`'item'`
+prefix) and `includes/nav-menu-submenu-link-css.php` (`'submenu'` prefix), which reads
+`$attributes[$prefix.'FontWeightHover']` etc. and emits real CSS. Root cause: this shared helper
+builds attribute names via `$prefix . 'Suffix'` string concatenation — the literal attribute name
+never appears in the corpus as text — and `audit-block-file-consistency.py` /
+`check-dead-controls.js`'s `PREFIXED_HELPER_SUFFIXES` allowlist (built exactly for this pattern,
+already covering `sgs_typography_css_rule` etc.) had never been extended to register
+`sgs_nav_shared_typography_hover_rule`. Fixed by adding that registration (`TextDecorationHover`,
+`TextTransformHover`, `FontWeightHover`) to `PREFIXED_HELPER_SUFFIXES` in both
+`scripts/audit-block-file-consistency.py` and `scripts/check-dead-controls.js`; removed the 12
+now-stale `orphan_attr` entries from `scripts/block-file-consistency-baseline.json` (manual
+targeted removal, not `--update-baseline`). Verified: `audit-block-file-consistency.py --json`
+before → 14 findings for the two blocks (12 hover + 2 unrelated `_note_*`); after → 2 (only the
+`_note_*` entries remain). `check-dead-controls.js --json` → 0 findings for either block before and
+after (already clean). `--check` on the Python script now exits 0 with 0 net-new findings against
+the smaller baseline. `check-dead-controls.js --self-test` passes in full. No source files in
+`src/blocks/nav-bar-menu/`, `src/blocks/nav-drawer-menu/`, or `includes/nav-menu-*.php` were
+touched — none needed to change.
+
 ## 2026-09-14 — 1 entry RESOLVED: drawer-logo colour attributes, Bean picked option (a)
 
 > ### P-UIMAX-DRAWER-LOGO-AUTODERIVE — auto-derive drawer-head logo colours from the header row
