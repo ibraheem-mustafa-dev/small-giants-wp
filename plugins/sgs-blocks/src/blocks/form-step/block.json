@@ -14,7 +14,8 @@
 	"textdomain": "sgs-blocks",
 	"icon": "editor-ol",
 	"parent": [
-		"sgs/form"
+		"sgs/form",
+		"sgs/choice-flow"
 	],
 	"supports": {
 		"html": false,

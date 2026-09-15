@@ -335,6 +335,45 @@ INSERTS: list[dict] = [
             '["core/image", "sgs/media", "sgs/icon", "sgs/decorative-image"]'
         ),
     },
+    {
+        # sgs/choice-flow (2026-09-15, Spec 43 Phase 2) — the branching-quiz
+        # wizard root. Structurally closest to sgs/form (InnerBlocks-only step
+        # container), but deliberately does NOT wrap sgs/container this phase —
+        # block.json declares zero colour/typography/box attrs yet (its own
+        # supports.sgs.elements.wrapper._note says "extend when a later phase
+        # adds styling controls"), so there is nothing for SGS_Container_Wrapper
+        # to mirror yet. wraps_block=None + composition_role='content-block'
+        # mirrors sgs/form-review's minimal shape rather than sgs/form's
+        # wrapped one, on purpose — revisit both fields together when a later
+        # phase adds wrapper-level styling (Spec 43 §9 Phase 4/5).
+        "block_slug": "sgs/choice-flow",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": '["sgs/form-step"]',
+    },
+    {
+        # sgs/choice-flow-question (2026-09-15, Spec 43 Phase 2, FR-43-1) —
+        # renders its question + options from its own `options` array
+        # attribute, not from InnerBlocks children. Mirrors sgs/option-picker's
+        # existing rationale (content-block, not leaf, so the misresolution
+        # guard — which fires for leaf + sgs-classed children — never triggers
+        # on a block that legitimately has no children at all).
+        "block_slug": "sgs/choice-flow-question",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        # sgs/choice-flow-result (2026-09-15, Spec 43 Phase 2, FR-43-3) — the
+        # recommendation terminal. Renders heading/body directly from its own
+        # attributes, no InnerBlocks children. Mirrors sgs/form-review's
+        # shape exactly (both are terminal/summary display blocks in the same
+        # form-step family).
+        "block_slug": "sgs/choice-flow-result",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

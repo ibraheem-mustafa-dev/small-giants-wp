@@ -1,0 +1,104 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/choice-flow-question",
+	"version": "0.1.0",
+	"title": "SGS Choice Flow — Question",
+	"category": "sgs-forms",
+	"description": "A plain multiple-choice question step. Each option can route to a specific next step, or fall through to the next step in flow order.",
+	"keywords": [
+		"quiz",
+		"question",
+		"choice",
+		"branching",
+		"flow"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "editor-help",
+	"parent": [
+		"sgs/form-step"
+	],
+	"supports": {
+		"html": false,
+		"sgs": {
+			"hideExtensions": [
+				"animation",
+				"clickEffects",
+				"parallax"
+			],
+			"elements": {
+				"question": {
+					"label": "Question text",
+					"layer": "CONTENT",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"_note": "v1 (Spec 43 Phase 2): plain-question step only, no colour/typography attrMap yet — kept minimal per FR-43-1's plain-question scope. Element declared for structural documentation; no styling attrs exist on this block to map."
+				},
+				"options": {
+					"label": "Options list",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"layout"
+					],
+					"_note": "v1: no per-option colour/layout attrs yet — plain list, styled by the block's own stylesheet only."
+				}
+			}
+		}
+	},
+	"attributes": {
+		"question": {
+			"type": "string",
+			"default": "",
+			"role": "content"
+		},
+		"options": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object",
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"value": {
+						"type": "string"
+					},
+					"nextStepId": {
+						"type": "string",
+						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the clientId of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker."
+					},
+					"tags": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"default": [],
+						"description": "FR-43-12: tags this option contributes to the path's accumulated tag set when chosen, for matching against a sgs/choice-flow-result's own matchTags. Empty when the flow only ever has one result (the common case)."
+					}
+				}
+			}
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"example": {
+		"attributes": {
+			"question": "Which service suits you?",
+			"options": [
+				{
+					"label": "Something quick",
+					"value": "quick",
+					"nextStepId": ""
+				},
+				{
+					"label": "A full consultation",
+					"value": "full",
+					"nextStepId": "__terminal__"
+				}
+			]
+		}
+	}
+}

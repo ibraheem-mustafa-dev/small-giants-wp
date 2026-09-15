@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/choice-flow-result",
+    "version": "0.1.0",
+    "title": "SGS Choice Flow — Result",
+    "category": "sgs-forms",
+    "description": "The recommendation terminal for a Choice Flow — shows a heading and result text, optionally matched against a weighted tag set (Spec 43 FR-43-3/FR-43-12).",
+    "keywords": [
+        "quiz",
+        "result",
+        "recommendation",
+        "choice flow"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "flag",
+    "parent": [
+        "sgs/form-step"
+    ],
+    "supports": {
+        "html": false,
+        "anchor": false,
+        "sgs": {
+            "hideExtensions": [
+                "animation",
+                "clickEffects",
+                "parallax"
+            ],
+            "elements": {
+                "heading": {
+                    "label": "Result heading",
+                    "order": 1,
+                    "clusters": [],
+                    "_note": "Renders as <h3 class=\"sgs-choice-flow-result__heading\">, a RichText-bound plain string attribute (no source:html — this is a dynamic, render.php-only block with no save.js, so nothing ever parses the attribute back out of saved markup). clusters: [] is a genuine gap — no per-instance colour/typography attribute exists on this block this phase; styled by shared framework CSS only."
+                },
+                "body": {
+                    "label": "Result body",
+                    "order": 2,
+                    "clusters": [],
+                    "_note": "Renders as <div class=\"sgs-choice-flow-result__body\">, a RichText-bound plain string attribute allowing basic inline formatting (no source:html — same reason as heading). clusters: [] is a genuine gap — same as heading."
+                }
+            }
+        }
+    },
+    "attributes": {
+        "heading": {
+            "type": "string",
+            "default": ""
+        },
+        "body": {
+            "type": "string",
+            "default": ""
+        },
+        "matchTags": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "example": {
+        "attributes": {
+            "heading": "Your recommended treatment",
+            "body": "Based on your answers, we think this is the best fit for you."
+        }
+    }
+}

@@ -83,6 +83,18 @@ final class Sgs_Block_CPTs {
 	 */
 	public const FORM_CPT = 'sgs_form';
 
+	/**
+	 * Post type slug for branching-quiz definition entries (Phase 2, Spec 43).
+	 *
+	 * A `sgs_choice_flow` post stores a branching quiz's question/answer graph,
+	 * edited on its own screen rather than inline inside a page — same reasoning
+	 * as `sgs_form` above. Per Spec 43 FR-43-8 ("same literal values, not a
+	 * parallel decision"), this CPT is governed by the EXACT SAME capability
+	 * (`edit_sgs_forms`) as `sgs_form`, not a second `edit_sgs_choice_flows`
+	 * capability — one capability governs both CPTs.
+	 */
+	public const CHOICE_FLOW_CPT = 'sgs_choice_flow';
+
 	/** Block pattern category slug for header patterns. */
 	private const HEADER_CAT = 'sgs-headers';
 
@@ -348,6 +360,55 @@ final class Sgs_Block_CPTs {
 				)
 			)
 		);
+
+		/**
+		 * Args for `sgs_choice_flow` — mirrors `$form_shared`'s shape
+		 * exactly, reusing the SAME `$form_capabilities` map (Phase 2,
+		 * Spec 43 FR-43-8: "same literal values, not a parallel decision" —
+		 * one capability governs both CPTs). No `custom-fields` support,
+		 * same reasoning as `sgs_form`.
+		 *
+		 * @var array<string,mixed>
+		 */
+		$choice_flow_shared = array(
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => false,
+			'show_in_rest'    => true,
+			'supports'        => array( 'title', 'editor', 'revisions' ),
+			'rewrite'         => false,
+			'has_archive'     => false,
+			'capability_type' => 'page',
+			'map_meta_cap'    => true,
+			'capabilities'    => $form_capabilities,
+		);
+
+		\register_post_type(
+			self::CHOICE_FLOW_CPT,
+			array_merge(
+				$choice_flow_shared,
+				array(
+					'label'       => \__( 'Choice Flows', 'sgs-blocks' ),
+					'labels'      => array(
+						'name'               => \__( 'Choice Flows', 'sgs-blocks' ),
+						'singular_name'      => \__( 'Choice Flow', 'sgs-blocks' ),
+						'add_new'            => \__( 'Add New', 'sgs-blocks' ),
+						'add_new_item'       => \__( 'Add New Choice Flow', 'sgs-blocks' ),
+						'edit_item'          => \__( 'Edit Choice Flow', 'sgs-blocks' ),
+						'new_item'           => \__( 'New Choice Flow', 'sgs-blocks' ),
+						'view_item'          => \__( 'View Choice Flow', 'sgs-blocks' ),
+						'search_items'       => \__( 'Search Choice Flows', 'sgs-blocks' ),
+						'not_found'          => \__( 'No choice flows found.', 'sgs-blocks' ),
+						'not_found_in_trash' => \__( 'No choice flows found in Trash.', 'sgs-blocks' ),
+					),
+					'description' => \__( 'Branching quiz definitions, edited on their own screen and rendered by a Choice Flow block wherever they are needed.', 'sgs-blocks' ),
+					// NO `template` arg — same reason as all CPTs above (FR-37-7,
+					// 2026-07-24): a registration template makes a new post
+					// non-empty and suppresses WordPress's native "Choose a
+					// pattern" starter modal.
+				)
+			)
+		);
 	}
 
 	/**
@@ -465,11 +526,25 @@ final class Sgs_Block_CPTs {
 			'edit.php?post_type=' . self::FORM_CPT,
 			''
 		);
+
+		// `sgs_choice_flow` shares the SAME capability as `sgs_form`
+		// ('edit_sgs_forms') — Phase 2, Spec 43 FR-43-8: one capability
+		// governs both CPTs, not a parallel decision.
+		\add_submenu_page(
+			Sgs_Admin_Menu::MENU_SLUG,
+			\__( 'Choice Flows', 'sgs-blocks' ),
+			\__( 'Choice Flows', 'sgs-blocks' ),
+			'edit_sgs_forms',
+			'edit.php?post_type=' . self::CHOICE_FLOW_CPT,
+			''
+		);
 	}
 
 	/**
-	 * Cap `sgs_form` revisions at 10; leave every other post type's revision
-	 * count untouched (Phase 1, Spec 42 — decided literal value, FR-42-3).
+	 * Cap `sgs_form` AND `sgs_choice_flow` revisions at 10; leave every other
+	 * post type's revision count untouched (Phase 1, Spec 42 — decided literal
+	 * value, FR-42-3; extended Phase 2, Spec 43 FR-43-8 to cover
+	 * `sgs_choice_flow` with the SAME literal value, not a second function).
 	 *
 	 * @param int          $num  The number of revisions WP would otherwise keep.
 	 * @param \WP_Post|int $post The post (or post ID) being checked.
@@ -478,7 +553,7 @@ final class Sgs_Block_CPTs {
 	public static function limit_form_revisions( int $num, $post ): int {
 		$post_type = \get_post_type( $post );
 
-		if ( self::FORM_CPT !== $post_type ) {
+		if ( self::FORM_CPT !== $post_type && self::CHOICE_FLOW_CPT !== $post_type ) {
 			return $num;
 		}
 
@@ -583,6 +658,36 @@ final class Sgs_Block_CPTs {
 		}
 
 		$post = \get_page_by_path( $slug, OBJECT, self::FORM_CPT );
+
+		if ( ! $post instanceof \WP_Post ) {
+			return null;
+		}
+
+		if ( 'publish' !== $post->post_status ) {
+			return null;
+		}
+
+		return $post;
+	}
+
+	/**
+	 * Resolve a `sgs/choice-flow` block's `flowId` attribute (a slug, not a
+	 * post ID — same shape as {@see self::resolve_form()}) to the published
+	 * `sgs_choice_flow` post it names, or null when there is no valid target.
+	 *
+	 * Same fail-closed shape as `resolve_form()` (never a fatal, degrade to
+	 * null), same by-slug lookup mechanism (Phase 2, Spec 43 — mirrors Phase 1
+	 * exactly, per FR-43-8).
+	 *
+	 * @param string $slug The `flowId` attribute value (a `sgs_choice_flow` post slug, or '' for "not linked").
+	 * @return \WP_Post|null The published choice-flow-definition post, or null.
+	 */
+	public static function resolve_choice_flow( string $slug ): ?\WP_Post {
+		if ( '' === $slug ) {
+			return null;
+		}
+
+		$post = \get_page_by_path( $slug, OBJECT, self::CHOICE_FLOW_CPT );
 
 		if ( ! $post instanceof \WP_Post ) {
 			return null;

@@ -26,6 +26,15 @@
 		"particles",
 		"scrub"
 	],
+	"sgs/choice-flow-result": [
+		"magnet",
+		"morph",
+		"motion-path",
+		"particles",
+		"scramble",
+		"scrub",
+		"split-reveal"
+	],
 	"sgs/collapsible-text": [
 		"magnet",
 		"morph",

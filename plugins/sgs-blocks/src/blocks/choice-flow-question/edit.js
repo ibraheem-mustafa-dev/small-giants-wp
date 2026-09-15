@@ -1,0 +1,248 @@
+import { __, sprintf } from '@wordpress/i18n';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
+import {
+	PanelBody,
+	TextControl,
+	SelectControl,
+	Button,
+} from '@wordpress/components';
+import { VStack } from '../../components/primitives';
+
+// Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
+// result step is reachable" rather than a specific sibling sgs/form-step.
+const TERMINAL_SENTINEL = '__terminal__';
+
+/**
+ * Slug an option label into a stable option `value` — mirrors
+ * sanitize_title()'s common case (lowercase, non-alnum collapsed to a single
+ * hyphen, trimmed) closely enough for editor-time value derivation. The
+ * server never trusts this value as-is; it is just the option's identity.
+ *
+ * @param {string} label
+ * @return {string}
+ */
+function slugifyLabel( label ) {
+	return ( label || '' )
+		.toString()
+		.toLowerCase()
+		.trim()
+		.replace( /[^a-z0-9]+/g, '-' )
+		.replace( /^-+|-+$/g, '' );
+}
+
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const { question, options } = attributes;
+
+	const blockProps = useBlockProps( {
+		className: 'sgs-choice-flow-question',
+	} );
+
+	// Walk up from this question block to the nearest sgs/choice-flow
+	// ancestor, then list its sgs/form-step children as step-picker choices.
+	// Walking (rather than assuming exactly one level, i.e. straight to the
+	// parent sgs/form-step's own parent) keeps this resilient if a future
+	// wrapper block is ever inserted between choice-flow and form-step.
+	const stepChoices = useSelect(
+		( select ) => {
+			const { getBlockRootClientId, getBlock, getBlocks } =
+				select( 'core/block-editor' );
+
+			let ancestorId = getBlockRootClientId( clientId );
+			let flowId = '';
+			while ( ancestorId ) {
+				const ancestorBlock = getBlock( ancestorId );
+				if ( ancestorBlock && ancestorBlock.name === 'sgs/choice-flow' ) {
+					flowId = ancestorId;
+					break;
+				}
+				ancestorId = getBlockRootClientId( ancestorId );
+			}
+
+			if ( ! flowId ) {
+				return [];
+			}
+
+			return getBlocks( flowId )
+				.filter( ( block ) => block.name === 'sgs/form-step' )
+				.map( ( block, index ) => ( {
+					label: sprintf(
+						/* translators: %d: step position within the flow. */
+						__( 'Step %d', 'sgs-blocks' ),
+						index + 1
+					),
+					value: block.clientId,
+				} ) );
+		},
+		[ clientId ]
+	);
+
+	const nextStepOptions = [
+		{ label: __( 'Advance to next step', 'sgs-blocks' ), value: '' },
+		...stepChoices,
+		{ label: __( 'Show result', 'sgs-blocks' ), value: TERMINAL_SENTINEL },
+	];
+
+	const updateOption = ( index, key, value ) => {
+		const newOptions = [ ...options ];
+		newOptions[ index ] = { ...newOptions[ index ], [ key ]: value };
+		setAttributes( { options: newOptions } );
+	};
+
+	const removeOption = ( index ) => {
+		setAttributes( { options: options.filter( ( _, i ) => i !== index ) } );
+	};
+
+	const moveOption = ( index, direction ) => {
+		const targetIndex = index + direction;
+		if ( targetIndex < 0 || targetIndex >= options.length ) {
+			return;
+		}
+		const newOptions = [ ...options ];
+		const [ moved ] = newOptions.splice( index, 1 );
+		newOptions.splice( targetIndex, 0, moved );
+		setAttributes( { options: newOptions } );
+	};
+
+	const addOption = () => {
+		const newIndex = options.length + 1;
+		setAttributes( {
+			options: [
+				...options,
+				{
+					label: sprintf(
+						/* translators: %d: option position. */
+						__( 'Option %d', 'sgs-blocks' ),
+						newIndex
+					),
+					value: `option-${ newIndex }`,
+					nextStepId: '',
+					tags: [],
+				},
+			],
+		} );
+	};
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen={ true }>
+					<VStack spacing={ 4 }>
+						{ options.map( ( option, index ) => (
+							<VStack
+								key={ index }
+								spacing={ 2 }
+								className="sgs-choice-flow-question__option-row"
+							>
+								<TextControl
+									label={ __( 'Label', 'sgs-blocks' ) }
+									value={ option.label || '' }
+									onChange={ ( val ) => {
+										const newOptions = [ ...options ];
+										const nextOption = { ...newOptions[ index ], label: val };
+										// Only auto-derive the value while it still matches the
+										// slug of the PREVIOUS label — once the operator edits
+										// the value directly it stops tracking the label.
+										if (
+											! option.value ||
+											option.value === slugifyLabel( option.label )
+										) {
+											nextOption.value = slugifyLabel( val );
+										}
+										newOptions[ index ] = nextOption;
+										setAttributes( { options: newOptions } );
+									} }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<TextControl
+									label={ __( 'Value', 'sgs-blocks' ) }
+									value={ option.value || '' }
+									onChange={ ( val ) => updateOption( index, 'value', val ) }
+									help={ __( 'Machine value used in submission data', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<SelectControl
+									label={ __( 'Goes to', 'sgs-blocks' ) }
+									value={ option.nextStepId || '' }
+									options={ nextStepOptions }
+									onChange={ ( val ) => updateOption( index, 'nextStepId', val ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<TextControl
+									label={ __( 'Tags', 'sgs-blocks' ) }
+									value={ ( option.tags || [] ).join( ', ' ) }
+									onChange={ ( val ) =>
+										updateOption(
+											index,
+											'tags',
+											val
+												.split( ',' )
+												.map( ( tag ) => tag.trim() )
+												.filter( Boolean )
+										)
+									}
+									help={ __(
+										'Only needed if this flow has more than one possible result — comma-separated. Leave blank for a single-result flow.',
+										'sgs-blocks'
+									) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+								<VStack spacing={ 1 } className="sgs-choice-flow-question__option-row-actions">
+									<Button
+										isSmall
+										variant="secondary"
+										disabled={ index === 0 }
+										onClick={ () => moveOption( index, -1 ) }
+									>
+										{ __( 'Move up', 'sgs-blocks' ) }
+									</Button>
+									<Button
+										isSmall
+										variant="secondary"
+										disabled={ index === options.length - 1 }
+										onClick={ () => moveOption( index, 1 ) }
+									>
+										{ __( 'Move down', 'sgs-blocks' ) }
+									</Button>
+									<Button
+										isDestructive
+										isSmall
+										onClick={ () => removeOption( index ) }
+									>
+										{ __( 'Remove option', 'sgs-blocks' ) }
+									</Button>
+								</VStack>
+							</VStack>
+						) ) }
+						<Button isPrimary onClick={ addOption }>
+							{ __( 'Add option', 'sgs-blocks' ) }
+						</Button>
+					</VStack>
+				</PanelBody>
+			</InspectorControls>
+
+			<div { ...blockProps }>
+				<TextControl
+					label={ __( 'Question', 'sgs-blocks' ) }
+					value={ question }
+					onChange={ ( val ) => setAttributes( { question: val } ) }
+					placeholder={ __( 'Which service suits you?', 'sgs-blocks' ) }
+					className="sgs-choice-flow-question__title-input"
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<ul className="sgs-choice-flow-question__options-preview">
+					{ options.map( ( option, index ) => (
+						<li key={ index } className="sgs-choice-flow-question__option-preview">
+							{ option.label || __( '(empty option)', 'sgs-blocks' ) }
+						</li>
+					) ) }
+				</ul>
+			</div>
+		</>
+	);
+}
