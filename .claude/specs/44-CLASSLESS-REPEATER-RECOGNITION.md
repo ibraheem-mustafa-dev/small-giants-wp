@@ -419,6 +419,22 @@ partial `this.go(...)` scan that missed 3 of 9 real routes) is real, verified
 evidence worth carrying forward into that track's design — not discarded, just
 relocated. So is the real, previously-scoped gap it was meant to close: see
 `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`, "Not yet
+
+**Pre-answered for that future track, so it doesn't need re-deriving (2026-09-15):**
+once that track builds a walker that processes a WHOLE draft, page by page, in
+one run, the walker-exception question resolved above ("does routing chrome
+away needs a broadened or new R-31-3 exception?") won't need answering either
+way — it goes away. The real design is SEGMENTATION BEFORE THE WALKER RUNS:
+a draft gets carved into its pieces (a page, a header/footer/drawer/modal CPT,
+a page template) up front, and each piece is routed to its own correct cloning
+surface before any walk starts. A page-scoped walk then never receives chrome
+content as input at all — nothing to detect or skip mid-walk, because it was
+never there. The existing `SKIP_TOP_LEVEL_TAGS` chrome-skip exception isn't
+extended by this future track; it becomes unnecessary and can likely retire
+once segmentation exists. Do not re-litigate broaden-vs-new-exception when this
+track starts — build the segmentation step instead.
+
+
 designed" — the detector that recognises a draft section as
 header/footer/drawer/mega-menu/shop/product-shaped and routes it to its real
 destination.
