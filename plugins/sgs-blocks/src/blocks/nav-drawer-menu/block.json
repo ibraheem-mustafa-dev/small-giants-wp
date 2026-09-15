@@ -635,10 +635,8 @@
 		},
 		"itemBorderWidth": {
 			"type": "object",
-			"default": {
-				"bottom": "1px"
-			},
-			"description": "FR-41-36 locked default: bottom-only, 1px, always visible. On the horizontal bar this is the ITEM UNDERLINE â€” a bottom-edge text-indicator under one item's own label. On a vertical list (this same instance rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the identical bottom edge is geometrically a ROW SEPARATOR between two adjacent rows. One shared attribute family paints both, by design (2026-09-13 terminology pass) â€” see nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with itemSeparatorWidth, the independent NEW vertical divider between top-level bar items (FR-41-37)."
+			"default": {},
+			"description": "REVERSED 2026-09-15 (Bean, live on the real homepage: read as an unwanted shadow/border on every item at rest). Default is now OFF (empty object, no border painted) until the operator sets a width. FR-41-36’s original locked default was bottom-only, 1px, always visible. On the horizontal bar this is the ITEM UNDERLINE â€” a bottom-edge text-indicator under one item's own label. On a vertical list (this same instance rendered inside a nav-drawer, or a submenu-root stacked in-drawer) the identical bottom edge is geometrically a ROW SEPARATOR between two adjacent rows. One shared attribute family paints both, by design (2026-09-13 terminology pass) â€” see nav-menu-css.php's item-border comment for the full reasoning. Not to be confused with itemSeparatorWidth, the independent NEW vertical divider between top-level bar items (FR-41-37)."
 		},
 		"itemBorderStyle": {
 			"type": "string",
