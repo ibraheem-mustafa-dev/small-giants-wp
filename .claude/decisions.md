@@ -50,8 +50,8 @@ session.
 every REST route's registered callback class is actually loaded/callable at runtime — every
 existing gate is either a static source-text check (misses missing-require bugs entirely) or a
 live probe scoped to specific known pages (misses a REST endpoint with no live-page trigger in
-its own suite). Flagged to `parking.md` as a real, general gap — not fixed this session, scope
-too large to open mid-Phase-1.
+its own suite). Routed via `/delegate` (sonnet, code_gen) and dispatched immediately to
+`wp-sgs-developer` in the same session — not parked, actioned same-day.
 
 ---
 
