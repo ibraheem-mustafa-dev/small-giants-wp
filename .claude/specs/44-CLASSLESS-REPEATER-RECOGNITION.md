@@ -2,10 +2,12 @@
 
 **doc_type:** spec
 **spec_id:** 44
-**spec_version:** 2.2.0
-**Status:** DESIGNED — not yet built. v2.0.0 and v2.1.0 each failed a council
-review (5/6 NO-GO, then 3/3 NO-GO). This revision fixes the root cause both
-rounds kept circling — see §0.2.
+**spec_version:** 2.3.0
+**Status:** DESIGNED — Pass-1 mechanism (Stage A + Stage B, within-page repeated
+content only) is internally consistent after three council rounds and one
+scope correction; NOT yet re-verified by a council pass since v2.2.0 → v2.3.0,
+and not yet built. Page routing/per-client template design (formerly this
+spec's "Pass 2") is OUT OF SCOPE as of this revision — see §0.3, §4.5.
 **Date:** 2026-09-15
 
 ## 0. What changed since v1.0.0 (read this first)
@@ -59,17 +61,42 @@ The fix is not a bigger vocabulary or a collision-rejection gate (both v2.1.0
 attempts). It's sequencing: **narrow candidates by the item's PARENT context —
 which page it's on, and whether it's a singleton or one of many repeated
 siblings — before ever comparing leaf shape** (§4.1, §4.3). `sgs/buybox` is
-always a singleton on a single-product page; `sgs/product-card` is always one of
-many grid siblings. That separates them before the thumbnail strip is ever
-examined, using a detector this pipeline already has
-(`repeated_sibling_detector.py`) plus the page-context signal already designed
-in §4.5. Captured as a standing rule:
+always a singleton; `sgs/product-card` is always one of many grid siblings.
+That separates them before the thumbnail strip is ever examined, using a
+detector this pipeline already has (`repeated_sibling_detector.py`) plus the
+parent element's own declared composite shape (`block_attributes`). Captured as
+a standing rule:
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
 
 This also resolves two smaller v2.1.0 gaps as a side effect, not a separate
 patch: clause (a)'s "two independent mechanisms" reachability problem, and
 clause (c)'s missing client parameter — both restated cleanly in the corrected
 §3.
+
+### 0.3 What changed since v2.2.0 — page routing moved out of scope entirely
+
+Bean corrected a scope assumption carried since v2.0.0: page-level routing
+(§4.5, formerly planned as this spec's "Pass 2") isn't a second pass of THIS
+mechanism at all. Each draft route (`shop`, `product`, `home`, ...) is cloned as
+its own separate run against its own destination — there is never a single walk
+where some content converts normally and other content needs routing away
+mid-page, so the walker-exception design-gate question §4.5 used to raise never
+actually arises under how this pipeline runs. That question, and the
+page-routing mechanism itself, move to a separate, already-planned "template/CPT
+side of the cloning pipeline" (Bean's phrasing) — not built or design-gated
+here. §4.5 is now a scoped placeholder pointing at that track, not part of this
+spec's build. Stage A's parent-narrowing (§3.1, §4.3) no longer depends on it —
+repointed to signals that stay within this spec's own scope (repetition context
++ the parent's own declared composite shape).
+
+A second correction surfaced in the same exchange, recorded for the future
+track rather than designed here: cloning a template-destination page (e.g.
+`product`) isn't "convert one draft into one WP page" — it's extracting that
+draft's design and writing it into the site's own shared theme template file,
+so every instance of that page type inherits it. Confirmed this session: no
+part of the current pipeline writes to `theme/sgs-theme/templates/` today.
+Genuinely new capability, not an extension of what exists — flagged for the
+template/CPT track, not this spec.
 
 ## 1. Problem (plain English)
 
@@ -96,9 +123,14 @@ measured scope — this is a real slice of the classless problem, not the whole 
   section (a lone hero, a single unrepeated CTA) remains explicitly out of scope —
   no sibling group and no known-composite match to check a guess against. Track
   separately.
-- **Styling transfer is out of scope.** This spec is a content-field-identity and
-  page-routing mechanism. It says nothing about how a classless child's CSS gets
-  transferred to the matched block attribute.
+- **Styling transfer is out of scope.** This spec is a content-field-identity
+  mechanism for repeated groups within a single page clone. It says nothing
+  about how a classless child's CSS gets transferred to the matched block
+  attribute.
+- **Page-level routing is out of scope** (moved out in this revision — §0.3,
+  §4.5). Which real page/template a whole draft route becomes, and how a
+  draft's design gets written into a site's own theme template, belongs to a
+  separate, already-planned template/CPT track, not this spec.
 - **Deterministic, DB-driven matching FIRST.** No AI call in the critical path. A
   Tier-B-style AI fallback for cases nothing here can resolve is a future
   extension (§11), not built here.
@@ -150,14 +182,19 @@ review surface (§7) — never silently dropped (Rule 4).
 blocks can be deliberately built to render identical leaf markup — confirmed
 this session: `sgs/buybox` and `sgs/product-card` share a byte-identical
 thumbnail-strip pattern by design. No amount of leaf-shape detail tells them
-apart, because the difference was never IN the leaf. It's in the parent: `sgs/buybox`
-is always a singleton on a single-product page; `sgs/product-card` is always one
-of many repeated siblings in a grid. Stage A checks this first, using signals the
-pipeline already has — §4.5's page-context read, and
-`converter/services/repeated_sibling_detector.py`'s existing singleton-vs-repeated
-check — before it ever looks at a thumbnail's shape. This routinely narrows the
-field to one candidate before leaf matching starts, which is what makes leaf
-matching safe to trust at all.
+apart, because the difference was never IN the leaf. It's in the parent:
+`sgs/buybox` is always a singleton within its clone; `sgs/product-card` is
+always one of many repeated siblings in a grid. Stage A checks this first,
+using two signals that stay within this spec's own scope (page-level routing —
+§4.5 — is a separate, deferred mechanism and is NOT a dependency here):
+(i) `converter/services/repeated_sibling_detector.py`'s existing
+singleton-vs-repeated check, and (ii) the group's own PARENT element's declared
+composite shape (does the parent carry a PDP-style attribute set — price,
+add-to-cart, configurator — or a compact-card attribute set — checked against
+`block_attributes`, the same table Stage B already reads). Both run before Stage
+A ever looks at a thumbnail's shape. This routinely narrows the field to one
+candidate before leaf matching starts, which is what makes leaf matching safe to
+trust at all.
 
 **The leaf check itself is a rendered-structure match, not a field-NAME match.**
 A draft's data model and a block's real PHP variable names essentially never
@@ -252,14 +289,17 @@ gap in the first version of this table, caught by re-checking against
 ### 4.3 Matching order: narrow the parent, then seed and check the leaf
 
 **Step 0 — narrow candidates by parent context, before any leaf-level work.**
-For a repeated group, compute two facts, both already available: (i) which real
-page/template the content sits on (§4.5's route read); (ii) whether the group's
-own parent element is a singleton or itself one of many repeated siblings
-(`converter/services/repeated_sibling_detector.py`, unchanged, reused as-is).
-Together these narrow the candidate block list from the full roster to the small
-set consistent with that page + repetition context — routinely one block. Only
-this narrowed set is checked against §3.1's leaf-structure rule; a block outside
-it is never considered, regardless of how similar its leaf shape looks.
+For a repeated group, compute two facts per §3.1, both already available within
+this clone (no dependency on the deferred page-routing mechanism, §4.5):
+(i) whether the group's own parent element is a singleton or itself one of many
+repeated siblings (`converter/services/repeated_sibling_detector.py`, unchanged,
+reused as-is); (ii) the parent element's own composite shape, checked against
+`block_attributes` (does it carry a PDP-style attribute set, a compact-card set,
+or something else). Together these narrow the candidate block list from the
+full roster to the small set consistent with that context — routinely one
+block. Only this narrowed set is checked against §3.1's leaf-structure rule; a
+block outside it is never considered, regardless of how similar its leaf shape
+looks.
 
 **Steps 1-2 — seeding the narrowed candidates' real structural shape**, both
 derived from the block's real PHP source, never a hand-typed Python dict
@@ -342,78 +382,46 @@ recorded as `transferred | natively-sourced-by <block> (no attribute needed) |
 skipped: <reason>` — including the group's own CSS explicitly recorded as
 `skipped: styling transfer out of scope, §2` rather than left unmentioned.
 
-### 4.5 Page-context detector (designed together, built as its own pass — §9)
+### 4.5 Page-routing and per-client template design — OUT OF SCOPE for this spec (moved here 2026-09-15)
 
-A second, structurally different structure-first mechanism, motivated by the
-WooCommerce filter-panel case: some content's identity depends on WHERE it sits
-on the page (which real page/template it becomes), not on its own DOM shape.
+Earlier drafts of this spec (v2.0.0–v2.1.0) designed a page-context detector as
+"Pass 2" of Spec 44, motivated by the WooCommerce filter-panel case. Bean
+corrected this: it doesn't belong here.
 
-**The signal — corrected to the draft's COMPLETE route enumeration, not a partial
-scan.** v2.0.0 read only literal `this.go('<name>')` calls, which the council
-found misses 3 of the Eye Care draft's 9 real routes (`about`, `help`, `contact`
-are reached via an indirection, `const nav = page => e => this.go(page)`, called
-as `nav('about')` etc. — a plain string-literal scan for `this.go(` never sees
-them). The corrected, complete signal is the draft's own **`isPage(...)`
-enumeration** (`Eye Care Birmingham.dc.html`: `isHome`, `isShop`, `isProduct`,
-`isLenses`, `isAbout`, `isHelp`, `isContact`, `isCheckout`, `isDone` — all nine,
-verified directly against the file), read as the primary signal; `this.go(...)`
-calls are corroboration only, never the sole source.
+**Why it's a different mechanism, not a second pass of this one.** Spec 44's
+Stage A/B (§4, §5) exist to resolve AMBIGUITY WITHIN a single page clone —
+which candidate block a repeated, classless group maps to. Page routing has no
+such ambiguity to resolve: each draft route (`shop`, `product`, `home`, ...) is
+its own separate clone run against its own destination, decided once, up front
+— never a case where the walker is midway through one page and has to choose
+whether to keep walking or hand off elsewhere. The walker-exception question
+this spec used to raise (does routing chrome/page content away from the current
+walk need a broadened or new R-31-3 exception?) doesn't arise under that model,
+so it needs no design-gate decision here.
 
-This directly answers a real, previously-scoped, unbuilt gap — see
+**What the real mechanism actually is, corrected from an earlier
+misunderstanding this session:** cloning a page-level route like `product`
+isn't "convert this one draft into one WP page." It's extracting that draft's
+DESIGN — layout, colours, spacing, block choices — and writing it into the
+SITE'S OWN theme template file (e.g. `theme/sgs-theme/templates/single-product.html`),
+which every instance of that page type then inherits. Clone one product draft,
+every product on the site is designed. Confirmed this session: no part of the
+current pipeline writes to `theme/sgs-theme/templates/` today — every clone run
+targets one page (`--deploy-target page:<id>`). This is genuinely new
+capability, not an extension of what exists.
+
+**Status:** tracked for the upcoming, separately-scoped "template/CPT side of
+the cloning pipeline" (Bean's own framing — a named, imminent piece of work,
+not a someday item). The route-name-reading signal that WAS designed here
+(§4.5's original content: the draft's complete `isPage(...)` enumeration is the
+reliable way to read a draft's own page names, corrected from an earlier
+partial `this.go(...)` scan that missed 3 of 9 real routes) is real, verified
+evidence worth carrying forward into that track's design — not discarded, just
+relocated. So is the real, previously-scoped gap it was meant to close: see
 `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`, "Not yet
-designed": *"the clone-time detector that recognises a draft section as
-header/footer/drawer/mega-menu/shop/product-shaped and routes it into the right
-CPT/template, instead of the walker's current chrome-skip-and-discard."*
-
-**The full quote matters, and changes what this touches (council finding — v2.0.0
-truncated it).** "Instead of the walker's current chrome-skip-and-discard" means
-this mechanism DOES touch walker-adjacent behaviour for chrome-shaped
-destinations (header/footer/drawer/mega-menu). Specifically:
-
-- For **chrome-shaped destinations** (header/footer/drawer/mega-menu), this
-  extends the SAME permitted walker exception that already exists
-  (`SKIP_TOP_LEVEL_TAGS`, R-31-3 exception 2) — not a new, fourth exception. Today
-  that exception's gate is a fixed tag list and its outcome is always "discard."
-  This spec changes the OUTCOME (route to the matched CPT instead of discarding)
-  and extends the GATE from a fixed tag list to a DB-driven check against
-  `draft_route_destinations` (§4.5.1) — the same exception, a wider eligibility
-  condition and a real outcome instead of a no-op.
-- For **template destinations that are NOT chrome** (the shop filter panel is the
-  motivating case — ordinary page content, not header/footer/nav), this is
-  genuinely new: content that would otherwise be walked as ordinary page content
-  must instead be excluded from this page's walk entirely, because it does not
-  become a block ON this page at all. This is the same KIND of decision as the
-  chrome-skip (exclude from this page's walk), applied to a case that isn't a
-  chrome tag — which is new ground for R-31-3, and per Rule 7 (design-gate
-  sensitive/high-blast-radius walker changes), **this needs Bean's explicit
-  sign-off before Pass 2 is built, not a silent assumption that it's covered by
-  the existing exception.** Flagging this plainly rather than asserting it's free,
-  per the council's finding.
-
-**New DB table — `draft_route_destinations`, scoped per-client (corrected —
-v2.0.0's global PK was a real bug):**
-
-```sql
-CREATE TABLE draft_route_destinations (
-    client_slug   TEXT NOT NULL,      -- e.g. 'eye-care-ward-end'; a NULL/'default' row provides the framework-generic fallback
-    route_name    TEXT NOT NULL,      -- e.g. 'shop', 'checkout' -- literal string as read from the draft's isPage(...) enumeration
-    destination_kind TEXT NOT NULL CHECK (destination_kind IN ('cpt', 'template')),
-    destination   TEXT NOT NULL,      -- CPT slug (sgs_header, sgs_modal...) or theme template path (archive-product.html...), validated at seed time against the real block/template registry
-    PRIMARY KEY (client_slug, route_name)
-);
-```
-
-Per-client route vocabulary (`'lenses'`, `'done'`) is genuinely one draft's
-naming, not a framework-wide fact — client-specific data belongs scoped, per
-root CLAUDE.md's "never hard-code client... structure into base theme/blocks
-plugin." The framework-generic destination KINDS (`sgs_header`,
-`archive-product.html`) are the only part that's truly framework-wide; a
-`client_slug='default'` row carries those. Seeded and registered the same way
-this project's other DB-first tables are — via `dbschema/capture_seed_data.py`'s
-`--check` drift gate (repointing away from v2.0.0's citation of the retired
-`slot_synonyms` table; the live equivalent name-matching mechanism is
-`slots`/`roles` + `db_lookup.py::_slot_synonyms`, and this table follows the
-same registration discipline, not that specific retired table).
+designed" — the detector that recognises a draft section as
+header/footer/drawer/mega-menu/shop/product-shaped and routes it to its real
+destination.
 
 ## 5. Stage B (FALLBACK) — DB-fact elimination
 
@@ -530,26 +538,17 @@ moment.
   (§2).
 - The three permitted walker exceptions (R-31-3; exception 2, the chrome-skip,
   lives in `converter/entry.py::_convert_section_body`, not `converter/walk.py`
-  — corrected citation) — Pass 1 (§4.2-4.4) adds none and changes none. Pass 2's
-  chrome-routing (§4.5) extends exception 2's gate condition (same exception,
-  wider eligibility, real outcome instead of discard); Pass 2's non-chrome
-  page-context routing is flagged explicitly in §4.5 as
-  needing Bean's design-gate sign-off before build, not silently asserted safe.
+  — corrected citation) — this spec adds none and changes none. Page routing,
+  which would have touched exception 2, is out of scope (§0.3, §4.5).
 
-## 9. Build sequencing (designed together, built in two passes)
+## 9. Build sequencing
 
-1. **Pass 1 — structural shapes.** §5.0's verification step, then §4.2-4.4
-   (`block_render_repeaters` + source-derived seeding + the recognition
-   consumer, now with the corrected worked example) and §5 (DB-fact elimination
-   fallback, §5.3's brand-strip correction).
-2. **Pass 2 — page-context detector.** §4.5, built against ONE real template case
-   (the shop archive → WooCommerce native blocks). Gated on Bean's explicit
-   sign-off for the non-chrome walker-exclusion question (§4.5) before this pass
-   starts, per Rule 7.
+One pass. §5.0's verification step, then §4.2-4.4 (`block_render_repeaters` +
+source-derived seeding + the recognition consumer, using the corrected worked
+example) and §5 (DB-fact elimination fallback, §5.3's brand-strip correction).
 
-Both passes are designed in this document now so the shared shape (FR-44-1's
-trust gate) doesn't get retrofitted later; only the BUILD order is staged, and
-Pass 2 does not begin until its one open design-gate question is resolved.
+Page routing (formerly a planned "Pass 2") is OUT OF SCOPE — see §4.5. It
+belongs to the separate, upcoming template/CPT pipeline track, not this spec.
 
 **Rollout, ships default-off.** Pass 1 lands behind a new flag,
 `--classless-match`, off by default — mirroring this project's existing
@@ -566,12 +565,13 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   structure — are correctly separated by page + repetition context BEFORE leaf
   matching runs, and that a group's leaf shape is only ever checked against the
   narrowed candidate(s), never the full roster.
-- Unit tests for the Stage A structure matcher: real fixtures for buybox's
-  thumbnail gallery (using the corrected worked example, §4.1 — this fixture
+- Unit tests for the Stage A structure matcher: the real buybox thumbnail
+  gallery fixture (using the corrected worked example, §4.1 — this fixture
   should assert the group does NOT auto-complete, since its leaf match is
-  partial) and the shop filter panel; a negative control where a group is
-  close-but-partial (per §3.1) even after narrowing, asserting it does NOT
-  auto-complete.
+  partial); a negative control where a group is close-but-partial (per §3.1)
+  even after narrowing, asserting it does NOT auto-complete. (The shop filter
+  panel is no longer a Stage A fixture — it belongs to the deferred page-routing
+  mechanism, §4.5, not a within-page repeated group.)
 - Unit tests for `block_render_repeaters` seeding: (a) a render-time row
   SURVIVES a full `/sgs-update` reseed; (b) a block with an ordinary
   non-repeater `foreach` seeds ZERO rows (§4.3's negative control); (c) mutating
@@ -581,10 +581,6 @@ off is the rollback path if a real run misbehaves — no code revert needed.
   brand-tile, reasons-card, filter chip, basket line item), plus a negative
   control (a group with a genuinely ambiguous field no rule can resolve),
   asserting it falls to review, never a guessed slot.
-- Unit tests for the page-context detector: the real, COMPLETE route-name list
-  from the Eye Care draft's `isPage(...)` enumeration (all nine: `home`, `shop`,
-  `product`, `lenses`, `about`, `help`, `contact`, `checkout`, `done`), asserting
-  correct CPT/template destinations and correct fallthrough for `home`.
 - FR-44-1(b) test: simulate a new client's first occurrence of a previously-seen
   pattern; assert it is forced to review once regardless of match quality, and
   that a second occurrence for the SAME client auto-completes under clause (a)
