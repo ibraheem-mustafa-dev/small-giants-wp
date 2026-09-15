@@ -2,9 +2,26 @@
 
 **doc_type:** spec
 **spec_id:** 44
-**spec_version:** 1.0.0
-**Status:** DESIGNED — not yet built
-**Date:** 2026-09-14
+**spec_version:** 2.0.0
+**Status:** DESIGNED — not yet built (rework; supersedes v1.0.0, reverted at D1074)
+**Date:** 2026-09-15
+
+## 0. What changed since v1.0.0 (read this first)
+
+v1.0.0 went through three `/adversarial-council` rounds (D1074) and was reverted —
+each round found a fundamental flaw the previous fix introduced, and all three
+attempts shared one root cause: they only ever looked at the *rendered HTML* of a
+repeated group. This rework (v2.0.0) is built from six new evidence threads gathered
+directly from a real draft's JS, the framework's own real block source, and live
+corrections from Bean against real running pages — documented in full at
+`.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md` and
+`.claude/decisions.md` D1074/D1078. Read those before touching this spec's mechanism.
+
+Headline change: **recognise the whole repeated subtree's real identity first, by
+matching it against a known composite block's actual source code or a page's own
+declared route name — not by guessing one field at a time.** DB-fact elimination
+(the mechanism v1.0.0 tried to reinvent, badly, per D1074 round 2) is kept, but
+demoted to a fallback for groups that don't match a known shape.
 
 ## 1. Problem (plain English)
 
@@ -15,212 +32,332 @@ reads ONLY CSS class names (`R-31-2`, currently locked) or, for a handful of ato
 tags (h1, button, img), the bare HTML tag. A repeated group of classless content —
 a ticker of trust badges, a row of brand logos, a grid of "why choose us" cards, a
 strip of filter chips, a list of basket line items — is therefore invisible to the
-converter today: it reaches Stage 4, gets correctly identified by this session's new
-`dom_shape_classifier.py` as "probably a card-grid" (13 boundaries proven live against
-the real Eye Care Birmingham draft), gets admitted past the hard-halt gate — and then
-still fails, because knowing "this is a card-grid" is not enough. The converter needs
-to know which CHILD element is the title, which is the icon, which is the price, to
-extract real block attributes. `recognise_section()` → `build_block_markup()` has no
-path for that today; both are 100% class/tag driven, at every recursion level.
+converter today. `dom_shape_classifier.py` can flag "this is probably a card-grid"
+and get it past the hard-halt gate, but that alone isn't enough to extract real
+content: the converter needs to know which child is the title, the icon, the price.
 
 **Goal:** teach the pipeline to reliably recognise a repeated, classless group's
-children — durably, from a real structural signature, not a one-off patch for this
-draft — so a genuinely unedited Claude Design export clones correctly with zero
-manual fixes.
+identity and its children's field roles — durably, from real structural evidence,
+not a one-off patch for this draft — so a genuinely unedited Claude Design export
+clones correctly with zero manual fixes.
 
-## 2. Scope (decided 2026-09-14, Bean-approved)
+## 2. Scope
 
-- **Repeated groups ONLY** for this spec. A classless ONE-OFF section (a lone hero,
-  a single unrepeated CTA block) is a harder problem — no sibling to cross-check a
-  guess against — and is explicitly out of scope here. Track separately if needed.
-- **Deterministic, DB-driven child→slot rules FIRST.** No AI call in the critical
-  path for this spec. (A Tier-B-style AI fallback for rules that can't decide is a
-  future extension, tracked in §8, not built here — it also depends on the still-open
-  API-key decision from earlier this session.)
-- **Trust policy: auto-complete, with a permanent audit trail.** Once a classless
-  group is confidently recognised and mapped, the clone completes automatically — no
-  human gate. Every decision (success AND any child that couldn't be mapped) is
-  written to a durable, cross-run log, and the orchestrator prints a clear
-  end-of-run alert so a Claude Code session driving `/sgs-clone` sees it immediately,
-  not buried in a JSON file that gets overwritten next run.
+- **Repeated groups + their known-composite parents ONLY.** A classless ONE-OFF
+  section (a lone hero, a single unrepeated CTA) remains explicitly out of scope —
+  no sibling group and no known-composite match to check a guess against. Track
+  separately.
+- **Styling transfer is out of scope.** This spec is a content-field-identity and
+  page-routing mechanism. It says nothing about how a classless child's CSS gets
+  transferred to the matched block attribute.
+- **Deterministic, DB-driven matching FIRST.** No AI call in the critical path. A
+  Tier-B-style AI fallback for cases nothing here can resolve is a future
+  extension (§9), not built here.
+- **Trust policy: auto-complete only on a real correctness signal, never on
+  completeness alone** (FR-44-1). This directly answers D1074 round 1's NO-GO
+  ("the trust gate measured completeness, not correctness").
 
-## 3. Why Approach A (a new, separate path) — not extending `recognise()`
+## 3. FR-44-1 — Auto-complete trust gate
 
-Three options were weighed (full detail: conversation record, 2026-09-14 design
-session). Chosen: **a wholly separate recognition + assembly path that only ever
-runs for content Stage 1 already flagged as "repeated, classless"** — `recognise()`
-and `build_block_markup()` stay completely untouched, so R-31-2 ("BEM is the only
-recognition signal") remains true of the function it currently governs, and there is
-zero risk to any currently-working conversion.
+A classless-group match auto-completes the clone ONLY when EITHER:
 
-Rejected: extending `recognise()` with a 5th, flag-guarded branch (bigger blast
-radius on the one function every block in the framework depends on, for no real
-gain over a separate path). Rejected: injecting synthesised classes onto a copy of
-the child HTML and reusing the existing pipeline unmodified — this is the same
-shape as the class-injection regression already found and fixed once this session
-(17 working blocks collapsed to 2); per-child injection is a different blast radius
-than per-section, but close enough to that exact failure mode that it isn't worth
-the risk when Approach A achieves the same result without ever rewriting the
-draft's HTML.
+(a) **Two independent mechanisms agree** on the same block/destination — e.g. the
+structure-first match (§4) and the DB-fact elimination fallback (§5) both land on
+the same candidate; OR
 
-## 4. The mechanism
+(b) **A single mechanism produces a genuine exact match** — every field in the
+group maps one-to-one against real block/page source with nothing left ambiguous
+(not a similarity score, not "3 of 5 fields look right") — matched against real
+source code or a real declared route name, never against a DB-schema row alone
+(a DB row is a partial projection of a block, not ground truth; see §4.2).
 
-### 4.1 New DB table — `classless_slot_rules`
+Anything that satisfies neither clause — including a genuine tie between two
+plausible candidates — falls to operator review, logged with the same permanent
+audit trail as v1.0.0 specified (§7). No group is ever silently dropped (Rule 4).
 
-Same pattern as the existing `property_suffixes` table (R-31-1: DB-first, no
-hardcoded dicts). One row per rule:
+This clause exists because the two real cases proven this session (buybox's
+thumbnail gallery, the WooCommerce filter panel) each had only ONE mechanism
+reaching them — clause (b) is what lets those auto-complete without reopening
+D1074 round 1's "completeness ≠ correctness" hole; a partial or scored match still
+always falls to review.
+
+## 4. Stage A (PRIMARY) — structure-first matching against real source
+
+### 4.1 The principle
+
+Don't identify a repeated group's fields one at a time. Recognise the whole
+subtree's identity first by matching it against a KNOWN composite's real,
+complete implementation — then every child inherits its identity from its known
+position in that real implementation. Proven twice this session on real evidence:
+`sgs/buybox`'s thumbnail gallery (matched field-for-field against
+`gallery-col.php`) and the WooCommerce shop filter panel (matched via
+`sgs/filter-search`'s own declared relationship to `woocommerce/product-filter-attribute`).
+Both are cases DB-fact elimination alone structurally could not reach — see §5.4.
+
+### 4.2 New DB table — `block_render_repeaters`
+
+A SIBLING table to `array_item_schema`, not a column on it — decided by a 5-persona
+`/adversarial-council` run this session, unanimous. Reason: `array_item_schema`'s
+existing update routine (`sgs-update-v2.py`, the array-item-schema seeder block)
+unconditionally deletes and rebuilds a block's rows from its `block.json`
+`items.properties` on every `/sgs-update` run. A shared-table row for a render-time
+repeater (which has no `block.json` attribute to rebuild from) would be silently
+wiped on the very next refresh. Existing readers (`db_lookup.py`'s
+`array_item_field_names`/`array_item_field_schema`, `array_content.py`) also don't
+filter by source kind, so a shared table risks those rows being misread as
+editor-attribute rows they aren't.
 
 ```sql
-CREATE TABLE classless_slot_rules (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    match_type      TEXT NOT NULL CHECK (match_type IN ('tag', 'content_pattern', 'position')),
-    match_value     TEXT NOT NULL,   -- e.g. 'svg' / 'img' / a regex for content_pattern / 'first'/'last' for position
-    canonical_slot  TEXT NOT NULL,   -- must resolve via the EXISTING slots/roles vocabulary (icon, title, price, image, link, label, badge...)
-    priority        INTEGER NOT NULL DEFAULT 0,  -- higher wins when >1 rule matches the same child
-    notes           TEXT
+CREATE TABLE block_render_repeaters (
+    block_slug   TEXT NOT NULL,
+    field_key    TEXT NOT NULL,
+    field_order  INTEGER,
+    role         TEXT,             -- same canonical vocabulary as array_item_schema.role
+    source_file  TEXT NOT NULL,    -- e.g. 'gallery-col.php' — the real PHP file the fact was derived from
+    PRIMARY KEY (block_slug, field_key)
 );
 ```
 
-Seed rules (illustrative, not exhaustive — populate + tune against real drafts
-during build, per the project's "prove the cause" discipline, not guessed up
-front):
+No `array_attr` column — a render-time repeater has no block attribute to name,
+and forcing one in gives the column two incompatible meanings depending on the
+row (the exact "tagged union in a table without one" failure the council flagged).
 
-| match_type | match_value | canonical_slot | notes |
-|---|---|---|---|
-| tag | `svg` | `icon` | first `<svg>` in the item |
-| tag | `img` | `image` | |
-| tag | `a` | `link` | |
-| content_pattern | `^[£$€]\s?\d` | `price` | currency-shaped text |
-| tag | `h1,h2,h3,h4` | `heading` | |
-| position | `longest_text` | `text` | the child with the most text content, when no other rule claimed it |
+### 4.3 Seeding — source-derived, never a hand-declared block.json key
 
-### 4.2 New module — `plugins/sgs-blocks/scripts/recogniser/classless_slot_mapper.py`
+Two sub-steps, both derived from the block's real PHP source, never a hand-typed
+Python dict (R-31-1):
 
-`classify_group_children(representative_item, group_members) -> SlotMapResult`
+1. **Detection** — does this block even have a render-time repeater? A source-scan
+   for a `foreach` over a plain (non-attribute-backed) array in the block's
+   `render.php` or a required partial, mirroring the existing `emit_shape` seeder's
+   pattern (`sgs-update-v2.py::_populate_emit_shape`, source-derived via
+   `converter.services.render_emits` — the proven, shipped precedent for "read the
+   block's real PHP, put the fact in the DB, don't scan at convert-time").
+2. **Field-role derivation** — reuse Thread 1's already-proven signal set
+   (`.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md`),
+   applied to the block's OWN rendered markup instead of a draft's: a
+   `data-index`-shaped attribute marks an action/position field, an
+   `aria-label="..."` pattern marks a label, an `<img src=... alt=...>` with a
+   fallback state marks an image field. This is the same signal set already
+   validated on the draft side — reapplied to the block's own source, not a new
+   invention.
 
-Takes ONE representative item from a `dom_shape_classifier.classify_repeated_siblings`
-group (already detected + proven this session), walks its DIRECT children (this is
-a FLAT match — every real example found this session, ticker/card/chip/basket-line,
-is 1-2 levels deep, never a deep recursive tree), applies `classless_slot_rules` in
-priority order, and returns:
+**Explicitly rejected:** a new declared `block.json` key (e.g.
+`supports.sgs.renderTimeRepeaters`) that a human hand-fills per block. This is the
+same shape as the retired `arrayItemFields` mechanism (D248) — "the create/prune/
+accessor trio existed; the seeder never did; zero inserts anywhere in the repo" —
+tombstoned in this project's own code a few weeks before this spec. Do not
+resurrect it.
 
-```python
-@dataclass
-class SlotMapResult:
-    slots: dict[str, ChildRef]     # {canonical_slot: reference to the matched child element}
-    unmapped_children: list[ChildRef]  # children no rule could label — NEVER silently dropped
-    confidence: float              # derived from coverage: mapped_children / total_children
+### 4.4 New consumer — recognition, not extraction
+
+`array_content.py::lift_array_content()`'s job is "copy fields into a declared
+block attribute." A render-time repeater has no attribute to copy into — routing
+it through that function is a category error (found independently by two council
+reviewers). A new, separate function owns this case:
+
+`recognise_render_time_repeater(draft_group, candidate_blocks) -> RenderMatchResult`
+
+Given a classless repeated group from a draft, checks whether its shape (child
+tag pattern + derived field roles, matched using Thread 1's signal set on the
+draft side against `block_render_repeaters.role` on the block side) matches a
+known render-time repeater. On an exact match (FR-44-1 clause b), classifies the
+group as natively-sourced: no attribute is written, and a conservation record is
+logged stating why (e.g. "N items recognised as buybox's live WooCommerce
+gallery, 0 unaccounted, no attribute write needed") — satisfying Rule 4 (NO
+SKIPPING) with an honest reason instead of a silent drop.
+
+### 4.5 Page-context detector (designed together, built as its own pass — §9)
+
+A second, structurally different structure-first mechanism, motivated by the
+WooCommerce filter-panel case: some content's identity depends on WHERE it sits
+on the page (which real page/template it becomes), not on its own DOM shape.
+
+**The signal: the draft's own declared route names — zero inference needed.**
+Every Claude Design draft checked this session (and, per Bean, every other draft
+he's produced) already names its pages explicitly in its own router state: an
+initial `page:'home'`-style state property, plus a `this.go('<name>', ...)` call
+at every navigation (e.g. `'shop'`, `'product'`, `'checkout'`, `'lenses'`,
+`'done'`). This is read directly off the draft's source — no operator flag, no
+DOM-shape inference, no dependency on an existing deployed page.
+
+This also directly answers a real, previously-scoped, unbuilt gap — see
+`.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md`, "Not yet
+designed": *"the clone-time detector that recognises a draft section as
+header/footer/drawer/mega-menu/shop/product-shaped and routes it into the right
+CPT/template."* This mechanism is that detector, not new scope.
+
+**New DB table — `draft_route_destinations`:**
+
+```sql
+CREATE TABLE draft_route_destinations (
+    route_name    TEXT NOT NULL,     -- e.g. 'shop', 'checkout', 'lenses' — literal string as read from the draft
+    destination_kind TEXT NOT NULL CHECK (destination_kind IN ('cpt', 'template')),
+    destination   TEXT NOT NULL,     -- CPT slug (sgs_header, sgs_modal...) or theme template path (archive-product.html...)
+    PRIMARY KEY (route_name)
+);
 ```
 
-Same hard constraints as `dom_shape_classifier.py`: never fires if the item already
-carries a canonical SGS-BEM class (constraint 1, unchanged), never treated as ground
-truth below a confidence floor.
+Seeded/extended the same way `slot_synonyms` already handles name variation across
+sources — a route name is matched by synonym, not exact-string-only, since
+different drafts may use `'store'` vs `'shop'`. `'home'` and any unmatched route
+name fall through unchanged to the existing universal (blank-canvas) pipeline —
+nothing about today's handling of ordinary landing-page content changes.
 
-### 4.3 New module — `converter/services/classless_assembly.py`
+**Own third table, not a third `source_kind` value anywhere** — a page-context
+fact has no `block_slug`, no `array_attr`, no `field_key`; it cannot share a
+primary key with either `array_item_schema` or `block_render_repeaters`. This was
+the council's own forward-looking finding when reviewing §4.2's fork.
 
-`assemble_classless_block_markup(block_slug, slot_map, item_element) -> str`
+## 5. Stage B (FALLBACK) — DB-fact elimination
 
-The SIMPLER, non-recursive counterpart to `build_block_markup()` — appropriately
-scoped to a flat repeated-item shape, not a rebuild of the full recursive BEM-tree
-assembler. For the given `block_slug`, reads its declared attrs from
-`block_attributes` (keyed by `canonical_slot`, same column the BEM path already
-uses), and for each attr whose `canonical_slot` has a match in `slot_map`, lifts the
-real value from that specific child — reusing the EXISTING per-value lift helpers
-already in the pipeline (icon-identity resolution via
-`converter/services/icon_resolver.py`, media sideload, colour token-snap) rather
-than reinventing value extraction. Serialises the resulting attrs dict into the same
-`<!-- wp:sgs/<slug> {...} /-->` comment format every other path emits, so everything
-downstream (Stage 9 reporting, the anti-mirror gate, media-sideload) sees identical
-shape regardless of which path produced it.
+Runs only when Stage A's structure-first matching (§4) doesn't reach a known
+shape. Unchanged from the strongest result found last session: for a candidate
+repeated group, check simple DB facts (does it have a price-shaped field? an
+image field? per `array_item_schema`/`block_attributes`) to eliminate non-matching
+blocks from the candidate list.
 
-**Open item to verify at build time, not guessed here:** confirm exactly which of
-`icon_resolver.py`'s functions take a bare element (rather than requiring a BEM
-class context) before assuming direct reuse — flag and adapt during implementation
-if a function needs a small signature change to accept a plain element.
+### 5.1 What this narrows, and what it doesn't
 
-### 4.4 Wiring point
+Reportedly narrowed 6 of 8 real content groups in the source draft to exactly one
+confident candidate — re-verify this figure against real fixture data at build
+time, per §8 (it was conversation-derived, not written to a file, at time of
+writing).
 
-`sgs-clone-orchestrator.py::stage_4_5_6_7_8_extract` — when a boundary was admitted
-via `admitted_via_dom_shape_gate=True` AND its `dom_shape_hint.source` came from
-`classify_repeated_siblings` (i.e. this is a repeated-group guess, not a heading/
-button/landmark guess, which stay firmly out of scope per §2), route to the new
-`classless_slot_mapper` + `classless_assembly` pair INSTEAD of the normal
-`converter.entry.convert_section` call — which would just fail again, as proven
-live this session (13 admitted, 0 additional completions). This is a NEW branch at
-the orchestrator/extraction layer, outside `converter/walk.py` entirely — satisfies
-"no 4th walker conditional" (R-31-3) by construction, same reasoning already
-established for the `dom_shape` and `sc_var` gates.
+### 5.2 Field-level resolution once narrowed
 
-### 4.5 Permanent audit log (Bean's explicit requirement)
+Once narrowed to one (or a short list of) candidate(s), resolve remaining
+field-level ambiguity in priority order: (1) function-vs-string / `onClick`-bound
+fields = action (Thread 1, strongest, two-layer-confirmed); (2) a shared named
+formatter (e.g. `this.gbp(...)` → price); (3) JS field names as English words, as
+a corroborating check only; (4) content-value-shape detectors (relative-date,
+FAQ-question-mark, SVG icon-path); (5) HTML tag shape for long-form vs short-form
+content, weakest tie-breaker only. Explicitly NOT a signal: HTML tag shape for
+"which field is the title" — proven unreliable even within one draft (Thread 1
+Finding 2a).
 
-New file: `plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl`
-(append-only, git-tracked — NOT inside `pipeline-state/<run>/`, which is per-run and
-gets superseded). One line per classless-group decision, ever, across every run:
+### 5.3 Framework-gap finding — CORRECTED this session
 
-```json
-{"ts": "...", "run_id": "...", "client": "...", "boundary_id": "...",
- "block_guessed": "sgs/card", "confidence": 0.42,
- "slots_mapped": {"icon": "svg:0", "text": "span:1"},
- "unmapped_children": ["div.badge-count"], "status": "complete"}
-```
+Last session's evidence found a "top brands" content group (name + count + link,
+no image) with, it was claimed, no matching block anywhere in the framework. This
+was WRONG, caught the same way the buybox/WooCommerce corrections were caught —
+checking the real block instead of trusting the DB projection. `sgs/brand-strip`
+already has `name` and `linkUrl` per-item fields, and its `media` field was
+deliberately fixed (D1031) to accept `null` as a genuine, validating empty state
+specifically so a logo entry can have no image. There is no framework gap here.
+The only unmatched field is the "count" text (e.g. "12 frames"), which either
+gets dropped with an honest skip-reason or gets a small new attribute added to
+`sgs/brand-strip` — a minor content decision, not a missing-block problem.
 
-At orchestrator completion, if this run produced ANY classless-path conversions
-(mapped or with unmapped children), print a clear, impossible-to-miss summary block
-to stdout (mirroring the existing `[stage-9]`-style summary lines) — e.g.:
+### 5.4 Why Stage A had to come first
 
-```
-[classless-recognition] 3 classless group(s) converted this run — 1 child left
-unmapped (div.badge-count in boundary b32). Full log:
-plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl
-```
+DB-fact elimination is structurally blind to two real categories: (a) render-time
+repeaters with no `block.json` attribute at all to project into
+`array_item_schema` (12 of 206 blocks have any coverage in that table at all,
+confirmed by direct query this session — buybox is one of the other 194); (b)
+anything that isn't an SGS block, like WooCommerce's own native filter blocks —
+no SGS-scoped table can ever contain that answer regardless of how it's queried.
 
-This is what makes "auto-complete but never silently drop" real: the next Claude
-Code session (or Bean) can grep the log for `unmapped_children` non-empty across
-every historical run, not just the one just finished.
+## 6. Corrections carried forward from this evidence base (do not re-litigate)
 
-## 5. What this does NOT change
+- `thumbs` (draft's PDP thumbnail-selector group) → `sgs/buybox`'s real
+  `gallery-col.php` thumbnail strip, NOT "no confident match" as Thread 3/4
+  originally concluded. See §5.4(a).
+- `items`/`filterGroups` (draft's shop filter panel) → WooCommerce's own native
+  Product Filter blocks + `sgs/filter-search` as a companion, NOT
+  `sgs/option-picker` (which only shared similar attribute vocabulary). See
+  §5.4(b) and §4.5.
+- The "top brands" framework gap → no gap; `sgs/brand-strip` already covers it.
+  See §5.3.
+- Full trail: `.claude/decisions.md` D1074, D1078.
+
+## 7. Permanent audit log (unchanged from v1.0.0)
+
+Every classless-group decision — Stage A structure match, Stage B elimination
+result, auto-completed or fell to review — is written to a durable, append-only,
+git-tracked log (`plugins/sgs-blocks/scripts/recogniser/classless-recognition-log.jsonl`,
+NOT inside per-run `pipeline-state/<run>/`). At orchestrator completion, any run
+producing classless-path conversions or review-queue items prints a clear
+end-of-run summary block to stdout, the same discipline v1.0.0 specified.
+
+## 8. What this does NOT change
 
 - `recognise()` / `converter/recognition.py` — byte-for-byte unchanged. R-31-2's
   scope is exactly what it was.
-- `build_block_markup()` — unchanged; the classless path never calls it.
-- The existing `dom_shape`/`sc_var` eligibility gates — unchanged; this spec adds a
-  new BRANCH inside Stage 4's handling of an already-admitted boundary, not a new
-  gate.
-- One-off (non-repeated) classless sections — explicitly out of scope (§2).
+- `build_block_markup()` — unchanged; neither Stage A nor Stage B calls it for a
+  render-time-repeater match; Stage B's field-lift path reuses
+  `array_content.py`'s existing, unmodified extraction helpers.
+- The existing `dom_shape`/`sc_var` eligibility gates — unchanged.
+- One-off (non-repeated) classless sections, and styling transfer — out of scope
+  (§2).
 
-## 6. Test plan
+## 9. Build sequencing (designed together, built in two passes)
 
-- Unit tests for `classless_slot_mapper.py`: real fixtures (not synthetic-canonical)
-  for each of this session's proven real shapes — ticker item, brand-tile, "why
-  choose us" card, filter chip, basket line item — asserting the correct slot map,
-  PLUS a negative control (an item with a genuinely ambiguous child no rule can
-  label) asserting it lands in `unmapped_children`, never a guessed slot.
-- Unit tests for `classless_assembly.py`: assert the emitted markup round-trips
-  through the SAME schema-conformance gate every other path passes through
-  (`check_attr_schema_conformance.py`).
-- Live verification (this project's hard rule — never claim success from mocks
-  alone): re-run against the real Eye Care Birmingham draft with
-  `--dom-shape-min-confidence 0.0`, confirm the previously-13-admitted-0-completed
-  boundaries now show real `status: complete` with real extracted attributes, and
-  confirm the existing 414-attribute/17-complete-block baseline is unaffected
-  (nothing in this spec touches the BEM path those came from).
-- Confirm the audit log + end-of-run alert actually fire on that real run.
+1. **Pass 1 — structural shapes.** §4.2-4.4 (`block_render_repeaters` +
+   source-derived seeding + the recognition consumer) and §5 (DB-fact
+   elimination fallback, §5.3's brand-strip correction). Two verified real cases
+   already exist (buybox, and the DB-elimination 6/8 result once re-verified).
+2. **Pass 2 — page-context detector.** §4.5, built against ONE real template case
+   (the shop archive → WooCommerce native blocks) rather than in the abstract,
+   per this project's own "build the detector against real evidence" discipline.
 
-## 7. Rollout
+Both passes are designed in this document now so the shared shape (a "known
+composite" — structural or page-context — feeding into the same FR-44-1 trust
+gate) doesn't get retrofitted later; only the BUILD order is staged.
 
-Stays behind the existing `--dom-shape-min-confidence` flag (no new CLI surface) —
-when a classless group is admitted via that gate, this spec's path is now what
-handles it (replacing today's guaranteed-fail `convert_section` call for that case).
-Auto-completes per §2's trust-policy decision; the permanent log is what makes that
-safe to trust without a human gate.
+## 10. Test plan
 
-## 8. Explicitly deferred (tracked, not built here)
+- Unit tests for the Stage A structure matcher: real fixtures (not
+  synthetic-canonical) for buybox's thumbnail gallery and the shop filter panel,
+  asserting exact-match classification; a negative control where a group is
+  close-but-not-exact, asserting it does NOT auto-complete (FR-44-1 clause b).
+- Unit tests for `block_render_repeaters` seeding: assert a render-time row
+  SURVIVES a full `/sgs-update` reseed (the exact failure mode that ruled out the
+  one-table option) — a negative control this project doesn't yet have anywhere
+  in `converter/tests/` or `db-consistency/tests/`.
+- Unit tests for Stage B: the five real shapes proven last session (ticker,
+  brand-tile, reasons-card, filter chip, basket line item), plus a negative
+  control (a group with a genuinely ambiguous field no rule can resolve),
+  asserting it falls to review, never a guessed slot.
+- Unit tests for the page-context detector: the real route-name list from the
+  Eye Care draft (`home`, `shop`, `product`, `checkout`, `lenses`, `done`),
+  asserting correct CPT/template destinations and correct fallthrough for `home`.
+- Live verification (this project's hard rule): re-run against the real Eye Care
+  Birmingham draft, confirm the previously-admitted-but-failed boundaries (13
+  admitted, 0 completed) now show real completions or honest review-queue
+  entries, and confirm the existing BEM-path baseline is fully unaffected.
+- Confirm the audit log + end-of-run alert fire on that real run.
 
-- One-off classless sections (heading-only, button-only, landmark-only hints from
-  `dom_shape_classifier.py`) — same "needs a design decision" verdict the original
-  Wave-1 research gave; revisit once the repeated-group case is proven across more
-  real drafts.
-- An AI fallback (Tier-B-style) for children no deterministic rule can label —
-  depends on the still-open Anthropic API-key decision; only worth building once
-  real logged `unmapped_children` data shows deterministic rules genuinely aren't
-  enough, not speculatively.
+## 11. Explicitly deferred (tracked, not built here)
+
+- **One-off classless sections** — no sibling group and no known-composite match
+  to check a guess against. Revisit once the repeated-group case is proven
+  across more real drafts.
+- **An AI fallback (Tier-B-style)** for cases nothing here resolves — depends on
+  the still-open Anthropic API-key decision; only worth building once real
+  logged review-queue data shows deterministic rules genuinely aren't enough.
+- **Per-group vs per-member consistency checking for Stage B** — does a
+  genuinely group-level elimination still need a separate per-member check for a
+  mistake that repeats identically across every group member (the failure mode
+  that killed D1074 round 2's v2.0.0)? Not re-examined against this new shape;
+  flag explicitly rather than assume fixed.
+- **Whether `array_item_schema.role`'s ~30% population rate (25 of 84 rows,
+  measured this session) is broad enough to rely on for Stage B**, or needs a
+  seeding push first.
+- **Tier A (`sc_var_classifier.py`) integration** — once its alias bug is fixed,
+  does it become a third signal layered into Stage B, or is it superseded?
+  Measure, don't assume additive.
+- **The two undone `dom_shape_classifier.py` prerequisite fixes** from D1074
+  (per-classifier `Hint.source`, a DB-verified `sgs/card-grid` slug) — confirm
+  still needed under this shape before building.
+
+## 12. Evidence index
+
+| Source | What |
+|---|---|
+| `.claude/decisions.md` D1074 | Full 3-round council failure trail for v1.0.0 |
+| `.claude/decisions.md` D1078 | The buybox/WooCommerce live corrections |
+| `.claude/reports/2026-09-14-claude-design-draft-field-identity-schema.md` | Thread 1 (JS/HTML signal evidence) |
+| `.claude/reports/2026-09-14-classless-recognition-next-design-attempt.md` | Full six-thread synthesis this spec is built from |
+| `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` | The pre-existing CPT/template routing gap §4.5 closes |
+| This session's `/adversarial-council` run (2026-09-15) | The `block_render_repeaters` sibling-table decision, 5/5 unanimous |
