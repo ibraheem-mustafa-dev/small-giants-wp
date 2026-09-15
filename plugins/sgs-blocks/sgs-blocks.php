@@ -79,6 +79,13 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 // ever) and by manually require()-ing the file, which made the class load
 // and the exact same REST request succeed immediately.
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-submission.php';
+// Same D1079 shape, found by the new scripts/check-rest-route-require.py
+// detector's first live --survey (2026-09-15): Form_REST_Upload::handle_upload
+// (/sgs-forms/v1/upload) and every Form_REST_Admin method (/submissions,
+// /submissions/{id}, /submissions/export) were ALSO never require'd. Both
+// confirmed unloadable live (class_exists() false) before this fix.
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-upload.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
