@@ -4,9 +4,13 @@
  *
  * Registers a single "SGS" top-level menu in wp-admin that owns every
  * framework-level admin surface. The top-level entry has no page render of its
- * own — WordPress auto-creates a first submenu pointing at the same slug, which
- * we suppress because the real first submenu (Site Info, FR-S4-3) is added by
- * {@see Sgs_Site_Info_Admin::add_menu()}.
+ * own — {@see Sgs_Site_Info_Admin::add_menu()} registers Site Info's submenu
+ * using THIS menu's own slug (`self::MENU_SLUG`) as its submenu slug, which is
+ * the WordPress convention for making a submenu page render directly when the
+ * parent item is clicked, instead of WordPress's own auto-generated duplicate
+ * first item. Because that submenu slug matches the parent slug, WordPress
+ * does not add a second row to the sidebar for it — Site Info's page simply
+ * becomes what the top-level "SGS" link opens.
  *
  * Position 58 places the menu between Appearance (60) and Plugins (65), which
  * is the natural slot for a "site personalisation" surface. Icon
@@ -61,10 +65,14 @@ final class Sgs_Admin_Menu {
 	 * before the default priority 10, guaranteeing the parent menu exists
 	 * before any submenu_page call references it as `parent_slug = 'sgs'`.
 	 *
-	 * The top-level menu's own callback is intentionally a no-op shim that
-	 * delegates to the first submenu — WP fires this for users who land on
-	 * admin.php?page=sgs directly. The Site Info submenu (FR-S4-3) overrides
-	 * the auto-created first submenu via its own add_submenu_page call.
+	 * No callback is passed (deliberately empty) — `add_menu_page()` only
+	 * wires an `admin_action_hook` when given a non-empty callback, so
+	 * omitting it means nothing renders for this registration call alone.
+	 * {@see Sgs_Site_Info_Admin::add_menu()} registers a submenu whose OWN
+	 * slug also equals `self::MENU_SLUG`; WordPress resolves that as the
+	 * page to render when an operator clicks "SGS" directly. Passing a
+	 * callback here as well would double-render (both callbacks would fire
+	 * on the same resolved hook).
 	 */
 	public static function add_menu(): void {
 		\add_menu_page(
@@ -72,25 +80,9 @@ final class Sgs_Admin_Menu {
 			\__( 'SGS', 'sgs-blocks' ),
 			self::CAP,
 			self::MENU_SLUG,
-			array( __CLASS__, 'render_landing' ),
+			'',
 			self::ICON,
 			self::POSITION
 		);
-	}
-
-	/**
-	 * Fallback landing renderer. WP fires this when an operator lands on
-	 * admin.php?page=sgs with no submenu override. Currently redirects to the
-	 * first concrete submenu (Site Info, FR-S4-3). When future submenus ship
-	 * with their own landing dashboard, this can be replaced.
-	 */
-	public static function render_landing(): void {
-		if ( ! \current_user_can( self::CAP ) ) {
-			\wp_die( \esc_html__( 'You do not have permission to access this page.', 'sgs-blocks' ), '', array( 'response' => 403 ) );
-		}
-		echo '<div class="wrap">';
-		echo '<h1>' . \esc_html__( 'SGS Framework', 'sgs-blocks' ) . '</h1>';
-		echo '<p>' . \esc_html__( 'Choose a section from the SGS submenu on the left.', 'sgs-blocks' ) . '</p>';
-		echo '</div>';
 	}
 }

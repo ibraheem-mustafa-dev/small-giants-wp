@@ -474,9 +474,16 @@ final class Sgs_Block_CPTs {
 	}
 
 	/**
-	 * Add "Advanced Headers", "Advanced Footers", "Menu drawers" and "Modals"
-	 * submenus under the SGS top-level menu. All link to the built-in
-	 * post-type list table — no custom screen required.
+	 * Add "Advanced Headers", "Advanced Footers", "Menu drawers", "Mega Menu
+	 * Panels", "Modals", "Forms" and "Choice Flows" submenus under the SGS
+	 * top-level menu. All link to the built-in post-type list table — no
+	 * custom screen required.
+	 *
+	 * "Mega Menu Panels" is registered here (calling
+	 * {@see Sgs_Mega_Menu_CPT::register_submenu()} directly) rather than on
+	 * its own `admin_menu` hook, specifically so it lands immediately below
+	 * "Menu drawers" in the sidebar — a separate hook fires after this
+	 * method and would push it below Modals/Forms/Choice Flows instead.
 	 */
 	public static function register_submenus(): void {
 		\add_submenu_page(
@@ -505,6 +512,11 @@ final class Sgs_Block_CPTs {
 			'edit.php?post_type=' . self::DRAWER_CPT,
 			''
 		);
+
+		// Mega Menu Panels belongs to Sgs_Mega_Menu_CPT, but is registered
+		// HERE (immediately after Menu drawers) so its sidebar position is
+		// deterministic — see the docblock above.
+		Sgs_Mega_Menu_CPT::register_submenu();
 
 		\add_submenu_page(
 			Sgs_Admin_Menu::MENU_SLUG,

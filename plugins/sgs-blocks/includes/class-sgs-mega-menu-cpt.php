@@ -73,7 +73,11 @@ final class Sgs_Mega_Menu_CPT {
 	 */
 	public static function register(): void {
 		\add_action( 'init', array( __CLASS__, 'register_post_type' ) );
-		\add_action( 'admin_menu', array( __CLASS__, 'register_submenu' ) );
+		// Submenu registration is deliberately NOT hooked here — it must appear
+		// directly below "Menu drawers" in the SGS sidebar, so
+		// {@see Sgs_Block_CPTs::register_submenus()} calls register_submenu()
+		// itself at that exact point in its own admin_menu callback, rather
+		// than this class registering it on a separate, later-firing hook.
 		\add_filter( 'wp_insert_post_data', array( __CLASS__, 'force_publish' ) );
 		\add_action( 'load-nav-menus.php', array( __CLASS__, 'record_pre_seed_state' ) );
 		\add_action( 'admin_head-nav-menus.php', array( __CLASS__, 'fix_nav_menus_metabox_visibility' ) );
@@ -152,7 +156,13 @@ final class Sgs_Mega_Menu_CPT {
 	/**
 	 * Add "Mega Menu Panels" under the SGS top-level menu. Links straight to
 	 * the built-in post-type list table — no custom screen required, mirrors
-	 * {@see Sgs_Block_CPTs::register_submenus()}.
+	 * the sibling submenus in {@see Sgs_Block_CPTs::register_submenus()}.
+	 *
+	 * Called directly BY {@see Sgs_Block_CPTs::register_submenus()}
+	 * (immediately after its "Menu drawers" registration), not hooked onto
+	 * `admin_menu` independently — that used to fire on this class's own
+	 * later admin_menu callback, which placed the item after Modals/Forms/
+	 * Choice Flows in the sidebar instead of directly below Menu drawers.
 	 */
 	public static function register_submenu(): void {
 		\add_submenu_page(
