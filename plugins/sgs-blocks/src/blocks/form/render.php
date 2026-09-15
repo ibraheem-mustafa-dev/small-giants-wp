@@ -53,9 +53,17 @@ $form_name = $attributes['formName'] ?? '';
 // Mirrors modalRef's fail-closed resolution shape
 // (Sgs_Block_CPTs::resolve_modal()) but resolves by SLUG, not post ID
 // (Spec 42 §2) — do not copy resolve_modal()'s body.
+// Resolution is gated on `$form_is_linked` — NEVER on `$form_id` matching a
+// real slug alone. Without this gate, the CPT post's OWN internal `sgs/form`
+// definition block (which legitimately carries the SAME formId as the slug
+// it is published under) would resolve itself and recurse into do_blocks()
+// forever — a real "Maximum call stack size" fatal, caught live during
+// Phase 1 QA, not a hypothetical. formIsLinked is only ever set true by the
+// picker's onChange (edit.js) on the EMBEDDING block, never on the CPT's
+// own content, so this gate breaks the cycle by construction.
 $form_is_linked  = ! empty( $attributes['formIsLinked'] );
 $referenced_form = null;
-if ( '' !== $form_id && class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
+if ( $form_is_linked && '' !== $form_id && class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
 	$referenced_form = \SGS\Blocks\Sgs_Block_CPTs::resolve_form( $form_id );
 }
 
