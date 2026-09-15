@@ -437,14 +437,6 @@ if ( ! scriptConfig ) {
 					'extensions',
 					'index.js'
 				),
-				// Variation-sets Gutenberg panel — sgs_product editor only (FR-24-11).
-				'plugins/product-variation-sets/index': path.resolve(
-					process.cwd(),
-					'src',
-					'plugins',
-					'product-variation-sets',
-					'index.js'
-				),
 				// Header behaviours (FR-S9-9): sticky/transparent/shrink + the
 				// --sgs-header-height ResizeObserver publisher.
 				//
@@ -488,14 +480,6 @@ if ( ! scriptConfig ) {
 				'src',
 				'blocks',
 				'extensions',
-				'index.js'
-			),
-			// Variation-sets Gutenberg panel — sgs_product editor only (FR-24-11).
-			'plugins/product-variation-sets/index': path.resolve(
-				process.cwd(),
-				'src',
-				'plugins',
-				'product-variation-sets',
 				'index.js'
 			),
 			// Header behaviours (FR-S9-9) — see the identical entry in the promise

@@ -4424,9 +4424,9 @@ already has a proven, REST-exposed, block-editor-reachable post-meta mechanism �
 existing `_sgs_*` key is registered against `sgs_product` / `product_variation` / `product`, and
 none against `post` or `page`.** So the IDIOM is precedented and the REGISTRATION is not.
 
-Registration shape, copied from the existing precedent rather than invented — `register_meta()` in
-`plugins/sgs-blocks/includes/content-types/class-product-cpt.php::Product_CPT` and `register_post_meta()` in
-`plugins/sgs-blocks/includes/class-configurator-meta.php`:
+Registration shape, copied from the existing precedent rather than invented — `register_post_meta()` in
+`plugins/sgs-blocks/includes/class-configurator-meta.php` (the `sgs_product` CPT precedent this originally
+also cited, `Product_CPT`, was removed 2026-09-15 when the standalone SGS product/store system was dropped):
 
 | Field | Value | Why |
 |---|---|---|
@@ -4489,9 +4489,11 @@ dismissible notice that exists persists nothing (it reappears on reload, because
 pure function of link count). ⚠ Read the existing dismissible notice as the precedent for the
 COMPONENT and its placement, never for the persistence — it has none.
 
-Write via `useEntityProp( 'postType', postType, 'meta' )` — the proven idiom, live in
-`plugins/sgs-blocks/src/plugins/product-variation-sets/index.js::registerPlugin`. ⚠ Gate on `postType` the same way
-that plugin does; a meta write against a post type where the key is unregistered fails silently.
+Write via `useEntityProp( 'postType', postType, 'meta' )` — the proven idiom (the plugin that
+demonstrated it, `product-variation-sets`, was removed 2026-09-15 with the standalone SGS
+product/store system; the idiom itself is standard `@wordpress/core-data`, not plugin-specific).
+⚠ Gate on `postType` explicitly; a meta write against a post type where the key is unregistered
+fails silently.
 
 **(f) Gate: §11 G20b.**
 

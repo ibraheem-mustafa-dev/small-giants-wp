@@ -10,8 +10,6 @@
  *    default price, a "View product" link, no configurator JS) and a dismissible
  *    admin notice names the required version. (The read-only render branch lives
  *    in product-card/render.php and calls is_supported() below.)
- *  - WC active on a site that still has `sgs_product` CPT cards: a dismissible
- *    admin prompt offers to link them to WooCommerce products.
  *
  * The version gate is filterable (`sgs_configurator_supported`) so it is
  * testable without downgrading WooCommerce, and so a site can override the floor.
@@ -41,7 +39,6 @@ final class Sgs_Configurator_Compat {
 	/** Wire WP hooks. Called once from the plugin bootstrap. */
 	public static function register(): void {
 		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_min_version_notice' ) );
-		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_link_prompt' ) );
 		\add_action( 'admin_post_' . self::DISMISS_ACTION, array( __CLASS__, 'handle_dismiss' ) );
 	}
 
@@ -100,47 +97,6 @@ final class Sgs_Configurator_Compat {
 		echo '</div>';
 	}
 
-	// ── Notice 2: WC active + CPT product cards still present ──────────────────────
-
-	/**
-	 * Show a dismissible prompt when WooCommerce is active AND `sgs_product` CPT
-	 * entries still exist — offering to link them to WooCommerce products rather
-	 * than silently leaving them on the no-shop format (FR-27-A5).
-	 */
-	public static function maybe_show_link_prompt(): void {
-		if ( ! \current_user_can( 'manage_woocommerce' ) && ! \current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		if ( ! self::wc_active() ) {
-			return; // No WC → the CPT IS the intended store; nothing to link to.
-		}
-		if ( self::is_dismissed( 'link_prompt' ) ) {
-			return;
-		}
-
-		$count = self::cpt_product_count();
-		if ( $count < 1 ) {
-			return;
-		}
-
-		echo '<div class="notice notice-info">';
-		echo '<p><strong>' . \esc_html__( 'SGS products + WooCommerce', 'sgs-blocks' ) . '</strong></p>';
-		echo '<p>' . \esc_html(
-			\sprintf(
-				/* translators: %d: number of sgs_product CPT entries. */
-				\_n(
-					'You have %d product saved in the no-shop format and WooCommerce is now active. You can keep it as-is, or recreate it as a WooCommerce product to use live pricing, stock and the interactive configurator.',
-					'You have %d products saved in the no-shop format and WooCommerce is now active. You can keep them as-is, or recreate them as WooCommerce products to use live pricing, stock and the interactive configurator.',
-					$count,
-					'sgs-blocks'
-				),
-				$count
-			)
-		) . '</p>';
-		echo self::dismiss_link( 'link_prompt' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url/esc_html below.
-		echo '</div>';
-	}
-
 	// ── Dismissal ───────────────────────────────────────────────────────────────
 
 	/**
@@ -189,24 +145,5 @@ final class Sgs_Configurator_Compat {
 		$back = \wp_get_referer();
 		\wp_safe_redirect( $back ? $back : \admin_url() );
 		exit;
-	}
-
-	// ── Helpers ────────────────────────────────────────────────────────────────
-
-	/**
-	 * Count `sgs_product` CPT entries (any status bar trash/auto-draft). Reliable
-	 * even when the CPT is not registered (direct count by post_type string).
-	 *
-	 * @return int
-	 */
-	private static function cpt_product_count(): int {
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- admin-notice render; the CPT may be unregistered so a direct count is the reliable signal.
-		return (int) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_status NOT IN ( 'trash', 'auto-draft' )",
-				Product_CPT::POST_TYPE
-			)
-		);
 	}
 }

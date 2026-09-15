@@ -157,7 +157,11 @@ final class Product_Bindings {
 	 */
 	private static function resolve_cpt_field( int $product_id, string $key ): string {
 		$post = \get_post( $product_id );
-		if ( ! $post || Product_CPT::POST_TYPE !== $post->post_type ) {
+		// No dedicated SGS product CPT is registered by the plugin any more
+		// (the standalone product/store system was dropped, D-2026-09-15) — this
+		// branch only ever resolves against a literal 'sgs_product' post type
+		// supplied by a site-specific integration, never a plugin-owned class.
+		if ( ! $post || 'sgs_product' !== $post->post_type ) {
 			return '';
 		}
 
@@ -339,7 +343,7 @@ final class Product_Bindings {
 		// arbitrary post (private page, draft, password-protected) just
 		// because its ID was passed as productId (IDOR guard).
 		$post = \get_post( $product_id );
-		if ( ! $post || Product_CPT::POST_TYPE !== $post->post_type ) {
+		if ( ! $post || 'sgs_product' !== $post->post_type ) {
 			return null;
 		}
 

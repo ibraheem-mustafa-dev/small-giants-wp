@@ -31,8 +31,6 @@ import {
 	Button,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -77,9 +75,13 @@ const CTA_STYLE_OPTIONS = [
 ];
 
 /**
- * Product source panel — searchable picker that lists both WooCommerce
- * products (wc/v3/products, when WC is active) and SGS products
- * (wp/v2/sgs_product). Selecting one auto-sets productId + sourceMode.
+ * Product source panel — searchable picker that lists WooCommerce products
+ * (wc/v3/products, when WC is active). Selecting one auto-sets productId +
+ * sourceMode. The SGS product CPT auto-query path was removed 2026-09-15
+ * (the standalone SGS product/store system was dropped — WooCommerce is now
+ * the only live-product data source; 'sgs-cpt' bound cards still render if
+ * an existing post already carries that sourceMode, but the editor no longer
+ * offers a way to create new ones).
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -89,24 +91,6 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 	const { sourceMode, productId, taxDisplayMode } = attributes;
 	const [ wcOptions, setWcOptions ] = useState( [] );
 	const [ wcLoading, setWcLoading ] = useState( false );
-
-	// SGS CPT products via the entity store (REST: wp/v2/sgs-products).
-	// A plain dropdown (3b, rule 41) lists the first page rather than
-	// searching-as-you-type, so this always fetches unfiltered.
-	const { cptRecords, cptResolving } = useSelect( ( select ) => {
-		const query = { per_page: 100 };
-		return {
-			cptRecords: select( coreStore ).getEntityRecords(
-				'postType',
-				'sgs_product',
-				query
-			),
-			cptResolving: select( coreStore ).isResolving(
-				'getEntityRecords',
-				[ 'postType', 'sgs_product', query ]
-			),
-		};
-	}, [] );
 
 	// WooCommerce products via the WC REST API (not a WP entity).
 	useEffect( () => {
@@ -140,28 +124,18 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 		};
 	}, [] );
 
-	const cptOptions = ( cptRecords || [] ).map( ( p ) => ( {
-		value: `cpt:${ p.id }`,
-		label: `${
-			p.title?.rendered || __( '(no title)', 'sgs-blocks' )
-		} (SGS)`,
-	} ) );
-
 	const options = [
 		{
 			value: TYPED_VALUE,
 			label: __( 'No product connected', 'sgs-blocks' ),
 		},
 		...wcOptions,
-		...cptOptions,
 	];
 
 	// Current dropdown value derived from sourceMode + productId.
 	let currentValue = TYPED_VALUE;
 	if ( 'wc-product' === sourceMode && productId ) {
 		currentValue = `wc:${ productId }`;
-	} else if ( 'sgs-cpt' === sourceMode && productId ) {
-		currentValue = `cpt:${ productId }`;
 	}
 
 	function onSelect( value ) {
@@ -169,14 +143,14 @@ function ProductSourcePanel( { attributes, setAttributes } ) {
 			setAttributes( { sourceMode: 'typed', productId: 0 } );
 			return;
 		}
-		const [ kind, id ] = value.split( ':' );
+		const [ , id ] = value.split( ':' );
 		setAttributes( {
-			sourceMode: 'wc' === kind ? 'wc-product' : 'sgs-cpt',
+			sourceMode: 'wc-product',
 			productId: Number.parseInt( id, 10 ) || 0,
 		} );
 	}
 
-	const loading = wcLoading || cptResolving;
+	const loading = wcLoading;
 
 	return (
 		<PanelBody
