@@ -12616,6 +12616,24 @@
       }
     },
     {
+      "slug": "sgs/choice-flow",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/collapsible-text",
       "attr": "backgroundColour",
       "fields": {
