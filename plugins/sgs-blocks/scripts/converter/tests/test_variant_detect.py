@@ -128,7 +128,7 @@ def test_detect_variant_0_0_tie_resolved_by_composition():
 
     attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
     child_slugs = [
-        "sgs/nav-menu",
+        "sgs/nav-drawer-menu",
         "sgs/icon-list",
         "sgs/text",
         "sgs/social-icons",
@@ -165,7 +165,7 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
     from converter.db import db_lookup
 
     attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
-    two_column_slugs = ["sgs/nav-menu", "sgs/button"]
+    two_column_slugs = ["sgs/nav-drawer-menu", "sgs/button"]
     assert db_lookup.detect_variant("sgs/nav-drawer", attrs, child_slugs=two_column_slugs) is None
 
 
@@ -175,7 +175,7 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
 # ----------------------------------------------------------------------------
 # Same real fixture, the case tier 1 provably cannot reach.
 # `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
-# slug set {sgs/nav-menu, sgs/button}, so slug-uniqueness has nothing to
+# slug set {sgs/nav-drawer-menu, sgs/button}, so slug-uniqueness has nothing to
 # discriminate on (the test directly above pins that). What CAN separate them
 # is the nested nav-menu's own configuration.
 #
@@ -191,23 +191,23 @@ def test_detect_variant_composition_tie_still_ambiguous_falls_through():
 #                  (`db_lookup.attr_for_grid_column_count`, keyed on the
 #                  pseudo-property `"grid-template-columns:count"`) instead
 #                  of a single hardcoded `"columns"` literal, and
-#                  `sgs/nav-menu/block.json` declares
+#                  `sgs/nav-drawer-menu/block.json` declares
 #                  `"css:grid-template-columns:count": "listColumns"` — so it
 #                  is now CSS-routable (previously `css_property`/
 #                  `css_element` were both NULL, the exact reason this test
 #                  used to require the seed-time filter to refuse it).
 # Confirmed live: `variant_composition_attr_slots` now carries seeded rows for
-# both `two-column-editorial.sgs/nav-menu.itemFontSize` and `.listColumns`
+# both `two-column-editorial.sgs/nav-drawer-menu.itemFontSize` and `.listColumns`
 # (previously zero rows for this variant beyond `itemFontWeight`), and
 # `detect_variant()` returns `"two-column-editorial"` for the real-clone-
 # shaped fixture below.
 
 _TWO_COLUMN_ATTRS = {"drawerBg": "surface", "closeStyle": "text-swap"}
-_TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-menu", "sgs/button"]
+_TWO_COLUMN_CHILD_SLUGS = ["sgs/nav-drawer-menu", "sgs/button"]
 # The shape a REAL clone's extraction produces — tier object, not flat scalar.
 _TWO_COLUMN_CHILD_BLOCKS = [
     (
-        "sgs/nav-menu",
+        "sgs/nav-drawer-menu",
         {
             "gap": "4px",
             "itemFontSize": {"desktop": 64, "mobile": 40},
@@ -223,7 +223,7 @@ def test_detect_variant_two_column_editorial_now_resolves_on_real_clone_shape():
     actually produces — the tier-object `itemFontSize`/`listColumns` fix.
 
     `two-column-editorial` and `floating-capped-card` nest the IDENTICAL child
-    slug set {sgs/nav-menu, sgs/button}, so tier-1 slug-uniqueness has nothing
+    slug set {sgs/nav-drawer-menu, sgs/button}, so tier-1 slug-uniqueness has nothing
     to discriminate on (see the ambiguous-tie test above this one). Tier 2
     (child-attribute-value composition) now carries two real discriminating
     rows for this variant — `itemFontSize` and `listColumns` — both routable
@@ -253,7 +253,7 @@ def test_detect_variant_two_column_editorial_flat_shape_still_fails_closed():
     from converter.db import db_lookup
 
     flat_shape = [
-        ("sgs/nav-menu", {"gap": "4px", "itemFontSize": 64, "itemFontSizeMobile": 40}),
+        ("sgs/nav-drawer-menu", {"gap": "4px", "itemFontSize": 64, "itemFontSizeMobile": 40}),
         ("sgs/button", {}),
     ]
     assert db_lookup.detect_variant(
@@ -282,12 +282,12 @@ def test_composition_attr_tier_resolves_a_live_seeded_row():
     from converter.db import db_lookup
 
     tied = {"editorial-ghost-list", "solid-brand-light"}
-    ghost_children = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "200"})]
+    ghost_children = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "200"})]
     assert db_lookup._composition_attr_tiebreak(
         "sgs/nav-drawer", tied, ghost_children
     ) == "editorial-ghost-list"
 
-    light_children = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "100"})]
+    light_children = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "100"})]
     assert db_lookup._composition_attr_tiebreak(
         "sgs/nav-drawer", tied, light_children
     ) == "solid-brand-light"
@@ -304,7 +304,7 @@ def test_composition_attr_tier_is_value_aware_not_name_aware():
     from converter.db import db_lookup
 
     tied = {"editorial-ghost-list", "solid-brand-light"}
-    wrong = [("sgs/nav-menu", {"gap": "4px", "itemFontWeight": "700"})]
+    wrong = [("sgs/nav-drawer-menu", {"gap": "4px", "itemFontWeight": "700"})]
     assert db_lookup._composition_attr_tiebreak("sgs/nav-drawer", tied, wrong) is None
 
 
@@ -326,9 +326,9 @@ def test_composition_attr_score_rejects_tier_object_vs_flat_shape():
     """
     from converter.db import db_lookup
 
-    triples = (("sgs/nav-menu", "itemFontSize", db_lookup._canon_slot_value(64)),)
-    tier_write = [("sgs/nav-menu", {"itemFontSize": {"desktop": 64}})]
-    flat_write = [("sgs/nav-menu", {"itemFontSize": 64})]
+    triples = (("sgs/nav-drawer-menu", "itemFontSize", db_lookup._canon_slot_value(64)),)
+    tier_write = [("sgs/nav-drawer-menu", {"itemFontSize": {"desktop": 64}})]
+    flat_write = [("sgs/nav-drawer-menu", {"itemFontSize": 64})]
 
     assert db_lookup._composition_attr_score(triples, tier_write) == 0
     # Positive control: the arithmetic itself works — it is the SHAPE that
@@ -348,7 +348,7 @@ def test_detect_variant_child_attribute_tier1_still_wins():
 
     attrs = {"drawerBg": "footer-bg", "drawerAlign": "left", "closeStyle": "separate-x"}
     child_blocks = [
-        ("sgs/nav-menu", {"gap": "4px"}),
+        ("sgs/nav-drawer-menu", {"gap": "4px"}),
         ("sgs/icon-list", {}),
         ("sgs/text", {}),
         ("sgs/social-icons", {}),
@@ -373,8 +373,8 @@ def test_parse_block_open_comment_round_trips_child_attributes():
     from converter.dispatch_spine import emit_block_markup
 
     attrs = {"listColumns": {"desktop": 2, "mobile": 1}, "label": "a --> b"}
-    markup = emit_block_markup("sgs/nav-menu", attrs)
-    assert parse_block_open_comment(markup) == ("sgs/nav-menu", attrs)
+    markup = emit_block_markup("sgs/nav-drawer-menu", attrs)
+    assert parse_block_open_comment(markup) == ("sgs/nav-drawer-menu", attrs)
 
     # No-attribute block: name resolves, attributes are an empty dict.
     assert parse_block_open_comment(emit_block_markup("sgs/card-grid", {})) == (

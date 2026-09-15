@@ -251,6 +251,26 @@ affected rule, not just background.
 
 **Trigger:** whoever picks up this item next — needs a build task, not more investigation.
 
+### P-NAV-HOVER-TYPOGRAPHY-CONTROLS — 6 declared Hover attrs have no editor control
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+
+`itemFontWeightHover` / `itemTextDecorationHover` / `itemTextTransformHover` /
+`submenuFontWeightHover` / `submenuTextDecorationHover` / `submenuTextTransformHover` are declared
+in both `nav-bar-menu/block.json` and `nav-drawer-menu/block.json` but have no control in either
+block's `edit.js` and are read by no `render.php`/`save.js`/`view.js`/shared include/theme
+pattern — confirmed via `audit-block-file-consistency.py --check` (14 findings: 6×2 blocks + 2
+bar-only `_note_*` doc-attrs, the latter an established, already-elsewhere-baselined convention).
+Verified pre-existing via `git show 80f78f511^:.../nav-menu/block.json` — present, identically
+orphaned, in the ORIGINAL pre-split `sgs/nav-menu`; not introduced or worsened by the
+nav-menu-split project (Steps 1-8) or by anything in this session. Accepted into
+`block-file-consistency-baseline.json` (2026-09-15, `--update-baseline`) rather than fixed, so it
+does not block deploy — this needs a properly-scoped build session (6 new hover-typography
+controls, following `TypographyPanel.js`'s existing per-state pattern and the
+`31-golden-colour-control.js` inspector-scan conventions), not a bolt-on fix.
+
+**Trigger:** whoever next does nav-menu typography/Spec-41-hover work — build the 6 controls or
+delete the 6 attrs, whichever the live design intent turns out to need.
+
 ### P-CLIENT-CONTROLS-STICKY-SIDEBAR-AND-BAND-MODEL — two decisions the consolidation track was waiting on
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-08-30
 

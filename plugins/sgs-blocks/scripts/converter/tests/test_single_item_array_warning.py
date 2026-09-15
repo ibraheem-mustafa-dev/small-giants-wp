@@ -230,10 +230,19 @@ def test_unrelated_single_element_not_reported_in_wrong_arrays_gap(caplog):
 
 def test_schema_relevant_single_candidate_still_warns_for_its_own_array(caplog):
     """Negative control: the fix narrows scope, it does not silence the
-    channel. A lone element that DOES match a declared field of the
-    triggering array attr (product-card's ``packSizes`` declares a ``label``
-    field, canonical slot ``label``) must still trigger the warning — proving
+    channel. A lone element that DOES match a declared field of a
+    triggering array attr must still trigger a warning — proving
     ``_candidate_relevant_to_schema`` is a real filter, not a blanket mute.
+
+    UPDATED 2026-09-15 (unrelated to the nav-menu-split, found blocking
+    deploy while running the full pytest gate): `sgs/product-card` gained a
+    SECOND array attr with its own `label` field, `colourSwatches`
+    (0a93cbec9, "add Frame Card component fields") -- confirmed live via
+    `array_item_schema` (both `packSizes` and `colourSwatches` declare
+    field_key='label'). A lone `__label` span is now genuinely schema-relevant
+    to BOTH arrays' own schemas, so TWO warnings is the correct, honest
+    behaviour, not one -- this was a stale assertion from before
+    colourSwatches existed, not a regression in the filter itself.
     """
     from converter.resolvers import array_content as ac
 
@@ -250,7 +259,9 @@ def test_schema_relevant_single_candidate_still_warns_for_its_own_array(caplog):
     assert attrs == {}
     assert gaps == []
     warnings = _drop_warnings(caplog)
-    assert len(warnings) == 1, f"expected exactly one drop warning, got {warnings!r}"
-    assert "sgs/product-card" in warnings[0] and "packSizes" in warnings[0]
-    assert "'label'" in warnings[0]
-    assert "'cta'" not in warnings[0] and "'media'" not in warnings[0]
+    assert len(warnings) == 2, f"expected exactly two drop warnings (packSizes + colourSwatches), got {warnings!r}"
+    joined = " ".join(warnings)
+    assert "sgs/product-card" in joined and "packSizes" in joined and "colourSwatches" in joined
+    assert "'label'" in warnings[0] and "'label'" in warnings[1]
+    for w in warnings:
+        assert "'cta'" not in w and "'media'" not in w

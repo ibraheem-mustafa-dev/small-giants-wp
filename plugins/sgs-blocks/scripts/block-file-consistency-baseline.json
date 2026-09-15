@@ -1544,6 +1544,90 @@
       "block": "sgs/nav-menu",
       "attr": "triggerMode",
       "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "_note_nav_fill",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "_note_three_state_model",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemFontWeightHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemTextDecorationHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "itemTextTransformHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuFontWeightHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuTextDecorationHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-bar-menu",
+      "attr": "submenuTextTransformHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemFontWeightHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemTextDecorationHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "itemTextTransformHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuFontWeightHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuTextDecorationHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
+    },
+    {
+      "type": "orphan_attr",
+      "block": "sgs/nav-drawer-menu",
+      "attr": "submenuTextTransformHover",
+      "reason": "declared in block.json, no control in edit.js, and its name appears in no render.php / save.js / view.js / shared includes / theme pattern or part markup — fully unused"
     }
   ]
 }
