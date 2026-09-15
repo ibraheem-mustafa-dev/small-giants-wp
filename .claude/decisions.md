@@ -1,5 +1,61 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1082 [ROUTINE] — Spec 43 Phase 2 shipped: `sgs/choice-flow` branching quiz
+(plain-question step + recommendation terminal), live-verified
+
+**2026-09-15.** Built via `/phase-planner` (2 parallel steps + 3 sequential steps across
+2 waves) per `.claude/plans/2026-09-15-phase-2-sgs-choice-flow.md`, following Phase 1's
+`sgs_form` CPT precedent. Ships: `sgs_choice_flow` CPT (mirrors `sgs_form`'s capability/
+revision/resolve pattern exactly — FR-43-8), `sgs/choice-flow` (parent wizard, own small
+Interactivity API store per FR-43-9 — deliberately NOT sharing `sgs/form`'s 878-line
+engine), `sgs/choice-flow-question` (plain multiple-choice step, per-option `nextStepId`
+routing — FR-43-2), `sgs/choice-flow-result` (recommendation terminal, tag-overlap match —
+FR-43-12), `sgs/form-step` widened to accept `sgs/choice-flow` as a parent (reused
+unchanged as an inert step marker). Publish-time validation (FR-43-2a) blocks Publish/
+Update via `core/editor`'s `lockPostSaving()` on a dangling route or a routing cycle with
+no reachable result step.
+
+**Architecture decision made at plan time, not deferred:** the block stays unlinked/
+standalone this phase (authored directly via InnerBlocks) — the `sgs_choice_flow` CPT is
+built now (satisfies FR-43-8) but cross-page `flowRef` referencing via `LinkControl` is
+explicitly Phase 4 scope, matching the spec's own phasing table.
+
+**A 3-persona parallel code review (adapted `/qc-council` — no cloning-pipeline ground
+truth applies here, so it ran as a fresh adversarial review instead) found one real bug**
+before deploy: `choice-flow-question/edit.js`'s step picker originally stored the target
+step's React `clientId` into `nextStepId` — a value that can never be resolved at render/
+runtime (`parse_blocks()` never carries `clientId`). Fixed at the source to store the
+step's 0-based DOM-order position instead. The SAME review then found a second-order gap
+in that fix: a positional index silently desyncs when steps are reordered (a normal,
+`templateLock:false`-permitted editing action), because `validateFlow()`'s bounds check
+can't tell "in range" from "the right target". Fixed with a clientId-keyed reorder-remap
+effect in `choice-flow/edit.js` that translates every affected `nextStepId` to the step's
+new position automatically, with zero action needed from the operator. Security review
+(render.php escaping) and CPT-registration-drift review both came back clean.
+
+**Two unrelated, pre-existing blockers hit during deploy, both fixed (not bypassed) because
+they were blocking deployment for every session, not just this one:** `sgs/card-grid`'s
+`cardPadding` attribute (added by a concurrent session's commit `5fac9b21b`) had no matching
+derived-classifier entry — re-ran `extract-signatures.py` to regenerate it (the correct fix
+per the override file's own docstring: overrides are for genuine mis-derivations, not plain
+classifier gaps). `sgs/choice-flow`'s own `terminalType` attribute (single-value enum this
+phase, no control built, nothing reads it) was flagged as a genuine orphan by
+`audit-block-file-consistency` — removed per this project's no-speculative-build rule;
+Phase 3/4 add it back atomically alongside the second real terminal-type choice.
+
+**Live-verified on sandybrown, both controls, at the authoritative `wp.data` level, not
+just visually:** a real 3-step branching flow (question → two distinct results) walked
+both paths to their correct, distinct results via `chrome-devtools-mcp`, including a
+sessionStorage resume-on-reload check. In the block editor: deleting a step another
+option routed to produced the exact named error ("routes to step '2', which does not
+exist in this flow (this flow has 2 step(s))") and `wp.data.select('core/editor')
+.isPostSavingLocked()` returned `true`; undoing the delete returned it to `false`. Test
+fixture (post 3568) deleted after verification.
+
+**FR-43-1 scope note:** this phase ships the plain-question step type only — the priced
+WC-variation step type (FR-43-1's other half) is Phase 3 scope, gated on real WooCommerce
+attribute/variation catalogue data existing first (FR-43-10a's precondition).
+
 ## D1081 [ROUTINE] — Spec 44 reworked v2.0.0 → v2.3.0 across three `/adversarial-council`
 rounds; root mechanism changed to parent-narrowed structural matching; page routing moved
 entirely out of scope

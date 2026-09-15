@@ -29,18 +29,27 @@ project's own `.claude/plans/`).
 **Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
 programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
 exactly as before** — see "Prior work (closed)" and "Front B" below for the pointers; nothing in
-those tracks moved this session. **Spec 42/43 also did not move further this session** — its
-own "Front B" entry below is carried forward verbatim from the sibling Eye Care session that
-closed it.
+those tracks moved this session.
+
+**Spec 42/43 (form CPT + choice-flow) — Phases 0, 1, AND 2 are now DONE, DEPLOYED, AND
+LIVE-VERIFIED (D1082).** Phase 2 (`sgs/choice-flow` branching quiz — plain-question step +
+recommendation terminal, FR-43-1/2/2a/3/8/9/11/12) shipped this session via `/phase-planner`,
+reviewed clean by a 3-persona parallel code review (1 real bug found + fixed: a routing-index
+reorder-desync gap), deployed to sandybrown, and live-walked both branches + both publish-
+validation controls via `chrome-devtools-mcp` at the `wp.data` level. Full evidence: D1082.
+**Phase 3 (priced WC-variation steps) is next but BLOCKED on its own stated precondition** —
+real WooCommerce attribute/variation catalogue data must exist first (FR-43-10a); that is a
+WooCommerce-admin catalogue-setup task, not a block-engine build. Phase 4 (modal delivery) and
+Phase 5 (mandatory rebuild + deferred items) remain open, no fixed order required before them.
 
 ## Prior work (closed / parked) — pointer only, full narrative in memory or decisions.md
 
-**Ward End Eye Care Spec 42/43 (form CPT + choice-flow) — council-closed, ready to build
-(D1072).** No longer parked. Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) +
-`specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) in full before touching; Phase 0 (FR-42-0, the fail-open
-`requireLogin` bug fix) is fully detailed and ready to execute now —
-`plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`. See "Front B" below for the full
-council result and the Phase 1-5 roadmap.
+**Ward End Eye Care Spec 42/43 (form CPT + choice-flow) — Phases 0-2 DONE (D1072, D1082).**
+Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0)
+in full before touching Phase 3+. Phase 3's own precondition (real WC attribute/variation
+catalogue data) is unmet — that's a WooCommerce-admin task, do it before planning Phase 3's
+block work. See "Front B" below for the original council result and the full Phase 0-5
+roadmap; `plans/2026-09-15-phase-2-sgs-choice-flow.md` is Phase 2's executed plan.
 
 **Ward End Eye Care Tasks 1/2/4/5 — FULLY CLOSED (D1067/D1069/D1070, CSS fix `153f8ec1d`).**
 QC-closed all four (D1067: PASS or PASS-WITH-GAPS); two doc-rot comments fixed inline. Task 1's
