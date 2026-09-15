@@ -199,14 +199,21 @@ below now cites the bar copy only. The five `includes/nav-menu-*.php` files in t
 unaffected: both new blocks `require_once` the same shared files (verified directly — both
 `render.php`s require identical `includes/nav-menu-*.php` paths).
 
+⚠ **Table corrected 2026-09-15 against live code** (a prior citation-fix pass, `e30cefcad`, fixed
+only citations in the file-path-double-colon-symbol backtick form `lint-spec-drift.py`'s gate scans
+for — this table's own function names sit in plain table cells, not that gated form, so they
+slipped through uncorrected until re-verified by hand). Every symbol below was grep-confirmed in
+the file named, not inferred from the old pre-split name.
+
 | File | Owns (cite by `path::symbol`) |
 |---|---|
-| `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` | entry + `SGS_Nav_Menu_Bar_Renderer` (constructor, `flatten()`, `from_link()`, `from_page_list()`), menu resolution, the treatment resolution call, the indicator/magnet `data-` flags, `<style>` assembly |
-| `plugins/sgs-blocks/includes/nav-menu-markup.php` | `sgs_nav_menu_render_items()`, `sgs_nav_menu_render_items_drawer()`, `sgs_nav_menu_burger_toggle_markup()` |
-| `plugins/sgs-blocks/includes/nav-menu-css.php` | `sgs_nav_menu_item_state_css()` — item typography, nav-container colour, the item text / background / border three-state emission with its paired treatments, the border-sweep band, the featured BAR item |
-| `plugins/sgs-blocks/includes/nav-menu-treatments.php` | `sgs_nav_menu_sweep_eligible()`, the treatment resolution, the shared glyph-sweep emitter, `sgs_nav_menu_typography_hover_rule()` (FR-41-21's block-private emitter), IconPicker-object → SVG resolution |
-| `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` | `sgs_nav_menu_trigger_css()` — the Menu Button's icon/text colour + glyph sweep, its resting and hover background, and the size rule that stops being a fixed square once the button carries a word |
-| `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` | `sgs_nav_menu_submenu_css()` — collapse-point switch, dropdown/mega positioning + the FR-41-11 bridge, the submenu LINK's three-state family and its typography, the drawer fork's overrides, the sliding indicator, the root box, custom CSS |
+| `plugins/sgs-blocks/src/blocks/nav-bar-menu/render.php` | entry + `SGS_Nav_Menu_Bar_Renderer` (constructor, `flatten()`, `from_link()`, `from_page_list()`), menu resolution, the treatment resolution call, the indicator/magnet `data-` flags, `<style>` assembly, `sgs_nav_shared_typography_hover_rule()` (FR-41-21's block-private emitter — declared identically in this file AND `nav-drawer-menu/render.php`, called from `nav-menu-css.php`/`nav-menu-submenu-link-css.php`) |
+| `plugins/sgs-blocks/includes/nav-menu-markup.php` | `sgs_nav_bar_menu_render_items()`, `sgs_nav_drawer_menu_render_items()`, `sgs_nav_bar_menu_burger_toggle_markup()` |
+| `plugins/sgs-blocks/includes/nav-menu-css.php` | `sgs_nav_shared_item_state_css()` — item typography, nav-container colour, the item text / background / border three-state emission with its paired treatments, the border-sweep band, the featured BAR item |
+| `plugins/sgs-blocks/includes/nav-menu-treatments.php` | `sgs_nav_shared_sweep_eligible()`, `sgs_nav_shared_resolved_treatments()` (the treatment resolution), `sgs_nav_shared_text_sweep_css()` (the shared glyph-sweep emitter), `sgs_nav_shared_icon_markup()` (IconPicker-object → SVG resolution) |
+| `plugins/sgs-blocks/includes/nav-menu-trigger-css.php` | `sgs_nav_bar_menu_trigger_css()` — the Menu Button's icon/text colour + glyph sweep, its resting and hover background, and the size rule that stops being a fixed square once the button carries a word (bar-only — the trigger/burger has no drawer counterpart) |
+| `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` | `sgs_nav_shared_submenu_css()` — collapse-point switch, dropdown/mega positioning + the FR-41-11 bridge, the submenu LINK's base typography/text-colour states, custom CSS |
+| `plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php` | `sgs_nav_shared_submenu_link_css()` — split out of the file above (file-size pass, 2026-09-14, D722 addendum): the submenu link's hoverable background/border/typography-hover, the drawer fork's overrides, `listColumns` in-drawer grid, the sliding indicator, the root box |
 
 ⛔ **All five `plugins/sgs-blocks/includes/nav-menu-*.php` files are `require_once`'d PER-INSTANCE from `render.php`,
 not bootstrap-loaded** (the `sgs/product-card` `plugins/sgs-blocks/includes/product-card-builtin-render.php`
@@ -2636,7 +2643,7 @@ need. Verified, not assumed: PHP already reads `supports.sgs.*` in this codebase
 so both are proven to bundle). The PHP reader,
 `plugins/sgs-blocks/includes/nav-menu-treatments.php::sgs_nav_shared_resolved_treatments`, now takes
 an explicit `$block_name` parameter instead of a hardcoded `'sgs/nav-menu'` lookup — each block's own
-`render.php` passes its own slug (`sgs_nav_menu_resolved_treatments( $attributes, 'sgs/nav-bar-menu' )`
+`render.php` passes its own slug (`sgs_nav_shared_resolved_treatments( $attributes, 'sgs/nav-bar-menu' )`
 / `'sgs/nav-drawer-menu'`), so the ONE-DECLARATIVE-SOURCE contract this section states now holds
 per-block rather than for a single shared block.json. ⛔ **Do NOT invent a separate JSON file, a PHP
 constant, or a JS constant** — any of those is a second artefact to keep in sync, which is the
@@ -4319,9 +4326,15 @@ $css .= sgs_typography_css_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-m
 for this revision):
 
 ```php
-$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'item',    $link_sel );
-$css .= sgs_nav_menu_typography_hover_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-menu__sublink' );
+$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'item',    $link_sel );
+$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'submenu', $uid_sel . ' .sgs-nav-bar-menu__sublink' );
 ```
+
+⚠ **Symbol + selector corrected 2026-09-15** — this example predates the D1059 split and named both
+the old function (`sgs_nav_menu_typography_hover_rule`, since renamed) and the old BEM root
+(`.sgs-nav-menu__sublink`, since split to `.sgs-nav-bar-menu__sublink`/`.sgs-nav-drawer-menu__sublink`
+per block). The real current call sites (see below) pass computed selectors, not this literal string
+— this snippet is illustrative shape only, not a verbatim quote of either call site.
 
 ⛔ **That helper is BLOCK-PRIVATE to `sgs/nav-menu` — NOT an addition to any shared helper file.**
 It composes the permitted declarations (FR-41-21's allowlist table) and returns one
@@ -4341,8 +4354,9 @@ choosing one owner: it is now defined identically, each inside its own required
 The "block-private, not a shared helper" ruling above still holds — it is just private to two
 blocks instead of one, which is the intended shape of a BOTH-fork block-private helper post-split,
 not a regression from it. ⚠ **Its two CALLERS live in other files** — `plugins/sgs-blocks/includes/nav-menu-css.php`
-(prefix `item`, on `$link_sel`) and `plugins/sgs-blocks/includes/nav-menu-submenu-css.php` (prefix `submenu`, on
-`$sublink_sel`). ⚠ **That is safe only because those two modules merely DEFINE functions at include
+(prefix `item`, on `$link_sel`) and `plugins/sgs-blocks/includes/nav-menu-submenu-link-css.php` (prefix
+`submenu`, on `$sublink_sel` — corrected 2026-09-15, this call site moved out of
+`nav-menu-submenu-css.php` in the 2026-09-14 file-size split, D722 addendum). ⚠ **That is safe only because those two modules merely DEFINE functions at include
 time and call this one at render time**, by which point `render.php`'s own top level has already
 declared it. ⛔ **Do not relocate the definition into one of the two modules** — the other module
 does not `require_once` its sibling, so it would be calling an undefined function on any page where

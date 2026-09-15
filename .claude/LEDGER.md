@@ -9,7 +9,8 @@ last_updated: 2026-09-15
 ## Human Summary — FOR BEAN, plain English (read this first)
 
 **THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE, DEPLOYED, AND
-LIVE-VERIFIED — nothing left open.** The single `sgs/nav-menu` block is now two real, separate
+LIVE-VERIFIED — no functional blockers.** One doc-only residual parked (Spec 41's 125 stale
+mentions — Front A). The single `sgs/nav-menu` block is now two real, separate
 blocks — `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with separated CSS/PHP namespaces,
 migrated theme patterns, reseeded DB, matching live canary content, AND the
 split-nav-either-side-of-logo layout + SOON badge + drawer two-tier split the whole track existed
@@ -24,8 +25,6 @@ project's own `.claude/plans/`).
 `782281040` → `a04ccf942` → `b54c9b347` (Step 6) → `31886a2ea` (Step 7) → `c149de5b4` (Step 8) →
 `e219265d2`+`71a23fe4b` (Step 5 DB fix) → `0b5593dc9` (gate repairs) → `439321df6`+`1376084dd`
 (live item-border-shadow fix, deployed).
-
-**No open blockers.** The whole track is closed — see Front A only for historical detail.
 
 **Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
 programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
@@ -81,25 +80,22 @@ rounds (D1081), designed but not yet built or re-verified.** Full detail in "Fro
 default + a dead CSS branch). Full narrative swept to `memory/session-2026-09-15.md` — read it for
 commit hashes and evidence.
 
-**Re-audited against the plan's own checklist 2026-09-15** after Bean directly challenged the
-"fully closed" claim — found and closed 5 real residuals: `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`
-RESOLVED (structural `ancestor` restriction on `nav-bar-menu/block.json`, not the CSS-mirroring
-patch it was tracking); `P-NAV-HOVER-TYPOGRAPHY-CONTROLS` RESOLVED (was a detector false-positive —
-`PREFIXED_HELPER_SUFFIXES` missing a registration, not a real missing-control gap; 12 stale
-baseline entries cleaned); Spec 37 FR-37-42 heading fixed; Spec 00 §3.1 gained the
-`sgs/form-field-*` counter-example; STOP-CATALOGUE.md gained `E26`. Detail on all 5:
+**Re-audited 2026-09-15** after Bean challenged "fully closed" — found+closed 5 residuals:
+dropdown-stacking RESOLVED (structural `ancestor` restriction, not the CSS-mirror patch it was
+tracking); hover-typography RESOLVED (detector false-positive, missing allowlist registration);
+Spec 37 FR-37-42 heading; Spec 00 §3.1 counter-example; STOP-CATALOGUE `E26`. Detail:
 `memory/session-2026-09-15.md` + `memory/parking-archive.md`.
 
-**Spec 41's 13 gating `CITE-SYMBOL` findings — FIXED** (`e30cefcad`): stale `sgs_nav_menu_*`/
-`.sgs-nav-menu__*` citations rewritten to the real post-split names, verified against code first.
+**Spec 41's 13 gating `CITE-SYMBOL` findings — FIXED** (`e30cefcad`); QC then found+fixed 4 more
+stale instances the gate can't see. **125 further ungated mentions remain, pre-existing** — parked
+as `P-SPEC41-BEM-PROSE-REWRITE` (own session, 5395 lines).
 
-**Spec 36's ungated `sgs/nav-menu` prose — FIXED** (`98cfb3358`, v2.5): rewrote every
-current-architecture passage §1-9 to the correct block, plus 2 mechanism corrections (submenu-context
-is drawer-only; bar block dropped `SGS_Container_Wrapper` at D539). History left as history.
+**Spec 36's ungated prose — FIXED** (`98cfb3358`, v2.5): rewrote every current-architecture passage
+§1-9, plus 2 mechanism corrections (submenu-context is drawer-only; bar dropped `SGS_Container_Wrapper`
+at D539). History left as history.
 
-**Doc sweep 2026-09-15:** `sgs/nav-menu` rename applied across specs 00/01/02/33/37/38 + README +
-goals.md; 2 plans archived; 3 prompts removed (1 saved as a parking entry); listColumns
-reading-order verified + archived.
+**Doc sweep 2026-09-15:** rename applied across specs 00/01/02/33/37/38 + README + goals; 2 plans
+archived; 3 prompts removed (1 saved as parking); listColumns order verified.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on

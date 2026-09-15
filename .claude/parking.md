@@ -218,6 +218,29 @@ matches.
 
 ## Framework: blocks, theme, specs
 
+### P-SPEC41-BEM-PROSE-REWRITE — Spec 41 needs the same full sgs/nav-menu prose rewrite Spec 36 got
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+
+Spec 36's ungated `sgs/nav-menu` prose (dozens of bare mentions with no `file::symbol` citation, so
+`lint-spec-drift.py`'s gate never flagged them) got a full rewrite to the post-D1059-split block
+names (`sgs/nav-bar-menu`/`sgs/nav-drawer-menu`) this session (`98cfb3358`, v2.5). Spec
+41 — the nav colour/state mechanism spec, 5395 lines — has the SAME problem at far larger scale:
+`grep -c "sgs-nav-menu__\|sgs_nav_menu_" .claude/specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md` returns
+**125 occurrences** (131 before this session's fixes) of the stale pre-split BEM prefix/function-name family, almost none in gated
+`file::symbol` form.
+
+A same-session `/handoff` QC pass caught and fixed 4 specific instances that sat directly beside
+already-corrected prose (a self-contradictory "Owns" table with 7 wrong function names, a
+self-contradicting inline code example, two stale cross-file citations) — those 4 are FIXED. The
+other 125 occurrences are genuinely untouched pre-existing debt, same category as Spec 36's before
+its rewrite, not something this session claimed to have closed.
+
+**Trigger:** a dedicated pass mirroring Spec 36's v2.5 rewrite — read the whole document, classify
+each `sgs-nav-menu__`/`sgs_nav_menu_*` mention as either current-architecture (needs the real
+post-split name, verified against live code) or genuinely historical narrative (leave as history,
+per the precedent Spec 36 set). Given the size (5395 lines vs Spec 36's ~1800), budget this as its
+own session, not a bolt-on.
+
 ### P-FX-PER-EFFECT-BLOCK-COMPATIBILITY — motion-effects panel is all-or-nothing per block, needs per-effect opt-in
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
 

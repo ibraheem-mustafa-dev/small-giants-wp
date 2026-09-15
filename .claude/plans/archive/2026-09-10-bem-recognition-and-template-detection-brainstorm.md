@@ -3,7 +3,9 @@ doc_type: design-brainstorm
 project: small-giants-wp
 plan_name: 2026-09-10-bem-recognition-and-template-detection-brainstorm
 generated: 2026-09-10
-status: draft
+status: archived — 2026-09-15, both questions' ranked-menu items built/decided (Q1 Tier 0-2 shipped
+  D1034/D1037/D1053/D1054, Tier 3 explicitly out of scope, zero evidenced need; Q2 Tier 1 shipped
+  D1037). Kept for historical rationale only — see decisions.md for the live record.
 authors: Claude (brainstorming skill, design mode)
 primary_goal: "Give Bean a ranked menu — not a forced choice — for (1) recognising non-BEM draft sources and (2) detecting template-shaped pages, grounded in what the pipeline already does today."
 motivation: "R-31-2 (BEM-only recognition) is correct for Bean-controlled drafts. The open question is whether it under-serves scraped/AI-generated/plain-HTML sources, and whether repeating pages are being hand-converted when they don't need to be."
