@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "..\\..\\..\\..\\..\\.claude\\skills\\sgs-wp-engine\\sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 7761,
+    "row_count": 7771,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1430,8 +1430,18 @@
     "sgs/choice-flow-result::fxWaveVariant": "behaviour",
     "sgs/choice-flow-result::heading": "text-content",
     "sgs/choice-flow-result::matchTags": null,
+    "sgs/choice-flow::backBorderRadius": "visual",
+    "sgs/choice-flow::backBorderStyle": "visual",
+    "sgs/choice-flow::backBorderWidth": "visual",
+    "sgs/choice-flow::backColourBackground": "color",
+    "sgs/choice-flow::backColourBackgroundHover": "color",
+    "sgs/choice-flow::backColourBorder": "color",
+    "sgs/choice-flow::backColourBorderHover": "color",
+    "sgs/choice-flow::backColourText": "color",
+    "sgs/choice-flow::backColourTextHover": "color",
     "sgs/choice-flow::maxWidth": "layout",
     "sgs/choice-flow::padding": "layout",
+    "sgs/choice-flow::progressStyle": "behaviour",
     "sgs/choice-flow::title": "text-content",
     "sgs/collapsible-text::backgroundColour": "color",
     "sgs/collapsible-text::backgroundColourGradient": "colour-gradient",

@@ -42,8 +42,7 @@
  *
  * Step indicator + Back button (user-reported gap, 2026-09-15 — all three
  * reference quizzes have numbered/named stages AND a Back control; the
- * first Visual-QA pass shipped neither). Both are static markup here, driven
- * entirely by `view.js`:
+ * first Visual-QA pass shipped neither).
  *   - `.sgs-choice-flow__step-count` / `__step-label` start empty and are
  *     filled by `showStepByIndex()` on every step change — "Step {n} of
  *     {total}" plus the current step's own `data-step-label` (an attribute
@@ -52,7 +51,24 @@
  *   - `.sgs-choice-flow__nav-back` starts `hidden` (there is nowhere to go
  *     back to on step 1) and `view.js` toggles it via the `history` stack
  *     `handleOptionClick()` was already building but nothing previously
- *     consumed.
+ *     consumed. LIVE evidence read from the client's own real lens-
+ *     configurator source (2026-09-15 —
+ *     sites/eye-care-ward-end/design_handoff_ward_end_eye_care/
+ *     Eye Care Birmingham.dc.html:1529-1532) put this in a BOTTOM sticky
+ *     footer strip (border-top divider, left-aligned), not inline with the
+ *     progress bar — AthleanX matches the same bottom-footer placement;
+ *     Invisalign's top-of-page text-link placement was explicitly rejected
+ *     (Bean, "the invisalign one is definitely the outlier"). Styled via the
+ *     shared `sgs_button_element_style_css()` helper — see the block.json
+ *     `back` element's own `_note` for the full colour-token evidence.
+ *
+ * Progress style variants (`progressStyle` attr, user-directed 2026-09-15):
+ * 'bar' (default) is this file's own plain fill bar, unchanged. 'circles'
+ * and 'badge' both need an EMPTY container here that `view.js` populates —
+ * only `view.js` reliably knows the flow's total step count + per-step
+ * labels (via `getSteps()`/`data-step-label`), so building N circles or a
+ * positioned badge server-side would mean re-deriving that count from the
+ * parsed InnerBlocks tree, duplicating logic `view.js` already owns.
  *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
@@ -76,6 +92,9 @@ $flow_title = isset( $attributes['title'] ) ? (string) $attributes['title'] : ''
 // sgs/quote's own box-family convention (box_family column, BoxControl).
 // -------------------------------------------------------------------------
 
+$progress_style  = isset( $attributes['progressStyle'] ) && in_array( $attributes['progressStyle'], array( 'circles', 'badge' ), true )
+	? $attributes['progressStyle']
+	: 'bar';
 $max_width       = isset( $attributes['maxWidth'] ) ? (string) $attributes['maxWidth'] : '';
 $padding_tiers   = sgs_responsive_normalise_object( $attributes['padding'] ?? null, true );
 $padding_desktop = is_array( $padding_tiers['desktop'] ?? null ) ? $padding_tiers['desktop'] : array();
@@ -109,6 +128,15 @@ if ( null !== $padding_mobile_val ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{padding:{$padding_mobile_val};}}";
 }
 
+// Back button — shared button-style emitter (mirrors sgs/product-card's
+// built-in CTA). Uppercase + letter-spacing is a fixed styling constant
+// (not a control), matching the real reference's own small-caps nav-button
+// treatment — same status as sgs/label's fixed 12px eyebrow size.
+$back_css = sgs_button_element_style_css( $attributes, 'back', "{$root_sel} .sgs-choice-flow__nav-back" );
+if ( '' !== $back_css ) {
+	$scoped_css[] = $back_css;
+}
+
 $wrapper_args = array(
 	'class'               => 'sgs-choice-flow ' . $uid,
 	'data-wp-interactive' => 'sgs/choice-flow',
@@ -124,20 +152,34 @@ if ( $scoped_css ) {
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() blocks a </style> breakout; every value above is pre-sanitised via sgs_css_length_value()/sgs_box_object_shorthand() (contract §D, matches sgs/quote + sgs/notice-banner).
 }
 
-echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
+echo '<div ' . $wrapper_attributes . ' data-progress-style="' . esc_attr( $progress_style ) . '">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
 
 echo '<div class="sgs-choice-flow__header">';
-echo '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">';
-echo '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' );
-echo '</button>';
 echo '<div class="sgs-choice-flow__step-indicator">';
 echo '<span class="sgs-choice-flow__step-count"></span>';
 echo '<span class="sgs-choice-flow__step-label"></span>';
 echo '</div>';
 echo '</div>';
 
+// 'circles' gets an empty stepper container ABOVE the plain bar (mirrors
+// AthleanX: numbered circles + connecting lines above a separate fill bar)
+// — populated entirely by view.js (it already knows step count + labels).
+if ( 'circles' === $progress_style ) {
+	echo '<div class="sgs-choice-flow__stepper" aria-hidden="true"></div>';
+}
+
 echo '<div class="sgs-choice-flow__progress" aria-hidden="true"><div class="sgs-choice-flow__progress-fill"></div></div>';
 echo '<div class="sgs-choice-flow__inner">';
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.
 echo '</div>';
+
+// Bottom sticky footer — Back button only (this flow's option-click-to-
+// advance model needs no separate forward button; see render.php's own
+// docblock for the real-evidence reasoning).
+echo '<div class="sgs-choice-flow__footer">';
+echo '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">';
+echo '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' );
+echo '</button>';
+echo '</div>';
+
 echo '</div>';

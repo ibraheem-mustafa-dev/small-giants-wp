@@ -257,13 +257,13 @@
       "has_render_php": true,
       "surfaces": {
         "styling": false,
-        "colour": false,
+        "colour": true,
         "link": false,
         "media": false,
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 14,
         "replacedCoreSupports": []
       }
     },
@@ -282,7 +282,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 7,
+        "paintDeclarations": 6,
         "replacedCoreSupports": []
       }
     },

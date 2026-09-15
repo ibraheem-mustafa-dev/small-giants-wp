@@ -6,14 +6,19 @@ import {
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect, useMemo, useRef } from '@wordpress/element';
-import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { PanelBody, TextControl, SelectControl, Notice } from '@wordpress/components';
 import {
 	SgsLengthControl,
 	SgsBoxControl,
+	SgsBorderControl,
+	SgsColourPanel,
 	ResponsiveOverride,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
+import fillRow from '../../components/colour-variants/fillRow';
+import textRow from '../../components/colour-variants/textRow';
+import { colourVar } from '../../utils';
 
 // Box-object interface contract — length units for the kept-scalar maxWidth
 // attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
@@ -49,8 +54,53 @@ function buildWrapperStyle( attributes ) {
 		wrapperStyle.marginLeft = 'auto';
 		wrapperStyle.marginRight = 'auto';
 	}
-
 	return wrapperStyle;
+}
+
+/**
+ * Editor canvas preview of the Back button's colour/border styling — same
+ * "inline style, editor-only" contract as buildWrapperStyle() above. Without
+ * this, the Back-button colour/border panel writes attributes the canvas
+ * never reflects at all (the block's own InnerBlocks are the only thing
+ * rendered in edit.js otherwise) — caught by check-editor-render-parity.js's
+ * CHECK A, 2026-09-15.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {Object} Inline style object for the preview `<span>`.
+ */
+function buildBackButtonPreviewStyle( attributes ) {
+	const {
+		backColourBackground,
+		backColourText,
+		backColourBorder,
+		backBorderStyle,
+		backBorderWidth,
+		backBorderRadius,
+	} = attributes;
+
+	const style = {
+		backgroundColor: backColourBackground ? colourVar( backColourBackground ) : 'transparent',
+		color: backColourText ? colourVar( backColourText ) : undefined,
+		borderStyle: backBorderStyle || 'solid',
+		borderColor: backColourBorder ? colourVar( backColourBorder ) : undefined,
+	};
+
+	const widthShorthand = boxShorthand( backBorderWidth, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( widthShorthand ) {
+		style.borderWidth = widthShorthand;
+	}
+
+	const radiusShorthand = boxShorthand( backBorderRadius, [
+		'topLeft',
+		'topRight',
+		'bottomRight',
+		'bottomLeft',
+	] );
+	if ( radiusShorthand ) {
+		style.borderRadius = radiusShorthand;
+	}
+
+	return style;
 }
 
 // Spec 43 §2/§9 (Phase 2) — sgs/choice-flow only ever contains sgs/form-step
@@ -351,7 +401,15 @@ function validateFlow( steps ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { title, maxWidth, padding } = attributes;
+	const {
+		title,
+		maxWidth,
+		padding,
+		progressStyle,
+		backBorderWidth,
+		backBorderStyle,
+		backBorderRadius,
+	} = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-choice-flow',
@@ -479,6 +537,71 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
+				{ /* User-directed (2026-09-15) — operator choice across the 3 real
+				   reference patterns found live: see progressStyle's own
+				   block.json description for the evidence. */ }
+				<PanelBody title={ __( 'Progress indicator', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Style', 'sgs-blocks' ) }
+						value={ progressStyle || 'bar' }
+						options={ [
+							{ label: __( 'Plain bar', 'sgs-blocks' ), value: 'bar' },
+							{ label: __( 'Numbered circles', 'sgs-blocks' ), value: 'circles' },
+							{ label: __( 'Badge on bar', 'sgs-blocks' ), value: 'badge' },
+						] }
+						onChange={ ( val ) => setAttributes( { progressStyle: val } ) }
+						help={ __(
+							'Plain bar matches the real lens-configurator reference; Numbered circles matches AthleanX; Badge on bar matches Invisalign.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+				{ /* User-reported gap (2026-09-15) — Back button colour/border,
+				   rendered via the shared sgs_button_element_style_css()
+				   helper. Defaults are grounded in the real lens-configurator
+				   source, not the theme's 'primary' preset — see the 'back'
+				   element's own block.json _note for the evidence. */ }
+				<PanelBody title={ __( 'Back button', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsColourPanel
+						rows={ [
+							fillRow( {
+								key: 'back-fill',
+								label: __( 'Background', 'sgs-blocks' ),
+								attrs: {
+									base: 'backColourBackground',
+									hover: 'backColourBackgroundHover',
+								},
+								attributes,
+								setAttributes,
+							} ),
+							textRow( {
+								key: 'back-text',
+								label: __( 'Text', 'sgs-blocks' ),
+								attrs: {
+									base: 'backColourText',
+									hover: 'backColourTextHover',
+								},
+								attributes,
+								setAttributes,
+							} ),
+						] }
+					/>
+					<SgsBorderControl
+						widthValues={ backBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { backBorderWidth: next } ) }
+						styleValue={ backBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { backBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.backColourBorder }
+						onColourChange={ ( val ) => setAttributes( { backColourBorder: val ?? '' } ) }
+						colourLinked
+						radiusValues={ { base: backBorderRadius ?? {} } }
+						showRadiusResponsive={ false }
+						onRadiusChange={ ( _tier, next ) => setAttributes( { backBorderRadius: next } ) }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -507,6 +630,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					</Notice>
 				) }
 				<div { ...innerBlocksProps } />
+				{ /* Editor-canvas-only preview of the Back button's colour/border
+				   styling (Spec 32-safe: inline style here, zero inline style
+				   on the actual frontend render.php output). Static, never
+				   clickable in the canvas — the real Back button only exists
+				   at runtime, shown/hidden by view.js. */ }
+				<div className="sgs-choice-flow__footer-preview">
+					<span
+						className="sgs-choice-flow__nav-back-preview"
+						style={ buildBackButtonPreviewStyle( attributes ) }
+					>
+						{ __( '← Back', 'sgs-blocks' ) }
+					</span>
+				</div>
 			</div>
 		</>
 	);

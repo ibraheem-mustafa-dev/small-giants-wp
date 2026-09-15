@@ -12,14 +12,20 @@
  * (`theme/sgs-theme/theme.json`) — no hardcoded hex. Specifically:
  *   --wp--preset--color--border         (#D4DBE5 "Border" — settings.color.palette)
  *   --wp--preset--color--primary        (#1F7A7A "Primary")
- *   --wp--preset--color--surface-alt    (#F1F0EC "Raised Background" — subtle tint)
+ *   --wp--preset--color--text           (#1A202C "Text")
  *   --wp--custom--border-radius--medium (settings.custom.borderRadius.medium, 8px)
  *   --wp--custom--transition--fast      (settings.custom.transition.fast, 0.15s ease)
  *   --wp--preset--font-size--x-large    (settings.typography.fontSizes "x-large", 24px)
- * The border/hover-border/hover-background trio mirrors this same theme.json's
- * own `settings.custom.buttonPresets.outline` convention (border token at
- * rest, primary token on hover, surface-alt tint on hover) rather than
- * inventing a new colour recipe for this block.
+ *
+ * ⚑ CORRECTED 2026-09-15 (Bean-directed consistency pass). The option-card
+ * hover used to fill the whole card with `surface-alt` + darken the border to
+ * `primary` — invented before the real reference was read. Real evidence
+ * (Eye Care Birmingham.dc.html:1368, the client's own lens-configurator
+ * source): the hover rule is `border-color:#141414;transform:translateY(-3px);
+ * box-shadow:0 14px 32px rgba(20,20,20,.09)` — the background NEVER changes;
+ * only the border darkens (to near-black — this theme's `text` token, the
+ * same role) plus a lift + shadow motion. Ported here as a straight token
+ * substitution + the same lift/shadow the reference uses.
  *
  * HOVER GUARD: this is a STATIC stylesheet (enqueued as an ordinary asset,
  * never passed through PHP), so `includes/helpers-hover-state.php`'s runtime
@@ -125,19 +131,30 @@
 	text-align: left;
 	cursor: pointer;
 	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
-		background-color var( --wp--custom--transition--fast, 0.15s ease );
+		transform var( --wp--custom--transition--fast, 0.15s ease ),
+		box-shadow var( --wp--custom--transition--fast, 0.15s ease );
 }
 
 .sgs-choice-flow-question__option-button:hover {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+	border-color: var( --wp--preset--color--text, #1a202c );
+	transform: translateY( -3px );
+	box-shadow: 0 14px 32px rgba( 20, 20, 20, 0.09 );
 }
 
 .sgs-choice-flow-question__option-button:focus-visible {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+	border-color: var( --wp--preset--color--text, #1a202c );
 	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
 	outline-offset: 2px;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-choice-flow-question__option-button {
+		transition: border-color var( --wp--custom--transition--fast, 0.15s ease );
+	}
+
+	.sgs-choice-flow-question__option-button:hover {
+		transform: none;
+	}
 }
 
 /* FR-43-15 — per-option image preview zone (16:9), only present when the

@@ -1579,6 +1579,96 @@
       }
     },
     {
+      "slug": "sgs/choice-flow",
+      "attr": "backBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "back",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/collapsible-text",
       "attr": "collapsedLines",
       "fields": {

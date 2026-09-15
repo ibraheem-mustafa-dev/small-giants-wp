@@ -17,6 +17,17 @@
  * TOKENS: every colour/radius/transition value is a theme.json token
  * (`theme/sgs-theme/theme.json`), no hardcoded hex.
  *
+ * ⚑ CORRECTED 2026-09-15 (Bean-directed consistency pass). The hover state
+ * used to be a border+text primary-colour tint — invented before the real
+ * reference was read. Real evidence (Eye Care Birmingham.dc.html:1387, the
+ * client's own lens-configurator source, the exact '?' help-toggle this
+ * pattern was extracted from): rest is
+ * `background:rgba(255,255,255,.94);border:1px solid #D8D2C8;color:#4A453E`,
+ * hover is `style-hover="background:#141414;color:#fff"` — a FULL colour
+ * invert to a solid near-black fill with white text, border unchanged. Ported
+ * as a straight token substitution (`text`/`text-inverse`), not the tint this
+ * file used before.
+ *
  * HOVER GUARD: static stylesheet — per `plugins/sgs-blocks/CLAUDE.md`'s
  * "Touch-safe HOVER helpers" section, `scripts/hover-guard/run-transform.js`
  * wraps the `:hover` rule below in both touch-safe guards on the COMPILED
@@ -41,18 +52,18 @@
 	font-weight: 700;
 	line-height: 1;
 	cursor: pointer;
-	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
+	transition: background-color var( --wp--custom--transition--fast, 0.15s ease ),
 		color var( --wp--custom--transition--fast, 0.15s ease );
 }
 
 .sgs-info-toggle:hover {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	color: var( --wp--preset--color--primary, #1f7a7a );
+	background-color: var( --wp--preset--color--text, #1a202c );
+	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 }
 
 .sgs-info-toggle:focus-visible {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	color: var( --wp--preset--color--primary, #1f7a7a );
+	background-color: var( --wp--preset--color--text, #1a202c );
+	color: var( --wp--preset--color--text-inverse, #f1f5f9 );
 	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
 	outline-offset: 2px;
 }

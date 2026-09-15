@@ -77,6 +77,115 @@ const RESULT_SELECTOR = '.sgs-choice-flow-result';
 const BACK_BUTTON_SELECTOR = '.sgs-choice-flow__nav-back';
 const STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
 const STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';
+const STEPPER_SELECTOR = '.sgs-choice-flow__stepper';
+const PROGRESS_SELECTOR = '.sgs-choice-flow__progress';
+const PROGRESS_BADGE_SELECTOR = '.sgs-choice-flow__progress-badge';
+
+/**
+ * Per-instance flag: has this flow's `.sgs-choice-flow__stepper` container
+ * (present only for `progressStyle: "circles"`) already been populated with
+ * its N circle+connector items? Built lazily on the FIRST `showStepByIndex()`
+ * call rather than at `initFlow()` time, so it always has the flow's real
+ * step count + labels available (both already resolved by that point).
+ *
+ * @type {WeakSet<HTMLElement>}
+ */
+const stepperBuilt = new WeakSet();
+
+/**
+ * Build the 'circles' progress variant's N circle+connector items once per
+ * flow instance (AthleanX reference pattern — see style.css's own comment).
+ * Idempotent per instance via `stepperBuilt`; a no-op when the flow's
+ * `progressStyle` isn't 'circles' (the container simply won't exist, since
+ * render.php only emits it for that variant).
+ *
+ * @param {HTMLElement}   flowRoot Flow wrapper element.
+ * @param {HTMLElement[]} steps    This flow's `.sgs-form-step` children.
+ */
+function buildStepperMarkup( flowRoot, steps ) {
+	const stepperEl = flowRoot.querySelector( STEPPER_SELECTOR );
+	if ( ! stepperEl || stepperBuilt.has( flowRoot ) ) {
+		return;
+	}
+
+	stepperEl.innerHTML = '';
+	steps.forEach( ( stepEl, index ) => {
+		const itemEl = document.createElement( 'div' );
+		itemEl.className = 'sgs-choice-flow__stepper-item';
+
+		const circleEl = document.createElement( 'span' );
+		circleEl.className = 'sgs-choice-flow__stepper-circle';
+		circleEl.textContent = String( index + 1 );
+
+		const labelEl = document.createElement( 'span' );
+		labelEl.className = 'sgs-choice-flow__stepper-label';
+		labelEl.textContent = stepEl.getAttribute( 'data-step-label' ) || '';
+
+		itemEl.appendChild( circleEl );
+		itemEl.appendChild( labelEl );
+		stepperEl.appendChild( itemEl );
+
+		if ( index < steps.length - 1 ) {
+			const connectorEl = document.createElement( 'span' );
+			connectorEl.className = 'sgs-choice-flow__stepper-connector';
+			stepperEl.appendChild( connectorEl );
+		}
+	} );
+
+	stepperBuilt.add( flowRoot );
+}
+
+/**
+ * Update the 'circles' variant's per-item complete/current/upcoming state.
+ * A no-op when the stepper container doesn't exist (any other
+ * `progressStyle`).
+ *
+ * @param {HTMLElement} flowRoot    Flow wrapper element.
+ * @param {number}      targetIndex Currently-shown step index.
+ */
+function updateStepperState( flowRoot, targetIndex ) {
+	const stepperEl = flowRoot.querySelector( STEPPER_SELECTOR );
+	if ( ! stepperEl ) {
+		return;
+	}
+	const items = stepperEl.querySelectorAll( '.sgs-choice-flow__stepper-item' );
+	items.forEach( ( itemEl, index ) => {
+		itemEl.classList.toggle( 'is-current', index === targetIndex );
+		itemEl.classList.toggle( 'is-complete', index < targetIndex );
+	} );
+}
+
+/**
+ * Update the 'badge' variant's step-count pill position + text — a no-op
+ * when the flow's `progressStyle` isn't 'badge' (render.php never emits
+ * `.sgs-choice-flow__progress` with `data-progress-style="badge"` on the
+ * wrapper otherwise, so the CSS positioning context this relies on isn't
+ * present, but reading/creating the badge element itself is still safe
+ * either way — this function only ever runs when the wrapper's own
+ * `dataset.progressStyle` says to).
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ * @param {number}      current  1-based current step number.
+ * @param {number}      total    Total step count.
+ * @param {number}      progress 0–1 progress fraction (matches the fill).
+ */
+function updateProgressBadge( flowRoot, current, total, progress ) {
+	if ( flowRoot.dataset.progressStyle !== 'badge' ) {
+		return;
+	}
+	const progressEl = flowRoot.querySelector( PROGRESS_SELECTOR );
+	if ( ! progressEl ) {
+		return;
+	}
+	let badgeEl = progressEl.querySelector( PROGRESS_BADGE_SELECTOR );
+	if ( ! badgeEl ) {
+		badgeEl = document.createElement( 'span' );
+		badgeEl.className = 'sgs-choice-flow__progress-badge';
+		progressEl.appendChild( badgeEl );
+	}
+	badgeEl.textContent = `${ current }/${ total }`;
+	badgeEl.style.left = `calc(${ progress } * 100%)`;
+}
 
 /**
  * Per-instance navigation state, keyed by the flow's root DOM element.
@@ -299,6 +408,14 @@ function showStepByIndex( flowRoot, targetIndex ) {
 		if ( stepLabelEl && targetStepEl ) {
 			stepLabelEl.textContent = targetStepEl.getAttribute( 'data-step-label' ) || '';
 		}
+
+		// progressStyle variants (user-directed, 2026-09-15) — both are no-ops
+		// when the flow's own progressStyle doesn't match (buildStepperMarkup/
+		// updateStepperState bail on a missing .stepper container;
+		// updateProgressBadge bails on flowRoot.dataset.progressStyle itself).
+		buildStepperMarkup( flowRoot, steps );
+		updateStepperState( flowRoot, targetIndex );
+		updateProgressBadge( flowRoot, targetIndex + 1, steps.length, progress );
 	}
 
 	updateBackButtonVisibility( flowRoot );

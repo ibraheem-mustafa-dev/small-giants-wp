@@ -42,6 +42,35 @@
 						"css:max-width": "maxWidth"
 					},
 					"_note": "Visual-QA pass (2026-09-15, design-reviewer gap #1) added maxWidth + padding only — a DELIBERATELY MINIMAL box+width shape (content-block composition_role, not wrapper-shell-kind — see seed-composition-roles.py comment for this block). No colour/typography attrs; do not extend this element toward the full SGS_Container_Wrapper capability set without a design-gate (CLAUDE.md rule 7)."
+				},
+				"back": {
+					"label": "Back button",
+					"layer": "CONTENT",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"text",
+						"layout"
+					],
+					"prefix": "back",
+					"attrMap": {
+						"css:background-color": "backColourBackground",
+						"css:color": "backColourText",
+						"css:border-color": "backColourBorder",
+						"css:border-width": "backBorderWidth",
+						"css:border-style": "backBorderStyle",
+						"css:border-radius": "backBorderRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backColourBackgroundHover",
+								"css:color": "backColourTextHover",
+								"css:border-color": "backColourBorderHover"
+							}
+						}
+					},
+					"_note": "Rendered via the shared sgs_button_element_style_css() helper (includes/helpers-button-style.php), the same mechanism sgs/product-card's built-in CTA uses. Colour defaults deliberately do NOT match the theme's 'primary' button preset — real evidence read from the client's own real lens-configurator source (sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care Birmingham.dc.html:1531) shows its Back/Close controls use a NEUTRAL ink/paper pair (background:none, border light, hover border darkens to near-black) — the brand accent colour is reserved there for progress-fill/price/badge highlights only, never the nav buttons. Defaults here mirror that: transparent background, `text`/`border` at rest, border darkens to `text` on hover, matching this codebase's own theme tokens for the same roles (2026-09-15)."
 				}
 			}
 		}
@@ -60,6 +89,50 @@
 			"default": {
 				"desktop": {}
 			}
+		},
+		"backColourBackground": {
+			"type": "string",
+			"default": "",
+			"description": "User-reported gap (2026-09-15): the Back button previously carried no operator-facing colour/border attrs at all — plain hardcoded CSS. Rendered via the shared sgs_button_element_style_css() helper, the same mechanism sgs/product-card's built-in CTA uses. Defaults deliberately NEUTRAL (transparent), grounded in the real lens-configurator source — see the 'back' element's own _note for the full evidence."
+		},
+		"backColourText": {
+			"type": "string",
+			"default": "text"
+		},
+		"backColourBorder": {
+			"type": "string",
+			"default": "border"
+		},
+		"backColourBackgroundHover": {
+			"type": "string",
+			"default": ""
+		},
+		"backColourTextHover": {
+			"type": "string",
+			"default": "text"
+		},
+		"backColourBorderHover": {
+			"type": "string",
+			"default": "text"
+		},
+		"backBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"default": "solid"
+		},
+		"backBorderWidth": {
+			"type": "object",
+			"default": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }
+		},
+		"backBorderRadius": {
+			"type": "object",
+			"default": { "topLeft": "8px", "topRight": "8px", "bottomRight": "8px", "bottomLeft": "8px" }
+		},
+		"progressStyle": {
+			"type": "string",
+			"enum": [ "bar", "circles", "badge" ],
+			"default": "bar",
+			"description": "User-directed (2026-09-15): operator choice across the 3 real reference patterns found live — 'bar' (the client's own real lens-configurator: a plain thin fill bar, step name as separate text above), 'circles' (AthleanX: numbered circle stepper with connecting lines, above a separate plain bar), 'badge' (Invisalign: a step-count pill riding directly on the fill track, styled like a slider thumb)."
 		}
 	},
 	"allowedBlocks": [

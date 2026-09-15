@@ -50,6 +50,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 
 if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
     try:
@@ -132,7 +133,22 @@ CEILING = {
     # follow the delegation reclassifies it PRIVATE_DONE. Lowered because the
     # population was already 0, not because a block was migrated -- see D881
     # section "Border controls" in CLAUDE.md for the corrected classification.
-    'PRIVATE_NEEDS_SWAP': 0,
+    # ⚑ RAISED 0 -> 2, 2026-09-15, WITH REASON (not silently): the same
+    # has_private_width/has_private_style generalisation that fixed the
+    # ANOMALY ratchet (see that constant's own comment) ALSO newly surfaced
+    # nav-bar-menu + nav-drawer-menu here -- both declare full PREFIXED
+    # border families (itemBorderWidth/Style/Colour/Radius,
+    # submenuBorderWidth/Style/Colour, submenuLinkBorderWidth/Style/Colour)
+    # that a prefix-blind exact-match check could never see, so they were
+    # previously hidden entirely (miscounted elsewhere) rather than genuinely
+    # absent. This is pre-existing debt the detector fix made visible, not a
+    # regression introduced by anything in this commit -- verified live via
+    # `python -c "..."` reading both blocks' real block.json attribute names.
+    # Migrating their edit.js to SgsBorderControl is real per-block work
+    # (render.php CSS emission + control wiring, per this file's own header
+    # note that there is deliberately no --fix here) — out of scope for the
+    # commit that fixed the detector; tracked as its own follow-up.
+    'PRIVATE_NEEDS_SWAP': 2,
     # Measured 2026-08-28, first real run of this classifier: filter-search, label,
     # mega-aside, mega-panel, product-search, social-icons, whatsapp-cta -- each has
     # SOME border-shaped attr (usually radius-only, sometimes radius+colour with no
@@ -141,7 +157,15 @@ CEILING = {
     # exhaustive enumeration instead of the brief's hand-picked list. Triage, don't
     # guess: each is a genuine "does this block need a FULL border capability added,
     # or is partial-by-design correct?" design question, not an auto-fixable case.
-    'ANOMALY': 7,
+    # ⚑ RATCHETED DOWN 4 (was 7) 2026-09-15: has_private_width/has_private_style
+    # were exact-match-only ('borderWidth' in attrs), blind to a PREFIXED border
+    # family (e.g. sgs/choice-flow's Back-button `backBorderWidth`/`backBorderStyle`)
+    # -- generalised to a PascalCase-boundary suffix match, which correctly
+    # reclassified 4 already-fine blocks (mega-panel/product-search/social-icons had
+    # prefixed families too) out of this bucket. The remaining 4
+    # (filter-search/label/mega-aside/whatsapp-cta) are genuine partial-border
+    # anomalies, unaffected by this fix.
+    'ANOMALY': 4,
 }
 
 
@@ -182,8 +206,18 @@ def classify_block(block_dir):
     has_private_colour = any(
         'olour' in n.lower() and 'order' in n.lower() for n in private_border_attr_names
     )
-    has_private_width = 'borderWidth' in attrs
-    has_private_style = 'borderStyle' in attrs
+    # Matches the block's own unprefixed 'borderWidth'/'borderStyle' AND a
+    # PREFIXED family sharing the same PascalCase-boundary suffix (e.g.
+    # 'backBorderWidth'/'backBorderStyle', sgs/choice-flow's Back-button
+    # border set, 2026-09-15) -- an exact-match-only check was blind to any
+    # prefixed border family and misclassified it as ANOMALY even with a
+    # full colour+width+style+radius set genuinely present.
+    has_private_width = any(
+        n == 'borderWidth' or n.endswith('BorderWidth') for n in attrs
+    )
+    has_private_style = any(
+        n == 'borderStyle' or n.endswith('BorderStyle') for n in attrs
+    )
 
     edit_js = _read(os.path.join(block_dir, 'edit.js'))
     uses_sgs_border_control = (
@@ -368,19 +402,49 @@ def cmd_check():
 def self_test():
     failures = []
 
-    # Fixture 1 (positive): a NATIVE_FULL block classifies correctly.
-    # Was `accordion` until 2026-08-30, when accordion became the Shape-B
-    # reference and moved to PRIVATE_DONE. Swapped to its own child block, which
-    # is still genuinely NATIVE_FULL -- and the pairing documents the deliberate
-    # asymmetry: sgs/accordion declared a `style` ATTRIBUTE that shadowed WP's
-    # reserved style object (so its native border path was dead code, which is
-    # why it was safe to migrate first); sgs/accordion-item never did, so its
-    # native path is live and it is a genuine NATIVE_FULL specimen.
+    # Fixture 1 (positive, RETIRED as a real-specimen test 2026-09-15 -- the
+    # migration finished). Was `accordion` until 2026-08-30 (moved to
+    # PRIVATE_DONE, Shape-B reference), then swapped to its own child block
+    # `accordion-item` as a still-genuinely-NATIVE_FULL specimen.
+    # `accordion-item` has SINCE also migrated (confirmed live:
+    # `__experimentalBorder` is absent from its block.json and its edit.js
+    # mounts SgsBorderControl) -- a full `--survey` run finds ZERO blocks
+    # left in the NATIVE_FULL bucket. Two assertions replace the one real-
+    # specimen check: (a) the codebase-wide fact that NATIVE_FULL is now
+    # empty, and (b) a SYNTHETIC fixture proving `classify_block()` itself
+    # still correctly detects a NATIVE_FULL shape when one exists -- without
+    # (b), a real bug that made native-border detection permanently return
+    # false would make (a) pass VACUOUSLY (zero found because the check is
+    # broken, not because the codebase migrated) -- the exact "negative
+    # control has its own vacuity mode" failure this project's own
+    # correction ledger names.
     results = scan()
-    if 'accordion-item' not in results or results['accordion-item']['category'] != 'NATIVE_FULL':
-        failures.append('accordion-item should classify NATIVE_FULL, got %s' % (
-            results.get('accordion-item', {}).get('category')
-        ))
+    native_full_blocks = sorted(
+        slug for slug, d in results.items() if d.get('category') == 'NATIVE_FULL'
+    )
+    if native_full_blocks:
+        failures.append(
+            'expected ZERO blocks left in NATIVE_FULL (the full-native-border '
+            'shape should be fully retired) -- found %s' % (native_full_blocks,)
+        )
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        synthetic_dir = os.path.join(tmp_dir, 'synthetic-native-full')
+        os.makedirs(synthetic_dir)
+        with open(os.path.join(synthetic_dir, 'block.json'), 'w', encoding='utf-8') as f:
+            json.dump({
+                'supports': {
+                    '__experimentalBorder': {
+                        'color': True, 'radius': True, 'style': True, 'width': True,
+                    },
+                },
+            }, f)
+        category, _ = classify_block(synthetic_dir)
+        if category != 'NATIVE_FULL':
+            failures.append(
+                'synthetic full-native-border fixture should classify NATIVE_FULL, '
+                'got %s -- native-border detection itself may be broken' % (category,)
+            )
 
     # Fixture 1b (the migration's own proof): accordion must now be PRIVATE_DONE.
     # Asserted explicitly so the fixture-1 swap above cannot silently hide a
@@ -417,9 +481,17 @@ def self_test():
                              results.get('container', {}).get('category')
                          ))
     else:
+        # ⚑ CORRECTED 2026-09-15: this asserted ['radius'] until container
+        # completed ITS OWN full migration off native border support entirely
+        # (confirmed live: `__experimentalBorder` is now absent from its
+        # block.json) -- same "fixture encodes a transient state that then
+        # changed" class this file's own comment above already documents
+        # happening once before. The category assertion above (PRIVATE_DONE)
+        # is what actually distinguishes this shape; this is just the detail.
         d = results['container']
-        if d['native_border_keys'] != ['radius']:
-            failures.append('container native_border_keys should be [radius], got %s' % (
+        if d['native_border_keys'] != []:
+            failures.append('container native_border_keys should be [] (fully '
+                             'migrated off native border support), got %s' % (
                 d['native_border_keys']
             ))
 

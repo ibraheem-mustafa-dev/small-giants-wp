@@ -7,52 +7,30 @@
  * SHARED, non-per-instance rules: the progress bar + the step-transition.
  */
 
-/* ===== Header: Back button + step indicator (user-reported gap, 2026-09-15) =====
- * All three reference quizzes (AthleanX, Invisalign, the real lens flow)
- * show a numbered/named stage AND a Back control; the first Visual-QA pass
- * shipped neither. Both are static markup (render.php) filled/toggled
- * entirely by view.js's showStepByIndex()/updateBackButtonVisibility() — see
- * that file. `.sgs-choice-flow__nav-back` starts `hidden` in markup (nothing
- * to go back to on step 1); `.sgs-choice-flow__step-count`/`__step-label`
- * start empty and are set on every step change.
+/* ===== Header: step indicator (user-reported gap, 2026-09-15) =====
+ * All three reference quizzes show a numbered/named stage; the first
+ * Visual-QA pass shipped none. `.sgs-choice-flow__step-count`/`__step-label`
+ * start empty and are filled by view.js's showStepByIndex() on every step
+ * change. Colour: the real lens-configurator source uses its own darker
+ * "accent-ink" token for every small-caps kicker label on the page
+ * (Eye Care Birmingham.dc.html — `color:var(--accInk,#6F6152)`, e.g. line
+ * 1362's "Question 1 of 3") — mapped here to this theme's own darker-accent
+ * token (`primary-dark`), the same role, not the muted-grey text token this
+ * file used before that evidence was read (2026-09-15).
+ *
+ * Hidden entirely for 'circles'/'badge' progressStyle — both those variants
+ * show the step count via their OWN visual (labelled circles / an "N/M"
+ * badge riding on the bar), so a second plain-text copy would be redundant.
  */
 .sgs-choice-flow__header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
+	justify-content: flex-end;
 	margin-bottom: 12px;
 }
 
-.sgs-choice-flow__nav-back {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	min-height: 44px;
-	padding: 8px 12px;
-	border: 2px solid var(--wp--preset--color--border, #D4DBE5);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	background-color: #fff;
-	color: var(--wp--preset--color--text, #1A202C);
-	font-family: inherit;
-	font-size: inherit;
-	cursor: pointer;
-	transition: border-color var(--wp--custom--transition--fast, 0.15s ease),
-		background-color var(--wp--custom--transition--fast, 0.15s ease);
-}
-
-.sgs-choice-flow__nav-back:hover {
-	border-color: var(--wp--preset--color--primary, #1F7A7A);
-	background-color: var(--wp--preset--color--surface-alt, #F1F0EC);
-}
-
-.sgs-choice-flow__nav-back:focus-visible {
-	border-color: var(--wp--preset--color--primary, #1F7A7A);
-	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
-	outline-offset: 2px;
-}
-
-.sgs-choice-flow__nav-back[hidden] {
+.wp-block-sgs-choice-flow[data-progress-style="circles"] .sgs-choice-flow__header,
+.wp-block-sgs-choice-flow[data-progress-style="badge"] .sgs-choice-flow__header {
 	display: none;
 }
 
@@ -69,7 +47,7 @@
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
-	color: var(--wp--preset--color--text-muted, #606D80);
+	color: var(--wp--preset--color--primary-dark, #0F4C4C);
 }
 
 .sgs-choice-flow__step-label {
@@ -79,6 +57,78 @@
 
 .sgs-choice-flow__step-label:empty {
 	display: none;
+}
+
+/* ===== Footer: Back button (user-reported gap, 2026-09-15) =====
+ * Real evidence (Eye Care Birmingham.dc.html:1529-1532) puts the Back
+ * button in a bottom sticky footer strip with a border-top divider,
+ * left-aligned — the same placement AthleanX uses; Invisalign's top-of-page
+ * text-link placement was explicitly ruled out (Bean, "the invisalign one
+ * is definitely the outlier"). Colour/border are emitted by render.php's
+ * scoped `<style>` via the shared sgs_button_element_style_css() helper —
+ * this rule only carries layout + the fixed small-caps text treatment the
+ * same source uses on every one of its nav buttons (Back/Close/Continue),
+ * not an operator control (matches sgs/label's fixed-eyebrow-size
+ * precedent — a deliberate constant, not a missing control).
+ */
+.sgs-choice-flow__footer {
+	display: flex;
+	justify-content: flex-start;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid var(--wp--preset--color--border-light, #E5E7EB);
+}
+
+.sgs-choice-flow__nav-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 8px 20px;
+	font-family: inherit;
+	font-size: 12.5px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	cursor: pointer;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-choice-flow__nav-back:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline-offset: 2px;
+}
+
+.sgs-choice-flow__nav-back[hidden] {
+	display: none;
+}
+
+/* Editor-canvas-only Back-button colour/border PREVIEW (edit.js's
+   buildBackButtonPreviewStyle()) — a static, non-interactive stand-in for
+   the real runtime button (view.js shows/hides the real one). Border
+   colour/width/radius/background/text come from inline style per-instance
+   (Spec 32 exemption: editor-canvas-only, matches this file's own
+   buildWrapperStyle() convention); only the shared layout/text-treatment
+   properties live here. */
+.sgs-choice-flow__footer-preview {
+	display: flex;
+	justify-content: flex-start;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid var(--wp--preset--color--border-light, #E5E7EB);
+}
+
+.sgs-choice-flow__nav-back-preview {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 8px 20px;
+	font-family: inherit;
+	font-size: 12.5px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	border-width: 2px;
 }
 
 /* ===== Step progress indicator (gap #2) =====
@@ -102,6 +152,101 @@
 	width: calc(var(--sgs-choice-flow-progress, 0) * 100%);
 	background-color: var(--wp--preset--color--primary, #1F7A7A);
 	transition: width 250ms ease-out;
+}
+
+/* ===== Progress style variants (user-directed, 2026-09-15) =====
+ * Real evidence from 3 live/real quizzes, captured via chrome-devtools MCP
+ * (AthleanX, Invisalign) + direct source read (the client's own real lens
+ * configurator). Operator picks one via the `progressStyle` attribute;
+ * `data-progress-style` on the wrapper drives which CSS applies. All three
+ * share the SAME underlying fill bar + `--sgs-choice-flow-progress` custom
+ * property — 'circles'/'badge' add a visual on TOP of it, never replace it.
+ */
+
+/* --- 'circles' (AthleanX): numbered circles + connecting lines, ABOVE the
+   plain bar. Entirely populated by view.js — see its buildStepperMarkup(). */
+.sgs-choice-flow__stepper {
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 12px;
+}
+
+.sgs-choice-flow__stepper-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.sgs-choice-flow__stepper-circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid var(--wp--preset--color--border, #D4DBE5);
+	color: var(--wp--preset--color--text-muted, #606D80);
+	font-size: 13px;
+	font-weight: 600;
+	background-color: #fff;
+	flex-shrink: 0;
+}
+
+.sgs-choice-flow__stepper-label {
+	font-size: 12px;
+	font-weight: 600;
+	text-align: center;
+	color: var(--wp--preset--color--text-muted, #606D80);
+	line-height: 1.3;
+}
+
+.sgs-choice-flow__stepper-connector {
+	flex: 1 1 auto;
+	height: 1px;
+	background-color: var(--wp--preset--color--border, #D4DBE5);
+	margin-top: 15px;
+}
+
+.sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle,
+.sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle {
+	border-color: var(--wp--preset--color--primary, #1F7A7A);
+	color: var(--wp--preset--color--primary, #1F7A7A);
+}
+
+.sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-label,
+.sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-label {
+	color: var(--wp--preset--color--primary, #1F7A7A);
+}
+
+/* --- 'badge' (Invisalign): a step-count pill riding on the fill track,
+   styled like a slider thumb — needs room to overflow the thin bar. */
+.wp-block-sgs-choice-flow[data-progress-style="badge"] .sgs-choice-flow__progress {
+	position: relative;
+	overflow: visible;
+	margin-top: 15px;
+}
+
+.sgs-choice-flow__progress-badge {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 30px;
+	padding: 0 10px;
+	border-radius: 999px;
+	border: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	background-color: #fff;
+	color: var(--wp--preset--color--primary-dark, #0F4C4C);
+	font-size: 12px;
+	font-weight: 700;
+	white-space: nowrap;
+	transition: left 250ms ease-out;
 }
 
 /* ===== Step transition (gap #3) =====
