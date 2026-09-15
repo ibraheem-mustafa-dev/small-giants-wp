@@ -457,6 +457,33 @@ if ( ! empty( $border_radius_mobile_obj ) ) {
 	}
 }
 
+// ── cardPadding: tier-object box family {desktop,tablet,mobile} — base +
+// tablet + mobile, on `.sgs-card-grid__body` (2026-09-15, closes the gap the
+// classless sc-var responsive correlator surfaced — see block.json's `body`
+// element note). Mirrors sgs/hero's mediaPadding read (render.php:299-306):
+// sgs_responsive_normalise_object( …, true ) [box=true, D328 defence against
+// an unset/legacy value mis-resolving as a flat side] + sgs_box_object_
+// shorthand() per tier. An entirely-empty tier -> shorthand() returns null ->
+// NO rule emitted for that tier, so style.css's own `.sgs-card-grid__body{
+// padding:var(--wp--preset--spacing--30)}` default renders unchanged.
+$card_padding_tiers      = sgs_responsive_normalise_object( $attributes['cardPadding'] ?? null, true );
+$card_padding_obj        = is_array( $card_padding_tiers['desktop'] ) ? $card_padding_tiers['desktop'] : array();
+$card_padding_tablet_obj = is_array( $card_padding_tiers['tablet'] ) ? $card_padding_tiers['tablet'] : array();
+$card_padding_mobile_obj = is_array( $card_padding_tiers['mobile'] ) ? $card_padding_tiers['mobile'] : array();
+
+$card_pad_base = sgs_box_object_shorthand( $card_padding_obj );
+if ( null !== $card_pad_base ) {
+	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__body{padding:' . $card_pad_base . '}';
+}
+$card_pad_tab = sgs_box_object_shorthand( $card_padding_tablet_obj );
+if ( null !== $card_pad_tab ) {
+	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . ' .sgs-card-grid__body{padding:' . $card_pad_tab . '}}';
+}
+$card_pad_mob = sgs_box_object_shorthand( $card_padding_mobile_obj );
+if ( null !== $card_pad_mob ) {
+	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . ' .sgs-card-grid__body{padding:' . $card_pad_mob . '}}';
+}
+
 // wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving CSS
 // combinators like `>` intact (contract §D — matches SGS_Container_Wrapper +
 // sgs/hero). Every value reaching $card_grid_native_css is pre-sanitised

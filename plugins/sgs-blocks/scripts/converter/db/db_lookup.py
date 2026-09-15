@@ -1308,6 +1308,40 @@ def box_family_for(block_slug: str, attr_name: str) -> "str | None":
     return row[0] or None
 
 
+@functools.lru_cache(maxsize=256)
+def box_css_catalogue(block_slug: str) -> dict[str, dict]:
+    """Return ``{attr_name: {css_property, css_element, box_family, tier_shape}}``
+    for every attr this block declares with a non-NULL ``css_property``.
+
+    Added for ``sc_var_responsive_bridge.py`` (classless correlator -> real
+    block attribute wiring), which resolves a MEASURED CSS property (e.g.
+    ``padding-top``) against every candidate attr on a block — it cannot
+    reuse the decl-shaped ``tier_object_write`` machinery in
+    ``services/tier_object.py`` (that module walks a CSS-rule declaration
+    with a ``ctx``/``decl`` pair; this caller starts from a flat correlator
+    record instead), and needs the WHOLE catalogue rather than one
+    already-known attr name (contrast ``box_family_for``, one attr).
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, css_property, css_element, box_family, tier_shape "
+            "FROM block_attributes WHERE block_slug = ? AND css_property IS NOT NULL",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+    return {
+        name: {
+            "css_property": css_property,
+            "css_element": css_element,
+            "box_family": box_family,
+            "tier_shape": tier_shape,
+        }
+        for name, css_property, css_element, box_family, tier_shape in rows
+    }
+
+
 @functools.lru_cache(maxsize=1024)
 def tier_object_base(block_slug: str, attr_name: str) -> bool:
     """True iff ``attr_name`` is a TIER-SHAPED object attr on this block.

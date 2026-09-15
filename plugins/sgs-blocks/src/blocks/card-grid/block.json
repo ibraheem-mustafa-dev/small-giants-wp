@@ -65,6 +65,9 @@
         ],
         "borderWidth": [
           "borderWidth"
+        ],
+        "cardPadding": [
+          "cardPadding"
         ]
       },
       "elements": {
@@ -194,6 +197,15 @@
           "order": 7,
           "clusters": [],
           "_note": "Renamed from 'card-badge' 2026-08-15 (element-manifest drift fix) — real rendered class is `.sgs-card-grid__badge` (render.php:719), not `.sgs-card-grid__card-badge`. Per-item badge text + badgeVariant preset are content/variant fields, not exposed as independent style controls — no badge-specific text/fill/layout attrs exist on the block."
+        },
+        "body": {
+          "label": "Card body",
+          "order": 4,
+          "clusters": [],
+          "attrMap": {
+            "css:padding": "cardPadding"
+          },
+          "_note": "The `.sgs-card-grid__body` wrapper (style.css: `padding: var(--wp--preset--spacing--30)`) holding title/subtitle/badge below the image — previously a hardcoded, non-responsive default with no attribute or editor control at all. `cardPadding` (2026-09-15, tier-object {desktop,tablet,mobile} — mirrors sgs/hero's mediaPadding/contentPadding, sgs/product-card's flat cardPadding) exposes it. Closes the gap the classless sc-var responsive correlator surfaced (D1061 follow-up): a real draft-authored responsive card-padding value (verified live on the Ward End Eye Care draft) had nowhere to land."
         }
       }
     }
@@ -372,6 +384,13 @@
     "cardBorderWidth": {
       "type": "object",
       "default": {}
+    },
+    "cardPadding": {
+      "type": "object",
+      "default": {
+        "desktop": {}
+      },
+      "description": "Box padding for the card's content BODY ({desktop,tablet,mobile}, each {top,right,bottom,left}) — mirrors sgs/hero's mediaPadding tier-object shape. Empty tier = theme default (var(--wp--preset--spacing--30), style.css)."
     },
     "cardRadius": {
       "type": "string",

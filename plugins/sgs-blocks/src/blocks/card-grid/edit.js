@@ -30,7 +30,7 @@ import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import CollectionPanel from './components/collection-panel';
-import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition } from '../../utils';
+import { colourVar, spacingVar, resolveResponsiveTier, resolveTextColourPreviewStyle, generateItemKey, withStableItemKeys, focalPointToObjectPosition, patchTier } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
@@ -304,6 +304,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		cardRadius,
 		cardShadow,
 		cardShadowColour,
+		cardPadding,
 		backgroundColourHover,
 		backgroundColourHoverGradient,
 		borderColourHover,
@@ -649,6 +650,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( _tier, next ) =>
 							setAttributes( { cardBorderWidth: next } )
 						}
+					/>
+					{ /* cardPadding is a TIER-OBJECT {desktop,tablet,mobile} (2026-09-15) —
+					     mirrors sgs/hero's mediaPadding (render.php: sgs_responsive_
+					     normalise_object() + sgs_box_object_shorthand() per tier). Closes
+					     the gap the classless sc-var responsive correlator surfaced: the
+					     card body's padding was previously a hardcoded style.css default
+					     with no attribute and no control at all. */ }
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: cardPadding?.desktop ?? {},
+							tablet: cardPadding?.tablet ?? {},
+							mobile: cardPadding?.mobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
+							patchTier( attributes, setAttributes, 'cardPadding', tierMap[ tier ], next );
+						} }
 					/>
 					<SgsLengthControl
 						label={ __( 'Corner radius', 'sgs-blocks' ) }

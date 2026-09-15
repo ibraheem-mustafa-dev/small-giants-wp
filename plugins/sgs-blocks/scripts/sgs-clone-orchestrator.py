@@ -1591,6 +1591,41 @@ def _maybe_halt_for_tier_b(boundaries: list[dict], sc_var_cache_path: Path, run_
 
 
 # ---------------------------------------------------------------------------
+# sc_var responsive bridge (D1061 follow-up, 2026-09-15) -- patch extra attrs
+# INTO already-serialised WP block-comment markup.
+# ---------------------------------------------------------------------------
+
+_WP_BLOCK_COMMENT_RE = re.compile(r"^<!--\s*wp:([a-z0-9-]+/[a-z0-9-]+)\s*(\{.*?\})?\s*-->", re.DOTALL)
+
+
+def _patch_block_comment_attrs(markup: str, extra_attrs: dict) -> str:
+    """Merge ``extra_attrs`` into an already-serialised block's OWN opening
+    ``<!-- wp:slug {...} -->`` comment, one level deep (a dict value merges
+    its own keys rather than being replaced whole -- the tier-object shape a
+    responsive box attr needs). Returns ``markup`` UNCHANGED if it doesn't
+    start with a recognisable WP block comment (never corrupts unexpected
+    input) or if ``extra_attrs`` is empty.
+    """
+    if not extra_attrs:
+        return markup
+    match = _WP_BLOCK_COMMENT_RE.match(markup)
+    if not match:
+        return markup
+    slug, attrs_json = match.group(1), match.group(2)
+    try:
+        attrs = json.loads(attrs_json) if attrs_json else {}
+    except ValueError:
+        return markup
+    for key, value in extra_attrs.items():
+        if isinstance(value, dict) and isinstance(attrs.get(key), dict):
+            attrs[key] = {**attrs[key], **value}
+        else:
+            attrs[key] = value
+    new_comment = f"<!-- wp:{slug} {json.dumps(attrs, separators=(',', ':'))} -->"
+    return new_comment + markup[match.end():]
+
+
+# ---------------------------------------------------------------------------
 # Stage 2 -- MATCH (dispatcher: confidence-matrix.score_candidates importable)
 # ---------------------------------------------------------------------------
 
@@ -1964,6 +1999,25 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             _seed_theme_json(theme_json)
         except Exception:  # noqa: BLE001
             pass  # no-op call; kept defensive in case of future re-wiring
+
+    # sc_var responsive bridge (D1061 follow-up, 2026-09-15) — load the
+    # correlator's joined-output JSON ONCE (--sc-var-responsive-correlated),
+    # indexed by boundary_id, so the per-boundary loop below can look up its
+    # record(s) in O(1). Opt-in: absent flag = today's behaviour unchanged.
+    _sc_var_responsive_by_boundary: dict[str, list[dict]] = {}
+    _sc_var_responsive_path = getattr(args, "sc_var_responsive_correlated", None)
+    if _sc_var_responsive_path:
+        try:
+            _corr_data = json.loads(Path(_sc_var_responsive_path).read_text(encoding="utf-8"))
+            for _rec in _corr_data.get("correlated", []):
+                _bid = _rec.get("boundary_id")
+                if _bid:
+                    _sc_var_responsive_by_boundary.setdefault(_bid, []).append(_rec)
+        except (OSError, ValueError) as _exc:  # noqa: BLE001
+            aggregate_warnings.append(
+                f"--sc-var-responsive-correlated read failed ({_exc}); "
+                "responsive-bridge step skipped for this run"
+            )
 
     for m in matches:
         boundary_id = m["boundary_id"]
@@ -2409,6 +2463,25 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     continue
                 # Normalise to orchestrator per_section_results schema.
                 _cv2_markup = result.get("block_markup", "")
+                _cv2_extracted_attrs = result.get("extracted_attributes", {})
+
+                # sc_var responsive bridge (D1061 follow-up, 2026-09-15) — this
+                # boundary's correlated classless-draft measurements (if any),
+                # resolved against the RESOLVED block's real block_attributes
+                # DB rows and merged in. A changed property with no matching
+                # attr is dropped and reported (aggregate_warnings), never
+                # guessed — mirrors the correlator's own strict-match rule.
+                for _corr_rec in _sc_var_responsive_by_boundary.get(boundary_id, []):
+                    from converter.services.sc_var_responsive_bridge import bridge_record as _bridge_record
+                    _bridge_writes, _bridge_gaps = _bridge_record(_corr_rec)
+                    if _bridge_writes:
+                        _cv2_extracted_attrs = {**_cv2_extracted_attrs, **_bridge_writes}
+                        _cv2_markup = _patch_block_comment_attrs(_cv2_markup, _bridge_writes)
+                    for _gap in _bridge_gaps:
+                        aggregate_warnings.append(
+                            f"{boundary_id}: sc_var responsive bridge gap "
+                            f"({_gap.get('reason')}, css_property={_gap.get('css_property')})"
+                        )
                 # Stage 4.5 — harvest token resolutions from the cv2 walker.
                 # The converter snapped colour/spacing/font-size values during
                 # _lift_root_supports_to_style / _lift_core_block_style and
@@ -2446,12 +2519,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     "block_name": result.get("block_name", target_block),
                     "status": result.get("status", "complete"),
                     "extract_path": "",
-                    "extracted_attributes": result.get("extracted_attributes", {}),
+                    "extracted_attributes": _cv2_extracted_attrs,
                     "block_markup": _cv2_markup,
                     "token_resolutions": _cv2_token_res,
                     "new_tokens_written": _new_tokens,
                     "supports_decisions": [],
-                    "supports_emitted_attributes": result.get("extracted_attributes", {}),
+                    "supports_emitted_attributes": _cv2_extracted_attrs,
                     "supports_omitted_attributes": {},
                     "modifier_signals": {},
                     "variation_css": result.get("variation_css", ""),
@@ -3389,6 +3462,21 @@ def main():
              "as its intended responder), writes the answer via --apply-response, then re-runs "
              "this exact command; Tier A/B already-resolved items never re-prompt. Omit for "
              "today's default (Tier B fully skipped, zero behaviour change).",
+    )
+    parser.add_argument(
+        "--sc-var-responsive-correlated", type=Path, default=None,
+        help="Opt-in (D1061 follow-up, 2026-09-15): a "
+             "recogniser/sc_var_responsive_correlator.py output JSON (its "
+             "{'correlated': [...]} shape) for THIS draft. When set, each "
+             "correlated record is resolved via converter/services/"
+             "sc_var_responsive_bridge.py against the resolved block's real "
+             "block_attributes DB rows and merged into that boundary's final "
+             "emitted attrs -- e.g. a classless draft's measured responsive "
+             "card padding (sgs/card-grid.cardPadding) lands as a real, "
+             "editable, responsive attribute instead of being silently lost. "
+             "A changed property with no matching attr is reported as a gap "
+             "(never guessed), same discipline the correlator itself uses. "
+             "Omit for today's default (unchanged, zero risk).",
     )
     args = parser.parse_args()
 
