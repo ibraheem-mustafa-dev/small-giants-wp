@@ -39,8 +39,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$question = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
-$options  = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
+$question       = isset( $attributes['question'] ) ? (string) $attributes['question'] : '';
+$options        = isset( $attributes['options'] ) && is_array( $attributes['options'] ) ? $attributes['options'] : array();
+$options_layout = isset( $attributes['layout'] ) && 'list' === $attributes['layout'] ? 'list' : 'grid';
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array( 'class' => 'sgs-choice-flow-question' )
@@ -53,7 +54,7 @@ if ( '' !== $question ) {
 }
 
 if ( ! empty( $options ) ) {
-	echo '<ul class="sgs-choice-flow-question__options">';
+	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
 	foreach ( $options as $option ) {
 		$label        = isset( $option['label'] ) ? (string) $option['label'] : '';
 		$value        = isset( $option['value'] ) ? (string) $option['value'] : '';
@@ -102,17 +103,18 @@ if ( ! empty( $options ) ) {
 			// of the option's own click target, matching the real reference
 			// flow's DOM shape rather than nesting an interactive control
 			// inside another interactive control.
-			$help_panel_id = wp_unique_id( 'sgs-choice-flow-question-help-' );
-
-			echo '<button type="button" class="sgs-choice-flow-question__help-toggle"';
-			echo ' aria-expanded="false"';
-			echo ' aria-controls="' . esc_attr( $help_panel_id ) . '"';
-			echo ' aria-label="' . esc_attr__( 'More information', 'sgs-blocks' ) . '"';
-			echo '>?</button>';
-
-			echo '<div class="sgs-choice-flow-question__help-panel" id="' . esc_attr( $help_panel_id ) . '" hidden>';
-			echo esc_html( $help_text );
-			echo '</div>';
+			// Renders via the shared `sgs_render_info_toggle()` helper
+			// (`includes/helpers-info-toggle.php`) rather than bespoke
+			// markup here — the SAME toggle-and-panel pattern any other
+			// block can now adopt.
+			echo sgs_render_info_toggle( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_info_toggle() escapes internally.
+				$help_text,
+				sprintf(
+					/* translators: %s: option label */
+					__( 'More information about %s', 'sgs-blocks' ),
+					$label
+				)
+			);
 		}
 
 		echo '</li>';

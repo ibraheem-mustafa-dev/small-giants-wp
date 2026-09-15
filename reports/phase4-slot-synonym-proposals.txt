@@ -1,4 +1,4 @@
-# Slot Synonym Auto-Seed Proposals — 2026-09-14 23:47:27 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-09-15 14:34:52 UTC
 
 ## Summary
 Unmapped rows: 64 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 2 | No match (low confidence): 62

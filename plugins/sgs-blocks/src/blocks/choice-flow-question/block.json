@@ -54,6 +54,12 @@
 			"default": "",
 			"role": "content"
 		},
+		"layout": {
+			"type": "string",
+			"enum": [ "grid", "list" ],
+			"default": "grid",
+			"description": "User-reported gap (2026-09-15): the AthleanX/Invisalign/lens-flow references show several steps with options stacked VERTICALLY, styled differently to a grid step (smaller side-by-side thumbnail rather than a full-width image banner) — 'grid' keeps the existing 1-col-mobile/2-col-desktop card grid; 'list' forces a single-column stacked row layout at every breakpoint, letting an operator vary this per step/question rather than one fixed layout for the whole flow."
+		},
 		"options": {
 			"type": "array",
 			"default": [],

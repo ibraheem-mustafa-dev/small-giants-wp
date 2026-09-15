@@ -114,6 +114,7 @@ require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';
 require_once __DIR__ . '/helpers-svg-gradient.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
+require_once __DIR__ . '/helpers-info-toggle.php';
 require_once __DIR__ . '/media/atoms/media-type.php';
 require_once __DIR__ . '/media/atoms/video-behaviour.php';
 require_once __DIR__ . '/class-sgs-media-element.php';

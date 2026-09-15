@@ -7,6 +7,80 @@
  * SHARED, non-per-instance rules: the progress bar + the step-transition.
  */
 
+/* ===== Header: Back button + step indicator (user-reported gap, 2026-09-15) =====
+ * All three reference quizzes (AthleanX, Invisalign, the real lens flow)
+ * show a numbered/named stage AND a Back control; the first Visual-QA pass
+ * shipped neither. Both are static markup (render.php) filled/toggled
+ * entirely by view.js's showStepByIndex()/updateBackButtonVisibility() — see
+ * that file. `.sgs-choice-flow__nav-back` starts `hidden` in markup (nothing
+ * to go back to on step 1); `.sgs-choice-flow__step-count`/`__step-label`
+ * start empty and are set on every step change.
+ */
+.sgs-choice-flow__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 12px;
+}
+
+.sgs-choice-flow__nav-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 8px 12px;
+	border: 2px solid var(--wp--preset--color--border, #D4DBE5);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: #fff;
+	color: var(--wp--preset--color--text, #1A202C);
+	font-family: inherit;
+	font-size: inherit;
+	cursor: pointer;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease),
+		background-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-choice-flow__nav-back:hover {
+	border-color: var(--wp--preset--color--primary, #1F7A7A);
+	background-color: var(--wp--preset--color--surface-alt, #F1F0EC);
+}
+
+.sgs-choice-flow__nav-back:focus-visible {
+	border-color: var(--wp--preset--color--primary, #1F7A7A);
+	outline: 2px solid var(--wp--preset--color--primary, #1F7A7A);
+	outline-offset: 2px;
+}
+
+.sgs-choice-flow__nav-back[hidden] {
+	display: none;
+}
+
+.sgs-choice-flow__step-indicator {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	text-align: right;
+	line-height: 1.3;
+}
+
+.sgs-choice-flow__step-count {
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--wp--preset--color--text-muted, #606D80);
+}
+
+.sgs-choice-flow__step-label {
+	font-size: 14px;
+	color: var(--wp--preset--color--text, #1A202C);
+}
+
+.sgs-choice-flow__step-label:empty {
+	display: none;
+}
+
 /* ===== Step progress indicator (gap #2) =====
  * Track + fill. The fill's width is driven entirely by view.js's
  * showStepByIndex(), which sets --sgs-choice-flow-progress (0–1) on the

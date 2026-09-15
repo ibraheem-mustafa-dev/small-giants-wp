@@ -34,7 +34,16 @@
  * build step. `:focus-visible` stays a separate, always-on selector as the
  * transform expects (splits `:hover` from `:focus-visible` rather than a
  * combined selector list).
+ *
+ * The '?' help-toggle + panel rules moved OUT of this file to
+ * `src/shared/info-toggle.css` (imported below) when the pattern was
+ * extracted into a shared, cross-block helper — see
+ * `includes/helpers-info-toggle.php`. Do not re-add `.sgs-choice-flow-
+ * question__help-toggle`/`__help-panel` rules here; the shared `.sgs-info-
+ * toggle`/`.sgs-info-toggle__panel` classes are what render.php now emits.
  */
+
+@import "../../shared/info-toggle.css";
 
 /* ---------------------------------------------------------------------- */
 /* Heading                                                                 */
@@ -60,9 +69,33 @@
 }
 
 @media ( min-width: 620px ) {
-	.sgs-choice-flow-question__options {
+	.sgs-choice-flow-question__options--grid {
 		grid-template-columns: repeat( 2, 1fr );
 	}
+}
+
+/* User-reported gap (2026-09-15): all three reference quizzes show several
+   steps with options stacked VERTICALLY, styled differently to a grid step
+   — a smaller side-by-side thumbnail rather than a full-width image banner.
+   `--list` forces a single column at every breakpoint and switches the
+   option-button + media zone to a horizontal row layout instead of grid's
+   stacked column, so a step with images reads as photo-left/text-right rows
+   rather than a card grid. */
+.sgs-choice-flow-question__options--list {
+	grid-template-columns: 1fr;
+}
+
+.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-button {
+	flex-direction: row;
+	align-items: center;
+	gap: 16px;
+}
+
+.sgs-choice-flow-question__options--list .sgs-choice-flow-question__option-media {
+	flex: 0 0 auto;
+	width: 72px;
+	aspect-ratio: 1 / 1;
+	margin-bottom: 0;
 }
 
 .sgs-choice-flow-question__option {
@@ -131,58 +164,6 @@
 	display: block;
 }
 
-/* ---------------------------------------------------------------------- */
-/* FR-43-16 — help-text toggle + panel                                     */
-/* ---------------------------------------------------------------------- */
-
-.sgs-choice-flow-question__help-toggle {
-	position: absolute;
-	top: 8px;
-	right: 8px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 24px;
-	height: 24px;
-	padding: 0;
-	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
-	border-radius: 50%;
-	background-color: #fff;
-	color: var( --wp--preset--color--text-muted, #606d80 );
-	font-size: 13px;
-	font-weight: 700;
-	line-height: 1;
-	cursor: pointer;
-	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
-		color var( --wp--custom--transition--fast, 0.15s ease );
-}
-
-.sgs-choice-flow-question__help-toggle:hover {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	color: var( --wp--preset--color--primary, #1f7a7a );
-}
-
-.sgs-choice-flow-question__help-toggle:focus-visible {
-	border-color: var( --wp--preset--color--primary, #1f7a7a );
-	color: var( --wp--preset--color--primary, #1f7a7a );
-	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
-	outline-offset: 2px;
-}
-
-.sgs-choice-flow-question__help-panel {
-	margin-top: 8px;
-	padding: 10px 12px;
-	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
-	border-radius: var( --wp--custom--border-radius--medium, 8px );
-	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
-	font-size: 14px;
-	line-height: 1.5;
-}
-
-/* [hidden] already suppresses display via the UA stylesheet — this rule only
-   exists so a stray specificity conflict elsewhere can never accidentally
-   re-show a collapsed panel (defensive, matches this attribute's use
-   elsewhere in the codebase, e.g. choice-flow/view.js's own step hide/show). */
-.sgs-choice-flow-question__help-panel[hidden] {
-	display: none;
-}
+/* FR-43-16's '?' help-toggle + panel now lives in the shared
+   src/shared/info-toggle.css (imported at the top of this file) as
+   .sgs-info-toggle / .sgs-info-toggle__panel — see that file. */

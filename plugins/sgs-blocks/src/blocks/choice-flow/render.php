@@ -40,6 +40,20 @@
  * `hidden` attribute remains the real accessibility/layout mechanism
  * (untouched); `.is-entering` is a pure visual enhancement layered on top.
  *
+ * Step indicator + Back button (user-reported gap, 2026-09-15 — all three
+ * reference quizzes have numbered/named stages AND a Back control; the
+ * first Visual-QA pass shipped neither). Both are static markup here, driven
+ * entirely by `view.js`:
+ *   - `.sgs-choice-flow__step-count` / `__step-label` start empty and are
+ *     filled by `showStepByIndex()` on every step change — "Step {n} of
+ *     {total}" plus the current step's own `data-step-label` (an attribute
+ *     `sgs/form-step` ALREADY emits for `sgs/form`'s own progress bar; reused
+ *     here rather than adding a second per-step label attribute).
+ *   - `.sgs-choice-flow__nav-back` starts `hidden` (there is nowhere to go
+ *     back to on step 1) and `view.js` toggles it via the `history` stack
+ *     `handleOptionClick()` was already building but nothing previously
+ *     consumed.
+ *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
  *
@@ -111,6 +125,17 @@ if ( $scoped_css ) {
 }
 
 echo '<div ' . $wrapper_attributes . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped markup.
+
+echo '<div class="sgs-choice-flow__header">';
+echo '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">';
+echo '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' );
+echo '</button>';
+echo '<div class="sgs-choice-flow__step-indicator">';
+echo '<span class="sgs-choice-flow__step-count"></span>';
+echo '<span class="sgs-choice-flow__step-label"></span>';
+echo '</div>';
+echo '</div>';
+
 echo '<div class="sgs-choice-flow__progress" aria-hidden="true"><div class="sgs-choice-flow__progress-fill"></div></div>';
 echo '<div class="sgs-choice-flow__inner">';
 echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks content is pre-rendered/sanitised by the block editor's own save pipeline.

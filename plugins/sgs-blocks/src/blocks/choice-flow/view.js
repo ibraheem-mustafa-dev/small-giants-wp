@@ -66,6 +66,7 @@
  */
 
 import { store } from '@wordpress/interactivity';
+import { INFO_TOGGLE_SELECTOR, handleInfoToggleClick } from '../../shared/info-toggle.js';
 
 const TERMINAL_SENTINEL = '__terminal__';
 
@@ -73,14 +74,9 @@ const FLOW_SELECTOR = '[data-wp-interactive="sgs/choice-flow"]';
 const STEP_SELECTOR = '.sgs-form-step';
 const OPTION_BUTTON_SELECTOR = '.sgs-choice-flow-question__option-button';
 const RESULT_SELECTOR = '.sgs-choice-flow-result';
-
-// FR-43-16 (v1.3.0, Phase 2b) — per-option help-text toggle. A SIBLING
-// control of OPTION_BUTTON_SELECTOR (see choice-flow-question/render.php's
-// own comment: the '?' button is deliberately outside the option <button>,
-// not nested inside it, so it has its own independent click target), so it
-// gets its own selector here rather than being folded into
-// handleOptionClick() above.
-const HELP_TOGGLE_SELECTOR = '.sgs-choice-flow-question__help-toggle';
+const BACK_BUTTON_SELECTOR = '.sgs-choice-flow__nav-back';
+const STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
+const STEP_LABEL_SELECTOR = '.sgs-choice-flow__step-label';
 
 /**
  * Per-instance navigation state, keyed by the flow's root DOM element.
@@ -250,6 +246,21 @@ function resolveTerminalStepIndex( flowRoot, accumulatedTags ) {
  *     style.css's progress-bar fill (`width:calc(var(...) * 100%)`) tracks
  *     the current step, per the formula `(targetIndex + 1) / stepCount`.
  *
+ * User-reported gap (2026-09-15, after the first live check): the progress
+ * bar had no numbered/named stage text and there was no Back control at all,
+ * despite all three reference quizzes (AthleanX, Invisalign, the real lens
+ * flow) having both. This function now ALSO:
+ *   - writes "Step {n} of {total}" into `.sgs-choice-flow__step-count` and
+ *     the target step's own `data-step-label` (an attribute `sgs/form-step`
+ *     already emits for `sgs/form`'s progress bar — read here, not
+ *     reinvented) into `.sgs-choice-flow__step-label`;
+ *   - shows/hides `.sgs-choice-flow__nav-back` via its own `hidden` IDL
+ *     property, based on whether there is anywhere to go back TO — this is
+ *     read directly off `flowState`'s history stack (see
+ *     `updateBackButtonVisibility()` below) rather than duplicated here,
+ *     since Back-button visibility must also update after a Back click,
+ *     which never calls this function with new history.
+ *
  * @param {HTMLElement} flowRoot    Flow wrapper element.
  * @param {number}      targetIndex Step index to reveal.
  */
@@ -278,7 +289,36 @@ function showStepByIndex( flowRoot, targetIndex ) {
 	if ( steps.length > 0 ) {
 		const progress = ( targetIndex + 1 ) / steps.length;
 		flowRoot.style.setProperty( '--sgs-choice-flow-progress', String( progress ) );
+
+		const stepCountEl = flowRoot.querySelector( STEP_COUNT_SELECTOR );
+		if ( stepCountEl ) {
+			stepCountEl.textContent = `Step ${ targetIndex + 1 } of ${ steps.length }`;
+		}
+
+		const stepLabelEl = flowRoot.querySelector( STEP_LABEL_SELECTOR );
+		if ( stepLabelEl && targetStepEl ) {
+			stepLabelEl.textContent = targetStepEl.getAttribute( 'data-step-label' ) || '';
+		}
 	}
+
+	updateBackButtonVisibility( flowRoot );
+}
+
+/**
+ * Show/hide the flow's Back button based on whether there is a previous
+ * step to return to. Kept separate from `showStepByIndex()` because
+ * `handleBackClick()` mutates `flowState`'s history stack itself and must
+ * re-check visibility AFTER that mutation, not just after a step change.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+function updateBackButtonVisibility( flowRoot ) {
+	const backButtonEl = flowRoot.querySelector( BACK_BUTTON_SELECTOR );
+	if ( ! backButtonEl ) {
+		return;
+	}
+	const instanceState = flowState.get( flowRoot );
+	backButtonEl.hidden = ! instanceState || instanceState.history.length === 0;
 }
 
 /**
@@ -399,27 +439,29 @@ function handleOptionClick( buttonEl ) {
 }
 
 /**
- * Handle a click on a per-option help-text toggle (FR-43-16). Reveals/hides
- * the adjacent `.sgs-choice-flow-question__help-panel` (a sibling element —
- * see render.php's own comment on why the panel is not nested inside the
- * toggle button) and keeps `aria-expanded` in sync for assistive tech.
+ * Handle a click on the flow's Back button (Visual-QA gap #1, 2026-09-15).
+ * Pops the last-visited step index off `instanceState.history` — a stack
+ * that `handleOptionClick()` has always pushed to, but which nothing
+ * previously consumed — and reveals it. Does NOT push the CURRENT step back
+ * onto history: history is a plain undo stack, and re-pushing on Back would
+ * make a second Back press bounce right back to where the user started.
  *
- * Independent of `handleOptionClick()` above: it never touches the option
- * button's own routing/tags/step-navigation state, and neither function's
- * selector can ever match the other's element.
- *
- * @param {HTMLElement} toggleEl The clicked `.sgs-choice-flow-question__help-toggle`.
+ * @param {HTMLElement} buttonEl The clicked `.sgs-choice-flow__nav-back`.
  */
-function handleHelpToggleClick( toggleEl ) {
-	const panelId = toggleEl.getAttribute( 'aria-controls' );
-	const panelEl = panelId ? document.getElementById( panelId ) : null;
-	if ( ! panelEl ) {
+function handleBackClick( buttonEl ) {
+	const flowRoot = buttonEl.closest( FLOW_SELECTOR );
+	if ( ! flowRoot ) {
 		return;
 	}
 
-	const isCurrentlyHidden = panelEl.hidden;
-	panelEl.hidden = ! isCurrentlyHidden;
-	toggleEl.setAttribute( 'aria-expanded', isCurrentlyHidden ? 'true' : 'false' );
+	const instanceState = flowState.get( flowRoot );
+	if ( ! instanceState || instanceState.history.length === 0 ) {
+		return;
+	}
+
+	const previousIndex = instanceState.history.pop();
+	showStepByIndex( flowRoot, previousIndex );
+	persistFlowState( flowRoot, previousIndex, instanceState.tags, instanceState.history );
 }
 
 /**
@@ -472,9 +514,19 @@ document.addEventListener( 'click', ( event ) => {
 		return;
 	}
 
-	const helpToggleEl = event.target.closest( HELP_TOGGLE_SELECTOR );
-	if ( helpToggleEl ) {
-		handleHelpToggleClick( helpToggleEl );
+	const backButtonEl = event.target.closest( BACK_BUTTON_SELECTOR );
+	if ( backButtonEl ) {
+		handleBackClick( backButtonEl );
+		return;
+	}
+
+	// FR-43-16's '?' help-toggle now lives in the shared
+	// src/shared/info-toggle.js module (see the top-of-file import) — this
+	// block is one of potentially several adopters, all using the same
+	// selector + handler.
+	const infoToggleEl = event.target.closest( INFO_TOGGLE_SELECTOR );
+	if ( infoToggleEl ) {
+		handleInfoToggleClick( infoToggleEl );
 	}
 } );
 
@@ -488,9 +540,6 @@ if ( document.readyState === 'loading' ) {
 
 // Namespace registration (codebase convention — matches sgs/form/view.js's
 // own store('sgs/form', ...) call). No reactive state/actions are needed by
-// this engine in v1 (see file-level docblock on the click-wiring decision
-// and the WeakMap-based private state above), so this registers the
-// namespace only, keeping the door open for a future directive-driven
-// addition (e.g. a "back" button) without a breaking change to this file's
-// shape.
+// this engine (see file-level docblock on the click-wiring decision and the
+// WeakMap-based private state above), so this registers the namespace only.
 store( 'sgs/choice-flow', {} );

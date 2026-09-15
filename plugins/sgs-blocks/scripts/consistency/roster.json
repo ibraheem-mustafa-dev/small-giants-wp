@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 84,
+    "count": 87,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -245,6 +245,63 @@
       },
       "qualifies": {
         "paintDeclarations": 13,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "title": "SGS Choice Flow",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 9,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "title": "SGS Choice Flow \u2014 Question",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 7,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-result",
+      "title": "SGS Choice Flow \u2014 Result",
+      "category": "sgs-forms",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
         "replacedCoreSupports": []
       }
     },

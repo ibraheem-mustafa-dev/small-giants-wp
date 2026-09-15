@@ -34,7 +34,7 @@ function slugifyLabel( label ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { question, options } = attributes;
+	const { question, options, layout } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-choice-flow-question',
@@ -163,6 +163,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>
+					<SelectControl
+						label={ __( 'Options layout', 'sgs-blocks' ) }
+						value={ layout || 'grid' }
+						options={ [
+							{ label: __( 'Grid (cards)', 'sgs-blocks' ), value: 'grid' },
+							{ label: __( 'List (stacked rows)', 'sgs-blocks' ), value: 'list' },
+						] }
+						onChange={ ( val ) => setAttributes( { layout: val } ) }
+						help={ __(
+							'List stacks every option full-width with a smaller side-by-side image, matching a reference quiz step that lists answers vertically rather than as a card grid.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 				<PanelBody title={ __( 'Options', 'sgs-blocks' ) } initialOpen={ true }>
 					<VStack spacing={ 4 }>
 						{ options.map( ( option, index ) => (
@@ -313,7 +330,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>
-				<ul className="sgs-choice-flow-question__options-preview">
+				<ul
+					className={ `sgs-choice-flow-question__options-preview sgs-choice-flow-question__options-preview--${ layout || 'grid' }` }
+				>
 					{ options.map( ( option, index ) => (
 						<li key={ index } className="sgs-choice-flow-question__option-preview">
 							{ option.label || __( '(empty option)', 'sgs-blocks' ) }

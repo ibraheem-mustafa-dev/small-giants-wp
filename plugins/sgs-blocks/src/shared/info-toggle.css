@@ -1,0 +1,75 @@
+/**
+ * Shared "info toggle" styling — pairs with `sgs_render_info_toggle()`
+ * (`includes/helpers-info-toggle.php`) and `src/shared/info-toggle.js`.
+ *
+ * Extracted from `sgs/choice-flow-question`'s Phase 2b help-text toggle so
+ * any OTHER block adopting the same '?' pattern gets identical styling.
+ * Imported via `@import` by each adopting block's own `style.css` (this
+ * repo's convention keeps every block's compiled CSS self-contained — no
+ * cross-block runtime dependency — so this file is a SOURCE partial, not a
+ * separately-enqueued stylesheet).
+ *
+ * A caller that needs the toggle positioned relative to some ancestor other
+ * than its own immediate parent must give that ancestor `position:relative`
+ * itself — this partial does not set positioning context, only the button/
+ * panel's own absolute placement and appearance.
+ *
+ * TOKENS: every colour/radius/transition value is a theme.json token
+ * (`theme/sgs-theme/theme.json`), no hardcoded hex.
+ *
+ * HOVER GUARD: static stylesheet — per `plugins/sgs-blocks/CLAUDE.md`'s
+ * "Touch-safe HOVER helpers" section, `scripts/hover-guard/run-transform.js`
+ * wraps the `:hover` rule below in both touch-safe guards on the COMPILED
+ * output at build time. Do not hand-add the guard here.
+ */
+
+.sgs-info-toggle {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
+	border-radius: 50%;
+	background-color: #fff;
+	color: var( --wp--preset--color--text-muted, #606d80 );
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
+		color var( --wp--custom--transition--fast, 0.15s ease );
+}
+
+.sgs-info-toggle:hover {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	color: var( --wp--preset--color--primary, #1f7a7a );
+}
+
+.sgs-info-toggle:focus-visible {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	color: var( --wp--preset--color--primary, #1f7a7a );
+	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
+	outline-offset: 2px;
+}
+
+.sgs-info-toggle__panel {
+	margin-top: 8px;
+	padding: 10px 12px;
+	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
+	border-radius: var( --wp--custom--border-radius--medium, 8px );
+	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* [hidden] already suppresses display via the UA stylesheet — this rule only
+   exists so a stray specificity conflict elsewhere can never accidentally
+   re-show a collapsed panel. */
+.sgs-info-toggle__panel[hidden] {
+	display: none;
+}
