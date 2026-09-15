@@ -67,6 +67,18 @@ require_once SGS_BLOCKS_PATH . 'includes/asset-cache-busting.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
+// Must load before class-form-rest-api.php — that file's route registration
+// references Form_REST_Submission::class as its REST callback. This require
+// was missing entirely (confirmed absent from every commit in this file's
+// git history via `git log -S`), so WordPress could register the /submit
+// route but never actually DISPATCH it — every live submission attempt
+// returned a bare 500 rest_invalid_handler, with nothing in any PHP error
+// log (WordPress's REST dispatcher fails the is_callable() check silently).
+// Found live during Phase 1 QA; confirmed unrelated to Phase 1's own changes
+// via `git log -S"class-form-rest-submission" -- sgs-blocks.php` (zero hits,
+// ever) and by manually require()-ing the file, which made the class load
+// and the exact same REST request succeed immediately.
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-submission.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
