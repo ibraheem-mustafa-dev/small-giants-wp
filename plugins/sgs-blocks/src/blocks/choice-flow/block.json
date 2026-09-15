@@ -38,14 +38,6 @@
 		}
 	},
 	"attributes": {
-		"terminalType": {
-			"type": "string",
-			"enum": [
-				"recommendation"
-			],
-			"default": "recommendation",
-			"description": "The flow's terminal action (Spec 43 §3). Only 'recommendation' (FR-43-3) is supported in this phase; email-capture (FR-43-4) and real-purchase (FR-43-5) terminals arrive in later phases."
-		},
 		"title": {
 			"type": "string",
 			"default": ""
