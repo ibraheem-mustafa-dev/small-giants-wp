@@ -1,5 +1,52 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1080 [INCIDENT] — `scripts/check-rest-route-require.py` built + dispatched same-day (D1079
+follow-up); its first `--survey` found 2 MORE live unfixed instances, also fixed same-day
+
+**2026-09-15, immediately after D1079.** Per Bean's directive, D1079's structural gap was routed
+via `/delegate` (sonnet, `code_gen`) and dispatched immediately to `wp-sgs-developer` rather than
+parked — `parking.md` is off-limits for this kind of item; action it in-session instead.
+
+**Gate built:** `plugins/sgs-blocks/scripts/check-rest-route-require.py` — a static, prebuild-safe
+detector (no live-canary dependency, matching this plugin's own `scripts/motion-qa/` precedent
+for why network-dependent checks stay out of `prebuild`). Builds the plugin's require-graph from
+`sgs-blocks.php` + Composer's PSR-4 map (`src/` only), cross-references every
+`register_rest_route()` callback under `includes/` + `src/`, flags any whose defining file is
+reachable by neither path. `--survey`/`--check`/`--self-test` triad, matching
+`scripts/check-dead-api-calls.py`'s established shape. Self-test's negative control reproduces
+the exact D1079 fixture shape and is proven (not just asserted) to flip from failing to passing
+when the fix line is added. Shipped standalone (package.json aliases only, NOT wired into
+`scripts/gates.json`) — promote to a hard gate once burned in, per this plugin's own convention
+for a brand-new structural gate.
+
+**Its first live `--survey` found TWO more real, currently-broken instances of D1079's exact
+bug shape**, independently confirmed (not just trusted from the subagent's report — re-ran the
+gate myself, and confirmed `class_exists()` false live on the canary before the fix):
+
+- `SGS\Blocks\Forms\Form_REST_Upload::handle_upload` (`/sgs-forms/v1/upload`) —
+  `includes/forms/class-form-rest-upload.php`, never `require`'d
+- `SGS\Blocks\Forms\Form_REST_Admin::list_submissions` / `::get_submission` /
+  `::export_submissions` (`/submissions`, `/submissions/{id}`, `/submissions/export`) —
+  `includes/forms/class-form-rest-admin.php`, never `require`'d (do not confuse with the
+  ALREADY-required, distinct `class-form-admin.php`)
+
+**Blast radius:** file uploads on every form, and the admin submissions list/detail/export
+screens, have been silently 500ing on every real request since these files were created — same
+invisible-to-every-log shape as D1079.
+
+**Fix:** two `require_once` lines added to `sgs-blocks.php`, positioned before
+`class-form-rest-api.php`'s require (same load-order reasoning as D1079). Verified: gate reports
+all 34 SGS REST route callbacks reachable; `class_exists()` true live on both classes;
+regression-swept the 4 real legacy `sgs/form` pages (2118/2159/2164/2893), all still 200. Fixed
+in `fed6e4557`, deployed + live-verified same session.
+
+**Total incident scope, both D1079 + D1080 combined:** 4 REST endpoints across this plugin's
+entire form system (`/submit`, `/upload`, `/submissions` list, `/submissions/{id}`,
+`/submissions/export`) were ALL simultaneously broken, invisibly, until this session. The gate
+now proves 0 remain in this class — first genuinely falsifiable claim made about this surface.
+
+---
+
 ## D1079 [INCIDENT] — `class-form-rest-submission.php` was never `require_once`'d; every live
 form submission on this site has been silently failing since the file was created
 
