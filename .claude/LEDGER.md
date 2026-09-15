@@ -8,74 +8,33 @@ last_updated: 2026-09-15
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE, DEPLOYED, AND
-LIVE-VERIFIED — no functional blockers, no doc residuals.** Spec 41's prose rewrite (the last
-doc-only item) closed this session — see Front A. The single `sgs/nav-menu` block is now two real, separate
-blocks — `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with separated CSS/PHP namespaces,
-migrated theme patterns, reseeded DB, matching live canary content, AND the
-split-nav-either-side-of-logo layout + SOON badge + drawer two-tier split the whole track existed
-to deliver. `/sgs-update` ran clean, the Step 5 DB blocker is resolved, `build-deploy.py` shipped
-to sandybrown, and Playwright confirmed every new capability actually works on the live site — see
-Front A for the full evidence trail, including two real (pre-existing, unrelated) bugs found and
-fixed along the way. Full architecture + evidence: `decisions.md` D1059/D1060/D1076; plan:
-`C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level, not under the
-project's own `.claude/plans/`).
+**THE ONLY GENUINELY OPEN FRONT: Front C (classless-repeater recognition, Spec 44) — designed,
+not built.** Two things need Bean directly, not a subagent: the drawer-burger click retest, and
+Spec 42/43 Phase 3's precondition (real WooCommerce catalogue data). Everything else that used to
+lead this file — the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2 — is FULLY
+DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for pointers to the evidence; it isn't
+repeated here.
 
-**Commit sequence:** `ed3b495de` → `5626e8c82` → `80f78f511` → `3b335757d` → `b6c335924` →
-`782281040` → `a04ccf942` → `b54c9b347` (Step 6) → `31886a2ea` (Step 7) → `c149de5b4` (Step 8) →
-`e219265d2`+`71a23fe4b` (Step 5 DB fix) → `0b5593dc9` (gate repairs) → `439321df6`+`1376084dd`
-(live item-border-shadow fix, deployed).
-
-**Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
-programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
-exactly as before** — see "Prior work (closed)" and "Front B" below for the pointers; nothing in
-those tracks moved this session.
-
-**Spec 42/43 (form CPT + choice-flow) — Phases 0, 1, AND 2 are now DONE, DEPLOYED, AND
-LIVE-VERIFIED (D1082).** Phase 2 (`sgs/choice-flow` branching quiz — plain-question step +
-recommendation terminal, FR-43-1/2/2a/3/8/9/11/12) shipped this session via `/phase-planner`,
-reviewed clean by a 3-persona parallel code review (1 real bug found + fixed: a routing-index
-reorder-desync gap), deployed to sandybrown, and live-walked both branches + both publish-
-validation controls via `chrome-devtools-mcp` at the `wp.data` level. Full evidence: D1082.
-**Phase 3 (priced WC-variation steps) is next but BLOCKED on its own stated precondition** —
-real WooCommerce attribute/variation catalogue data must exist first (FR-43-10a); that is a
-WooCommerce-admin catalogue-setup task, not a block-engine build. Phase 4 (modal delivery) and
-Phase 5 (mandatory rebuild + deferred items) remain open, no fixed order required before them.
+**One real residual on the otherwise-closed nav-menu split:** `nav-bar-menu`/`nav-drawer-menu`
+have no visual-diff report yet (verified absent — see State Snapshot). Not blocking, but owed.
 
 ## Prior work (closed / parked) — pointer only, full narrative in memory or decisions.md
 
-**Ward End Eye Care Spec 42/43 (form CPT + choice-flow) — Phases 0-2 DONE (D1072, D1082).**
-Read `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0)
-in full before touching Phase 3+. Phase 3's own precondition (real WC attribute/variation
-catalogue data) is unmet — that's a WooCommerce-admin task, do it before planning Phase 3's
-block work. See "Front B" below for the original council result and the full Phase 0-5
-roadmap; `plans/2026-09-15-phase-2-sgs-choice-flow.md` is Phase 2's executed plan.
-
-**Ward End Eye Care Tasks 1/2/4/5 — FULLY CLOSED (D1067/D1069/D1070, CSS fix `153f8ec1d`).**
-QC-closed all four (D1067: PASS or PASS-WITH-GAPS); two doc-rot comments fixed inline. Task 1's
-"6 live trigger points" turned out to be a false premise, checked against the live site rather
-than assumed — Ward End Eye Care has no build yet, so there is no real content to migrate
-(D1069). The `sgs_modal`/`modalRef` mechanism itself was instead live-proven end-to-end on a
-generic test post (D1070) — re-open the REAL migration only once the eye-care build exists. The
-separately-scoped pre-existing bug Task 2's QC surfaced (`.sgs-form-field--hidden` had no CSS
-rule) is now FIXED and live-verified — commit `153f8ec1d`.
-
-**Spec 41 nav-menu colour/state — Waves A/B/C (steps 1-23) fully DONE, deployed, live-verified,
-plan archived to `plans/archive/phase-nav-menu-colour-state.md`.** Full decision trail
-`decisions.md` D1038-D1049. Only one genuinely open item survives from that programme: the
-intermittent drawer-burger click-reliability issue needs Bean's own live retest (a duplicate-
-burger fix, D1047, shipped but is NOT proven to be this issue's root cause) — no subagent can
-close this, it needs Bean's hands on a real device.
-
-**Clone-fidelity closeout + R8 motion + BEM-recognition:** fully closed/shipped, swept to
-`.claude/memory/session-2026-09-11-prior-work-closed.md`. Open residuals carried forward: R1's
-17-attribute conversion, the `tier_object_base()` 67-attribute over-match, Mama's branded
-header/footer authoring — **R8 shipped, READY not paused** (corrected 2026-09-15; see
-`.claude/prompts/2026-09-10-header-footer-implementation.md`), trust-bar pill padding (minor).
-
-**Universal-pipeline upgrade (Claude Design `.dc.html`) — converter wiring shipped (D1071/D1073),
-Tier B rewired as a halt-and-resume (D1075). Spec 44 reworked v2.0.0→v2.3.0 across 3 council
-rounds (D1081), designed but not yet built or re-verified.** Full detail in "Front C" below.
+- **Nav-menu split (D1059/D1060), all 8 steps** — deployed (`1376084dd`), live-verified,
+  re-audited 2026-09-15 (5 residuals found+closed), Spec 41+36 doc rewrites both fully closed
+  (`63f3cf215`, `98cfb3358`). Evidence: `memory/session-2026-09-15.md`; `decisions.md`
+  D1059/D1060/D1076. One residual still open — see Human Summary + State Snapshot.
+- **Ward End Eye Care Spec 42/43 Phases 0-2** — done (D1072, D1082). Phase 3 blocked on real
+  WooCommerce catalogue data (external, not a block-engine task). `specs/42-SGS-FORM-CPT-AND-PRICING.md`
+  (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0); 6-persona council result (NO-GO-as-written,
+  revised) in `decisions.md` D1072; phase plan `.claude/plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md`.
+- **Ward End Eye Care Tasks 1/2/4/5** — fully closed (D1067/D1069/D1070, CSS fix `153f8ec1d`).
+- **Clone-fidelity closeout + R8 motion + BEM-recognition** — closed/shipped, swept to
+  `memory/session-2026-09-11-prior-work-closed.md`. Open residuals: R1's 17-attribute
+  conversion, `tier_object_base()`'s 67-attribute over-match, trust-bar pill padding (minor).
+  Mama's branded header/footer authoring is READY (not paused) — `.claude/prompts/2026-09-10-header-footer-implementation.md`.
+- **Universal-pipeline converter wiring** (D1071/D1073/D1075) — shipped; its live continuation is
+  Front C (Spec 44), not further work here.
 
 ## Blockers
 
@@ -83,45 +42,8 @@ rounds (D1081), designed but not yet built or re-verified.** Full detail in "Fro
 
 ## THE FRONT — what to pick up next
 
-### Front A — nav-menu split (D1059/D1060) — FULLY DONE + DEPLOYED + LIVE-VERIFIED, re-audited 2026-09-15
-`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` split (all 8 steps), deployed to sandybrown
-(`1376084dd`), live-verified. Two real pre-existing bugs found+fixed live (item-border shadow
-default + a dead CSS branch). Full narrative swept to `memory/session-2026-09-15.md` — read it for
-commit hashes and evidence.
-
-**Re-audited 2026-09-15** after Bean challenged "fully closed" — found+closed 5 residuals:
-dropdown-stacking RESOLVED (structural `ancestor` restriction, not the CSS-mirror patch it was
-tracking); hover-typography RESOLVED (detector false-positive, missing allowlist registration);
-Spec 37 FR-37-42 heading; Spec 00 §3.1 counter-example; STOP-CATALOGUE `E26`. Detail:
-`memory/session-2026-09-15.md` + `memory/parking-archive.md`.
-
-**Spec 41 — FULLY CLOSED 2026-09-15 (`63f3cf215`).** The 13 gating `CITE-SYMBOL` findings
-(`e30cefcad`) + 4 QC-found stale instances + the remaining 159 ungated bare-prose mentions
-(`P-SPEC41-BEM-PROSE-REWRITE`, archived to `memory/parking-archive.md`) are all fixed. Verified:
-0 live-stale `sgs-nav-menu__`/`sgs_nav_menu_` hits (37 remaining are deliberate history), 0
-gating `lint-spec-drift.py` findings, spot-checked technical claims against live code (`/qc` run).
-
-**Spec 36's ungated prose — FIXED** (`98cfb3358`, v2.5): rewrote every current-architecture passage
-§1-9, plus 2 mechanism corrections (submenu-context is drawer-only; bar dropped `SGS_Container_Wrapper`
-at D539). History left as history.
-
-**Doc sweep 2026-09-15:** rename applied across specs 00/01/02/33/37/38 + README + goals; 2 plans
-archived; 3 prompts removed (1 saved as parking); listColumns order verified.
-
-### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
-**Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
-Spec 42+43 together, verdict NO-GO-as-written, Bean chose "revise specs first" from the menu.**
-Grades: Cynic D+, Competitor D+, Spec-Lawyer C-, Ship-PM C-, Abuse C+, Support C+. Convergent
-finding: Spec 43's flagship eyewear pricing example rested on a false reuse claim
-(`sgs/option-picker` has no pricing mechanism at all — verified live by 2 personas independently).
-**Bean corrected the real mechanism mid-fix:** `sgs/buybox`'s existing `Product_Manifest` +
-`sgs_configurator_mode_price()` (the same system Mama's Munches' flavour/pack-size picker
-already runs on) IS the real, live, server-authoritative pricing engine — not option-picker.
-Both specs revised: **Spec 42 → v2.1.0**, **Spec 43 → v1.2.0** (pricing rebuilt on the real
-`sgs/buybox` manifest). Phase plan:
-`.claude/plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` — Phase 0 (FR-42-0 fix) fully
-detailed and ready to execute (~5 min); Phases 1-5 scoped as a roadmap, each gets its own
-`/phase-planner` run when reached. **Next action: execute Phase 0.**
+The nav-menu split and the Spec 42/43 council track are both CLOSED — see "Prior work" above
+for pointers. The only genuinely open front is C, plus the two Bean-only tasks below.
 
 ### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081)
 
@@ -142,10 +64,14 @@ one-off classless content (deferred, no composite to check against).
 Standing rule from this front: narrow by parent context before leaf-structural match — lesson
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
 
-### Task — Bean retests the drawer-burger click issue (STILL OPEN, needs Bean not a subagent)
-Confirm live whether the intermittent click-miss (2/3 real clicks failed to open the drawer in
-automated testing) still occurs now the duplicate-burger fix (D1047) has shipped. If it still
-fails, dispatch a fresh `/systematic-debugging` investigation with Bean's exact repro steps.
+### Tasks — need Bean directly, not a subagent
+- **Drawer-burger click retest.** Confirm live whether the intermittent click-miss (2/3 real
+  clicks failed to open the drawer in automated testing) still occurs now the duplicate-burger
+  fix (D1047) has shipped. If it still fails, dispatch a fresh `/systematic-debugging`
+  investigation with Bean's exact repro steps.
+- **Spec 42/43 Phase 3 precondition.** Real WooCommerce attribute/variation catalogue data must
+  exist before Phase 3 (priced WC-variation steps) can be built — a WooCommerce-admin
+  catalogue-setup task, not block-engine work.
 
 ### Methodology guardrails
 See "Methodology guardrails (carried forward — all still true)" below — unchanged, still
@@ -277,7 +203,7 @@ binding. **Add from this session:**
 
 | For | Read |
 |---|---|
-| **Nav-menu split — SPLIT DONE (Steps 1-5), next is Step 6-8 (new features)** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/) (full Step 1-8 sequence + locked rulings); `decisions.md` D1059 (split architecture), D1060 (drawer colour defaults), D1076 (Steps 3-5 close-out); `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` (BAR 32/DRAWER 9/BOTH 100/NO-EFFECT 12) |
+| **Nav-menu split — ALL 8 STEPS DONE; only gap is a missing visual-diff report** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/); `decisions.md` D1059/D1060/D1076; `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
 | **Classless repeater recognition — start here** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.0, DESIGNED not built); `decisions.md` D1081 (3-round trail); Front C above |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |

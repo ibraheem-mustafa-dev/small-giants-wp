@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 43
-spec_version: 1.2.0
+spec_version: 1.3.0
 status: active
 owner: framework
 date: 2026-09-14
@@ -45,6 +45,20 @@ derived_from:
     FR-43-1's "priced tile step" and "WC variation-picker step" into ONE step type, and resolves
     the Cynic/Competitor/Abuse-Red-Team convergent finding that the eyewear worked example had
     no real server-side price authority — it now has the same one Mama's Munches already ships.
+  - **2026-09-15 (v1.3.0), post Phase 2 build — decomposed the REAL Ward End Eye Care lens-
+    configurator source** (`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Eye Care
+    Birmingham.dc.html`, lines ~1300-1545), not a generic external reference. This is the
+    client's own already-agreed design (`sites/eye-care-ward-end/CLAUDE.md`'s "lens-selection
+    flow — the standout" section, sourced from her named competitor, JP Opticians). Confirms
+    two things structurally: (1) the "step indicator replaces the header" pattern the owner
+    asked about is delivered entirely by `sgs_modal` chrome (a slim bar: icon + dynamic step
+    label + Close button) — it needs NO change to `sgs/site-header` or a dedicated page
+    template, settling that open question in favour of the already-planned Phase 4 mechanism;
+    (2) every option in the real flow carries an IMAGE (icon or product-photo preview) and a
+    floating `?` HELP-TEXT toggle revealing extra explanatory copy — neither exists on
+    `sgs/choice-flow-question` today, and neither is lens/pricing-specific: a plain
+    qualification quiz benefits from both identically. FR-43-15/FR-43-16 below add them to the
+    plain-question step type now, universal to any `sgs/choice-flow`, not deferred to Phase 3.
 ---
 
 # Spec 43 — `sgs/choice-flow`
@@ -96,7 +110,8 @@ route through `sgs/option-picker` — see FR-43-10/FR-43-10a below.
 time based on which shares more cleanly — see §6) can be any of:
 
 - **Plain question** — multiple-choice options, no price. The qualification/recommendation
-  use case (dentist/fitness "which service suits you").
+  use case (dentist/fitness "which service suits you"). Each option MAY carry an optional
+  image and an optional help-text toggle — see FR-43-15/FR-43-16 below.
 - **Priced WooCommerce-variation step (v1.2.0: merges the old "priced tile" and
   "WC variation-picker" step types into one — they were always the same mechanism).**
   Resolves ONE WooCommerce attribute axis per step, reading `sgs/buybox`'s existing
@@ -110,6 +125,27 @@ time based on which shares more cleanly — see §6) can be any of:
 - **Plain data-capture step** — reuses `sgs/form`'s existing field blocks (text, file
   upload) unchanged. The prescription/eye-test-upload use case — explicitly does **not**
   affect price; a flow can freely mix priced and unpriced steps.
+
+**FR-43-15 (added v1.3.0, 2026-09-15 — universal, not lens-specific).** Each option on a
+plain-question step MAY carry an optional `image` (a single media attachment — id/url/alt,
+matching `sgs/media`'s existing image-attribute shape, not a new convention). When set, it
+renders in the option card's existing 16:9 preview zone (already reserved space for the
+option's icon/visual — see the option-card layout FR-43-1 describes) instead of a plain
+colour band. Grounded in the real Ward End Eye Care lens flow, where every option shows
+either a themed icon or a live product-image preview — but the capability itself has no
+pricing/lens dependency: a plain "which service suits you" quiz benefits from a photo per
+option exactly as much. Optional — an option with no image keeps rendering as before
+(a plain text card), so this is additive to every flow already built.
+
+**FR-43-16 (added v1.3.0, 2026-09-15 — universal, not lens-specific).** Each option MAY
+carry an optional `helpText` string. When set, a small `?` toggle button renders overlaid on
+the option card (floating, top-right corner — does not affect the card's own click target
+or layout flow); toggling it reveals `helpText` in a panel directly beneath that option,
+dismissed by toggling again. Grounded in the real lens flow, where every option's `?` reveals
+a short explanation for choices a client may not understand from the label alone (e.g. what
+"varifocal" means) — again, universal: a qualification quiz's options benefit from the same
+mechanism whenever a choice needs more context than fits in a label. Optional — an option
+with no `helpText` renders with no `?` button at all, not a disabled one.
 
 **FR-43-2 — branching.** Any step gains a `nextStepMap` attribute: answer value → target
 step ID. This is the one genuinely new mechanism this spec introduces (per-step routing,
@@ -303,7 +339,16 @@ FR-43-1 (plain-question step type only), FR-43-2/FR-43-2a, FR-43-3, FR-43-8, FR-
 own IAPI store (FR-43-9). **This alone ships a complete, sellable feature — a "which
 service suits you" qualification quiz — touching zero WooCommerce, zero pricing, zero
 modal, and zero of `sgs/form`'s existing engine.** It is the natural first slice and was
-not named as one anywhere in v1.1.0.
+not named as one anywhere in v1.1.0. **SHIPPED 2026-09-15 (D1082) — full evidence
+`decisions.md` D1082.**
+
+**Phase 2b — visual + per-option richness pass (added v1.3.0, 2026-09-15).** FR-43-15
+(per-option image), FR-43-16 (per-option help-text toggle), plus a plain styling pass on
+`sgs/choice-flow`/`sgs/choice-flow-question`/`sgs/choice-flow-result` (max-width/padding —
+Phase 2 shipped with zero box attrs — button/option-card border+state treatment, a step
+progress indicator, and a Tier-V CSS step transition). Grounded against the real Ward End
+Eye Care lens-configurator source, not a generic reference. Still zero WooCommerce/pricing/
+modal — those stay Phase 3/4.
 
 **Phase 3 — priced WC-variation steps + real purchase.** FR-43-1's priced step type,
 FR-43-10/FR-43-10a, FR-43-5, FR-43-4's rate-limit note. Requires the target product's
@@ -317,7 +362,7 @@ catalogue-setup precondition).
 (mandatory rebuild, only after Phase 1 proves stable and the instance count is known),
 FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (analytics).
 
-## 10. Requirement index (v1.2.0)
+## 10. Requirement index (v1.3.0)
 
 | FR | One-line |
 |---|---|
@@ -338,3 +383,5 @@ FR-42-7b, FR-42-10/FR-43-14 (clone-orchestrator CPT-creation gap), FR-42-13 (ana
 | FR-43-12 | Recommendation-matching rule: build-time call, keep simple |
 | FR-43-13 | Preset templates: explicitly deferred, same status as Spec 42 FR-42-12 |
 | FR-43-14 | Cloning pipeline can't create a flow CPT — shared gap with Spec 42, fix once |
+| FR-43-15 | Per-option image (universal, not lens-specific) — grounded in the real lens-flow source |
+| FR-43-16 | Per-option help-text `?` toggle (universal, not lens-specific) — grounded in the real lens-flow source |
