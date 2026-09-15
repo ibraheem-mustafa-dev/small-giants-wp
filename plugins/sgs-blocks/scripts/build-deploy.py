@@ -245,7 +245,10 @@ ROLLBACK_HINT = (
     "roll back: ssh in and swap the .bak copy back, then reset OPcache:\n"
     "    mv $WP/plugins/sgs-blocks $WP/plugins/sgs-blocks.broken && \\\n"
     "    mv $WP/plugins/sgs-blocks.bak $WP/plugins/sgs-blocks\n"
-    "  (same shape for themes/sgs-theme; then curl an opcache_reset() page)"
+    "  (themes/sgs-theme's backup is DOT-PREFIXED so WordPress's theme scanner\n"
+    "  skips it: mv $WP/themes/sgs-theme $WP/themes/sgs-theme.broken && \\\n"
+    "  mv $WP/themes/.sgs-theme.bak $WP/themes/sgs-theme; then curl an\n"
+    "  opcache_reset() page)"
 )
 
 
@@ -859,6 +862,14 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
     ``<dir>.bak`` (previous .bak dropped first, so exactly one generation is
     kept and disk use stays bounded). Recovery is then a single `mv` back —
     see ROLLBACK_HINT, which step_verify prints on failure.
+
+    The theme's backup is named ``.sgs-theme.bak`` (dot-prefixed) rather than
+    ``sgs-theme.bak`` — WordPress's theme directory scanner
+    (``search_theme_directories()``) skips any directory starting with ``.``,
+    so the backup no longer shows up as a second "SGS Theme" entry on the
+    Themes admin page while still living in the same rollback location. The
+    plugins backup keeps its visible name; WordPress's plugin scanner doesn't
+    surface it the same way in normal use.
     """
     log("[4/5] Remote extract + install")
     parts: list[str] = [f"WP={shlex.quote(wp_content)}"]
@@ -882,9 +893,14 @@ def step_remote_extract(dry_run: bool, use_alias: bool, wp_content: str,
         parts.append("touch $WP/plugins/sgs-blocks/sgs-blocks.php")
         parts.append("rm -f $WP/uploads/sgs-css/sgs-*.css")
     if theme:
-        parts.append("rm -rf $WP/themes/sgs-theme.bak")
+        # Dot-prefixed so WordPress's theme scanner (search_theme_directories())
+        # skips it — WP excludes any directory starting with "." from the theme
+        # listing, so the backup no longer shows up as a second "SGS Theme" on
+        # the Themes admin page. Same rotation logic as sgs-blocks.bak above,
+        # just a hidden folder name instead of a visible one.
+        parts.append("rm -rf $WP/themes/.sgs-theme.bak")
         parts.append("if [ -d $WP/themes/sgs-theme ]; then "
-                     "mv $WP/themes/sgs-theme $WP/themes/sgs-theme.bak; fi")
+                     "mv $WP/themes/sgs-theme $WP/themes/.sgs-theme.bak; fi")
         parts.append("mkdir -p $WP/themes")
         parts.append("mv theme/sgs-theme $WP/themes/")
     # Cleanup remote staging dirs + tarball
