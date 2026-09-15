@@ -94,10 +94,11 @@ baseline entries cleaned); Spec 37 FR-37-42 heading fixed; Spec 00 §3.1 gained 
 `sgs_nav_menu_*`/`.sgs-nav-menu__*` citations rewritten to the real post-split names, verified
 against the actual code before writing. `lint-spec-drift.py --check`: 13 gating → 0 gating.
 
-**Still genuinely open:** Spec 36's dozens of bare, ungated `sgs/nav-menu` prose mentions
-throughout its architecture description (§2-4, block table, phasing section) — no path citation,
-so the gate never flags them, but they still describe the single pre-split block. Bigger job
-(a real rewrite of that prose, not a mechanical citation fix), not yet started.
+**Spec 36's ungated `sgs/nav-menu` prose — FIXED 2026-09-15** (`98cfb3358`, v2.5): rewrote every
+current-architecture passage across §1-9 to name the correct block, verified against live code, plus 2
+mechanism corrections (submenu-context is drawer-only, not a bar/drawer selector; the bar block
+dropped `SGS_Container_Wrapper` at D539, not "keeps" it). Historical passages left as history.
+**Whole nav-menu-split track now genuinely closed** — nothing known outstanding.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
 **Ran the 6-persona council (Cynic/Competitor/Spec-Lawyer/Ship-PM/Abuse/Support-Realist) on
