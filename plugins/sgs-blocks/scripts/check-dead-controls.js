@@ -850,6 +850,24 @@ const PREFIXED_HELPER_SUFFIXES = {
 	// this checker's SIX-corpus literal scan cannot see either end without this
 	// entry.
 	sgs_link_colour_css: [ 'LinkColour', 'LinkColourHover', 'LinkColourGradient', 'LinkColourHoverGradient' ],
+	// Added 2026-09-15 — false-positive fix for P-NAV-HOVER-TYPOGRAPHY-CONTROLS.
+	// `sgs_nav_shared_typography_hover_rule( $attributes, $prefix, $selector,
+	// $sweep_hover_colour = '' )` (nav-bar-menu/render.php + nav-drawer-menu/
+	// render.php) reads `$attributes[ $prefix . 'TextDecorationHover' ]` /
+	// `...'TextTransformHover'` / `...'FontWeightHover'` via the same
+	// $prefix.'Suffix' string-concatenation convention as every helper above —
+	// the literal attribute name never appears verbatim. Both real call sites
+	// pass a literal 2nd-arg prefix: `sgs_nav_shared_typography_hover_rule(
+	// $attributes, 'item', $link_sel, $item_sweep_hover )` in
+	// includes/nav-menu-css.php and `..., 'submenu', $sublink_sel,
+	// $submenu_sweep_hover )` in includes/nav-menu-submenu-link-css.php. The
+	// controls ARE wired (TypographyControls.js's showHover branch, mounted
+	// with showHover:true on both the item and submenu targets in both
+	// blocks' edit.js) — this was purely a missing registration in this
+	// dict, not a dead control. See parking-archive.md for the resolved entry.
+	sgs_nav_shared_typography_hover_rule: [
+		'TextDecorationHover', 'TextTransformHover', 'FontWeightHover',
+	],
 };
 
 /**
