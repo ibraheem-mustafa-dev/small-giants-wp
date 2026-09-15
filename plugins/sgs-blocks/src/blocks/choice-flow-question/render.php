@@ -13,6 +13,12 @@
  * SgsColourPanel would follow the same uid-scoped <style> pattern already
  * used by sibling form-field-* blocks (see form-field-tiles/render.php).
  *
+ * Phase 2b (2026-09-15) adds FR-43-15 (per-option image) and FR-43-16
+ * (per-option help-text toggle) — both purely additive per-option markup,
+ * styled entirely by this block's new static style.css (no scoped <style>
+ * needed here either, since neither capability carries a colour/typography
+ * attribute of its own).
+ *
  * NO-INLINE: this block emits zero inline style property declarations.
  * Contract + mechanism: Spec 32.
  *
@@ -54,18 +60,61 @@ if ( ! empty( $options ) ) {
 		$next_step_id = isset( $option['nextStepId'] ) ? (string) $option['nextStepId'] : '';
 		$tags         = isset( $option['tags'] ) && is_array( $option['tags'] ) ? array_map( 'strval', $option['tags'] ) : array();
 
+		// FR-43-15: optional per-option image. Only render the media zone
+		// when a real URL is present — an empty/absent `image` object keeps
+		// this option rendering exactly as before (no broken layout, no
+		// empty box).
+		$image     = isset( $option['image'] ) && is_array( $option['image'] ) ? $option['image'] : array();
+		$image_url = isset( $image['url'] ) ? (string) $image['url'] : '';
+		$image_alt = isset( $image['alt'] ) ? (string) $image['alt'] : '';
+
+		// FR-43-16: optional per-option help text. Only render the toggle +
+		// panel when non-empty — an option with no helpText gets no '?'
+		// button at all, not a disabled one.
+		$help_text = isset( $option['helpText'] ) ? (string) $option['helpText'] : '';
+
 		if ( '' === $label ) {
 			continue;
 		}
 
 		echo '<li class="sgs-choice-flow-question__option">';
+
 		echo '<button type="button" class="sgs-choice-flow-question__option-button"';
 		echo ' data-value="' . esc_attr( $value ) . '"';
 		echo ' data-next-step-id="' . esc_attr( $next_step_id ) . '"';
 		echo ' data-tags="' . esc_attr( implode( ',', $tags ) ) . '"';
 		echo '>';
-		echo esc_html( $label );
+
+		if ( '' !== $image_url ) {
+			echo '<span class="sgs-choice-flow-question__option-media">';
+			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '" loading="lazy" />';
+			echo '</span>';
+		}
+
+		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
 		echo '</button>';
+
+		if ( '' !== $help_text ) {
+			// A SIBLING of the option button, deliberately outside it (see
+			// this file's Phase 2b docblock note + style.css's own comment
+			// on `position:relative` living one level up) — so a screen
+			// reader or keyboard user can reach the help toggle independently
+			// of the option's own click target, matching the real reference
+			// flow's DOM shape rather than nesting an interactive control
+			// inside another interactive control.
+			$help_panel_id = wp_unique_id( 'sgs-choice-flow-question-help-' );
+
+			echo '<button type="button" class="sgs-choice-flow-question__help-toggle"';
+			echo ' aria-expanded="false"';
+			echo ' aria-controls="' . esc_attr( $help_panel_id ) . '"';
+			echo ' aria-label="' . esc_attr__( 'More information', 'sgs-blocks' ) . '"';
+			echo '>?</button>';
+
+			echo '<div class="sgs-choice-flow-question__help-panel" id="' . esc_attr( $help_panel_id ) . '" hidden>';
+			echo esc_html( $help_text );
+			echo '</div>';
+		}
+
 		echo '</li>';
 	}
 	echo '</ul>';

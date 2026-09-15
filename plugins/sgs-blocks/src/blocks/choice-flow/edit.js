@@ -7,6 +7,51 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import {
+	SgsLengthControl,
+	SgsBoxControl,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+} from '../../components';
+
+// Box-object interface contract — length units for the kept-scalar maxWidth
+// attr (base only). Mirrors sgs/notice-banner/edit.js's LENGTH_UNITS exactly
+// (Visual-QA pass, 2026-09-15, design-reviewer gap #1).
+const LENGTH_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'em', label: 'em' },
+	{ value: '%', label: '%' },
+];
+
+// Editor canvas preview only (desktop styles; responsive tiers are PHP-side
+// @media, matches sgs/notice-banner/edit.js's buildWrapperStyle()). The
+// SAVED/RENDERED frontend output is dynamic (render.php) and carries zero
+// inline declarations (Spec 32) — this exists only for the live editor
+// preview.
+function boxShorthand( box, keys ) {
+	if ( ! box || 'object' !== typeof box ) return undefined;
+	if ( ! keys.some( ( key ) => box[ key ] ) ) return undefined;
+	return keys.map( ( key ) => box[ key ] || '0' ).join( ' ' );
+}
+
+function buildWrapperStyle( attributes ) {
+	const { padding, maxWidth } = attributes;
+	const wrapperStyle = {};
+
+	const paddingPreview = boxShorthand( padding?.desktop, [ 'top', 'right', 'bottom', 'left' ] );
+	if ( paddingPreview ) {
+		wrapperStyle.padding = paddingPreview;
+	}
+	if ( maxWidth ) {
+		wrapperStyle.maxWidth = maxWidth;
+		wrapperStyle.marginLeft = 'auto';
+		wrapperStyle.marginRight = 'auto';
+	}
+
+	return wrapperStyle;
+}
 
 // Spec 43 §2/§9 (Phase 2) — sgs/choice-flow only ever contains sgs/form-step
 // children, reused unchanged as an inert step marker (FR-43-9). This mirrors
@@ -306,10 +351,11 @@ function validateFlow( steps ) {
 }
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
-	const { title } = attributes;
+	const { title, maxWidth, padding } = attributes;
 
 	const blockProps = useBlockProps( {
 		className: 'sgs-choice-flow',
+		style: buildWrapperStyle( attributes ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
@@ -401,6 +447,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+				</PanelBody>
+				{ /* Visual-QA pass (2026-09-15, design-reviewer gap #1) — a
+				   DELIBERATELY MINIMAL box+width shape (maxWidth + padding
+				   only), mirroring sgs/notice-banner's "Wrapper" panel
+				   exactly. Do not extend toward the full
+				   SGS_Container_Wrapper capability set here (CLAUDE.md
+				   rule 7 — this block is content-block, not
+				   wrapper-shell-kind). */ }
+				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Outer max-width', 'sgs-blocks' ) }
+						value={ maxWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { maxWidth: val ?? '' } ) }
+						help={ __( 'Exact CSS length, e.g. 800px. Leave blank for no cap.', 'sgs-blocks' ) }
+					/>
+					<ResponsiveOverride
+						value={ padding }
+						onChange={ ( obj ) => setAttributes( { padding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 

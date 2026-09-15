@@ -23,6 +23,11 @@
 				"clickEffects",
 				"parallax"
 			],
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				]
+			},
 			"elements": {
 				"wrapper": {
 					"label": "Wrapper",
@@ -32,7 +37,11 @@
 						"layout"
 					],
 					"isWrapper": true,
-					"_note": "Phase 2 (Spec 43 §9) minimum shape — no colour/typography/box attrs declared yet in this phase, so no attrMap. Extend when a later phase adds styling controls."
+					"attrMap": {
+						"css:padding": "padding",
+						"css:max-width": "maxWidth"
+					},
+					"_note": "Visual-QA pass (2026-09-15, design-reviewer gap #1) added maxWidth + padding only — a DELIBERATELY MINIMAL box+width shape (content-block composition_role, not wrapper-shell-kind — see seed-composition-roles.py comment for this block). No colour/typography attrs; do not extend this element toward the full SGS_Container_Wrapper capability set without a design-gate (CLAUDE.md rule 7)."
 				}
 			}
 		}
@@ -41,6 +50,16 @@
 		"title": {
 			"type": "string",
 			"default": ""
+		},
+		"maxWidth": {
+			"type": "string",
+			"default": "800px"
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
 		}
 	},
 	"allowedBlocks": [
@@ -48,6 +67,7 @@
 	],
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {

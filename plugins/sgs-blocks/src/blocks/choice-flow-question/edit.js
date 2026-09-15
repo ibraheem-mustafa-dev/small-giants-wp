@@ -4,10 +4,12 @@ import { useSelect } from '@wordpress/data';
 import {
 	PanelBody,
 	TextControl,
+	TextareaControl,
 	SelectControl,
 	Button,
 } from '@wordpress/components';
 import { VStack } from '../../components/primitives';
+import MediaPicker from '../../components/MediaPicker';
 
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
 // result step is reachable" rather than a specific sibling sgs/form-step.
@@ -128,10 +130,35 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					value: `option-${ newIndex }`,
 					nextStepId: '',
 					tags: [],
+					image: null,
+					helpText: '',
 				},
 			],
 		} );
 	};
+
+	/**
+	 * Adapt an option's stored `image` shape ({id, url, alt} — FR-43-15,
+	 * matching sgs/media's own imageId/imageUrl/imageAlt attribute trio) to
+	 * the richer `SGSMedia` shape `MediaPicker` expects ({url, type, id, alt,
+	 * mime}), and back again on change/remove. `type`/`mime` are never
+	 * persisted here — this option's `image` attribute is image-only
+	 * (`allowedTypes={ [ 'image' ] }` below), so they would be redundant on
+	 * every stored row.
+	 *
+	 * @param {{id?: number, url?: string, alt?: string}|null|undefined} image
+	 * @return {import('../../components/MediaPicker').SGSMedia|null}
+	 */
+	const toMediaPickerValue = ( image ) =>
+		image && image.url
+			? {
+					url: image.url,
+					type: 'image',
+					id: image.id || 0,
+					alt: image.alt || '',
+					mime: 'image/jpeg',
+			  }
+			: null;
 
 	return (
 		<>
@@ -200,6 +227,47 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									) }
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
+								/>
+								{ /* FR-43-15 (v1.3.0): optional per-option image, rendered in
+								     the option card's 16:9 preview zone. Reuses this codebase's
+								     shared MediaPicker (wraps MediaUpload/MediaUploadCheck —
+								     see decorative-image/edit.js for the established pattern)
+								     rather than hand-rolling a bespoke MediaUpload call. */ }
+								<MediaPicker
+									value={ toMediaPickerValue( option.image ) }
+									allowedTypes={ [ 'image' ] }
+									onChange={ ( media ) =>
+										updateOption(
+											index,
+											'image',
+											media
+												? {
+														id: media.id,
+														url: media.url,
+														alt: media.alt,
+												  }
+												: null
+										)
+									}
+									onRemove={ () => updateOption( index, 'image', null ) }
+									label={ __( 'Select image', 'sgs-blocks' ) }
+									instructionsImage={ __(
+										'Optional. Shown in the option card’s preview zone.',
+										'sgs-blocks'
+									) }
+								/>
+								{ /* FR-43-16 (v1.3.0): optional per-option help text, revealed
+								     by a floating '?' toggle on the option card. */ }
+								<TextareaControl
+									label={ __( 'Help text', 'sgs-blocks' ) }
+									value={ option.helpText || '' }
+									onChange={ ( val ) => updateOption( index, 'helpText', val ) }
+									help={ __(
+										'Optional. Shown when a visitor taps the ‘?’ on this option — leave blank for no toggle at all.',
+										'sgs-blocks'
+									) }
+									rows={ 3 }
+									__nextHasNoMarginBottom
 								/>
 								<VStack spacing={ 1 } className="sgs-choice-flow-question__option-row-actions">
 									<Button

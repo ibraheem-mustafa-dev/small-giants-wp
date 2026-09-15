@@ -74,6 +74,14 @@ const STEP_SELECTOR = '.sgs-form-step';
 const OPTION_BUTTON_SELECTOR = '.sgs-choice-flow-question__option-button';
 const RESULT_SELECTOR = '.sgs-choice-flow-result';
 
+// FR-43-16 (v1.3.0, Phase 2b) — per-option help-text toggle. A SIBLING
+// control of OPTION_BUTTON_SELECTOR (see choice-flow-question/render.php's
+// own comment: the '?' button is deliberately outside the option <button>,
+// not nested inside it, so it has its own independent click target), so it
+// gets its own selector here rather than being folded into
+// handleOptionClick() above.
+const HELP_TOGGLE_SELECTOR = '.sgs-choice-flow-question__help-toggle';
+
 /**
  * Per-instance navigation state, keyed by the flow's root DOM element.
  *
@@ -223,16 +231,54 @@ function resolveTerminalStepIndex( flowRoot, accumulatedTags ) {
 /**
  * Show exactly one step (by index), hide all others. Uses the native
  * `hidden` IDL property — see file-level docblock for why this is used
- * instead of `sgs/form`'s CSS class.
+ * instead of `sgs/form`'s CSS class. `hidden` is the real accessibility/
+ * layout mechanism and is UNCHANGED by the additions below.
+ *
+ * Visual-QA pass (2026-09-15, design-reviewer gaps #2/#3) additionally:
+ *   - toggles `.is-entering` on the newly-revealed step so style.css's
+ *     CSS-only opacity+translate transition plays on step change (a pure
+ *     visual layer on top of `hidden`, never a replacement for it).
+ *     `.is-entering` is style.css's PRE-transition state (opacity:0,
+ *     translated, `transition:none`) — it is added BEFORE the step is
+ *     un-hidden (so the very first paint already shows that start state,
+ *     never the animated-to state) and removed one `requestAnimationFrame`
+ *     later, which is what actually triggers the transition — style.css's
+ *     un-classed resting rule (opacity:1, no translate, a real
+ *     transition-duration) becomes active again the moment the class is
+ *     gone, so removing it IS the animation trigger, not a cleanup step;
+ *   - sets `--sgs-choice-flow-progress` (0–1) on the flow root so
+ *     style.css's progress-bar fill (`width:calc(var(...) * 100%)`) tracks
+ *     the current step, per the formula `(targetIndex + 1) / stepCount`.
  *
  * @param {HTMLElement} flowRoot    Flow wrapper element.
  * @param {number}      targetIndex Step index to reveal.
  */
 function showStepByIndex( flowRoot, targetIndex ) {
 	const steps = getSteps( flowRoot );
+	const targetStepEl = steps[ targetIndex ];
+
+	// Snap the target step to its pre-transition state BEFORE un-hiding it —
+	// see docblock above for why this ordering (add-then-unhide-then-remove)
+	// is what makes the transition actually play instead of being coalesced
+	// away by the browser.
+	if ( targetStepEl ) {
+		targetStepEl.classList.add( 'is-entering' );
+	}
+
 	steps.forEach( ( stepEl, index ) => {
 		stepEl.hidden = index !== targetIndex;
 	} );
+
+	if ( targetStepEl ) {
+		requestAnimationFrame( () => {
+			targetStepEl.classList.remove( 'is-entering' );
+		} );
+	}
+
+	if ( steps.length > 0 ) {
+		const progress = ( targetIndex + 1 ) / steps.length;
+		flowRoot.style.setProperty( '--sgs-choice-flow-progress', String( progress ) );
+	}
 }
 
 /**
@@ -353,6 +399,30 @@ function handleOptionClick( buttonEl ) {
 }
 
 /**
+ * Handle a click on a per-option help-text toggle (FR-43-16). Reveals/hides
+ * the adjacent `.sgs-choice-flow-question__help-panel` (a sibling element —
+ * see render.php's own comment on why the panel is not nested inside the
+ * toggle button) and keeps `aria-expanded` in sync for assistive tech.
+ *
+ * Independent of `handleOptionClick()` above: it never touches the option
+ * button's own routing/tags/step-navigation state, and neither function's
+ * selector can ever match the other's element.
+ *
+ * @param {HTMLElement} toggleEl The clicked `.sgs-choice-flow-question__help-toggle`.
+ */
+function handleHelpToggleClick( toggleEl ) {
+	const panelId = toggleEl.getAttribute( 'aria-controls' );
+	const panelEl = panelId ? document.getElementById( panelId ) : null;
+	if ( ! panelEl ) {
+		return;
+	}
+
+	const isCurrentlyHidden = panelEl.hidden;
+	panelEl.hidden = ! isCurrentlyHidden;
+	toggleEl.setAttribute( 'aria-expanded', isCurrentlyHidden ? 'true' : 'false' );
+}
+
+/**
  * Initialise a single flow instance on page load: resume a persisted step
  * if one exists for this instance, otherwise show the first step (task
  * point 7).
@@ -389,11 +459,22 @@ function initAllFlows() {
 
 // Single delegated click listener — resolves the actual option button via
 // closest() rather than requiring a data-wp-on--click directive on every
-// button (see file-level docblock, click-wiring decision).
+// button (see file-level docblock, click-wiring decision). FR-43-16's
+// help-toggle handling is added here as its OWN independent branch (checked
+// via a second, unrelated closest()) rather than folded into
+// handleOptionClick() — the two selectors can never both match the same
+// clicked element, so the branches cannot conflict, and the option-click
+// routing logic above is untouched.
 document.addEventListener( 'click', ( event ) => {
 	const buttonEl = event.target.closest( OPTION_BUTTON_SELECTOR );
 	if ( buttonEl ) {
 		handleOptionClick( buttonEl );
+		return;
+	}
+
+	const helpToggleEl = event.target.closest( HELP_TOGGLE_SELECTOR );
+	if ( helpToggleEl ) {
+		handleHelpToggleClick( helpToggleEl );
 	}
 } );
 

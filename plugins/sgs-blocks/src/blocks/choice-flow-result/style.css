@@ -1,0 +1,32 @@
+/* ===== SGS Choice Flow — Result ===== */
+
+/*
+ * Visual-QA pass (2026-09-15, design-reviewer gap #4). Previously
+ * unstyled (plain heading + paragraph). This block has no maxWidth/padding
+ * of its own — it inherits the constraint from its `sgs/choice-flow`
+ * ancestor (Spec 43 §9's own render.php, once that block's maxWidth/padding
+ * ships) once it is placed inside one, which is its only supported context
+ * (block.json `"parent": ["sgs/form-step"]`, itself only ever a child of
+ * `sgs/choice-flow`).
+ *
+ * font-size uses the theme's own type-scale token (theme.json
+ * `settings.typography.fontSizes`, slug `x-large` = 24px) rather than a
+ * bare literal, matching this project's no-hardcoding rule.
+ */
+
+.sgs-choice-flow-result__heading {
+	margin: 0 0 var(--wp--preset--spacing--20, 16px);
+	font-size: var(--wp--preset--font-size--x-large, 24px);
+	line-height: 1.25;
+	font-weight: 700;
+}
+
+.sgs-choice-flow-result__body {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--regular, 16px);
+	line-height: 1.6;
+}
+
+.sgs-choice-flow-result__body > * + * {
+	margin-top: var(--wp--preset--spacing--20, 16px);
+}

@@ -1,0 +1,188 @@
+/**
+ * sgs/choice-flow-question — static frontend + editor styles.
+ *
+ * Spec 43 Phase 2b visual pass (design-reviewer findings vs the AthleanX/
+ * Invisalign reference quizzes, 2026-09-15) plus FR-43-15 (per-option image)
+ * and FR-43-16 (per-option help-text toggle) support classes.
+ *
+ * NO-INLINE (Spec 32): every rule below is a class selector; render.php never
+ * emits an inline `style="…"` property declaration for any of this.
+ *
+ * TOKENS: every colour/radius/transition value below is a theme.json token
+ * (`theme/sgs-theme/theme.json`) — no hardcoded hex. Specifically:
+ *   --wp--preset--color--border         (#D4DBE5 "Border" — settings.color.palette)
+ *   --wp--preset--color--primary        (#1F7A7A "Primary")
+ *   --wp--preset--color--surface-alt    (#F1F0EC "Raised Background" — subtle tint)
+ *   --wp--custom--border-radius--medium (settings.custom.borderRadius.medium, 8px)
+ *   --wp--custom--transition--fast      (settings.custom.transition.fast, 0.15s ease)
+ *   --wp--preset--font-size--x-large    (settings.typography.fontSizes "x-large", 24px)
+ * The border/hover-border/hover-background trio mirrors this same theme.json's
+ * own `settings.custom.buttonPresets.outline` convention (border token at
+ * rest, primary token on hover, surface-alt tint on hover) rather than
+ * inventing a new colour recipe for this block.
+ *
+ * HOVER GUARD: this is a STATIC stylesheet (enqueued as an ordinary asset,
+ * never passed through PHP), so `includes/helpers-hover-state.php`'s runtime
+ * guard cannot reach it — that helper only wraps rules a render.php builds as
+ * a PHP string. Per plugins/sgs-blocks/CLAUDE.md's "Touch-safe HOVER
+ * helpers" section ("Static style.css is a SECOND surface this helper cannot
+ * reach... covered at build time instead by scripts/hover-guard/"), the
+ * established convention for THIS surface is to write a plain `:hover` rule
+ * here and let `scripts/hover-guard/run-transform.js` wrap it in both
+ * touch-safe guards on the COMPILED build output — hand-adding the guard to
+ * this source file would be redundant with (and could conflict with) that
+ * build step. `:focus-visible` stays a separate, always-on selector as the
+ * transform expects (splits `:hover` from `:focus-visible` rather than a
+ * combined selector list).
+ */
+
+/* ---------------------------------------------------------------------- */
+/* Heading                                                                 */
+/* ---------------------------------------------------------------------- */
+
+.sgs-choice-flow-question__title {
+	font-size: var( --wp--preset--font-size--x-large, 24px );
+	line-height: 1.25;
+	margin: 0 0 16px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Option grid (was a plain stacked <ul>)                                 */
+/* ---------------------------------------------------------------------- */
+
+.sgs-choice-flow-question__options {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+@media ( min-width: 620px ) {
+	.sgs-choice-flow-question__options {
+		grid-template-columns: repeat( 2, 1fr );
+	}
+}
+
+.sgs-choice-flow-question__option {
+	/* position:relative anchors the FR-43-16 help-toggle button, which is a
+	   SIBLING of the option button (not nested inside it — see render.php),
+	   so it needs its own positioning context at this level. */
+	position: relative;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Option card                                                             */
+/* ---------------------------------------------------------------------- */
+
+.sgs-choice-flow-question__option-button {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	min-height: 44px; /* WCAG 2.2 touch target */
+	padding: 14px 16px;
+	border: 2px solid var( --wp--preset--color--border, #d4dbe5 );
+	border-radius: var( --wp--custom--border-radius--medium, 8px );
+	background-color: #fff;
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
+		background-color var( --wp--custom--transition--fast, 0.15s ease );
+}
+
+.sgs-choice-flow-question__option-button:hover {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+}
+
+.sgs-choice-flow-question__option-button:focus-visible {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
+	outline-offset: 2px;
+}
+
+/* FR-43-15 — per-option image preview zone (16:9), only present when the
+   option carries an image; omitted entirely from the markup otherwise, so a
+   text-only option keeps rendering exactly as before (no empty box). */
+.sgs-choice-flow-question__option-media {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	margin-bottom: 12px;
+	border-radius: calc( var( --wp--custom--border-radius--medium, 8px ) - 2px );
+	overflow: hidden;
+	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+}
+
+.sgs-choice-flow-question__option-media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.sgs-choice-flow-question__option-label {
+	display: block;
+}
+
+/* ---------------------------------------------------------------------- */
+/* FR-43-16 — help-text toggle + panel                                     */
+/* ---------------------------------------------------------------------- */
+
+.sgs-choice-flow-question__help-toggle {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
+	border-radius: 50%;
+	background-color: #fff;
+	color: var( --wp--preset--color--text-muted, #606d80 );
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	transition: border-color var( --wp--custom--transition--fast, 0.15s ease ),
+		color var( --wp--custom--transition--fast, 0.15s ease );
+}
+
+.sgs-choice-flow-question__help-toggle:hover {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	color: var( --wp--preset--color--primary, #1f7a7a );
+}
+
+.sgs-choice-flow-question__help-toggle:focus-visible {
+	border-color: var( --wp--preset--color--primary, #1f7a7a );
+	color: var( --wp--preset--color--primary, #1f7a7a );
+	outline: 2px solid var( --wp--preset--color--primary, #1f7a7a );
+	outline-offset: 2px;
+}
+
+.sgs-choice-flow-question__help-panel {
+	margin-top: 8px;
+	padding: 10px 12px;
+	border: 1px solid var( --wp--preset--color--border, #d4dbe5 );
+	border-radius: var( --wp--custom--border-radius--medium, 8px );
+	background-color: var( --wp--preset--color--surface-alt, #f1f0ec );
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+/* [hidden] already suppresses display via the UA stylesheet — this rule only
+   exists so a stray specificity conflict elsewhere can never accidentally
+   re-show a collapsed panel (defensive, matches this attribute's use
+   elsewhere in the codebase, e.g. choice-flow/view.js's own step hide/show). */
+.sgs-choice-flow-question__help-panel[hidden] {
+	display: none;
+}

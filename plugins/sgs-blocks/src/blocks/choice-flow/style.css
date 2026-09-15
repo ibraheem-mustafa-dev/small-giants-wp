@@ -1,0 +1,66 @@
+/* ===== SGS Choice Flow — Frontend + Editor ===== */
+
+/*
+ * Visual-QA pass (2026-09-15, design-reviewer gaps #1/#2/#3). maxWidth +
+ * padding are per-instance scoped declarations emitted by render.php's own
+ * `<style>` block (uid-keyed, contract §D) — this file carries only the
+ * SHARED, non-per-instance rules: the progress bar + the step-transition.
+ */
+
+/* ===== Step progress indicator (gap #2) =====
+ * Track + fill. The fill's width is driven entirely by view.js's
+ * showStepByIndex(), which sets --sgs-choice-flow-progress (0–1) on the
+ * flow root on every step change (and on initial load). The `, 0` fallback
+ * covers the editor canvas, where view.js's frontend-only viewScriptModule
+ * never runs.
+ */
+.sgs-choice-flow__progress {
+	width: 100%;
+	height: 3px;
+	background-color: var(--wp--preset--color--border-light, #E5E7EB);
+	border-radius: 999px;
+	overflow: hidden;
+	margin-bottom: var(--wp--preset--spacing--30, 24px);
+}
+
+.sgs-choice-flow__progress-fill {
+	height: 100%;
+	width: calc(var(--sgs-choice-flow-progress, 0) * 100%);
+	background-color: var(--wp--preset--color--primary, #1F7A7A);
+	transition: width 250ms ease-out;
+}
+
+/* ===== Step transition (gap #3) =====
+ * Scoped to .sgs-form-step INSIDE a choice-flow instance only — sgs/form-step
+ * is a shared inert marker also used by sgs/form, which has its own,
+ * unrelated show/hide + transition mechanism; this rule must never leak
+ * into that context.
+ *
+ * `.is-entering` is the PRE-transition state (see view.js's showStepByIndex()
+ * docblock) — added before a step is un-hidden, removed one animation frame
+ * later. Removing it is what triggers the transition into this rule's own
+ * resting state (opacity:1, no translate).
+ */
+.sgs-choice-flow .sgs-form-step {
+	opacity: 1;
+	transform: translateY(0);
+	transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+
+.sgs-choice-flow .sgs-form-step.is-entering {
+	opacity: 0;
+	transform: translateY(8px);
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-choice-flow .sgs-form-step,
+	.sgs-choice-flow__progress-fill {
+		transition-duration: 0.01ms !important;
+	}
+
+	.sgs-choice-flow .sgs-form-step.is-entering {
+		opacity: 1;
+		transform: none;
+	}
+}
