@@ -83,9 +83,20 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 			// operator who wants no border clears the WIDTH (or picks style `none`).
 			$css .= $link_sel . '{border-width:' . $item_border_width . ';border-style:'
 				. ( '' !== $item_border_style ? $item_border_style : 'solid' ) . ';}';
-		} elseif ( '' !== $item_border_style ) {
-			$css .= $link_sel . '{border-style:' . $item_border_style . ';}';
 		}
+		/*
+		 * REMOVED 2026-09-15 (found live, item border shadow fix). This elseif
+		 * used to fire whenever width was empty but itemBorderStyle held its own
+		 * non-empty default ('solid') -- which it always does. `border-style:solid`
+		 * with NO border-width is not "no border": CSS falls back to the UA
+		 * default `medium` width (~3px), painting a border the operator never
+		 * asked for -- directly contradicting the comment above ("clears the
+		 * WIDTH" should mean no border). Dead in production until
+		 * itemBorderWidth's own default changed from {bottom:"1px"} to {} today --
+		 * before that, width was never actually empty on a live instance, so this
+		 * branch never fired. Style only ever means anything paired with a width;
+		 * there is no supported operator flow that sets a style with no width.
+		 */
 
 		/*
 		 * ⛔ Under `sweep` the band OWNS every non-resting colour on the bottom edge.
