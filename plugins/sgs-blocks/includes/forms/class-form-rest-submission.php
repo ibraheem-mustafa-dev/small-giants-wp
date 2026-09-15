@@ -28,8 +28,13 @@ class Form_REST_Submission {
 	 *
 	 * Guard order (do not reorder without security review):
 	 *   1. Honeypot trap     — return fake 200.
-	 *   2. Form-config fetch — transient; refuse 503 if unresolvable (FR-42-0 — never
-	 *                          guess requireLogin true or false when the config is missing).
+	 *   2. Form-config fetch — CPT-linked forms (Spec 42 Phase 1) read requireLogin/
+	 *                          rateLimit straight from the published `sgs_form` post's
+	 *                          `sgs/form` block attrs (durable, cache-independent);
+	 *                          unlinked forms fall through to the existing transient
+	 *                          lookup. Both sources refuse 503 if unresolvable (FR-42-0
+	 *                          — never guess requireLogin true or false when the config
+	 *                          is missing).
 	 *   3. validate_fields() — 400/413 on malformed payload.
 	 *   4. Require-login     — 401 when form is login-gated.
 	 *   5. check_rate_limit  — 429 when IP quota exceeded.
@@ -56,25 +61,64 @@ class Form_REST_Submission {
 			);
 		}
 
-		// 2. Retrieve cached form configuration (set by render.php, lives 24 hours).
-		// FR-42-0: a page-cache layer (e.g. LiteSpeed on the canary) can serve a page
-		// without re-running render.php, so this transient can be cold even for a
-		// real, valid form. Refuse the submission outright rather than guessing
-		// requireLogin true or false — a silent default-false here was a live
-		// fail-open security defect (a login-gated form became anonymously
-		// submittable with no error, no log line, nothing).
-		$form_config = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
+		// 2. Resolve form configuration.
+		//
+		// 2a. CPT-linked forms (Spec 42 Phase 1): `formId` is a `sgs_form` post
+		// slug. When it resolves to a published post, requireLogin/rateLimit are
+		// read directly from that post's `sgs/form` block attrs — a durable
+		// source that does not depend on render.php having run or any transient
+		// still being warm. If the post's content no longer contains a root
+		// `sgs/form` block (e.g. hand-edited into something else), refuse the
+		// submission outright using the same FR-42-0 discipline as the legacy
+		// path below — never guess requireLogin true or false.
+		$cpt_form_post = null;
 
-		if ( ! is_array( $form_config ) ) {
-			return new \WP_Error(
-				'form_config_unavailable',
-				__( 'This form could not be submitted right now. Please try again shortly.', 'sgs-blocks' ),
-				[ 'status' => 503 ]
-			);
+		if ( class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
+			$cpt_form_post = \SGS\Blocks\Sgs_Block_CPTs::resolve_form( (string) $form_id );
 		}
 
-		$require_login  = (bool) ( $form_config['requireLogin'] ?? false );
-		$rate_limit_max = absint( $form_config['rateLimit'] ?? 5 );
+		if ( null === $cpt_form_post ) {
+			// 2b. Legacy / unlinked forms — retrieve cached form configuration
+			// (set by render.php, lives 24 hours).
+			// FR-42-0: a page-cache layer (e.g. LiteSpeed on the canary) can serve a page
+			// without re-running render.php, so this transient can be cold even for a
+			// real, valid form. Refuse the submission outright rather than guessing
+			// requireLogin true or false — a silent default-false here was a live
+			// fail-open security defect (a login-gated form became anonymously
+			// submittable with no error, no log line, nothing).
+			$form_config = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
+
+			if ( ! is_array( $form_config ) ) {
+				return new \WP_Error(
+					'form_config_unavailable',
+					__( 'This form could not be submitted right now. Please try again shortly.', 'sgs-blocks' ),
+					[ 'status' => 503 ]
+				);
+			}
+
+			$require_login  = (bool) ( $form_config['requireLogin'] ?? false );
+			$rate_limit_max = absint( $form_config['rateLimit'] ?? 5 );
+		} else {
+			$form_block = null;
+
+			foreach ( \parse_blocks( $cpt_form_post->post_content ) as $block ) {
+				if ( 'sgs/form' === $block['blockName'] ) {
+					$form_block = $block;
+					break;
+				}
+			}
+
+			if ( null === $form_block ) {
+				return new \WP_Error(
+					'form_config_unavailable',
+					__( 'This form could not be submitted right now. Please try again shortly.', 'sgs-blocks' ),
+					[ 'status' => 503 ]
+				);
+			}
+
+			$require_login  = (bool) ( $form_block['attrs']['requireLogin'] ?? false );
+			$rate_limit_max = absint( $form_block['attrs']['rateLimit'] ?? 5 );
+		}
 
 		// 3. Schema-level payload validation runs BEFORE the login check so a
 		// 400 response cannot be used to probe whether a form requires login.

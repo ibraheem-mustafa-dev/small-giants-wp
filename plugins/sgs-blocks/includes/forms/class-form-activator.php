@@ -57,5 +57,15 @@ class Form_Activator {
 		dbDelta( $sql );
 
 		update_option( 'sgs_forms_db_version', self::DB_VERSION );
+
+		$administrator = get_role( 'administrator' );
+		if ( $administrator ) {
+			$administrator->add_cap( 'edit_sgs_forms' );
+		}
+
+		$editor = get_role( 'editor' );
+		if ( $editor ) {
+			$editor->add_cap( 'edit_sgs_forms' );
+		}
 	}
 }

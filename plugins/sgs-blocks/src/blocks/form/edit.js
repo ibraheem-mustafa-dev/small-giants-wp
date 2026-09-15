@@ -14,6 +14,7 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
+import { resolveSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -28,6 +29,7 @@ const SUBMIT_STYLE_OPTIONS = [
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const {
 		formId,
+		formIsLinked,
 		formName,
 		submitLabel,
 		submitStyle,
@@ -443,11 +445,49 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			/>
 			<InspectorControls>
 				<PanelBody title={ __( 'Form Settings', 'sgs-blocks' ) }>
+					{ /* Spec 35 §2 LINK standard + Spec 42 §2 (Phase 1) — additive,
+					   not a replacement: mirrors `modalRef`'s established
+					   CPT-reference picker precedent. Linking here writes the
+					   referenced post's SLUG into the existing `formId` attribute
+					   (never a new attribute) and sets `formIsLinked` true, giving
+					   render.php + the REST handler an unambiguous discriminator
+					   between "never linked" and "linked but broken". The
+					   free-text control below keeps working unchanged for a form
+					   that never touches this picker. */ }
+					<LinkPopoverField
+						label={ __( 'Linked Form', 'sgs-blocks' ) }
+						help={ __(
+							'Optional. Link this block to a reusable form definition (Forms admin screen) instead of building fields inline below.',
+							'sgs-blocks'
+						) }
+						value={ { url: formIsLinked ? formId : '' } }
+						suggestionsQuery={ { type: 'post', subtype: 'sgs_form' } }
+						enableInternalResolution
+						showTarget={ false }
+						showRel={ false }
+						onChange={ async ( { linkId } ) => {
+							if ( ! linkId ) {
+								setAttributes( { formIsLinked: false } );
+								return;
+							}
+							const record = await resolveSelect( 'core' ).getEntityRecord(
+								'postType',
+								'sgs_form',
+								linkId
+							);
+							if ( record?.slug ) {
+								setAttributes( {
+									formId: record.slug,
+									formIsLinked: true,
+								} );
+							}
+						} }
+					/>
 					<TextControl
-						label={ __( 'Form ID', 'sgs-blocks' ) }
+						label={ __( 'Form ID (used if no form is linked above)', 'sgs-blocks' ) }
 						value={ formId }
 						onChange={ ( value ) =>
-							setAttributes( { formId: value } )
+							setAttributes( { formId: value, formIsLinked: false } )
 						}
 						help={ __(
 							'Unique identifier for this form. Used for analytics and tracking submissions.',

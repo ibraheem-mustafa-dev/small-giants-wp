@@ -70,6 +70,19 @@ final class Sgs_Block_CPTs {
 	 */
 	public const MODAL_CPT = 'sgs_modal';
 
+	/**
+	 * Post type slug for form definition entries (Phase 1, Spec 42).
+	 *
+	 * A `sgs_form` post stores a form's field definitions + settings, edited on
+	 * its own screen rather than inline inside a page. Unlike the four CPTs
+	 * above, this one carries its OWN dedicated capability (`edit_sgs_forms`)
+	 * rather than the inherited `edit_theme_options` — form-building is an
+	 * everyday content-editing task, not a theme-structure change, so it should
+	 * be assignable to a role that manages content without also handing over
+	 * header/footer/drawer/modal editing rights.
+	 */
+	public const FORM_CPT = 'sgs_form';
+
 	/** Block pattern category slug for header patterns. */
 	private const HEADER_CAT = 'sgs-headers';
 
@@ -87,6 +100,8 @@ final class Sgs_Block_CPTs {
 		\add_action( 'init', array( __CLASS__, 'register_post_types' ) );
 		\add_action( 'admin_init', array( __CLASS__, 'register_patterns_from_cpts' ) );
 		\add_action( 'admin_menu', array( __CLASS__, 'register_submenus' ) );
+		\add_filter( 'wp_insert_post_data', array( __CLASS__, 'guard_form_slug_rename' ), 10, 2 );
+		\add_filter( 'wp_revisions_to_keep', array( __CLASS__, 'limit_form_revisions' ), 10, 2 );
 	}
 
 	/**
@@ -257,6 +272,82 @@ final class Sgs_Block_CPTs {
 				)
 			)
 		);
+
+		/**
+		 * Capability map for `sgs_form` — deliberately its OWN map, not the
+		 * shared `$capabilities` above (Phase 1, Spec 42).
+		 *
+		 * Every primitive routes to `edit_sgs_forms` instead of
+		 * `edit_theme_options`, so form-building can be assigned to a role
+		 * that manages everyday content without also granting header/footer/
+		 * drawer/modal theme-structure access. Same 12-primitive shape as
+		 * `$capabilities`, same `map_meta_cap => true` reasoning: the
+		 * singular meta-caps (`edit_post`, `read_post`, `delete_post`) are
+		 * deliberately omitted so WP core derives them from these primitives.
+		 *
+		 * @var array<string,string>
+		 */
+		$form_capabilities = array(
+			'read'                   => 'edit_sgs_forms',
+			'read_private_posts'     => 'edit_sgs_forms',
+			'edit_posts'             => 'edit_sgs_forms',
+			'edit_private_posts'     => 'edit_sgs_forms',
+			'edit_published_posts'   => 'edit_sgs_forms',
+			'edit_others_posts'      => 'edit_sgs_forms',
+			'publish_posts'          => 'edit_sgs_forms',
+			'delete_posts'           => 'edit_sgs_forms',
+			'delete_private_posts'   => 'edit_sgs_forms',
+			'delete_published_posts' => 'edit_sgs_forms',
+			'delete_others_posts'    => 'edit_sgs_forms',
+			'create_posts'           => 'edit_sgs_forms',
+		);
+
+		/**
+		 * Args for `sgs_form` — mirrors `$shared`'s shape but swaps in the
+		 * form-specific capability map and drops `custom-fields` support
+		 * (out of scope for Phase 1; no post-meta is stored on this CPT yet).
+		 *
+		 * @var array<string,mixed>
+		 */
+		$form_shared = array(
+			'public'          => false,
+			'show_ui'         => true,
+			'show_in_menu'    => false,
+			'show_in_rest'    => true,
+			'supports'        => array( 'title', 'editor', 'revisions' ),
+			'rewrite'         => false,
+			'has_archive'     => false,
+			'capability_type' => 'page',
+			'map_meta_cap'    => true,
+			'capabilities'    => $form_capabilities,
+		);
+
+		\register_post_type(
+			self::FORM_CPT,
+			array_merge(
+				$form_shared,
+				array(
+					'label'       => \__( 'Forms', 'sgs-blocks' ),
+					'labels'      => array(
+						'name'               => \__( 'Forms', 'sgs-blocks' ),
+						'singular_name'      => \__( 'Form', 'sgs-blocks' ),
+						'add_new'            => \__( 'Add New', 'sgs-blocks' ),
+						'add_new_item'       => \__( 'Add New Form', 'sgs-blocks' ),
+						'edit_item'          => \__( 'Edit Form', 'sgs-blocks' ),
+						'new_item'           => \__( 'New Form', 'sgs-blocks' ),
+						'view_item'          => \__( 'View Form', 'sgs-blocks' ),
+						'search_items'       => \__( 'Search Forms', 'sgs-blocks' ),
+						'not_found'          => \__( 'No forms found.', 'sgs-blocks' ),
+						'not_found_in_trash' => \__( 'No forms found in Trash.', 'sgs-blocks' ),
+					),
+					'description' => \__( 'Form definitions, edited on their own screen and rendered by a Form block wherever they are needed.', 'sgs-blocks' ),
+					// NO `template` arg — same reason as all CPTs above (FR-37-7,
+					// 2026-07-24): a registration template makes a new post
+					// non-empty and suppresses WordPress's native "Choose a
+					// pattern" starter modal.
+				)
+			)
+		);
 	}
 
 	/**
@@ -362,6 +453,79 @@ final class Sgs_Block_CPTs {
 			'edit.php?post_type=' . self::MODAL_CPT,
 			''
 		);
+
+		// `sgs_form` uses its OWN capability ('edit_sgs_forms'), not
+		// 'edit_theme_options' — a user who only holds the new cap must still
+		// see this submenu entry (Phase 1, Spec 42 FR-42-1).
+		\add_submenu_page(
+			Sgs_Admin_Menu::MENU_SLUG,
+			\__( 'Forms', 'sgs-blocks' ),
+			\__( 'Forms', 'sgs-blocks' ),
+			'edit_sgs_forms',
+			'edit.php?post_type=' . self::FORM_CPT,
+			''
+		);
+	}
+
+	/**
+	 * Cap `sgs_form` revisions at 10; leave every other post type's revision
+	 * count untouched (Phase 1, Spec 42 — decided literal value, FR-42-3).
+	 *
+	 * @param int          $num  The number of revisions WP would otherwise keep.
+	 * @param \WP_Post|int $post The post (or post ID) being checked.
+	 * @return int
+	 */
+	public static function limit_form_revisions( int $num, $post ): int {
+		$post_type = \get_post_type( $post );
+
+		if ( self::FORM_CPT !== $post_type ) {
+			return $num;
+		}
+
+		return 10;
+	}
+
+	/**
+	 * Block a `sgs_form` post's slug from changing once it has at least one
+	 * row in the submissions table (Phase 1, Spec 42 — decided slug-rename
+	 * policy). A silent no-op (keep the old slug) reads better to a non-coder
+	 * client than a save failure with no visible reason.
+	 *
+	 * @param array<string,mixed> $data    Slashed post data about to be saved.
+	 * @param array<string,mixed> $postarr Raw, unslashed $_POST data.
+	 * @return array<string,mixed>
+	 */
+	public static function guard_form_slug_rename( array $data, array $postarr ): array {
+		if ( self::FORM_CPT !== ( $data['post_type'] ?? '' ) ) {
+			return $data;
+		}
+
+		$post_id = (int) ( $postarr['ID'] ?? 0 );
+
+		if ( $post_id <= 0 ) {
+			return $data;
+		}
+
+		$existing = \get_post( $post_id );
+
+		if ( ! $existing instanceof \WP_Post || $existing->post_name === $data['post_name'] ) {
+			return $data;
+		}
+
+		global $wpdb;
+
+		$submission_count = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sgs_form_submissions WHERE form_id = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name, not user input.
+				$existing->post_name
+			)
+		);
+
+		if ( $submission_count > 0 ) {
+			$data['post_name'] = $existing->post_name;
+		}
+
+		return $data;
 	}
 
 	/**
@@ -389,6 +553,38 @@ final class Sgs_Block_CPTs {
 		}
 
 		if ( self::MODAL_CPT !== $post->post_type ) {
+			return null;
+		}
+
+		if ( 'publish' !== $post->post_status ) {
+			return null;
+		}
+
+		return $post;
+	}
+
+	/**
+	 * Resolve a `sgs/form` block's `formId` attribute (a slug, not a post ID —
+	 * unlike {@see self::resolve_modal()}) to the published `sgs_form` post it
+	 * names, or null when there is no valid target.
+	 *
+	 * Same fail-closed shape as `resolve_modal()` (never a fatal, degrade to
+	 * null), but a DIFFERENT lookup mechanism: `sgs_form` is resolved by SLUG
+	 * (Spec 42 §2), because a form's embed attribute carries a human-readable
+	 * slug, not a numeric post ID. Do not copy `resolve_modal()`'s `get_post()`
+	 * body here.
+	 *
+	 * @param string $slug The `formId` attribute value (a `sgs_form` post slug, or '' for "not linked").
+	 * @return \WP_Post|null The published form-definition post, or null.
+	 */
+	public static function resolve_form( string $slug ): ?\WP_Post {
+		if ( '' === $slug ) {
+			return null;
+		}
+
+		$post = \get_page_by_path( $slug, OBJECT, self::FORM_CPT );
+
+		if ( ! $post instanceof \WP_Post ) {
 			return null;
 		}
 

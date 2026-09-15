@@ -41,8 +41,54 @@ require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php'
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
 // fontSize/lineHeight are string values passed straight to
 // wp_style_engine_get_styles(), which sanitises them internally).
-$form_id           = $attributes['formId'] ?? '';
-$form_name         = $attributes['formName'] ?? '';
+$form_id   = $attributes['formId'] ?? '';
+$form_name = $attributes['formName'] ?? '';
+
+// CPT-linked forms (Phase 1, Spec 42 §2) — when linked, this embed's own
+// wrapper/attributes below are NOT used at all; the referenced `sgs_form`
+// CPT post's own `sgs/form` block (with its own attrs + InnerBlocks) is
+// rendered wholesale via do_blocks(), recursing back into this same
+// render.php using the CPT's own authoritative config — the same source
+// class-form-rest-submission.php reads for requireLogin/rateLimit (FR-42-8).
+// Mirrors modalRef's fail-closed resolution shape
+// (Sgs_Block_CPTs::resolve_modal()) but resolves by SLUG, not post ID
+// (Spec 42 §2) — do not copy resolve_modal()'s body.
+$form_is_linked  = ! empty( $attributes['formIsLinked'] );
+$referenced_form = null;
+if ( '' !== $form_id && class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
+	$referenced_form = \SGS\Blocks\Sgs_Block_CPTs::resolve_form( $form_id );
+}
+
+if ( $form_is_linked && null === $referenced_form ) {
+	// Broken reference: formId WAS linked (the picker set formIsLinked=true)
+	// but resolve_form() now returns null — the referenced post is
+	// trashed/unpublished/deleted. Two-audience degrade (Spec 42 §2,
+	// decided): every visitor sees a plain fallback; an edit_sgs_forms
+	// holder ALSO sees an actionable editor notice above it. A legacy/
+	// never-linked form (formIsLinked false/absent) NEVER reaches this
+	// branch — it falls through to the unchanged legacy path below.
+	?>
+	<div class="sgs-form sgs-form--broken-reference">
+		<?php if ( current_user_can( 'edit_sgs_forms' ) ) : ?>
+			<p class="sgs-form__admin-notice" role="alert">
+				<?php esc_html_e( "This form's reference is broken — go to Forms, find the linked form, and republish it or unlink this block.", 'sgs-blocks' ); ?>
+			</p>
+		<?php endif; ?>
+		<p class="sgs-form__fallback-message">
+			<?php esc_html_e( "This form isn't available right now — please contact us instead.", 'sgs-blocks' ); ?>
+		</p>
+	</div>
+	<?php
+	return;
+}
+
+if ( null !== $referenced_form ) {
+	echo (string) do_blocks( $referenced_form->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is core-trusted block HTML, same provenance as modalRef's identical pattern (modal/render.php).
+	return;
+}
+
+// ── legacy / unlinked path — everything below this point is UNCHANGED ──────
+
 $submit_label      = $attributes['submitLabel'] ?? __( 'Submit', 'sgs-blocks' );
 $submit_style      = $attributes['submitStyle'] ?? 'primary';
 $success_message   = $attributes['successMessage'] ?? __( 'Thank you! Your submission has been received.', 'sgs-blocks' );

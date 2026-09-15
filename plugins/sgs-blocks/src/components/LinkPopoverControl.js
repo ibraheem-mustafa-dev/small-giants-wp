@@ -95,6 +95,11 @@ export const TARGET_ENUM_OPTIONS = [
  *                                                fields, only when a url is set. For a consumer's
  *                                                own bespoke field (e.g. the block-link extension's
  *                                                accessible-label field).
+ * @param {Object}    [props.suggestionsQuery]   Passed straight to LinkControl's own
+ *                                                suggestionsQuery prop (e.g. { type: 'post',
+ *                                                subtype: 'sgs_form' }) to scope suggestions to
+ *                                                one post type/subtype. Omit for the default
+ *                                                unscoped search.
  */
 export function LinkPopoverContent( {
 	anchor,
@@ -112,6 +117,7 @@ export function LinkPopoverContent( {
 	targetMode = 'enum',
 	enableInternalResolution = false,
 	renderExtraFields,
+	suggestionsQuery,
 } ) {
 	const linkValue = {
 		url: url || '',
@@ -160,6 +166,7 @@ export function LinkPopoverContent( {
 					onChange={ handleLinkChange }
 					onRemove={ handleRemove }
 					forceIsEditingLink={ ! linkValue.url }
+					suggestionsQuery={ suggestionsQuery }
 				/>
 				{ !! linkValue.url && (
 					<VStack spacing={ 4 }>
@@ -238,6 +245,11 @@ export function LinkPopoverContent( {
  *                                                `searchOnly` contract, which this supersedes.
  *                                                Forces target/rel/download rows off regardless of
  *                                                the show* props.
+ * @param {Object}   [props.suggestionsQuery]     Passed straight to LinkControl's own
+ *                                                suggestionsQuery prop (e.g. { type: 'post',
+ *                                                subtype: 'sgs_form' }) to scope suggestions to
+ *                                                one post type/subtype. Omit for the default
+ *                                                unscoped search.
  */
 const LinkPopoverField = forwardRef( function LinkPopoverField(
 	{
@@ -252,6 +264,7 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 		enableInternalResolution = false,
 		renderExtraFields,
 		searchOnly = false,
+		suggestionsQuery,
 	},
 	ref
 ) {
@@ -304,6 +317,7 @@ const LinkPopoverField = forwardRef( function LinkPopoverField(
 					onChangeRel={ ! searchOnly && showRel ? ( val ) => onChange( { rel: val } ) : undefined }
 					onChangeDownload={ ! searchOnly && showDownload ? ( val ) => onChange( { download: val } ) : undefined }
 					renderExtraFields={ searchOnly ? undefined : renderExtraFields }
+					suggestionsQuery={ suggestionsQuery }
 				/>
 			) }
 		</BaseControl>

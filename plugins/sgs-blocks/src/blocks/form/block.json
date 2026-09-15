@@ -198,6 +198,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"formIsLinked": {
+			"type": "boolean",
+			"default": false,
+			"description": "True only when formId was set by the CPT picker (Phase 1, Spec 42) — the unambiguous discriminator between 'never linked to a sgs_form post' (legacy/free-text formId, renders own InnerBlocks) and 'linked, but the reference is now broken' (trashed/unpublished sgs_form post, renders the two-audience degrade message). Never set true by hand-authoring; only the picker's onChange writes it."
+		},
 		"formName": {
 			"type": "string",
 			"default": ""
