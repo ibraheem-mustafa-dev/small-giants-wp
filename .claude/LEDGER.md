@@ -1,28 +1,31 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-14
+last_updated: 2026-09-15
 ---
 
 # small-giants-wp — LEDGER (the one living status)
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE, ALL 8 STEPS,
-INCLUDING THE NEW FEATURES.** The single `sgs/nav-menu` block is now two real, separate blocks —
-`sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with separated CSS/PHP namespaces, migrated theme
-patterns, reseeded DB, matching live canary content, AND the split-nav-either-side-of-logo layout
-+ SOON badge + drawer two-tier split the whole track existed to deliver. Build passes clean end
-to end on every commit. Full architecture + evidence: `decisions.md` D1059/D1060/D1076; plan:
+**THE FRONT right now: the nav-menu block split (D1059/D1060) is FULLY DONE, DEPLOYED, AND
+LIVE-VERIFIED — nothing left open.** The single `sgs/nav-menu` block is now two real, separate
+blocks — `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` — with separated CSS/PHP namespaces,
+migrated theme patterns, reseeded DB, matching live canary content, AND the
+split-nav-either-side-of-logo layout + SOON badge + drawer two-tier split the whole track existed
+to deliver. `/sgs-update` ran clean, the Step 5 DB blocker is resolved, `build-deploy.py` shipped
+to sandybrown, and Playwright confirmed every new capability actually works on the live site — see
+Front A for the full evidence trail, including two real (pre-existing, unrelated) bugs found and
+fixed along the way. Full architecture + evidence: `decisions.md` D1059/D1060/D1076; plan:
 `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level, not under the
 project's own `.claude/plans/`).
 
 **Commit sequence:** `ed3b495de` → `5626e8c82` → `80f78f511` → `3b335757d` → `b6c335924` →
-`782281040` → `a04ccf942` → `b54c9b347` (Step 6) → `31886a2ea` (Step 7) → `c149de5b4` (Step 8).
+`782281040` → `a04ccf942` → `b54c9b347` (Step 6) → `31886a2ea` (Step 7) → `c149de5b4` (Step 8) →
+`e219265d2`+`71a23fe4b` (Step 5 DB fix) → `0b5593dc9` (gate repairs) → `439321df6`+`1376084dd`
+(live item-border-shadow fix, deployed).
 
-**One real blocker survives (Step 5 debt, found deploying Step 6) — see Front A: `sgs/nav-drawer-menu`
-has 179 rogue DB `css_property` seeds blocking any canary deploy that touches it.** Needs its own
-session. Not the nav-menu-split track's own work to re-open — it's a Step 5 reseed gap.
+**No open blockers.** The whole track is closed — see Front A only for historical detail.
 
 **Everything else this file used to lead with (the Spec 41 nav-menu colour/state Waves A-C
 programme, R8 motion, BEM-recognition) is unchanged from the last handoff and CLOSED or PARKED
@@ -72,33 +75,44 @@ halt-and-resume (D1075).** Full detail in "Front C" below — not duplicated her
 
 ## THE FRONT — what to pick up next
 
-### Front A — nav-menu split (D1059/D1060) — ALL 8 STEPS DONE
-`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` fully split (BEM/PHP namespaces, patterns, DB
-reseeded, live canary content). Steps 6-8 (`b54c9b347`, `31886a2ea`, `c149de5b4`, 2026-09-15) —
-`ColumnShapePicker` gained an `auto` track (`1fr auto 1fr` "Fit centre"); `nav-bar-menu` gained
-`justifyContent`, `splitAfterItemId`+`splitSide`+`showBurger`; `nav-drawer-menu` gained
-`splitAfterItemId`+`splitSide` (two-tier). Both split-capable blocks disambiguate auto-derived
-`navLabel` per side (landmark-unique). Step 7: both blocks repurpose the operator's menu-item
-"Description" field as free-text badge copy ("SOON") via a new shared `sgs_nav_shared_badge_html()`
-— tinted chip on the bar, bare letter-spaced word in the drawer; real visually-hidden text (not
-CSS content) keeps the accessible name "Label (Badge)"; 24-char cap. Also fixed:
-`aria-disabled="true"` on the drawer's URL-less `__link--label` span. `npm run build` clean on
-every commit. **Visual-diff gate scope-skipped on all three** (disclosed each time) — Step 6/8
-attrs default byte-identical, Step 7 is genuinely new-visual but capture is blocked by the
-blocker below. Whole track: read it as CLOSED — no more nav-menu-split steps pending.
+### Front A — nav-menu split (D1059/D1060) — FULLY DONE + DEPLOYED + LIVE-VERIFIED
+`sgs/nav-bar-menu` + `sgs/nav-drawer-menu` fully split, all 8 steps shipped (`b54c9b347`,
+`31886a2ea`, `c149de5b4`, 2026-09-15) — split-nav layout (`ColumnShapePicker` `auto` track,
+`justifyContent`, `splitAfterItemId`/`splitSide`/`showBurger`), SOON badge (shared
+`sgs_nav_shared_badge_html()`, real visually-hidden text for the accessible name, 24-char cap),
+drawer two-tier split. **The Step 5 blocker (179 rogue `sgs/nav-drawer-menu` DB `css_property`
+seeds) is RESOLVED** (`e219265d2` + `71a23fe4b`) — root cause was `sync-container-wrapping-blocks.py`'s
+ground-truth roster still naming the deleted `sgs/nav-menu`; fixed + re-ran `/sgs-update` in full;
+`db-consistency/run.py --check` (build-deploy.py's F6 gate) now exits 0. Two more pre-existing,
+unrelated-to-nav gate failures found+fixed while getting a clean deploy (`0b5593dc9`): stale
+`sgs/nav-menu` fixtures in `converter/tests/test_variant_detect.py` (renamed to
+`sgs/nav-drawer-menu`, matching live DB truth), and a stale product-card assertion (unrelated,
+predates this session — `colourSwatches` gained a `label` field in `0a93cbec9`).
 
-**STANDING BLOCKER (Step 5 debt, found while deploying Step 6): `sgs/nav-drawer-menu` has 179
-"rogue" DB `css_property` seeds** — `build-deploy.py`'s F6 scanner (`sgs-update-v2.py`) fails the
-deploy: submenu typography/marker attrs (e.g. `submenuFontStyle`) have no matching entry in
-`css-property-classifications.json`/`attr-classification-overrides.json`, would vanish on next
-reseed. NOT caused by Steps 6-8. **Deploy to sandybrown BLOCKED for nav-drawer-menu pages** —
-needs its own session; also blocks live-verifying Step 7's badge on the canary.
+**DEPLOYED to sandybrown (`1376084dd`) and LIVE-VERIFIED via Playwright** — homepage nav renders
+unchanged (regression-safe), and a scratch test page proved every new capability actually works:
+badge renders + correct accessible name, split-before/after render the right item subsets,
+unresolvable split id correctly falls back to the FULL menu, drawer two-tier split works. Scratch
+page + test menu-item edit deleted/reverted after verification.
 
-**`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** (still PARTIAL) — citation drift
-fixed + live-verified post-split, bug itself still unfixed.
+**Two REAL bugs found live, fixed, redeployed, re-verified (`439321df6` + `1376084dd`) — neither
+Steps 6-8's own work, both much older:** (1) `itemBorderWidth`'s FR-41-36 "always visible" 1px
+default read as a stray shadow under every nav item at rest (Bean-flagged on the real homepage) —
+changed to `{}` (off) on both blocks. (2) That alone didn't fix it: a DEAD `elseif` branch in
+`nav-menu-item-border-featured-css.php` (dead until today, because width was never previously
+empty on a live instance) painted `border-style:solid` with no width whenever width was cleared —
+which CSS resolves to the browser's ~3px default border, not none. Branch removed. Both
+live-confirmed via computed-style capture on the real homepage: `border-bottom: 0px none`.
+
+Whole track: read as CLOSED. No more nav-menu-split steps, no more known blockers, deploy is
+current and verified.
+
+**`parking.md`'s `P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT`** (still PARTIAL) + new
+**`P-NAV-HOVER-TYPOGRAPHY-CONTROLS`** (6 pre-existing orphaned Hover attrs, baselined not built) —
+both residual, both genuinely pre-existing, neither blocking anything.
 
 **Spec 36/41 citation drift** — 13 gating `CITE-SYMBOL` findings on Spec 41 (Step-3-rename drift,
-re-disclosed each nav-menu-split commit through `c149de5b4`), not yet re-fixed. Spec 36's bare
+re-disclosed on every nav-menu-split commit through `1376084dd`), not yet re-fixed. Spec 36's bare
 `sgs/nav-menu` prose mentions (ungated) also untouched — bigger job.
 
 ### Front B — Spec 42/43 combined adversarial-council — CLOSED (D1072), carried forward verbatim
