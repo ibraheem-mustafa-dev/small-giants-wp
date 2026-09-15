@@ -56,6 +56,7 @@
 	],
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
 			"title": "Which service suits you?"

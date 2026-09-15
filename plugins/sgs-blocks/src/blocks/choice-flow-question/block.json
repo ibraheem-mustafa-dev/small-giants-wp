@@ -68,7 +68,7 @@
 					},
 					"nextStepId": {
 						"type": "string",
-						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the clientId of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker."
+						"description": "Empty string = advance to the next step in flow order (default, FR-43-2). '__terminal__' = jump to the reachable result step. Any other value = the 0-based DOM-order position of a sibling sgs/form-step within the same sgs/choice-flow, resolved at editor-time by the step picker (not a clientId — clientId is editor-only and unresolvable by render.php/the runtime store, see choice-flow-question/edit.js and choice-flow/view.js)."
 					},
 					"tags": {
 						"type": "array",

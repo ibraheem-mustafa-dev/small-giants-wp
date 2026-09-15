@@ -63,6 +63,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				return [];
 			}
 
+			// value is the step's 0-based DOM-order position, NOT its
+			// clientId. clientId is a React-editor-only concept — WordPress's
+			// parse_blocks() never includes it in the parsed block tree that
+			// render.php or a runtime store receives, so a stored clientId
+			// could never be resolved back to a step at render/runtime.
+			// choice-flow/view.js's step engine reads this same value
+			// straight off `flowRoot.querySelectorAll('.sgs-form-step')[
+			// index ]` — the identical DOM-order lookup sgs/form/view.js
+			// already uses for its own step indexing, so a stringified
+			// index is a stable, runtime-resolvable identifier.
 			return getBlocks( flowId )
 				.filter( ( block ) => block.name === 'sgs/form-step' )
 				.map( ( block, index ) => ( {
@@ -71,7 +81,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__( 'Step %d', 'sgs-blocks' ),
 						index + 1
 					),
-					value: block.clientId,
+					value: String( index ),
 				} ) );
 		},
 		[ clientId ]
