@@ -5,7 +5,7 @@ import {
 	InspectorControls,
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useEffect, useMemo } from '@wordpress/element';
+import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { PanelBody, TextControl, Notice } from '@wordpress/components';
 
 // Spec 43 §2/§9 (Phase 2) — sgs/choice-flow only ever contains sgs/form-step
@@ -60,6 +60,102 @@ function findDescendantsByName( block, blockName ) {
 		found.push( ...findDescendantsByName( child, blockName ) );
 	} );
 	return found;
+}
+
+/**
+ * Reorder-desync guard (found by adversarial review, 2026-09-15).
+ *
+ * `nextStepId` is stored as a positional index — the target step's 0-based
+ * DOM-order position at the moment it was picked (see
+ * `choice-flow-question/edit.js`'s `stepChoices`). That value is necessary
+ * because `sgs/form-step` has no stable identity of its own that survives
+ * to render/runtime (a clientId does not — see `view.js`'s own docblock for
+ * the full history of that earlier bug). But a bare position is NOT stable
+ * across a step reorder, which `sgs/choice-flow`'s `templateLock: false`
+ * explicitly allows (drag-and-drop, "Move up"/"Move down"). Without this
+ * guard, reordering steps silently repoints every `nextStepId` at whatever
+ * step now occupies the OLD position — `validateFlow()`'s bounds-only check
+ * (below) cannot catch this, because the repointed value is still a valid,
+ * in-range index; it is just the WRONG one.
+ *
+ * Fix: track each step's clientId order across renders. When the order
+ * changes (and it is genuinely the SAME SET of steps, just reordered — an
+ * add/remove is a different, already-handled case via the dangling-
+ * reference check), translate every question option's `nextStepId` from its
+ * OLD position to the SAME STEP's NEW position, keyed by clientId identity,
+ * so a client's authored routing intent survives a reorder unchanged.
+ *
+ * @param {Object[]} steps        Current top-level `sgs/form-step` children,
+ *                                 in DOM order, each with clientId + full
+ *                                 nested innerBlocks tree.
+ * @param {string[]} previousOrder The same steps' clientIds, in the order
+ *                                 recorded before this render's change.
+ * @param {Function} updateBlockAttributes `core/block-editor`'s dispatch
+ *                                 action, used to rewrite each affected
+ *                                 question block's `options` attribute.
+ */
+function remapStepReferencesOnReorder( steps, previousOrder, updateBlockAttributes ) {
+	const currentOrder = steps.map( ( step ) => step.clientId );
+
+	// Only remap when it's a genuine REORDER of the same step set — a
+	// different length (a step was added/removed) is out of scope here;
+	// the dangling-reference check already covers a removed step's
+	// now-invalid references, and a newly added step has no existing
+	// nextStepId pointing at it yet.
+	if (
+		previousOrder.length !== currentOrder.length ||
+		previousOrder.every( ( id, i ) => id === currentOrder[ i ] )
+	) {
+		return;
+	}
+
+	const sameSet =
+		previousOrder.every( ( id ) => currentOrder.includes( id ) ) &&
+		currentOrder.every( ( id ) => previousOrder.includes( id ) );
+	if ( ! sameSet ) {
+		return;
+	}
+
+	// oldIndex -> newIndex, by clientId identity.
+	const indexMap = new Map();
+	previousOrder.forEach( ( clientIdAtOldPos, oldIndex ) => {
+		indexMap.set( oldIndex, currentOrder.indexOf( clientIdAtOldPos ) );
+	} );
+
+	steps.forEach( ( step ) => {
+		findDescendantsByName( step, 'sgs/choice-flow-question' ).forEach(
+			( questionBlock ) => {
+				let changed = false;
+				const newOptions = ( questionBlock.attributes.options || [] ).map(
+					( option ) => {
+						const raw = option.nextStepId || '';
+						if ( '' === raw || TERMINAL_SENTINEL === raw ) {
+							return option;
+						}
+						const oldIndex = /^\d+$/.test( raw ) ? parseInt( raw, 10 ) : -1;
+						if ( ! indexMap.has( oldIndex ) ) {
+							// Not a value this remap recognises (already
+							// dangling, or somehow out of range) — leave it
+							// for validateFlow()'s dangling-reference check
+							// to report as-is, don't guess a translation.
+							return option;
+						}
+						const newIndex = indexMap.get( oldIndex );
+						if ( newIndex === oldIndex ) {
+							return option;
+						}
+						changed = true;
+						return { ...option, nextStepId: String( newIndex ) };
+					}
+				);
+				if ( changed ) {
+					updateBlockAttributes( questionBlock.clientId, {
+						options: newOptions,
+					} );
+				}
+			}
+		);
+	} );
 }
 
 /**
@@ -238,6 +334,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 
 	const errors = useMemo( () => validateFlow( steps ), [ steps ] );
+
+	// Reorder-desync guard (see remapStepReferencesOnReorder's own docblock).
+	// previousStepOrder persists across renders without itself triggering a
+	// re-render (a ref, not state) — this is a synchronisation side effect,
+	// not something the UI reads directly.
+	const previousStepOrder = useRef( null );
+	const { updateBlockAttributes } = useDispatch( 'core/block-editor' );
+
+	useEffect( () => {
+		const currentOrder = steps.map( ( step ) => step.clientId );
+		if ( previousStepOrder.current !== null ) {
+			remapStepReferencesOnReorder(
+				steps,
+				previousStepOrder.current,
+				updateBlockAttributes
+			);
+		}
+		previousStepOrder.current = currentOrder;
+		// Deliberately NOT depending on `updateBlockAttributes` (a stable
+		// dispatch function identity) beyond this one read — including
+		// `steps` (already covers array-identity changes from any
+		// attribute edit anywhere in the tree, which is fine: the internal
+		// clientId-order comparison is a no-op when only content changed,
+		// not order).
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ steps ] );
 
 	// FR-43-2a's publish-blocking mechanism: `core/editor`'s
 	// lockPostSaving()/unlockPostSaving() is the standard WordPress API for
