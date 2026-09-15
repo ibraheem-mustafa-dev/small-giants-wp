@@ -1548,3 +1548,5 @@
 2026-09-15 14:27:39 | choice-flow | MANUAL SKIP | Build-wiring fix only (import style.css so it compiles) -- same visual output as the just-reviewed commit, verified live next in this session.
 2026-09-15 14:27:40 | choice-flow-question | MANUAL SKIP | Build-wiring fix only (import style.css so it compiles) -- same visual output as the just-reviewed commit, verified live next in this session.
 2026-09-15 14:27:40 | choice-flow-result | MANUAL SKIP | Build-wiring fix only (import style.css so it compiles) -- same visual output as the just-reviewed commit, verified live next in this session.
+2026-09-15 15:51:32 | choice-flow | MANUAL SKIP | New visual capability (Back button/step indicator/list layout) cannot be captured pre-deploy -- canary requires the exact committed code; live verification + a visual-diff report will follow immediately after deploy, same session.
+2026-09-15 15:51:33 | choice-flow-question | MANUAL SKIP | New visual capability (Back button/step indicator/list layout) cannot be captured pre-deploy -- canary requires the exact committed code; live verification + a visual-diff report will follow immediately after deploy, same session.
