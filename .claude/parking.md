@@ -218,6 +218,34 @@ matches.
 
 ## Framework: blocks, theme, specs
 
+### P-REST-CALLBACK-LOADABILITY-GATE — no gate asserts a registered REST route's callback class is actually loaded
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
+
+D1079: `class-form-rest-submission.php`'s `Form_REST_Submission` class was never `require_once`'d
+anywhere in this codebase's history, so its `/sgs-forms/v1/submit` REST route registered fine
+(`::class` resolves to a string regardless of load state) but every real dispatch returned a
+bare 500 `rest_invalid_handler`, invisibly — nothing written to any PHP error log. Found live
+during Phase 1 QA, fixed same session (`dfa749f68`).
+
+**The general gap this exposes:** every existing gate in this repo is either a static
+source-text check (blind to a missing `require` — the class NAME appears correctly everywhere
+in source, only its LOAD PATH is broken) or a live probe scoped to specific known pages (a REST
+endpoint with no page-level trigger in its own test suite is invisible to those too).
+`FormSubmissionTest.php`'s 34/34 pass gave false confidence for exactly this reason — it does
+text-pattern matching on the file's raw contents, never actual WP bootstrap + class loading.
+
+**Minimal fix shape (not built):** a gate that, for every `register_rest_route()` call found in
+`includes/**/*.php` + `src/**/*.php`, resolves the registered callback's class/method and
+asserts `class_exists()`/`is_callable()` is true after a full WP bootstrap (either a WP-CLI
+`wp eval` sweep, or a PHPUnit test that actually boots WP and iterates
+`rest_get_server()->get_routes()`, checking every callback is callable). Scope is bigger than
+this one file — the same missing-require class of bug could affect any REST route, admin-ajax
+handler, or block-registration callback not covered by Composer's PSR-4 (`src/` only) or an
+explicit `require_once` in `sgs-blocks.php`.
+
+**Trigger:** whoever picks up general test/gate infrastructure work next — needs design + build,
+not more investigation. Not fixed this session; scope too large to open mid-Phase-1.
+
 ### P-NAV-DROPDOWN-STACKING-IN-PAGE-CONTENT — reparent fix escapes stacking but breaks scoped CSS
 **Status:** PARTIAL · **Bucket:** framework · **Parked:** 2026-07-31 · **Reopened:** 2026-09-14
 

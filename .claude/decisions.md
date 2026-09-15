@@ -1,5 +1,60 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1079 [INCIDENT] — `class-form-rest-submission.php` was never `require_once`'d; every live
+form submission on this site has been silently failing since the file was created
+
+**2026-09-15, Phase 1 (Spec 42 sgs_form CPT) live QA.** While live-testing Step 7's
+cache-independent `requireLogin`/`rateLimit` read via a real browser submission (Playwright
+blocked by a concurrent session's exclusive lock; switched to `chrome-devtools-mcp`), an
+anonymous submit against a genuine, correctly-configured CPT-linked form returned a bare
+`500 rest_invalid_handler` instead of the expected `401`.
+
+**Root cause, proven not inferred:** `SGS\Blocks\Forms\Form_REST_Submission` — the exact class
+`class-form-rest-api.php`'s `/sgs-forms/v1/submit` route dispatches to
+(`[ Form_REST_Submission::class, 'handle_submit' ]`) — was **never `require_once`'d anywhere in
+this codebase, at any point in its git history.** `git log -S"class-form-rest-submission" --
+sgs-blocks.php` returns zero commits, ever. `sgs-blocks.php`'s forms-require block loads
+`class-form-activator.php`/`class-form-processor.php`/`class-form-upload.php`/
+`class-form-rest-api.php`/`class-form-admin.php`/`class-form-privacy.php` — never the
+submission-handling file itself. Composer's autoload is PSR-4 scoped to `src/` only
+(`composer.json`), and `includes/forms/` isn't covered by it or by any directory-scan
+autoloader. `Form_REST_Submission::class` resolves to a plain string at PHP compile time
+regardless of whether the class is loaded, so **route REGISTRATION never failed** — only
+DISPATCH did, and WordPress's REST dispatcher fails its `is_callable()` check with a bare 500
+and writes **nothing to any PHP error log** (confirmed: `wc-logs/fatal-errors-*`, `error_log`,
+`debug.log` all silent). Confirmed via `class_exists()` (false on the live server, true the
+instant the file is manually `require`'d) and by re-running the identical failing REST request
+after a manual live patch — it succeeded immediately with the correct status code.
+
+**Why Phase 0's own `FormSubmissionTest.php` 34/34 pass gave false confidence:** that suite
+does source-TEXT pattern matching on the file's raw contents (`$this->read_forms_file(...)`),
+never actual WordPress bootstrap + class loading. It could not have caught this class of bug —
+the class's own logic was always correct; only its load path was missing.
+
+**Blast radius:** every real client form submission on this site (contact, booking, whatever
+else uses `sgs/form`) has failed with an opaque 500 for as long as this file has existed —
+invisible to every log, every green gate, and (per Phase 0's own summary) apparently invisible
+to that phase's own "live REST POST" verification too, which either predates this state or
+was not actually exercised against a fully-bootstrapped request path.
+
+**Fix:** one line — `require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-submission.php';`
+added to `sgs-blocks.php`, positioned before `class-form-rest-api.php`'s require (load-order
+matters: the route registration references the class name at registration time via `::class`,
+which works regardless of order, but the class must be loaded before any request is DISPATCHED).
+Verified via a live before/after request pair on the same fixture. Confirmed unrelated to
+Phase 1's own changes (`git log -S` on this exact string against `sgs-blocks.php`, zero hits
+ever — this predates Phase 1 entirely). Committed `dfa749f68`, deployed + live-verified same
+session.
+
+**Structural gap this exposes, not yet closed:** no gate in this repo currently asserts that
+every REST route's registered callback class is actually loaded/callable at runtime — every
+existing gate is either a static source-text check (misses missing-require bugs entirely) or a
+live probe scoped to specific known pages (misses a REST endpoint with no live-page trigger in
+its own suite). Flagged to `parking.md` as a real, general gap — not fixed this session, scope
+too large to open mid-Phase-1.
+
+---
+
 ## D1078 [ROUTINE] — Bean corrected the D1077 "thumbs has no match" finding live; real block
 SOURCE CODE beats the DB schema table; new architectural idea flagged for next session
 
