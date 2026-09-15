@@ -3303,3 +3303,35 @@ in §C unchanged. STOP-bullet count: 29 before this session, 31 after.
 pre-edit reported 280 STOPs (bulleted-style count); one added here (bulleted style, matching
 E15/E16 — not the narrative `⛔` style used in E17-E24, so the floor extractor sees it), zero
 removed, zero reworded, zero ritual questions touched. 280 → 281. 281 >= 280. PASS.
+
+### E26. Earned 2026-09-15 — nav-menu-split closeout doc pass: a shared BEM root is a live invisible-family bug, and no gate catches it
+
+- **STOP-A-SHARED-BEM-ROOT-MAKES-A-BLOCK-FAMILY-INVISIBLE-WITH-NO-GATE.** Spec 00 §3.1 states
+  the BEM element segment is the ONLY recognition signal the converter walker uses — but nothing
+  in the codebase checks that a registered block's BEM root is actually unique to that block.
+  Verified live: the 14 `sgs/form-field-*` blocks (address, checkbox, consent, date, email,
+  file, hidden, number, phone, radio, select, text, textarea, tiles — `plugins/sgs-blocks/src/blocks/form-field-*`)
+  all emit `.sgs-form-field__` as their shared BEM root, and `sgs/form-field` itself is NOT a
+  registered block (no such directory exists). Because BEM root is the sole recognition signal,
+  the walker has no way to tell which `form-field-*` block a given `.sgs-form-field__*` element
+  belongs to — the entire 14-block family is permanently invisible to the cloning pipeline, and
+  has been since it was built. `scripts/lint-naming-conventions.py::check_bem_classes` is the
+  only CI gate touching BEM class shape, and it checks exactly one thing: that no BEM segment
+  contains an underscore (`if "_" in part`). It never reads `blocks.slug`, never compares a
+  block's declared CSS root against any other block's, and has no concept of "shared root" at
+  all — so a second block silently colliding onto an existing root passes it clean, exactly as
+  `sgs/form-field-*` does today. This is precisely the reasoning (V1 in the plan) that forced the
+  nav-menu-split project (D1059/D1060) to give `sgs/nav-bar-menu` and `sgs/nav-drawer-menu`
+  SEPARATE BEM roots (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`) rather than leaving them
+  sharing the old conflated `sgs/nav-menu` block's `.sgs-nav-menu__*` root — had they shared a
+  root the same way `form-field-*` does, the split would have solved nothing for the cloning
+  pipeline's recognition problem even though the two blocks themselves were cleanly separated.
+  Sibling of STOP-A-CROSS-FILE-DETECTOR-CANNOT-SEE-A-SPLIT-LITERAL-ARRAY (E25) and
+  STOP-A-DB-FIRST-NO-HARDCODED-DICTS — this one is the naming-layer mirror: a structural
+  precondition (root uniqueness) that every registered block silently depends on, with no gate
+  anywhere enforcing it.
+
+**D101 carry-forward receipt for E26.** `python .claude/hooks/handoff-preflight.py --check` run
+pre-edit reported 281 STOPs (bulleted-style count, per E25's own receipt). One added here
+(narrative `⛔`-free bulleted style, matching E25's own format), zero removed, zero reworded,
+zero ritual questions touched. 281 → 282. 282 >= 281. PASS.

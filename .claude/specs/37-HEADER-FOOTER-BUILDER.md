@@ -1610,7 +1610,7 @@ model instead of a nonce (a nonce is bound to a logged-in user), which means a s
 a token lifetime, and a URL that grants site content to whoever holds it. The capability + nonce
 model above stays the whole story. This is a decision, not an unbuilt requirement.
 
-#### FR-37-42 — Visual column-shape picker for rows (approved 2026-07-28, NOT built)
+#### FR-37-42 — Visual column-shape picker for rows (approved 2026-07-28)
 A row set to **Columns** exposes, alongside its column **count**, a set of **column SHAPES
 presented as small visual diagrams** the operator clicks — equal, wide-centre, wide-first,
 wide-last, and the two-column 2:1 / 1:2 pair. Selecting one writes the **existing**
@@ -1641,6 +1641,14 @@ prompt).` `src/components/ColumnShapePicker.js`, mounted 2026-08-26 (`2e46fc3f2`
 (`71a5d4d42`) and `src/blocks/container/edit.js` (`e90a1b313`) — Bean's build-time call (§3.3) was
 "all three share one control," and all three now do. NOT yet deployed to the live canary, so the
 eye-verified half of Done-when is still OPEN — that is the only genuinely remaining piece.
+
+**Wide-centre `auto`-track note:** the picker originally could not express a wide-centre
+`1fr auto 1fr` shape at all — `weightsToTrack()` in `ColumnShapePicker.js` mapped every weight
+member to `${w}fr`, so `auto` was structurally unreachable through numeric weights alone. This
+gap closed as Step 6 of the nav-menu-split project (D1059/D1060): `ColumnShapePicker.js` gained
+an `auto`-aware `weightsToTrack()` plus a new `SHAPES` entry (`key: 'fit-centre'`, `weights:
+[1,'auto',1]`), so the picker can now emit a real `1fr auto 1fr` track, not just `fr`-ratio
+shapes.
 
 **Built to the gold standard, not to taste** — `reports/2026-08-26-column-shape-picker-gold-standard.md`:
 · Core's own column picker is **insert-time only** (`columns/edit.js` swaps the Placeholder once the

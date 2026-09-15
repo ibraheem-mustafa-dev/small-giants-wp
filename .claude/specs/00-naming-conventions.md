@@ -90,6 +90,18 @@ Recognition path (deterministic, tier-driven post-D107):
 
 **Canonical vocabulary** lives in `sgs-framework.db.slots` (post-D99 replacement for retired `slot_synonyms`) and is documented in [Spec 31 §13 §3 FR-22-1 + FR-22-2](31-UNIVERSAL-CLONING-PIPELINE.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
 
+**Counter-example — a shared root makes a whole family invisible:** the 14 `sgs/form-field-*`
+blocks (address, checkbox, consent, date, email, file, hidden, number, phone, radio, select,
+text, textarea, tiles) all emit `.sgs-form-field__` as their BEM root, and `sgs/form-field`
+itself is not a registered block. Because BEM root is the only recognition signal (this
+section), there is no way for the converter walker to distinguish which `form-field-*` block a
+given `.sgs-form-field__*` element belongs to, or to route to any of them at all — the entire
+family is permanently invisible to the cloning pipeline. This is live, verifiable evidence for
+why a registered block's BEM root must be unique to that block. It is exactly why the
+nav-menu-split project gave `sgs/nav-bar-menu` and `sgs/nav-drawer-menu` their own separate
+roots (`.sgs-nav-bar-menu__*` / `.sgs-nav-drawer-menu__*`) rather than continuing to share the
+old conflated `.sgs-nav-menu__*` root the two blocks were split out of.
+
 #### 3.1.1 Label / badge recognition → `sgs/label` (convention)
 
 Every **short standalone label or cosmetic badge** text element routes to the `label` canonical → `sgs/label` (the "Atomic eyebrow / kicker / badge text block; reusable for card-tag badges", style variants `plain` / `pill-fill` / `pill-wrap`). This is the canonical home for pre-heading labels and pill badges — NOT `sgs/text` (which is body copy) and NOT a per-block scalar attr. A draft that emits a badge as a literal `sgs/label` is faithful; a converter workaround that invents a per-block badge class is not (R-22-9).
