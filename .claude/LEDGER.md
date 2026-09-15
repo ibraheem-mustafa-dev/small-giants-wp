@@ -76,8 +76,6 @@ Standing rule from this front: narrow by parent context before leaf-structural m
 ### Methodology guardrails
 See "Methodology guardrails (carried forward — all still true)" below — unchanged, still
 binding. **Add from this session:**
-- A `git stash` on a shared worktree is banned even for a seconds-long "does this reproduce on
-  clean HEAD" check — use `git worktree add` or `git show <sha>:<path>` instead.
 - `DEPLOYED-BUT-BROKEN` from `build-deploy.py`'s verify step can be a LOCAL cert-store problem
   (stale Python `certifi` bundle), not a real outage — `curl` succeeding while Python's `ssl`
   fails with `CERTIFICATE_VERIFY_FAILED` on a cert `openssl s_client` shows is genuinely valid
@@ -113,7 +111,12 @@ binding. **Add from this session:**
 - **A `git status`-derived pathspec commit can still sweep another session's file — RECURRED
   (D1076).** Cross-check every file against the work's actual claimed scope before staging —
   appearing in `git status` isn't enough. A 515-line unrelated feature landed in a nav-menu-split
-  commit this way; no data lost, but no dispatched agent had claimed it.
+  commit this way; no data lost, but no dispatched agent had claimed it. **The inverse also
+  happens:** your own staged file can get swept into a CONCURRENT session's commit before your
+  `git commit` runs (happened to a LEDGER.md edit 2026-09-15 — content landed correctly, but under
+  another session's commit message, not yours). Not worth unwinding for a doc-only change, but
+  verify the content actually landed (`git show <their-sha>:<path>`) rather than assuming your
+  commit failed outright.
 - **Don't rewrite a doc entry's technical citation from inference alone (2026-09-14).** Swapped a
   parking entry's post-rename paths from inference, caught, reverted; then corrected that this IS
   my own track — the right move was verifying live and fixing properly, not punting. Did both.
@@ -154,7 +157,7 @@ binding. **Add from this session:**
 - **A raw detector count is an UPPER BOUND, not a workload.**
 - **A gate that can never go green is a defect in the gate.**
 - **An exact-name exemption set must never become a pattern.**
-- **At least THREE sessions hold uncommitted work in this checkout.** Check `git diff` before
+- **Multiple sessions routinely hold uncommitted work in this checkout.** Check `git diff` before
   attributing an unfamiliar change. **The LEDGER itself is one of the files sessions race on** —
   read it fresh immediately before replacing it, every time; a sibling session's legitimate
   "replace, not append" write can revert your own recent update if you write from stale context.
