@@ -197,14 +197,27 @@ def build(db_path: str = UIMAX_DB_PATH, output_path: str = OUTPUT_PATH) -> dict:
         slug  = _family_slug(family)
         faces = _parse_styles(styles, family)
 
+        # WP_Font_Collection::get_sanitization_schema() (wp-includes/fonts/class-wp-
+        # font-collection.php) walks each font_families[] entry looking for exactly
+        # TWO top-level keys: 'font_family_settings' (an object) and 'categories' (an
+        # indexed array of slugs). WP_Font_Utils::sanitize_from_schema() unsets any
+        # key not present in the schema — a flat entry with 'name'/'slug'/'fontFamily'
+        # at the top level (the previous shape here) has NONE of its keys matching,
+        # so every key is stripped and the entry sanitizes down to an empty array().
+        # json_encode(array()) emits `[]`, which is exactly what shipped to the
+        # editor and threw "Cannot read properties of undefined (reading 'slug')"
+        # when FontCollection's JS mapped over the response expecting objects.
+        # Root-caused 2026-09-15 by reading class-wp-font-collection.php +
+        # class-wp-font-utils.php directly on the canary, not inferred.
         font_families.append(
             {
-                "name":       family,
-                "font_family": family,
-                "slug":       slug,
-                "fontFamily": family,
-                "category":   _category_slug(category),
-                "fontFace":   faces,
+                "font_family_settings": {
+                    "name":       family,
+                    "slug":       slug,
+                    "fontFamily": family,
+                    "fontFace":   faces,
+                },
+                "categories": [_category_slug(category)],
             }
         )
 
@@ -261,15 +274,25 @@ def self_test() -> None:
     assert 1000 <= count <= 2500, f"Unexpected font_families count: {count}"
     print(f"  [PASS] font_families count = {count} (within 1000–2500)")
 
-    # 4. Every font_family has non-empty slug, name, and at least one fontFace.
+    # 4. Every font_family entry is shaped exactly as WP_Font_Collection's own
+    #    sanitization schema requires: a 'font_family_settings' object (with a
+    #    non-empty slug, name, and at least one fontFace) plus a 'categories' list.
+    #    A flat entry (the pre-fix shape) has none of the keys the schema looks
+    #    for, so WP_Font_Utils::sanitize_from_schema() strips it down to an empty
+    #    array() — this assertion is what would have caught that regression.
     for ff in parsed["font_families"]:
-        assert ff.get("slug"), f"Empty slug for: {ff}"
-        assert ff.get("name"), f"Empty name for: {ff}"
-        assert ff.get("fontFace"), f"Empty fontFace for: {ff.get('name')}"
-    print("  [PASS] All font_families have slug + name + fontFace")
+        settings = ff.get("font_family_settings")
+        assert isinstance(settings, dict) and settings, (
+            f"Missing/empty font_family_settings for: {ff}"
+        )
+        assert settings.get("slug"), f"Empty slug for: {ff}"
+        assert settings.get("name"), f"Empty name for: {ff}"
+        assert settings.get("fontFace"), f"Empty fontFace for: {settings.get('name')}"
+        assert ff.get("categories"), f"Empty categories for: {settings.get('name')}"
+    print("  [PASS] All font_families have font_family_settings.{slug,name,fontFace} + categories")
 
     # 5. Well-known fonts present.
-    names = {ff["name"] for ff in parsed["font_families"]}
+    names = {ff["font_family_settings"]["name"] for ff in parsed["font_families"]}
     for expected in ("Inter", "Roboto"):
         assert expected in names, f"Well-known font missing: {expected}"
     print("  [PASS] Inter and Roboto both present")
@@ -278,6 +301,39 @@ def self_test() -> None:
     cat_count = len(parsed["categories"])
     assert cat_count == 5, f"Expected 5 categories, got {cat_count}"
     print("  [PASS] Categories count = 5")
+
+    # 7. Simulate WP_Font_Utils::sanitize_from_schema()'s key-stripping behaviour
+    #    (wp-includes/fonts/class-wp-font-utils.php) against a sample of entries.
+    #    This is the exact mechanism that silently reduced every entry to `[]`
+    #    when the manifest shape didn't match WP core's schema — replicate it
+    #    here so a future shape regression fails LOUDLY in this script rather
+    #    than silently in the browser. Schema per
+    #    WP_Font_Collection::get_sanitization_schema().
+    def _simulate_wp_strip(entry: dict) -> dict:
+        allowed_top = {"font_family_settings", "categories"}
+        stripped = {k: v for k, v in entry.items() if k in allowed_top}
+        settings = stripped.get("font_family_settings")
+        if isinstance(settings, dict):
+            allowed_settings = {"name", "slug", "fontFamily", "preview", "fontFace"}
+            stripped["font_family_settings"] = {
+                k: v for k, v in settings.items() if k in allowed_settings
+            }
+        return stripped
+
+    sample = parsed["font_families"][:50] + parsed["font_families"][-50:]
+    for ff in sample:
+        survived = _simulate_wp_strip(ff)
+        settings = survived.get("font_family_settings") or {}
+        assert settings.get("slug") and settings.get("name") and settings.get("fontFace"), (
+            f"Entry would be stripped to empty by WP's own sanitizer: {ff}"
+        )
+        assert survived.get("categories"), (
+            f"Entry's categories would be stripped by WP's own sanitizer: {ff}"
+        )
+    print(
+        f"  [PASS] {len(sample)} sampled entries survive a simulated "
+        "WP_Font_Utils::sanitize_from_schema() pass"
+    )
 
     print(f"\nAll assertions passed.  Manifest written to:\n  {OUTPUT_PATH}")
 
