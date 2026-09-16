@@ -345,6 +345,37 @@ def _content_bearing_attrs_by_name(parent_slug: str, attr_name: str) -> tuple[st
     return tuple(r[0] for r in rows)
 
 
+def _content_bearing_attrs_by_canonical_slot_with_role(
+    parent_slug: str, canonical_slot: str
+) -> tuple[tuple[str, str], ...]:
+    """Same query as `_content_bearing_attrs_by_canonical_slot`, but also
+    returns each matched row's `role` -- needed by Step 2's value-shape
+    check (review finding on task-2: a single canonical_slot match must
+    still pass `_role_value_shape_matches` before it counts, exactly like
+    Tier 1's own role-fallback at Step 2 of `resolve_array_item_field`).
+    Kept as a separate query rather than threading role through the
+    string-only function below, so every existing caller of that function
+    (and its `candidates=` usage building a plain attr-name tuple for a
+    `Gap`) stays byte-identical.
+    """
+    content_roles = db_lookup._content_bearing_roles()
+    if not content_roles:
+        return ()
+    placeholders = ",".join("?" for _ in content_roles)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name, role FROM block_attributes "
+            f"WHERE block_slug = ? AND canonical_slot = ? AND role IN ({placeholders})",
+            (parent_slug, canonical_slot, *content_roles),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple((r[0], r[1]) for r in rows)
+
+
 def _content_bearing_attrs_by_canonical_slot(
     parent_slug: str, canonical_slot: str
 ) -> tuple[str, ...]:
@@ -361,22 +392,12 @@ def _content_bearing_attrs_by_canonical_slot(
     here would be an unrequested, undocumented divergence from that pattern
     for a case the spec text never asks for.
     """
-    content_roles = db_lookup._content_bearing_roles()
-    if not content_roles:
-        return ()
-    placeholders = ",".join("?" for _ in content_roles)
-    conn = sqlite3.connect(SGS_DB)
-    try:
-        rows = conn.execute(
-            "SELECT attr_name FROM block_attributes "
-            f"WHERE block_slug = ? AND canonical_slot = ? AND role IN ({placeholders})",
-            (parent_slug, canonical_slot, *content_roles),
-        ).fetchall()
-    except sqlite3.OperationalError:
-        return ()
-    finally:
-        conn.close()
-    return tuple(r[0] for r in rows)
+    return tuple(
+        attr_name
+        for attr_name, _role in _content_bearing_attrs_by_canonical_slot_with_role(
+            parent_slug, canonical_slot
+        )
+    )
 
 
 def resolve_scalar_attribute(
@@ -390,7 +411,15 @@ def resolve_scalar_attribute(
 
     Step 2 -- only when Step 1 found nothing: canonical_slot fallback,
     same block only (never cross-family -- see the DECISION SURFACED note
-    on `_content_bearing_attrs_by_canonical_slot`).
+    on `_content_bearing_attrs_by_canonical_slot`). A single candidate only
+    counts when its role's value-shape check passes (reuses
+    `_role_value_shape_matches`, the same check Tier 1's own role-fallback
+    applies at `resolve_array_item_field` Step 2) -- crossing role families
+    (e.g. placing a plain string onto a link-href attribute) is a WRONG
+    placement, not a gap, and Tier 2 gets no exemption from the discipline
+    Tier 1 already enforces. A single candidate that fails the shape check
+    falls through to the same "no match" Gap below as zero candidates --
+    it is not a fresh guess at some other candidate, there isn't one.
 
     Ambiguity gate -- 2+ candidates at EITHER step is never guessed at; it
     is reported as a Gap, mirroring `resolve_array_item_field`'s own
@@ -414,13 +443,22 @@ def resolve_scalar_attribute(
             candidates=exact_matches,
         )
 
-    slot_matches = _content_bearing_attrs_by_canonical_slot(parent_slug, draft_field.key)
+    slot_matches_with_role = _content_bearing_attrs_by_canonical_slot_with_role(
+        parent_slug, draft_field.key
+    )
+    slot_matches = tuple(attr_name for attr_name, _role in slot_matches_with_role)
     if len(slot_matches) == 1:
-        return Tier2Placement(
-            block_slug=parent_slug,
-            attr_name=slot_matches[0],
-            matched_by="canonical-slot-fallback",
-        )
+        candidate_attr, candidate_role = slot_matches_with_role[0]
+        if _role_value_shape_matches(candidate_role, draft_field.value):
+            return Tier2Placement(
+                block_slug=parent_slug,
+                attr_name=candidate_attr,
+                matched_by="canonical-slot-fallback",
+            )
+        # Shape check failed -- this candidate doesn't count. Fall through
+        # to the same "no match" Gap below as zero candidates (§4.2 point
+        # 2a); never treated as ambiguity (there is still only one row) and
+        # never silently placed anyway.
     if len(slot_matches) >= 2:
         return Gap(
             draft_field.key,

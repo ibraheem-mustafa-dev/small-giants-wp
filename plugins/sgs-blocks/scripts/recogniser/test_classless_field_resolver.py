@@ -201,6 +201,39 @@ def test_tier2_canonical_slot_fallback_ambiguous_is_a_gap() -> None:
     print("  PASS  Tier 2 Step 2: 2+ canonical_slot candidates (button on product-card) gaps, never guesses")
 
 
+def test_tier2_canonical_slot_single_match_requires_value_shape() -> None:
+    """sgs/button carries canonical_slot='link' on exactly ONE content-bearing
+    row -- 'url' (role='link-href'); the sibling 'anchor'/'linkId' rows at
+    the same canonical_slot are role='technical'/'enum-class-probe', neither
+    content-bearing, so the DB-filtered candidate set is genuinely a single
+    match, not an ambiguity the len>=2 branch already catches. Review
+    finding on task-2: Step 2 accepted a single canonical_slot match with no
+    value-shape check, so a plain-text field value ('Book now', not a URL)
+    could be placed straight onto a link-href attribute -- a wrong
+    placement, not a gap. Must now gap instead, exactly like Tier 1's own
+    role-fallback value-shape check (`test_role_fallback_value_shape_must_match`)."""
+    field = cfr.DraftField(key="link", value="Book now")
+    result = cfr.resolve_scalar_attribute("sgs/button", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "no_scalar_attribute_match"
+    print("  PASS  Tier 2 Step 2: single canonical_slot match (sgs/button 'link'->url, "
+          "role=link-href) rejects a non-URL-shaped value, gaps rather than mis-placing")
+
+
+def test_tier2_canonical_slot_single_match_places_when_shape_matches() -> None:
+    """Positive control for the fixture above -- the SAME single candidate
+    (sgs/button, canonical_slot='link' -> url, role=link-href) must still
+    place normally when the value genuinely is URL-shaped, proving the new
+    check gates on shape, not on blocking the canonical-slot-fallback path
+    outright."""
+    field = cfr.DraftField(key="link", value="https://example.com/book")
+    result = cfr.resolve_scalar_attribute("sgs/button", field)
+    assert isinstance(result, cfr.Tier2Placement), f"got {result!r}"
+    assert result.attr_name == "url"
+    assert result.matched_by == "canonical-slot-fallback"
+    print("  PASS  Tier 2 Step 2: same single candidate places when the value IS URL-shaped")
+
+
 def test_tier2_styling_role_only_never_matches() -> None:
     """sgs/card-grid.titleFontWeight exists, exactly matches the field key --
     but its role is 'typography', which is NOT content-bearing. It must not
@@ -248,6 +281,8 @@ def main() -> int:
     test_role_fallback_value_shape_must_match()
     test_tier2_exact_name_content_bearing_places_field()
     test_tier2_canonical_slot_fallback_ambiguous_is_a_gap()
+    test_tier2_canonical_slot_single_match_requires_value_shape()
+    test_tier2_canonical_slot_single_match_places_when_shape_matches()
     test_tier2_styling_role_only_never_matches()
     test_tier2_function_literal_excluded()
     test_tier2_unknown_field_is_a_gap_not_a_crash()
