@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-09-15
+last_updated: 2026-09-17
 ---
 
 # small-giants-wp — LEDGER (the one living status)
@@ -11,15 +11,34 @@ last_updated: 2026-09-15
 **THE ONLY GENUINELY OPEN FRONT: Front C (classless-repeater recognition, Spec 44) — designed,
 not built.** Two things need Bean directly, not a subagent: the drawer-burger click retest, and
 Spec 42/43 Phase 3's precondition (real WooCommerce catalogue data). Everything else that used to
-lead this file — the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2 — is FULLY
-DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for pointers to the evidence; it isn't
-repeated here.
+lead this file — the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and now the
+choice-flow visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)"
+for pointers to the evidence; it isn't repeated here.
 
-**One real residual on the otherwise-closed nav-menu split:** `nav-bar-menu`/`nav-drawer-menu`
-have no visual-diff report yet (verified absent — see State Snapshot). Not blocking, but owed.
+**One thing dispatched, CONFIRMED FAILED, needs re-dispatch:** the nav-bar-menu/nav-drawer-menu
+border-census fix + `submenuLink*` dead-attribute resolution. The Sonnet agent hit Anthropic's
+weekly rate limit mid-task and made no commit — see parking.md `P-NAV-MENU-BORDER-CENSUS-DELEGATED`
+for the confirmed-failure note + re-dispatch instruction. The diagnosis it needs is already
+written there; only the fix itself is outstanding.
+
+**One real residual on the otherwise-closed nav-menu split (pre-existing, unrelated to the above):**
+`nav-bar-menu`/`nav-drawer-menu` have no visual-diff report yet from the ORIGINAL split (verified
+absent — see State Snapshot). Not blocking, but owed.
 
 ## Prior work (closed / parked) — pointer only, full narrative in memory or decisions.md
 
+- **`sgs/choice-flow` Phase 2b visual/UX gap-fix pass (D1083)** — deployed + live-verified
+  (`f56c82dc2` and prior commits back to `0b87a060f`). Back button, "Step N of M" indicator, a
+  `layout: grid|list` option attribute, a shared `sgs_render_info_toggle()` helper, then a full
+  colour/radius consistency correction grounded in the real lens-configurator source + live
+  AthleanX/Invisalign captures (the first-pass colours were invented, not checked — Bean caught
+  it). New `progressStyle` (bar/circles/badge) operator choice. Two real bugs caught by this
+  session's own live-verification and fixed same-session: a fatal 500 on any help-texted option
+  (`choice-flow-question/render.php` missing a `require_once`), and the Back button falling
+  through to the browser's default `<button>` chrome when transparent. Reports:
+  `reports/visual-diff/choice-flow-2026-09-15-2.md`/`-3.md`, `choice-flow-question-2026-09-15-2.md`.
+  Also fixed a genuine, real detector blind spot in `scripts/survey-border-control-migration.py`
+  (prefixed border-attribute families were invisible to it) — see the delegated follow-up above.
 - **Nav-menu split (D1059/D1060), all 8 steps** — deployed (`1376084dd`), live-verified,
   re-audited 2026-09-15 (5 residuals found+closed), Spec 41+36 doc rewrites both fully closed
   (`63f3cf215`, `98cfb3358`). Evidence: `memory/session-2026-09-15.md`; `decisions.md`
@@ -120,6 +139,34 @@ binding. **Add from this session:**
 - **Don't rewrite a doc entry's technical citation from inference alone (2026-09-14).** Swapped a
   parking entry's post-rename paths from inference, caught, reverted; then corrected that this IS
   my own track — the right move was verifying live and fixing properly, not punting. Did both.
+- **A colour/radius/spacing choice for a new UI element is a claim about a reference design —
+  verify it before building, not after Bean asks (2026-09-16).** Built the choice-flow Back
+  button seeded to the theme's filled `primary` preset with zero reference check; Bean's own
+  question ("did you test how it looks?") forced the first live-verification pass, and a SECOND
+  round of feedback caught that the colour itself was never checked against the 3 real reference
+  quizzes at all — real evidence showed all three use a neutral ink/paper pair for nav buttons,
+  never the brand accent. Read the real source (or capture the real live site) BEFORE choosing a
+  colour/style for anything modelled on an external reference, not after.
+- **A census script that string-searches one file for a component name is blind to that
+  component being mounted via a SHARED file the block imports (2026-09-16).** Same root cause as
+  the already-documented `sgs/media` atom-delegation fix, recurring in
+  `survey-border-control-migration.py` against `nav-bar-menu`/`nav-drawer-menu` — both blocks
+  mount `SgsBorderControl` correctly, just through `src/shared/nav-menu-panels/*.js`, which the
+  script's `'SgsBorderControl' in edit_js` check never traverses. Any future "does this file use
+  X" census needs to check for shared-component delegation before concluding a block hasn't
+  adopted something.
+- **A block adopting a shared helper for the first time may not `require_once` the file that
+  helper lives in — check, don't assume (2026-09-16).** `choice-flow-question/render.php` had
+  never called any shared helper before adopting `sgs_render_info_toggle()`; it fatalled the
+  whole page with a 500 on first live check because it never required `render-helpers.php`.
+  Caught by live verification, not the build — `php -l` and the build gates both pass on a file
+  missing a require, since the fatal is a RUNTIME undefined-function error, not a syntax one.
+- **An unset/empty CSS colour attribute is not the same as "transparent" — the browser's own
+  UA stylesheet fills the gap (2026-09-16).** A Back button's `backColourBackground` default of
+  `''` meant nothing was emitted for `background-color`, so the button fell through to the
+  browser's default `<button>` chrome (measured live: `rgb(240,240,240)`, not transparent). A
+  genuinely transparent resting state needs an explicit static `background-color: transparent`
+  fallback in the stylesheet, not just "leave the attribute empty".
 
 ## Methodology guardrails (carried forward — all still true)
 
@@ -188,7 +235,7 @@ binding. **Add from this session:**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1078 — re-check, don't trust a cached number here).
+  D1083 — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **Nav-bar-menu/nav-drawer-menu have NO visual-diff report yet** — deliberately scoped-bypassed

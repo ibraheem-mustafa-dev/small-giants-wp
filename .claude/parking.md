@@ -218,6 +218,41 @@ matches.
 
 ## Framework: blocks, theme, specs
 
+### P-NAV-MENU-BORDER-CENSUS-DELEGATED — nav-bar-menu/nav-drawer-menu border-migration fix, dispatched to a subagent
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-16
+
+Delegated same-session via `/delegate` (routed to Sonnet) as a follow-up to
+`scripts/survey-border-control-migration.py`'s `has_private_width`/`has_private_style`
+generalisation (D1083) — that fix correctly surfaced `nav-bar-menu`/`nav-drawer-menu` into
+`PRIVATE_NEEDS_SWAP`, and the ceiling was raised 0→2 with a written reason pending this
+follow-up. Investigation BEFORE dispatch found the classifier's verdict is itself
+misleading: `item*` and `submenu*` (non-Link) border families are ALREADY migrated to
+`SgsBorderControl`, just delegated through shared components
+(`src/shared/nav-menu-panels/ItemsPanel.js`, `DropdownStylePanel.js`) that the census's
+plain string-search on each block's own `edit.js` can't see — a real fix is a detector-
+side delegation-blind-spot patch (same class as the existing `sgs/media` atom-delegation
+fix), not new UI work. Separately, `submenuLink*` (submenuLinkBorderWidth/Style/Colour/
+ColourHover) looks fully orphaned — zero control anywhere, zero consumption in either
+block's `render.php` — a genuinely different, real defect the dispatched agent was asked
+to root-cause (wire it up if there's a real design need, e.g. a submenu-link separator, or
+remove the 4 dead attributes if vestigial) rather than silently leave unresolved.
+
+**CONFIRMED NOT LANDED (2026-09-17).** The dispatched Sonnet agent (id `aa9b1575b4d324504`)
+FAILED mid-task — Anthropic weekly rate limit (HTTP 429), reset ~11pm Europe/London the day
+it was dispatched. Its own partial `result` shows it had independently re-confirmed the
+pre-dispatch investigation above (both shared components genuinely mount `SgsBorderControl`)
+but had not yet touched the detector or made any commit. `git log --oneline -25` post-dispatch
+shows no commit touching `survey-border-control-migration.py` or `nav-bar-menu`/
+`nav-drawer-menu` — re-verified 2026-09-17, still nothing landed.
+
+**Next action:** re-dispatch fresh (the rate-limit window has passed) rather than resume the
+same agent id — a resumed agent on a shared 77-session worktree is more likely to collide with
+concurrent edits than a clean re-dispatch with a fresh `git log` check first. Re-use the
+diagnosis above verbatim; it does not need re-investigating.
+
+**Trigger:** next session start — check `git log` for the fix first in case a peer session on
+this shared worktree already picked it up independently.
+
 ### P-FX-PER-EFFECT-BLOCK-COMPATIBILITY — motion-effects panel is all-or-nothing per block, needs per-effect opt-in
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15
 
