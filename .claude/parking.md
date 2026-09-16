@@ -31,6 +31,32 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
+### P-SPEC45-TIER3-BLOCK-KIND-SCORING-SWEEP
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Spec 45 Tier 3's scoring rule (`classless_field_resolver.py::score_candidates`) was
+empirically validated by two independent qc-council raters against its ARRAY-attribute
+candidate surface (`array_item_schema`) — confirmed volume-bias-free, both structurally
+(cross-block array-attr competition is unreachable in production) and by direct field-key
+overlap computation. Neither rater swept the BLOCK-kind sibling-candidate surface (real
+allow-listed children under `sgs/cta-section`, `sgs/site-header-row`,
+`sgs/site-footer-row`, `sgs/form` — scored via `block_attributes.attr_name`, a different
+field-name source than `array_item_schema`) for the same volume-bias property.
+
+**Trigger:** before Tier 3 is wired into a live pipeline run (blocked on Spec 44 anyway,
+D1084), or if a new fixture surfaces a suspiciously attribute-rich sibling candidate.
+
+### P-SPEC45-DEAD-BLOCK-COMPOSITION-PARENT-ROWS
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+`block_composition` carries two PARENT rows (`sgs/mobile-nav`, `sgs/adaptive-nav`) whose
+own slug is absent from the `blocks` table (renamed/deleted blocks, no source directory).
+Harmless today — Spec 45's Tier 3 orphan filter only ever gates CANDIDATE slugs, and
+`parent_slug` can never legitimately arrive as a slug that isn't a real, current block — but
+a DB cleanup (`/sgs-update` or a targeted migration) would remove the residual confusion.
+
+**Trigger:** next `/sgs-update` seeder pass that touches `block_composition` orphans.
+
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-01
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
