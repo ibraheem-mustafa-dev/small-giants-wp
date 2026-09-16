@@ -15,11 +15,11 @@ lead this file — the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phase
 choice-flow visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)"
 for pointers to the evidence; it isn't repeated here.
 
-**One thing dispatched, CONFIRMED FAILED, needs re-dispatch:** the nav-bar-menu/nav-drawer-menu
-border-census fix + `submenuLink*` dead-attribute resolution. The Sonnet agent hit Anthropic's
-weekly rate limit mid-task and made no commit — see parking.md `P-NAV-MENU-BORDER-CENSUS-DELEGATED`
-for the confirmed-failure note + re-dispatch instruction. The diagnosis it needs is already
-written there; only the fix itself is outstanding.
+**Nav-menu border-census re-dispatch (D1085) — DONE.** The re-dispatched fix landed
+(`5e54a599a`): the detector's delegation blind spot is fixed (both blocks now classify
+`PRIVATE_DONE`), and the `submenuLink*` attributes turned out NOT to be dead — they were
+already painted via a shared CSS include the original check hadn't looked at; the real gap
+was a missing editor control, now wired up. `P-NAV-MENU-BORDER-CENSUS-DELEGATED` archived.
 
 **One real residual on the otherwise-closed nav-menu split (pre-existing, unrelated to the above):**
 `nav-bar-menu`/`nav-drawer-menu` have no visual-diff report yet from the ORIGINAL split (verified
