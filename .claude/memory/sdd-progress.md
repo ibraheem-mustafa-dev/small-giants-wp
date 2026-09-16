@@ -1134,3 +1134,22 @@ wave — Critical sign-off-gate truthy-check bug closed and re-verified by an 8-
 secondary ShapeSignature child-proximity docking also fixed, D1037 in decisions.md). Q2's "Tier 1"
 (structural repeated-sibling detection, survey/fix/fix-apply/check triad mirroring
 migrate-tier-object.py) shipped, standalone CLI, not yet wired into the orchestrator.
+
+---
+
+# SDD progress — Spec 45 classless field resolver, 2026-09-16/17
+
+Base commit: e1c7f4884 (main)
+Task 1 (Tier 1): complete, shipped before this SDD run started (commit e1c7f4884, plan
+`.claude/plans/2026-09-16-spec45-classless-field-resolver.md`, D1084).
+Task 2 (Tier 2 — parent's own scalar attribute): complete (commits e1c7f4884..8f319605e,
+review Approved-with-1-Important-finding then re-reviewed Approved after fix — Step 2's
+canonical_slot fallback now guarded by the same `_role_value_shape_matches` check Tier 1
+uses, closing a wrong-placement risk; one Minor noted, not blocking: the fix's default-deny
+value-shape gate covers 5 of 20 live content-bearing roles, so Step 2 now gaps rather than
+places on the other 15 — consistent with Tier 1, flagged for Tier 3 to watch).
+QC (qc-inline): PASS, 8/8 scenarios, confidence 100/100, ship. Real ambiguous canonical_slot
+case (sgs/container.background-image, 3 tablet/mobile/desktop candidates) confirmed gapped
+with all candidates named, never guessed. One Minor carried forward for Tier 3's attention:
+Step 2's value-shape guard only recognises 5 of 20 live content-bearing roles (default-deny,
+consistent with Tier 1) - not a blocker, watch if Tier 3 needs the other 15.
