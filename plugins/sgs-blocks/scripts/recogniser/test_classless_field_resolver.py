@@ -169,6 +169,67 @@ def test_role_fallback_value_shape_must_match() -> None:
     print("  PASS  role-fallback value-shape check rejects a non-URL-shaped value for url-href")
 
 
+# ---------------------------------------------------------------------------
+# section 4.2 -- Tier 2, the parent's own scalar attribute
+# ---------------------------------------------------------------------------
+
+
+def test_tier2_exact_name_content_bearing_places_field() -> None:
+    """sgs/card-grid.emptyMessage: role='text-content' (content-bearing),
+    canonical_slot=None -- a field named identically must place by exact-name,
+    Step 1."""
+    field = cfr.DraftField(key="emptyMessage", value="No services found")
+    result = cfr.resolve_scalar_attribute("sgs/card-grid", field)
+    assert isinstance(result, cfr.Tier2Placement), f"got {result!r}"
+    assert result.block_slug == "sgs/card-grid"
+    assert result.attr_name == "emptyMessage"
+    assert result.matched_by == "exact-name"
+    print("  PASS  Tier 2 Step 1: exact-name content-bearing match places 'emptyMessage'")
+
+
+def test_tier2_canonical_slot_fallback_ambiguous_is_a_gap() -> None:
+    """sgs/product-card carries canonical_slot='button' on BOTH ctaText
+    (role=text-content) and ctaUrl (role=link-href) -- both content-bearing.
+    No attribute is literally named 'button' on this block, so Step 1 finds
+    nothing and Step 2's canonical_slot fallback must find 2 candidates and
+    gap, never pick the first by row order."""
+    field = cfr.DraftField(key="button", value="Book now")
+    result = cfr.resolve_scalar_attribute("sgs/product-card", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "ambiguous_canonical_slot_match"
+    assert set(result.candidates) == {"ctaText", "ctaUrl"}
+    print("  PASS  Tier 2 Step 2: 2+ canonical_slot candidates (button on product-card) gaps, never guesses")
+
+
+def test_tier2_styling_role_only_never_matches() -> None:
+    """sgs/card-grid.titleFontWeight exists, exactly matches the field key --
+    but its role is 'typography', which is NOT content-bearing. It must not
+    place at Step 1 (role scoping excludes it), and Step 2's canonical_slot
+    fallback also finds nothing (no row has canonical_slot='titleFontWeight')
+    -- proving the content-bearing scoping is real, not decorative."""
+    field = cfr.DraftField(key="titleFontWeight", value="bold")
+    result = cfr.resolve_scalar_attribute("sgs/card-grid", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "no_scalar_attribute_match"
+    print("  PASS  Tier 2: a styling-role-only attribute (titleFontWeight, role=typography) never matches")
+
+
+def test_tier2_function_literal_excluded() -> None:
+    field = cfr.DraftField(key="emptyMessage", value=cfr.FUNCTION_LITERAL)
+    result = cfr.resolve_scalar_attribute("sgs/card-grid", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "function_literal_excluded"
+    print("  PASS  Tier 2: function-literal value is excluded before any DB lookup")
+
+
+def test_tier2_unknown_field_is_a_gap_not_a_crash() -> None:
+    field = cfr.DraftField(key="totallyUnknownScalarKey", value="mystery value")
+    result = cfr.resolve_scalar_attribute("sgs/card-grid", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "no_scalar_attribute_match"
+    print("  PASS  negative control: unknown scalar field key -> gap, never a crash")
+
+
 def main() -> int:
     print("classless_field_resolver.py self-test (Spec 45 Tier 1)")
     test_prefilter_excludes_function_literal()
@@ -185,7 +246,12 @@ def main() -> int:
     test_role_fallback_requires_content_bearing_role()
     test_role_fallback_ambiguous_role_never_silently_picked()
     test_role_fallback_value_shape_must_match()
-    print("\nCLASSLESS-FIELD-RESOLVER (Tier 1): PASS")
+    test_tier2_exact_name_content_bearing_places_field()
+    test_tier2_canonical_slot_fallback_ambiguous_is_a_gap()
+    test_tier2_styling_role_only_never_matches()
+    test_tier2_function_literal_excluded()
+    test_tier2_unknown_field_is_a_gap_not_a_crash()
+    print("\nCLASSLESS-FIELD-RESOLVER (Tier 1 + Tier 2): PASS")
     return 0
 
 

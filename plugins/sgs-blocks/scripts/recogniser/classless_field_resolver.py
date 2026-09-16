@@ -90,6 +90,15 @@ class Tier1Placement:
 
 
 @dataclass(frozen=True)
+class Tier2Placement:
+    """A field placed by Tier 2 (§4.2) onto the parent block's own scalar attribute."""
+
+    block_slug: str
+    attr_name: str
+    matched_by: str  # "exact-name" | "canonical-slot-fallback"
+
+
+@dataclass(frozen=True)
 class RouteToTier3:
     """§4.1.0 Step A: no exact array_attr match, value is nested -- Tier 3's job."""
 
@@ -304,4 +313,124 @@ def resolve_array_item_field(
         reason="no_direct_or_role_match",
         detail=f"{parent_slug}.{array_attr}",
         candidates=tuple(fk for fk, _ in rows),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Tier 2 (§4.2) -- a field NOT inside any array attribute: the parent's own
+# scalar attribute.
+# ---------------------------------------------------------------------------
+
+
+def _content_bearing_attrs_by_name(parent_slug: str, attr_name: str) -> tuple[str, ...]:
+    """Step 1 -- rows on `parent_slug` whose `attr_name` exactly equals the
+    draft field's key, restricted to content-bearing roles. Returns matched
+    `attr_name`s (always == `attr_name` here, but kept as a tuple so the
+    caller's "how many?" check is identical in shape to Step 2's)."""
+    content_roles = db_lookup._content_bearing_roles()
+    if not content_roles:
+        return ()
+    placeholders = ",".join("?" for _ in content_roles)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            f"WHERE block_slug = ? AND attr_name = ? AND role IN ({placeholders})",
+            (parent_slug, attr_name, *content_roles),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
+def _content_bearing_attrs_by_canonical_slot(
+    parent_slug: str, canonical_slot: str
+) -> tuple[str, ...]:
+    """Step 2 -- same-block canonical_slot fallback (§4.2 point 3). Treats
+    the draft field's key AS a candidate `canonical_slot` value and queries
+    rows already filtered to `parent_slug`, so this can never reach into a
+    different block's attributes -- the exact same-family guarantee the
+    spec's D279 citation requires.
+
+    DECISION SURFACED: exact string equality against `canonical_slot`, same
+    as Step 1's exact-name match -- no case-folding or fuzzy matching. Every
+    other exact-match idiom in this module (Tier 1's direct-key match,
+    Step 1 above) is a plain `=` comparison; introducing normalisation only
+    here would be an unrequested, undocumented divergence from that pattern
+    for a case the spec text never asks for.
+    """
+    content_roles = db_lookup._content_bearing_roles()
+    if not content_roles:
+        return ()
+    placeholders = ",".join("?" for _ in content_roles)
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT attr_name FROM block_attributes "
+            f"WHERE block_slug = ? AND canonical_slot = ? AND role IN ({placeholders})",
+            (parent_slug, canonical_slot, *content_roles),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
+def resolve_scalar_attribute(
+    parent_slug: str, draft_field: DraftField
+) -> Tier2Placement | Gap:
+    """§4.2 Tier 2 -- a field that is NOT inside any repeated array attribute:
+    a plain scalar attribute directly on `parent_slug`.
+
+    Step 1 -- exact attribute-name match, restricted to content-bearing
+    roles. Exactly one match -> place it.
+
+    Step 2 -- only when Step 1 found nothing: canonical_slot fallback,
+    same block only (never cross-family -- see the DECISION SURFACED note
+    on `_content_bearing_attrs_by_canonical_slot`).
+
+    Ambiguity gate -- 2+ candidates at EITHER step is never guessed at; it
+    is reported as a Gap, mirroring `resolve_array_item_field`'s own
+    ambiguity discipline (never pick the first by row order).
+    """
+    if is_function_literal(draft_field.value):
+        return Gap(draft_field.key, reason="function_literal_excluded")
+
+    exact_matches = _content_bearing_attrs_by_name(parent_slug, draft_field.key)
+    if len(exact_matches) == 1:
+        return Tier2Placement(
+            block_slug=parent_slug,
+            attr_name=exact_matches[0],
+            matched_by="exact-name",
+        )
+    if len(exact_matches) >= 2:
+        return Gap(
+            draft_field.key,
+            reason="ambiguous_exact_name_match",
+            detail=parent_slug,
+            candidates=exact_matches,
+        )
+
+    slot_matches = _content_bearing_attrs_by_canonical_slot(parent_slug, draft_field.key)
+    if len(slot_matches) == 1:
+        return Tier2Placement(
+            block_slug=parent_slug,
+            attr_name=slot_matches[0],
+            matched_by="canonical-slot-fallback",
+        )
+    if len(slot_matches) >= 2:
+        return Gap(
+            draft_field.key,
+            reason="ambiguous_canonical_slot_match",
+            detail=parent_slug,
+            candidates=slot_matches,
+        )
+
+    return Gap(
+        draft_field.key,
+        reason="no_scalar_attribute_match",
+        detail=parent_slug,
     )
