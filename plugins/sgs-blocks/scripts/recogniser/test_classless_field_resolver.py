@@ -1,4 +1,4 @@
-"""Self-test for classless_field_resolver.py (Spec 45 Tier 1).
+"""Self-test for classless_field_resolver.py (Spec 45 Tiers 1-3).
 
 Fixtures are Spec 45 v1.6.0 section 11's named Tier 1 + section 4.0 + section
 4.1.0 cases, run against the LIVE sgs-framework.db (this module's own design
@@ -263,8 +263,475 @@ def test_tier2_unknown_field_is_a_gap_not_a_crash() -> None:
     print("  PASS  negative control: unknown scalar field key -> gap, never a crash")
 
 
+# ---------------------------------------------------------------------------
+# section 9 -- Tier 3, nested child-block matching within a resolved parent
+#
+# Every concrete (block, attr, field_key, role) below was confirmed against the
+# LIVE sgs-framework.db before being written -- see task-3-report.md for the
+# queries. Nothing here is an invented slug.
+# ---------------------------------------------------------------------------
+
+
+def test_tier3_own_object_attribute_exact_name_places() -> None:
+    """section 9.1(a): sgs/team-member.photo is attr_type='object' with
+    role='image-object' (content-bearing). A nested field named identically
+    must place there, never be treated as a child block."""
+    field = cfr.DraftField(key="photo", value={"id": 4, "url": "team/ada.png"})
+    result = cfr.resolve_nested_field("sgs/team-member", field)
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    assert result.resolved_kind == "own-object-attribute"
+    assert result.matched_by == "exact-name"
+    assert result.targets == ("photo",)
+    print("  PASS  Tier 3 section 9.1: 'photo' places on sgs/team-member's own object attribute")
+
+
+def test_tier3_own_object_attribute_canonical_slot_places_whole_group() -> None:
+    """section 9.1(b), the v1.6.0 widening: no attribute is named 'image' on
+    sgs/team-member, but canonical_slot='image' groups photo/photoTablet/
+    photoMobile -- all three content-bearing. The field places against every
+    attribute sharing that slot."""
+    field = cfr.DraftField(key="image", value={"id": 4, "url": "team/ada.png"})
+    result = cfr.resolve_nested_field("sgs/team-member", field)
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    assert result.matched_by == "canonical-slot"
+    assert set(result.targets) == {"photo", "photoTablet", "photoMobile"}
+    print("  PASS  Tier 3 section 9.1: canonical_slot 'image' places against all 3 grouped attrs")
+
+
+def test_tier3_own_object_attribute_styling_role_never_matches() -> None:
+    """section 9.1's role filter, proven real: sgs/accordion.gap IS
+    attr_type='object' and exactly matches the field key -- but its role is
+    'layout', not content-bearing. Step 0 must find nothing, so real drafted
+    content can never be written into a styling attribute."""
+    field = cfr.DraftField(key="gap", value={"desktop": "2rem"})
+    assert cfr.resolve_own_object_attribute("sgs/accordion", field) is None
+    result = cfr.resolve_nested_field("sgs/accordion", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    print("  PASS  Tier 3 section 9.1: styling-role object attr 'gap' never matches (role filter is real)")
+
+
+def test_tier3_own_object_attribute_collision_is_a_gap() -> None:
+    """section 9.1's collision tiebreak. (block_slug, attr_name) is not
+    uniquely constrained on its own -- the real unique index also includes
+    `source`. Zero such collisions exist in the DB today (verified), so the
+    only honest test is to hand the pure decision function a synthetic
+    2-tuple: it must gap, never silently pick either row."""
+    result = cfr.own_object_attribute_outcome(
+        "sgs/team-member", "photo", ("photo", "photo"), ()
+    )
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier3_ambiguous_own_object_attribute"
+    assert len(result.candidates) == 2
+    print("  PASS  Tier 3 section 9.1: 2+ exact-name matches gap, never a silent pick of either row")
+
+
+def test_tier3_empty_candidate_set_gaps_immediately() -> None:
+    """section 9.2: sgs/team-member has NO array_item_schema rows, and its
+    accepts_allowed_blocks contributes nothing (gate 2 -- see the dedicated
+    fixture below). Its allow-list is non-NULL, so the sgs/container fallback
+    is not eligible either. All three sources empty -> immediate gap."""
+    field = cfr.DraftField(key="members", value=[{"name": "Ada", "role": "Founder"}])
+    result = cfr.resolve_nested_field("sgs/team-member", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier3_empty_candidate_set"
+    print("  PASS  Tier 3 section 9.2: all three candidate sources empty -> immediate gap")
+
+
+def test_tier3_gate1_drops_orphan_candidate_slugs() -> None:
+    """Verification gate 1. block_composition carries 7 orphaned rows for
+    deleted blocks. Confirmed live: none of sgs/mobile-nav, sgs/adaptive-nav,
+    sgs/mobile-nav-toggle, sgs/mega-menu resolves to a `blocks` row, so none
+    may ever enter a candidate set."""
+    for orphan in (
+        "sgs/mobile-nav",
+        "sgs/adaptive-nav",
+        "sgs/mobile-nav-toggle",
+        "sgs/mega-menu",
+    ):
+        assert cfr._blocks_row_exists(orphan) is False, orphan
+    assert cfr._blocks_row_exists("sgs/accordion-item") is True
+
+    # sgs/adaptive-nav's allow-list is exactly [sgs/mega-menu], an orphan.
+    # Dropping it empties the set -- the honest section 9.2 gap, not a crash.
+    candidates, fallback = cfr.build_candidate_set("sgs/adaptive-nav")
+    assert candidates == (), f"got {candidates!r}"
+    assert fallback is False
+    result = cfr.resolve_nested_field(
+        "sgs/adaptive-nav", cfr.DraftField(key="panels", value=[{"title": "A"}])
+    )
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier3_empty_candidate_set"
+
+    # sgs/site-header-row's allow-list mixes orphans with real blocks: the
+    # orphans drop, the real ones stay -- never an all-or-nothing rejection.
+    header_row, _ = cfr.build_candidate_set("sgs/site-header-row")
+    names = {c.name for c in header_row}
+    assert "sgs/mobile-nav-toggle" not in names
+    assert "sgs/responsive-logo" in names
+    print("  PASS  Tier 3 gate 1: orphan candidate slugs dropped; real siblings survive")
+
+
+def test_tier3_gate2_excludes_untrustworthy_allow_lists() -> None:
+    """Verification gate 2. sgs/product-card and sgs/team-member both carry a
+    non-empty accepts_allowed_blocks while neither renders InnerBlocks at all
+    -- the column was seeded wrong for those two rows. product-card is the
+    trap: its only 'InnerBlocks' text match is inside a COMMENT saying it has
+    none, so a bare word match would false-positive."""
+    assert cfr.block_renders_inner_blocks("sgs/product-card") is False
+    assert cfr.block_renders_inner_blocks("sgs/team-member") is False
+    assert cfr._accepts_allowed_blocks("sgs/product-card"), "the wrong allow-list still exists in the DB"
+    assert cfr._accepts_allowed_blocks("sgs/team-member"), "the wrong allow-list still exists in the DB"
+
+    candidates, _ = cfr.build_candidate_set("sgs/team-member")
+    assert candidates == (), f"got {candidates!r}"
+    # product-card still has its own two array attributes; what must be absent
+    # is every slug from its untrusted allow-list.
+    pc = {c.name for c in cfr.build_candidate_set("sgs/product-card")[0]}
+    assert pc == {"colourSwatches", "packSizes"}, f"got {pc!r}"
+    print("  PASS  Tier 3 gate 2: product-card/team-member contribute nothing from accepts_allowed_blocks")
+
+
+def test_tier3_gate2_positive_control_real_parents_not_excluded() -> None:
+    """POSITIVE control for the gate above -- it must not be excluding real
+    InnerBlocks parents as a side effect. All 18 of the real allow-list
+    parents (every non-empty row whose own block still exists) must pass."""
+    passed = [
+        slug
+        for slug in (
+            "sgs/accordion",
+            "sgs/cta-section",
+            "sgs/hero",
+            "sgs/form",
+            "sgs/tabs",
+            "sgs/multi-button",
+            "sgs/feature-grid",
+            "sgs/mega-panel",
+            "sgs/product-faq",
+            "sgs/choice-flow",
+            "sgs/physics-canvas",
+            "sgs/testimonial-slider",
+            "sgs/site-header",
+            "sgs/site-header-row",
+            "sgs/site-footer",
+            "sgs/site-footer-row",
+        )
+        if cfr.block_renders_inner_blocks(slug)
+    ]
+    assert len(passed) == 16, f"wrongly excluded: {passed!r}"
+    accordion, _ = cfr.build_candidate_set("sgs/accordion")
+    assert [c.name for c in accordion] == ["sgs/accordion-item"]
+    print("  PASS  Tier 3 gate 2 positive control: 16 real InnerBlocks parents all still contribute")
+
+
+def test_tier3_gate2_comment_stripper_is_line_bounded() -> None:
+    """Regression control for the gate above. A DOTALL `/*...*/` strip
+    swallowed 470 real lines of hero/edit.js -- including its only
+    useInnerBlocksProps( call -- because a `//` comment there reads
+    'the *Tablet/*Mobile siblings' and that stray `/*` opened a block comment
+    that never closed until much later. A silent under-detection is this
+    gate's worst failure mode, so assert the exact shape directly."""
+    source = (
+        "// pass 3b: the *Tablet/*Mobile siblings no longer exist.\n"
+        "const props = useInnerBlocksProps( blockProps );\n"
+        "/* a real block comment\n"
+        "   still open */\n"
+    )
+    stripped = cfr._strip_js_comments(source)
+    assert "useInnerBlocksProps( blockProps )" in stripped, stripped
+    assert "Tablet" not in stripped, stripped
+    assert "a real block comment" not in stripped, stripped
+    # Negative control: a genuine block comment mentioning the call must NOT
+    # survive, or the gate would pass on prose alone.
+    assert "useInnerBlocksProps" not in cfr._strip_js_comments(
+        "/* this block does not call useInnerBlocksProps( ) at all */\n"
+    )
+    print("  PASS  Tier 3 gate 2: comment stripper is line-bounded (hero under-detection regression)")
+
+
+def test_tier3_container_fallback_fires_on_unrestricted_parent() -> None:
+    """section 9.2 source 3. sgs/quote has accepts_allowed_blocks genuinely
+    NULL and zero array_item_schema rows -- confirmed live. The classed path
+    would recurse such a child as a default sgs/container rather than gapping,
+    and Tier 3 reuses that mechanism rather than inventing one."""
+    field = cfr.DraftField(key="badge", value={"text": "Trusted", "icon": "star"})
+    candidates, fallback = cfr.build_candidate_set("sgs/quote")
+    assert candidates == () and fallback is True
+    result = cfr.resolve_nested_field("sgs/quote", field)
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    assert result.resolved_kind == "container-fallback"
+    assert result.targets == ("sgs/container",)
+    assert result.hits is None, "the fallback is placed directly, never scored"
+    print("  PASS  Tier 3 section 9.2: sgs/container fallback fires on a genuinely unrestricted parent")
+
+
+def test_tier3_container_fallback_not_offered_to_an_allow_listed_parent() -> None:
+    """Negative control for the fixture above -- an EMPTY candidate set is not
+    sufficient on its own. sgs/team-member's allow-list is non-NULL (merely
+    untrustworthy), so it must gap rather than fall back to sgs/container."""
+    _candidates, fallback = cfr.build_candidate_set("sgs/team-member")
+    assert fallback is False
+    print("  PASS  Tier 3 section 9.2: a non-NULL allow-list blocks the container fallback")
+
+
+def test_tier3_card_grid_misnamed_field_resolves_by_raw_count() -> None:
+    """section 11's named fixture: the sgs/card-grid.items case with a
+    MISNAMED draft field. 'cards' does not match the array_attr 'items' by
+    name (Step A routes it here), and card-grid's own items attribute must win
+    on raw exact-name hits when the content genuinely matches -- title,
+    subtitle and badge are all real array_item_schema field_keys on that
+    pair."""
+    field = cfr.DraftField(
+        key="cards",
+        value=[{"title": "Roofing", "subtitle": "Since 1994", "badge": "Popular"}],
+    )
+    result = cfr.resolve_nested_field("sgs/card-grid", field)
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    placed = result.items[0]
+    assert isinstance(placed, cfr.Tier3Placement), f"got {placed!r}"
+    assert placed.resolved_kind == "array-attribute"
+    assert placed.targets == ("items",)
+    assert placed.hits == 3
+    print("  PASS  Tier 3 section 9.3: misnamed 'cards' resolves to sgs/card-grid.items on 3 raw hits")
+
+
+def test_tier3_allow_listed_parent_resolves_on_two_or_more_hits() -> None:
+    """section 11: a real allow-listed parent with a nested value scoring >=2
+    raw hits against exactly one candidate, no tie. sgs/hero's allow-list is
+    [sgs/media] (verified InnerBlocks parent), and imageUrl/imageAlt/caption
+    are all real content-bearing attr_names on sgs/media.
+
+    Spec section 11 names sgs/accordion for this case; accordion cannot reach
+    the floor (its only child, sgs/accordion-item, carries exactly ONE
+    content-bearing attribute), so the spec's own 'e.g.' is taken at its word
+    and a real allow-listed parent that CAN is used instead. The accordion
+    case is covered by the 1-hit floor fixture below."""
+    field = cfr.DraftField(
+        key="picture",
+        value={"imageUrl": "hero.jpg", "imageAlt": "A roof", "caption": "Our work"},
+    )
+    result = cfr.resolve_nested_field("sgs/hero", field)
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    assert result.resolved_kind == "child-block"
+    assert result.targets == ("sgs/media",)
+    assert result.hits == 3
+    print("  PASS  Tier 3 section 9.3: sgs/hero resolves a 3-hit nested value to sgs/media")
+
+
+def test_tier3_brand_logo_negative_control_card_grid_never_wins() -> None:
+    """THE brand-logo negative control that broke the round-1 fix. The item
+    shape is section 11's own: {name, logo, url, alt, count, variant}.
+
+    Scored against sgs/card-grid -- the attribute-RICH wrong candidate, whose
+    items attribute declares 12 field_keys against brand-strip's 9 -- it must
+    score ZERO exact-name hits and gap. Under the abandoned percentage rule
+    this same control moved from a correctly-rejected 50% to an incorrectly-
+    accepted 75-100% precisely BECAUSE card-grid is attribute-rich."""
+    item = {
+        "name": "Northgate",
+        "logo": "northgate.svg",
+        "url": "https://northgate.example",
+        "alt": "Northgate logo",
+        "count": 12,
+        "variant": "mono",
+    }
+    result = cfr.resolve_nested_field("sgs/card-grid", cfr.DraftField(key="brands", value=[item]))
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    gap = result.items[0]
+    assert isinstance(gap, cfr.Gap), f"got {gap!r}"
+    assert gap.reason == "tier3_no_candidate_meets_evidence_floor"
+    assert "items=0" in gap.detail, gap.detail
+    print("  PASS  Tier 3 negative control: the brand-logo item scores 0 against card-grid, gaps")
+
+
+def test_tier3_brand_logo_positive_control_correct_candidate_wins() -> None:
+    """The paired positive control: the SAME item against the candidate that
+    genuinely matches. sgs/brand-strip.logos declares 'name' and 'alt' as real
+    field_keys, so it scores 2 and resolves -- proving the exact-name raw
+    count discriminates by genuine relevance, not by attribute volume."""
+    item = {
+        "name": "Northgate",
+        "logo": "northgate.svg",
+        "url": "https://northgate.example",
+        "alt": "Northgate logo",
+        "count": 12,
+        "variant": "mono",
+    }
+    result = cfr.resolve_nested_field("sgs/brand-strip", cfr.DraftField(key="brands", value=[item]))
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    placed = result.items[0]
+    assert isinstance(placed, cfr.Tier3Placement), f"got {placed!r}"
+    assert placed.targets == ("logos",)
+    assert placed.hits == 2
+
+    # And the two head-to-head, scored directly against one another: whatever
+    # bounded set they were ever both in, card-grid must lose.
+    fields = frozenset(item)
+    brand = cfr.build_candidate_set("sgs/brand-strip")[0][0]
+    card = cfr.build_candidate_set("sgs/card-grid")[0][0]
+    scored = dict(
+        (c.name, h) for c, h in cfr.score_candidates((brand, card), fields)
+    )
+    assert scored == {"logos": 2, "items": 0}, scored
+    print("  PASS  Tier 3 positive control: brand-strip.logos=2 beats card-grid.items=0 head-to-head")
+
+
+def test_tier3_exactly_one_hit_gaps_the_floor_is_two() -> None:
+    """section 9.3's absolute evidence floor. sgs/accordion's sole candidate,
+    sgs/accordion-item, declares exactly ONE content-bearing attribute
+    ('title'), so a nested {title, body} scores 1. The floor is >=2, not
+    'more than zero' -- a single coincidental field-name match is never
+    enough, however small the nested object."""
+    field = cfr.DraftField(key="panel", value={"title": "Delivery", "body": "Next day"})
+    result = cfr.resolve_nested_field("sgs/accordion", field)
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier3_no_candidate_meets_evidence_floor"
+    assert "sgs/accordion-item=1" in result.detail, result.detail
+    print("  PASS  Tier 3 section 9.3: a candidate scoring exactly 1 raw hit gaps (floor is >=2)")
+
+
+def test_tier3_tie_at_top_count_reports_ambiguous_with_both_counts() -> None:
+    """section 9.3's margin rule. sgs/product-card carries TWO un-matched
+    array attributes -- colourSwatches (colour/key/label) and packSizes
+    (label/selected) -- and its allow-list contributes nothing (gate 2). An
+    item of {label, colour, selected} scores 2 against each. A tie at the top
+    count is reported, naming both, never resolved by list position."""
+    field = cfr.DraftField(
+        key="variants", value=[{"label": "500g", "colour": "red", "selected": True}]
+    )
+    result = cfr.resolve_nested_field("sgs/product-card", field)
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    gap = result.items[0]
+    assert isinstance(gap, cfr.Gap), f"got {gap!r}"
+    assert gap.reason == "tier3_ambiguous_candidate_tie"
+    assert set(gap.candidates) == {"colourSwatches", "packSizes"}
+    assert "colourSwatches=2" in gap.detail and "packSizes=2" in gap.detail, gap.detail
+    print("  PASS  Tier 3 section 9.3: a 2-way tie at the top count reports ambiguous, naming both")
+
+
+def test_tier3_counting_domain_is_one_representative_unit() -> None:
+    """section 9.3's counting-domain rule: hits() is computed over the FIRST
+    item of an array, never summed across every item. Without it an array
+    candidate would accumulate hits per repetition and win on volume alone."""
+    array_value = [{"title": "A", "subtitle": "B"}] * 40
+    assert cfr._representative_fields(array_value) == frozenset({"title", "subtitle"})
+    assert cfr._representative_fields({"title": "A"}) == frozenset({"title"})
+    # The pre-filter applies to the counting domain too -- a function-literal
+    # field is never available to inflate a candidate's hit count.
+    assert cfr._representative_fields({"title": "A", "go": cfr.FUNCTION_LITERAL}) == frozenset(
+        {"title"}
+    )
+    print("  PASS  Tier 3 section 9.3: hits() counts one representative unit, never summed per item")
+
+
+def test_tier3_role_match_never_contributes_to_selection() -> None:
+    """The round-3 defect, asserted directly. sgs/card-grid.items declares
+    THREE text-content rows (title/subtitle/badge); a role/value-shape match
+    would score a hit for every plain string regardless of relevance. Scoring
+    is exact-name only, so three unrelated plain strings must score ZERO."""
+    candidate = cfr.build_candidate_set("sgs/card-grid")[0][0]
+    assert candidate.name == "items"
+    scored = cfr.score_candidates(
+        (candidate,), frozenset({"headline", "strapline", "flash"})
+    )
+    assert scored[0][1] == 0, scored
+    print("  PASS  Tier 3 section 9.3: three plain strings score 0 (no role/value-shape wildcard)")
+
+
+def test_tier3_visited_set_catches_a_self_referential_value() -> None:
+    """section 9.4's visited-set, keyed on id(value). JSON cannot encode a
+    true cycle, so this is a defensive bound against a future non-JSON input
+    -- it must emit a named gap, never an unhandled RecursionError."""
+    node: dict = {"label": "loop"}
+    node["self"] = node
+    result = cfr.resolve_nested_field("sgs/quote", cfr.DraftField(key="self", value=node))
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    reasons = {r.reason for r in result.inner if isinstance(r, cfr.Gap)}
+    assert "tier3_cycle_detected" in reasons, result.inner
+    print("  PASS  Tier 3 section 9.4: a self-referential value gaps on the visited-set, no RecursionError")
+
+
+def test_tier3_depth_cap_emits_a_gap_never_a_recursion_error() -> None:
+    """section 9.4's hard max_depth. Every level here falls to the
+    sgs/container fallback (sgs/container is itself unrestricted with no array
+    attributes), so the nesting would otherwise descend for as long as the
+    input does."""
+    deep = cfr.DraftField(key="a", value={"b": {"c": {"d": {"e": {"f": "end"}}}}})
+    result = cfr.resolve_nested_field("sgs/quote", deep, max_depth=2)
+    flattened: list = []
+    stack = [result]
+    while stack:
+        node = stack.pop()
+        flattened.append(node)
+        if isinstance(node, cfr.Tier3Placement):
+            stack.extend(node.inner)
+    reasons = {n.reason for n in flattened if isinstance(n, cfr.Gap)}
+    assert "tier3_max_depth_exceeded" in reasons, flattened
+
+    # A genuinely deep-but-finite input under the real default cap must NOT
+    # raise -- the bound is a guard, not a ceiling on ordinary drafts.
+    assert cfr.resolve_nested_field("sgs/quote", deep) is not None
+    print("  PASS  Tier 3 section 9.4: exceeding max_depth emits a named gap, never a RecursionError")
+
+
+def test_tier3_array_items_resolved_independently() -> None:
+    """section 9.5: each item of an array of objects is scored and resolved
+    independently against the SAME bounded candidate set -- a bad item must
+    not be carried by its good siblings, nor drag them down."""
+    field = cfr.DraftField(
+        key="cards",
+        value=[
+            {"title": "Roofing", "subtitle": "Since 1994"},
+            {"headline": "Guttering", "strapline": "Fast"},
+        ],
+    )
+    result = cfr.resolve_nested_field("sgs/card-grid", field)
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    assert isinstance(result.items[0], cfr.Tier3Placement), result.items
+    assert isinstance(result.items[1], cfr.Gap), result.items
+    print("  PASS  Tier 3 section 9.5: array items resolve independently (one places, one gaps)")
+
+
+def test_tier3_function_literal_and_non_nested_values_are_refused() -> None:
+    """section 4.0's pre-filter and section 9's own condition. Tier 3 only ever
+    accepts a nested value; a plain scalar reaching it is a routing error and
+    is named as one rather than silently scored."""
+    fn = cfr.resolve_nested_field("sgs/card-grid", cfr.DraftField(key="go", value=cfr.FUNCTION_LITERAL))
+    assert isinstance(fn, cfr.Gap) and fn.reason == "function_literal_excluded"
+    scalar = cfr.resolve_nested_field("sgs/card-grid", cfr.DraftField(key="heading", value="Hello"))
+    assert isinstance(scalar, cfr.Gap) and scalar.reason == "tier3_not_a_nested_value"
+    print("  PASS  Tier 3: a function literal and a plain scalar are both refused, named")
+
+
+def test_tier3_entry_point_accepts_route_to_tier3() -> None:
+    """Tier 3 is entered from identify_array_field's RouteToTier3 result --
+    the signal Tier 1 already produces for exactly this case."""
+    field = cfr.DraftField(key="cards", value=[{"title": "A", "subtitle": "B", "badge": "C"}])
+    routed = cfr.identify_array_field("sgs/card-grid", field)
+    assert isinstance(routed, cfr.RouteToTier3), f"got {routed!r}"
+    result = cfr.resolve_nested_field("sgs/card-grid", routed, field.value)
+    assert isinstance(result, cfr.Tier3ArrayResolution), f"got {result!r}"
+    assert result.items[0].targets == ("items",)
+    print("  PASS  Tier 3: entry point accepts the RouteToTier3 that Step A already emits")
+
+
+def test_tier3_recursion_reenters_the_whole_resolver() -> None:
+    """section 9.4: once a candidate is resolved the WHOLE resolver recurses
+    with that candidate as the new parent -- genuinely the same resolver, so
+    the nested object's own fields come back placed by Tiers 1/2, not by a
+    Tier-3-private copy of them."""
+    field = cfr.DraftField(
+        key="picture",
+        value={"imageUrl": "hero.jpg", "imageAlt": "A roof", "caption": "Our work"},
+    )
+    result = cfr.resolve_nested_field("sgs/hero", field)
+    placements = [r for r in result.inner if isinstance(r, cfr.Tier2Placement)]
+    assert {p.attr_name for p in placements} == {"imageUrl", "imageAlt", "caption"}
+    assert all(p.block_slug == "sgs/media" for p in placements)
+    print("  PASS  Tier 3 section 9.4: recursion re-enters the real resolver with the new parent")
+
+
 def main() -> int:
-    print("classless_field_resolver.py self-test (Spec 45 Tier 1)")
+    print("classless_field_resolver.py self-test (Spec 45 Tiers 1-3)")
     test_prefilter_excludes_function_literal()
     test_prefilter_is_type_based_not_name_based()
     test_step_a_exact_key_match_routes_to_array_attr()
@@ -286,7 +753,32 @@ def main() -> int:
     test_tier2_styling_role_only_never_matches()
     test_tier2_function_literal_excluded()
     test_tier2_unknown_field_is_a_gap_not_a_crash()
-    print("\nCLASSLESS-FIELD-RESOLVER (Tier 1 + Tier 2): PASS")
+    test_tier3_own_object_attribute_exact_name_places()
+    test_tier3_own_object_attribute_canonical_slot_places_whole_group()
+    test_tier3_own_object_attribute_styling_role_never_matches()
+    test_tier3_own_object_attribute_collision_is_a_gap()
+    test_tier3_empty_candidate_set_gaps_immediately()
+    test_tier3_gate1_drops_orphan_candidate_slugs()
+    test_tier3_gate2_excludes_untrustworthy_allow_lists()
+    test_tier3_gate2_positive_control_real_parents_not_excluded()
+    test_tier3_gate2_comment_stripper_is_line_bounded()
+    test_tier3_container_fallback_fires_on_unrestricted_parent()
+    test_tier3_container_fallback_not_offered_to_an_allow_listed_parent()
+    test_tier3_card_grid_misnamed_field_resolves_by_raw_count()
+    test_tier3_allow_listed_parent_resolves_on_two_or_more_hits()
+    test_tier3_brand_logo_negative_control_card_grid_never_wins()
+    test_tier3_brand_logo_positive_control_correct_candidate_wins()
+    test_tier3_exactly_one_hit_gaps_the_floor_is_two()
+    test_tier3_tie_at_top_count_reports_ambiguous_with_both_counts()
+    test_tier3_counting_domain_is_one_representative_unit()
+    test_tier3_role_match_never_contributes_to_selection()
+    test_tier3_visited_set_catches_a_self_referential_value()
+    test_tier3_depth_cap_emits_a_gap_never_a_recursion_error()
+    test_tier3_array_items_resolved_independently()
+    test_tier3_function_literal_and_non_nested_values_are_refused()
+    test_tier3_entry_point_accepts_route_to_tier3()
+    test_tier3_recursion_reenters_the_whole_resolver()
+    print("\nCLASSLESS-FIELD-RESOLVER (Tiers 1-3): PASS")
     return 0
 
 
