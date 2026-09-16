@@ -1162,3 +1162,17 @@ current DB) judged adequate as substituted - not escalated. Owed for later: the 
 §9.3 "14-group measurement + brand-logo control, recorded in a report" gate is scoped to
 "BEFORE Tier 3 is wired into the live pipeline" (D1084 defers that wiring entirely) - not a
 gap in this build pass, but do not treat Tier 3 as pipeline-ready without it.
+Task 3 QC-council (Bean-directed, given this mechanism's 3x-failed history): two independent
+raters, dispatched cold (no prior report seen), each re-derived the empirical facts from
+scratch against the live DB and source. Both confirmed: brand-strip=2/card-grid=0 field-key
+overlap (matches spec's own trace numbers); score_candidates is a bare exact-key intersection
+with no role/percentage weighting; floor(>=2) and no-tie gates are independent, sequential,
+unbypassable; both verification gates (orphan filter, InnerBlocks cross-check) correctly
+scoped and correctly neutralise the two known DB-seeding defects (product-card, team-member).
+One rater additionally proved the historical attack is architecturally unreachable in
+production (cross-block array-attr competition can't occur - build_candidate_set only ever
+pulls the ALREADY-KNOWN parent's own array attrs). Verdict: validated-shipped, no fixes
+required. Two non-blocking residuals noted for parking: (a) the block-kind sibling-candidate
+scoring surface (cta-section/site-header-row/site-footer-row/form) wasn't swept for the same
+property, (b) sgs/mobile-nav + sgs/adaptive-nav are dead block_composition parent rows
+(harmless today - parent_slug can never legitimately be a slug that isn't a real block).
