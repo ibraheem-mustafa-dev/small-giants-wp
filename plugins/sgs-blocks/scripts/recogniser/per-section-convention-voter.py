@@ -373,11 +373,25 @@ def collect_class_signature(node: Tag) -> list[str]:
 
 def _bs4_to_dom_dict(el: "Tag") -> dict:
     """Normalise a BeautifulSoup Tag to the duck-typed dict shape
-    dom_shape_classifier.py (Q1 Tier 2) expects: tag/classes/attrs keys."""
+    dom_shape_classifier.py (Q1 Tier 2) expects: tag/classes/attrs keys.
+
+    Also precomputes the two `classify_button_shaped` CTA-disambiguation
+    signals (Spec 45 §10.1) here, at the one point this function's caller
+    still holds the REAL, attached bs4 element with intact tree navigation --
+    `classify_button_shaped` itself receives only this flattened dict, with
+    its children already discarded and no sibling context forwarded to it."""
     classes = el.get("class") or []
     if isinstance(classes, str):
         classes = classes.split()
-    return {"tag": el.name, "classes": list(classes), "attrs": dict(el.attrs)}
+    return {
+        "tag": el.name,
+        "classes": list(classes),
+        "attrs": dict(el.attrs),
+        "_child_count": len(el.find_all(True, recursive=False)),
+        "_has_heading_or_paragraph_sibling": any(
+            sib.name in ("h1", "h2", "h3", "h4", "p") for sib in el.find_next_siblings()
+        ),
+    }
 
 
 def dom_shape_hint_for_gap_candidate(node: Tag) -> dict | None:

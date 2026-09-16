@@ -1088,3 +1088,160 @@ def resolve_fields(
         else:
             results.append(resolve_scalar_attribute(parent_slug, draft_field))
     return tuple(results)
+
+
+# ---------------------------------------------------------------------------
+# Tier 4 (§10) -- one-off (non-repeated) content. Per §10's own framing: "Tier
+# 4 is not a separate field-resolution engine. It is Tiers 1-3, fed a parent
+# identity from dom_shape_classifier.py instead of from Spec 44." Everything
+# below is Step 0 (§10.1 -- resolve the classifier's bare guess to a real,
+# DB-verified slug) plus a thin review-pending wrapper (§10.3) around calling
+# `resolve_fields` exactly as Tier 1-3 already do.
+#
+# BUILD STATUS (D1084, same as Tiers 1-3): standalone, fixture-driven --
+# `hint` is a plain Hint-shaped input here, never imported from
+# `dom_shape_classifier` (this module has no reason to depend on that one;
+# only its Hint SHAPE -- block/confidence/optional child_count/
+# has_heading_or_paragraph_sibling -- is assumed, duck-typed). §10.3's full
+# design (an isolated `operator-review.html` row + a `source` discriminator
+# on `classless-recognition-log.jsonl`, so a Tier-4 row can never satisfy
+# Spec 44's own per-client promotion scan) is Spec-44-surface-dependent and
+# NOT built here -- those surfaces don't exist yet. `Tier4Resolution` is the
+# whole of this build's scope: it carries `review_pending=True` (always) and
+# the classifier's own confidence, so a future caller has everything it
+# needs to write that isolated entry once Spec 44's surfaces exist.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class Tier4Resolution:
+    """§10.2/§10.3's wrapper -- whatever Tier 1-3 produced for the resolved
+    slug, plus `review_pending` (always `True`: `dom_shape_classifier.py`'s
+    confidence is capped below Spec 44's own auto-complete floor by design,
+    §10.3) and the classifier's own `confidence`, unchanged."""
+
+    block_slug: str
+    results: tuple[Any, ...]
+    confidence: float
+    review_pending: bool = True
+
+
+# §10.1's resolution mapping for the two classifier guesses that map to
+# exactly one real block unambiguously (`classify_heading`/
+# `classify_repeated_siblings` -- verified live against the `blocks` table).
+_TIER4_UNAMBIGUOUS_SLUGS: dict[str, str] = {
+    "hero": "sgs/hero",
+    "card-grid": "sgs/card-grid",
+}
+
+
+def _hint_field(hint: Any, name: str, default: Any = None) -> Any:
+    """Duck-typed read -- `hint` may be a real `dom_shape_classifier.Hint`,
+    any object exposing the same attributes, or a plain dict (matching this
+    module's own `DraftField`/element-input convention elsewhere)."""
+    if isinstance(hint, dict):
+        return hint.get(name, default)
+    return getattr(hint, name, default)
+
+
+def disambiguate_cta_guess(hint: Any) -> str | None:
+    """§10.1's CTA disambiguation. `classify_button_shaped` always returns
+    the bare guess "cta" (never a resolved slug) -- disambiguating it into
+    `sgs/cta-section` (composite: children + a heading/paragraph sibling) vs
+    `sgs/whatsapp-cta` (a single floating action element: near-zero children,
+    no such sibling) is Tier 4's own job, reading the two structural signals
+    `classify_button_shaped` now carries on the Hint (Spec 45 §10.1).
+
+    Returns `None` -- never a guess -- when either signal is missing
+    (`child_count`/`has_heading_or_paragraph_sibling` both default to `None`
+    on `Hint`; this is exactly the pre-§10.1-fix shape, before
+    `_bs4_to_dom_dict` wired the two keys through) or when the two signals
+    point in different directions (neither shape matches cleanly).
+    """
+    child_count = _hint_field(hint, "child_count")
+    has_sibling = _hint_field(hint, "has_heading_or_paragraph_sibling")
+    if child_count is None or has_sibling is None:
+        return None
+    if has_sibling and child_count > 0:
+        return "sgs/cta-section"
+    if not has_sibling and child_count == 0:
+        return "sgs/whatsapp-cta"
+    return None
+
+
+def resolve_tier4_slug(hint: Any) -> str | Gap:
+    """§10.1 Step 0 -- resolve a `dom_shape_classifier.Hint`-shaped bare
+    guess to a real, DB-verified slug. Never a silent guess: an unresolvable
+    or ambiguous guess is a `Gap`, exactly like every other tier in this
+    module.
+
+    The landmark case needs no lookup here at all -- post-fix,
+    `dom_shape_classifier._LANDMARK_TAG_BLOCK` already maps `header`/`footer`
+    DIRECTLY to their real row-level slugs (`sgs/site-header-row` /
+    `sgs/site-footer-row`), so `hint.block` already IS the real slug by the
+    time it reaches this function. A bare `<nav>` guess never reaches here
+    at all -- `nav`'s removal from that constant means `classify_element`
+    returns `None` for it, upstream of any Tier 4 call.
+    """
+    block = _hint_field(hint, "block")
+    if block is None:
+        return Gap("", reason="tier4_no_block_guess", detail="hint carries no 'block' value")
+
+    if block in _TIER4_UNAMBIGUOUS_SLUGS:
+        return _TIER4_UNAMBIGUOUS_SLUGS[block]
+
+    if block == "cta":
+        slug = disambiguate_cta_guess(hint)
+        if slug is not None:
+            return slug
+        return Gap(
+            "cta",
+            reason="tier4_cta_ambiguous",
+            detail=(
+                "classify_button_shaped's bare 'cta' guess needs child_count/"
+                "has_heading_or_paragraph_sibling to disambiguate sgs/cta-section "
+                "vs sgs/whatsapp-cta -- one or both signals are absent or "
+                "contradictory"
+            ),
+        )
+
+    if block.startswith("sgs/"):
+        # The post-fix landmark case -- _LANDMARK_TAG_BLOCK already holds the
+        # real slug directly (see docstring above).
+        return block
+
+    return Gap(
+        str(block),
+        reason="tier4_unresolvable_bare_guess",
+        detail=f"no Tier 4 resolution mapping for classifier guess {block!r}",
+    )
+
+
+def resolve_tier4(
+    hint: Any,
+    draft_fields: tuple[DraftField, ...],
+    *,
+    max_depth: int = DEFAULT_MAX_DEPTH,
+) -> Tier4Resolution | Gap:
+    """Tier 4's entry point (§10). Step 0 (§10.1) resolves `hint`'s bare
+    guess to a real slug; Step 1 (§10.2) feeds that slug into Tiers 1-3,
+    completely unchanged, as `parent_slug` -- "no new matching logic" per the
+    spec text. Step 2 (§10.3) wraps the result `review_pending=True`,
+    always, regardless of how clean the downstream Tier 1-3 match is.
+
+    A Step-0 failure (an unresolvable or ambiguous guess) returns the bare
+    `Gap` directly -- there is no slug to feed downstream, so no
+    `Tier4Resolution` wrapper applies.
+    """
+    slug = resolve_tier4_slug(hint)
+    if isinstance(slug, Gap):
+        return slug
+
+    confidence = _hint_field(hint, "confidence")
+    results = resolve_fields(slug, draft_fields, max_depth=max_depth)
+    return Tier4Resolution(
+        block_slug=slug,
+        results=results,
+        confidence=confidence,
+        review_pending=True,
+    )

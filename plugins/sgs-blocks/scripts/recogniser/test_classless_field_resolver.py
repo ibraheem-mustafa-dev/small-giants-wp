@@ -730,8 +730,156 @@ def test_tier3_recursion_reenters_the_whole_resolver() -> None:
     print("  PASS  Tier 3 section 9.4: recursion re-enters the real resolver with the new parent")
 
 
+# ---------------------------------------------------------------------------
+# section 10 -- Tier 4, one-off (non-repeated) content. Every concrete
+# (block, attr, role) below was confirmed against the live sgs-framework.db
+# before being written, same discipline as the Tier 3 fixtures above.
+# ---------------------------------------------------------------------------
+
+
+def test_tier4_hero_unambiguous_resolves_and_feeds_tier1_2() -> None:
+    """section 10.1: classify_heading's bare "hero" guess maps unambiguously
+    to sgs/hero. The resolved slug must feed Tiers 1-3 exactly as if Spec 44
+    had produced this identity -- here, sgs/hero.label (role=text-content)
+    places by Tier 2 exact-name -- AND the whole result must be
+    review-pending (section 10.3) even though the downstream match is a
+    clean, unambiguous hit."""
+    hint = {"block": "hero", "confidence": 0.4}
+    fields = (cfr.DraftField(key="label", value="Book now"),)
+    result = cfr.resolve_tier4(hint, fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/hero"
+    assert result.review_pending is True
+    assert result.confidence == 0.4
+    assert len(result.results) == 1
+    placement = result.results[0]
+    assert isinstance(placement, cfr.Tier2Placement), f"got {placement!r}"
+    assert placement.attr_name == "label"
+    print("  PASS  Tier 4 section 10.1: 'hero' resolves to sgs/hero, feeds Tier 2, review-pending")
+
+
+def test_tier4_card_grid_unambiguous_resolves_and_feeds_tier1_2() -> None:
+    """section 10.1: classify_repeated_siblings' bare "card-grid" guess maps
+    unambiguously to sgs/card-grid. sgs/card-grid.emptyMessage (role=
+    text-content, canonical_slot=None) places by Tier 2 exact-name, review-
+    pending regardless of the clean match (section 10.3)."""
+    hint = {"block": "card-grid", "confidence": 0.5}
+    fields = (cfr.DraftField(key="emptyMessage", value="No services found"),)
+    result = cfr.resolve_tier4(hint, fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/card-grid"
+    assert result.review_pending is True
+    assert result.confidence == 0.5
+    placement = result.results[0]
+    assert isinstance(placement, cfr.Tier2Placement), f"got {placement!r}"
+    assert placement.attr_name == "emptyMessage"
+    print("  PASS  Tier 4 section 10.1: 'card-grid' resolves to sgs/card-grid, feeds Tier 2, review-pending")
+
+
+def test_tier4_cta_before_signal_plumbing_gaps() -> None:
+    """section 10.1: BEFORE the child_count/has_heading_or_paragraph_sibling
+    plumbing fix, a "cta" guess carries no disambiguating signal at all --
+    simulated here by a hint with no child_count/has_heading_or_paragraph_
+    sibling keys, exactly what classify_button_shaped returned before this
+    session's fix. Must gap, never guess between sgs/cta-section and
+    sgs/whatsapp-cta."""
+    hint = {"block": "cta", "confidence": 0.45}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier4_cta_ambiguous"
+    print("  PASS  Tier 4 section 10.1: 'cta' with no signals gaps (pre-plumbing-fix shape)")
+
+
+def test_tier4_cta_after_fix_resolves_cta_section_shape() -> None:
+    """section 10.1 AFTER the fix: a composite CTA shape (children present +
+    a heading/paragraph sibling) resolves to sgs/cta-section. Feeds
+    sgs/cta-section.headline (role=text-content) via Tier 2 exact-name."""
+    hint = {"block": "cta", "confidence": 0.45, "child_count": 3, "has_heading_or_paragraph_sibling": True}
+    fields = (cfr.DraftField(key="headline", value="Ready to get started?"),)
+    result = cfr.resolve_tier4(hint, fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/cta-section"
+    assert result.review_pending is True
+    placement = result.results[0]
+    assert isinstance(placement, cfr.Tier2Placement), f"got {placement!r}"
+    assert placement.attr_name == "headline"
+    print("  PASS  Tier 4 section 10.1: composite-shaped 'cta' resolves to sgs/cta-section")
+
+
+def test_tier4_cta_after_fix_resolves_whatsapp_cta_shape() -> None:
+    """section 10.1 AFTER the fix: a single floating action element (near-
+    zero children, no heading/paragraph sibling) resolves to
+    sgs/whatsapp-cta. Feeds sgs/whatsapp-cta.label (role=text-content) via
+    Tier 2 exact-name."""
+    hint = {"block": "cta", "confidence": 0.45, "child_count": 0, "has_heading_or_paragraph_sibling": False}
+    fields = (cfr.DraftField(key="label", value="Chat with us"),)
+    result = cfr.resolve_tier4(hint, fields)
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/whatsapp-cta"
+    assert result.review_pending is True
+    placement = result.results[0]
+    assert isinstance(placement, cfr.Tier2Placement), f"got {placement!r}"
+    assert placement.attr_name == "label"
+    print("  PASS  Tier 4 section 10.1: floating-shaped 'cta' resolves to sgs/whatsapp-cta")
+
+
+def test_tier4_cta_contradictory_signals_gaps() -> None:
+    """Negative control for both directions above: signals that match
+    NEITHER shape cleanly (children present but no heading/paragraph
+    sibling) must gap rather than default to either slug."""
+    hint = {"block": "cta", "confidence": 0.45, "child_count": 2, "has_heading_or_paragraph_sibling": False}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier4_cta_ambiguous"
+    print("  PASS  Tier 4 section 10.1: contradictory cta signals gap, never guessed")
+
+
+def test_tier4_bare_nav_guess_never_routes_to_header_row() -> None:
+    """section 10.1: nav's removal from dom_shape_classifier._LANDMARK_TAG_
+    BLOCK is confirmed at the classifier layer (a bare <nav> now produces NO
+    hint at all) AND at this module's own resolution layer -- a synthetic
+    "nav" bare guess reaching resolve_tier4 (as it could have before the
+    fix) must gap, never silently resolve to sgs/site-header-row."""
+    import dom_shape_classifier as dsc
+
+    element = {"tag": "nav", "classes": []}
+    assert dsc.classify_element(element, [], is_top_level=False) is None, (
+        "bare <nav> must produce no classifier hint at all post-fix"
+    )
+
+    hint = {"block": "nav", "confidence": 0.35}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier4_unresolvable_bare_guess"
+    print("  PASS  Tier 4 section 10.1: bare 'nav' guess never routes to a header-row block")
+
+
+def test_tier4_header_landmark_slug_passes_through_directly() -> None:
+    """section 10.1: post-fix, dom_shape_classifier._LANDMARK_TAG_BLOCK
+    already maps header/footer DIRECTLY to their real row-level slugs, so
+    resolve_tier4 needs no separate lookup for this case -- hint.block
+    arrives already resolved."""
+    hint = {"block": "sgs/site-footer-row", "confidence": 0.35}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/site-footer-row"
+    assert result.review_pending is True
+    print("  PASS  Tier 4 section 10.1: an already-real landmark slug passes through unchanged")
+
+
+def test_tier4_unresolvable_bare_guess_gaps() -> None:
+    """Negative control: a classifier guess with no Tier 4 mapping at all
+    (neither an unambiguous name, "cta", nor an already-real slug) must gap,
+    never crash or silently pick something."""
+    hint = {"block": "totally-unknown-guess", "confidence": 0.4}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Gap), f"got {result!r}"
+    assert result.reason == "tier4_unresolvable_bare_guess"
+    print("  PASS  Tier 4: an unmapped bare guess gaps, never crashes or guesses")
+
+
 def main() -> int:
-    print("classless_field_resolver.py self-test (Spec 45 Tiers 1-3)")
+    print("classless_field_resolver.py self-test (Spec 45 Tiers 1-4)")
     test_prefilter_excludes_function_literal()
     test_prefilter_is_type_based_not_name_based()
     test_step_a_exact_key_match_routes_to_array_attr()
@@ -778,7 +926,16 @@ def main() -> int:
     test_tier3_function_literal_and_non_nested_values_are_refused()
     test_tier3_entry_point_accepts_route_to_tier3()
     test_tier3_recursion_reenters_the_whole_resolver()
-    print("\nCLASSLESS-FIELD-RESOLVER (Tiers 1-3): PASS")
+    test_tier4_hero_unambiguous_resolves_and_feeds_tier1_2()
+    test_tier4_card_grid_unambiguous_resolves_and_feeds_tier1_2()
+    test_tier4_cta_before_signal_plumbing_gaps()
+    test_tier4_cta_after_fix_resolves_cta_section_shape()
+    test_tier4_cta_after_fix_resolves_whatsapp_cta_shape()
+    test_tier4_cta_contradictory_signals_gaps()
+    test_tier4_bare_nav_guess_never_routes_to_header_row()
+    test_tier4_header_landmark_slug_passes_through_directly()
+    test_tier4_unresolvable_bare_guess_gaps()
+    print("\nCLASSLESS-FIELD-RESOLVER (Tiers 1-4): PASS")
     return 0
 
 

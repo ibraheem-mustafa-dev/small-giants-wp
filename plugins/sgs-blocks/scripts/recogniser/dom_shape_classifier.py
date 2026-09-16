@@ -27,9 +27,11 @@ HARD CONSTRAINTS (design doc, non-negotiable):
   3. No 4th walker conditional -- this module runs entirely OUTSIDE
      `converter/walk.py`'s three permitted exceptions (R-31-3), at boundary-build
      time and at leftover-routing time. Landmark-tag detection only ever fires on
-     a NON-top-level `<nav>`/`<header>`/`<footer>` -- a top-level one is already
-     chrome-skipped by the walker's own existing exception (`SKIP_TOP_LEVEL_TAGS`),
-     so there is no overlap and no new branch anywhere in the walker.
+     a NON-top-level `<header>`/`<footer>` (`<nav>` deliberately excluded, Spec 45
+     §10.1 -- no signal here to choose between its 3 real nav-block candidates) --
+     a top-level one is already chrome-skipped by the walker's own existing
+     exception (`SKIP_TOP_LEVEL_TAGS`), so there is no overlap and no new branch
+     anywhere in the walker.
 
 Element inputs are duck-typed, matching `converter/services/sibling_shape_prefilter.py`'s
 own convention: a plain dict with `"tag"`/`"classes"`/`"attrs"` keys, or any object
@@ -74,12 +76,23 @@ _lf_spec.loader.exec_module(_lf)
 @dataclass
 class Hint:
     """A LOW-confidence DOM-shape guess -- never ground truth. Constraint 2
-    above: `confidence` is always <= `TIER2_MAX_CONFIDENCE`."""
+    above: `confidence` is always <= `TIER2_MAX_CONFIDENCE`.
+
+    `child_count`/`has_heading_or_paragraph_sibling` (Spec 45 §10.1) are the
+    two structural signals `classify_button_shaped` reads off a live element
+    -- carried on the Hint rather than folded into `block` so the bare guess
+    stays "cta" (Tier 4's own downstream disambiguation between
+    `sgs/cta-section`/`sgs/whatsapp-cta` reads these two fields; a classifier
+    that doesn't populate them, e.g. every non-CTA classifier below, leaves
+    both `None`).
+    """
 
     block: str
     confidence: float
     evidence: str
     source: str = "dom_shape"
+    child_count: int | None = None
+    has_heading_or_paragraph_sibling: bool | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -87,6 +100,8 @@ class Hint:
             "confidence": self.confidence,
             "evidence": self.evidence,
             "source": self.source,
+            "child_count": self.child_count,
+            "has_heading_or_paragraph_sibling": self.has_heading_or_paragraph_sibling,
         }
 
 
@@ -117,7 +132,17 @@ def _any_class_already_canonical(class_signature: list[str] | None) -> bool:
 
 _HEADING_TAGS = {"h1", "h2"}
 _BUTTON_TAGS = {"button"}
-_LANDMARK_TAG_BLOCK = {"nav": "header", "header": "header", "footer": "footer"}
+
+# `nav` is deliberately ABSENT (Spec 45 §10.1) -- three real nav-block
+# candidates exist (sgs/nav-bar-menu / sgs/nav-drawer / sgs/nav-drawer-menu)
+# with no signal in this function to choose between them, so a bare <nav>
+# must fall through unresolved rather than guess. The two remaining keys map
+# DIRECTLY to their real, DB-verified, unambiguous row-level slugs -- the
+# constant itself IS the Tier 4 resolution now, no separate lookup needed.
+_LANDMARK_TAG_BLOCK = {
+    "header": "sgs/site-header-row",
+    "footer": "sgs/site-footer-row",
+}
 
 
 def classify_heading(element: Any, is_first_child: bool) -> Hint | None:
@@ -133,9 +158,29 @@ def classify_heading(element: Any, is_first_child: bool) -> Hint | None:
     )
 
 
+def _get_signal(element: Any, name: str, default: Any) -> Any:
+    """`.get()`-safe read of a precomputed structural signal (Spec 45 §10.1).
+    Never direct key/attribute access -- the module's own shipped self-test
+    builds bare `{"tag": "button", "classes": []}` dicts by hand with neither
+    signal present, and a direct read would `KeyError`/raise on those."""
+    if isinstance(element, dict):
+        return element.get(name, default)
+    return getattr(element, name, default)
+
+
 def classify_button_shaped(element: Any) -> Hint | None:
     """A `<button>`, or an element carrying `role=\"button\"`, is a CTA
-    candidate."""
+    candidate.
+
+    The bare guess stays "cta" -- disambiguating it into
+    `sgs/cta-section`/`sgs/whatsapp-cta` is Tier 4's own job downstream
+    (`classless_field_resolver.py`, Spec 45 §10.1/§10.2), not this
+    classifier's. What changes here is that the two structural signals that
+    disambiguation needs -- `_child_count`/`_has_heading_or_paragraph_sibling`,
+    precomputed by the caller at the one point the real DOM element still
+    exists (`_bs4_to_dom_dict`) -- are now read and carried on the returned
+    `Hint`, rather than being unavailable at this call as they were before.
+    """
     tag = _get_tag(element)
     role = (_get_attr(element, "role") or "").strip().lower()
     if tag not in _BUTTON_TAGS and role != "button":
@@ -143,12 +188,21 @@ def classify_button_shaped(element: Any) -> Hint | None:
     evidence = f"<{tag}> element"
     if role == "button":
         evidence += ' role="button"'
-    return Hint(block="cta", confidence=0.45, evidence=evidence)
+    return Hint(
+        block="cta",
+        confidence=0.45,
+        evidence=evidence,
+        child_count=_get_signal(element, "_child_count", 0),
+        has_heading_or_paragraph_sibling=_get_signal(
+            element, "_has_heading_or_paragraph_sibling", False
+        ),
+    )
 
 
 def classify_landmark_tag(element: Any, is_top_level: bool) -> Hint | None:
-    """A bare landmark tag (`<nav>`/`<header>`/`<footer>`) with no BEM class,
-    at NON-top-level, is a header/footer candidate.
+    """A bare landmark tag (`<header>`/`<footer>` -- `<nav>` deliberately
+    excluded, Spec 45 §10.1) with no BEM class, at NON-top-level, is a
+    header/footer candidate.
 
     `is_top_level` is required, not inferred -- a top-level landmark is
     already chrome-skipped by `converter/services/section_passes.py`'s
