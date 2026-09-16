@@ -1,5 +1,80 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1084 [ROUTINE] — Spec 45 (classless field resolution) builds standalone, ahead of Spec 44
+
+**2026-09-16.** Bean committed Spec 45 v1.6.0 (`.claude/specs/45-CLASSLESS-FIELD-RESOLUTION.md`)
+and asked to start implementing it. Before writing any code, checked the codebase directly:
+Spec 44 (`.claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md`), the spec Spec 45 depends on for
+its real input (a resolved parent block slug) and for its gap-routing surfaces
+(`classless-recognition-log.jsonl`, `operator-review.html`, `classless-summary.md`), is itself
+only DESIGNED, not built — zero `--classless-match` flag, zero group-identity resolver in code.
+
+**Decision (Bean's call, three options offered):** build Spec 45's Tiers 1-4 standalone now —
+fully unit-tested, fixture-driven functions per the spec's own build order — rather than
+building Spec 44 first or narrowing scope to just the `/sgs-update` roles fix. The field-mapping
+logic is identical either way; only the live pipeline wiring (`--classless-field-resolve` flag,
+Spec 44's log/review surfaces) is deferred until Spec 44 lands. Plan:
+`.claude/plans/2026-09-16-spec45-classless-field-resolver.md`.
+
+**Why this matters for later sessions:** if you're resuming this work and Spec 44 still isn't
+built, that's expected, not drift — don't rediscover this gap from scratch. Wiring Spec 45 into
+a live clone run is blocked on Spec 44 by design; that follow-up gets parked once all four
+Tier commits land (see the plan §6), not built opportunistically mid-pass.
+
+## D1083 [ROUTINE] — `sgs/choice-flow` Phase 2b visual/UX gap-fix pass, grounded in real
+reference evidence, not invention
+
+**2026-09-15/16.** User-directed follow-up to D1082: Bean asked "did you test how it
+looks?" and, after live-verification, flagged three concrete gaps — no numbered/named
+progress stages, no Back control, no vertical-layout option to match the real reference
+quizzes. First-pass fixes (Back button, "Step N of M" text, a `layout: grid|list` option
+attribute, a shared `sgs_render_info_toggle()` helper extracted from the existing
+help-text toggle) were built, live-verified, and deployed — but Bean's SECOND round of
+feedback caught that the Back button's colour choice (seeded to the theme's filled
+`primary` button preset) had never been checked against any real reference, and asked for
+the whole modal's colour/radius system to be made internally consistent.
+
+**Real evidence read directly from source, not guessed:** the client's own real lens-
+configurator draft (`sites/eye-care-ward-end/design_handoff_ward_end_eye_care/
+Eye Care Birmingham.dc.html`) plus live `chrome-devtools` captures of AthleanX and
+Invisalign showed ALL THREE references use a NEUTRAL ink/paper pair for nav buttons
+(background:none, border darkens on hover) — the brand accent colour is reserved for
+progress-fill/price/badge highlights only, never buttons. The option-card hover and
+help-toggle hover (built in the first pass) were ALSO invented before this evidence was
+read: real hover only darkens the border + lifts with a shadow (cards) or fully inverts to
+a solid dark fill (help-toggle) — neither matches what shipped first. All three corrected
+to straight token substitutions of the real recipe, using this theme's own tokens
+(`text`/`text-inverse`/`primary-dark`/`border`), not hardcoded hex.
+
+**New `progressStyle` attribute (bar/circles/badge)** — operator choice across the 3 real
+patterns found live: a plain fill bar (the real lens flow, default), a numbered-circle
+stepper with connecting lines (AthleanX), or a step-count badge riding the fill track like
+a slider thumb (Invisalign). Back button moved into a bottom sticky footer (matches
+AthleanX + the real lens flow; Invisalign's top-of-page text-link placement was
+explicitly ruled out by Bean — "the invisalign one is definitely the outlier").
+
+**Two real detector/bug findings caught by this session's own live-verification
+discipline, both fixed at the source rather than routed around:**
+1. `choice-flow-question/render.php` fatalled the whole page with a 500 on any option
+   carrying help text — it had never itself required `render-helpers.php` (never needed a
+   shared helper before adopting `sgs_render_info_toggle()`). Missing `require_once`,
+   caught live on the canary, fixed and redeployed same session.
+2. `scripts/survey-border-control-migration.py`'s `has_private_width`/`has_private_style`
+   checks were exact-match-only (`'borderWidth' in attrs`), blind to a PREFIXED border
+   family like this block's new `backBorderWidth`/`backBorderStyle` — generalised to a
+   PascalCase-boundary suffix match. This surfaced 2 genuinely pre-existing findings in
+   UNRELATED blocks (`nav-bar-menu`/`nav-drawer-menu`), disclosed transparently (ceiling
+   raised 0→2 with a written reason) rather than silently absorbed — delegated via
+   `/delegate` to a Sonnet agent as a same-session follow-up (see parking.md).
+
+**Live-verified on sandybrown at 1440/768/375px via `chrome-devtools` MCP** — all three
+progress-bar variants, Back button show/hide + navigation + transparent-background fix
+(a second real bug: the button fell through to the browser's own UA `<button>` chrome
+when no background colour was set, since nothing emits `background-color` for an empty
+attribute value), option-card/help-toggle hover states confirmed via compiled CSS output.
+Visual-diff reports: `reports/visual-diff/choice-flow-2026-09-15-2.md` and `-3.md`,
+`choice-flow-question-2026-09-15-2.md`.
+
 ## D1082 [ROUTINE] — Spec 43 Phase 2 shipped: `sgs/choice-flow` branching quiz
 (plain-question step + recommendation terminal), live-verified
 
