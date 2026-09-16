@@ -103,6 +103,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		itemMagnetEnabled,
 		submenuBorderColour,
 		submenuBorderColourGradient,
+		submenuLinkBorderWidth,
+		submenuLinkBorderStyle,
+		submenuLinkBorderColour,
+		submenuLinkBorderColourHover,
 		sublinkMarkerIcon,
 		submenuPadding,
 		submenuBorderWidth,
@@ -375,6 +379,41 @@ export default function Edit( { attributes, setAttributes } ) {
 				/>
 			),
 		} ),
+		// Added 2026-09-17 (P-NAV-MENU-BORDER-CENSUS-DELEGATED follow-up): the
+		// SUBLINK's own border colour — distinct from "Panel border colour"
+		// above (that row is `submenuBorderColour`, the `submenu-panel`
+		// element; this one is `submenuLinkBorderColour`, the `sublink`
+		// element). Normal + Hover only — no Current, per block.json's
+		// `sublink.attrMap` (no `submenuLinkBorderColourCurrent` declared).
+		// Shape (width/style) is `DropdownStylePanel`'s new "Link border"
+		// control, matching the panel-border split above. render.php already
+		// consumed both attrs (`includes/nav-menu-submenu-link-css.php`); this
+		// was the missing editor control, not a dead attribute.
+		{
+			key: 'submenu-link-border',
+			label: __( 'Link border colour', 'sgs-blocks' ),
+			...( itemSurface
+				? { contrastAgainst: itemSurface, contrastLargeText: true }
+				: {} ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: submenuLinkBorderColour,
+					onChange: ( val ) =>
+						setAttributes( { submenuLinkBorderColour: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: submenuLinkBorderColourHover,
+					onChange: ( val ) =>
+						setAttributes( { submenuLinkBorderColourHover: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
 		// OMITTED (not disabled) unless `sublinkMarkerIcon` differs from its
 		// declared chevron-right default.
 		sublinkMarkerIconIsCustom &&
@@ -526,6 +565,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					submenuPadding={ submenuPadding }
 					submenuBorderWidth={ submenuBorderWidth }
 					submenuBorderStyle={ submenuBorderStyle }
+					submenuLinkBorderWidth={ submenuLinkBorderWidth }
+					submenuLinkBorderStyle={ submenuLinkBorderStyle }
 					setAttributes={ setAttributes }
 				/>
 

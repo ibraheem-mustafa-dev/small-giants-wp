@@ -1,5 +1,53 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1085 [ROUTINE] — nav-bar-menu/nav-drawer-menu border census: 2nd delegation blind spot fixed + a real control gap wired up (not removed)
+
+**2026-09-17.** Follow-up to P-NAV-MENU-BORDER-CENSUS-DELEGATED (D1083's ceiling raise
+0→2, prior dispatch failed on a weekly rate limit before landing anything — see parking
+entry). Re-verified the pre-dispatch diagnosis from scratch rather than trusting it, per
+this project's prove-the-cause rule, and found it was half right, half wrong:
+
+**Reason 1 (detector blind spot) — confirmed correct, fixed.** `nav-bar-menu`/
+`nav-drawer-menu` mount `<SgsBorderControl>` for the `item*` and `submenu*` families
+via two SHARED component files they plainly `import`
+(`src/shared/nav-menu-panels/ItemsPanel.js::ItemsPanel`,
+`.../DropdownStylePanel.js::DropdownStylePanel`), not directly in their own `edit.js` —
+invisible to `scripts/survey-border-control-migration.py`'s flat per-file text search,
+one composition layer shallower than the existing `sgs/media` atom-delegation blind spot
+it already handles. Fixed the same way: a new explicit lookup,
+`BORDER_DELEGATING_SHARED_FILES` + `survey-border-control-migration.py::
+_delegated_shared_file_mounts_sgs_border_control()`, checked alongside the existing
+atom-delegation resolver in `classify_block()`.
+
+**Reason 2 (claimed "genuinely dead attributes") — DISPROVEN by direct evidence, NOT
+removed.** The prior diagnosis's own claim ("zero consumption in
+`nav-bar-menu/render.php`") was true only of that literal file — `submenuLinkBorderWidth/
+Style/Colour/ColourHover` are read and painted as real CSS (border-width/style/colour +
+a hover rule) by `includes/nav-menu-submenu-link-css.php::
+sgs_nav_shared_submenu_link_css()`, which BOTH blocks' `render.php` `require_once`. What
+was genuinely true: no editor control existed anywhere for any of the 4 attrs — a real
+gap under this project's "every customisable property must be an inspector control" rule,
+not a dead-code case. Wired up properly, reusing the block's own established shape/colour
+split (width+style via `SgsBorderControl`, colour via Colour-panel rows): added a "Link
+border" `SgsBorderControl` mount (`showColour={ false }`, no radius — sublink has none)
+in `DropdownStylePanel.js`, plus a "Link border colour" row (Normal + Hover, no Current —
+matches `sublink.attrMap`'s declared state set) in each block's own `edit.js`
+`colourRows` array. Both blocks pass `submenuLinkBorderWidth`/`submenuLinkBorderStyle`
+into the shared panel (BOTH-classified attrs, per each block's own `block.json`).
+
+**Verified:** `survey-border-control-migration.py --survey`: `nav-bar-menu`/
+`nav-drawer-menu` now `PRIVATE_DONE` (`PRIVATE_NEEDS_SWAP` count 0, was 2). `--check` and
+`--self-test` both pass; spot-checked `whatsapp-cta`/`product-card`/`container`/`icon`/
+`mega-panel`/`social-icons` unchanged. `php -l` clean on both `render.php` files +
+`nav-menu-submenu-link-css.php`. `check-dead-controls.js` unchanged (same 5 advisory
+findings, none new, none touching these two blocks). CEILING's `PRIVATE_NEEDS_SWAP`
+lowered 2→0 with the reason recorded inline in the script.
+
+**Files:** `plugins/sgs-blocks/scripts/survey-border-control-migration.py`,
+`plugins/sgs-blocks/src/shared/nav-menu-panels/DropdownStylePanel.js`,
+`plugins/sgs-blocks/src/blocks/nav-bar-menu/edit.js`,
+`plugins/sgs-blocks/src/blocks/nav-drawer-menu/edit.js`.
+
 ## D1084 [ROUTINE] — Spec 45 (classless field resolution) builds standalone, ahead of Spec 44
 
 **2026-09-16.** Bean committed Spec 45 v1.6.0 (`.claude/specs/45-CLASSLESS-FIELD-RESOLUTION.md`)

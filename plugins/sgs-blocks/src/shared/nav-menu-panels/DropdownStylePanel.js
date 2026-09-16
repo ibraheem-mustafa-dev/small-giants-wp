@@ -61,24 +61,39 @@ import {
  * FR-41-33), which is why `SgsBorderControl` is mounted `showColour={ false }`
  * here. Shadow COLOUR deliberately stays with `ShadowControl`.
  *
- * @param {Object}   root0                       Props.
- * @param {boolean}  root0.showSizingControls    True on `sgs/nav-bar-menu`, false on
- *                                               `sgs/nav-drawer-menu` (see docblock above).
- * @param {string}   [root0.submenuAnimation]    `submenuAnimation` — bar only.
- * @param {string}   [root0.submenuTopOffset]    `submenuTopOffset` — bar only.
- * @param {string}   [root0.submenuMinWidth]     `submenuMinWidth` — bar only.
- * @param {Object}   root0.submenuPadding        `submenuPadding` — responsive tier object, BOTH.
- * @param {Object}   root0.submenuBorderWidth    `submenuBorderWidth`, BOTH.
- * @param {string}   root0.submenuBorderStyle    `submenuBorderStyle`, BOTH.
- * @param {Object}   [root0.submenuBorderRadius] `submenuBorderRadius` — bar only.
- * @param {string}   [root0.submenuShadow]       `submenuShadow` — bar only. Named explicitly,
- *                                               not read off `attributes`, so the attribute
- *                                               name appears in `edit.js` where
- *                                               inspector-scan rule 21's corpus can see it.
- * @param {string}   [root0.submenuShadowColour] `submenuShadowColour` — bar only.
- * @param {Object}   [root0.attributes]          Full attributes — `ShadowControl` reads and
- *                                               writes its own key pair (bar only).
- * @param {Function} root0.setAttributes         The block's attribute setter.
+ * ⚑ ADDED 2026-09-17 (P-NAV-MENU-BORDER-CENSUS-DELEGATED follow-up): a second
+ * `SgsBorderControl` mount for the SUBLINK's own border shape
+ * (`submenuLinkBorderWidth`/`submenuLinkBorderStyle`, BOTH-classified) — a
+ * genuinely distinct element from the panel's own border above it
+ * (`.sgs-nav-bar-menu__sublink` vs `.sgs-nav-bar-menu__submenu`, block.json's
+ * `sublink` vs `submenu-panel` element manifest entries). render.php
+ * (`includes/nav-menu-submenu-link-css.php::sgs_nav_shared_submenu_link_css()`)
+ * already emitted this CSS; there was no editor control anywhere to reach it
+ * — a genuine control gap, not a dead attribute (verified live: zero matches
+ * for either attr name in any edit.js/panel file before this change). Colour
+ * (`submenuLinkBorderColour`/`Hover`) stays a row in each block's own Colour
+ * panel, matching the split above — `showColour={ false }` here too.
+ *
+ * @param {Object}   root0                          Props.
+ * @param {boolean}  root0.showSizingControls       True on `sgs/nav-bar-menu`, false on
+ *                                                  `sgs/nav-drawer-menu` (see docblock above).
+ * @param {string}   [root0.submenuAnimation]       `submenuAnimation` — bar only.
+ * @param {string}   [root0.submenuTopOffset]       `submenuTopOffset` — bar only.
+ * @param {string}   [root0.submenuMinWidth]        `submenuMinWidth` — bar only.
+ * @param {Object}   root0.submenuPadding           `submenuPadding` — responsive tier object, BOTH.
+ * @param {Object}   root0.submenuBorderWidth       `submenuBorderWidth`, BOTH.
+ * @param {string}   root0.submenuBorderStyle       `submenuBorderStyle`, BOTH.
+ * @param {Object}   [root0.submenuBorderRadius]    `submenuBorderRadius` — bar only.
+ * @param {Object}   root0.submenuLinkBorderWidth   `submenuLinkBorderWidth`, BOTH.
+ * @param {string}   root0.submenuLinkBorderStyle   `submenuLinkBorderStyle`, BOTH.
+ * @param {string}   [root0.submenuShadow]          `submenuShadow` — bar only. Named explicitly,
+ *                                                  not read off `attributes`, so the attribute
+ *                                                  name appears in `edit.js` where
+ *                                                  inspector-scan rule 21's corpus can see it.
+ * @param {string}   [root0.submenuShadowColour]    `submenuShadowColour` — bar only.
+ * @param {Object}   [root0.attributes]             Full attributes — `ShadowControl` reads and
+ *                                                  writes its own key pair (bar only).
+ * @param {Function} root0.setAttributes            The block's attribute setter.
  */
 export default function DropdownStylePanel( {
 	showSizingControls,
@@ -89,6 +104,8 @@ export default function DropdownStylePanel( {
 	submenuBorderWidth,
 	submenuBorderStyle,
 	submenuBorderRadius,
+	submenuLinkBorderWidth,
+	submenuLinkBorderStyle,
 	submenuShadow,
 	submenuShadowColour,
 	attributes,
@@ -110,6 +127,8 @@ export default function DropdownStylePanel( {
 					submenuPadding: {},
 					submenuBorderWidth: {},
 					submenuBorderStyle: '',
+					submenuLinkBorderWidth: {},
+					submenuLinkBorderStyle: '',
 				} )
 			}
 		>
@@ -246,6 +265,39 @@ export default function DropdownStylePanel( {
 						  }
 						: {} ) }
 				/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				hasValue={ () =>
+					Object.keys( submenuLinkBorderWidth || {} ).length > 0 ||
+					!! submenuLinkBorderStyle
+				}
+				label={ __( 'Link border', 'sgs-blocks' ) }
+				onDeselect={ () =>
+					setAttributes( {
+						submenuLinkBorderWidth: {},
+						submenuLinkBorderStyle: '',
+					} )
+				}
+			>
+				<SgsBorderControl
+					label={ __( 'Link border', 'sgs-blocks' ) }
+					showColour={ false }
+					widthValues={ submenuLinkBorderWidth || {} }
+					onWidthChange={ ( next ) =>
+						setAttributes( { submenuLinkBorderWidth: next || {} } )
+					}
+					styleValue={ submenuLinkBorderStyle }
+					onStyleChange={ ( next ) =>
+						setAttributes( { submenuLinkBorderStyle: next || '' } )
+					}
+				/>
+				<p className="components-base-control__help">
+					{ __(
+						'The colour of this border — resting and on hover — is in the Colour panel above, so you can match it against the link’s text and background.',
+						'sgs-blocks'
+					) }
+				</p>
 			</ToolsPanelItem>
 
 			{ /* ⛔ `shadowAttrKeys( 'submenuShadow' )` with NO options returns exactly

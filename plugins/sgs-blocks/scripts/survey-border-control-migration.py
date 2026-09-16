@@ -92,6 +92,48 @@ BORDER_DELEGATING_ATOMS = {
 }
 
 
+# A block's edit.js need not mount <SgsBorderControl> directly OR via a
+# block.json-declared atom -- it can also delegate straight to a SHARED
+# React component file it plainly `import`s (no atoms/block.json wiring at
+# all). `nav-bar-menu`/`nav-drawer-menu` both import `ItemsPanel.js` (mounts
+# SgsBorderControl for the `item*` family) and `DropdownStylePanel.js`
+# (mounts SgsBorderControl for the `submenu*`/`submenuLink*` non-colour
+# families) from `src/shared/nav-menu-panels/` -- confirmed live 2026-09-17
+# by reading both files directly (ItemsPanel.js line ~44, DropdownStylePanel.js
+# line ~230 plus the "Link border" mount added the same day). A literal
+# `'SgsBorderControl' in edit_js` text search can't see through a plain
+# import + JSX-mount either, same blind spot as the atom-delegation case
+# above, just one composition layer shallower.
+#
+# Same discipline as BORDER_DELEGATING_ATOMS: a small, explicit lookup, not a
+# general import-graph walker. Add a new entry the day a second shared-panel
+# delegation shape appears -- never a per-block special case.
+BORDER_DELEGATING_SHARED_FILES = {
+    'nav-menu-panels/ItemsPanel': os.path.join(
+        ROOT, 'plugins', 'sgs-blocks', 'src', 'shared', 'nav-menu-panels', 'ItemsPanel.js'
+    ),
+    'nav-menu-panels/DropdownStylePanel': os.path.join(
+        ROOT, 'plugins', 'sgs-blocks', 'src', 'shared', 'nav-menu-panels', 'DropdownStylePanel.js'
+    ),
+}
+
+# Matches `import Foo from '../../shared/nav-menu-panels/ItemsPanel';` (or any
+# relative depth / quote style) -- captures the module specifier so it can be
+# matched against BORDER_DELEGATING_SHARED_FILES by substring.
+_IMPORT_SPECIFIER_RE = re.compile(r'''import\s+\w+\s+from\s+['"]([^'"]+)['"]''')
+
+
+def _delegated_shared_file_mounts_sgs_border_control(edit_js):
+    """True when `edit_js` imports one of BORDER_DELEGATING_SHARED_FILES'
+    known keys AND that shared file's own source mounts <SgsBorderControl>."""
+    for m in _IMPORT_SPECIFIER_RE.finditer(edit_js):
+        specifier = m.group(1)
+        for key, shared_path in BORDER_DELEGATING_SHARED_FILES.items():
+            if key in specifier and 'SgsBorderControl' in _read(shared_path):
+                return True
+    return False
+
+
 def _delegated_atom_mounts_sgs_border_control(bj):
     """For each border-delegating atom declared on the block (in any atom-bearing
     list nested under `supports.sgs`, e.g. block.json's `mediaElements[].atoms`),
@@ -144,11 +186,27 @@ CEILING = {
     # absent. This is pre-existing debt the detector fix made visible, not a
     # regression introduced by anything in this commit -- verified live via
     # `python -c "..."` reading both blocks' real block.json attribute names.
-    # Migrating their edit.js to SgsBorderControl is real per-block work
-    # (render.php CSS emission + control wiring, per this file's own header
-    # note that there is deliberately no --fix here) — out of scope for the
-    # commit that fixed the detector; tracked as its own follow-up.
-    'PRIVATE_NEEDS_SWAP': 2,
+    # ⚑ LOWERED 2 -> 0, 2026-09-17: the "real per-block work" note above turned
+    # out to be a SECOND detector blind spot, not genuine unmigrated work.
+    # nav-bar-menu/nav-drawer-menu delegate `item*` and `submenu*`/
+    # `submenuLink*` border controls to two SHARED component files
+    # (`src/shared/nav-menu-panels/ItemsPanel.js`,
+    # `.../DropdownStylePanel.js`) rather than mounting `SgsBorderControl`
+    # directly in their own edit.js — a plain-import delegation one layer
+    # shallower than the box-shape atom shape above, and just as invisible to
+    # a flat per-file text search. Fixed via
+    # `_delegated_shared_file_mounts_sgs_border_control()` +
+    # `BORDER_DELEGATING_SHARED_FILES` (same explicit-lookup discipline as
+    # `BORDER_DELEGATING_ATOMS`). Separately, `submenuLinkBorderWidth/Style/
+    # Colour/ColourHover` genuinely HAD NO editor control anywhere (verified
+    # live, unlike `item*`/`submenu*` which were already fully wired) even
+    # though render.php already consumed them
+    # (`includes/nav-menu-submenu-link-css.php`) — wired up properly (a
+    # "Link border" `SgsBorderControl` mount in `DropdownStylePanel.js` +
+    # colour rows in both blocks' `edit.js`) rather than removed, since the
+    # render-side emission proved it was real, planned, in-progress work, not
+    # vestigial. See parking-archive.md for the resolved entry.
+    'PRIVATE_NEEDS_SWAP': 0,
     # Measured 2026-08-28, first real run of this classifier: filter-search, label,
     # mega-aside, mega-panel, product-search, social-icons, whatsapp-cta -- each has
     # SOME border-shaped attr (usually radius-only, sometimes radius+colour with no
@@ -223,6 +281,7 @@ def classify_block(block_dir):
     uses_sgs_border_control = (
         'SgsBorderControl' in edit_js
         or _delegated_atom_mounts_sgs_border_control(bj)
+        or _delegated_shared_file_mounts_sgs_border_control(edit_js)
     )
 
     detail = {

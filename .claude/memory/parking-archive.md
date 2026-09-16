@@ -7,6 +7,30 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-17 — 1 entry RESOLVED: nav-bar-menu/nav-drawer-menu border census, both root causes fixed
+
+### P-NAV-MENU-BORDER-CENSUS-DELEGATED — nav-bar-menu/nav-drawer-menu border-migration fix, dispatched to a subagent (ARCHIVED)
+**Status was:** OPEN · **Bucket:** framework · **Parked:** 2026-09-16 · **Resolved:** 2026-09-17
+
+Re-diagnosed from scratch rather than trusting the prior investigation (prior Sonnet
+dispatch failed on a weekly rate limit before landing anything). Confirmed Reason 1 (a
+2nd delegation blind spot in `survey-border-control-migration.py` — `nav-bar-menu`/
+`nav-drawer-menu` mount `<SgsBorderControl>` via shared imports
+`ItemsPanel.js`/`DropdownStylePanel.js`, invisible to the census's flat per-file text
+search) and DISPROVED Reason 2 ("submenuLink* genuinely dead") — `includes/nav-menu-
+submenu-link-css.php::sgs_nav_shared_submenu_link_css()`, required by both blocks'
+`render.php`, already consumed and painted `submenuLinkBorderWidth/Style/Colour/
+ColourHover` as real CSS. The genuine gap was a missing editor control, not dead code.
+
+**Fixed both, this session (D1085):** detector-side `BORDER_DELEGATING_SHARED_FILES` +
+`_delegated_shared_file_mounts_sgs_border_control()` in
+`survey-border-control-migration.py`; a "Link border" `SgsBorderControl` mount in
+`DropdownStylePanel.js` + a "Link border colour" Colour-panel row (Normal+Hover) in both
+blocks' `edit.js`. Verified: census now `PRIVATE_DONE` for both blocks
+(`PRIVATE_NEEDS_SWAP` ceiling lowered 2→0), `--check`/`--self-test` pass, no
+classification regressions on spot-checked blocks, `php -l` clean, `check-dead-controls.js`
+unchanged, full `npm run build` exit 0 with all gates green.
+
 ## 2026-09-15 — 1 entry RESOLVED: nav-drawer 2-column listColumns reading order, live-verified
 
 ### P-NAV-MENU-LISTCOLUMNS-READING-ORDER — 2-column drawer list interleaves the menu order (ARCHIVED)
