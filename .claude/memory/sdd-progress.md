@@ -1153,3 +1153,12 @@ case (sgs/container.background-image, 3 tablet/mobile/desktop candidates) confir
 with all candidates named, never guessed. One Minor carried forward for Tier 3's attention:
 Step 2's value-shape guard only recognises 5 of 20 live content-bearing roles (default-deny,
 consistent with Tier 1) - not a blocker, watch if Tier 3 needs the other 15.
+Task 3 (Tier 3 — nested child-block matching): complete (commits f81e0885f..70c8442b5,
+review Approved with only Minor findings — no Critical/Important, no fix cycle needed).
+Independently re-verified by the reviewer (own DB sweep, hand-traced scoring on the
+brand-logo fixture, confirmed mutation-testing claims trace to real assertions). Known
+Open Design Question (brand-logo control can't be built as one real bounded set against
+current DB) judged adequate as substituted - not escalated. Owed for later: the spec's own
+§9.3 "14-group measurement + brand-logo control, recorded in a report" gate is scoped to
+"BEFORE Tier 3 is wired into the live pipeline" (D1084 defers that wiring entirely) - not a
+gap in this build pass, but do not treat Tier 3 as pipeline-ready without it.
