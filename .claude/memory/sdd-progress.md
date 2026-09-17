@@ -1224,3 +1224,15 @@ CORRECTIONS entry (commit ce46f36fb), logged to mistakes.md
 (delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default). All 3
 sibling self-test suites (classless_field_resolver, dom_shape_classifier,
 render_repeater_seeder) confirmed green after the fix.
+Task 2 (Stage A recognition - parent-narrowing + structural match, spec sections 3.1/4.1/4.3
+Step 0/4.4): complete (commit ab0a291e5, review Approved with no fixes needed - the reviewer
+independently re-derived the key claims from live DB data rather than trusting the report).
+Real design finding: the implementer's first design (token-overlap scoring for the
+parent-composite-shape check) was rejected on MEASUREMENT against the real Eye Care draft
+(it ranked the wrong block - product-card's vocabulary swamps buybox's), replaced with
+per-attribute capability-satisfaction (exclusion-only, DB-token-driven, no block-name
+lookup) - independently re-verified correct by the reviewer via direct DB queries. Also
+found and verified a real correction to spec section 4.1's own worked example: TWO
+structural markers are unmatched between the buybox block and the real draft (not one as
+the spec states) - both directions independently confirmed by reading the real source
+files. 19/19 self-test assertions pass, fully inert (grep-confirmed no live wiring).
