@@ -486,8 +486,20 @@ if ( '' === $items_html ) {
 }
 
 // ── 3. Burger + drawer-toggle context. ──────────────────────────────────────
-$drawer_ref = isset( $attributes['drawerRef'] ) && '' !== $attributes['drawerRef']
-	? sanitize_html_class( (string) $attributes['drawerRef'] )
+//
+// drawerRef (Task 6/W2-b) is now a `sgs_drawer` POST ID, not a free-text
+// DOM-id string: an operator picks a specific published drawer via the
+// SelectControl in DropdownSettingsPanel.js, or leaves it 0 to fall back to
+// the site's single Active-drawer pointer (Sgs_Active_Layout::AREA_DRAWER —
+// see that class's OPTION_DRAWER docblock: "the burger will carry a post id
+// and fall back to this pointer, with no second store"). Sgs_Drawer_Render
+// resolves the ACTUAL <dialog> id to open by reading the target post's own
+// sgs/nav-drawer block (mirrors Sgs_Drawer_Render::active_drawer_ref()),
+// falling back to 'sgs-nav-drawer' — identical to the pre-Task-6 default —
+// when nothing resolves, so an untouched instance renders unchanged.
+$drawer_post_id = isset( $attributes['drawerRef'] ) ? absint( $attributes['drawerRef'] ) : 0;
+$drawer_ref     = class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' )
+	? \SGS\Blocks\Sgs_Drawer_Render::drawer_ref_for( $drawer_post_id )
 	: 'sgs-nav-drawer';
 
 // `showBurger` (Step 6, D1059) — the right-hand half of a split menu (§2b)
@@ -507,7 +519,7 @@ $sgs_nm_show_burger = ! isset( $attributes['showBurger'] ) || (bool) $attributes
  * instance has `showBurger` off) keeps byte-identical output.
  */
 if ( $sgs_nm_show_burger && class_exists( '\\SGS\\Blocks\\Sgs_Drawer_Render' ) ) {
-	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_ref );
+	\SGS\Blocks\Sgs_Drawer_Render::note_burger( $drawer_post_id );
 }
 
 /*

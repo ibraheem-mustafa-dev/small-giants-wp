@@ -397,8 +397,8 @@
 			"default": 768
 		},
 		"drawerRef": {
-			"type": "string",
-			"default": "sgs-nav-drawer"
+			"type": "number",
+			"default": 0
 		},
 		"justifyContent": {
 			"type": "string",

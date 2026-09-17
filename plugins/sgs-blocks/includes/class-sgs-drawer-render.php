@@ -51,18 +51,22 @@ final class Sgs_Drawer_Render {
 	private const FOOTER_PRIORITY = 5;
 
 	/**
-	 * The "a burger asked for a drawer" registry: every `drawerRef` a
-	 * `sgs/nav-menu` emitted an `aria-controls` for on this request.
+	 * The "a burger asked for a drawer" registry (W2-b).
 	 *
-	 * Recorded rather than assumed because rendering the Active drawer on a page
-	 * with no burger would add a `<dialog>` nothing can open — pure weight on
-	 * every page. It is a SET of refs, not a bool, because W2-b's per-burger
-	 * override needs the requested identities and this is its natural home: the
-	 * same registry will carry post ids with no re-architecture.
+	 * Recorded rather than assumed because rendering a drawer on a page with no
+	 * burger would add a `<dialog>` nothing can open — pure weight on every
+	 * page. Keyed by the RAW `drawerRef` post id each `sgs/nav-bar-menu`
+	 * instance carries: `0` means "no specific pick, fall back to the site
+	 * Active drawer" (the single `Sgs_Active_Layout::AREA_DRAWER` pointer —
+	 * see that class's `OPTION_DRAWER` docblock), a positive id means the
+	 * operator picked a specific `sgs_drawer` post via the picker in
+	 * `DropdownSettingsPanel.js`. Multiple distinct picks across burgers on one
+	 * page are supported — {@see self::render_active_drawer()} dedupes the
+	 * RESOLVED ids so each drawer post prints at most once.
 	 *
-	 * @var array<string,bool>
+	 * @var array<int,bool>
 	 */
-	private static $burger_refs = array();
+	private static $requested_post_ids = array();
 
 	/**
 	 * Per-request guard: has the `wp_footer` render already been attempted?
@@ -94,25 +98,23 @@ final class Sgs_Drawer_Render {
 	 * WP-CLI batch. Same seam, same reason, so neither class is the odd one out.
 	 */
 	public static function reset_request_state(): void {
-		self::$burger_refs      = array();
-		self::$render_attempted = false;
+		self::$requested_post_ids = array();
+		self::$render_attempted   = false;
 	}
 
 	/**
-	 * Record that a burger on this page points at `$drawer_ref`.
+	 * Record that a burger on this page wants a drawer open (W2-b).
 	 *
-	 * Called from `sgs/nav-menu`'s render.php, which always emits its burger
+	 * Called from `sgs/nav-bar-menu`'s render.php, which always emits its burger
 	 * markup (CSS decides visibility at `collapsePoint`, so the button exists in
-	 * the DOM on every tier). Every nav-menu — header or footer — renders before
-	 * `wp_footer`, so the flag is always set in time.
+	 * the DOM on every tier). Every bar instance renders before `wp_footer`, so
+	 * the registry is always populated in time.
 	 *
-	 * @param string $drawer_ref Sanitised `<dialog>` id the burger controls.
+	 * @param int $post_id The block's raw `drawerRef` attribute — a `sgs_drawer`
+	 *                      post id, or `0` for "no specific pick".
 	 */
-	public static function note_burger( string $drawer_ref ): void {
-		if ( '' === $drawer_ref ) {
-			return;
-		}
-		self::$burger_refs[ $drawer_ref ] = true;
+	public static function note_burger( int $post_id = 0 ): void {
+		self::$requested_post_ids[ $post_id ] = true;
 	}
 
 	/**
@@ -121,7 +123,68 @@ final class Sgs_Drawer_Render {
 	 * @return bool
 	 */
 	public static function has_burger(): bool {
-		return ! empty( self::$burger_refs );
+		return ! empty( self::$requested_post_ids );
+	}
+
+	/**
+	 * Validated `sgs_drawer` post content, or '' when the id does not resolve
+	 * to a published post of that type.
+	 *
+	 * Shared validation point for both the picker's render-time resolution
+	 * ({@see self::drawer_ref_for()}) and the `wp_footer` print
+	 * ({@see self::render_active_drawer()}) — a single fail-closed check,
+	 * never two copies that could drift (R-31-9).
+	 *
+	 * @param int $post_id Candidate `sgs_drawer` post id.
+	 * @return string Raw `post_content`, or ''.
+	 */
+	public static function get_drawer_post_content( int $post_id ): string {
+		if ( $post_id <= 0 ) {
+			return '';
+		}
+		$post = \get_post( $post_id );
+		if ( ! $post instanceof \WP_Post ) {
+			return '';
+		}
+		if ( Sgs_Block_CPTs::DRAWER_CPT !== $post->post_type ) {
+			return '';
+		}
+		if ( 'publish' !== $post->post_status ) {
+			return '';
+		}
+		return (string) $post->post_content;
+	}
+
+	/**
+	 * The `<dialog>` id a burger should target for a given picked drawer post
+	 * id (W2-b).
+	 *
+	 * `$post_id` of `0` (no specific pick) falls back to the site's single
+	 * Active-drawer pointer ({@see Sgs_Active_Layout::AREA_DRAWER}) — the SAME
+	 * pointer every other AREA_DRAWER consumer reads, per that class's
+	 * `OPTION_DRAWER` docblock ("the burger will carry a post id and fall back
+	 * to this pointer, with no second store"). Whatever post is resolved, the
+	 * actual DOM id is read from ITS OWN `sgs/nav-drawer` block's `drawerRef`
+	 * attribute (mirrors {@see self::active_drawer_ref()}'s resolution), so a
+	 * picker choice always opens the panel it actually points at. Falls back to
+	 * 'sgs-nav-drawer' — byte-identical to the pre-W2-b default — when nothing
+	 * resolves, so an untouched instance (no pick, no Active drawer set)
+	 * renders unchanged.
+	 *
+	 * @param int $post_id Raw `drawerRef` attribute value.
+	 * @return string Resolved `<dialog>` id.
+	 */
+	public static function drawer_ref_for( int $post_id ): string {
+		$resolved = $post_id > 0 ? $post_id : Sgs_Active_Layout::get_active_id( Sgs_Active_Layout::AREA_DRAWER );
+		if ( 0 === $resolved ) {
+			return 'sgs-nav-drawer';
+		}
+		$content = self::get_drawer_post_content( $resolved );
+		if ( '' === $content ) {
+			return 'sgs-nav-drawer';
+		}
+		$ref = self::find_drawer_ref( (array) \parse_blocks( $content ) );
+		return '' !== $ref ? $ref : 'sgs-nav-drawer';
 	}
 
 	/**
@@ -155,56 +218,71 @@ final class Sgs_Drawer_Render {
 			return;
 		}
 
-		// ── THE LANDMARK GUARD (council BLOCKER 3). ───────────────────────────
-		// A drawer may ALREADY have painted on this page: the 8 header patterns
-		// each embed a `sgs/nav-drawer` block, and both that block's `drawerRef`
-		// and `sgs/nav-menu`'s default are the same string 'sgs-nav-drawer'
-		// (nav-drawer/block.json, nav-menu/block.json). Rendering the Active CPT
-		// drawer on top of one would put TWO `<dialog id="sgs-nav-drawer">`
-		// elements in the DOM — a duplicate-id defect, emitted silently.
-		//
-		// The input for this guard did not exist until this commit: nav-drawer's
-		// render.php had ZERO references to Sgs_Active_Layout, so the shared
-		// registry was never marked by the ordinary block path and this check
-		// would have read false on a page that had already painted a drawer. It
-		// now calls mark_served( AREA_DRAWER ), mirroring the identical fix at
-		// class-sgs-header-rules.php:253-258. Both halves ship together — the
-		// guard is inert without the mark, and that is precisely the trap.
+		// ── THE LANDMARK GUARD (council BLOCKER 3, still load-bearing under
+		// W2-b). A drawer may ALREADY have painted on this page: any
+		// sibling-embedded `sgs/nav-drawer` block (the pre-Task-6 pattern shape,
+		// left untouched on already-published pages per the non-destructive
+		// property) marks AREA_DRAWER served the moment it renders. Printing a
+		// picked/Active drawer on top of one risks a duplicate `<dialog>` id —
+		// this guard is what stops that, unconditionally, before this class
+		// resolves or prints anything of its own.
 		if ( Sgs_Active_Layout::has_served( Sgs_Active_Layout::AREA_DRAWER ) ) {
-			return;
-		}
-
-		$content = Sgs_Active_Layout::get_active_content( Sgs_Active_Layout::AREA_DRAWER );
-		if ( '' === $content ) {
 			return;
 		}
 
 		// ── COUNCIL FIX (iii) — WRITE-ORDERING IS LOAD-BEARING. ───────────────
 		// Set the attempt guard BEFORE do_blocks(), exactly as
-		// Sgs_Active_Layout::render_active() does at :159-165 and for the same
-		// reason. The drawer's own content contains a `sgs/nav-menu`
-		// (framework-header-default.php:42-45) and nav-menu's render.php has no
-		// nesting check — the drawer-awareness that suppresses its burger is
-		// EDITOR-only (nav-menu/edit.js). So do_blocks() below re-invokes
-		// nav-menu, which calls note_burger() again, and the nested
-		// `sgs/nav-drawer` calls mark_served() — both AFTER this callback already
-		// consumed them. Setting the guard first makes that re-entry a no-op
-		// instead of a second render. This is stated rather than left as a
-		// mirrored line doing invisible work.
+		// Sgs_Active_Layout::render_active() does and for the same reason: a
+		// picked drawer's own content may contain a `sgs/nav-bar-menu` (a burger
+		// nested inside a drawer), whose render.php would call note_burger()
+		// again and whose nested `sgs/nav-drawer` would call mark_served() —
+		// both AFTER this callback already consumed them. Setting the guard
+		// first makes that re-entry a no-op instead of a second render.
 		self::$render_attempted = true;
 
-		$html = (string) \do_blocks( $content );
-
-		// Fail closed on an empty RENDER, not just on empty content — a published
-		// drawer whose blocks all fail their render callbacks yields ''. Emitting
-		// nothing is right here: the page keeps its burger, and the FR-36-9a
-		// editor notice is what tells the operator the panel is missing.
-		if ( '' === trim( $html ) ) {
+		// Resolve each requested pick to a concrete, VALIDATED post id. `0`
+		// (no specific pick, W2-b's default) falls back to the site's single
+		// Active-drawer pointer — the same one every other AREA_DRAWER consumer
+		// reads (no second store). Distinct picks across multiple burgers on one
+		// page are deduped by resolved id, so the same drawer post never prints
+		// twice even when two burgers point at it.
+		$resolved_ids = array();
+		foreach ( array_keys( self::$requested_post_ids ) as $post_id ) {
+			$resolved = $post_id > 0 ? $post_id : Sgs_Active_Layout::get_active_id( Sgs_Active_Layout::AREA_DRAWER );
+			if ( $resolved > 0 ) {
+				$resolved_ids[ $resolved ] = true;
+			}
+		}
+		if ( empty( $resolved_ids ) ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is trusted rendered block HTML, identical in provenance to Sgs_Active_Layout::render_active()'s return value.
-		echo $html;
+		$served_any = false;
+		foreach ( array_keys( $resolved_ids ) as $post_id ) {
+			$content = self::get_drawer_post_content( $post_id );
+			if ( '' === $content ) {
+				continue;
+			}
+
+			$html = (string) \do_blocks( $content );
+
+			// Fail closed on an empty RENDER, not just on empty content — a
+			// published drawer whose blocks all fail their render callbacks
+			// yields ''. Emitting nothing is right here: the page keeps its
+			// burger, and the FR-36-9a editor notice is what tells the operator
+			// the panel is missing.
+			if ( '' === trim( $html ) ) {
+				continue;
+			}
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- do_blocks() output is trusted rendered block HTML, identical in provenance to Sgs_Active_Layout::render_active()'s return value.
+			echo $html;
+			$served_any = true;
+		}
+
+		if ( $served_any ) {
+			Sgs_Active_Layout::mark_served( Sgs_Active_Layout::AREA_DRAWER );
+		}
 	}
 
 	/**
