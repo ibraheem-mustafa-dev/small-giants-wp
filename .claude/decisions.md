@@ -1,5 +1,59 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1094 [ROUTINE] — Front C Tasks 1-3: real human-approval split for FR-44-1(b), a
+match-diversity floor for FR-44-1(a), and a real re-measurement replacing D1088's void 35/0
+
+**2026-09-17.** Executed the 2026-09-17 `/adversarial-council` re-verification's convergent
+findings (D1093's plan, `.claude/plans/2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md`),
+Tasks 1-3 of 4, direct implementation (not a full SDD subagent cascade — narrow, well-specified
+fixes to a module already read in full this session).
+
+**Task 1 — FR-44-1(b) now requires a real human approval, not a pipeline log write.**
+`classless_trust_gate.py`'s audit log gains a second row KIND: `KIND_DECISION` (what
+`evaluate()`/`append_decision()` write every run, unchanged) vs `KIND_APPROVAL` (new — written
+ONLY by `record_human_approval()`, whose only caller is a new `--approve` CLI action requiring a
+named approver, never called from the automated path). `pattern_precedent()` now requires an
+approval row, not merely a prior decision row — closing the exact hole 3 of 7 council personas
+converged on: before this, the run's own "forced to review once" write satisfied the gate meant
+to force a person to look. 5 new tests, including a 3-run replay proving a decision row alone
+never opens the gate however many times it repeats.
+
+**Task 2 — a match-diversity floor on FR-44-1(a).** `MIN_DISTINCT_ROLES = 2` in
+`_clause_a()`: a matched role window with fewer than 2 DISTINCT role kinds (e.g.
+`label, label, label`) is refused as insufficient diversity, however exact and however long —
+closes Ship-PM's council finding that a plain 3-line paragraph can present the identical
+sequence shape as a real per-item repeater. Real buybox thumbnails (3 distinct kinds) still
+clear the floor — proven via a synthetic negative control + a real-shaped positive control on
+the same `_clause_a()` machinery, not two different code paths.
+
+**Task 3 — real re-measurement, replacing D1088's void "35/0" figure.** New script
+`recogniser/measure-classless-baseline.py` runs the real Stage A -> Stage B -> FR-44-1 pipeline
+(`classless_trust_gate.recognise_classless_group()`) over every real `<sc-for>` in the Eye Care
+Birmingham draft, using `classless_draft_adapter.py` (built same session as the trust gate) for
+draft-side input — deliberately NOT a full `sgs-clone-orchestrator.py` dry-run, for the same
+disclosed shared-worktree blast-radius reasons D1088 gave (scaffolds real block files, writes a
+shared DB, and this client's `theme-snapshot.json` is currently deleted on this worktree by
+another concurrent session). **Real result: 39 groups found (not 35 — a genuine, disclosed
+count discrepancy against D1088's own measurement, left as two honest numbers rather than
+silently reconciled), 0 auto-completed, 2 fell to review (`sgs/trustpilot-reviews`, partial
+matches), 37 no-match.** Still zero auto-completions (safe), and — unlike D1088's void
+result — the now-real seeded data produces actual partial-match signal for the first time.
+Report: `.claude/reports/2026-09-17-front-c-task3-baseline-remeasure.md`. 39 real decision rows
+written to the git-tracked audit log (`kind=decision` — per Task 1, none of them can
+auto-complete a future run on their own).
+
+**Not attempted this session: Task 4 (structural-facts consumer wiring)** — correctly scoped as
+its own `/brainstorming` -> `/subagent-driven-development` -> `/qc-council` cycle per the plan,
+genuinely architectural (how `block_render_composition`/`block_render_singletons` roles merge
+into one fingerprint alongside `block_render_repeaters`'s, given `role_order` is a sorted index
+not a raw file offset) rather than a mechanical follow-on to Tasks 1-3.
+
+**Outcome: OUTCOME ACHIEVED for Tasks 1-3** (each task's plan-stated acceptance criterion — a
+real reproducible test for Task 1, a real discriminating test for Task 2, a real number with
+real artefacts for Task 3 — is met). **CODE SHIPPED, OUTCOME NOT YET HIT for Front C as a whole**
+— Task 4 (the consumer wiring that would let the now-built structural-facts trio actually
+strengthen a match) remains open, tracked in the same plan file.
+
 ## D1093 [ROUTINE] — `block_render_singletons` (Spec 31 §13.10); a real detector-bug found +
 fixed mid-session; full `/brainstorming` → `/subagent-driven-development` → `/qc-council` build
 

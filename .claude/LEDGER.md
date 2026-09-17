@@ -134,39 +134,36 @@ dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestrati
 6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
    Tasks 1 and 3, run last (highest risk).
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094)
 
-**Council re-verified 2026-09-17 (7 personas): NO-GO on `--classless-auto-complete`.**
-Root cause, found by 3 of 7 independently: FR-44-1(b)'s "forced human review once" is
-satisfied by the PIPELINE'S OWN log row, not a real human approval — no `approved` field
-exists anywhere. Also found: the flagship buybox-vs-product-card signal is inert against
-the live DB (§3.1's repetition check can never fire); a thin 3-label match can
-false-auto-complete as an empty block (the project's known empty-section-false-win shape);
-last session's "35/0" safety number is void (measured before the seeder held real data).
-`--classless-match` alone: conditional/sandbox-only, not client-safe yet.
+**Tasks 1-3 of the 4-task plan SHIPPED (D1094), same day as the council that found them.**
+FR-44-1(b) now needs a REAL human `--approve` action (`record_human_approval()`,
+`kind=approval`) — a pipeline decision-row write can never open the gate on its own,
+proven by a 3-run replay. FR-44-1(a) now needs `MIN_DISTINCT_ROLES=2` — a same-role-
+repeated sequence (`label,label,label`) is refused regardless of length; real buybox
+thumbnails (3 distinct kinds) still clear it. Re-measured live via the new
+`recogniser/measure-classless-baseline.py` (Stage A→B→gate over every real `<sc-for>` in
+the Eye Care draft, no full orchestrator run — same disclosed blast-radius reasons D1088
+gave): **39 groups (not 35 — a real discrepancy vs D1088's count), 0 auto-completed, 2
+review (`sgs/trustpilot-reviews`, partial), 37 no-match.** Still safe; now shows real
+signal instead of D1088's void result. `--classless-match`/`--classless-auto-complete`
+both still default off — no client-facing change.
 
-**Structural-facts trio now COMPLETE — repeaters (D1088/D1089), composition (D1090),
-singletons (D1093) — all `/qc-council`-validated live, consumer wiring parked for all three.**
+**Structural-facts trio COMPLETE — repeaters (D1088/D1089), composition (D1090),
+singletons (D1093) — all `/qc-council`-validated live, consumer wiring still parked.**
 Singletons cover static/one-off content (e.g. buybox's main image) after Bean corrected an
 "it's natively-sourced, out of scope" framing — matching-signal and write-disposition are
-separate questions. A real detector bug (a state attribute toggled as a whole PHP-ternary
-string, not just an echoed value) was found + fixed mid-session, 3 confirmed real instances.
+separate questions.
 
 **Scope note:** `sgs/buybox` is arguably the WRONG flagship example for a page-agnostic
-mechanism — inherently product-page-specific, belongs to a future template/CPT pipeline, not
-general classless recognition; revisit Spec 44's worked example next pass.
-`P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open, unchanged. New:
-`P-SPEC44-RENDER-COMPOSITION-CONSUMER` +
-`P-SPEC44-RENDER-SINGLETON-CONSUMER` — both block on the same real design question (how
-repeater/composition/singleton role sequences merge into one fingerprint), not a mechanical
-step — see D1093 for the full reasoning.
+mechanism — inherently product-page-specific; revisit Spec 44's worked example next pass.
+`P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open. `P-SPEC44-RENDER-COMPOSITION-CONSUMER`
++ `P-SPEC44-RENDER-SINGLETON-CONSUMER` still open — both block on the same design question
+(how repeater/composition/singleton roles merge into one fingerprint) — D1093 has the reasoning.
 
-**Next session — 4 tasks in order, full orchestration plan (per-task model/brief/dependencies/
-acceptance) at `.claude/plans/2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md`:**
-1. Real human-approval field for FR-44-1(b) — the council's convergent finding.
-2. Match-diversity floor on FR-44-1(a) — refuse a same-role-repeated "exact match".
-3. Re-measure the Eye Care draft's 35 groups (the "35/0" figure is void, measured pre-fix).
-4. `/brainstorming` → build the structural-facts consumer wiring (Stage A + Spec 45 Tier 4).
+**Next session — Task 4 only, plan at
+`.claude/plans/2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md`:** `/brainstorming`
+then build the structural-facts consumer wiring (Stage A + Spec 45 Tier 4).
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);

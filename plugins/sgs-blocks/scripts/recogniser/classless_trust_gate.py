@@ -1,5 +1,22 @@
 """FR-44-1's trust gate, §7's audit log, and the end-of-run summary — Spec 44 Task 4.
 
+FR-44-1(b) REAL HUMAN APPROVAL (Front C Task 1, closes a real hole the 2026-09-17
+`/adversarial-council` re-verification converged on). Before this, `pattern_precedent()`
+was satisfied by ANY prior row for the (client, block, match_type) triple — including the
+run's OWN "forced to review once" row, which `evaluate()` writes unconditionally via
+`append_decision()`. Nothing about that write involves a person: the pipeline's own log
+call satisfied the gate that exists specifically to force a person to look. §3(b)'s text
+("a one-time human look") was true in prose and false in code.
+
+Fixed by splitting the log into two ROW KINDS. `KIND_DECISION` (unchanged) is what
+`evaluate()`/`append_decision()` write every run — a record of what happened, never proof
+anyone looked. `KIND_APPROVAL` is a NEW row kind, written ONLY by `record_human_approval()`,
+which is never called from `evaluate()` or anywhere else in the automated path — the only
+caller is this module's own `--approve` CLI action, invoked by a person. `pattern_precedent()`
+now requires an APPROVAL row for the (client, block, match_type) triple, not merely a decision
+row. A run can still write any number of decision rows for a pattern; none of them open the
+gate on their own.
+
 The integration layer for the three inert modules built before it: Task 1's seeder
 writes `block_render_repeaters`, Task 2's Stage A matches a draft group's structure
 against it, Task 3's Stage B falls back to `array_item_schema`. None of them decides
@@ -69,6 +86,9 @@ LOG_PATH = _HERE / "classless-recognition-log.jsonl"
 SOURCE_SPEC44 = "spec44"
 SOURCE_TIER4 = "tier4-domshape"
 
+KIND_DECISION = "decision"
+KIND_APPROVAL = "approval"
+
 MATCH_TYPE_RENDER_REPEATER = "render-repeater"
 MATCH_TYPE_ARRAY_SCHEMA = "array-item-schema"
 
@@ -118,15 +138,29 @@ def row_source(row: dict) -> str:
     return value if isinstance(value, str) and value else SOURCE_SPEC44
 
 
+def row_kind(row: dict) -> str:
+    """A row with no `kind` key predates the approval split and is a decision row —
+    the only kind ever written before this field existed."""
+    value = row.get("kind")
+    return value if isinstance(value, str) and value else KIND_DECISION
+
+
 def pattern_precedent(
     rows: Sequence[dict],
     client_slug: str,
     block_slug: str,
     match_type: str,
 ) -> bool:
-    """FR-44-1(b): has THIS client already had this (block, match-type) pattern seen?
+    """FR-44-1(b): has a HUMAN already approved this (block, match-type) pattern for
+    THIS client — not merely "has the pipeline logged it before".
 
-    The `source` filter is the load-bearing line — a `tier4-domshape` row is a
+    Requires a `KIND_APPROVAL` row, which only `record_human_approval()` writes and
+    which nothing in the automated recognise/evaluate path ever calls. A `KIND_DECISION`
+    row — including the run's own "forced to review once" write — does NOT satisfy this,
+    however many times it repeats; satisfying "one-time human look" from the pipeline's
+    own log write was the exact hole this split closes.
+
+    The `source` filter is still load-bearing — a `tier4-domshape` row is a
     ≤0.5-confidence classifier annotation from a different spec and can never stand
     in for this spec's forced first look, no matter how often it repeats.
     """
@@ -135,6 +169,10 @@ def pattern_precedent(
     for row in rows:
         if row_source(row) != SOURCE_SPEC44:
             continue
+        if row_kind(row) != KIND_APPROVAL:
+            continue
+        if not row.get("approved"):
+            continue
         if (
             row.get("client_slug") == client_slug
             and row.get("block") == block_slug
@@ -142,6 +180,42 @@ def pattern_precedent(
         ):
             return True
     return False
+
+
+def record_human_approval(
+    client_slug: str,
+    block_slug: str,
+    match_type: str,
+    approver: str,
+    note: str = "",
+    path: Path | str | None = None,
+) -> dict:
+    """The ONLY way a `KIND_APPROVAL` row is ever written. Never called by `evaluate()`
+    or `recognise_classless_group()` — this is a deliberately separate action, invoked
+    by a person via this module's `--approve` CLI, so its existence in the log IS the
+    proof a human looked. Fails loud (raises) rather than silently accepting an
+    unattributed approval — an approval with no named approver is not one.
+    """
+    if not (client_slug and block_slug and match_type and approver and approver.strip()):
+        raise ValueError(
+            "record_human_approval requires client_slug, block_slug, match_type and a "
+            "non-empty approver — an approval with no named human is not an approval")
+    row = {
+        "ts": _now(),
+        "source": SOURCE_SPEC44,
+        "kind": KIND_APPROVAL,
+        "client_slug": client_slug,
+        "block": block_slug,
+        "match_type": match_type,
+        "approved": True,
+        "approver": approver.strip(),
+        "note": note,
+    }
+    p = Path(path) if path else LOG_PATH
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+    return row
 
 
 def read_precedent(path: Path | str | None = None) -> tuple[dict, ...]:
@@ -196,6 +270,7 @@ class ClasslessDecision:
         return {
             "ts": _now(),
             "source": SOURCE_SPEC44,
+            "kind": KIND_DECISION,
             "client_slug": self.client_slug,
             "run_id": self.run_id,
             "boundary_id": self.boundary_id,
@@ -222,8 +297,24 @@ def emit_block_markup(block_slug: str) -> str:
     return f"<!-- wp:{block_slug.lstrip('/')} /-->"
 
 
+MIN_DISTINCT_ROLES = 2
+"""Front C Task 2 — the match-diversity floor. Ship-PM's `/adversarial-council` finding
+(2026-09-17): a plain three-line paragraph (heading + subheading + body, each read as
+`label`) can present the identical role SEQUENCE as a real repeater whose every item
+happens to share one role — the shape `('label', 'label', 'label')` is reachable both
+ways, and an exact-length, exact-role match cannot tell them apart from sequence alone.
+Requiring at least `MIN_DISTINCT_ROLES` distinct role KINDS in the matched window means a
+single-role-repeated sequence (whatever its length) is never, on its own, "exact
+structural match" evidence — it takes a second, different kind of structural marker
+(an action-trigger, an image-or-fallback, a current-state indicator) alongside the labels
+before FR-44-1(a) will trust the match. `sgs/buybox`'s real thumbnail-strip sequence
+(`action-trigger, current-state-indicator, label`) clears this with 3 distinct kinds;
+a bare 3-label sequence does not, regardless of length."""
+
+
 def _clause_a(result: _stage_a.RenderMatchResult) -> tuple[bool, list[str]]:
-    """FR-44-1(a): a genuine, parent-narrowed EXACT match against ONE survivor."""
+    """FR-44-1(a): a genuine, parent-narrowed EXACT match against ONE survivor, with a
+    minimum diversity of structural-role KINDS (Task 2 — see MIN_DISTINCT_ROLES)."""
     reasons: list[str] = []
     if not result.matched:
         return False, ["(a) Stage A reached no known shape"]
@@ -241,6 +332,14 @@ def _clause_a(result: _stage_a.RenderMatchResult) -> tuple[bool, list[str]]:
         # A hypothesis is not the "genuine exact structural match" (a) asks for.
         reasons.append("(a) matched window is a merged-shape hypothesis "
                        f"({result.leaf.source_file} holds more than one repeater)")
+    if result.leaf is not None:
+        distinct = set(result.leaf.candidate_roles)
+        if len(distinct) < MIN_DISTINCT_ROLES:
+            reasons.append(
+                f"(a) matched role sequence has only {len(distinct)} distinct role "
+                f"kind(s) {sorted(distinct)} among {list(result.leaf.candidate_roles)} — "
+                f"needs at least {MIN_DISTINCT_ROLES} distinct kinds to trust as an "
+                "exact structural match (Task 2 diversity floor)")
     return (not reasons), reasons
 
 
@@ -471,3 +570,41 @@ def decisions_to_json(decisions: Sequence[ClasslessDecision]) -> list[dict]:
         }
         for d in decisions
     ]
+
+
+# ---------------------------------------------------------------- --approve CLI
+
+def _cli(argv: list[str] | None = None) -> int:
+    """The one human-facing surface for `record_human_approval()`. There is no
+    programmatic caller anywhere in this codebase — a person runs this by hand,
+    naming themselves, after actually looking at the review page for the pattern
+    they are approving. That is what makes the resulting log row proof of a look."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="classless_trust_gate.py",
+        description="Spec 44 FR-44-1(b) — record a human's one-time approval of a "
+                     "(client, block, match-type) classless-recognition pattern.")
+    parser.add_argument("--approve", action="store_true", required=True,
+                        help="Record the approval (the only supported action today).")
+    parser.add_argument("--client", required=True, help="client_slug, e.g. eye-care-ward-end")
+    parser.add_argument("--block", required=True, help="block slug, e.g. sgs/buybox")
+    parser.add_argument("--match-type", required=True,
+                        choices=[MATCH_TYPE_RENDER_REPEATER, MATCH_TYPE_ARRAY_SCHEMA])
+    parser.add_argument("--approver", required=True,
+                        help="Your name — required, and recorded verbatim in the log.")
+    parser.add_argument("--note", default="", help="Optional context for the review trail.")
+    args = parser.parse_args(argv)
+
+    row = record_human_approval(
+        args.client, args.block, args.match_type, args.approver, args.note)
+    print(f"[classless] APPROVED {row['block']} / {row['match_type']} for client "
+          f"'{row['client_slug']}' by {row['approver']} at {row['ts']}")
+    print(f"[classless] written to {LOG_PATH}")
+    return 0
+
+
+if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    sys.exit(_cli())

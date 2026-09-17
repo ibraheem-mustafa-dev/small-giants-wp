@@ -18,6 +18,13 @@ THE TWO CONTROLS THIS SUITE EXISTS FOR:
    (b), however many times it repeats for that client — and the byte-identical row
    under `source: "spec44"` CAN. Without the second half, the first would pass equally
    against a filter that rejects everything.
+
+3. **Front C Task 1's real-human-approval control.** A `KIND_DECISION` row — including
+   the run's own automatically-written "forced to review once" row — must NEVER satisfy
+   (b) on its own, however many times it repeats. Only a `KIND_APPROVAL` row, written by
+   `record_human_approval()` (the `--approve` CLI's only caller), opens the gate. This is
+   the fix for the exact hole the 2026-09-17 `/adversarial-council` converged on: before
+   it, the pipeline's own log write satisfied "forced human review".
 """
 from __future__ import annotations
 
@@ -97,9 +104,17 @@ def _partial_stage_a(conn: sqlite3.Connection) -> stage_a.RenderMatchResult:
 
 
 def _row(client: str, block: str, source: str | None,
-         match_type: str = mod.MATCH_TYPE_RENDER_REPEATER) -> dict:
-    row = {"client_slug": client, "block": block, "match_type": match_type,
-           "outcome": mod.OUTCOME_REVIEW}
+         match_type: str = mod.MATCH_TYPE_RENDER_REPEATER,
+         kind: str = mod.KIND_APPROVAL, approved: bool = True) -> dict:
+    """Defaults to an APPROVAL-shaped row (Task 1) — the shape that satisfies (b) — so
+    most fixtures don't need to spell it out. Pass `kind=mod.KIND_DECISION` explicitly
+    to build the automatic-write shape that must NEVER satisfy (b) on its own."""
+    row = {"client_slug": client, "block": block, "match_type": match_type, "kind": kind}
+    if kind == mod.KIND_APPROVAL:
+        row["approved"] = approved
+        row["approver"] = "test-fixture"
+    else:
+        row["outcome"] = mod.OUTCOME_REVIEW
     if source is not None:
         row["source"] = source
     return row
@@ -222,6 +237,49 @@ def test_clause_a_needs_exact_sole_survivor_and_no_hypothesis() -> None:
           f"({why_p[0]}); un-narrowed is not a match at all")
 
 
+def test_diversity_floor_refuses_a_single_role_repeated_sequence() -> None:
+    """Front C Task 2 — Ship-PM's council finding. A three-line paragraph (heading +
+    subheading + body, each reading as `label`) presents the identical SEQUENCE shape
+    as a real per-item repeater whose every item happens to share one role. Built as a
+    synthetic RenderMatchResult (not a real DB match — there is no requirement a real
+    block ever produces this shape; the point is that `_clause_a` must refuse it on
+    structure alone, independent of which block it claims to be) rather than reused
+    from a real DB fixture."""
+    narrowing = stage_a.NarrowingResult(
+        roster=("sgs/fake-labels-block",), survivors=("sgs/fake-labels-block",),
+        excluded=(), repetition_conclusive=True, capability_conclusive=True)
+    leaf = stage_a.LeafMatch(
+        block_slug="sgs/fake-labels-block", source_file="fake.php",
+        candidate_roles=(seeder.ROLE_LABEL, seeder.ROLE_LABEL, seeder.ROLE_LABEL),
+        window=(0, 3), quality=stage_a.EXACT,
+        unmatched_draft_roles=(), unmatched_candidate_roles=(),
+        merged_shape_hypothesis=False)
+    thin = stage_a.RenderMatchResult(
+        matched=True, block_slug="sgs/fake-labels-block", match_quality=stage_a.EXACT,
+        client_slug=CLIENT, narrowing=narrowing, leaf=leaf)
+    ok, why = mod._clause_a(thin)
+    assert ok is False and any("distinct role kind" in w for w in why), why
+
+    # Positive control on the SAME machinery: real buybox thumbnails (3 distinct
+    # kinds) must still clear the floor — proves the check discriminates, not blocks.
+    rich_leaf = stage_a.LeafMatch(
+        block_slug=BUYBOX, source_file="gallery-col.php",
+        candidate_roles=THUMB_STRIP_ROLES, window=(0, 3), quality=stage_a.EXACT,
+        unmatched_draft_roles=(), unmatched_candidate_roles=(),
+        merged_shape_hypothesis=False)
+    rich = stage_a.RenderMatchResult(
+        matched=True, block_slug=BUYBOX, match_quality=stage_a.EXACT,
+        client_slug=CLIENT,
+        narrowing=stage_a.NarrowingResult(
+            roster=(BUYBOX,), survivors=(BUYBOX,), excluded=(),
+            repetition_conclusive=True, capability_conclusive=True),
+        leaf=rich_leaf)
+    ok_rich, why_rich = mod._clause_a(rich)
+    assert ok_rich is True and why_rich == [], why_rich
+    print("  PASS  Task 2: a 3x-label single-kind sequence is refused as insufficient "
+          "diversity; the real 3-distinct-kind buybox thumbnail sequence still clears")
+
+
 def test_a_merged_shape_hypothesis_never_clears_clause_a() -> None:
     """Task 2's disclosed limit: where one source_file holds two repeaters, an EXACT
     match on a WINDOW is a hypothesis about the per-item shape, not a genuine exact
@@ -271,10 +329,36 @@ def test_first_occurrence_for_a_new_client_is_forced_to_review() -> None:
           "over — a new client's first occurrence is forced to review despite EXACT")
 
 
+def test_a_decision_row_alone_never_opens_the_gate_no_matter_how_many_runs() -> None:
+    """Front C Task 1's core control. Before the approval split, appending the run's
+    OWN forced-to-review row was enough to auto-complete the very next run — the
+    pipeline's log write satisfying the gate that exists to force a HUMAN look. This
+    replays THREE runs, each appending its own decision row, and asserts every single
+    one still falls to review: a decision row is never proof anyone looked, however
+    many times it repeats."""
+    conn = _fixture_db()
+    try:
+        exact = _exact_stage_a(conn)
+    finally:
+        conn.close()
+    log = _tmp(".jsonl")
+    outcomes = []
+    for i in range(3):
+        d = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log),
+                         auto_complete_enabled=True, boundary_id=f"b{i}")
+        mod.append_decision(d, log)
+        outcomes.append(d.outcome)
+    assert outcomes == [mod.OUTCOME_REVIEW] * 3, outcomes
+    print("  PASS  Task 1: 3 runs, each appending its own decision row, ALL fall to "
+          "review — no decision row ever satisfies (b) on its own")
+
+
 def test_second_occurrence_for_the_same_client_auto_completes_under_a_alone() -> None:
-    """§10, second half. The precedent row is the FIRST occurrence's own review row,
-    replayed from a real log file rather than hand-built — so the round trip through
-    `append_decision`/`read_log` is what is being asserted."""
+    """§10, second half, as amended by Front C Task 1: what actually opens the gate
+    between runs is a HUMAN's `record_human_approval()` call, not the pipeline's own
+    review-row write. The first run's decision row is appended and asserted to still
+    NOT satisfy (b) on its own; only after the explicit approval does the next run
+    auto-complete under (a) alone."""
     conn = _fixture_db()
     try:
         exact = _exact_stage_a(conn)
@@ -286,20 +370,51 @@ def test_second_occurrence_for_the_same_client_auto_completes_under_a_alone() ->
     mod.append_decision(first, log)
     assert first.outcome == mod.OUTCOME_REVIEW, first.outcome
 
+    still_unapproved = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log),
+                                    auto_complete_enabled=True, boundary_id="b1b")
+    assert still_unapproved.outcome == mod.OUTCOME_REVIEW, still_unapproved.reasons
+
+    mod.record_human_approval(CLIENT, BUYBOX, mod.MATCH_TYPE_RENDER_REPEATER,
+                              approver="bean", path=log)
+
     second = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log),
                           auto_complete_enabled=True, boundary_id="b2")
     assert second.clause_a is True and second.clause_b is True, second.reasons
     assert second.outcome == mod.OUTCOME_AUTO, second.reasons
     assert second.block_markup == "<!-- wp:sgs/buybox /-->", second.block_markup
-    print("  PASS  FR-44-1(b): the SECOND occurrence for the same client, after the "
-          f"first look was recorded, auto-completes -> {second.block_markup}")
+    print("  PASS  FR-44-1(b): the run's own review row does NOT open the gate; the "
+          f"SECOND occurrence auto-completes only after record_human_approval() -> "
+          f"{second.block_markup}")
+
+
+def test_record_human_approval_requires_a_named_approver() -> None:
+    log = _tmp(".jsonl")
+    for bad in ("", "   "):
+        try:
+            mod.record_human_approval(CLIENT, BUYBOX, mod.MATCH_TYPE_RENDER_REPEATER,
+                                      approver=bad, path=log)
+            raise AssertionError(f"expected ValueError for approver={bad!r}")
+        except ValueError:
+            pass
+    row = mod.record_human_approval(CLIENT, BUYBOX, mod.MATCH_TYPE_RENDER_REPEATER,
+                                    approver="bean", path=log)
+    assert row["kind"] == mod.KIND_APPROVAL and row["approver"] == "bean", row
+    assert row["approved"] is True, row
+    print("  PASS  Task 1: an unattributed approval is refused (ValueError); a real "
+          "one records kind=approval, approved=True, approver='bean'")
 
 
 def test_a_run_cannot_satisfy_its_own_first_look_gate() -> None:
     """The snapshot rule. §7's literal wording, against a log the run is appending to,
     would let boundary 2 of the SAME run find boundary 1's forced-review row and
     auto-complete — the 'one-time human look' having happened to nobody. Precedent is
-    therefore read ONCE per run; this asserts that snapshot is what the gate sees."""
+    therefore read ONCE per run; this asserts that snapshot is what the gate sees.
+
+    Extended for Task 1: a FRESH read after only a decision-row write (no approval)
+    must STILL be review — proven separately and exhaustively by
+    `test_a_decision_row_alone_never_opens_the_gate_no_matter_how_many_runs`. Here the
+    fresh-read control is the human approval itself, which is the only thing that
+    should ever change the outcome of an identical re-evaluation."""
     conn = _fixture_db()
     try:
         exact = _exact_stage_a(conn)
@@ -312,12 +427,19 @@ def test_a_run_cannot_satisfy_its_own_first_look_gate() -> None:
     second = mod.evaluate(exact, None, CLIENT, snapshot, True, boundary_id="b2")
     assert first.outcome == mod.OUTCOME_REVIEW
     assert second.outcome == mod.OUTCOME_REVIEW, second.reasons
-    # And the control: a FRESH read (i.e. the next run) does open the gate.
-    third = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log), True,
-                         boundary_id="b3")
-    assert third.outcome == mod.OUTCOME_AUTO, third.reasons
+    # A fresh read after only the decision row (no approval) is STILL review.
+    fresh_unapproved = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log), True,
+                                    boundary_id="b3")
+    assert fresh_unapproved.outcome == mod.OUTCOME_REVIEW, fresh_unapproved.reasons
+    # And the real control: only a human approval opens the gate on the next read.
+    mod.record_human_approval(CLIENT, BUYBOX, mod.MATCH_TYPE_RENDER_REPEATER,
+                              approver="bean", path=log)
+    fourth = mod.evaluate(exact, None, CLIENT, mod.read_precedent(log), True,
+                          boundary_id="b4")
+    assert fourth.outcome == mod.OUTCOME_AUTO, fourth.reasons
     print("  PASS  snapshot rule: a row written THIS run cannot open THIS run's gate; "
-          "the next run's fresh read does")
+          "a fresh read after a decision-row-only write still doesn't; only "
+          "record_human_approval() opens it")
 
 
 # ---------------------------------------------------------------- §9 rollout
@@ -477,9 +599,12 @@ def main() -> int:
     test_a_tier4_row_can_never_satisfy_clause_b()
     test_a_tier4_row_cannot_auto_complete_a_real_exact_match()
     test_clause_a_needs_exact_sole_survivor_and_no_hypothesis()
+    test_diversity_floor_refuses_a_single_role_repeated_sequence()
     test_a_merged_shape_hypothesis_never_clears_clause_a()
     test_first_occurrence_for_a_new_client_is_forced_to_review()
+    test_a_decision_row_alone_never_opens_the_gate_no_matter_how_many_runs()
     test_second_occurrence_for_the_same_client_auto_completes_under_a_alone()
+    test_record_human_approval_requires_a_named_approver()
     test_a_run_cannot_satisfy_its_own_first_look_gate()
     test_auto_complete_is_off_unless_the_flag_is_set()
     test_emitted_markup_invents_nothing()
