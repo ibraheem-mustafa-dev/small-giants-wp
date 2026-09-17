@@ -1252,3 +1252,34 @@ unmodified" cannot be literally satisfied (those helpers need bs4.Tag DOM input 
 doesn't exist at this classless layer, and importing that module mutates the live DB as a
 verified side effect) - Stage B does field-identity resolution only and hands the open
 question to Task 4. 24/24 self-test assertions pass, fully inert.
+Task 4 (trust gate + audit log + review surface + rollout flags + orchestrator wiring, spec
+sections 3/FR-44-1, 7, 4.4, 9): complete (commit 8205c95d4, review Approved with no fixes
+needed - reviewer independently verified every load-bearing claim: the trust-gate clause (a)
+four-condition check, the source='spec44' filter both directions and through a real EXACT
+match, the same-run precedent-satisfaction bug fix, the call-site relocation against the real
+current orchestrator line numbers, zero deletions in the orchestrator diff, and Stage B's
+unconditional auto-complete refusal). 32 new self-test assertions pass, Tasks 1-3 regression
+clean.
+
+=== HEADLINE FINDING (the reason this build stops at "inert, safe, tested" rather than
+"working on real data" today): the mechanism cannot resolve anything on a real draft yet, for
+two separate, both fully diagnosed and disclosed reasons - (1) Task 1's block_render_repeaters
+seeder is deliberately not wired into /sgs-update, so Stage A has zero rows to match against
+on the live DB; (2) the spec's own flagship worked example (buybox vs product-card) requires
+a "parent composite shape" capability signal that only a human-supplied test fixture can
+provide today - no code anywhere derives it from real draft markup, so the real Eye Care
+draft's equivalent group comes back AMBIGUOUS, not matched. Live-measured: running the full
+built pipeline (adapter -> Stage A -> Stage B -> trust gate -> log) over all 35 real classless
+groups in the actual draft produces 35 no-matches, 0 diversions - proven safe (nothing
+diverted, nothing broken) but proven inert (nothing recognised either). A full orchestrator
+dry-run was deliberately NOT attempted (real, disclosed blast-radius reasons on a shared
+worktree - scaffolds real block files, writes to a shared DB, target client's theme snapshot
+is currently deleted by another concurrent session) - the outcome was knowable in advance
+given the empty seeder table, so nothing was lost by skipping it.
+
+=== STATUS: all four Spec 44 tasks built, reviewed, tested, fully inert (both flags default
+off, zero behaviour change for any existing client, confirmed by diff stat + tests). Next real
+step is the deferred /adversarial-council re-verification (Bean's instruction, next session),
+which should weigh the headline finding above directly - this mechanism's own flagship case is
+provably unreachable without new work (a draft-side capability detector) this build pass
+correctly did not invent unscoped.
