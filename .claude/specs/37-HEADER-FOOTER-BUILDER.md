@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.2.0
+spec_version: 1.2.1
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
@@ -9,6 +9,12 @@ authors: [Claude Code, Bean]
 session_date: 2026-07-22
 last_verified: 2026-09-17
 status_history:
+  - 2026-09-17 — v1.2.1. Wave 2 Task 1 (W2-b scoping) done: `drawerRef` locked as a post-picker
+    matching `sgs/modal`'s `modalRef` UI shape (SelectControl + useEntityRecords, stores a post
+    ID, dangling-reference Notice) — plus a new site-wide render hook (reusing the existing
+    `Sgs_Active_Layout::mark_served( AREA_DRAWER )` call) to guarantee the referenced drawer's
+    markup prints once per page, since a drawer's `<dialog>` (unlike a modal's inline content)
+    must exist exactly once for the burger to open it. Bean-approved; FR-37-49 updated in place.
   - 2026-09-17 — v1.2.0. First `/adversarial-council` pass on v1.1.0 (6 personas) returned NO-GO
     as written — 213 findings total, converging (4/6 independently) on a false Done-when claim
     (template_lock does not enforce anything server-side/REST) and (4/6 independently) on FR-37-47
@@ -1956,6 +1962,27 @@ and this amendment does not change that. Do not treat W2-b as "ready to build" j
 has an FR number: it needs its own quick scoping pass (is it Gutenberg core's own
 `<PostPicker>`/`<LinkControl>`-style component reused as-is, or bespoke search+select UI?) BEFORE
 implementation starts, not discovered mid-build.
+
+**W2-b shape — LOCKED 2026-09-17 (Wave 2 Task 1 scoping, Bean-approved).** `drawerRef` is
+currently a free-text `TextControl` (`nav-bar-menu/DropdownSettingsPanel.js`) storing a raw
+string that must be manually typed to MATCH the target `sgs/nav-drawer` block's own `drawerRef`
+attribute (sanitised into a DOM `id` — `nav-bar-menu/render.php` + `nav-drawer/render.php`). It
+is a name-matching pair, not a reference: a typo silently breaks the burger with no error.
+
+Re-type it as a real post-picker, reusing `sgs/modal`'s already-shipped `modalRef` pattern
+verbatim for the UI half: a `SelectControl` populated via `useEntityRecords( 'postType',
+'sgs_drawer', { per_page: -1, status: ['publish'], context: 'edit' } )`, storing a **post ID**
+(not a string), with the same dangling-reference `Notice` when the stored ID resolves to no
+published post (`modal/edit.js` lines ~104-120 and ~297-304 are the reference implementation —
+copy the shape, not the modal-specific copy).
+
+**Where it does NOT transfer, and must be built new:** a modal's referenced content renders
+INLINE at the trigger block's own position; a drawer's `<dialog>` must exist exactly once,
+somewhere on the page, for the burger to open it by DOM id. Once W2-d removes the sibling-block
+embedding, nothing guarantees the picked drawer's markup prints anywhere. The fix is a
+site-wide render hook that prints the referenced `sgs_drawer` post's content once per page —
+reusing the existing `Sgs_Active_Layout::mark_served( AREA_DRAWER )` mechanism already called
+in `nav-drawer/render.php` (do not invent a second "has this drawer printed yet" tracker).
 
 This also completes **D2** (a header/footer post can no longer contain anything but its own
 locked wrapper, full stop — `sgs/nav-drawer` was the one thing still legitimately appearing as a
