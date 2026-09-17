@@ -1,5 +1,61 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1087 [ROUTINE] — Spec 45 classless field resolver, all 4 tiers complete + reviewed + qc'd
+
+**2026-09-16/17.** Follow-up to D1084 (the standalone-build scope decision). Built all four
+tiers of `.claude/specs/45-CLASSLESS-FIELD-RESOLUTION.md` v1.6.0 via `/subagent-driven-development`
+(implementer + task reviewer per tier, fix cycles where findings surfaced), with a `/qc-council`
+stage on Tier 3 (the mechanism that broke 3 times in the spec's own history) and `/qc-inline` on
+Tiers 2 and 4, per Bean's direction. Module: `plugins/sgs-blocks/scripts/recogniser/classless_field_resolver.py`.
+Commit range: `e1c7f4884..7d911ff36`.
+
+**Tier 1** (repeated array-item fields) — direct-key match + role-based value-shape fallback,
+gated on an ambiguity check that caught a real wildcard bug mid-build (a "default-to-text"
+role-fallback would have silently matched any plain string against the first of 3 text-content
+rows on `sgs/card-grid.items` — fixed to gap on 2+ same-role candidates instead).
+
+**Tier 2** (parent's own scalar attribute) — exact-name match + same-block canonical_slot
+fallback. Review found one Important gap (the fallback had no value-shape guard, so it could
+place a plain string onto a URL-typed attribute) — fixed, re-reviewed, approved.
+
+**Tier 3** (nested child-block matching) — the historically fragile tier. Both verification
+gates (orphan filter, InnerBlocks-cross-check) implemented and empirically validated by two
+independent qc-council raters against the live DB, cold (no prior report seen): confirmed the
+raw-exact-name-count scoring rule (floor=2, strict no-tie) has zero volume bias, and one rater
+proved the historical failure mode is architecturally unreachable in production (cross-block
+array-attr competition can't occur — `build_candidate_set` only ever pulls the already-known
+parent's own attrs). A follow-up sweep (this session, closing the two parking items the
+qc-council run left open) found no volume-bias defect on the block-kind sibling-candidate
+surface either, plus one disclosed non-blocking finding: `sgs/form`'s field-blocks share
+label+placeholder across 8 siblings, so the plainest text-field shape correctly gaps as an
+8-way tie rather than guessing.
+
+**Tier 4** (one-off content via `dom_shape_classifier.py`) — landmark-tag fix (`nav` removed
+from `_LANDMARK_TAG_BLOCK` entirely; `header`/`footer` map directly to real row-level slugs)
+and CTA disambiguation (`_child_count`/`_has_heading_or_paragraph_sibling` signals). Review
+found two issues: (1) a Critical process violation — the implementer subagent ran `git stash`
+on this shared worktree, banned outright, 3rd recurrence of this exact pattern despite being
+captured twice before (see `mistakes.md` + CC memory `feedback_no_git_stash_in_subagents.md` —
+root cause: dispatch prompts kept citing weaker rules instead of pasting the verbatim ban); no
+data lost, logged properly this time. (2) an Important correctness bug — the CTA sibling check
+only looked at NEXT siblings, but real composite CTA markup has heading/paragraph BEFORE the
+button; Bean ruled to widen to both directions, fixed, and a missing real-BeautifulSoup
+end-to-end positive control was added (every prior test had hand-built the signal dict).
+
+**Post-build cleanup (same session):** `block_composition` carried 7 orphan rows (blocks
+deleted/renamed with no `blocks` table row and no source directory). 5 with no other defender
+anywhere in the seeder were permanently removed via a new idempotent `ORPHAN_REMOVALS` section
+in `seed-composition-roles.py`; 2 (`sgs/content-collection`, `sgs/adaptive-nav`) are still
+actively re-inserted by that file's own `INSERTS` list with real planned-work rationale — left
+in place, flagged inline as stale rather than fought.
+
+**Status: all four tiers built, reviewed, qc'd, DB-clean, pushed to main. Still standalone
+(D1084) — not wired to a live pipeline run.** That wiring, plus the `classless-recognition-log.jsonl`
+/ `operator-review.html` isolated review-gate Tier 4 needs, both wait on Spec 44's own build
+(the group-identity resolver that would supply a real `parent_slug`), which remains DESIGNED-ONLY
+at v2.3.0, not built, not re-verified since that version. Spec 44 is the actual next milestone
+for this whole mechanism, not further Spec 45 work.
+
 ## D1086 [ROUTINE] — `sgs/nav-bar-menu` item separator: centred geometry + resting-state visibility fix
 
 **2026-09-17.** Bean-reported, live-verified against `sites/mamas-munches`. The FR-41-37
