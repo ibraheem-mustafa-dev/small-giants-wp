@@ -4382,3 +4382,69 @@ not the 125/131 cached above) to 0 outside those intentionally-historical sectio
 `lint-spec-drift.py --check` passes with 0 gating findings (3 pre-existing advisory FR-ORPHAN
 findings unrelated to this spec). Commit: see `.claude/decisions.md` / git log for the commit that
 lands this closure.
+
+---
+
+## 2026-09-17 — Spec 45 Tier 3 residuals closed
+
+### P-SPEC45-TIER3-BLOCK-KIND-SCORING-SWEEP (CLOSED)
+**Was:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Spec 45 Tier 3's scoring rule (`classless_field_resolver.py::score_candidates`) was
+empirically validated by two independent qc-council raters against its ARRAY-attribute
+candidate surface (`array_item_schema`) — confirmed volume-bias-free. Neither rater swept
+the BLOCK-kind sibling-candidate surface (real allow-listed children under
+`sgs/cta-section`, `sgs/site-header-row`, `sgs/site-footer-row`, `sgs/form` — scored via
+`block_attributes.attr_name` / `_content_bearing_attr_names()`, a different field-name
+source than `array_item_schema`) for the same volume-bias property.
+
+**Closed 2026-09-17.** Ran the sweep directly against the live DB and the real
+`score_candidates`/`select_candidate` functions. Two concrete adversarial constructions:
+
+1. `{label, placeholder}` fed to `sgs/form`'s candidate set (12 real sibling field-blocks)
+   — the single most common plain-text-field shape. Result: an 8-way tie at 2 raw hits
+   (form-field-text/email/phone/textarea/select/tiles/file/consent all share `label` +
+   `placeholder`) → correctly reported `tier3_ambiguous_candidate_tie`, naming all 8
+   candidates and their counts. Not a wrong-winner bug — a genuine, safe coverage
+   limitation: these sibling blocks are deliberately near-identical in their
+   content-bearing attribute names, so this exact shape needs more signal than `label` +
+   `placeholder` alone to resolve, and the resolver correctly declines to guess rather than
+   picking one.
+2. `{linkTarget, panelHeading}` fed to `sgs/site-header-row`'s candidate set, deliberately
+   probing whether attribute-rich `sgs/cart` (6 fields) could win by volume over
+   thinner candidates (`core/site-logo`, `sgs/button`, both 1 field each) on a
+   near-miss object. Result: every candidate capped at 1 raw hit → correctly gapped on
+   the evidence floor (`tier3_no_candidate_meets_evidence_floor`), cart included — no
+   richness-driven win.
+3. A genuinely cart-shaped object (`{panelHeading, viewCartLabel, checkoutLabel}`, 3 real
+   matching keys) correctly and cleanly resolved to `sgs/cart` at 3 hits with every other
+   candidate at 0 — real relevance wins outright when the signal is actually there.
+
+**Verdict: no volume-bias defect on the block-kind surface either — same conclusion as the
+qc-council's array-attribute finding.** The one real, disclosed limitation (form-field
+siblings' near-identical schemas causing frequent legitimate ties) is documented above,
+not fixed — fixing it would need a stronger, block-specific discriminating signal beyond
+this spec's own scope (exact-name-only scoring, deliberately, per section 9.3's own
+anti-volume-bias design).
+
+### P-SPEC45-DEAD-BLOCK-COMPOSITION-PARENT-ROWS (CLOSED)
+**Was:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+`block_composition` carried two PARENT rows (`sgs/mobile-nav`, `sgs/adaptive-nav`) whose
+own slug is absent from the `blocks` table (renamed/deleted blocks, no source directory).
+
+**Closed 2026-09-17.** Live re-check found the DB actually carries 7 such orphan rows
+today (matching Spec 45 v1.6.0's own §0.4 finding exactly): `sgs/divider`,
+`sgs/mega-menu`, `sgs/mobile-nav`, `sgs/mobile-nav-toggle`, `sgs/nav-menu` had no other
+defender anywhere in the seeder and were permanently deleted via a new `ORPHAN_REMOVALS`
+section in `plugins/sgs-blocks/scripts/seed-composition-roles.py` (idempotent, re-runnable,
+matches the file's existing RENAMES/INSERTS/CORRECTIONS pattern — a manual one-off sqlite3
+DELETE would not have survived a reseed). Two of the 7 (`sgs/content-collection`,
+`sgs/adaptive-nav`) are still actively re-inserted by that same file's own `INSERTS` list,
+with real dated rationale describing them as planned/superseded work rather than accidental
+leftovers — deleting them would just have been re-added on the next run. Left in place, but
+flagged with an inline `⚠ STALE AS OF 2026-09-17` comment on each INSERT entry naming the
+live DB check and, for `sgs/adaptive-nav`, the real nav blocks that likely superseded it
+(`sgs/nav-bar-menu`/`sgs/nav-drawer`/`sgs/nav-drawer-menu`) — a bigger call than a DB
+cleanup, left for whoever owns that roster decision. `block_composition` orphan count: 7 → 2
+(both explicitly flagged, not silently tolerated).

@@ -110,6 +110,36 @@ CORRECTIONS: dict[str, str] = {
 # apply loop are removed; there is no column left to override.
 # ---------------------------------------------------------------------------
 
+# Orphan REMOVALS (2026-09-17, Spec 45 Tier 3 qc-council follow-up — parking entry
+# P-SPEC45-DEAD-BLOCK-COMPOSITION-PARENT-ROWS). These 7 rows reference blocks with
+# no row in `blocks` at all AND no source directory under src/blocks/ — fully
+# deleted/renamed blocks whose block_composition row was never cleaned up.
+# blocks.is_stale exists but is 0 for every row (not used as this signal today).
+# Confirmed live 2026-09-17: zero of these 7 slugs have a src/blocks/<slug> directory.
+# Spec 45's Tier 3 orphan filter (classless_field_resolver.py::_blocks_row_exists)
+# already drops any of these if they appear as a CANDIDATE slug inside another
+# parent's accepts_allowed_blocks — this removal cleans up the source rows
+# themselves so they stop being reachable as a Tier 3 PARENT too (empty/gap
+# outcome either way, but a clean table is easier to reason about than a
+# silently-tolerated orphan roster).
+# Idempotent: only deletes when the row is present AND still resolves to no
+# `blocks` row (re-running after a legitimate revival of one of these slugs is a
+# safe no-op for that slug).
+# ⚠ Two of the original 7 (`sgs/content-collection`, `sgs/adaptive-nav`) are
+# DELIBERATELY EXCLUDED from this tuple — both are still actively re-inserted by
+# this file's own INSERTS list below, with real dated rationale describing them
+# as planned/superseded work, not accidental leftovers. Deleting + immediately
+# re-inserting on every run is churn with no effect; their staleness is flagged
+# as an inline comment on each INSERT entry instead (see below) rather than
+# fought here. Only the 5 slugs with no other defender in this file are removed.
+ORPHAN_REMOVALS: tuple[str, ...] = (
+    "sgs/divider",
+    "sgs/mega-menu",
+    "sgs/mobile-nav",
+    "sgs/mobile-nav-toggle",
+    "sgs/nav-menu",
+)
+
 # Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
 # carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
 # `sgs/trust-bar`. Rename the row (preserving its composition_role).
@@ -142,6 +172,14 @@ INSERTS: list[dict] = [
         # NO InnerBlocks) → matches its layout-grid peers post-grid/card-grid/gallery.
         # wraps_block + container_kind='layout' are set by
         # sync-container-wrapping-blocks.py --apply.
+        # ⚠ STALE AS OF 2026-09-17 (Spec 45 Tier 3 qc-council follow-up): no
+        # `blocks` table row and no `src/blocks/content-collection/` directory
+        # exist today — this block was never actually built. Kept in INSERTS
+        # rather than deleted because the row describes real, still-plausible
+        # planned scope (not an accidental leftover) — but treat this as a
+        # planning placeholder, not evidence the block exists. If this is
+        # confirmed abandoned rather than merely not-yet-built, remove this
+        # INSERT entry and move the slug into ORPHAN_REMOVALS above instead.
         "block_slug": "sgs/content-collection",
         "wraps_block": None,
         "composition_role": "content-block",
@@ -209,6 +247,17 @@ INSERTS: list[dict] = [
         # to the drawer. Replaces core/navigation in the header. Mirrors
         # site-header-row (content-block). wraps_block + container_kind='layout' set
         # by sync-container-wrapping-blocks.py --apply.
+        # ⚠ STALE AS OF 2026-09-17 (Spec 45 Tier 3 qc-council follow-up): no
+        # `blocks` table row and no `src/blocks/adaptive-nav/` directory exist
+        # today. Real nav blocks that DO exist: sgs/nav-bar-menu,
+        # sgs/nav-drawer, sgs/nav-drawer-menu — this design likely shipped
+        # under one or more of those names instead. Kept in INSERTS rather
+        # than deleted because the DB row is currently harmless (Spec 45's
+        # Tier 3 orphan filter already gates it out wherever it's reachable as
+        # a candidate) and re-litigating which of the 3 real nav blocks
+        # supersedes this row is bigger scope than a DB cleanup. If confirmed
+        # superseded, remove this INSERT entry and move the slug into
+        # ORPHAN_REMOVALS above instead.
         "block_slug": "sgs/adaptive-nav",
         "wraps_block": None,
         "composition_role": "content-block",
@@ -385,6 +434,31 @@ def main() -> int:
     con = sqlite3.connect(str(DB_PATH))
     cur = con.cursor()
     changed = 0
+
+    # 0. Orphan REMOVALS (idempotent — only when the row is present AND still
+    #    resolves to no `blocks` row; a legitimate future revival of one of
+    #    these slugs makes this a safe no-op for it).
+    if ORPHAN_REMOVALS:
+        placeholders = ",".join("?" for _ in ORPHAN_REMOVALS)
+        real_rows = {
+            r[0]
+            for r in cur.execute(
+                f"SELECT slug FROM blocks WHERE slug IN ({placeholders})",  # noqa: S608
+                ORPHAN_REMOVALS,
+            )
+        }
+        for slug in ORPHAN_REMOVALS:
+            if slug in real_rows:
+                print(f"  [skip] orphan-removal {slug}: now a real block, not an orphan")
+                continue
+            cur.execute(
+                "DELETE FROM block_composition WHERE block_slug = ?", (slug,)
+            )
+            if cur.rowcount:
+                print(f"  [del]  orphan block_composition row: {slug}")
+                changed += cur.rowcount
+            else:
+                print(f"  [ok]   orphan-removal {slug}: row already absent")
 
     # 1. Slug RENAMES (idempotent — only when old row exists and new does not).
     #    has_inner_blocks is not a block_composition column any more (dropped
