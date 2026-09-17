@@ -33,6 +33,21 @@ import render_repeater_recogniser as stage_a  # noqa: E402
 import render_repeater_seeder as seeder  # noqa: E402
 
 LIVE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+
+def _live_repeater_row_count() -> int:
+    con = sqlite3.connect(f"file:{LIVE_DB}?mode=ro", uri=True)
+    try:
+        return con.execute("SELECT COUNT(*) FROM block_render_repeaters").fetchone()[0]
+    finally:
+        con.close()
+
+
+# Snapshotted at import time (before any fixture in this module writes anything) so the
+# invariant below is "this run didn't change the count", not a hardcoded 0 — D1089 wired
+# the real seeder into /sgs-update, so 0 stopped being the correct live value.
+_LIVE_ROWS_BEFORE_THIS_RUN = _live_repeater_row_count()
+
 REPO = Path(__file__).resolve().parents[4]
 DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
          / "Eye Care Birmingham.dc.html")
@@ -240,11 +255,15 @@ def test_adapter_into_stage_a_is_ambiguous_without_a_capability_signal() -> None
 
 
 def test_live_db_was_not_written() -> None:
-    con = sqlite3.connect(f"file:{LIVE_DB}?mode=ro", uri=True)
-    count = con.execute("SELECT COUNT(*) FROM block_render_repeaters").fetchone()[0]
-    con.close()
-    assert count == 0, f"live block_render_repeaters holds {count} rows — this run wrote to it"
-    print("  PASS  live DB unwritten by this run")
+    """Proves isolation (unchanged row count), not emptiness — D1089 wired the real
+    seeder into /sgs-update, so the live table legitimately holds real rows now."""
+    count = _live_repeater_row_count()
+    assert count == _LIVE_ROWS_BEFORE_THIS_RUN, (
+        f"live block_render_repeaters had {_LIVE_ROWS_BEFORE_THIS_RUN} rows before this "
+        f"run, holds {count} now — this run wrote to it"
+    )
+    print("  PASS  live DB row count unchanged by this run "
+          f"({_LIVE_ROWS_BEFORE_THIS_RUN} rows)")
 
 
 def main() -> int:

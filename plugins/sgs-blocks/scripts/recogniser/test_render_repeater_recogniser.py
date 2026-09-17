@@ -29,6 +29,21 @@ import render_repeater_recogniser as mod  # noqa: E402
 import render_repeater_seeder as seeder  # noqa: E402
 
 LIVE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+
+def _live_repeater_row_count() -> int:
+    con = sqlite3.connect(f"file:{LIVE_DB}?mode=ro", uri=True)
+    try:
+        return con.execute("SELECT COUNT(*) FROM block_render_repeaters").fetchone()[0]
+    finally:
+        con.close()
+
+
+# Snapshotted at import time (before any fixture in this module writes anything) so the
+# invariant below is "this run didn't change the count", not a hardcoded 0 — D1089 wired
+# the real seeder into /sgs-update, so 0 stopped being the correct live value.
+_LIVE_ROWS_BEFORE_THIS_RUN = _live_repeater_row_count()
+
 REPO = Path(__file__).resolve().parents[4]
 DRAFT = (REPO / "sites" / "eye-care-ward-end" / "design_handoff_ward_end_eye_care"
          / "Eye Care Birmingham.dc.html")
@@ -343,12 +358,17 @@ def test_no_stage_a_match_is_a_clean_result() -> None:
 
 
 def test_live_db_was_not_written() -> None:
-    """The fixtures seed a temp DB; the shared live DB must be untouched by this run."""
-    con = sqlite3.connect(f"file:{LIVE_DB}?mode=ro", uri=True)
-    rows = con.execute("SELECT COUNT(*) FROM block_render_repeaters").fetchone()[0]
-    con.close()
-    assert rows == 0, f"live block_render_repeaters has {rows} rows — this test wrote to it"
-    print("  PASS  live DB unwritten by this run")
+    """The fixtures seed a temp DB; the shared live DB's row COUNT must be unchanged by
+    this run (not zero — D1089 wired the real seeder into /sgs-update, so the live table
+    legitimately holds real rows now; the invariant this test proves is isolation, not
+    emptiness)."""
+    rows = _live_repeater_row_count()
+    assert rows == _LIVE_ROWS_BEFORE_THIS_RUN, (
+        f"live block_render_repeaters had {_LIVE_ROWS_BEFORE_THIS_RUN} rows before this "
+        f"run, has {rows} now — this test wrote to it"
+    )
+    print("  PASS  live DB row count unchanged by this run "
+          f"({_LIVE_ROWS_BEFORE_THIS_RUN} rows)")
 
 
 def main() -> int:
