@@ -1199,3 +1199,28 @@ qc'd, and pushed to main (D1084's standalone/fixture-driven scope). Final commit
 7d911ff36. Next real milestone for this mechanism is Spec 44's own build (the group-identity
 resolver Tier 1-4 need as their real parent_slug input) - tracked separately, not part of
 this SDD run.
+
+---
+
+# SDD progress — Spec 44 classless repeater recognition, 2026-09-17 (build now, council next session per Bean)
+
+Base commit: d1d9e944e (main)
+Task 1 (block_render_repeaters table + source-derived seeder, spec sections 4.2-4.3
+Steps 1-2): complete (commits d1d9e944e..2293bdeb9, review Needs-fixes then re-reviewed
+Approved after fix - 2 Important findings closed: role_order continuity across a block's
+multiple repeaters now documented in code, not just the report; a real comment-blanking
+regex gap that could silently drop a genuine action-trigger signal on a URL-containing
+line is now scoped to real PHP comment spans, with a regression test). Two real bugs
+caught and fixed DURING the implementer's own build (PHP-code read as markup; a `?>`
+close-tag misread as a markup boundary) - both kept as regression fixtures. 9/9 self-test
+assertions pass, 87-block live survey (14 blocks have repeaters, 54 rows, 0 parse
+failures).
+
+Separately, this controller (not a dispatched subagent) caught and fixed a real
+self-inflicted data-loss regression during verification: an earlier same-session DB
+cleanup had silently replaced sgs/adaptive-nav's real accepts_allowed_blocks value with a
+stale in-file default via a delete-then-reinsert seeder pattern. Fixed as a reproducible
+CORRECTIONS entry (commit ce46f36fb), logged to mistakes.md
+(delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default). All 3
+sibling self-test suites (classless_field_resolver, dom_shape_classifier,
+render_repeater_seeder) confirmed green after the fix.
