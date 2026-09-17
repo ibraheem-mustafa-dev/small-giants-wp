@@ -2,12 +2,15 @@
 
 **doc_type:** spec
 **spec_id:** 44
-**spec_version:** 2.3.0
+**spec_version:** 2.3.1
 **Status:** DESIGNED — Pass-1 mechanism (Stage A + Stage B, within-page repeated
 content only) is internally consistent after three council rounds and one
 scope correction; NOT yet re-verified by a council pass since v2.2.0 → v2.3.0,
 and not yet built. Page routing/per-client template design (formerly this
 spec's "Pass 2") is OUT OF SCOPE as of this revision — see §0.3, §4.5.
+v2.3.1 is a small, additive §7 amendment only (the `source` field/filter
+required by Spec 45 Tier 4's isolated review-gate) — no mechanism change, no
+new council round needed for this revision alone.
 **Date:** 2026-09-15
 
 ## 0. What changed since v1.0.0 (read this first)
@@ -340,6 +343,16 @@ mismatch triggers a reseed, not silent staleness — add this check alongside th
 existing `block_selectors` prune this project already runs for the equivalent
 problem on a different table.
 
+**A block composing ANOTHER block at render time (`render_block()`, not a PHP
+`require()`) is a separate, Spec-31-owned fact, not this spec's own table.**
+Surfaced during this spec's own re-verification (2026-09-17): `sgs/buybox`
+composes `sgs/option-picker` via `render_block()`, invisible to `resolve_sources()`
+above (which only follows `require()`). This is `block_render_composition`, Spec
+31 §13.9 — Stage A is a CONSUMER of it, not its builder. **The consumer wiring
+itself is not yet built** (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`, `.claude/parking.md`)
+— read Spec 31 §13.9's own "open, not yet built" note before assuming a composed
+child ever contributes a signal to a Stage A match today.
+
 ### 4.4 New consumer, and exactly where it runs
 
 `array_content.py::lift_array_content()`'s job is "copy fields into a declared
@@ -524,6 +537,19 @@ named store FR-44-1(b) reads: before auto-completing, `recognise_render_time_rep
 scans it for a prior row with the same `client_slug` and the same (block,
 match-type) pattern — a small, linear scan, since it's scoped per client, not a
 new index or table.
+
+⚠ **Cross-spec amendment (added for Spec 45 §10.3, 2026-09-15):** this same
+log is also written to by Spec 45's Tier 4 (`.claude/specs/45-CLASSLESS-FIELD-RESOLUTION.md`
+§10.3), a classifier-derived, always-review-pending source unrelated to this
+spec's own Stage A/B decisions. Every row carries a `source` field —
+`"spec44"` for a row this spec's own mechanism writes, `"tier4-domshape"` for
+a Spec-45-Tier-4 row. **The FR-44-1(b) scan above MUST filter to
+`source == "spec44"` before treating any row as prior approval** — a Tier-4
+row's ≤0.5 classifier confidence must never satisfy this spec's own
+per-client first-look gate. **A row with no `source` key (every row written
+before this amendment) is treated as `source == "spec44"`** — this preserves
+existing promotion memory rather than silently resetting every client's
+first-look state on the day this field is introduced.
 
 **The review surface is real and already exists — name it, don't invent a new
 one.** This pipeline already generates `pipeline-state/<run>/operator-review.html`

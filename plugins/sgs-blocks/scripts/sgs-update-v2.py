@@ -2133,6 +2133,41 @@ def _run_render_repeater_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (render-repeater seed): WARN {exc}")
 
 
+def _run_render_composition_seed(conn: sqlite3.Connection) -> None:
+    """Run seed-render-composition.py --seed as a Stage 1 tail step (Spec 31 §13.9, 2026-09-17).
+
+    `block_render_composition` records a block composing ANOTHER registered block at
+    render time via `render_block(['blockName' => '<slug>', ...])` — distinct from
+    `block_composition.accepts_allowed_blocks`, which only knows about editor-stored
+    InnerBlocks children. Confirmed real instances: `sgs/buybox` -> `sgs/option-picker`,
+    `sgs/card-grid` -> `sgs/product-card` (x2), `sgs/product-card` -> `sgs/option-picker`
+    (x3, one via a required partial). Spec 44's Stage A and Spec 45's Tier 3 both consume
+    this table; neither owns it. Same subprocess/WARN-not-fail/idempotent contract as the
+    render-repeater seed immediately above.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/seed-render-composition.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (render-composition seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script), "--seed"],
+            capture_output=True, text=True, timeout=120,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "render_composition:" in ln]
+            print(f"Stage 1 tail (render-composition seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (render-composition seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (render-composition seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -4124,6 +4159,11 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     that table's own seeding earlier in this Stage 1 pass; order between
         #     the two does not matter (disjoint tables, no shared writer). ---
         _run_render_repeater_seed(conn)
+
+        # --- Stage 1 tail: seed `block_render_composition` (Spec 31 §13.9, 2026-09-17)
+        #     — a block composing ANOTHER block via render_block() at render time.
+        #     Independent of the render-repeater seed above (disjoint tables). ---
+        _run_render_composition_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(

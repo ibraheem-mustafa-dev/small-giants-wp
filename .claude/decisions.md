@@ -1,5 +1,52 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1090 [ROUTINE] — `block_render_composition` — render-time block composition as a
+Spec 31 data-layer fact, built via `/brainstorming` after a scope correction
+
+**2026-09-17.** Surfaced during Spec 44's `/adversarial-council` re-verification
+(D1089's aftermath): the classless-repeater scanner only ever saw a block's own
+`render.php` + `require()`'d PHP partials — invisible to a block composing ANOTHER
+registered block at render time via `render_block(['blockName' => '<slug>', ...])`,
+distinct from `block_composition.accepts_allowed_blocks` (editor-stored InnerBlocks
+children). Confirmed real instance: `sgs/buybox` → `sgs/option-picker`.
+
+Bean's first proposal (a hand-authored register) was reconsidered mid-design after
+`/brainstorming` traced it against Spec 44's own §4.3, which already named and
+rejected almost exactly that shape — a `block.json` key a human hand-fills, citing
+D248's "the create/prune/accessor trio existed; the seeder never did; zero inserts
+anywhere." Converged instead on full automated detection, source-derived (R-31-1),
+same discipline as `render_repeater_seeder.py`.
+
+**Scope correction during design (Bean-caught):** this isn't Spec-44-owned — it's a
+general framework fact about the block composition graph, sibling to
+`block_composition` (Spec 31's own data layer, §13), and Spec 45's Tier 3 (nested
+child-block matching) is a second, independent consumer. Placed at Spec 31 §13.9,
+not inside Spec 44's own recogniser code.
+
+**Built:** `block_render_composition` table (`block_slug, child_slug, call_order,
+source_file, source_sha`) + `seed-render-composition.py`, wired as a Stage 1 tail
+step in `sgs-update-v2.py` (`_run_render_composition_seed`), same idempotent
+/WARN-not-fail/subprocess contract as every sibling seeder. Reuses
+`render_repeater_seeder.py`'s `mask_php`/`resolve_sources`/`source_sha` primitives
+rather than re-implementing PHP parsing a second time.
+
+**Verified live, not asserted:** real survey found exactly 3 composing blocks, 6
+rows — `sgs/buybox` → `sgs/option-picker`; `sgs/card-grid` → `sgs/product-card` ×2;
+`sgs/product-card` → `sgs/option-picker` ×3 (one found only via a required partial,
+`product-card-builtin-render.php`, that a manual grep of `render.php` alone had
+missed). Negative control: three blocks (`before-after`, `nav-drawer`, `text`)
+mention `render_block()` only inside a PHP *comment* — confirmed zero false-positive
+rows for all three. A real `/sgs-update --stage 1` run fires the new tail step and
+reproduces the same 6-row result through the actual pipeline entry point, not just
+the standalone script.
+
+**Deliberately NOT built this session:** the Stage A / Tier 3 consumer wiring —
+parked as `P-SPEC44-RENDER-COMPOSITION-CONSUMER`. Blocked on a real ordering
+question (`block_render_repeaters.role_order` is a sorted index, not a raw file
+offset, so splicing a composed-child fact into an exact position needs a small
+schema decision), not a mechanical step — built the foundation cleanly rather than
+rushing the harder, riskier half same-session.
+
 ## D1089 [ROUTINE] — Spec 44 `block_render_repeaters` seeder wired into `/sgs-update`;
 sequencing reordered ahead of the deferred adversarial-council pass
 

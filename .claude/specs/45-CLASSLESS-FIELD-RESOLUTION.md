@@ -773,6 +773,18 @@ real, verified `accepts_allowed_blocks` allow-list, if non-empty) UNION (the
 `sgs/container` fallback, only when both other sources are empty AND the
 parent is genuinely unrestricted — see the new fourth bullet below).**
 
+⚠ **A real, currently-unresolved gap in this list, surfaced during Spec 44's
+re-verification (2026-09-17), not yet closed here:** `accepts_allowed_blocks`
+only records a child block the EDITOR stored (InnerBlocks). A parent can also
+compose a child at RENDER TIME via `render_block()` — e.g. `sgs/buybox`
+genuinely composes `sgs/option-picker`, with no `accepts_allowed_blocks` entry
+for it at all. That fact now lives in `block_render_composition` (Spec 31
+§13.9), a Spec-31-owned table, not this spec's own mechanism — Tier 3's
+candidate-set UNION should very likely include it as a fourth source, but the
+consumer wiring is not yet built anywhere (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`,
+`.claude/parking.md`). Read Spec 31 §13.9's own "open, not yet built" note
+before assuming a render-time-composed child is visible to Tier 3 today.
+
 - If `accepts_allowed_blocks` is a genuine non-empty list (20 of 216
   `block_composition` rows today — e.g. `sgs/accordion → [sgs/accordion-item]`,
   `sgs/cta-section → [sgs/heading, sgs/text, sgs/multi-button]`), those slugs

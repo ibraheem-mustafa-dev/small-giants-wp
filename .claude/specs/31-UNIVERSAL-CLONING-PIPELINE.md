@@ -998,6 +998,67 @@ The orchestrator writes these per run at `pipeline-state/<client>-<page>-<YYYY-M
 
 Retired stages (11 pixel-diff, 11.5 parity2) are not listed — both were removed 2026-07-04; see Spec 20 for why.
 
+### 13.9 `block_render_composition` — render-time block composition (D1090, 2026-09-17)
+
+A block can compose ANOTHER registered block at render time by calling WordPress's own
+`render_block(['blockName' => '<slug>', ...])` from inside its own PHP — distinct from
+`block_composition.accepts_allowed_blocks` (§13, Axis 3), which only knows about a child
+block the EDITOR stored (InnerBlocks). Confirmed real instances, all three found by
+running the seeder, not by inventing them: `sgs/buybox` → `sgs/option-picker` (one
+axis-picker per WooCommerce variation axis), `sgs/card-grid` → `sgs/product-card` (twice
+— a collection-mode branch and a wc-product-mode branch), `sgs/product-card` →
+`sgs/option-picker` (three call sites — two in its own `render.php`, one in a required
+partial, `product-card-builtin-render.php`, found only because the seeder follows the
+same `require()` resolution `render_repeater_seeder.py` already proved out).
+
+**Surfaced during Spec 44's re-verification (2026-09-17):** the classless-repeater
+scanner (Spec 44 §4.2) only ever saw a block's own `render.php` + its `require()`'d PHP
+partials — it had no path to a composed CHILD block's own identity when the composition
+happened via `render_block()` rather than a PHP include. This is genuinely a Spec-31
+data-layer gap, not a Spec-44 one — Spec 44 is a consumer of this fact, not its owner,
+the same way it already consumes `block_composition`/`block_attributes` as pre-existing
+signals (§3.1). Spec 45's Tier 3 (nested child-block matching) is a second, independent
+consumer of the same fact.
+
+```sql
+CREATE TABLE block_render_composition (
+    block_slug   TEXT NOT NULL,   -- the block doing the composing, e.g. sgs/buybox
+    child_slug   TEXT NOT NULL,   -- the block being composed, e.g. sgs/option-picker
+    call_order   INTEGER NOT NULL, -- position among this block's own render_block() calls
+    source_file  TEXT NOT NULL,
+    source_sha   TEXT NOT NULL,   -- same staleness discipline as block_render_repeaters
+    PRIMARY KEY (block_slug, child_slug, source_file, call_order)
+);
+```
+
+**Detection is source-derived, R-31-1 compliant — no hand-typed block-to-block dict.**
+`seed-render-composition.py` reads a `render_block()` call's blockName straight out of
+the block's real PHP; only a LITERAL string counts. A call whose blockName is built from
+a variable or expression is flagged (WARN, never silently skipped or guessed) — the same
+fail-loud discipline `render_repeater_seeder.py` already applies to an unparseable
+`foreach`. Its masking/source-resolution primitives (`mask_php`, `resolve_sources`,
+`source_sha`) are REUSED from `recogniser.render_repeater_seeder` rather than
+re-implemented, so a masking bug fixed once fixes both consumers. **Negative control,
+proven live, not assumed:** three blocks (`before-after`, `nav-drawer`, `text`) mention
+`render_block()` only in a PHP *comment* documenting a call that lives elsewhere — the
+seeder correctly produces zero rows for all three, because its detection view blanks
+comment spans before scanning (same `mask_php(text, comments_out=...)` side-channel
+`markup_view()` already uses for the identical reason in `render_repeater_seeder.py`).
+
+Wired as a Stage 1 tail step in `sgs-update-v2.py`
+(`_run_render_composition_seed`), same idempotent/WARN-not-fail/subprocess contract as
+every sibling seeder — survives every `/sgs-update` reseed automatically.
+
+**Open, not yet built:** a Stage A consumer that folds a `block_render_composition` row
+into a candidate's structural fingerprint (e.g. a `"composed:sgs/option-picker"` role
+entry) — see `P-SPEC44-RENDER-COMPOSITION-CONSUMER` in `.claude/parking.md`. Blocked on a
+real ordering question: `block_render_repeaters.role_order` is a sorted INDEX, not a raw
+source offset, so splicing a composed-child fact into the exact right position in an
+existing role sequence needs either a small schema addition (an offset column) or a
+looser "this candidate also composes X" matching dimension rather than precise
+interleaving — a real design decision, not a mechanical wiring step, left for whoever
+picks this up.
+
 ## 14. Motion & animation recognition — the R1/R8/R9/R10 batch (D1017–D1032, FR-31-25)
 
 This section documents what the 2026-09-10/11 tier-migration work actually built, closing the gap

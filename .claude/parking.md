@@ -55,6 +55,25 @@ wired. Building the detector is real, separate design work (what draft-side sign
 indicate "this parent provides add-to-cart" vs "this parent just links away"), not a code
 tweak.
 
+### P-SPEC44-RENDER-COMPOSITION-CONSUMER
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+`block_render_composition` (Spec 31 §13.9, D1090) is built, seeded, and wired into
+`/sgs-update` — 6 real rows confirmed live (`sgs/buybox` → `sgs/option-picker`;
+`sgs/card-grid` → `sgs/product-card` ×2; `sgs/product-card` → `sgs/option-picker` ×3).
+Nothing consumes it yet. Two real, separate consumer slots are named but unbuilt: Spec
+44 Stage A (fold a composed-child row into a candidate's structural fingerprint, e.g. a
+`"composed:sgs/option-picker"` role) and Spec 45 Tier 3 §9.2 (add render-time-composed
+children as a fourth source in the candidate-set UNION, alongside
+`accepts_allowed_blocks`).
+
+**Trigger:** blocked on a real ordering design decision for the Spec 44 side —
+`block_render_repeaters.role_order` is a sorted index, not a raw source offset, so
+splicing a composed-child fact into the exact right position in an existing role
+sequence needs either a small schema addition (an offset column) or a looser
+"also composes X" matching dimension instead of precise interleaving. Not a
+mechanical wiring step; needs its own design pass before either consumer is built.
+
 ### P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
 
