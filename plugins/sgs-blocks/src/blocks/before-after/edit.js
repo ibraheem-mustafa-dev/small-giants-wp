@@ -31,6 +31,7 @@ import {
 	SelectControl,
 	Notice,
 	Spinner,
+	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -989,29 +990,31 @@ export default function Edit( { attributes, setAttributes } ) {
 								'sgs-blocks'
 							) }
 						</Notice>
-						<ServerSideRender
-							block="sgs/before-after"
-							attributes={ omitNullAttributes( attributes ) }
-							LoadingResponsePlaceholder={ () => (
-								<div
-									style={ {
-										padding: '2rem',
-										textAlign: 'center',
-									} }
-								>
-									<Spinner />
-								</div>
-							) }
-							ErrorResponsePlaceholder={ ( { response } ) => (
-								<Notice status="error" isDismissible={ false }>
-									{ response?.errorMsg ||
-										__(
-											'Preview failed to load.',
-											'sgs-blocks'
-										) }
-								</Notice>
-							) }
-						/>
+						<Disabled>
+							<ServerSideRender
+								block="sgs/before-after"
+								attributes={ omitNullAttributes( attributes ) }
+								LoadingResponsePlaceholder={ () => (
+									<div
+										style={ {
+											padding: '2rem',
+											textAlign: 'center',
+										} }
+									>
+										<Spinner />
+									</div>
+								) }
+								ErrorResponsePlaceholder={ ( { response } ) => (
+									<Notice status="error" isDismissible={ false }>
+										{ response?.errorMsg ||
+											__(
+												'Preview failed to load.',
+												'sgs-blocks'
+											) }
+									</Notice>
+								) }
+							/>
+						</Disabled>
 					</>
 				) }
 			</div>

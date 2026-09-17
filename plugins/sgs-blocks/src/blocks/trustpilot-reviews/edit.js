@@ -25,6 +25,7 @@ import {
 	TextareaControl,
 	Button,
 	Notice,
+	Disabled,
 } from '@wordpress/components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -742,10 +743,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<ServerSideRender
-					block="sgs/trustpilot-reviews"
-					attributes={ attributes }
-				/>
+				<Disabled>
+					<ServerSideRender
+						block="sgs/trustpilot-reviews"
+						attributes={ attributes }
+					/>
+				</Disabled>
 			</div>
 		</>
 	);

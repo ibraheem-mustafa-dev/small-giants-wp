@@ -11,6 +11,7 @@ import {
 	SelectControl,
 	TextareaControl,
 	Notice,
+	Disabled,
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
@@ -596,10 +597,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			   logo is picked here, matching render.php's own fallback. ── */ }
 			<div { ...blockProps }>
 				{ logoId || desktopUrl ? (
-					<ServerSideRender
-						block="sgs/responsive-logo"
-						attributes={ attributes }
-					/>
+					<Disabled>
+						<ServerSideRender
+							block="sgs/responsive-logo"
+							attributes={ attributes }
+						/>
+					</Disabled>
 				) : (
 					<div className="sgs-responsive-logo-editor__empty">
 						<span className="dashicons dashicons-format-image" />

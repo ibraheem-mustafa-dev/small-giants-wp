@@ -1,0 +1,111 @@
+{
+	"generatedAt": "2026-09-17T11:28:49.997Z",
+	"total": 9,
+	"violations": 0,
+	"findings": [
+		{
+			"file": "src/blocks/before-after/edit.js",
+			"block": "sgs/before-after",
+			"line": 994,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"SgsColourPanel",
+				"div",
+				"",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/brand-strip/edit.js",
+			"block": "sgs/brand-strip",
+			"line": 1047,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"SgsColourPanel",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/business-info/edit.js",
+			"block": "sgs/business-info",
+			"line": 325,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"SgsColourPanel",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/card-grid/edit.js",
+			"block": "sgs/card-grid",
+			"line": 1236,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"SgsColourPanel",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/nav-bar-menu/edit.js",
+			"block": "sgs/nav-bar-menu",
+			"line": 781,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/nav-drawer-menu/edit.js",
+			"block": "sgs/nav-drawer-menu",
+			"line": 600,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/product-card/edit.js",
+			"block": "sgs/product-card",
+			"line": 2898,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/responsive-logo/edit.js",
+			"block": "sgs/responsive-logo",
+			"line": 601,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/trustpilot-reviews/edit.js",
+			"block": "sgs/trustpilot-reviews",
+			"line": 747,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"Disabled"
+			]
+		}
+	]
+}

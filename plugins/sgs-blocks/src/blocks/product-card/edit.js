@@ -29,6 +29,7 @@ import {
 	Notice,
 	Spinner,
 	Button,
+	Disabled,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -2893,10 +2894,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ isBound ? (
 				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
-					<ServerSideRender
-						block="sgs/product-card"
-						attributes={ attributes }
-					/>
+					<Disabled>
+						<ServerSideRender
+							block="sgs/product-card"
+							attributes={ attributes }
+						/>
+					</Disabled>
 				</div>
 			) : (
 				/* Typed built-in mode: WYSIWYG preview from block attributes */

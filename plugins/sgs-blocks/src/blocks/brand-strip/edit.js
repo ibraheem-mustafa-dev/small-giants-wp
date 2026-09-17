@@ -12,6 +12,7 @@ import {
 	ToggleControl,
 	TextControl,
 	Button,
+	Disabled,
 } from '@wordpress/components';
 import { SgsColourPanel, ResponsiveControl, ResponsiveBoxControl, TypographyControls, ShadowControl, LinkPopoverField, SgsBorderControl, resolveColourToken, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
@@ -1042,10 +1043,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ __( 'Add logos in the sidebar panel.', 'sgs-blocks' ) }
 						</p>
 					) : (
-						<ServerSideRender
-							block="sgs/brand-strip"
-							attributes={ attributes }
-						/>
+						<Disabled>
+							<ServerSideRender
+								block="sgs/brand-strip"
+								attributes={ attributes }
+							/>
+						</Disabled>
 					) }
 				</div>
 			</>

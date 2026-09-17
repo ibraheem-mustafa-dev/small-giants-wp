@@ -10,7 +10,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl, Notice } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, Notice, Disabled } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { ResponsiveBoxControl, SgsColourPanel, textRow, DesignTokenPicker, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl } from '../../components';
 
@@ -321,10 +321,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<ServerSideRender
-					block="sgs/business-info"
-					attributes={ attributes }
-				/>
+				<Disabled>
+					<ServerSideRender
+						block="sgs/business-info"
+						attributes={ attributes }
+					/>
+				</Disabled>
 			</div>
 		</>
 	);

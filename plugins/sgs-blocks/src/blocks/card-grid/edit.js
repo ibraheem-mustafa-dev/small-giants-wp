@@ -14,6 +14,7 @@ import {
 	ToggleControl,
 	Spinner,
 	FocalPointPicker,
+	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -1231,18 +1232,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			     the same pattern sgs/content-collection used before the fold. */ }
 			{ isWcProductMode || isCptCollectionMode ? (
 				<div { ...blockProps }>
-					<ServerSideRender
-						block="sgs/card-grid"
-						attributes={ attributes }
-						LoadingResponsePlaceholder={ () => (
-							<div style={ { padding: '2rem', textAlign: 'center' } }>
-								<Spinner />
-								<p style={ { marginTop: 8, color: '#6b7280' } }>
-									{ __( 'Loading products…', 'sgs-blocks' ) }
-								</p>
-							</div>
-						) }
-					/>
+					<Disabled>
+						<ServerSideRender
+							block="sgs/card-grid"
+							attributes={ attributes }
+							LoadingResponsePlaceholder={ () => (
+								<div style={ { padding: '2rem', textAlign: 'center' } }>
+									<Spinner />
+									<p style={ { marginTop: 8, color: '#6b7280' } }>
+										{ __( 'Loading products…', 'sgs-blocks' ) }
+									</p>
+								</div>
+							) }
+						/>
+					</Disabled>
 				</div>
 			) : (
 				<div { ...blockProps } style={ { ...blockProps.style, ...gridStyle } }>

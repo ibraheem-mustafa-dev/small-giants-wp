@@ -965,5 +965,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 103
+  },
+  {
+    "id": "audit-serverside-render-disabled",
+    "cmd": "node scripts/consistency/audit-serverside-render-disabled.js --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 104
   }
 ]
