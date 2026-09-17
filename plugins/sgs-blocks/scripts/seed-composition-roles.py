@@ -140,6 +140,20 @@ ORPHAN_REMOVALS: tuple[str, ...] = (
     "sgs/nav-menu",
 )
 
+# accepts_allowed_blocks CORRECTIONS (2026-09-17, same-session self-caught regression).
+# The FIRST run of the ORPHAN_REMOVALS pass above (before sgs/adaptive-nav was excluded
+# from it) deleted sgs/adaptive-nav's row, and the SAME run's step 2 (INSERTS) then
+# re-created it from this file's own stale in-file default
+# (accepts_allowed_blocks=None, below) rather than its real live value
+# ("[\"sgs/mega-menu\"]", confirmed present in this same session's earlier direct query,
+# before any script ran). Real data was silently replaced by a stale default —
+# undetected until Spec 44 Task 1's test suite failed on it. Fixed here as a genuine,
+# reproducible CORRECTION (not a one-off manual UPDATE) and the INSERTS entry below is
+# corrected to match, so a future delete-then-reinsert cycle can't regress this again.
+ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS: dict[str, str] = {
+    "sgs/adaptive-nav": '["sgs/mega-menu"]',
+}
+
 # Slug RENAMES (2026-06-02, Workstream A — D150). The block_composition table
 # carries the pre-D123 slug `sgs/trust-badges`; the block was renamed to
 # `sgs/trust-bar`. Rename the row (preserving its composition_role).
@@ -258,10 +272,16 @@ INSERTS: list[dict] = [
         # supersedes this row is bigger scope than a DB cleanup. If confirmed
         # superseded, remove this INSERT entry and move the slug into
         # ORPHAN_REMOVALS above instead.
+        # ⚠ accepts_allowed_blocks corrected 2026-09-17 to match the row's real
+        # live value ('["sgs/mega-menu"]') after a same-session incident where a
+        # delete-then-reinsert cycle silently replaced it with this INSERT
+        # entry's stale None default — see ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS
+        # above, which is the actual reproducible fix; this default is corrected
+        # too so it can never regress the same way twice.
         "block_slug": "sgs/adaptive-nav",
         "wraps_block": None,
         "composition_role": "content-block",
-        "accepts_allowed_blocks": None,
+        "accepts_allowed_blocks": '["sgs/mega-menu"]',
     },
     {
         # sgs/site-footer (2026-07-13, Spec 17 §S9 / FR-S9-3, D325) — section-KIND
@@ -459,6 +479,27 @@ def main() -> int:
                 changed += cur.rowcount
             else:
                 print(f"  [ok]   orphan-removal {slug}: row already absent")
+
+    # 0.5. accepts_allowed_blocks CORRECTIONS (idempotent — only writes when the
+    #      live value differs; skips silently if the row itself is absent, since
+    #      INSERTS below is what creates it, now with the corrected default).
+    for slug, correct_value in ACCEPTS_ALLOWED_BLOCKS_CORRECTIONS.items():
+        row = cur.execute(
+            "SELECT accepts_allowed_blocks FROM block_composition WHERE block_slug = ?",
+            (slug,),
+        ).fetchone()
+        if row is None:
+            print(f"  [skip] accepts_allowed_blocks correction {slug}: no row yet")
+            continue
+        if row[0] == correct_value:
+            print(f"  [ok]   accepts_allowed_blocks {slug}: already correct")
+            continue
+        cur.execute(
+            "UPDATE block_composition SET accepts_allowed_blocks = ? WHERE block_slug = ?",
+            (correct_value, slug),
+        )
+        changed += cur.rowcount
+        print(f"  [set]  accepts_allowed_blocks {slug}: {row[0]!r} -> {correct_value!r}")
 
     # 1. Slug RENAMES (idempotent — only when old row exists and new does not).
     #    has_inner_blocks is not a block_composition column any more (dropped
