@@ -37,13 +37,10 @@ empirically validated (`/qc-council` on the historically-fragile Tier 3, `/qc-in
 44 (above), even now built, doesn't yet produce real matches on real data for it to consume.
 See Front E below and D1087 for full detail.
 
-**Two process incidents this session, both self-caught, both logged, no data lost either
-time:** (1) a dispatched subagent used `git stash` on this shared worktree — 3rd recurrence of
-an already-banned pattern (`mistakes.md` + `feedback_no_git_stash_in_subagents.md`); (2) the
-controller's own earlier DB-orphan cleanup silently replaced a real live `accepts_allowed_blocks`
-value with a stale seeder default via a delete-then-reinsert cycle — caught when a later task's
-tests failed on it, fixed as a reproducible correction
-(`delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default`).
+**Two process incidents this session, both self-caught, both logged in `mistakes.md`, no data
+lost either time:** (1) a dispatched subagent's `git stash` (3rd recurrence,
+`feedback_no_git_stash_in_subagents.md`); (2) a delete-then-reinsert seeder cycle silently
+overwrote real live data with a stale default, caught + fixed as a reproducible correction.
 
 **Nav-menu border-census re-dispatch (D1085) — DONE.** The re-dispatched fix landed
 (`5e54a599a`): the detector's delegation blind spot is fixed (both blocks now classify
@@ -148,25 +145,28 @@ false-auto-complete as an empty block (the project's known empty-section-false-w
 last session's "35/0" safety number is void (measured before the seeder held real data).
 `--classless-match` alone: conditional/sandbox-only, not client-safe yet.
 
-**Structural-facts trio now COMPLETE, all three tables built + validated, consumer wiring
-parked for all three.** `block_render_repeaters` (Spec 44 §4.2, D1088/D1089) — repeated
-content. `block_render_composition` (Spec 31 §13.9, D1090) — a block composing ANOTHER
-block via `render_block()` at render time (e.g. `sgs/buybox` → `sgs/option-picker`).
-`block_render_singletons` (Spec 31 §13.10, D1093) — static/one-off content (e.g. buybox's
-main product image), added after Bean directly corrected an "it's natively-sourced, out of
-scope" framing — matching-signal and write-disposition are separate questions. All three
-`/qc-council`-validated against the live DB post-build, not just code-reviewed. A real
-detector bug (a state attribute toggled as a whole PHP-ternary string) was found and fixed
-mid-session — 3 independent real instances, not hypothetical.
+**Structural-facts trio now COMPLETE — repeaters (D1088/D1089), composition (D1090),
+singletons (D1093) — all `/qc-council`-validated live, consumer wiring parked for all three.**
+Singletons cover static/one-off content (e.g. buybox's main image) after Bean corrected an
+"it's natively-sourced, out of scope" framing — matching-signal and write-disposition are
+separate questions. A real detector bug (a state attribute toggled as a whole PHP-ternary
+string, not just an echoed value) was found + fixed mid-session, 3 confirmed real instances.
 
-**Scope note carried forward:** `sgs/buybox` itself is arguably the WRONG flagship example
-for a page-agnostic mechanism — it's inherently product-page-specific and belongs to a
-future specialised template/CPT pipeline, not general classless recognition; worth
-revisiting Spec 44's own worked example next pass. `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING`
-still open, unchanged. New: `P-SPEC44-RENDER-COMPOSITION-CONSUMER` +
+**Scope note:** `sgs/buybox` is arguably the WRONG flagship example for a page-agnostic
+mechanism — inherently product-page-specific, belongs to a future template/CPT pipeline, not
+general classless recognition; revisit Spec 44's worked example next pass.
+`P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open, unchanged. New:
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER` +
 `P-SPEC44-RENDER-SINGLETON-CONSUMER` — both block on the same real design question (how
 repeater/composition/singleton role sequences merge into one fingerprint), not a mechanical
 step — see D1093 for the full reasoning.
+
+**Next session — 4 tasks in order, full orchestration plan (per-task model/brief/dependencies/
+acceptance) at `.claude/plans/2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md`:**
+1. Real human-approval field for FR-44-1(b) — the council's convergent finding.
+2. Match-diversity floor on FR-44-1(a) — refuse a same-role-repeated "exact match".
+3. Re-measure the Eye Care draft's 35 groups (the "35/0" figure is void, measured pre-fix).
+4. `/brainstorming` → build the structural-facts consumer wiring (Stage A + Spec 45 Tier 4).
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
