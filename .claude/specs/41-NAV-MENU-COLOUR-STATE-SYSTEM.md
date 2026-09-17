@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 41
-spec_version: 0.4.9
+spec_version: 0.4.10
 status: active
 owner: framework
 date: 2026-09-11
@@ -613,6 +613,26 @@ before `render.php` runs; see the block-note-comment prior art at `plugins/sgs-b
 hover effect at all: new `itemSeparatorHoverTreatment` / `itemSeparatorSweepAngle` attributes,
 sweep band on the `<li>`'s own `::after` (kept off the link's own `::before` to avoid a
 pseudo-element collision with the link's existing border-bottom sweep).
+
+⚑ **GEOMETRY + DEFAULT-COLOUR CORRECTED 2026-09-17 (D1086, Bean-reported live on
+`sites/mamas-munches`).** Two claims above are now STALE:
+
+- The mechanism described at FR-41-37 ("`border-right-width/style/color` render... on every
+  top-level bar item except the last") painted the line flush against one item's own edge, not
+  centred in the flex `gap` between the two items either side of it — a real geometry defect,
+  not a documentation drift. It is now a `::before` pseudo-element on every item EXCEPT THE
+  FIRST (`:not(:first-child)`, not `:not(:last-child)`), positioned at `left: calc(<gap>/-2)` so
+  it lands centred in the gap regardless of the operator's chosen `gap` value. The sweep band
+  (FR-41-38, above) moved onto this same `::before` rather than the `<li>`'s `::after`.
+- `itemSeparatorColour`'s default is now `text-muted`, not `border-light` — the original default
+  measured ~1.1:1 contrast against a real header background (`sites/mamas-munches`), which read
+  as "hover-only" even though it was always painted; `text-muted` measures ~4.7-5.8:1, a genuine
+  WCAG UI-component-border pass. This diverges from the Underline/Row-separator family's own
+  `border-light` default (line 568-570 above no longer applies to this specific attribute) —
+  deliberately: a between-item divider and an under-text underline read very differently against
+  the same background.
+
+Full detail: `decisions.md` D1086, `reports/visual-diff/nav-bar-menu-2026-09-17.md`.
 
 **DB-first, not a hardcoded dict:** a new `item-separator` manifest element in `block.json` plus
 `attr-classification-overrides.json` entries for the new behaviour-role treatment/angle
