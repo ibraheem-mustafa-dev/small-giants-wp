@@ -8,3 +8,17 @@
 	width: 100%;
 	box-sizing: border-box;
 }
+
+/* FR-37-47 — starter-look preset (StarterLookPresetControl). This is
+   Inspector-sidebar chrome, not canvas content — it never appears inside
+   `.editor-styles-wrapper`, so these rules are deliberately unscoped. */
+.sgs-starter-look__help {
+	margin-top: 0;
+	opacity: 0.75;
+}
+
+.sgs-starter-look__grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}

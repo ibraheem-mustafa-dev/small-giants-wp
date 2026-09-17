@@ -74,7 +74,7 @@ const BG_ATTACHMENT_OPTIONS = [
 ];
 import { close } from '@wordpress/icons';
 import { ResponsiveControl, ResponsiveBoxControl, resolveColourToken, SgsColourPanel, fillRow, textRow, SgsLengthControl,
-	SgsBorderControl, IconPicker, TypographyControls,
+	SgsBorderControl, IconPicker, TypographyControls, StarterLookPresetControl,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { resolveTextColourPreviewStyle, typographyPreviewStyle } from '../../utils';
@@ -632,6 +632,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+			</InspectorControls>
+
+			{ /* FR-37-47 — starter-look preset, same mechanism as
+			     sgs/site-header's (site-header/edit.js). This root has no
+			     `rowSlot` children — the control's wholesale-InnerBlocks
+			     fallback path applies here. */ }
+			<InspectorControls group="styles">
+				<StarterLookPresetControl
+					clientId={ clientId }
+					rootBlockName="sgs/nav-drawer"
+				/>
 			</InspectorControls>
 
 			{ /* ── Styles tab ──────────────────────────────────────────── */ }

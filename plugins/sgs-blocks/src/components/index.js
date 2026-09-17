@@ -78,3 +78,11 @@ export { default as SgsLengthControl } from './SgsLengthControl';
 // Shared media size & crop panel (C19, 2026-08-27) — piloted on sgs/media only.
 // See the component's own docblock for the mode picker + grey-out contract.
 export { default as MediaSizingPanel, RATIO_OPTIONS as MEDIA_SIZING_RATIO_OPTIONS } from './MediaSizingPanel';
+// FR-37-47 (2026-09-17) — starter-look preset control shared by the 3
+// template-locked CPT root blocks (site-header, site-footer, nav-drawer).
+export { default as StarterLookPresetControl } from './StarterLookPresetControl';
+// Regression fix, 2026-09-17 — replaces `<Disabled>` around every block's
+// `<ServerSideRender>` preview (see the component's own docblock for why
+// `<Disabled>`'s `inert` + `pointer-events:none` silently killed real CSS
+// `:hover` and JS-driven interaction across all 9 SSR-previewed blocks).
+export { default as SsrPreviewGuard } from './SsrPreviewGuard';
