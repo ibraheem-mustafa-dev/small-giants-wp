@@ -8,24 +8,42 @@ last_updated: 2026-09-17
 
 ## Human Summary — FOR BEAN, plain English (read this first)
 
-**THREE OPEN FRONTS: Front C (classless recognition, Spec 44 — designed, not built), Front D
-(Mama's/Indus header-footer builder cleanup), and Front E (Spec 45 classless FIELD resolution —
-now FULLY BUILT, all 4 tiers, and blocked on Front C to go live).** Two things need Bean directly,
-not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's precondition (real
-WooCommerce catalogue data). Everything else that used to lead this file — the nav-menu split,
-Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow visual/UX pass — is FULLY
-DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for pointers to the evidence; it isn't
-repeated here.
+**THREE OPEN FRONTS, ALL BUILT-BUT-NOT-LIVE-TRUSTED: Front C (Spec 44, classless GROUP
+recognition), Front D (Mama's/Indus header-footer builder cleanup), and Front E (Spec 45,
+classless FIELD resolution).** Fronts C and E are BOTH now fully built (all 4 tiers/units
+each) but neither is proven to do anything useful on a real draft yet — see below. Two things
+need Bean directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
+precondition (real WooCommerce catalogue data). Everything else that used to lead this file —
+the nav-menu split, Spec 41/36 doc rewrites, Spec 42/43 Phases 0-2, and the choice-flow
+visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (closed)" for
+pointers; it isn't repeated here.
 
-**Spec 45 (classless field resolution) — all 4 tiers shipped this session (D1084/D1087).**
-Given a draft field + a resolved parent block, decides which real attribute it becomes — built,
-reviewed (implementer + reviewer per tier, fix cycles closed), and empirically validated
-(`/qc-council` on the historically-fragile Tier 3, `/qc-inline` on Tiers 2/4). Standalone and
-fixture-driven by design — it has no live pipeline input yet because Spec 44 (Front C, below)
-hasn't shipped the thing that would supply one. See Front E below and D1087 for full detail.
-One process incident worth knowing about: a dispatched subagent used `git stash` on this shared
-worktree during the build — 3rd recurrence of an already-banned pattern, no data lost, logged
-properly this time (`mistakes.md` + `feedback_no_git_stash_in_subagents.md`).
+**Spec 44 (classless GROUP recognition) — all 4 units shipped this session (D1084/D1088),
+council re-verification deferred to NEXT session per Bean's explicit instruction.** Built,
+reviewed (Approved, zero fix cycles across all 4 units), tested, fully inert (both new flags
+default off, zero-deletion diff, confirmed no behaviour change for any client). **Live-measured
+and honest: running the whole thing over all 35 real classless groups in the actual Eye Care
+draft produces 35 no-matches, 0 diversions** — two disclosed, fully diagnosed reasons, both
+parked (`P-SPEC44-SEEDER-NOT-WIRED`, `P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING`). The second
+one matters most: the spec's OWN flagship worked example (buybox vs product-card) is provably
+unreachable without a draft-side "capability" detector that doesn't exist anywhere — not a
+tuning gap, a missing mechanism. The deferred council pass should weigh this directly. Full
+detail: D1088, Front C below.
+
+**Spec 45 (classless FIELD resolution) — all 4 tiers shipped, D1084/D1087.** Given a draft
+field + a resolved parent block, decides which real attribute it becomes — built, reviewed,
+empirically validated (`/qc-council` on the historically-fragile Tier 3, `/qc-inline` on Tiers
+2/4). Standalone and fixture-driven by design — still has no live pipeline input, because Spec
+44 (above), even now built, doesn't yet produce real matches on real data for it to consume.
+See Front E below and D1087 for full detail.
+
+**Two process incidents this session, both self-caught, both logged, no data lost either
+time:** (1) a dispatched subagent used `git stash` on this shared worktree — 3rd recurrence of
+an already-banned pattern (`mistakes.md` + `feedback_no_git_stash_in_subagents.md`); (2) the
+controller's own earlier DB-orphan cleanup silently replaced a real live `accepts_allowed_blocks`
+value with a stale seeder default via a delete-then-reinsert cycle — caught when a later task's
+tests failed on it, fixed as a reproducible correction
+(`delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default`).
 
 **Nav-menu border-census re-dispatch (D1085) — DONE.** The re-dispatched fix landed
 (`5e54a599a`): the detector's delegation blind spot is fixed (both blocks now classify
@@ -118,21 +136,35 @@ don't research/fix yet):**
 live Playwright re-verification of all 5 fixes, then continue to Mama's real content authoring
 per `.claude/prompts/2026-09-10-header-footer-implementation.md`.
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088)
 
-**Spec 44 (`specs/44-CLASSLESS-REPEATER-RECOGNITION.md`) is DESIGNED at v2.3.0, NOT YET BUILT,
-NOT YET re-verified by a council pass since v2.3.0 — do not assume v2.3.0 is GO.** Went through
-3 `/adversarial-council` rounds (full trail D1081). Root mechanism: Stage A (parent-context-narrowed
-structural match) falling back to Stage B (DB-fact elimination). Auto-complete gate FR-44-1.
-Full detail, the scope correction (page-level routing moved OUT of Spec 44), and the
-carried-forward D1078 corrections (`thumbs`/`items`/"top brands" resolutions) are in
-`decisions.md` D1081 and the spec itself — read those, not a summary here.
+**Spec 44 v2.3.1 is now BUILT — all 4 units, reviewed Approved, zero fix cycles — but
+NOT YET re-verified by a council pass since v2.2.0 → v2.3.0, and Bean's explicit instruction
+is that this re-verification happens NEXT session, before anything here is trusted or wired
+live.** `recogniser/render_repeater_seeder.py` (Unit 1, table+seeder) →
+`render_repeater_recogniser.py` (Unit 2, Stage A) → `array_schema_eliminator.py` (Unit 3,
+Stage B) → `classless_trust_gate.py` + `classless_draft_adapter.py` (Unit 4, FR-44-1 trust
+gate + §7 audit log/review surface + orchestrator wiring behind `--classless-match`/
+`--classless-auto-complete`, both default off). Full build narrative: D1088.
 
-**Next priority:** council-verify v2.3.0 before building, then Stage A/B behind
-`--classless-match`/`--classless-auto-complete`. Separate named tracks: responsiveness work
-(already designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
-rule-table extension (Tailwind/shadcn/Webflow/Elementor/Divi — locate its plan next session);
-one-off classless content (deferred, no composite to check against).
+**Next priority: the deferred `/adversarial-council` pass, and it has real material to
+weigh, not just a rubber-stamp.** Live-measured this session: the built pipeline correctly
+diverts NOTHING on the real Eye Care draft today (35/35 no-match) — safe, but also proves
+nothing yet, for two disclosed reasons: `P-SPEC44-SEEDER-NOT-WIRED` (the table has 0 live
+rows, seeder not called from `/sgs-update` by design) and, more importantly,
+`P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING` — the spec's OWN flagship worked example
+(buybox vs product-card) cannot be resolved from real draft markup because no code anywhere
+derives the "parent capability" signal (§4.3 Step 0 (ii)) that's the only thing separating
+the pair. The council pass should decide whether that detector gets designed before wiring
+the seeder, or whether the seeder ships first and the flagship case stays unreached a while
+longer. A third parked item, lower priority: `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING`
+(Stage B identifies fields but never extracts their values — deliberately never
+auto-completes as a result).
+
+Separate named tracks, unaffected by this session's build: responsiveness work (already
+designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
+rule-table extension (Tailwind/shadcn/Webflow/Elementor/Divi — locate its plan next
+session); one-off classless content (deferred, no composite to check against).
 
 Standing rule from this front: narrow by parent context before leaf-structural match — lesson
 `C:/Users/Bean/.claude/memory/learning/2026-09-15-narrow-by-parent-context-before-leaf-structural-match.md`.
@@ -244,7 +276,7 @@ here):**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1087 — re-check, don't trust a cached number here).
+  D1088 — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **`nav-bar-menu` now has one real visual-diff report** (`reports/visual-diff/nav-bar-menu-2026-09-17.md`,
@@ -267,7 +299,8 @@ here):**
 | **Nav-menu split — ALL 8 STEPS DONE; only gap is a missing visual-diff report** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/); `decisions.md` D1059/D1060/D1076; `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
 | **Classless repeater recognition — start here** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.0, DESIGNED not built); `decisions.md` D1081 (3-round trail); Front C above |
-| **Classless FIELD resolution — Spec 45, all 4 tiers BUILT, blocked on Spec 44 to go live** | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` (v1.6.0); `decisions.md` D1084/D1087; Front E above; `plugins/sgs-blocks/scripts/recogniser/classless_field_resolver.py` |
+| **Classless GROUP recognition — Spec 44, all 4 units BUILT + inert, council re-verify next session** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.1); `decisions.md` D1088; Front C above; `plugins/sgs-blocks/scripts/recogniser/render_repeater_recogniser.py` + `array_schema_eliminator.py` + `classless_trust_gate.py` |
+| **Classless FIELD resolution — Spec 45, all 4 tiers BUILT, still no real input (Spec 44 built but inert)** | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` (v1.6.0); `decisions.md` D1084/D1087; Front E above; `plugins/sgs-blocks/scripts/recogniser/classless_field_resolver.py` |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |
 | Header/footer spec + stalled strategic plan | `specs/37-HEADER-FOOTER-BUILDER.md`; `plans/2026-07-29-merged-spec36-37-track-strategic-plan.md` |

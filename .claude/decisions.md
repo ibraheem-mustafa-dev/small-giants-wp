@@ -1,5 +1,85 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1088 [ROUTINE] — Spec 44 classless repeater recognition, all 4 tiers built + reviewed;
+adversarial-council re-verification deliberately deferred to next session
+
+**2026-09-17.** Bean's explicit sequencing instruction: build Spec 44
+(`.claude/specs/44-CLASSLESS-REPEATER-RECOGNITION.md` v2.3.1) now, run the
+`/adversarial-council` re-verification pass the spec itself calls for ("NOT YET
+re-verified since v2.2.0 → v2.3.0, do not assume v2.3.0 is GO") NEXT session, not this
+one. Built via `/subagent-driven-development` (implementer + task reviewer per unit, no
+fix cycles needed — all four reviews returned Approved on first pass), plan
+`.claude/plans/2026-09-17-spec44-classless-repeater-recognition.md`. Commit range
+`d1d9e944e..8205c95d4` (plus one same-session self-caught fix, `ce46f36fb` — see below).
+
+**Unit 1** — `block_render_repeaters` DB table + source-derived seeder
+(`recogniser/render_repeater_seeder.py`), mirroring `sgs-update-v2.py::_populate_emit_shape`'s
+proven pattern. Caught and fixed two real bugs mid-build (PHP source misread as markup;
+a `?>` close-tag misread as a markup boundary) and one review-found gap (a comment-blanking
+regex that could silently drop a real signal on a URL-containing line — fixed, scoped to
+real PHP comment spans).
+
+**Unit 2** — Stage A recognition (`recogniser/render_repeater_recogniser.py`):
+parent-narrowing (§4.3 Step 0) + structural leaf matching (§3.1). The implementer's first
+design for the parent-composite-shape signal (a token-overlap popularity score) was
+rejected on MEASUREMENT against the real Eye Care draft — it ranked the wrong block —
+replaced with per-attribute, exclusion-only capability satisfaction. Found and verified a
+real correction to the spec's own §4.1 worked example: TWO structural markers are
+unmatched between `sgs/buybox` and the real draft, not one as the spec states.
+
+**Unit 3** — Stage B fallback (`recogniser/array_schema_eliminator.py`): DB-fact
+elimination over the full `array_item_schema` roster. Found the spec's own "6 of 8 groups
+narrowed" figure (§5.1) is unreproducible (no filter criterion recorded, 3 conflicting
+denominators across the evidence report) — measured honestly, elimination narrows 0 of 6
+real draft shapes to exactly one candidate (a DB-seeding-coverage limit: only 25 of 90
+`array_item_schema` rows carry a role). Corrected three more spec worked-example errors
+(reasons-card has 3 fields not 2; "filter chip" is 2 distinct shapes not 1; the draft has
+35 `sc-for` expressions not 34). Caught 2 more real bugs (a plain-text value resolving
+into an image field; a weak signal stealing a stronger signal's slot, shifting a whole
+item's fields by one while still "looking correct").
+
+**Unit 4** — trust gate + audit log + review surface + rollout flags + orchestrator wiring
+(`recogniser/classless_trust_gate.py`, `classless_draft_adapter.py`, extensions to
+`simple_html_review_report.py` and `sgs-clone-orchestrator.py`). Found and fixed a real
+trust-gate bug: reading the audit log live (not a snapshot) would let a pattern's SECOND
+occurrence within the same run auto-complete, defeating FR-44-1(b)'s "one-time human
+look" — fixed via a once-per-run snapshot. Relocated the orchestrator call site after
+re-reading the real current code (the brief's suggested anchor was unreachable for a
+genuinely classless boundary — it would already have hit an earlier unmatched-section
+gate). Made Stage B matches NEVER auto-complete (no extracted value exists to emit).
+Confirmed via diff stat: zero deletions in `sgs-clone-orchestrator.py`, both new flags
+default off — no behaviour change for any existing client.
+
+**Self-caught regression, same session (not a task, the controller's own fix,
+`ce46f36fb`):** an earlier DB-orphan cleanup (done to close a Spec 45 parking item) had
+silently replaced `sgs/adaptive-nav`'s real live `accepts_allowed_blocks` value with a
+stale in-file seeder default via a delete-then-reinsert cycle — undetected until Task 1's
+own tests failed on it. Fixed as a reproducible `CORRECTIONS`-style entry, logged to
+`mistakes.md` (`delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default`).
+
+**HEADLINE FINDING — read before assuming "Spec 44 is built" means "Spec 44 works on real
+data".** Live-measured (Unit 4): running the complete built pipeline over all 35 real
+classless groups in the actual Eye Care Birmingham draft produces **35 no-matches, 0
+diversions** — proven safe, proven inert. Two disclosed, fully diagnosed reasons: (1)
+Unit 1's seeder is deliberately not wired into `/sgs-update`, so `block_render_repeaters`
+has 0 rows on the live DB (cheapest unblock, parked: `P-SPEC44-SEEDER-NOT-WIRED`); (2) the
+spec's own flagship worked example (buybox vs product-card) is provably unreachable
+without a draft-side "capability" detector that doesn't exist anywhere in this codebase —
+not a tuning gap, a missing mechanism (parked: `P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING`).
+A third parked item: Stage B never extracts values, only identifies fields
+(`P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING`). The deferred adversarial-council pass
+should weigh the capability-detector gap directly — it's the spec's own headline case
+failing on real data even with the whole mechanism built, reviewed, and wired.
+
+**Status: all four units built, reviewed (Approved, zero fix cycles needed), tested (32+
+new assertions across Unit 4 alone, full regression clean across all four units), fully
+inert (both `--classless-match`/`--classless-auto-complete` default off, confirmed
+zero-deletion diff). A full orchestrator dry-run was deliberately NOT attempted this
+session — real, disclosed shared-worktree blast-radius reasons (scaffolds real block
+files into `src/blocks/`, writes to a shared uimax DB, target client's theme snapshot is
+currently deleted by another concurrent session) — outcome was knowable in advance given
+the empty seeder table, so nothing was lost by skipping it.**
+
 ## D1087 [ROUTINE] — Spec 45 classless field resolver, all 4 tiers complete + reviewed + qc'd
 
 **2026-09-16/17.** Follow-up to D1084 (the standalone-build scope decision). Built all four

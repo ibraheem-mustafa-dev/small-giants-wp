@@ -31,6 +31,61 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
+### P-SPEC44-SEEDER-NOT-WIRED
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Spec 44's `block_render_repeaters` table + seeder
+(`plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py`) is built and self-tested
+but deliberately not called from `/sgs-update` — the live DB table has 0 rows. Stage A
+(`render_repeater_recogniser.py`) can therefore never match anything on real data today,
+even with `--classless-match` on; every boundary reports "unseeded" and falls to Stage B or
+no-match. This is the single cheapest unblock for the whole mechanism doing anything real —
+a ~5-line call in `sgs-update-v2.py` Stage 1 (the module's own docstring names the exact
+call shape).
+
+**Trigger:** the deferred `/adversarial-council` re-verification pass (next session per
+Bean's instruction) — wire the seeder only after that pass, since turning it on changes
+what Stage A can match for the first time.
+
+### P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Spec 44's own flagship worked example (§4.1 — `sgs/buybox` vs `sgs/product-card`, two
+blocks that render byte-identical thumbnail markup by design) is UNREACHABLE end-to-end
+from real draft markup. The only thing that separates the pair is Step 0's parent
+composite-shape signal (§4.3 Step 0 (ii)) — an exclusion-only check requiring the caller to
+supply which "capabilities" (e.g. `add-to-cart`) the draft's parent element demonstrably
+provides. Task 2 built the check; Task 4's draft-side adapter honestly supplies nothing
+(observing "this parent provides add-to-cart" from real draft markup is a separate,
+unbuilt mechanism), so the real Eye Care draft's `thumbs` group comes back AMBIGUOUS
+across the documented pair, not matched to `sgs/buybox`. Proven both ways by test: the
+same group WITH a hand-supplied capability resolves correctly; without one, from real
+markup, it does not. This is a missing mechanism, not a tuning problem, and Task 2 itself
+found repetition-context (signal (i)) can't separate this pair either — capability
+detection is the only thing that can.
+
+**Trigger:** the deferred council pass should weigh this directly — it's the spec's own
+headline case failing to resolve on real data even with the whole mechanism built and
+wired. Building the detector is real, separate design work (what draft-side signals
+indicate "this parent provides add-to-cart" vs "this parent just links away"), not a code
+tweak.
+
+### P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING
+**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Stage B (`array_schema_eliminator.py`, DB-fact elimination) resolves a draft field to a
+DECLARED `array_item_schema` field (identity), never extracts the field's actual VALUE — a
+draft's values live in its JS builder, not its markup, and nothing in Spec 44 defines a
+DOM-bearing or JS-bearing input contract for reading them. Task 4 therefore made Stage B
+NEVER auto-complete (regardless of flags/audit-log precedent) — auto-completing would emit
+a content-free block that passes every structural check, exactly the "silently dropped"
+failure Rule 4 exists to prevent. A Stage B match today is a review-queue annotation
+carrying Task 3's per-field conservation record, not a conversion path.
+
+**Trigger:** whenever Stage B's identification is trusted enough to be worth acting on
+(after the seeder is wired and real matches start happening) — needs its own design pass,
+not folded into a future task casually.
+
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-01
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
