@@ -880,6 +880,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 					kind="layout"
 					showLayout={ false }
+					enableColumnShapePicker
 				/>
 				<PanelBody title={ __( 'Footer row', 'sgs-blocks' ) }>
 					{ rowSlot && (
