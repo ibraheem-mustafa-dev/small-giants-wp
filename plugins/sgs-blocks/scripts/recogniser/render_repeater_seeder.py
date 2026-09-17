@@ -374,12 +374,23 @@ def _loop_vars(head: str) -> tuple[str, ...]:
     return tuple(m.group(0) for m in re.finditer(r"\$[A-Za-z_]\w*", tail))
 
 
-def detect_repeaters(slug: str, sources: list[tuple[str, str]] | None = None) -> tuple[list[dict], list[str]]:
+def detect_repeaters(
+    slug: str,
+    sources: list[tuple[str, str]] | None = None,
+    spans_out: dict[str, list[tuple[int, int]]] | None = None,
+) -> tuple[list[dict], list[str]]:
     """(repeaters, parse warnings) for one block. A repeater = a non-attribute-backed
     `foreach` that emits markup AND yields at least one structural role.
 
     `sources` overrides the on-disk resolution so a self-test can drive MUTATED real
     source through this exact code path.
+
+    `spans_out`, when given, is filled with `{source_file: [(body_start, body_end), ...]}`
+    for EVERY `foreach` body this block's PHP contains — attribute-backed ones included,
+    since that markup is still "repeated, not static" even though it's excluded from
+    `block_render_repeaters` itself. Purely additive: existing callers passing nothing
+    see byte-identical behaviour (`seed-render-singletons.py`, Spec 31 §13.10, is the
+    only consumer of this parameter today).
     """
     sources = resolve_sources(slug) if sources is None else sources
     if not sources:
@@ -395,6 +406,8 @@ def detect_repeaters(slug: str, sources: list[tuple[str, str]] | None = None) ->
                 spans.append(_parse_foreach(mask, m.start()))
             except RepeaterParseError as exc:
                 warnings.append(f"{slug}: {fname}: {exc}")
+        if spans_out is not None:
+            spans_out.setdefault(fname, []).extend((bs, be) for _op, _cl, bs, be in spans)
         for op, cl, bs, be in spans:
             head = text[op + 1:cl]
             if _attribute_backed(head, full):

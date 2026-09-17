@@ -2168,6 +2168,40 @@ def _run_render_composition_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (render-composition seed): WARN {exc}")
 
 
+def _run_render_singleton_seed(conn: sqlite3.Connection) -> None:
+    """Run seed-render-singletons.py --seed as a Stage 1 tail step (Spec 31 §13.10, 2026-09-17).
+
+    `block_render_singletons` records STATIC/SINGLETON structural elements — content
+    that renders exactly once, not inside a `foreach` (`block_render_repeaters`) and
+    not a child block composed via `render_block()` (`block_render_composition`) —
+    the third and final table in the structural-facts trio. It reuses both sibling
+    seeders' own claimed-span data rather than re-deriving what "not repeated, not
+    composed" means. Same subprocess/WARN-not-fail/idempotent contract as both
+    seeds immediately above.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/seed-render-singletons.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (render-singleton seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script), "--seed"],
+            capture_output=True, text=True, timeout=120,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "render_singletons:" in ln]
+            print(f"Stage 1 tail (render-singleton seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (render-singleton seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (render-singleton seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -4164,6 +4198,13 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     — a block composing ANOTHER block via render_block() at render time.
         #     Independent of the render-repeater seed above (disjoint tables). ---
         _run_render_composition_seed(conn)
+
+        # --- Stage 1 tail: seed `block_render_singletons` (Spec 31 §13.10, 2026-09-17)
+        #     — static/singleton structural elements, the third structural-facts
+        #     table. Depends on nothing above at seed time (its own detector calls
+        #     the two sibling detectors itself, in-process) but runs last so it is
+        #     read as "everything else" in this pass's own narrative order. ---
+        _run_render_singleton_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(

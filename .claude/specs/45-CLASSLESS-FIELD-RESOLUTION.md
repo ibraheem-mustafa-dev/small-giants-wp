@@ -785,6 +785,15 @@ consumer wiring is not yet built anywhere (`P-SPEC44-RENDER-COMPOSITION-CONSUMER
 `.claude/parking.md`). Read Spec 31 §13.9's own "open, not yet built" note
 before assuming a render-time-composed child is visible to Tier 3 today.
 
+⚠ **A second, separate Spec-31-owned fact — static/singleton structural
+content — is also not yet a Tier consumer.** `block_render_singletons` (Spec 31
+§13.10) records content that renders exactly once, outside both a `foreach` and
+a `render_block()` call. Built, seeded and wired, same as
+`block_render_composition`. The consumer wiring is not yet built anywhere
+(`P-SPEC44-RENDER-SINGLETON-CONSUMER`, `.claude/parking.md`). Read Spec 31
+§13.10's own "open, not yet built" note before assuming a singleton element is
+visible to any Tier here today.
+
 - If `accepts_allowed_blocks` is a genuine non-empty list (20 of 216
   `block_composition` rows today — e.g. `sgs/accordion → [sgs/accordion-item]`,
   `sgs/cta-section → [sgs/heading, sgs/text, sgs/multi-button]`), those slugs

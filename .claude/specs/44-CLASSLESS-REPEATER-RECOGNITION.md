@@ -353,6 +353,15 @@ itself is not yet built** (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`, `.claude/park
 — read Spec 31 §13.9's own "open, not yet built" note before assuming a composed
 child ever contributes a signal to a Stage A match today.
 
+**A third, separate Spec-31-owned fact — static/singleton structural content —
+exists alongside the two above.** `block_render_singletons` (Spec 31 §13.10) records
+content that renders exactly once, outside both a `foreach` and a `render_block()`
+call (e.g. `sgs/buybox`'s main product image, invisible to the render-time-repeater
+scan above). Built, seeded and wired, same as `block_render_composition`. **The
+consumer wiring itself is not yet built** (`P-SPEC44-RENDER-SINGLETON-CONSUMER`,
+`.claude/parking.md`) — read Spec 31 §13.10's own "open, not yet built" note before
+assuming a singleton element ever contributes a signal to a Stage A match today.
+
 ### 4.4 New consumer, and exactly where it runs
 
 `array_content.py::lift_array_content()`'s job is "copy fields into a declared

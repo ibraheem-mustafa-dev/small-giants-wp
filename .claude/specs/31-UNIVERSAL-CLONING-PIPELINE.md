@@ -1059,6 +1059,82 @@ looser "this candidate also composes X" matching dimension rather than precise
 interleaving — a real design decision, not a mechanical wiring step, left for whoever
 picks this up.
 
+### 13.10 `block_render_singletons` — static/singleton structural elements (2026-09-17)
+
+A STATIC/SINGLETON structural element is content that renders EXACTLY ONCE — not
+inside a `foreach` (`block_render_repeaters`, §4.2) and not a child block composed at
+render time via `render_block()` (`block_render_composition`, §13.9) — but still
+carries a real, matchable structural role per §3.1 (action-trigger /
+image-or-fallback / current-state-indicator / label). This is the third and final
+table in the structural-facts trio.
+
+**Concrete proven case:** `sgs/buybox`'s main product image
+(`plugins/sgs-blocks/src/blocks/buybox/gallery-col.php`) sits OUTSIDE its thumbnail
+`foreach` loop and OUTSIDE its one `render_block()` call to `sgs/option-picker`, yet
+has a genuine `image-or-fallback` conditional (a real `<img>` vs. an SVG placeholder
+— `if ( '' !== $buybox_img_src ) : <img> else : <svg> endif;`). It is invisible to
+both sibling tables today, and for a minimal single-image/single-variant product,
+buybox's thumbnail gallery AND price-ladder AND axis-picker composition all degrade
+to empty/absent — meaning the static parts are the ONLY reliably-present signal for
+the most common real case. Live-verified: `seed-render-singletons.py --survey
+--block sgs/buybox` seeds `image-or-fallback` for `gallery-col.php` at byte offset
+3130, well outside the thumbnail `foreach` body span (4730–5762) and the
+`render_block()` composition call span (34317–34812) in `render.php`.
+
+```sql
+CREATE TABLE IF NOT EXISTS block_render_singletons (
+    block_slug   TEXT NOT NULL,
+    role         TEXT NOT NULL,   -- same 4-value vocabulary: action-trigger,
+                                  -- image-or-fallback, current-state-indicator, label
+    role_order   INTEGER NOT NULL,
+    source_file  TEXT NOT NULL,
+    source_sha   TEXT NOT NULL,
+    PRIMARY KEY (block_slug, role, role_order)
+);
+```
+
+**Detection is REUSE-NOT-REIMPLEMENT, R-31-1 compliant.** `seed-render-singletons.py`
+adds no new PHP masking or role-detection logic of its own. For each live block it
+calls both sibling detectors to learn which byte spans they already claimed —
+`render_repeater_seeder.detect_repeaters()`'s `foreach` body spans, via a purely
+additive `spans_out` parameter that ALL existing callers ignore by default (ALL
+spans, including attribute-backed ones excluded from `block_render_repeaters`
+itself, because that markup is still "repeated, not static") — and its own
+`render_block()` call spans, found by reusing `_match_pair()` over the reused
+`mask_php()` mask, so a paren inside a string-literal call argument (e.g. a URL) can
+never be miscounted as call structure. Both claimed-span sets are blanked
+(offset-preserving, spaces only) out of BOTH the file's `markup_view()` and its
+original text, and the reused `derive_roles()` runs on what's left with an EMPTY
+`loop_vars` tuple — there is no loop to bind an item-variable from at top level, so
+the echoed-loop-var label signal correctly never fires for singleton content.
+
+**Fail-loud, matching every sibling seeder:** if EITHER `detect_repeaters()` or
+`detect_composition()` already flagged a WARN for a block, singleton seeding is
+skipped too and the equivalent WARN is printed. A block whose repeater/composition
+boundaries are already known-unreliable must never have its "everything else"
+region guessed at — "everything else" is only correct when the two subtractions it
+depends on were.
+
+**Disjointness is the load-bearing correctness property**, proven as a named
+negative control in `test_render_singleton_seeder.py`
+(`test_singleton_spans_never_overlap_sibling_claimed_spans`): for `sgs/buybox`, every
+byte offset `block_render_singletons` seeds is asserted to fall outside every span
+`block_render_repeaters`/`block_render_composition` already claimed for the same
+block+file, checked against real offsets, not role-name spot-checking. A silent
+overlap would double-count the same markup as both "repeated" and "static",
+corrupting any future consumer's fingerprint.
+
+Wired as a Stage 1 tail step in `sgs-update-v2.py` (`_run_render_singleton_seed`),
+immediately after `_run_render_composition_seed`, same idempotent/WARN-not-fail/
+subprocess contract as both sibling seeds. Live-seeded: 97 rows across 31 of 87
+blocks as of 2026-09-17.
+
+**Open, not yet built:** any consumer wiring in Spec 44's Stage A
+(`render_repeater_recogniser.py`) or Spec 45's Tier 4
+(`classless_field_resolver.py`) — see `P-SPEC44-RENDER-SINGLETON-CONSUMER` in
+`.claude/parking.md`. This table is built, seeded and wired; nothing reads it yet,
+same shape as `block_render_composition`'s own still-open consumer slot above.
+
 ## 14. Motion & animation recognition — the R1/R8/R9/R10 batch (D1017–D1032, FR-31-25)
 
 This section documents what the 2026-09-10/11 tier-migration work actually built, closing the gap
