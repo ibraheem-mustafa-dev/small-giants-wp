@@ -23,6 +23,11 @@
  *   default-group panel registered, landing it directly above WordPress
  *   core's structurally-last "Advanced" panel — see that file's header for
  *   the proof.
+ * - CPT default panel: adds a Document sidebar "Default" toggle on the
+ *   sgs_modal post-type screen only (renders null everywhere else) — see
+ *   cpt-default-panel.js. sgs_header/sgs_footer were removed 2026-09-17,
+ *   same day as added, once confirmed duplicate of Sgs_Active_Layout's
+ *   existing "Active" admin mechanism for those two CPTs.
  */
 import './responsive-device-toggle';
 import './animation';
@@ -34,6 +39,7 @@ import './image-controls';
 import './fx';
 import './responsive-visibility';
 import './media-elements';
+import './cpt-default-panel';
 
 // The two colour-picker fork stylesheets that carry genuinely NEW SGS
 // classnames (not core's own `.components-*` names, which `wp-components`

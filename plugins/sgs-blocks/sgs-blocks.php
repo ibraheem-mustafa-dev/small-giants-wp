@@ -379,6 +379,21 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout-admin.php';
 Sgs_Active_Layout_Admin::register();
 
+// SGS "_sgs_is_default" post meta (sgs_modal only — sgs_header/sgs_footer
+// coverage was removed the same day, 2026-09-17, once confirmed duplicate of
+// Sgs_Active_Layout's existing "Active" pointer, see class-sgs-cpt-default-meta.php)
+// + the read-only "Used by" list-table column (sgs_header/sgs_footer/sgs_drawer/
+// sgs_modal/sgs_form/sgs_choice_flow), client build 2026-09-17. Loaded after
+// the CPTs + Active-layout + rules engines because both classes below read
+// Sgs_Block_CPTs' post-type constants and, for the usage column, resolve
+// against Sgs_Header_Rules / Sgs_Footer_Rules / Sgs_Active_Layout at render
+// time (not registration time), so load order here only needs the class
+// definitions to exist, which require_once already guarantees.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-default-meta.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-usage-columns.php';
+Sgs_Cpt_Default_Meta::register();
+Sgs_Cpt_Usage_Columns::register();
+
 // SGS Active menu-drawer render path (W2-a, merged Spec 36+37 Wave 2) — the drawer
 // has no core/template-part slot to intercept, so it renders on wp_footer instead
 // of via pre_render_block. Loaded after Sgs_Active_Layout because every read
