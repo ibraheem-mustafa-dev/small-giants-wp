@@ -260,6 +260,51 @@ def test_url_literal_in_markup_does_not_blank_a_data_attribute() -> None:
     print("  PASS  url-literal: `://` in markup no longer blanks a real data-* signal")
 
 
+def test_ternary_whole_attribute_state_is_detected() -> None:
+    """A state attribute toggled as a WHOLE STRING via a PHP ternary
+    (`echo $cond ? 'aria-current="true"' : ''`) must register as
+    current-state-indicator — the plain _STATE_ATTRS loop only catches an
+    echoed VALUE inside an otherwise-static attribute and silently drops this
+    shape, because the attribute's own value ("true") reads as a hardcoded
+    literal to that loop's "hardcoded value is chrome" guard.
+
+    Real, unmutated `sgs/buybox` render.php (PD-12 value-ladder) — the row
+    marking the currently-selected pack size uses exactly this shape and was
+    flattened to zero signal (three plain labels, no state) before this fix.
+
+    The negative half is asserted directly: the OLD detection path (the
+    _STATE_ATTRS loop alone, no ternary check) is run over the SAME real
+    source and shown to miss it. Without that, this test would pass against
+    either implementation.
+    """
+    real = mod.resolve_sources("sgs/buybox")
+    render_php = dict(real)["render.php"]
+    assert "aria-current=\"true\"" in render_php, (
+        "fixture assumption stale — the real value-ladder shape changed")
+
+    # OLD behaviour (the bug): the plain per-attribute loop, reproduced here
+    # directly rather than by deleting code, so this control can never rot
+    # silently if the real loop's own logic is edited.
+    markup = mod.markup_view(render_php)
+    old_found = False
+    for name in mod._STATE_ATTRS:
+        for m in re.finditer(r"\b" + name + r"\s*=", markup, re.I):
+            value = mod._attr_value(markup, m.end() - 1)
+            if "<?" in value or "{{" in value:
+                old_found = True
+    assert not old_found, "control is vacuous — the old loop already caught this shape"
+
+    # NEW behaviour: the ternary-scoped regex catches it.
+    repeaters, warnings = mod.detect_repeaters("sgs/buybox", sources=real)
+    assert not warnings, warnings
+    roles = [r for rep in repeaters if rep["source_file"] == "render.php"
+             for r, _o in rep["roles"]]
+    assert roles[0] == mod.ROLE_CURRENT, roles
+    assert roles.count(mod.ROLE_CURRENT) == 1, roles
+    print("  PASS  ternary-whole-attribute state: PD-12 value-ladder's selected-row "
+          "marker is no longer flattened to a plain label")
+
+
 def test_survey_does_not_mutate_the_database() -> None:
     """A dry run must not even create the table — a survey that writes schema is a
     write with a read's name."""
@@ -296,6 +341,7 @@ def main() -> int:
         builtins.print = real_print
     test_unparseable_foreach_is_flagged_not_silently_absent()
     test_url_literal_in_markup_does_not_blank_a_data_attribute()
+    test_ternary_whole_attribute_state_is_detected()
     test_survey_does_not_mutate_the_database()
     for path in _TEMP_DBS:
         try:

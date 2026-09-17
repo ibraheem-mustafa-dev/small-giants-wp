@@ -66,6 +66,14 @@ ROLE_LABEL = "label"
 _STATE_ATTRS = ("aria-current", "aria-selected", "aria-pressed", "aria-expanded")
 _ALTERNATIVE_RE = re.compile(r"(\}\s*else\b|\belse\s*:|\belseif\b|\bendif\b|<\?php\s+else)", re.I)
 _IMAGE_RE = re.compile(r"<\s*img\b|sgs_render_media|wp_get_attachment_image", re.I)
+# A state attribute toggled as a WHOLE STRING via a PHP ternary
+# (`echo $cond ? 'aria-current="true"' : ''`) — see derive_roles()'s own note
+# on why the plain _STATE_ATTRS loop can't see this shape.
+_TERNARY_STATE_RE = re.compile(
+    r"\?\s*['\"][^'\"]*\b(?:" + "|".join(_STATE_ATTRS) + r")\s*=\s*"
+    r"[\"'][^\"']*[\"'][^'\"]*['\"]\s*:",
+    re.I,
+)
 
 
 class RepeaterParseError(RuntimeError):
@@ -302,6 +310,20 @@ def derive_roles(markup: str, original: str, loop_vars: tuple[str, ...]) -> list
             # A toggled state — a hardcoded value is chrome, not a per-item indicator.
             if "<?" in value or "{{" in value:
                 found.append((ROLE_CURRENT, m.start()))
+
+    # A state attribute can also be toggled as a WHOLE STRING via a PHP ternary
+    # rather than an echoed VALUE inside an otherwise-static attribute (the
+    # shape the loop above catches). That loop can't see this: the
+    # attribute's OWN value ("true") is a plain literal, so its "hardcoded
+    # value is chrome" guard — correct for the usual case — discards it. Found
+    # live in `sgs/buybox`'s value-ladder (PD-12): the row marking the
+    # currently-selected pack size was silently flattened to zero signal.
+    # Matched against `original` (real PHP), never `markup` — the ternary's
+    # two string-literal branches are PHP code, not rendered markup, even
+    # though `markup_view()` happens to keep their bytes (see its own note on
+    # why a PHP string literal and real HTML are indistinguishable to it).
+    for m in _TERNARY_STATE_RE.finditer(original):
+        found.append((ROLE_CURRENT, m.start()))
 
     for m in re.finditer(r"\b(aria-label|title)\s*=", markup, re.I):
         found.append((ROLE_LABEL, m.start()))
