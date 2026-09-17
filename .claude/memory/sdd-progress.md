@@ -1283,3 +1283,37 @@ step is the deferred /adversarial-council re-verification (Bean's instruction, n
 which should weigh the headline finding above directly - this mechanism's own flagship case is
 provably unreachable without new work (a draft-side capability detector) this build pass
 correctly did not invent unscoped.
+
+## block_render_singletons (Spec 31 §13.10) — 2026-09-17
+
+Task: build the third structural-facts table (static/singleton block elements),
+table + seeder ONLY, consumer wiring explicitly parked. Design approved via
+/brainstorming earlier this session.
+
+Implementer (sonnet): DONE, commit 920f4d2b9. 97 rows seeded live across 31 of 87
+blocks. Reused all 6 named primitives from the two sibling seeders, additive-only
+change to detect_repeaters()'s return contract, sibling suite unaffected.
+
+Task reviewer (opus, independent): Approved. Verified disjointness holds BY
+CONSTRUCTION (not fixture luck) via an independent 87-block sweep + a manual
+no-blanking negative control finding 4 real overlaps. 3 Important + 5 Minor
+findings, all narrow and mechanical.
+
+Fix pass (sonnet): commit 851e931a9. All 3 Important + 2 Minor findings fixed:
+fail-loud wrapped around the one unguarded _match_pair() call; disjointness test
+now cross-checks against detect_composition()'s own real offsets, not just its
+own internal recomputation; added the missing no-blanking negative control
+(re-derived live, matched the reviewer's independent numbers exactly); 2 doc
+corrections (cross-file offset wording, disclosed-limits addition).
+
+Controller re-verification (not a third subagent dispatch — findings were narrow/
+mechanical with clear acceptance criteria): re-ran both test files independently,
+confirmed 11/11 singleton assertions + 10/10 sibling assertions all pass, confirmed
+zero diff on both consumer files (render_repeater_recogniser.py,
+classless_field_resolver.py) across the full commit range.
+
+STATUS: complete, reviewed, fixed, verified. Commits 920f4d2b9..851e931a9 on main,
+integrated with origin/main. Consumer wiring (Stage A / Spec 45 Tier 4) remains
+parked as P-SPEC44-RENDER-SINGLETON-CONSUMER — a real design decision (how to
+merge repeater + singleton role sequences into one fingerprint), not a mechanical
+step, left for its own pass.
