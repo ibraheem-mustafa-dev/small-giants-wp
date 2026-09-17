@@ -1,5 +1,18 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1100 [ROUTINE] — header-footer register's last open item (A11) closed won't-fix:
+matching the drafts' literal 11px would itself be the hardcode being removed
+
+**2026-09-17.** Bean's call on the one item the archived header-footer-hardcoding-register
+left open: don't change footer column headings' `fontSize:"medium"` to match the 11px/0.82rem
+uppercase micro-label both source drafts happen to render at. Reasoning — baking a client
+draft's literal computed px value in as the FRAMEWORK's default is exactly the R-31-1
+violation this whole register exists to remove; a framework default has to stay a real
+theme.json-resolvable token, not a one-off value copied from whichever draft was open when it
+was set. `medium` stays as the shipped default; a client wanting the 11px look sets it via the
+block's own per-instance font-size control. This closes the register at 17/17 — nothing left
+open in `plans/archive/2026-07-15-header-footer-hardcoding-register.md`.
+
 ## D1099 [ROUTINE] — plans/strategy/ retired; header-footer register + product-queue
 archived, `plans/archive/` is now the only non-active plans location
 

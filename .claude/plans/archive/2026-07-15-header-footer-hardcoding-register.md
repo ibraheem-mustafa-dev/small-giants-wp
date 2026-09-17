@@ -60,7 +60,7 @@ The framework's default footer is a copy of ONE client's draft.
 | A8 | ~60-79 | 7 hardcoded hrefs: `/`, `/about/`, `/services/`, `/blog/`, `/contact/`, `/privacy-policy/`, `/terms/` | Empty list — no baked IA |
 | A9 | ~90, ~100 | `>Contact</h2>`, `>Opening Hours</h3>` literals | Empty content |
 | A10 | ~114-115 | `<a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a>` in a raw `core/paragraph` | `sgs/business-info` `displayType="attribution"` reading Site Info. **If that displayType does not exist, STOP and report — do not invent one and do not leave the hardcoded URL.** |
-| A11 | ~53, ~89, ~99 | `"fontSize":"medium"` on footer column headings | Leave as-is BUT report: both drafts render these as 11px/0.82rem uppercase micro-labels, not `medium`. Flagged for the Opus pass, not for you to change. |
+| A11 | ~53, ~89, ~99 | `"fontSize":"medium"` on footer column headings | **RESOLVED 2026-09-17, won't-fix (Bean).** Both drafts render these as 11px/0.82rem uppercase micro-labels, but baking that literal px value in as the block's default would itself be the R-31-1 hardcode this whole register exists to remove — a framework default has to stay a real theme.json-resolvable token (`medium`), not a client draft's one-off computed value. `medium` stays; a client wanting the 11px look sets it per-instance via the block's own font-size control. |
 
 **File: `theme/sgs-theme/patterns/footer-indus-foods.php` — BROKEN, silently**
 
