@@ -31,11 +31,11 @@ import {
 	SelectControl,
 	Notice,
 	Spinner,
-	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	SsrPreviewGuard,
 	textRow,
 	DesignTokenPicker,
 	ShadowControl,
@@ -990,7 +990,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								'sgs-blocks'
 							) }
 						</Notice>
-						<Disabled>
+						<SsrPreviewGuard>
 							<ServerSideRender
 								block="sgs/before-after"
 								attributes={ omitNullAttributes( attributes ) }
@@ -1014,7 +1014,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									</Notice>
 								) }
 							/>
-						</Disabled>
+						</SsrPreviewGuard>
 					</>
 				) }
 			</div>

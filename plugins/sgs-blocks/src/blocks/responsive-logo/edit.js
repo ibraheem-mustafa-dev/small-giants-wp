@@ -11,11 +11,10 @@ import {
 	SelectControl,
 	TextareaControl,
 	Notice,
-	Disabled,
 } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { Button } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel } from '../../components';
+import { ResponsiveBoxControl, ResponsiveOverride, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, SgsBorderControl, SgsColourPanel, SsrPreviewGuard } from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
 // TypographyControls unit-set pattern — px is the common case for a logo cap;
@@ -597,12 +596,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			   logo is picked here, matching render.php's own fallback. ── */ }
 			<div { ...blockProps }>
 				{ logoId || desktopUrl ? (
-					<Disabled>
+					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/responsive-logo"
 							attributes={ attributes }
 						/>
-					</Disabled>
+					</SsrPreviewGuard>
 				) : (
 					<div className="sgs-responsive-logo-editor__empty">
 						<span className="dashicons dashicons-format-image" />

@@ -60,10 +60,11 @@
 import { __ } from '@wordpress/i18n';
 import { useRef } from 'react';
 import { useBlockProps, useSettings, InspectorControls } from '@wordpress/block-editor';
-import { Notice, Disabled } from '@wordpress/components';
+import { Notice } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
 	SgsColourPanel,
+	SsrPreviewGuard,
 	TypographyControls,
 	fillRow,
 	textRow,
@@ -777,9 +778,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<Disabled>
+				<SsrPreviewGuard>
 					<ServerSideRender block="sgs/nav-bar-menu" attributes={ attributes } />
-				</Disabled>
+				</SsrPreviewGuard>
 			</div>
 		</>
 	);

@@ -17,6 +17,7 @@ import {
 	SgsLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
+	SsrPreviewGuard,
 } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import {
@@ -29,7 +30,6 @@ import {
 	Notice,
 	Spinner,
 	Button,
-	Disabled,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -2894,12 +2894,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ isBound ? (
 				/* Bound mode: server-side render preview */
 				<div { ...blockProps }>
-					<Disabled>
+					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/product-card"
 							attributes={ attributes }
 						/>
-					</Disabled>
+					</SsrPreviewGuard>
 				</div>
 			) : (
 				/* Typed built-in mode: WYSIWYG preview from block attributes */

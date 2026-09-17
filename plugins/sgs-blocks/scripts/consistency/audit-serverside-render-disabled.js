@@ -3,16 +3,30 @@
  *
  * Finds every `<ServerSideRender` JSX usage across `src/blocks/*\/edit.js` and
  * flags any that is NOT wrapped in `<Disabled>` (from `@wordpress/components`)
- * anywhere in its JSX ancestor chain within the same `return ( ... )`
- * statement.
+ * OR `<SsrPreviewGuard>` (`src/components/SsrPreviewGuard.js`) anywhere in its
+ * JSX ancestor chain within the same `return ( ... )` statement.
  *
  * WHY THIS MATTERS: `<ServerSideRender>` injects raw server-rendered HTML
  * straight into the block editor's DOM — real `<a href>` / `<iframe>`
- * elements included. Without `<Disabled>` wrapping it, clicking a hyperlinked
- * element inside the canvas (a menu link, a phone/email link, a map iframe)
- * navigates the editor tab instead of selecting the block. `<Disabled>` makes
- * the whole subtree inert (pointer-events + focus trapping) without changing
- * the rendered markup, which is exactly what an editor PREVIEW needs.
+ * elements included. Without one of the two accepted wrappers, clicking a
+ * hyperlinked element inside the canvas (a menu link, a phone/email link, a
+ * map iframe) navigates the editor tab instead of selecting the block.
+ *
+ * TWO accepted wrappers, not one (regression fix, 2026-09-17):
+ *  - `<Disabled>` makes the whole subtree `inert` (native HTML `inert` +
+ *    `pointer-events:none`) — blunt, and confirmed LIVE to also silence real
+ *    CSS `:hover` and any JS-driven interaction (e.g. a hover/click-opened
+ *    dropdown) inside the preview, which is a regression for any block with
+ *    meaningful hover/interactive preview UI.
+ *  - `<SsrPreviewGuard>` (the fix) intercepts only the click/submit DEFAULT
+ *    ACTION via a capture-phase handler — real pointer/hover/focus events
+ *    reach the DOM normally, so `:hover` and JS-driven interactivity both
+ *    keep working, while navigation/submission is still cancelled. See that
+ *    component's own docblock for the full mechanism.
+ * All 9 blocks in this audit's roster were migrated from `<Disabled>` to
+ * `<SsrPreviewGuard>` 2026-09-17 — `<Disabled>` remains a VALID (if blunter)
+ * wrapper for this detector's purposes, e.g. for any future block that has no
+ * meaningful hover/interactive preview UI and wants the simpler primitive.
  *
  * Modelled on `scripts/audit-inline-styling.js`'s shape/CLI conventions:
  * balanced-region text scanning (no full AST/babel dependency), a `--check`
@@ -275,7 +289,7 @@ function analyseFile( filePath, blockName ) {
 			const absoluteOffset = region.start + m.index;
 			claimedOffsets.add( absoluteOffset );
 			const stack = ancestorStackAt( tokens, m.index );
-			const wrapped = stack.includes( 'Disabled' );
+			const wrapped = stack.includes( 'Disabled' ) || stack.includes( 'SsrPreviewGuard' );
 			findings.push( {
 				file: path.relative( ROOT, filePath ).replace( /\\/g, '/' ),
 				block: blockName,
@@ -329,9 +343,10 @@ function buildMarkdownReport( allFindings ) {
 	lines.push( '' );
 	lines.push(
 		'Finds every `<ServerSideRender>` JSX usage across `src/blocks/*/edit.js` and reports ' +
-			'whether it is wrapped in `<Disabled>` (from `@wordpress/components`) within the same ' +
-			'`return ( ... )` statement. An unwrapped usage lets real `<a href>`/`<iframe>` elements ' +
-			'stay clickable in the editor canvas, so clicking one navigates instead of selecting the block.'
+			'whether it is wrapped in `<Disabled>` (from `@wordpress/components`) OR `<SsrPreviewGuard>` ' +
+			'(`src/components/SsrPreviewGuard.js`) within the same `return ( ... )` statement. An ' +
+			'unwrapped usage lets real `<a href>`/`<iframe>` elements stay clickable in the editor ' +
+			'canvas, so clicking one navigates instead of selecting the block.'
 	);
 	lines.push( '' );
 
@@ -399,7 +414,7 @@ function main() {
 
 	process.stdout.write( `[audit-serverside-render-disabled] Scanned ${ blockDirs.length } block dirs.\n` );
 	process.stdout.write( `  <ServerSideRender> usages found: ${ allFindings.length }\n` );
-	process.stdout.write( `  Wrapped in <Disabled>: ${ allFindings.length - violations.length }\n` );
+	process.stdout.write( `  Wrapped in <Disabled> or <SsrPreviewGuard>: ${ allFindings.length - violations.length }\n` );
 	process.stdout.write( `  NOT wrapped (violations): ${ violations.length }\n` );
 	if ( violations.length ) {
 		process.stdout.write( '\n  Violations:\n' );
@@ -416,7 +431,7 @@ function main() {
 			process.exitCode = 1;
 			return;
 		}
-		process.stdout.write( '\n[audit-serverside-render-disabled --check] PASS — every ServerSideRender usage is wrapped in <Disabled>.\n' );
+		process.stdout.write( '\n[audit-serverside-render-disabled --check] PASS — every ServerSideRender usage is wrapped in <Disabled> or <SsrPreviewGuard>.\n' );
 	}
 }
 

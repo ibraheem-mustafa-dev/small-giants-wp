@@ -13,6 +13,7 @@ import {
 import { ResponsiveOverride, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
+	SsrPreviewGuard,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -25,7 +26,6 @@ import {
 	TextareaControl,
 	Button,
 	Notice,
-	Disabled,
 } from '@wordpress/components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -743,12 +743,12 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<Disabled>
+				<SsrPreviewGuard>
 					<ServerSideRender
 						block="sgs/trustpilot-reviews"
 						attributes={ attributes }
 					/>
-				</Disabled>
+				</SsrPreviewGuard>
 			</div>
 		</>
 	);

@@ -14,7 +14,6 @@ import {
 	ToggleControl,
 	Spinner,
 	FocalPointPicker,
-	Disabled,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import {
@@ -27,6 +26,7 @@ import { ShadowControl, shadowAttrKeys, TypographyControls, ResponsiveBoxControl
 	DesignTokenPicker,
 	GradientCapableColourControl,
 	SgsColourPanel,
+	SsrPreviewGuard,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
@@ -1232,7 +1232,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			     the same pattern sgs/content-collection used before the fold. */ }
 			{ isWcProductMode || isCptCollectionMode ? (
 				<div { ...blockProps }>
-					<Disabled>
+					<SsrPreviewGuard>
 						<ServerSideRender
 							block="sgs/card-grid"
 							attributes={ attributes }
@@ -1245,7 +1245,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								</div>
 							) }
 						/>
-					</Disabled>
+					</SsrPreviewGuard>
 				</div>
 			) : (
 				<div { ...blockProps } style={ { ...blockProps.style, ...gridStyle } }>

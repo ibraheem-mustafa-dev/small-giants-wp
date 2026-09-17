@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-09-17T11:28:49.997Z",
+	"generatedAt": "2026-09-17T20:13:04.598Z",
 	"total": 9,
 	"violations": 0,
 	"findings": [
@@ -13,19 +13,19 @@
 				"SgsColourPanel",
 				"div",
 				"",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1047,
+			"line": 1046,
 			"wrapped": true,
 			"ancestors": [
 				"",
 				"SgsColourPanel",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
@@ -37,7 +37,7 @@
 				"",
 				"SgsColourPanel",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
@@ -49,29 +49,29 @@
 				"",
 				"SgsColourPanel",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
 			"file": "src/blocks/nav-bar-menu/edit.js",
 			"block": "sgs/nav-bar-menu",
-			"line": 781,
+			"line": 782,
 			"wrapped": true,
 			"ancestors": [
 				"",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
 			"file": "src/blocks/nav-drawer-menu/edit.js",
 			"block": "sgs/nav-drawer-menu",
-			"line": 600,
+			"line": 601,
 			"wrapped": true,
 			"ancestors": [
 				"",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
@@ -82,18 +82,18 @@
 			"ancestors": [
 				"",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
 			"file": "src/blocks/responsive-logo/edit.js",
 			"block": "sgs/responsive-logo",
-			"line": 601,
+			"line": 600,
 			"wrapped": true,
 			"ancestors": [
 				"",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		},
 		{
@@ -104,7 +104,7 @@
 			"ancestors": [
 				"",
 				"div",
-				"Disabled"
+				"SsrPreviewGuard"
 			]
 		}
 	]
