@@ -1051,9 +1051,8 @@ every sibling seeder — survives every `/sgs-update` reseed automatically.
 
 **Consumer BUILT (Front C Task 4, 2026-09-17) — as a Step-0 narrowing signal, not a
 spliced sequence.** The blocking question ("splice a composed-child fact into the exact
-right position in an existing role sequence") was resolved by NOT splicing at all —
-`P-SPEC44-RENDER-COMPOSITION-CONSUMER`'s own alternative, "a looser matching dimension",
-is what shipped. `render_repeater_recogniser.ParentContext` gained
+right position in an existing role sequence") was resolved by NOT splicing at all — a
+looser matching dimension instead. `render_repeater_recogniser.ParentContext` gained
 `required_composed_children: frozenset[str]`, checked in `narrow_candidates()` at Step 0
 via the new `composes_child(conn, slug, child_slug)` helper — exclusion-only, exactly like
 the existing `required_capabilities` check it sits beside (`NarrowingResult.

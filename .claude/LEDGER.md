@@ -155,17 +155,16 @@ assumed, via a real test showing `_clause_a()`/outcome are byte-identical regard
 `static_leaf`'s value (Bean's explicit call: "choose depending on testing"). Real live
 measurement: **0 of 39 Eye Care groups carry a corroboration signal** — honest null
 result for this draft, proven-working via synthetic + real buybox positive controls.
-`P-SPEC44-RENDER-SINGLETON-CONSUMER` CLOSED (archived).
-`P-SPEC44-RENDER-COMPOSITION-CONSUMER` narrowed to its one real residual — Spec 45 Tier
-3's candidate-set UNION still lacks a composed-children source. Both rollout flags
-still default off throughout — zero client-facing change all session.
+Residual left unbuilt: Spec 45 Tier 3's candidate-set UNION still lacks a
+composed-children source. Both rollout flags still default off — zero client-facing
+change all session.
 
 **Structural-facts trio COMPLETE — repeaters (D1088/D1089), composition (D1090),
 singletons (D1093), now all CONSUMED too (D1095) — all `/qc-council`/test-validated live.**
 
 **Scope note (unresolved, carried forward):** `sgs/buybox` is arguably the WRONG flagship
 example for a page-agnostic mechanism — inherently product-page-specific; revisit Spec
-44's worked example next pass. `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open.
+44's worked example next pass. Stage B still never extracts a value, identity only.
 
 **Next session — Front C's plan is closed, nothing queued.** Pick up the Tier 3 residual,
 the buybox-flagship note, or Stage-B value-extraction only if prioritised.

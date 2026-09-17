@@ -783,10 +783,9 @@ for it at all. That fact now lives in `block_render_composition` (Spec 31
 for this fact on Spec 44's Stage A side** (`ParentContext.required_composed_
 children`, a Step-0 narrowing signal — see Spec 31 §13.9) — but this spec's
 OWN Tier 3 candidate-set UNION still does NOT include it as a fourth source.
-That remains genuinely unbuilt here (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`,
-`.claude/parking.md`, residual scope narrowed to Tier 3 specifically) — read
-Spec 31 §13.9's own "consumer BUILT" note for what shipped and what didn't
-before assuming a render-time-composed child is visible to Tier 3 today.
+That remains genuinely unbuilt here — read Spec 31 §13.9's own "consumer
+BUILT" note for what shipped (the Stage A side) and what didn't (this Tier 3
+side) before assuming a render-time-composed child is visible to Tier 3 today.
 
 ⚠ **A second, separate Spec-31-owned fact — static/singleton structural
 content — GAINED a Tier 4 consumer (Front C Task 4, 2026-09-17).**

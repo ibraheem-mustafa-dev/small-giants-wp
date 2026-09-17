@@ -32,59 +32,6 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 ## Cloning pipeline + converter
 
 
-### P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
-
-Spec 44's own flagship worked example (§4.1 — `sgs/buybox` vs `sgs/product-card`, two
-blocks that render byte-identical thumbnail markup by design) is UNREACHABLE end-to-end
-from real draft markup. The only thing that separates the pair is Step 0's parent
-composite-shape signal (§4.3 Step 0 (ii)) — an exclusion-only check requiring the caller to
-supply which "capabilities" (e.g. `add-to-cart`) the draft's parent element demonstrably
-provides. Task 2 built the check; Task 4's draft-side adapter honestly supplies nothing
-(observing "this parent provides add-to-cart" from real draft markup is a separate,
-unbuilt mechanism), so the real Eye Care draft's `thumbs` group comes back AMBIGUOUS
-across the documented pair, not matched to `sgs/buybox`. Proven both ways by test: the
-same group WITH a hand-supplied capability resolves correctly; without one, from real
-markup, it does not. This is a missing mechanism, not a tuning problem, and Task 2 itself
-found repetition-context (signal (i)) can't separate this pair either — capability
-detection is the only thing that can.
-
-**Trigger:** the deferred council pass should weigh this directly — it's the spec's own
-headline case failing to resolve on real data even with the whole mechanism built and
-wired. Building the detector is real, separate design work (what draft-side signals
-indicate "this parent provides add-to-cart" vs "this parent just links away"), not a code
-tweak.
-
-### P-SPEC44-RENDER-COMPOSITION-CONSUMER
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
-
-**Residual scope narrowed 2026-09-17 (Front C Task 4) — the Spec 44 Stage A consumer
-slot SHIPPED** (`ParentContext.required_composed_children`, a Step-0 narrowing signal —
-Spec 31 §13.9). Real and tested, but currently inert in production: no draft-side
-detector populates it from real markup yet (same disclosed limit as the pre-existing
-`required_capabilities` signal). What remains genuinely open: **Spec 45 Tier 3 §9.2's
-candidate-set UNION does NOT yet include render-time-composed children as a fourth
-source**, alongside `accepts_allowed_blocks` — that specific piece was never touched by
-Task 4 and has no ordering blocker (the interleaving concern below was resolved by NOT
-splicing, for the Stage A consumer — the same non-splicing approach applies here too,
-whenever this is picked up).
-
-### P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
-
-Stage B (`array_schema_eliminator.py`, DB-fact elimination) resolves a draft field to a
-DECLARED `array_item_schema` field (identity), never extracts the field's actual VALUE — a
-draft's values live in its JS builder, not its markup, and nothing in Spec 44 defines a
-DOM-bearing or JS-bearing input contract for reading them. Task 4 therefore made Stage B
-NEVER auto-complete (regardless of flags/audit-log precedent) — auto-completing would emit
-a content-free block that passes every structural check, exactly the "silently dropped"
-failure Rule 4 exists to prevent. A Stage B match today is a review-queue annotation
-carrying Task 3's per-field conservation record, not a conversion path.
-
-**Trigger:** whenever Stage B's identification is trusted enough to be worth acting on
-(after the seeder is wired and real matches start happening) — needs its own design pass,
-not folded into a future task casually.
-
 ### P-MAMAS-PRODUCT-DRAFT-NOT-BEM
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-08-01
 `sites/mamas-munches/mockups/product/index.html` contains **zero `sgs-` classes**; all 4 of its
