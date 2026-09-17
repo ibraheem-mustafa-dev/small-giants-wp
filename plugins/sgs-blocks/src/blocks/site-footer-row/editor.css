@@ -23,10 +23,23 @@
  * elements without restricting the full block inserter. */
 .editor-styles-wrapper .sgs-site-footer-row .sgs-row-quick-insert {
 	width: 100%;
+	position: relative;
 }
 
 .editor-styles-wrapper .sgs-row-quick-insert__buttons {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
+}
+
+/* Per-instance dismiss (Bean, 2026-09-17) — writes hidePromotedPlaceholder on
+ * this row only, never a global setting. Positioned top-right of the
+ * Placeholder so it reads as "close this panel", not one of the quick-insert
+ * choices. */
+.editor-styles-wrapper .sgs-row-quick-insert__dismiss {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	min-width: 36px;
+	min-height: 36px;
 }

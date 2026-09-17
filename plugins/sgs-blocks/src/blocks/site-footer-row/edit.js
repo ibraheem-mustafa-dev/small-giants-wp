@@ -257,6 +257,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		contentWidth,
 		fxEffect,
 		fxFooterStagger,
+		hidePromotedPlaceholder,
 	} = attributes;
 
 	const isGrid = 'grid' === layout;
@@ -428,19 +429,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			templateLock: false,
 			orientation: 'horizontal',
-			renderAppender: hasInnerBlocks
-				? undefined
-				: () => (
-						<RowQuickInsertAppender
-							clientId={ clientId }
-							promoted={ FOOTER_PROMOTED }
-							label={ __( 'Add a footer element', 'sgs-blocks' ) }
-							instructions={ __(
-								'Choose a common footer element below, or use the block inserter (+) for anything else.',
-								'sgs-blocks'
-							) }
-						/>
-				  ),
+			// Dismissible per-instance (Bean, 2026-09-17): once the operator
+			// closes the promoted panel on THIS row, fall back to no custom
+			// renderAppender at all — WordPress's own plain default appender
+			// takes over, exactly as sgs/container already does for its
+			// optional empty InnerBlocks slot. Content can still be added
+			// normally; only the steering UI is gone.
+			renderAppender:
+				hasInnerBlocks || hidePromotedPlaceholder
+					? undefined
+					: () => (
+							<RowQuickInsertAppender
+								clientId={ clientId }
+								promoted={ FOOTER_PROMOTED }
+								label={ __(
+									'Add a footer element',
+									'sgs-blocks'
+								) }
+								instructions={ __(
+									'Choose a common footer element below, or use the block inserter (+) for anything else.',
+									'sgs-blocks'
+								) }
+								onDismiss={ () =>
+									setAttributes( {
+										hidePromotedPlaceholder: true,
+									} )
+								}
+							/>
+					  ),
 			prioritizedInserterBlocks: FOOTER_PROMOTED_SLUGS,
 		}
 	);

@@ -109,6 +109,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"hidePromotedPlaceholder": {
+			"type": "boolean",
+			"default": false,
+			"_comment": "Per-instance dismiss for RowQuickInsertAppender's promoted quick-insert placeholder (editor-only, never rendered on the front end). Once true, an empty row falls back to WordPress's own plain default appender, matching sgs/container's existing behaviour for an optional empty InnerBlocks slot."
+		},
 		"backgroundColour": {
 			"type": "string",
 			"default": ""
