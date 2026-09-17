@@ -30,6 +30,13 @@ DISCLOSED LIMITS (stated, not silent — a reader must know what a clean run mea
     encloses that specific image.
   - a repeater reached only through a helper this block calls but does not
     `require` is invisible, exactly as it is to `render_emits`.
+  - `role_order` is ONE CONTINUOUS counter across ALL of a block's repeaters and
+    source_files — the spec's own PK is `(block_slug, role, role_order)` with no
+    `source_file` in it. A block with two separate repeaters (sgs/buybox has
+    exactly this: a value ladder in `render.php`, a thumbnail strip in
+    `gallery-col.php`) gets one sequence spanning both, so a consumer comparing
+    PER-ITEM shape MUST group by `source_file` first or it compares a MERGED shape
+    that exists on no real rendered item.
 """
 from __future__ import annotations
 
@@ -96,8 +103,15 @@ def source_sha(slug: str) -> str:
 
 # ---------------------------------------------------------------- PHP masking
 
-def mask_php(src: str) -> str:
-    """Blank HTML, comments, strings and heredocs to spaces, preserving offsets."""
+def mask_php(src: str, comments_out: list[tuple[int, int]] | None = None) -> str:
+    """Blank HTML, comments, strings and heredocs to spaces, preserving offsets.
+
+    `comments_out`, when given, is filled with the `(start, end)` span of every
+    region this walk classified as a PHP COMMENT. It is the single source of
+    comment truth: the walk already knows it is inside `<?php ... ?>` and outside
+    any string/heredoc, which a standalone regex over the raw source does not.
+    `markup_view` consumes it rather than re-scanning (see its own note).
+    """
     out = list(src)
     n = len(src)
     i = 0
@@ -134,11 +148,15 @@ def mask_php(src: str) -> str:
             j = src.find("\n", i)
             j = n if j == -1 else j
             blank(i, j)
+            if comments_out is not None:
+                comments_out.append((i, j))
             i = j
         elif src.startswith("/*", i):
             j = src.find("*/", i + 2)
             j = n if j == -1 else j + 2
             blank(i, j)
+            if comments_out is not None:
+                comments_out.append((i, j))
             i = j
         elif src.startswith("<<<", i):
             m = re.match(r"<<<\s*['\"]?([A-Za-z_]\w*)['\"]?\r?\n", src[i:])
@@ -162,15 +180,22 @@ def markup_view(src: str) -> str:
     rendered markup. Offsets are preserved, so a signal found here can be evaluated
     against the original text.
     """
-    masked = mask_php(src)
+    comments: list[tuple[int, int]] = []
+    masked = mask_php(src, comments_out=comments)
     out = []
     for k, ch in enumerate(src):
         # mask_php blanked it => it is HTML, a string, a comment or a heredoc.
         blanked = masked[k] != ch and not ch.isspace()
         out.append(ch if (blanked or ch.isspace()) else " ")
-    # Comments were blanked by mask_php too; re-blank them so they cannot supply markup.
-    for m in re.finditer(r"//[^\n]*|#[^\n]*|/\*.*?\*/", src, re.S):
-        for k in range(m.start(), m.end()):
+    # Comments were blanked by mask_php too, so the loop above just restored them.
+    # Re-blank the EXACT spans mask_php classified as comments — never a fresh regex
+    # over the raw source. That regex ran unscoped and read the `//` in a markup URL
+    # (`href="http://…"`) as a line-comment opener, silently blanking the rest of that
+    # line — including any real `data-*` action-trigger attribute sitting after it.
+    # mask_php's walk already knows it is inside <?php ... ?> and outside any
+    # string/heredoc, which is exactly the context a standalone regex cannot see.
+    for start, end in comments:
+        for k in range(start, end):
             if not src[k].isspace():
                 out[k] = " "
     return "".join(out)
@@ -439,6 +464,12 @@ def seed_render_repeaters(
                   f"({stored[0][0][:12]} -> {sha[:12]}) — reseeding.")
 
         rows = []
+        # role_order is ONE CONTINUOUS counter across ALL of this block's repeaters and
+        # source_files (the PK is (block_slug, role, role_order) — the spec's own DDL has
+        # no source_file in it). sgs/buybox really has two separate repeaters (render.php's
+        # value ladder, gallery-col.php's thumbnail strip) and they share one sequence — so
+        # a consumer comparing PER-ITEM shape MUST group by source_file first, or it
+        # compares a MERGED shape that exists on no real rendered item.
         order = 0
         for rep in repeaters:
             for role, _offset in rep["roles"]:

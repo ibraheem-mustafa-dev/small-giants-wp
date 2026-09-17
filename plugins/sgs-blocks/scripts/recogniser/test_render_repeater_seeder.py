@@ -15,6 +15,7 @@ proving those three can actually fail.
 from __future__ import annotations
 
 import os
+import re
 import sqlite3
 import sys
 import tempfile
@@ -214,6 +215,51 @@ def test_unparseable_foreach_is_flagged_not_silently_absent() -> None:
     print(f"  PASS  fail-loud: flagged={counts['flagged']}, seeded 0 (not 'no repeater')")
 
 
+def test_url_literal_in_markup_does_not_blank_a_data_attribute() -> None:
+    """`markup_view`'s comment-blanking pass must be scoped to what `mask_php`
+    actually classified as a PHP comment, not a fresh regex over the raw source.
+
+    Real gallery-col.php, mutated so the thumbnail button's ONLY `data-*`
+    action-trigger signal sits on the SAME LINE as, and AFTER, an absolute-URL
+    literal in real markup. `formaction` is a genuine `<button>` attribute and is
+    NOT itself a `data-*` signal, so if the `//` in `https://` is misread as a
+    line-comment opener the whole action-trigger role disappears — silently.
+
+    The negative half is asserted directly: the OLD unscoped regex is run over
+    this exact fixture and must be shown to swallow the `data-index` attribute.
+    Without that, this test would pass against either implementation.
+    """
+    real = mod.resolve_sources("sgs/buybox")
+    mutated = [
+        (f, t.replace('data-index="<?php',
+                      'formaction="https://example.com/gallery" data-index="<?php')
+         if f == GALLERY_COL else t)
+        for f, t in real
+    ]
+    assert mutated != real, "mutation did not take — the fixture is not being used"
+
+    text = dict(mutated)[GALLERY_COL]
+    inj = text.index('formaction="https://')
+    idx = text.index("data-index=", inj)
+
+    # OLD behaviour (the bug): the unscoped regex matches from the `//` inside the
+    # URL to end of line, swallowing the data-index attribute that follows it.
+    old = re.compile(r"//[^\n]*|#[^\n]*|/\*.*?\*/", re.S)
+    assert any(m.start() < idx < m.end() for m in old.finditer(text)), (
+        "control is vacuous — the old regex would not have blanked this attribute")
+
+    # NEW behaviour: the attribute survives into the markup view, and the role lands.
+    view = mod.markup_view(text)
+    assert view[idx:idx + len("data-index=")] == "data-index=", repr(view[idx - 40:idx + 20])
+
+    repeaters, warnings = mod.detect_repeaters("sgs/buybox", sources=mutated)
+    assert not warnings, warnings
+    roles = [r for rep in repeaters if rep["source_file"] == GALLERY_COL
+             for r, _o in rep["roles"]]
+    assert roles == [mod.ROLE_ACTION, mod.ROLE_CURRENT, mod.ROLE_LABEL], roles
+    print("  PASS  url-literal: `://` in markup no longer blanks a real data-* signal")
+
+
 def test_survey_does_not_mutate_the_database() -> None:
     """A dry run must not even create the table — a survey that writes schema is a
     write with a read's name."""
@@ -249,6 +295,7 @@ def main() -> int:
     finally:
         builtins.print = real_print
     test_unparseable_foreach_is_flagged_not_silently_absent()
+    test_url_literal_in_markup_does_not_blank_a_data_attribute()
     test_survey_does_not_mutate_the_database()
     for path in _TEMP_DBS:
         try:
@@ -256,7 +303,8 @@ def main() -> int:
         except OSError:
             pass
     print("\nBLOCK-RENDER-REPEATERS: PASS (worked example + negative control + "
-          "attribute-backed exclusion + reseed survival + staleness + fail-loud + read-only survey)")
+          "attribute-backed exclusion + reseed survival + staleness + fail-loud + "
+          "url-literal comment scoping + read-only survey)")
     return 0
 
 
