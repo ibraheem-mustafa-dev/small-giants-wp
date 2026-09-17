@@ -1236,3 +1236,19 @@ found and verified a real correction to spec section 4.1's own worked example: T
 structural markers are unmatched between the buybox block and the real draft (not one as
 the spec states) - both directions independently confirmed by reading the real source
 files. 19/19 self-test assertions pass, fully inert (grep-confirmed no live wiring).
+Task 3 (Stage B - DB-fact elimination fallback, spec section 5 all subsections): complete
+(commit ecbf280ab, review Approved with no fixes needed - reviewer independently
+reproduced the live-DB-mutation-on-import claim, re-derived fixture provenance from the
+real draft file, and confirmed both regression-tested bugs are real). Found and corrected
+several real spec inaccuracies with citations: section 5.1's "6 of 8 groups narrowed"
+figure is unreproducible (no filter criterion recorded anywhere, 3 conflicting
+denominators across the evidence report) - measured honestly, elimination narrows 0 of 6
+real draft shapes to exactly one candidate (a DB-seeding-coverage limit, not a code
+defect - only 25 of 90 array_item_schema rows carry a role); the reasons-card has 3 real
+fields not 2; "filter chip" is 2 distinct real shapes in the draft, not 1; the draft has
+35 distinct sc-for expressions not the spec's 34. One NEEDS_CONTEXT item correctly
+surfaced rather than guessed: section 8's "reuses array_content.py's extraction helpers
+unmodified" cannot be literally satisfied (those helpers need bs4.Tag DOM input that
+doesn't exist at this classless layer, and importing that module mutates the live DB as a
+verified side effect) - Stage B does field-identity resolution only and hands the open
+question to Task 4. 24/24 self-test assertions pass, fully inert.
