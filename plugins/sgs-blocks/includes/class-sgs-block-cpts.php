@@ -186,14 +186,18 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No headers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor header layouts selectable as a site header variant.', 'sgs-blocks' ),
-					// FR-37-7 (2026-07-24): the registration `template` seed is REMOVED so a new
-					// Advanced Header opens EMPTY, which lets WordPress's native "Choose a pattern"
-					// starter modal fire (it only appears on an empty post). The modal offers the
-					// sgs_header starter patterns (Block Types: core/post-content, Post Types:
-					// sgs_header), and "Start from scratch" is a MINIMAL starter card (the bare
-					// sgs/site-header 3-row shell) rather than this pre-seed. Was Spec 37
-					// FR-37-1/D323 (formerly cited as FR-S9-11 of the deleted Spec 17):
-					// `'template' => array( array( 'sgs/site-header' ) )`.
+					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
+					// `template_lock` set to 'all', overriding the FR-37-7 empty-post design
+					// this comment used to describe. A new Advanced Header now opens
+					// pre-populated with a single locked `sgs/site-header` block; nothing
+					// else can be inserted as a sibling or appended below it. This
+					// deliberately retires WordPress's native "Choose a pattern" starter
+					// modal for this CPT (a template-locked post is never the empty post
+					// that modal requires) — starter LOOKS move to FR-37-47's preset
+					// control on the now-always-present block instead. See Spec 37
+					// "Front D architecture amendment" for the full rationale.
+					'template'      => array( array( 'sgs/site-header' ) ),
+					'template_lock' => 'all',
 				)
 			)
 		);
@@ -217,12 +221,16 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No footers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'Full-editor footer layouts selectable as a site footer variant.', 'sgs-blocks' ),
-					// FR-37-7 (2026-07-24): the registration `template` seed is REMOVED (mirrors
-					// the sgs_header change) so a new Advanced Footer opens EMPTY and WordPress's
-					// native "Choose a pattern" starter modal fires with the sgs_footer starters.
-					// "Start from scratch" = the minimal footer-scratch card (the bare sgs/site-footer
-					// shell). Was Spec 37 FR-37-10/D325 (formerly cited as FR-S9-3 of the deleted
-					// Spec 17): `'template' => array( array( 'sgs/site-footer' ) )`.
+					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
+					// `template_lock` set to 'all' (mirrors the sgs_header change above),
+					// overriding the FR-37-7 empty-post design this comment used to
+					// describe. A new Advanced Footer now opens pre-populated with a
+					// single locked `sgs/site-footer` block; nothing else can be
+					// inserted as a sibling or appended below it. Starter LOOKS move to
+					// FR-37-47's preset control instead of the native starter modal. See
+					// Spec 37 "Front D architecture amendment" for the full rationale.
+					'template'      => array( array( 'sgs/site-footer' ) ),
+					'template_lock' => 'all',
 				)
 			)
 		);
@@ -246,12 +254,21 @@ final class Sgs_Block_CPTs {
 						'not_found_in_trash' => \__( 'No menu drawers found in Trash.', 'sgs-blocks' ),
 					),
 					'description' => \__( 'The slide-out panel a burger button opens, editable on its own screen.', 'sgs-blocks' ),
-					// NO `template` arg — deliberate, same reason as both CPTs above
-					// (FR-37-7, 2026-07-24). A registration template makes a new post
-					// non-empty, and WordPress's native "Choose a pattern" starter modal
-					// only fires on an EMPTY post. Seeding here would kill the starter
-					// picker the drawer starter patterns depend on, and would re-open the
-					// templateLock-reapplies-over-children class (D393).
+					// FR-37-46 (2026-09-17, Front D): `template` is now RESTORED and
+					// `template_lock` set to 'all', overriding the FR-37-7/D393 reasoning
+					// this comment used to describe. The D393 concern (`templateLock`
+					// reapplying OVER a block's own existing InnerBlocks children) is a
+					// DIFFERENT WP code path (`useInnerBlockTemplateSync`, a nested-block
+					// mechanism) from this CPT-level, whole-post `template`/`template_lock`
+					// (the editor's root-level template sync) — confirmed safe by the
+					// Task 2 verification spike before this change was made. A new Menu
+					// Drawer now opens pre-populated with a single locked
+					// `sgs/nav-drawer` block; nothing else can be inserted as a sibling
+					// or appended below it. Starter LOOKS move to FR-37-47's preset
+					// control instead of the native starter modal. See Spec 37 "Front D
+					// architecture amendment" for the full rationale.
+					'template'      => array( array( 'sgs/nav-drawer' ) ),
+					'template_lock' => 'all',
 				)
 			)
 		);
