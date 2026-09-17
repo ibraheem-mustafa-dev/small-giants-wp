@@ -7,6 +7,37 @@ source: .claude/parking.md (Phase 6c split — doc-op programme)
 
 # Parking archive — resolved + closed + retired entries
 
+## 2026-09-17 — 1 entry CLOSED: P-SPEC44-RENDER-SINGLETON-CONSUMER, both named slots shipped
+
+### P-SPEC44-RENDER-SINGLETON-CONSUMER — Stage A + Spec 45 Tier 4 singleton consumers, both built (CLOSED)
+**Status was:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17 · **Closed:** 2026-09-17
+
+Front C Task 4, same day it was parked. Both named consumer slots shipped: Spec 44 Stage
+A gained `RenderMatchResult.static_leaf` (the draft boundary's own non-repeated content,
+via new `classless_draft_adapter.derive_static_draft_roles()`, compared against the
+winning candidate's `block_render_singletons` rows using the SAME `match_leaf()` Stage A
+already used for repeaters — zero new matching logic); Spec 45 Tier 4's `resolve_tier4()`
+gained an optional `static_roles` parameter producing `Tier4Resolution.static_
+corroboration` the same way. Both are deliberately informational-only — proven, not
+assumed, via `test_static_leaf_never_changes_clause_a_or_the_outcome` (clause_a/outcome/
+reasons byte-identical regardless of static_leaf's value) — a scope choice Bean made
+explicitly ("choose depending on testing" rather than deciding on paper). The blocking
+"role_order is a sorted index, not a raw offset" question was resolved by NOT splicing at
+all: both consumers compare as a SEPARATE evidence dimension via the existing `match_leaf`
+function, never merged into the repeater role sequence.
+
+A real live measurement (`measure-classless-baseline.py`, extended same session) against
+the Eye Care Birmingham draft found 0 of 39 real groups currently carry a static-shape
+corroboration signal — an honest null result for this specific draft (every matched
+boundary's own static content is empty or the group matched no candidate), proven not to
+be a broken detector via synthetic + real-buybox-fixture positive controls
+(`test_static_leaf_is_computed_for_the_winning_candidate`,
+`test_tier4_static_corroboration_against_real_buybox_singleton`).
+
+Full mechanism + measured result: Spec 31 §13.10 (updated same session). The sibling
+composition entry's residual Tier-3-only scope stays open —
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER`, `.claude/parking.md`.
+
 ## 2026-09-17 — 1 entry RESOLVED: nav-bar-menu/nav-drawer-menu border census, both root causes fixed
 
 ### P-NAV-MENU-BORDER-CENSUS-DELEGATED — nav-bar-menu/nav-drawer-menu border-migration fix, dispatched to a subagent (ARCHIVED)

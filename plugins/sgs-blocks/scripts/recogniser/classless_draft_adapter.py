@@ -144,10 +144,48 @@ def derive_draft_roles(item: Any) -> tuple[tuple[str, str], ...]:
     rather than bare so a caller can show WHICH draft field produced each marker in
     the review queue — a bare role sequence is unauditable by an operator.
     """
-    found: list[tuple[int, str, str]] = []
     if not hasattr(item, "find_all"):
         return ()
-    nodes = [item, *item.find_all(True)]
+    return _derive_roles_from_nodes([item, *item.find_all(True)])
+
+
+def derive_static_draft_roles(boundary: Any) -> tuple[tuple[str, str], ...]:
+    """Front C Task 4 — §3.1's structural markers on `boundary`'s own STATIC content:
+    everything inside it that is NOT part of a repeated `<sc-for>` group.
+
+    Mirrors `seed-render-singletons.py`'s span-subtraction on the PHP side (blank the
+    repeater/composition spans, derive roles from what's left), applied to the draft's
+    DOM instead of bytes: every `<sc-for>` under `boundary` is excluded along with its
+    whole subtree, and the SAME signal derivation (`_derive_roles_from_nodes`) runs on
+    the remaining nodes — no new signal-detection logic, only a different input slice.
+
+    Identity-based exclusion (`is`, never `==`/`in`) — bs4's `Tag.__eq__` compares
+    STRUCTURE (tag name + attrs + contents), not identity, so two genuinely different
+    but identically-shaped nodes would wrongly compare equal and either falsely
+    exclude a real static node or falsely include one still inside a `<sc-for>`.
+    """
+    if not hasattr(boundary, "find_all"):
+        return ()
+    excluded_holders = list(boundary.find_all("sc-for"))
+
+    def _within_excluded(node: Any) -> bool:
+        return any(
+            any(ancestor is holder for holder in excluded_holders)
+            for ancestor in node.parents
+        )
+
+    nodes = [
+        node for node in [boundary, *boundary.find_all(True)]
+        if getattr(node, "name", "") != "sc-for" and not _within_excluded(node)
+    ]
+    return _derive_roles_from_nodes(nodes)
+
+
+def _derive_roles_from_nodes(nodes: list) -> tuple[tuple[str, str], ...]:
+    """The signal loop shared by `derive_draft_roles` (one repeated item's own
+    subtree) and `derive_static_draft_roles` (a boundary's non-repeated remainder).
+    Identical logic either way — only the caller's node list differs."""
+    found: list[tuple[int, str, str]] = []
     for order, node in enumerate(nodes):
         name = (getattr(node, "name", "") or "").lower()
         attrs = _attrs(node)
@@ -209,13 +247,21 @@ def build_stage_a_group(
     """`DraftGroup` for §4.4, with §4.3 Step 0's two signals as far as they are real.
 
     Signal (i) comes from `repeated_sibling_detector` via Stage A's own
-    `parent_repetition_context`. Signal (ii) is left EMPTY — see this module's
-    disclosed limits; it is exclusion-only, so an empty set narrows nothing.
+    `parent_repetition_context`. Signal (ii) — required composed children — is left
+    EMPTY, same disclosed limit as `required_capabilities`: nothing derives "this
+    parent embeds an X picker" from draft markup yet; it is exclusion-only, so an
+    empty set narrows nothing rather than faking a signal.
+
+    `static_roles` (Front C Task 4) IS real: `derive_static_draft_roles(element)`
+    reads the boundary's own non-repeated content, the same way `roles` reads the
+    repeated item's.
     """
     roles = tuple(role for role, _key in derive_draft_roles(item))
+    static_roles = tuple(role for role, _key in derive_static_draft_roles(element))
     repetition = _stage_a.parent_repetition_context(element, parent_siblings or [])
     return _stage_a.DraftGroup(
         roles=roles,
+        static_roles=static_roles,
         parent=_stage_a.ParentContext(repetition=repetition),
         label=label,
     )

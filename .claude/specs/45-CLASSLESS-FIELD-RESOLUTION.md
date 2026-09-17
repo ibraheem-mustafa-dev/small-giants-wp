@@ -779,20 +779,29 @@ only records a child block the EDITOR stored (InnerBlocks). A parent can also
 compose a child at RENDER TIME via `render_block()` — e.g. `sgs/buybox`
 genuinely composes `sgs/option-picker`, with no `accepts_allowed_blocks` entry
 for it at all. That fact now lives in `block_render_composition` (Spec 31
-§13.9), a Spec-31-owned table, not this spec's own mechanism — Tier 3's
-candidate-set UNION should very likely include it as a fourth source, but the
-consumer wiring is not yet built anywhere (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`,
-`.claude/parking.md`). Read Spec 31 §13.9's own "open, not yet built" note
+§13.9), a Spec-31-owned table. **Front C Task 4 (2026-09-17) built a consumer
+for this fact on Spec 44's Stage A side** (`ParentContext.required_composed_
+children`, a Step-0 narrowing signal — see Spec 31 §13.9) — but this spec's
+OWN Tier 3 candidate-set UNION still does NOT include it as a fourth source.
+That remains genuinely unbuilt here (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`,
+`.claude/parking.md`, residual scope narrowed to Tier 3 specifically) — read
+Spec 31 §13.9's own "consumer BUILT" note for what shipped and what didn't
 before assuming a render-time-composed child is visible to Tier 3 today.
 
 ⚠ **A second, separate Spec-31-owned fact — static/singleton structural
-content — is also not yet a Tier consumer.** `block_render_singletons` (Spec 31
-§13.10) records content that renders exactly once, outside both a `foreach` and
-a `render_block()` call. Built, seeded and wired, same as
-`block_render_composition`. The consumer wiring is not yet built anywhere
-(`P-SPEC44-RENDER-SINGLETON-CONSUMER`, `.claude/parking.md`). Read Spec 31
-§13.10's own "open, not yet built" note before assuming a singleton element is
-visible to any Tier here today.
+content — GAINED a Tier 4 consumer (Front C Task 4, 2026-09-17).**
+`block_render_singletons` (Spec 31 §13.10) records content that renders
+exactly once, outside both a `foreach` and a `render_block()` call.
+`resolve_tier4()` (§10 below) now accepts an optional `static_roles` parameter
+— the draft element's own non-repeated structural markers — compared against
+the classifier-guessed slug's singleton rows and attached as
+`Tier4Resolution.static_corroboration`. **Deliberately informational only**:
+`confidence` and `review_pending` (§10.3, below) are untouched by it — see Spec
+31 §13.10 for the full mechanism and its real measured result (0 of 39 real
+groups on the Eye Care Birmingham draft currently carry this signal — an
+honest null result for that specific draft, proven-working against real and
+synthetic positive controls). Tier 3's own consumer status for THIS table is
+unchanged by this — read the composition paragraph above for that distinction.
 
 - If `accepts_allowed_blocks` is a genuine non-empty list (20 of 216
   `block_composition` rows today — e.g. `sgs/accordion → [sgs/accordion-item]`,

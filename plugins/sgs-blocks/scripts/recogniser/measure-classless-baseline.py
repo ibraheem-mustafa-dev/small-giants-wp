@@ -30,6 +30,16 @@ in the real draft (a correction to the spec's own earlier "34" claim) — this s
 them the same way (`soup.find_all("sc-for")`), so its own printed count is the thing to
 compare against "35", not a re-typed constant.
 
+FRONT C TASK 4's EMPIRICAL REVIEW (added, not a separate script — Bean's own steer: "do
+the review first, update the specs based on the results"). `build_stage_a_group()` now
+also derives each group's `static_roles` for real (Task 4), so re-running this script
+automatically exercises the new singleton-corroboration path for every real group on this
+draft with zero extra wiring. This run's OWN printed static-corroboration count is the
+real answer to "does the richer fingerprint ever fire on real data" — not a guess, not a
+second hypothetical run, because the shipped design never lets it affect the OUTCOME
+(proven by `test_static_leaf_never_changes_clause_a_or_the_outcome`) — so there is only
+ever one real number to measure, not a before/after pair.
+
 UK English throughout.
 """
 from __future__ import annotations
@@ -111,11 +121,42 @@ def main() -> int:
     for line in gate.summary_lines(decisions):
         print(line)
 
+    corroborated = [d for d in decisions if "static-shape corroboration" in d.signal]
+    print(f"[measure] Front C Task 4: {len(corroborated)}/{len(decisions)} decisions "
+          "carry a real static-shape corroboration signal")
+    for d in corroborated:
+        print(f"[measure]   {d.boundary_id} -> {d.block}: {d.signal}")
+
     REPORT.parent.mkdir(parents=True, exist_ok=True)
-    out = gate.write_classless_summary(REPORT.parent, decisions)
+    written = gate.write_classless_summary(REPORT.parent, decisions)
     # write_classless_summary always names its file classless-summary.md; rename to
     # this task's own dated report path so it doesn't collide with a real pipeline run.
-    out.replace(REPORT)
+    # Path.replace() returns the DESTINATION path — reassign, don't keep using the old
+    # (now-nonexistent) `written` path, or a later .open("a") silently recreates it empty.
+    out = written.replace(REPORT)
+    # write_classless_summary's own title is generic ("reports", the dir name it was
+    # given) — replace just the first line with a real title naming this run.
+    body = out.read_text(encoding="utf-8")
+    body = body.replace(
+        "# Classless recognition — reports",
+        "# Classless recognition — Front C Task 3+4 re-measurement "
+        "(Eye Care Birmingham draft)", 1)
+    out.write_text(body, encoding="utf-8")
+    if corroborated:
+        with out.open("a", encoding="utf-8") as fh:
+            fh.write("\n## Front C Task 4 — static-shape corroboration (informational only)\n\n")
+            fh.write(f"{len(corroborated)} of {len(decisions)} decisions carried a real "
+                     "singleton-content corroboration signal:\n\n")
+            for d in corroborated:
+                fh.write(f"- `{d.boundary_id}` -> `{d.block}`: {d.signal}\n")
+    else:
+        with out.open("a", encoding="utf-8") as fh:
+            fh.write("\n## Front C Task 4 — static-shape corroboration (informational only)\n\n")
+            fh.write("0 of the real groups on this draft carried a static-shape "
+                     "corroboration signal this run — every matched group's boundary "
+                     "either has no static content of its own (the thumbs group, "
+                     "confirmed by `test_derive_static_draft_roles_on_the_real_thumbs_"
+                     "boundary_is_empty`) or matched no candidate at all.\n")
     print(f"[measure] report written to {REPORT}")
     print(f"[measure] {len(decisions)} real decision rows appended to "
           f"{gate.LOG_PATH} (kind={gate.KIND_DECISION} — Task 1: these alone can NEVER "

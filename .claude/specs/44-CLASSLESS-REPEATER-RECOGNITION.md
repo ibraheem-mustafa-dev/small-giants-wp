@@ -348,19 +348,28 @@ problem on a different table.
 Surfaced during this spec's own re-verification (2026-09-17): `sgs/buybox`
 composes `sgs/option-picker` via `render_block()`, invisible to `resolve_sources()`
 above (which only follows `require()`). This is `block_render_composition`, Spec
-31 §13.9 — Stage A is a CONSUMER of it, not its builder. **The consumer wiring
-itself is not yet built** (`P-SPEC44-RENDER-COMPOSITION-CONSUMER`, `.claude/parking.md`)
-— read Spec 31 §13.9's own "open, not yet built" note before assuming a composed
-child ever contributes a signal to a Stage A match today.
+31 §13.9 — Stage A is a CONSUMER of it. **Consumer wiring shipped (Front C Task 4,
+2026-09-17)** as `ParentContext.required_composed_children`, a Step-0 narrowing signal
+exactly like `required_capabilities` — read Spec 31 §13.9's own "consumer BUILT" note
+for the exact mechanism. It is real and tested but currently INERT in production for
+the same reason `required_capabilities` already was: no draft-side detector observes
+"this parent embeds an X-shaped widget" from real markup yet.
 
 **A third, separate Spec-31-owned fact — static/singleton structural content —
 exists alongside the two above.** `block_render_singletons` (Spec 31 §13.10) records
 content that renders exactly once, outside both a `foreach` and a `render_block()`
 call (e.g. `sgs/buybox`'s main product image, invisible to the render-time-repeater
-scan above). Built, seeded and wired, same as `block_render_composition`. **The
-consumer wiring itself is not yet built** (`P-SPEC44-RENDER-SINGLETON-CONSUMER`,
-`.claude/parking.md`) — read Spec 31 §13.10's own "open, not yet built" note before
-assuming a singleton element ever contributes a signal to a Stage A match today.
+scan above). **Consumer wiring shipped (Front C Task 4, 2026-09-17)** as
+`RenderMatchResult.static_leaf` — the draft boundary's own non-repeated content
+compared against the winning candidate's singleton rows, via the same `match_leaf()`
+this spec's leaf comparison already uses. Read Spec 31 §13.10's own "consumer BUILT"
+note for the mechanism and its measured result: **deliberately informational only**
+(never affects FR-44-1(a) — proven by `test_static_leaf_never_changes_clause_a_or_
+the_outcome`), and a real live measurement against the Eye Care Birmingham draft found
+**0 of 39 real groups** currently carry a corroboration signal — an honest null result
+for this specific draft, not evidence the mechanism is dead (see Spec 31 §13.10 for the
+full reasoning and the positive-control tests proving it detects a real match when one
+exists).
 
 ### 4.4 New consumer, and exactly where it runs
 

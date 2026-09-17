@@ -15,6 +15,7 @@ transcribed from the spec's prose.
 """
 from __future__ import annotations
 
+import importlib.util
 import os
 import sqlite3
 import sys
@@ -22,11 +23,27 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).parent
+SCRIPTS_DIR = HERE.parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 import render_repeater_recogniser as mod  # noqa: E402
 import render_repeater_seeder as seeder  # noqa: E402
+
+
+def _load_hyphenated(name: str, filename: str):
+    """Front C Task 4 fixtures need the composition/singleton seeders, both hyphenated
+    filenames — same dynamic-load pattern `seed-render-singletons.py` itself uses for
+    its own sibling import (see that file's `_load_composition_module`)."""
+    path = SCRIPTS_DIR / filename
+    spec = importlib.util.spec_from_file_location(name, str(path))
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    spec.loader.exec_module(module)  # type: ignore[union-attr]
+    return module
+
+
+_seed_composition = _load_hyphenated("sgs_seed_render_composition", "seed-render-composition.py")
+_seed_singletons = _load_hyphenated("sgs_seed_render_singletons", "seed-render-singletons.py")
 
 LIVE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -86,6 +103,11 @@ def _fixture_db() -> sqlite3.Connection:
     finally:
         live.close()
     seeder.seed_render_repeaters(conn, slugs=list(PAIR))
+    # Front C Task 4: composition + singleton rows, same real-PHP-source discipline,
+    # for the pair plus sgs/container (a real negative control — composes nothing).
+    composition_slugs = list(PAIR) + ["sgs/container"]
+    _seed_composition.seed_render_composition(conn, slugs=composition_slugs)
+    _seed_singletons.seed_render_singletons(conn, slugs=composition_slugs)
     return conn
 
 
@@ -324,6 +346,90 @@ def test_merged_shape_window_is_flagged_not_silent() -> None:
     print("  PASS  merged shape: sub-file window returned flagged as a per-item hypothesis")
 
 
+# ---------------------------------------------------------------- Front C Task 4
+
+def test_singleton_role_sequences_reads_the_real_buybox_rows() -> None:
+    """`singleton_role_sequences()` must be shaped identically to
+    `candidate_role_sequences()` — real buybox rows, not invented ones."""
+    conn = _fixture_db()
+    seqs = mod.singleton_role_sequences(conn, BUYBOX)
+    conn.close()
+    assert seqs[GALLERY_COL] == (seeder.ROLE_IMAGE,), seqs
+    assert seqs["render.php"] == (seeder.ROLE_LABEL, seeder.ROLE_ACTION, seeder.ROLE_LABEL), seqs
+    print(f"  PASS  singleton_role_sequences: real buybox rows {seqs}")
+
+
+def test_composes_child_reads_the_real_composition_table() -> None:
+    conn = _fixture_db()
+    buybox_composes = mod.composes_child(conn, BUYBOX, "sgs/option-picker")
+    container_composes = mod.composes_child(conn, "sgs/container", "sgs/option-picker")
+    conn.close()
+    assert buybox_composes is True, "buybox really does compose sgs/option-picker"
+    assert container_composes is False, "container composes nothing — negative control"
+    print("  PASS  composes_child: buybox->option-picker True; container->option-picker "
+          "False (real negative control, container has 0 composition rows)")
+
+
+def test_composition_narrowing_excludes_a_non_composing_candidate() -> None:
+    """Step 0's new composition signal, exclusion-only, mirroring the capability check."""
+    conn = _fixture_db()
+    narrowing = mod.narrow_candidates(
+        conn, [BUYBOX, "sgs/container"],
+        mod.ParentContext(required_composed_children=frozenset({"sgs/option-picker"})))
+    conn.close()
+    assert narrowing.survivors == (BUYBOX,), narrowing
+    assert narrowing.composition_conclusive is True, narrowing
+    assert any("does not compose" in reason for _slug, reason in narrowing.excluded), narrowing
+    print(f"  PASS  composition narrowing: {narrowing.survivors} survive requiring "
+          "sgs/option-picker; sgs/container excluded")
+
+
+def test_composition_signal_narrows_nothing_when_empty() -> None:
+    """Same discipline as `required_capabilities`: unsupplied means unsupplied, not
+    'exclude everything' or 'exclude nothing by coincidence'."""
+    conn = _fixture_db()
+    narrowing = mod.narrow_candidates(conn, [BUYBOX, "sgs/container"], mod.ParentContext())
+    conn.close()
+    assert narrowing.composition_conclusive is False, narrowing
+    assert set(narrowing.survivors) == {BUYBOX, "sgs/container"}, narrowing
+    print("  PASS  composition narrowing: empty required set narrows nothing")
+
+
+def test_static_leaf_is_computed_for_the_winning_candidate() -> None:
+    """End-to-end: a real EXACT repeater match, WITH static_roles supplied, gains a
+    real static_leaf corroboration against buybox's own real gallery-col.php singleton
+    row — computed via the SAME match_leaf() Stage A already uses for repeaters."""
+    conn = _fixture_db()
+    group = mod.DraftGroup(
+        roles=(seeder.ROLE_ACTION, seeder.ROLE_CURRENT, seeder.ROLE_LABEL),
+        static_roles=(seeder.ROLE_IMAGE,),
+        parent=_parent(capabilities=("add-to-cart",)),
+    )
+    result = mod.recognise_render_time_repeater(group, "fixture-client", conn=conn)
+    conn.close()
+    assert result.matched and result.block_slug == BUYBOX, result
+    assert result.static_leaf is not None, result
+    assert result.static_leaf.quality == mod.EXACT, result.static_leaf
+    assert result.static_leaf.source_file == GALLERY_COL, result.static_leaf
+    print(f"  PASS  static_leaf: real EXACT corroboration on {result.static_leaf.source_file} "
+          f"({result.static_leaf.candidate_roles})")
+
+
+def test_static_leaf_is_none_when_no_static_roles_supplied() -> None:
+    """Backward compatibility: every existing caller supplies no `static_roles` (the
+    field defaults to `()`), and must see `static_leaf=None`, not a crash or a guess."""
+    conn = _fixture_db()
+    group = mod.DraftGroup(
+        roles=(seeder.ROLE_ACTION, seeder.ROLE_CURRENT, seeder.ROLE_LABEL),
+        parent=_parent(capabilities=("add-to-cart",)),
+    )
+    result = mod.recognise_render_time_repeater(group, "fixture-client", conn=conn)
+    conn.close()
+    assert result.matched and result.static_leaf is None, result
+    print("  PASS  static_leaf: None when static_roles is not supplied (default, "
+          "every pre-Task-4 caller)")
+
+
 # ---------------------------------------------------------------- honest no-match
 
 def test_unseeded_table_reports_unseeded_not_no_match() -> None:
@@ -391,6 +497,12 @@ def main() -> int:
     test_order_is_part_of_the_structure()
     test_short_window_never_outranks_the_real_item_shape()
     test_merged_shape_window_is_flagged_not_silent()
+    test_singleton_role_sequences_reads_the_real_buybox_rows()
+    test_composes_child_reads_the_real_composition_table()
+    test_composition_narrowing_excludes_a_non_composing_candidate()
+    test_composition_signal_narrows_nothing_when_empty()
+    test_static_leaf_is_computed_for_the_winning_candidate()
+    test_static_leaf_is_none_when_no_static_roles_supplied()
     test_unseeded_table_reports_unseeded_not_no_match()
     test_no_stage_a_match_is_a_clean_result()
     test_live_db_was_not_written()

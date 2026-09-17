@@ -1124,6 +1124,14 @@ class Tier4Resolution:
     results: tuple[Any, ...]
     confidence: float
     review_pending: bool = True
+    static_corroboration: Any | None = None
+    """Front C Task 4, additive. When the caller supplies `resolve_tier4(...,
+    static_roles=...)`, this carries the `render_repeater_recogniser.LeafMatch`
+    comparing that static content against the resolved slug's `block_render_singletons`
+    roles — corroborating evidence for a HUMAN weighing the classifier's <=0.5 guess,
+    never a change to `confidence` or `review_pending` (both stay exactly as
+    `dom_shape_classifier.py`/§10.3 already set them — that ceiling is a settled Spec 45
+    decision, not reopened here)."""
 
 
 # §10.1's resolution mapping for the two classifier guesses that map to
@@ -1222,6 +1230,7 @@ def resolve_tier4(
     draft_fields: tuple[DraftField, ...],
     *,
     max_depth: int = DEFAULT_MAX_DEPTH,
+    static_roles: tuple[str, ...] = (),
 ) -> Tier4Resolution | Gap:
     """Tier 4's entry point (§10). Step 0 (§10.1) resolves `hint`'s bare
     guess to a real slug; Step 1 (§10.2) feeds that slug into Tiers 1-3,
@@ -1232,6 +1241,16 @@ def resolve_tier4(
     A Step-0 failure (an unresolvable or ambiguous guess) returns the bare
     `Gap` directly -- there is no slug to feed downstream, so no
     `Tier4Resolution` wrapper applies.
+
+    `static_roles` (Front C Task 4, additive, default empty -- every existing caller
+    is unaffected): the draft element's own non-repeated structural markers, e.g.
+    `classless_draft_adapter.derive_static_draft_roles(element)`. This function does
+    NOT thread the raw bs4 element through `dom_shape_classifier.py`'s `Hint` shape --
+    the caller, which already built `draft_fields` from the real element, computes
+    `static_roles` itself and passes the plain role tuple. When supplied, the resolved
+    slug's `block_render_singletons` roles are compared via the SAME `match_leaf()`
+    Stage A uses, attached as `Tier4Resolution.static_corroboration` -- informational
+    only, per that field's own docstring.
     """
     slug = resolve_tier4_slug(hint)
     if isinstance(slug, Gap):
@@ -1255,9 +1274,25 @@ def resolve_tier4(
         )
 
     results = resolve_fields(slug, draft_fields, max_depth=max_depth)
+
+    static_corroboration = None
+    if static_roles:
+        if str(_HERE) not in sys.path:  # this module's own top-level setup only adds
+            sys.path.insert(0, str(_HERE))  # _SCRIPTS_ROOT, not its own sibling dir
+        import render_repeater_recogniser as _stage_a  # local: rare param, keep this
+                                                         # module's top-level imports
+                                                         # unchanged for every other caller
+        conn = _stage_a.open_db()
+        try:
+            static_corroboration = _stage_a.match_leaf(
+                slug, static_roles, _stage_a.singleton_role_sequences(conn, slug))
+        finally:
+            conn.close()
+
     return Tier4Resolution(
         block_slug=slug,
         results=results,
         confidence=confidence,
         review_pending=True,
+        static_corroboration=static_corroboration,
     )

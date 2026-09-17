@@ -216,6 +216,49 @@ def test_a_tier4_row_cannot_auto_complete_a_real_exact_match() -> None:
           "still closed by 5 tier4 rows, nothing emitted")
 
 
+def test_static_leaf_never_changes_clause_a_or_the_outcome() -> None:
+    """Front C Task 4's core control. A real EXACT match's `_clause_a()`/`evaluate()`
+    result must be BYTE-IDENTICAL whether `static_leaf` is None, an EXACT corroboration,
+    or even a fabricated NONE/mismatched one — proving the trust gate genuinely never
+    reads it, not merely that no test happens to exercise a case where it would matter.
+    """
+    import dataclasses
+
+    conn = _fixture_db()
+    try:
+        exact = _exact_stage_a(conn)
+    finally:
+        conn.close()
+    assert exact.static_leaf is None, "fixture builds no static_roles — sanity check"
+
+    fabricated_good = stage_a.LeafMatch(
+        block_slug=BUYBOX, source_file="gallery-col.php",
+        candidate_roles=(seeder.ROLE_IMAGE,), window=(0, 1), quality=stage_a.EXACT,
+        unmatched_draft_roles=(), unmatched_candidate_roles=(),
+        merged_shape_hypothesis=False)
+    fabricated_bad = dataclasses.replace(
+        fabricated_good, quality=stage_a.NONE,
+        unmatched_draft_roles=(seeder.ROLE_IMAGE,), unmatched_candidate_roles=())
+
+    baseline = mod.evaluate(exact, None, CLIENT, [], True, boundary_id="b")
+    with_good = mod.evaluate(dataclasses.replace(exact, static_leaf=fabricated_good),
+                             None, CLIENT, [], True, boundary_id="b")
+    with_bad = mod.evaluate(dataclasses.replace(exact, static_leaf=fabricated_bad),
+                            None, CLIENT, [], True, boundary_id="b")
+
+    assert baseline.clause_a == with_good.clause_a == with_bad.clause_a, (
+        baseline.clause_a, with_good.clause_a, with_bad.clause_a)
+    assert baseline.outcome == with_good.outcome == with_bad.outcome
+    assert baseline.reasons == with_good.reasons == with_bad.reasons, (
+        "reasons must be identical too — static_leaf only ever reaches the SIGNAL string")
+    # The one thing that DOES differ — the informational signal text.
+    assert "static-shape corroboration" not in baseline.signal
+    assert "static-shape corroboration (gallery-col.php): exact" in with_good.signal
+    assert "static-shape corroboration (gallery-col.php): none" in with_bad.signal
+    print("  PASS  Task 4: static_leaf changes ONLY the signal text — clause_a, outcome "
+          "and reasons are byte-identical with None / a real EXACT / a fabricated NONE")
+
+
 # ---------------------------------------------------------------- FR-44-1(a)
 
 def test_clause_a_needs_exact_sole_survivor_and_no_hypothesis() -> None:
@@ -598,6 +641,7 @@ def main() -> int:
     test_a_row_with_no_source_key_reads_as_spec44()
     test_a_tier4_row_can_never_satisfy_clause_b()
     test_a_tier4_row_cannot_auto_complete_a_real_exact_match()
+    test_static_leaf_never_changes_clause_a_or_the_outcome()
     test_clause_a_needs_exact_sole_survivor_and_no_hypothesis()
     test_diversity_floor_refuses_a_single_role_repeated_sequence()
     test_a_merged_shape_hypothesis_never_clears_clause_a()

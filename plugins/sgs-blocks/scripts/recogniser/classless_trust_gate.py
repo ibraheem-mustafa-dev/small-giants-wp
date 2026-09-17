@@ -314,7 +314,13 @@ a bare 3-label sequence does not, regardless of length."""
 
 def _clause_a(result: _stage_a.RenderMatchResult) -> tuple[bool, list[str]]:
     """FR-44-1(a): a genuine, parent-narrowed EXACT match against ONE survivor, with a
-    minimum diversity of structural-role KINDS (Task 2 — see MIN_DISTINCT_ROLES)."""
+    minimum diversity of structural-role KINDS (Task 2 — see MIN_DISTINCT_ROLES).
+
+    ⛔ Front C Task 4's `result.static_leaf` (singleton-content corroboration) is
+    DELIBERATELY NEVER read here — Bean's own steer was "choose depending on
+    testing", so this stays informational-only (surfaced via `_stage_a_signal()`
+    for the review page) until a real measurement earns it a role in the gate.
+    """
     reasons: list[str] = []
     if not result.matched:
         return False, ["(a) Stage A reached no known shape"]
@@ -446,12 +452,21 @@ def _stage_a_signal(result: _stage_a.RenderMatchResult) -> str:
     leaf = result.leaf
     if leaf is None:
         return "no leaf comparison"
-    return (f"{leaf.block_slug} / {leaf.source_file}: draft roles vs "
+    base = (f"{leaf.block_slug} / {leaf.source_file}: draft roles vs "
             f"{list(leaf.candidate_roles)}"
             + (f"; draft-only {list(leaf.unmatched_draft_roles)}"
                if leaf.unmatched_draft_roles else "")
             + (f"; block-only {list(leaf.unmatched_candidate_roles)}"
                if leaf.unmatched_candidate_roles else ""))
+    # Front C Task 4 — informational only (never read by _clause_a). Appended to the
+    # SAME signal string rather than a separate field so a review-page reader sees it
+    # right beside the repeater evidence it's corroborating, not in a column they'd
+    # have to know to look for.
+    sl = result.static_leaf
+    if sl is not None:
+        base += (f"; static-shape corroboration ({sl.source_file}): {sl.quality} on "
+                 f"{list(sl.candidate_roles)}")
+    return base
 
 
 # ---------------------------------------------------------------- A then B

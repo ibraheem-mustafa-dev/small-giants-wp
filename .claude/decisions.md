@@ -1,5 +1,77 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1095 [ROUTINE] — Front C Task 4: structural-facts consumer wiring, built + measured
+same session as designed, per Bean's "do the review first" instruction
+
+**2026-09-17.** `/brainstorming` design session (context explored live, one clarifying
+question on trust scope) converged on a design resolving both `P-SPEC44-RENDER-
+COMPOSITION-CONSUMER`/`P-SPEC44-RENDER-SINGLETON-CONSUMER`'s shared blocker —
+`block_render_repeaters.role_order` being a sorted index, not a raw offset, made splicing
+composition/singleton facts into the repeater role SEQUENCE unreliable. Resolved by NOT
+splicing: both facts feed the match as SEPARATE evidence dimensions instead. Bean's own
+instruction ("just do the review first and we'll update the specs based on the results")
+redirected the flow away from the brainstorming skill's own spec-doc-first checklist —
+built directly via `/subagent-driven-development`-equivalent discipline (implementer
+work done inline, full real-data test suite as the review), then the specs were updated
+from the real measured result, not from design prose.
+
+**Built, all four consumer slots named across the two parking entries:**
+1. **Spec 44 Stage A, composition** — `ParentContext.required_composed_children`
+   (`render_repeater_recogniser.py`), a Step-0 narrowing signal via new
+   `composes_child()`, mirroring the existing `required_capabilities` check exactly.
+   Real, tested, currently INERT in production (no draft-side detector populates it
+   yet — same disclosed limit `required_capabilities` already carried).
+2. **Spec 44 Stage A, singleton** — `RenderMatchResult.static_leaf`, computed for the
+   WINNING candidate only via a new `classless_draft_adapter.derive_static_draft_roles()`
+   (excludes every `<sc-for>` subtree, mirrors `seed-render-singletons.py`'s own
+   span-subtraction) compared against `block_render_singletons` using the SAME
+   `match_leaf()` Stage A already used for repeaters — zero new matching logic.
+3. **Spec 45 Tier 4, singleton** — `resolve_tier4()` gained an optional `static_roles`
+   parameter, producing `Tier4Resolution.static_corroboration` the same way.
+4. **Spec 45 Tier 3, composition** — genuinely NOT built; the candidate-set UNION
+   (§9.2) still has no fourth source for render-time-composed children. Correctly
+   left as the sole residual scope on `P-SPEC44-RENDER-COMPOSITION-CONSUMER`.
+
+**Trust-gate scope, Bean's explicit call ("choose depending on testing" rather than
+deciding on paper):** both singleton consumers are deliberately INFORMATIONAL ONLY — a
+new negative-control test (`test_static_leaf_never_changes_clause_a_or_the_outcome`)
+proves `_clause_a()`'s result and the whole decision's `outcome`/`reasons` are
+byte-identical whether `static_leaf` is `None`, a real EXACT match, or a fabricated
+mismatch; only the review-page `signal` text differs. Same for Tier 4's `confidence`/
+`review_pending`.
+
+**The real measurement, run live (not simulated) via `measure-classless-baseline.py`
+extended the same session:** 0 of the real 39 Eye Care Birmingham draft groups carry a
+static-shape corroboration signal — an honest null result for this specific draft (every
+matched boundary's own adjacent static content is empty, or the group matched no
+candidate at all), NOT a sign the mechanism is broken — proven working via a synthetic
+positive control (`test_derive_static_draft_roles_excludes_the_repeated_group`) and two
+real-buybox-fixture positive controls (`test_static_leaf_is_computed_for_the_winning_
+candidate`, `test_tier4_static_corroboration_against_real_buybox_singleton`) showing a
+real EXACT corroboration when one genuinely exists.
+
+**A real bug caught and fixed mid-build, not by a reviewer but by re-reading the report
+after running the script:** `measure-classless-baseline.py`'s own report-rename step
+called `Path.replace()` and kept using the OLD (now-nonexistent) Path object for a later
+append — silently recreating an empty stray file at the old location instead of
+appending to the real report. Caught by reading the actual written report content, not
+trusting the script's own "report written" print line — fixed by reassigning to
+`replace()`'s return value (the real destination Path).
+
+**Specs updated from the measured result, not from design prose (Bean's explicit
+sequencing):** Spec 31 §13.9/§13.10, Spec 44 §4.3, Spec 45 §10 pointer notes all
+replaced their "open, not yet built" language with the real mechanism + the real 0/39
+finding. `P-SPEC44-RENDER-SINGLETON-CONSUMER` CLOSED (both its named slots shipped) —
+archived to `memory/parking-archive.md`. `P-SPEC44-RENDER-COMPOSITION-CONSUMER`
+residual-scoped to the Spec 45 Tier 3 UNION piece alone (the only genuinely unbuilt
+consumer left across all four original slots).
+
+**Outcome: CODE SHIPPED, OUTCOME MEASURED (not yet "outcome achieved" in the sense of
+changing a real match — the real finding is that nothing on THIS draft exercises the new
+signal yet).** Front C's 4-task plan is now fully closed. Full trail: this session's
+transcript; the design's clarifying-question answer and scope-menu answer are both
+recorded here since no separate design-doc file was written per Bean's own redirect.
+
 ## D1094 [ROUTINE] — Front C Tasks 1-3: real human-approval split for FR-44-1(b), a
 match-diversity floor for FR-44-1(a), and a real re-measurement replacing D1088's void 35/0
 

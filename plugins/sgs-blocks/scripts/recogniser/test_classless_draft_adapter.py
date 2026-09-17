@@ -184,6 +184,40 @@ def test_step_0_capabilities_are_empty_and_say_so() -> None:
           "nothing, exclusion-only, never faked")
 
 
+# ---------------------------------------------------------------- Front C Task 4
+
+def test_derive_static_draft_roles_excludes_the_repeated_group() -> None:
+    """A boundary with BOTH a static image-or-fallback conditional AND a repeated
+    `<sc-for>` group: the static derivation must see only the outside marker, never
+    the repeated item's own action/label markers."""
+    soup = BeautifulSoup(
+        '<div>'
+        '<sc-if value="{{ hero.hasImg }}"><img src="{{ hero.img }}"></sc-if>'
+        '<sc-if value="{{ hero.noImg }}"><span>no image</span></sc-if>'
+        '<sc-for list="{{ items }}" as="it">'
+        '<button onClick="{{ it.pick }}" aria-label="{{ it.label }}">x</button>'
+        '</sc-for>'
+        '</div>', "html.parser")
+    static_roles = mod.derive_static_draft_roles(soup.div)
+    assert static_roles == ((seeder.ROLE_IMAGE, "hasImg"),), static_roles
+    print(f"  PASS  static derivation: {static_roles} — the sc-for's own action-trigger "
+          "and label markers are correctly excluded")
+
+
+def test_derive_static_draft_roles_on_the_real_thumbs_boundary_is_empty() -> None:
+    """Real draft, real negative control: the thumbs `<sc-for>`'s own parent holds
+    NOTHING besides the sc-for itself, so its static derivation is correctly empty —
+    exactly why Front C Task 4's Stage A consumer never fires for this specific
+    boundary on this specific draft (confirmed separately by the Task 3 baseline
+    re-measurement finding 0 buybox matches on the real Eye Care draft)."""
+    holder = _thumbs_holder(_soup())
+    assert mod.derive_static_draft_roles(holder) == (), (
+        "if this fixture premise changed, the assertion above is the thing to update, "
+        "not silently skip")
+    print("  PASS  negative control: the real thumbs boundary's own static content is "
+          "empty — matches the draft having no static siblings there")
+
+
 # ---------------------------------------------------------------- Stage B input
 
 def test_stage_b_fields_come_from_the_real_bindings() -> None:
@@ -278,6 +312,8 @@ def main() -> int:
     test_a_field_rendered_twice_contributes_one_marker()
     test_a_hardcoded_aria_state_is_not_a_per_item_indicator()
     test_step_0_capabilities_are_empty_and_say_so()
+    test_derive_static_draft_roles_excludes_the_repeated_group()
+    test_derive_static_draft_roles_on_the_real_thumbs_boundary_is_empty()
     test_stage_b_fields_come_from_the_real_bindings()
     test_stage_b_values_being_none_is_visible_to_stage_b()
     test_adapter_into_stage_a_is_ambiguous_without_a_capability_signal()

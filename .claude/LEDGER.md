@@ -134,36 +134,41 @@ dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestrati
 6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
    Tasks 1 and 3, run last (highest risk).
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094/D1095)
 
-**Tasks 1-3 of the 4-task plan SHIPPED (D1094), same day as the council that found them.**
+**ALL 4 tasks of the plan SHIPPED same day as the council that found them (D1094+D1095).**
 FR-44-1(b) now needs a REAL human `--approve` action (`record_human_approval()`,
-`kind=approval`) — a pipeline decision-row write can never open the gate on its own,
-proven by a 3-run replay. FR-44-1(a) now needs `MIN_DISTINCT_ROLES=2` — a same-role-
-repeated sequence (`label,label,label`) is refused regardless of length; real buybox
-thumbnails (3 distinct kinds) still clear it. Re-measured live via the new
-`recogniser/measure-classless-baseline.py` (Stage A→B→gate over every real `<sc-for>` in
-the Eye Care draft, no full orchestrator run — same disclosed blast-radius reasons D1088
-gave): **39 groups (not 35 — a real discrepancy vs D1088's count), 0 auto-completed, 2
-review (`sgs/trustpilot-reviews`, partial), 37 no-match.** Still safe; now shows real
-signal instead of D1088's void result. `--classless-match`/`--classless-auto-complete`
-both still default off — no client-facing change.
+`kind=approval`) — a decision-row write can never open the gate on its own (3-run replay
+proof). FR-44-1(a) now needs `MIN_DISTINCT_ROLES=2` — a same-role-repeated sequence is
+refused regardless of length; real buybox thumbnails (3 kinds) still clear it. Live
+re-measure (`recogniser/measure-classless-baseline.py`): **39 groups (not 35 — real
+discrepancy vs D1088), 0 auto-completed, 2 review, 37 no-match.** Still safe, real signal
+now instead of D1088's void result.
+
+**Task 4 (structural-facts consumer wiring) shipped same session, per Bean's own
+"do the review first, update specs from the results" redirect** — built + tested before
+any spec prose was written. Composition (Stage A `required_composed_children`) +
+singleton (Stage A `static_leaf`, Spec 45 Tier 4 `static_corroboration`) consumers all
+built as SEPARATE evidence dimensions (not spliced into the repeater sequence — resolves
+both parking entries' shared blocker). **Deliberately informational-only** — proven, not
+assumed, via a real test showing `_clause_a()`/outcome are byte-identical regardless of
+`static_leaf`'s value (Bean's explicit call: "choose depending on testing"). Real live
+measurement: **0 of 39 Eye Care groups carry a corroboration signal** — honest null
+result for this draft, proven-working via synthetic + real buybox positive controls.
+`P-SPEC44-RENDER-SINGLETON-CONSUMER` CLOSED (archived).
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER` narrowed to its one real residual — Spec 45 Tier
+3's candidate-set UNION still lacks a composed-children source. Both rollout flags
+still default off throughout — zero client-facing change all session.
 
 **Structural-facts trio COMPLETE — repeaters (D1088/D1089), composition (D1090),
-singletons (D1093) — all `/qc-council`-validated live, consumer wiring still parked.**
-Singletons cover static/one-off content (e.g. buybox's main image) after Bean corrected an
-"it's natively-sourced, out of scope" framing — matching-signal and write-disposition are
-separate questions.
+singletons (D1093), now all CONSUMED too (D1095) — all `/qc-council`/test-validated live.**
 
-**Scope note:** `sgs/buybox` is arguably the WRONG flagship example for a page-agnostic
-mechanism — inherently product-page-specific; revisit Spec 44's worked example next pass.
-`P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open. `P-SPEC44-RENDER-COMPOSITION-CONSUMER`
-+ `P-SPEC44-RENDER-SINGLETON-CONSUMER` still open — both block on the same design question
-(how repeater/composition/singleton roles merge into one fingerprint) — D1093 has the reasoning.
+**Scope note (unresolved, carried forward):** `sgs/buybox` is arguably the WRONG flagship
+example for a page-agnostic mechanism — inherently product-page-specific; revisit Spec
+44's worked example next pass. `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open.
 
-**Next session — Task 4 only, plan at
-`.claude/plans/2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md`:** `/brainstorming`
-then build the structural-facts consumer wiring (Stage A + Spec 45 Tier 4).
+**Next session — Front C's plan is closed, nothing queued.** Pick up the Tier 3 residual,
+the buybox-flagship note, or Stage-B value-extraction only if prioritised.
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);

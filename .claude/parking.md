@@ -58,41 +58,16 @@ tweak.
 ### P-SPEC44-RENDER-COMPOSITION-CONSUMER
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
 
-`block_render_composition` (Spec 31 §13.9, D1090) is built, seeded, and wired into
-`/sgs-update` — 6 real rows confirmed live (`sgs/buybox` → `sgs/option-picker`;
-`sgs/card-grid` → `sgs/product-card` ×2; `sgs/product-card` → `sgs/option-picker` ×3).
-Nothing consumes it yet. Two real, separate consumer slots are named but unbuilt: Spec
-44 Stage A (fold a composed-child row into a candidate's structural fingerprint, e.g. a
-`"composed:sgs/option-picker"` role) and Spec 45 Tier 3 §9.2 (add render-time-composed
-children as a fourth source in the candidate-set UNION, alongside
-`accepts_allowed_blocks`).
-
-**Trigger:** blocked on a real ordering design decision for the Spec 44 side —
-`block_render_repeaters.role_order` is a sorted index, not a raw source offset, so
-splicing a composed-child fact into the exact right position in an existing role
-sequence needs either a small schema addition (an offset column) or a looser
-"also composes X" matching dimension instead of precise interleaving. Not a
-mechanical wiring step; needs its own design pass before either consumer is built.
-
-### P-SPEC44-RENDER-SINGLETON-CONSUMER
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
-
-`block_render_singletons` (Spec 31 §13.10) is built, seeded, and wired into
-`/sgs-update` — 97 real rows confirmed live across 31 of 87 blocks (e.g. `sgs/buybox`
-→ `image-or-fallback` for its main product image in `gallery-col.php`). Nothing
-consumes it yet. Two real, separate consumer slots are named but unbuilt, mirroring
-`block_render_composition`'s own: Spec 44 Stage A (fold a singleton row into a
-candidate's structural fingerprint alongside its repeater/composition roles) and
-Spec 45 Tier 4 (`classless_field_resolver.py`, resolve a singleton draft field
-against a matched candidate's static structural shape).
-
-**Trigger:** blocked on the same real ordering question as
-`P-SPEC44-RENDER-COMPOSITION-CONSUMER` — `block_render_repeaters.role_order` is a
-sorted index, not a raw source offset, so splicing a singleton fact into an
-existing role sequence needs either a small schema addition or a looser matching
-dimension. Sensible to design both consumer slots (composition + singleton)
-together, since they share the same interleaving problem against the same
-`role_order` shape.
+**Residual scope narrowed 2026-09-17 (Front C Task 4) — the Spec 44 Stage A consumer
+slot SHIPPED** (`ParentContext.required_composed_children`, a Step-0 narrowing signal —
+Spec 31 §13.9). Real and tested, but currently inert in production: no draft-side
+detector populates it from real markup yet (same disclosed limit as the pre-existing
+`required_capabilities` signal). What remains genuinely open: **Spec 45 Tier 3 §9.2's
+candidate-set UNION does NOT yet include render-time-composed children as a fourth
+source**, alongside `accepts_allowed_blocks` — that specific piece was never touched by
+Task 4 and has no ordering blocker (the interleaving concern below was resolved by NOT
+splicing, for the Stage A consumer — the same non-splicing approach applies here too,
+whenever this is picked up).
 
 ### P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17

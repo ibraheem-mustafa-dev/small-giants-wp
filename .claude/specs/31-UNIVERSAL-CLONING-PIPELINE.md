@@ -1049,15 +1049,22 @@ Wired as a Stage 1 tail step in `sgs-update-v2.py`
 (`_run_render_composition_seed`), same idempotent/WARN-not-fail/subprocess contract as
 every sibling seeder — survives every `/sgs-update` reseed automatically.
 
-**Open, not yet built:** a Stage A consumer that folds a `block_render_composition` row
-into a candidate's structural fingerprint (e.g. a `"composed:sgs/option-picker"` role
-entry) — see `P-SPEC44-RENDER-COMPOSITION-CONSUMER` in `.claude/parking.md`. Blocked on a
-real ordering question: `block_render_repeaters.role_order` is a sorted INDEX, not a raw
-source offset, so splicing a composed-child fact into the exact right position in an
-existing role sequence needs either a small schema addition (an offset column) or a
-looser "this candidate also composes X" matching dimension rather than precise
-interleaving — a real design decision, not a mechanical wiring step, left for whoever
-picks this up.
+**Consumer BUILT (Front C Task 4, 2026-09-17) — as a Step-0 narrowing signal, not a
+spliced sequence.** The blocking question ("splice a composed-child fact into the exact
+right position in an existing role sequence") was resolved by NOT splicing at all —
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER`'s own alternative, "a looser matching dimension",
+is what shipped. `render_repeater_recogniser.ParentContext` gained
+`required_composed_children: frozenset[str]`, checked in `narrow_candidates()` at Step 0
+via the new `composes_child(conn, slug, child_slug)` helper — exclusion-only, exactly like
+the existing `required_capabilities` check it sits beside (`NarrowingResult.
+composition_conclusive` records whether it ever fired). **Disclosed, not overclaimed:**
+this signal is real and tested (a candidate genuinely missing a required composed child is
+genuinely excluded — `test_composition_narrowing_excludes_a_non_composing_candidate`), but
+it is currently INERT in production for the same reason `required_capabilities` already
+was — nothing derives "this draft group's parent embeds an X-shaped widget" from real
+draft markup yet. `classless_draft_adapter.build_stage_a_group()` always leaves it empty,
+same disclosed limit, same honest status. The slot exists for Spec 45 Tier 3 (§9.2) and a
+future draft-side detector to populate; it changes zero real match outcomes today.
 
 ### 13.10 `block_render_singletons` — static/singleton structural elements (2026-09-17)
 
@@ -1132,11 +1139,41 @@ immediately after `_run_render_composition_seed`, same idempotent/WARN-not-fail/
 subprocess contract as both sibling seeds. Live-seeded: 97 rows across 31 of 87
 blocks as of 2026-09-17.
 
-**Open, not yet built:** any consumer wiring in Spec 44's Stage A
-(`render_repeater_recogniser.py`) or Spec 45's Tier 4
-(`classless_field_resolver.py`) — see `P-SPEC44-RENDER-SINGLETON-CONSUMER` in
-`.claude/parking.md`. This table is built, seeded and wired; nothing reads it yet,
-same shape as `block_render_composition`'s own still-open consumer slot above.
+**Consumer BUILT (Front C Task 4, 2026-09-17) — a SEPARATE evidence dimension, never
+spliced into the repeater role sequence.** `render_repeater_recogniser.RenderMatchResult`
+gained `static_leaf`, computed for the WINNING repeater candidate only: the draft
+boundary's own non-repeated content (`classless_draft_adapter.derive_static_draft_roles()`
+— excludes every `<sc-for>` subtree, same span-subtraction idea `seed-render-singletons.py`
+itself uses on the PHP side, applied to the draft's DOM) compared against the winning
+slug's `block_render_singletons` rows via the SAME `match_leaf()` function Stage A already
+uses for repeaters (zero new matching logic). Spec 45 Tier 4's `resolve_tier4()` gained the
+mirror: an optional `static_roles` parameter, compared against the classifier-guessed
+slug's singleton rows, attached as `Tier4Resolution.static_corroboration`.
+
+**Deliberately INFORMATIONAL ONLY, both sites** — proven, not asserted:
+`test_static_leaf_never_changes_clause_a_or_the_outcome` shows FR-44-1(a)'s clause and the
+trust gate's outcome are byte-identical whether `static_leaf` is `None`, a real EXACT
+match, or a fabricated mismatch; only the review-page `signal` text differs. Tier 4's
+`confidence`/`review_pending` are likewise untouched. This was a deliberate scope choice
+(Bean, 2026-09-17: "choose depending on testing" rather than deciding on paper), so a real
+measurement — not a design guess — decides whether it should ever gate.
+
+**That measurement ran, live, against the real Eye Care Birmingham draft
+(`measure-classless-baseline.py`): 0 of 39 real groups carried a static-shape
+corroboration signal.** Every matched boundary on this specific draft either has no
+static content of its own adjacent to its repeated group (the real `thumbs` boundary
+tested empty — `test_derive_static_draft_roles_on_the_real_thumbs_boundary_is_empty`) or
+matched no candidate at all. This is an honest null result for THIS draft, not proof the
+mechanism is dead — the synthetic + real-buybox-fixture tests both confirm it correctly
+detects a real corroboration when one exists (`test_static_leaf_is_computed_for_the_
+winning_candidate`, `test_tier4_static_corroboration_against_real_buybox_singleton`). A
+future draft with static content beside a repeated group (or a future measurement against
+a draft that DOES exercise it) is the next real data point, not a reason to promote this
+signal into the gate without one.
+
+The companion `required_composed_children` slot above (§13.9) shares the exact same
+"built, tested, inert-in-production-today" status for the same underlying reason: no
+draft-side detector observes it from real markup yet.
 
 ## 14. Motion & animation recognition — the R1/R8/R9/R10 batch (D1017–D1032, FR-31-25)
 

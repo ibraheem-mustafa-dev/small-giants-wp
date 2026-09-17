@@ -86,6 +86,13 @@ class ParentContext:
 
     repetition: str = UNKNOWN
     required_capabilities: frozenset[str] = frozenset()
+    required_composed_children: frozenset[str] = frozenset()
+    """Front C Task 4 — mirrors `required_capabilities` exactly: exclusion-only, a
+    candidate missing ANY named child from `block_render_composition` is excluded.
+    Same disclosed limit as `required_capabilities` — nothing derives this from draft
+    markup yet (`classless_draft_adapter.build_stage_a_group` always leaves it empty),
+    so an empty set narrows nothing. Kept because Spec 45 Tier 3 (§9.2) and a future
+    draft-side detector both have a real slot to populate."""
 
 
 @dataclass(frozen=True)
@@ -95,9 +102,15 @@ class DraftGroup:
     `roles` is the per-ITEM structural-role sequence in document order, in the same
     vocabulary the seeder derives from block PHP (`render_repeater_seeder.ROLE_*`) —
     §3.1's rendered-STRUCTURE match, never a field-name match.
+
+    `static_roles` (Front C Task 4, additive) is the group's BOUNDARY's own
+    non-repeated content, in the same role vocabulary — compared against
+    `block_render_singletons` as informational corroboration only (see
+    `classless_trust_gate.py`'s docstring: it never contributes to FR-44-1(a)).
     """
 
     roles: tuple[str, ...]
+    static_roles: tuple[str, ...] = ()
     parent: ParentContext = field(default_factory=ParentContext)
     label: str = ""
 
@@ -113,6 +126,7 @@ class NarrowingResult:
     excluded: tuple[tuple[str, str], ...]  # (slug, reason)
     repetition_conclusive: bool
     capability_conclusive: bool
+    composition_conclusive: bool = False  # Front C Task 4, additive — see ParentContext
 
     @property
     def sole_survivor(self) -> bool:
@@ -169,6 +183,11 @@ class RenderMatchResult:
     leaf: LeafMatch | None
     ambiguous_candidates: tuple[str, ...] = ()
     notes: tuple[str, ...] = ()
+    static_leaf: LeafMatch | None = None
+    """Front C Task 4 — the draft boundary's static content vs `block_render_singletons`,
+    computed for the WINNING candidate only (never for a rejected/ambiguous one — there is
+    no "winner" to corroborate in those cases). INFORMATIONAL ONLY: never read by
+    `classless_trust_gate._clause_a()`, only by `_stage_a_signal()` for the review page."""
 
 
 # ---------------------------------------------------------------- DB access
@@ -205,6 +224,32 @@ def candidate_role_sequences(conn: sqlite3.Connection, slug: str) -> dict[str, t
     for source_file, role in rows:
         out.setdefault(source_file, []).append(role)
     return {f: tuple(r) for f, r in out.items()}
+
+
+def singleton_role_sequences(conn: sqlite3.Connection, slug: str) -> dict[str, tuple[str, ...]]:
+    """Front C Task 4 — `block_render_singletons`'s per-file role sequences for `slug`,
+    shaped identically to `candidate_role_sequences()` so `match_leaf()` (below) can
+    compare against either table with zero changes to its own logic."""
+    rows = conn.execute(
+        "SELECT source_file, role FROM block_render_singletons "
+        "WHERE block_slug = ? ORDER BY source_file, role_order",
+        (slug,),
+    ).fetchall()
+    out: dict[str, list[str]] = {}
+    for source_file, role in rows:
+        out.setdefault(source_file, []).append(role)
+    return {f: tuple(r) for f, r in out.items()}
+
+
+def composes_child(conn: sqlite3.Connection, slug: str, child_slug: str) -> bool:
+    """Front C Task 4 — does `slug` compose `child_slug` at render time
+    (`block_render_composition`)? The Step-0 counterpart of `satisfies_capability()`."""
+    row = conn.execute(
+        "SELECT 1 FROM block_render_composition WHERE block_slug = ? AND child_slug = ? "
+        "LIMIT 1",
+        (slug, child_slug),
+    ).fetchone()
+    return row is not None
 
 
 def attribute_token_sets(conn: sqlite3.Connection, slug: str) -> tuple[frozenset[str], ...]:
@@ -296,6 +341,7 @@ def narrow_candidates(
     survivors: list[str] = []
     repetition_hits = 0
     capability_hits = 0
+    composition_hits = 0
 
     for slug in roster:
         composition_role, parent_block = _structural_facts(conn, slug)
@@ -320,6 +366,16 @@ def narrow_candidates(
                 capability_hits += 1
                 continue
 
+        if parent.required_composed_children:
+            missing_children = sorted(
+                child for child in parent.required_composed_children
+                if not composes_child(conn, slug, child)
+            )
+            if missing_children:
+                excluded.append((slug, f"composition: does not compose {', '.join(missing_children)}"))
+                composition_hits += 1
+                continue
+
         survivors.append(slug)
 
     return NarrowingResult(
@@ -328,6 +384,7 @@ def narrow_candidates(
         excluded=tuple(excluded),
         repetition_conclusive=repetition_hits > 0,
         capability_conclusive=capability_hits > 0,
+        composition_conclusive=composition_hits > 0,
     )
 
 
@@ -472,6 +529,14 @@ def recognise_render_time_repeater(
             notes.append("PARTIAL: unmatched markers on both sides are recorded — does not "
                          "satisfy FR-44-1(a)")
 
+        static_leaf = None
+        if draft_group.static_roles:
+            # Front C Task 4 — computed for the WINNING candidate only, and only ever
+            # informational: it is never fed back into the narrowing/leaf logic above.
+            static_leaf = match_leaf(
+                best.block_slug, draft_group.static_roles,
+                singleton_role_sequences(conn, best.block_slug))
+
         return RenderMatchResult(
             matched=True,
             block_slug=best.block_slug,
@@ -480,6 +545,7 @@ def recognise_render_time_repeater(
             narrowing=narrowing,
             leaf=best,
             notes=tuple(notes),
+            static_leaf=static_leaf,
         )
     finally:
         if owns_conn:

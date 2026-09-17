@@ -987,6 +987,40 @@ def test_tier4_unresolvable_bare_guess_gaps() -> None:
     print("  PASS  Tier 4: an unmapped bare guess gaps, never crashes or guesses")
 
 
+# ---------------------------------------------------------------- Front C Task 4
+
+def test_tier4_static_corroboration_against_real_buybox_singleton() -> None:
+    """§10.3 corroboration (Front C Task 4): a landmark-passthrough guess of
+    `sgs/buybox` (confidence still capped, still review-pending — that ceiling is
+    untouched) gains a real `static_corroboration` when `static_roles` is supplied,
+    matched against the LIVE DB's real seeded `block_render_singletons` row for
+    buybox's `image-or-fallback` (gallery-col.php) — confirmed live in this same
+    session via D1093's seeding run."""
+    import render_repeater_seeder as _seeder  # noqa: E402 — same-directory sibling
+    hint = {"block": "sgs/buybox", "confidence": 0.5}
+    result = cfr.resolve_tier4(hint, (), static_roles=(_seeder.ROLE_IMAGE,))
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.block_slug == "sgs/buybox"
+    assert result.confidence == 0.5 and result.review_pending is True, (
+        "the confidence ceiling and review-pending flag are UNTOUCHED by corroboration")
+    assert result.static_corroboration is not None, result
+    assert result.static_corroboration.quality == "exact", result.static_corroboration
+    assert result.static_corroboration.source_file == "gallery-col.php"
+    print(f"  PASS  Tier 4 corroboration: real EXACT match on "
+          f"{result.static_corroboration.source_file} — confidence/review_pending unchanged")
+
+
+def test_tier4_static_corroboration_is_none_when_not_supplied() -> None:
+    """Backward compatibility — every existing Tier 4 test above supplies no
+    `static_roles`, and must see `static_corroboration=None`, not a crash."""
+    hint = {"block": "sgs/buybox", "confidence": 0.5}
+    result = cfr.resolve_tier4(hint, ())
+    assert isinstance(result, cfr.Tier4Resolution), f"got {result!r}"
+    assert result.static_corroboration is None, result
+    print("  PASS  Tier 4 corroboration: None when static_roles is not supplied (default, "
+          "every pre-Task-4 caller)")
+
+
 def main() -> int:
     print("classless_field_resolver.py self-test (Spec 45 Tiers 1-4)")
     test_prefilter_excludes_function_literal()
@@ -1047,6 +1081,8 @@ def main() -> int:
     test_tier4_e2e_real_markup_floating_cta_resolves_to_whatsapp_cta()
     test_tier4_missing_confidence_gaps_not_silently_zeroed()
     test_tier4_unresolvable_bare_guess_gaps()
+    test_tier4_static_corroboration_against_real_buybox_singleton()
+    test_tier4_static_corroboration_is_none_when_not_supplied()
     print("\nCLASSLESS-FIELD-RESOLVER (Tiers 1-4): PASS")
     return 0
 
