@@ -1,5 +1,39 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1102 [ROUTINE] — `/qc-council` on the Spec 44 completion phase plan: 2 real fix-shape
+corrections found and applied before any execution happened
+
+**2026-09-17.** Ran `/qc-council` (3 cross-model raters: structural-diff/sonnet,
+pipeline-forensics/sonnet, code-path-tracer/haiku) against the D1101 phase plan's concrete
+fix-shape claims, before next session commits to executing it. Two real, load-bearing
+corrections, both fixed directly in the plan:
+
+1. **Step 4's scope was wrong.** The plan treated `items`/`thumbs` → wrong `sgs/info-box` as
+   ONE bug in ONE file (`sc_var_classifier.py`). The pipeline-forensics rater found `thumbs` IS
+   reachable there (a genuine single-row data-quality issue in `slots.aliases`), but `items` has
+   **no row at all** in that table — unreachable through `sc_var_classifier.py`'s alias lookup
+   by construction. The real bug, wherever it lives, is a different consumer entirely
+   (unconfirmed hypothesis: `converter/db/db_lookup.py::equivalent_block_for`, verified to exist
+   at that path but not yet confirmed as the actual cause). Step 4 rescoped to investigate both
+   as separate bugs.
+2. **Step 3's function citation was wrong, and a lower-friction fix existed.** The plan said
+   `pattern_precedent()` accepts a path override for audit-log isolation — it doesn't; that
+   function takes an already-loaded `rows` sequence. The real read-side override lives in
+   `read_precedent()`. More importantly, the structural-diff rater found a cleaner fix than
+   either path-override route: `measure-classless-baseline.py`'s `CLIENT_SLUG` is a plain module
+   constant threaded straight through one call — swapping it to a test-specific value isolates
+   the measurement with no signature changes anywhere. Step 3 now recommends this as the primary
+   route.
+
+Also caught: the plan's "83 tests currently passing" claim was off by one — real baseline is 82
+passed + 1 error (`test_render_repeater_seeder.py::test_source_mutation_changes_sha_and_warns`,
+a wrong fixture name, pre-existing and unrelated to this phase). Corrected in the plan's
+Pre-conditions section, with the fixture fix folded into Step 6's opportunistic scope.
+
+Docscore held at A (100%) after all fixes. This is exactly the failure mode `/qc-council` exists
+to catch pre-dispatch — a plausible-sounding fix-shape with a wrong file:symbol citation, caught
+by verification rather than re-derived from scratch next session after wasted investigation time.
+
 ## D1101 [ROUTINE] — Spec 44 completion phase plan written via /phase-planner, docscore A
 
 **2026-09-17.** Ran `/phase-planner` against the 6-item Spec 44 completion register (the AI

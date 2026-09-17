@@ -54,10 +54,15 @@ Must be true before Step 1 runs:
   with `grep -n "classless_match\|classless_auto_complete" plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`.
   If either has flipped to `True` since this plan was written, STOP — that changes Wave 3's risk
   profile and needs a fresh look before Step 8 runs.
-- The existing 83-test baseline passes clean:
+- ⚠ CORRECTED (qc-council code-path-tracer, verified live 2026-09-17): the real baseline is
+  **82 passed, 1 error** — `test_render_repeater_seeder.py::test_source_mutation_changes_sha_and_warns`
+  errors on a wrong fixture name (`capture`, not a real pytest fixture — likely means `capsys`).
+  This is a PRE-EXISTING, unrelated test-infra bug, not something this phase introduced.
   `cd plugins/sgs-blocks/scripts/recogniser && python -m pytest test_render_repeater_recogniser.py test_array_schema_eliminator.py test_render_repeater_seeder.py test_classless_trust_gate.py -q`
-  — if this doesn't pass BEFORE this phase starts, fix that first; this phase's own QA gates
-  assume a clean starting baseline to measure against.
+  — confirm the SAME 82/1 result before starting (a different result means something else
+  changed and needs investigating first). Fixing the broken fixture itself is a 2-minute,
+  in-scope opportunistic fix at Step 6 (Wave 1 integration) — not worth its own step, but don't
+  leave it unfixed either now that it's been found.
 - `Frame Card.dc.html` still exists at its recorded path and still contains `<sc-for>` markup
   (`grep -c "sc-for" "sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Frame Card.dc.html"`
   — confirmed 2 at plan-write time; if it's since been edited/moved, Step 3's expectations need
@@ -74,7 +79,8 @@ Must be true before Step 1 runs:
 - `plugins/sgs-blocks/scripts/recogniser/` — `classless_trust_gate.py`,
   `render_repeater_recogniser.py`, `array_schema_eliminator.py`, `render_repeater_seeder.py`,
   `classless_field_resolver.py`, `dom_shape_classifier.py`, `sc_var_classifier.py` + their test
-  files (83 tests currently passing across the four Stage A/B/trust-gate modules)
+  files (82 passing + 1 pre-existing broken fixture across the four Stage A/B/trust-gate
+  modules — see Pre-conditions)
 - `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py::classless_match` /
   `::classless_auto_complete` (both `default=False` today — confirmed live 2026-09-17)
 - `sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Frame Card.dc.html` — the untested
@@ -230,27 +236,36 @@ Step 3 — Run Spec 44's full pipeline against a second draft
   Model:       sonnet
   Action:      Run Stage A + Stage B + the trust gate against `Frame Card.dc.html` (confirmed
                to exist, never previously tested — every prior run used only Eye Care
-               Birmingham). ⚠ CONFIRMED (Hidden Decisions pass, sonnet-reviewer, verified against
-               the real script before this instruction was written): `measure-classless-baseline.py`
-               is NOT read-only — it calls `recognise_classless_group(...,
-               auto_complete_enabled=True, conn=conn)` then `gate.append_decision(decision)`,
-               writing REAL rows to the git-tracked audit log
-               (`classless-recognition-log.jsonl`), under a hardcoded `CLIENT_SLUG =
-               "eye-care-ward-end"`. Running it unmodified against Frame Card would write real
+               Birmingham). ⚠ CONFIRMED real, then RE-VERIFIED and corrected by `/qc-council`
+               (structural-diff rater, 2026-09-17): `measure-classless-baseline.py` is NOT
+               read-only — it calls `recognise_classless_group(..., auto_complete_enabled=True,
+               conn=conn)` then `gate.append_decision(decision)` (`classless_trust_gate.py::append_decision`,
+               genuinely takes a `path` override, defaults to module-level `LOG_PATH`), writing
+               REAL rows to the git-tracked audit log (`classless-recognition-log.jsonl`), under
+               a hardcoded module constant `CLIENT_SLUG = "eye-care-ward-end"` at
+               `measure-classless-baseline.py:64`, threaded straight into
+               `recognise_classless_group(sa_group, sb_group, CLIENT_SLUG, precedent, ...)`
+               (lines 113-115). Running it unmodified against Frame Card would write real
                precedent under the SAME client slug as the existing Eye Care Birmingham
                precedent — risking Frame Card itself tripping FR-44-1(b)'s same-client
                second-occurrence auto-complete clause for real, contaminating the precedent
                history Step 8's live run depends on being clean. **Do not run the script
-               unmodified.** Either (a) point it at an isolated/throwaway audit-log path for
-               this measurement only (confirm `classless_trust_gate.py`'s `append_decision`/log
-               path accepts an override), or (b) use a distinct `CLIENT_SLUG` (e.g.
-               `"eye-care-ward-end-frame-card-test"`) so this measurement can never satisfy a
-               real second-occurrence clause. Read `classless_trust_gate.py`'s audit-log
-               mechanism first to pick the cleaner option — do not guess.
+               unmodified.** The council's finding: swapping `CLIENT_SLUG` to a distinct test
+               value (e.g. `"eye-care-ward-end-frame-card-test"`) is the LOWER-FRICTION fix —
+               it's a plain constant threaded through one call, no signature change needed —
+               versus threading a `path=` override through `append_decision` (real, but requires
+               editing the call site at `measure-classless-baseline.py:116`, which currently
+               passes no path argument at all). Use the `CLIENT_SLUG` swap unless a specific
+               reason favours the path-isolation route instead. Note the correction to the
+               original draft of this step: the READ-side override lives in
+               `classless_trust_gate.py::read_precedent` (which calls `read_log(path)`), NOT in
+               `pattern_precedent()` — `pattern_precedent()` takes an already-loaded `rows`
+               sequence, no path parameter at all. Cite the right function if the path-isolation
+               route is taken.
   Files:       sites/eye-care-ward-end/design_handoff_ward_end_eye_care/Frame Card.dc.html (read
                only), plugins/sgs-blocks/scripts/recogniser/measure-classless-baseline.py (read,
-               extend with an isolated-log or isolated-client-slug parameter — never run it
-               unmodified against a second draft in the same client directory)
+               extend with an isolated `CLIENT_SLUG` — never run it unmodified against a second
+               draft in the same client directory)
   Inputs:      D1074's own recommendation (test against a second, independently-generated
                draft); the existing baseline script's approach (D1094)
   Outcome:     A report recording: group count, auto-complete count, review count, no-match
@@ -288,12 +303,20 @@ Step 3 — Run Spec 44's full pipeline against a second draft
     same-client second-occurrence auto-complete clause for real, contaminating the precedent
     history this phase's later live-flagged run (Step 8 of the plan) depends on being clean.
 
-    Read `classless_trust_gate.py`'s audit-log mechanism (`append_decision`, `pattern_precedent`,
-    the log file path) first. Then pick ONE of: (a) point this measurement at an
-    isolated/throwaway audit-log file instead of the real one, or (b) run it under a distinct
-    `client_slug` (e.g. `"eye-care-ward-end-frame-card-test"`) so it can never satisfy a real
-    second-occurrence check against the real Eye Care client's history. Do not guess which is
-    cleaner — the mechanism's own code will make it obvious which override point exists.
+    Already verified for you by `/qc-council` (2026-09-17): the lower-friction fix is swapping
+    `measure-classless-baseline.py:64`'s `CLIENT_SLUG` module constant to a distinct test value
+    (e.g. `"eye-care-ward-end-frame-card-test"`) — it's threaded straight through one call
+    (`recognise_classless_group(sa_group, sb_group, CLIENT_SLUG, precedent, ...)`, lines
+    113-115), no signature change needed. This is the recommended route; use it unless you find
+    a specific reason it doesn't work. The alternative (isolating the audit-log FILE path
+    instead) is also real — `classless_trust_gate.py::append_decision` genuinely accepts a
+    `path` override — but requires editing the call site at
+    `measure-classless-baseline.py:116` (currently calls `gate.append_decision(decision)` with
+    no path argument) and is more moving parts for no extra benefit here. ⚠ If you go the
+    path-isolation route instead, note the read-side override lives in
+    `classless_trust_gate.py::read_precedent` (which calls `read_log(path)`) — NOT in
+    `pattern_precedent()`, which takes an already-loaded `rows` sequence and has no path
+    parameter at all.
 
     Read plugins/sgs-blocks/scripts/recogniser/measure-classless-baseline.py in full — it
     already implements the real Stage A -> Stage B -> trust-gate pipeline measurement for the
@@ -316,53 +339,76 @@ Step 3 — Run Spec 44's full pipeline against a second draft
 Step 4 — Root-cause the Tier A alias bug
   Model:       sonnet
   Action:      Invoke `/systematic-debugging` on the known `items`/`thumbs` → wrong
-               `sgs/info-box` alias resolution bug in `sc_var_classifier.py` (flagged, not
-               fixed, per decisions.md ~line 1090: "the implementer correctly judged this needs
-               real DB investigation before a confident fix, not a guess"). Find the real cause
-               against `slots.aliases` DB data, not a guessed regex fix.
-  Files:       plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py,
-               plugins/sgs-blocks/scripts/recogniser/test_sc_var_classifier.py (create if absent)
+               `sgs/info-box` alias resolution bug (flagged, not fixed, per decisions.md
+               ~line 1090: "the implementer correctly judged this needs real DB investigation
+               before a confident fix, not a guess"). ⚠ SCOPE CORRECTED by `/qc-council`
+               (pipeline-forensics rater, verified live 2026-09-17, DISPUTED the original
+               scoping): this is TWO SEPARATE bugs, not one, and only one of them lives in the
+               file this step originally named. `slots` table query (`scope='element'`) shows
+               exactly ONE row with `"thumbs"` in its `aliases` JSON array, mapping to
+               `standalone_block='sgs/info-box'` — a genuine single-candidate DATA-QUALITY bug
+               (an over-broad alias), correctly reachable and fixable through
+               `sc_var_classifier.py::_load_slot_aliases`. But **no row's `aliases` array
+               contains the literal string `"items"` anywhere in the table** — `items` cannot
+               be reproduced through `sc_var_classifier.py`'s alias lookup AT ALL. Its real root
+               cause must live in a DIFFERENT consumer of `slots.aliases`/`slot_name` — the
+               rater's hypothesis, not yet confirmed, points at
+               `converter/db/db_lookup.py::equivalent_block_for`. Investigate BOTH, don't stop
+               at `thumbs` and assume `items` shares its cause.
+  Files:       plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py (the `thumbs` data-fix
+               and its regression test), plugins/sgs-blocks/scripts/recogniser/test_sc_var_classifier.py
+               (ALREADY EXISTS — confirmed live 2026-09-17, extend it, do not treat as new),
+               plugins/sgs-blocks/scripts/converter/db/db_lookup.py (read first — likely where
+               `items`'s real root cause lives; do not assume without checking)
   Inputs:      decisions.md's Tier A hit-rate measurement (0 of 35 correct, 2 resolve-but-wrong,
                the fabricated-docstring correction already landed in `372ed8ce1`); `slots.aliases`
-               DB table
-  Outcome:     A proven root cause (DB-verified, not guessed) + a fix + a regression test proving
-               `items`/`thumbs` no longer resolve to `sgs/info-box` incorrectly
+               DB table; the qc-council finding above (two bugs, two different files)
+  Outcome:     TWO proven root causes (DB-verified, not guessed) — `thumbs`'s single-row data
+               issue AND `items`'s real location (wherever it turns out to live) — each fixed at
+               its own layer, each with a regression test proving the specific word no longer
+               resolves incorrectly
   Exec:        PARALLEL with steps 1, 2, 3, 6
   Deps:        none
   Marker:      (none)
-  Time:        30 min
+  Time:        40 min (revised up from 30 — this is now confirmed to be two investigations, not
+               one)
   Tooling:     /systematic-debugging (root-cause gate), /sgs-db (query `slots.aliases`), pytest
   On-Fail:     If the DB investigation shows the alias table itself is the source of truth and
                is simply wrong (not a code bug), fix the DATA (via `/sgs-update` or a direct,
                documented DB correction) rather than papering over it with a code-side
-               exception — matches this project's DB-first rule (R-31-1).
+               exception — matches this project's DB-first rule (R-31-1). If `items`'s real
+               consumer turns out to be a shared mechanism used by more than just Tier A, treat
+               that as a design-gate trigger (Rule 7) and flag it rather than fixing silently.
   Cold-Entry:  n/a (not a SESSION-START step)
   Prompt: |
-    Root-cause a known, disclosed-but-unfixed bug: in
-    plugins/sgs-blocks/scripts/recogniser/sc_var_classifier.py, the aliases `items`/`thumbs`
-    resolve to `sgs/info-box`, which is wrong (per decisions.md, ~line 1090 area: "the
-    implementer correctly judged this needs real DB investigation before a confident fix").
+    Root-cause a known, disclosed-but-unfixed bug: `items`/`thumbs` resolve to `sgs/info-box`,
+    which is wrong (per decisions.md, ~line 1090 area: "the implementer correctly judged this
+    needs real DB investigation before a confident fix").
 
-    Use `/systematic-debugging`'s protocol: read the actual evidence first. Query the
-    `slots.aliases` table (via `/sgs-db`) for every row involving `items`/`thumbs` as an alias
-    key. Read sc_var_classifier.py's resolution logic in full to see exactly how it picks a
-    slug from the alias table. Determine: is this a CODE bug (the classifier picks the wrong row
-    when multiple candidates exist) or a DATA bug (the DB row itself is wrong)? Do not guess —
-    cite the specific row(s)/logic that produces the wrong answer.
+    ⚠ THIS IS TWO BUGS, NOT ONE — confirmed by `/qc-council` verification before you start, so
+    you don't waste time re-discovering it. Query the `slots` table
+    (`scope='element'`, via `/sgs-db`) for every row whose `aliases` JSON array contains
+    `"thumbs"` — you'll find exactly ONE row, mapping to `sgs/info-box`. That's a real, single-
+    candidate DATA bug: fix it via this project's documented DB-correction path (check
+    CLAUDE.md's DB-first section), not a code-side special case (R-31-9 bans hardcoded
+    carve-outs). Add/extend `plugins/sgs-blocks/scripts/recogniser/test_sc_var_classifier.py`
+    (it already exists — extend it, don't treat this as a new file) with a regression test
+    proving `thumbs` now resolves correctly or fails closed.
 
-    Fix at the layer the root cause actually lives in. If it's a code bug, fix the resolution
-    logic. If it's a data bug, fix it via the project's documented DB-correction path (check
-    CLAUDE.md's DB-first section) rather than adding a code-side special case for these two
-    words specifically (that would be a hardcoded carve-out, banned by this project's R-31-9
-    universal-mechanism rule).
+    Then query the same table for `"items"` — you will find NO row contains it. This means
+    `items` CANNOT be reproduced through `sc_var_classifier.py`'s alias lookup at all — the
+    bug, wherever it lives, is not in that file. Read
+    `plugins/sgs-blocks/scripts/converter/db/db_lookup.py` (specifically anything named
+    `equivalent_block_for` or similar — a council rater's unconfirmed hypothesis, verify before
+    trusting it) and trace where `"items"` genuinely resolves to `sgs/info-box` from. Find the
+    real consumer, root-cause it with the same DB-first discipline, and fix it at whatever layer
+    it actually lives in.
 
-    Add or extend test_sc_var_classifier.py with a regression test proving `items`/`thumbs` now
-    resolve correctly (or explicitly fail closed / fall through, if no correct single answer
-    exists — never a guessed wrong answer). Run the full existing sc_var_classifier test suite
-    to confirm no regression.
+    Run the full existing sc_var_classifier test suite (and whatever test suite covers the
+    second bug's real location) to confirm no regression on either fix.
 
-    Return: the root cause (one sentence, with the DB query or code line that proves it), what
-    was fixed and where, and the full pytest output.
+    Return: TWO root causes (one sentence each, with the DB query or code line/file that proves
+    each), what was fixed and where for each, and the full pytest output for both.
 
 Step 5 — Decide + build sgs/brand-strip's "count" field
   Model:       sonnet
@@ -548,7 +594,15 @@ Step 8 — Live run with both rollout flags ON
                existing BEM-path baseline (non-classless groups) is byte-for-byte unaffected;
                (c) the audit log, `operator-review.html`, and end-of-run summary file (Spec 44
                §7) all actually fire — check each file exists and has real content, don't trust
-               a "ran successfully" exit code alone.
+               a "ran successfully" exit code alone. `/qc-council` (pipeline-forensics rater,
+               2026-09-17) confirmed this 3-artefact trio is the complete, correct set —
+               `sgs-clone-orchestrator.py:2027,2255,2261-2262,2267,2782,3230-3261` traces cleanly
+               to all three. ℹ Informational, not a gate: every Stage-9 run (regardless of these
+               flags) also inserts into the pre-existing uimax `recognition_log` DB table
+               (`insert_recognition_log`, `sgs-clone-orchestrator.py:3022-3069`) — a same-named
+               but UNRELATED "learning surface", not new behaviour this step introduces and not
+               part of Spec 44's own audit trail. No action needed; noted so it isn't mistaken
+               for an unexpected side effect during Step 8.
   Files:       (run-time artefacts under `pipeline-state/`, not source files — this step runs
                the pipeline, doesn't edit code)
   Inputs:      Steps 1-7's completed work (the full register); D1094's dry-run baseline for
