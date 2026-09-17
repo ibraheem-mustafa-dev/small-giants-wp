@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 37
-spec_version: 1.1.0
+spec_version: 1.2.0
 title: SGS Header/Footer Builder — CPT editing home, container blocks, behaviours, binding
 project: small-giants-wp
 status: active
@@ -9,6 +9,18 @@ authors: [Claude Code, Bean]
 session_date: 2026-07-22
 last_verified: 2026-09-17
 status_history:
+  - 2026-09-17 — v1.2.0. First `/adversarial-council` pass on v1.1.0 (6 personas) returned NO-GO
+    as written — 213 findings total, converging (4/6 independently) on a false Done-when claim
+    (template_lock does not enforce anything server-side/REST) and (4/6 independently) on FR-37-47
+    being underspecified across nonce/copy/scope/testability axes. Bean's corrections applied:
+    (1) dropped a MUST-FIX that would have gated this on testing against existing canary posts —
+    overruled per CLAUDE.md's standing pre-production rule, not applicable; (2) FR-37-47 REDESIGNED
+    from a bespoke write-action to a preset control extending the already-BUILT FR-37-28 pattern,
+    eliminating the nonce/copy/scope/testability findings by removing the mechanism that caused
+    them, not patching each one. FR-37-46's Done-when narrowed to an honest (editor-only) claim
+    + a required pre-build verification spike on the actual WP mechanism. FR-37-48's trigger
+    resolved to one canonical hook + idempotency guard. FR-37-49's two halves split honestly —
+    W2-d scoped, W2-b flagged as needing its own scoping pass before build.
   - 2026-09-17 — v1.1.0. Front D architecture amendment (design-gated, Bean-directed): FR-37-46
     (template-lock the 3 CPTs), FR-37-47 (bespoke starter action, OVERRIDES FR-37-7's
     native-picker-only ruling for sgs_header/sgs_footer/sgs_drawer — sgs_mega_menu unaffected),
@@ -755,10 +767,11 @@ references its slug; (2) author each live site's header/footer as a CPT + set ac
 > ruling is **explicitly superseded** for these three CPTs. Front D found the native mechanism's
 > side effect — every pattern insertion stamps provenance metadata that locks child-block editing
 > behind an "Edit pattern" click (§8.3 finding, all starter presets equally affected) — and Bean
-> ruled that a genuinely locked, always-populated CPT post (FR-37-46) is worth building bespoke UI
-> to get, overriding this FR's original preference. **`sgs_mega_menu` is UNAFFECTED — FR-37-7
-> stands as written for it**; only the three CPTs gaining the template-lock move to FR-37-47's
-> bespoke starter action instead.
+> ruled that a genuinely locked, always-populated CPT post (FR-37-46) is worth losing the native
+> picker to get, overriding this FR's original preference. **`sgs_mega_menu` is UNAFFECTED —
+> FR-37-7 stands as written for it**; only the three CPTs gaining the template-lock move to
+> FR-37-47's preset control instead (redesigned 2026-09-17 to extend FR-37-28's existing pattern,
+> not a new bespoke action — see FR-37-47).
 
 A single picker component serves `sgs_header`, `sgs_footer` **and** `sgs_mega_menu`. On
 creating a new post of any of those types, the first screen is a visual card grid of styles
@@ -1819,48 +1832,101 @@ lock operates one level up, at the CPT POST level (what may exist in `post_conte
 at the row-seeding level inside the container (what the 3 rows start with). The two locks do not
 interact and must not be conflated when verifying either.
 
-**Status:** `NOT-BUILT`.
-**Done when:** a new post of any of the three types opens with the locked block already present
-and populated by its own template default; no other block can be inserted as a sibling or
-appended below it, in the editor or via a raw REST `post_content` write; `wp/v2/{type}` schema
-still round-trips the locked content unchanged on save (a template-locked post is not read-only).
+**Adversarial-council correction (2026-09-17) — the original Done-when overclaimed.** A first-pass
+`/adversarial-council` (4 of 6 personas independently, one by reading the actual gate code)
+found `template`/`template_lock` are consumed ONLY by the block-editor's client-side JS — nothing
+in `wp_insert_post()`, `WP_REST_Posts_Controller`, or `Sgs_Cpt_Rest_Gate` (the only real REST-side
+gate on these CPTs, a pure capability check with zero content-shape validation) enforces a
+template against a raw write. The original Done-when's "or via a raw REST `post_content` write"
+clause was an unproven claim of exactly the kind this project's own citation rule bans. **Scoped
+down, not built around:** these 3 CPTs already sit behind `edit_theme_options` (a privileged,
+non-client capability), so a raw-REST bypass is a real but low-probability gap, not a blocker —
+narrowing the claim to what the mechanism actually does is the fix, not building a
+`rest_pre_insert_{post_type}` filter for a threat model this system doesn't have yet. If that
+capability bar ever widens to a lower-trust role, revisit.
 
-#### FR-37-47 — Bespoke "Load a starter" action, replacing the native picker for these 3 CPTs
+**Required verification spike before this FR is marked BUILT (2nd council finding, WP Core
+Purist).** §3.3a's D393 citation proves `templateLock:'all'` misbehaves inside a block's OWN
+`useInnerBlocksProps` (a nested-block code path, `useInnerBlockTemplateSync`) — it does NOT prove
+the same thing about a CPT's whole-post-level `template`/`template_lock` (a different WP code
+path, the editor's root-level template sync). Before relying on this mechanism, grep the actual
+WP 7.1 bundle for the root-level sync function and confirm empirically it does what FR-37-46
+assumes — this project has been burned twice already by promoting "not proven wrong" to "proven
+right" on WP-core behaviour (FR-37-3's area-vs-slug bug, D393 itself).
+
+**Existing canary content is explicitly NOT a constraint (Bean, 2026-09-17).** The framework is
+pre-production — per CLAUDE.md's standing rule, weighing "this would change what the canary
+currently renders" is banned reasoning. A first-pass council flagged testing this lock against
+already-published canary posts as a MUST-FIX; Bean overruled it as wasted effort on nothing worth
+protecting. Do not re-litigate this.
+
+**Status:** `NOT-BUILT`.
+**Done when:** the verification spike above confirms the root-level sync mechanism, cited by
+`file:line` in the WP bundle actually shipped; a new post of any of the three types opens with the
+locked block already present and populated by its own template default; no other block can be
+inserted as a sibling or appended below it **in the block-editor UI** (the REST case is a named,
+accepted gap per above, not a Done-when criterion).
+
+#### FR-37-47 — Starter LOOKS become a preset control, extending FR-37-28, not a bespoke action
 
 Because FR-37-46 makes every new post non-empty by construction, WordPress's native "Choose a
 pattern" modal (FR-37-7) can never fire for `sgs_header`/`sgs_footer`/`sgs_drawer` again — a
 template-locked post is never the empty post that modal requires. This is the deliberate,
-overriding trade this wave makes (see the FR-37-7 override note above): a small bespoke action
-in place of the native modal, so the 14 existing starter patterns (FR-37-8) stay reachable and
-the "Edit pattern" lock (H) never gets a chance to apply, because content never arrives through
-WordPress's pattern-insertion path at all.
+overriding trade this wave makes (see the FR-37-7 override note above): the 14 existing starter
+looks (FR-37-8) must stay reachable some other way, and the "Edit pattern" lock (H) must never get
+a chance to apply, because content must never arrive through WordPress's pattern-insertion path.
 
-**Mechanism.** A "Load a starter" button/action in the CPT editor (Document sidebar or a toolbar
-action on the locked block) lists the same starter looks FR-37-8 already ships as files. Choosing
-one reads that pattern file's content and writes it into the ROWS **inside** the already-present,
-locked `sgs/site-header`/`sgs/site-footer`/`sgs/nav-drawer` block — never replacing or touching the
-locked top-level block itself, so the lock is never disturbed. This reuses FR-37-8's starter files
-verbatim (no new starter-authoring work) and the row-seeding mechanism already proven safe by
-D393 (§3.3a) — applying a starter is structurally the same operation as the existing
-"apply this row's TEMPLATE" path, just triggered by an explicit action instead of block-mount.
+**Redesigned 2026-09-17 (Bean, after a first-pass `/adversarial-council`) — no bespoke action, no
+new write-path.** The original design specified a standalone "Load a starter" action with its own
+write endpoint. 4 of 6 council personas independently flagged it as underspecified across
+different axes: no nonce/capability/sanitisation plan for the new write path (it would have been
+this amendment's ONLY genuinely new attack surface); no defined operator-facing copy or UI
+placement; no defined row-mapping or repeat-application behaviour; and a "the locked block stays
+byte-identical" Done-when that is self-contradicting once you account for the rows actually
+changing. Bean's fix: **don't build a new action at all — make starter looks a preset control**,
+the same shape as the already-BUILT-and-LIVE-VERIFIED FR-37-28 "Layout preset" ToggleGroupControl
+on `sgs/site-header`'s Styles tab (Centred / Split / Minimal), which already proves this pattern
+end to end: derived from existing attributes, writes only existing attributes, no new stored
+shape, switchable at will.
+
+**Mechanism.** Each of the 14 starter looks becomes a value in a preset control (same
+`ToggleGroupControl`/card-style UI as FR-37-27's roster) on the locked block's Settings/Styles
+tab. Selecting a preset: (a) sets the SAME existing attributes FR-37-28 already writes
+(`contentWidth`, row `justifyContent`, etc.) for looks that are purely stylistic; (b) for looks
+that also differ in which blocks are present (e.g. the search-bar starters add a
+`sgs/product-search` block a plain starter doesn't have), replaces the affected row's InnerBlocks
+via `dispatch('core/block-editor').replaceInnerBlocks()` — the SAME client-side call
+`RowQuickInsertAppender` (FR-37-34) already uses safely today for its promoted-element buttons.
+Everything happens inside the existing editor session, as one ordinary Inspector-control
+interaction: **no new REST route, no new nonce (the standard post-save flow already covers it),
+no new sanitisation surface, and switching presets is a normal, Undo-able editor action** exactly
+like every other control on this block — which resolves the abuse-red-team's nonce/sanitisation
+gap, the support-realist's copy/placement gap, and the spec-lawyer's undo/repeat-application gap
+all at once, by removing the mechanism that created them rather than patching each individually.
 
 **`sgs_mega_menu` is unaffected** — it keeps FR-37-7's native picker as originally specified;
 this FR touches nothing there.
 
 **Status:** `NOT-BUILT`.
-**Done when:** creating a new post of any of the three types shows a way to pick a starter look;
-choosing one writes that starter's content into the rows, verified by reading the saved
-`post_content` (not editor state, per FR-37-7's own D393 lesson); the locked top-level block is
-byte-identical before and after; no `metadata.patternName`/`metadata.name` provenance stamp
-appears on any resulting block (the concrete proof that H cannot occur through this path).
+**Done when:** creating a new post of any of the three types shows the preset control listing all
+14 starter looks; selecting one applies the matching attributes and/or row content, verified by
+reading the saved `post_content` (not editor state, per FR-37-7's own D393 lesson); switching to a
+DIFFERENT preset afterward correctly reapplies (not just the first-choice case); a single Undo
+after selecting a preset cleanly reverts to the prior state; no `metadata.patternName`/
+`metadata.name` provenance stamp appears on any resulting block (the concrete proof that H cannot
+occur through this path); FR-37-26's operator-simplicity test (currently recorded FAIL on this
+exact surface) is re-run at least via the existing Claude-driven proxy arm against this new flow,
+result recorded pass/fail, not left unexercised.
 
 #### FR-37-48 — Auto-seed one post per CPT so the admin list is never empty
 
 `wp sgs header|footer|drawer seed-starter` (FR-37-30, already built and live-verified) runs once
-automatically per site — on first plugin activation, or as a cloning-pipeline setup step — so
-`edit.php?post_type=sgs_header` (and footer/drawer) never shows zero rows on a fresh install.
-This is independent of FR-37-46/47: FR-37-46 fixes what a *new, individual* post starts with;
-this FR fixes what the *list table* shows before any operator has created anything.
+automatically per site, on the plugin's `register_activation_hook` — the single canonical trigger
+(spec-lawyer finding: the original wording named two possible triggers with no idempotency guard;
+one trigger, guarded, is simpler and sufficient). Guarded on `wp_count_posts($type)->publish === 0`
+before inserting, so reactivating the plugin or a re-run of activation never double-seeds. This is
+independent of FR-37-46/47: FR-37-46 fixes what a *new, individual* post starts with; this FR
+fixes what the *list table* shows before any operator has created anything.
 
 **No new CPT meta needed for "which is the default."** This was investigated and DELIBERATELY
 NOT built as a separate flag — `Sgs_Active_Layout`'s existing "Active" pointer + admin column
@@ -1881,6 +1947,15 @@ dropping their embedded `sgs/nav-drawer` sibling block (**W2-d**), shipped in th
 first — per the sequencing ruling recorded against FR-37-43 above. Landing W2-d alone would strand
 the only current way an operator attaches drawer content (the sibling-insert one-click fix, Spec
 36 FR-36-9a clause 2) with no replacement.
+
+**Honesty correction (Ship-PM council finding, 2026-09-17).** These two items are NOT equally
+ready. **W2-d** is scoped and mechanical: 8 known pattern files, a known diff (delete the embedded
+`sgs/nav-drawer` block), covered by FR-37-49's own Done-when below. **W2-b has never had a UI
+shape** — FR-37-43 named it as an open stage in 2026-07-30 with nothing beyond a one-line label,
+and this amendment does not change that. Do not treat W2-b as "ready to build" just because it now
+has an FR number: it needs its own quick scoping pass (is it Gutenberg core's own
+`<PostPicker>`/`<LinkControl>`-style component reused as-is, or bespoke search+select UI?) BEFORE
+implementation starts, not discovered mid-build.
 
 This also completes **D2** (a header/footer post can no longer contain anything but its own
 locked wrapper, full stop — `sgs/nav-drawer` was the one thing still legitimately appearing as a

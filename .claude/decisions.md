@@ -1,5 +1,44 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1092 [ROUTINE] — First `/adversarial-council` on the Front D Spec 37 amendment: NO-GO as written, fixed via `/brainstorming`
+
+**2026-09-17.** 6-persona council (Cynic, Spec-Lawyer, Ship-PM, Abuse-Redteam, Support-Realist,
+WP-Core-Purist) against D1091's design (Spec 37 v1.1.0, FR-37-46..49). No persona said GO; grades
+clustered C to C+. Strong convergence on two findings: (1) 4/6 personas independently found
+FR-37-46's Done-when falsely claimed `template_lock` enforces against a raw REST write — one
+persona confirmed by reading the actual gate (`class-sgs-cpt-rest-gate.php`), a pure capability
+check with zero content-shape validation; (2) 4/6 independently found FR-37-47 ("Load a starter",
+a bespoke write-action) underspecified across four different axes: no nonce/capability/
+sanitisation plan (abuse-redteam), no operator-facing copy/placement (support-realist), it was
+really FR-37-36 (a previously-deferred, non-trivial custom picker) relabeled smaller (ship-PM),
+and a self-contradicting "byte-identical" success criterion (spec-lawyer).
+
+**Bean's corrections, both applied same session:**
+1. A MUST-FIX proposing to test the new lock against existing published canary posts was
+   overruled outright — this project's own CLAUDE.md already bans reasoning from "what the canary
+   currently renders" (pre-production, nothing to protect). The council imported exactly the
+   reasoning that rule exists to forbid; corrected without re-litigating.
+2. FR-37-47 was not patched — it was **redesigned**: instead of a bespoke write-action, starter
+   looks become a preset control extending FR-37-28's already-BUILT "Layout preset"
+   `ToggleGroupControl` pattern (derived from + writes only existing attributes, no new stored
+   shape) plus `RowQuickInsertAppender`'s already-safe client-side `replaceInnerBlocks()` call for
+   looks that differ in content, not just style. This is not a smaller version of the same
+   mechanism — removing the new write-path removes the nonce/copy/testability findings as a
+   side effect, the same "fix the mechanism, not each symptom" pattern D1091 itself used for C/D2/H.
+
+**Also fixed, lower-stakes findings applied directly:** FR-37-46's Done-when narrowed to an
+honest editor-only enforcement claim (server-side REST validation named as a future hardening
+item, not a blocker, given these CPTs already sit behind `edit_theme_options`); a required
+pre-build verification spike added (confirm the WP mechanism this design leans on — §3.3a's D393
+citation is about nested-block template sync, not proven to cover post-level sync — before
+trusting it); FR-37-48's ambiguous "activation or pipeline step" trigger resolved to one hook +
+an idempotency guard; FR-37-49's two bundled items split honestly (W2-d scoped, W2-b flagged
+as still needing its own scoping pass, not ready just because it has an FR number).
+
+**Not yet resolved, carried forward:** FR-37-49's W2-b (drawer post-picker) genuinely has no UI
+shape yet — flagged, not solved, in Spec 37 v1.2.0. Full record: Spec 37 v1.2.0 status_history +
+the amendment section itself.
+
 ## D1091 [ROUTINE] — Front D header/footer/drawer CPT architecture, overrides FR-37-7 for 3 CPTs, built via `/brainstorming`
 
 **2026-09-17.** Bean flagged the Advanced Header/Footer/Nav-Drawer CPT builder as messy before
