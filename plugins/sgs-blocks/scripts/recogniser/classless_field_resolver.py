@@ -105,10 +105,14 @@ class Tier3Candidate:
     """One member of §9.2's bounded candidate set.
 
     `kind` is `"array-attr"` (one of the parent's own un-matched
-    `array_item_schema` array attributes) or `"block"` (a verified
-    allow-listed child block). `field_names` is what §9.3 scores against:
-    `array_item_schema.field_key` for the former, content-bearing
-    `block_attributes.attr_name` for the latter.
+    `array_item_schema` array attributes), `"block"` (a verified
+    allow-listed InnerBlocks child), or `"composed-block"` (2026-09-17 — a
+    child composed at RENDER TIME via `render_block()`, from
+    `block_render_composition`, Spec 31 §13.9 — distinct from `"block"`
+    because it is never editor-stored and has no `accepts_allowed_blocks`
+    entry at all). `field_names` is what §9.3 scores against:
+    `array_item_schema.field_key` for the array-attr case, content-bearing
+    `block_attributes.attr_name` for both block cases.
     """
 
     kind: str
@@ -764,6 +768,27 @@ def _accepts_allowed_blocks(parent_slug: str) -> tuple[str, ...] | None:
     return tuple(str(s) for s in parsed) if isinstance(parsed, list) else ()
 
 
+@functools.lru_cache(maxsize=None)
+def _composed_children(parent_slug: str) -> tuple[str, ...]:
+    """The fourth candidate-set source (2026-09-17 build): every DISTINCT
+    `child_slug` `parent_slug` composes at RENDER TIME (`block_render_composition`,
+    Spec 31 §13.9) — invisible to `accepts_allowed_blocks` by construction, since
+    that column only ever records EDITOR-stored InnerBlocks. `call_order` is
+    ignored here (this is a set of real candidates to score, not a sequence)."""
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT child_slug FROM block_render_composition "
+            "WHERE block_slug = ? ORDER BY child_slug",
+            (parent_slug,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return ()
+    finally:
+        conn.close()
+    return tuple(r[0] for r in rows)
+
+
 def _content_bearing_attr_names(block_slug: str) -> frozenset[str]:
     """§9.3's scoring surface for a BLOCK candidate: exact `attr_name`s,
     restricted to content-bearing roles, never `canonical_slot`/role."""
@@ -791,6 +816,14 @@ def build_candidate_set(
     """§9.2 -- the bounded candidate set, plus whether the `sgs/container`
     fallback is eligible. Never a roster-wide search.
 
+    FOUR sources, unioned (2026-09-17 -- render-time composition added as the
+    fourth): the parent's own un-matched `array_item_schema` array attribute(s);
+    its real, verified `accepts_allowed_blocks` allow-list (InnerBlocks); its
+    `block_render_composition` children (`render_block()`, Spec 31 §13.9 --
+    genuinely invisible to `accepts_allowed_blocks`); the `sgs/container`
+    fallback, only when the first three are all empty and the parent is
+    genuinely unrestricted.
+
     Returns `(candidates, fallback_eligible)`. `fallback_eligible` is only ever
     True when the candidate set is empty AND the parent's
     `accepts_allowed_blocks` is genuinely NULL.
@@ -808,6 +841,7 @@ def build_candidate_set(
         )
 
     allowed = _accepts_allowed_blocks(parent_slug)
+    already_added: set[str] = set()
     if allowed and block_renders_inner_blocks(parent_slug):
         for slug in allowed:
             if not _blocks_row_exists(slug):
@@ -817,6 +851,24 @@ def build_candidate_set(
                     kind="block", name=slug, field_names=_content_bearing_attr_names(slug)
                 )
             )
+            already_added.add(slug)
+
+    # Fourth source (2026-09-17): render-time-composed children. No InnerBlocks
+    # gate here on purpose -- render_block() composition is unrelated to whether
+    # the parent's edit.js renders <InnerBlocks/> at all (sgs/buybox composes
+    # sgs/option-picker via PHP and has no InnerBlocks slot whatsoever).
+    for slug in _composed_children(parent_slug):
+        if slug in already_added:
+            continue  # already scored via accepts_allowed_blocks -- never twice
+        if not _blocks_row_exists(slug):
+            continue  # same orphan gate as the InnerBlocks source
+        candidates.append(
+            Tier3Candidate(
+                kind="composed-block", name=slug,
+                field_names=_content_bearing_attr_names(slug),
+            )
+        )
+        already_added.add(slug)
 
     fallback_eligible = not candidates and allowed is None
     return tuple(candidates), fallback_eligible

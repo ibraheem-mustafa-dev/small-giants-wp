@@ -657,9 +657,15 @@ off is the rollback path if a real run misbehaves — no code revert needed.
 
 ## 11. Explicitly deferred (tracked, not built here)
 
-- **One-off classless sections** — no sibling group and no known-composite match
-  to check a guess against. Revisit once the repeated-group case is proven
-  across more real drafts.
+- ~~One-off classless sections~~ — **NOT deferred; built, elsewhere (correction,
+  2026-09-17).** This bullet predates Spec 45 Tier 4 (D1087) and this session's
+  singleton consumer (Front C Task 4): a one-off element with no sibling group
+  is exactly Tier 4's job (`dom_shape_classifier.py`'s bare guess, always
+  review-pending) — since Task 4, corroborated against the guessed block's own
+  real `block_render_singletons` shape. Both the repeated case (this spec's
+  own Stage A) and the one-off case (Spec 45 Tier 4) now have a real,
+  tested mechanism. Left struck-through rather than deleted so a reader who
+  remembers this line existing can see it was corrected, not silently dropped.
 - **An AI fallback (Tier-B-style)** for cases nothing here resolves — depends on
   the still-open Anthropic API-key decision; only worth building once real
   logged review-queue data shows deterministic rules genuinely aren't enough.

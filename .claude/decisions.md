@@ -1,5 +1,52 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1096 [ROUTINE] — Front C Task 5: Spec 45 Tier 3 gains render-time composition as a
+fourth candidate-set source, proven with a real before/after test; two corrections logged
+
+**2026-09-17.** Bean corrected two things from the prior write-up and directed a third:
+(1) "one-off classless sections" was reported as still-deferred in Spec 44 §11 — wrong,
+that text predates Spec 45 Tier 4 (D1087) and Task 4's singleton corroboration; struck
+through in the spec with an explanation rather than silently deleted. (2) Directed to
+finish Spec 45's one real remaining gap (Tier 3's candidate-set UNION) and then build a
+test that actually proves whether it works — not just unit-shape correctness. (3) On
+page-routing (Spec 44 §4.5's deferred "Pass 2"): confirmed intentional sequencing —
+specialised per-page-type routing logic cannot be designed soundly until the universal
+recognition mechanism (Spec 44/45 + Spec 31's structural-facts trio) is proven; that work
+starts only once this front is genuinely complete, not before.
+
+**Built:** `classless_field_resolver.py::build_candidate_set()` gains a fourth source —
+`_composed_children()`, reading `block_render_composition` (Spec 31 §13.9) — unioned
+alongside the existing array-attribute and `accepts_allowed_blocks` sources, deduplicated
+against the InnerBlocks list, gated by the same orphan check. A new `Tier3Candidate.kind`
+value (`"composed-block"`, distinct from `"block"`) keeps the two sources visibly
+distinguishable in the review trail rather than folding them into one ambiguous label.
+
+**The real test, not a synthetic one:** `sgs/buybox` has zero array attributes and a
+genuinely NULL `accepts_allowed_blocks` — before this fix its candidate set was empty and
+it would have fallen back to a bare `sgs/container` guess. It composes `sgs/option-picker`
+at render time. Two new tests prove the actual before/after change on real data: the
+candidate set is now non-empty and the container fallback is correctly suppressed
+(`test_tier3_composed_block_suppresses_the_container_fallback`), and a real draft field
+shaped like option-picker's own content (`label`+`optionItems`, clearing the >=2-hit floor)
+resolves all the way through to `sgs/option-picker`
+(`test_tier3_composed_block_actually_resolves_a_real_field`) — an actual field-resolution
+OUTCOME changing, not just a candidate appearing in a list. One pre-existing test
+(`test_tier3_gate2_excludes_untrustworthy_allow_lists`) needed updating: `sgs/product-card`
+now legitimately carries a composed-block candidate too (it also composes
+`sgs/option-picker`), so the assertion was sharpened to prove gate 2 still excludes every
+InnerBlocks-sourced candidate specifically, rather than asserting an empty set that a real
+new source would now correctly violate.
+
+Spec 45 §9.2 rewritten from "two sources" to "four sources, built" (was carrying a stale
+"not yet closed here" warning). The residual scope that used to live on
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER` (removed from parking.md this same session — Bean:
+"I never gave you permission to add anything to the parking doc") is now fully closed in
+substance: both named consumer slots across both original parking entries have shipped.
+
+**Outcome: OUTCOME ACHIEVED** — not just code shipped. The acceptance criterion Bean set
+("a test that will actually [tell] whether it worked") is met by a real before/after
+change on real DB data, not a unit-level shape check.
+
 ## D1095 [ROUTINE] — Front C Task 4: structural-facts consumer wiring, built + measured
 same session as designed, per Bean's "do the review first" instruction
 

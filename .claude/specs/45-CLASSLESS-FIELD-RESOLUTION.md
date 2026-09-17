@@ -764,28 +764,32 @@ same way §4's Tiers place a scalar. **No match → proceed to 9.2.**
 **Rewritten in v1.4.0** — v1.3.0 stated this as a three-way branch on
 `accepts_allowed_blocks` alone and asserted (incorrectly — `/qc-council`
 proved it false) that the parent's own array attribute case was "already
-handled upstream." The real rule is one bounded candidate set, built from TWO
+handled upstream." **Widened again 2026-09-17 (Front C Task 5)** to add a
+fourth source. The real rule is one bounded candidate set, built from FOUR
 sources together, never a roster-wide search:
 
 **Candidate set = (the parent's own `array_item_schema` array attribute(s)
 that §4.1.0 Step A did NOT already match by exact name) UNION (the parent's
 real, verified `accepts_allowed_blocks` allow-list, if non-empty) UNION (the
-`sgs/container` fallback, only when both other sources are empty AND the
-parent is genuinely unrestricted — see the new fourth bullet below).**
+parent's own `block_render_composition` children, Spec 31 §13.9 — render-time
+`render_block()` composition, invisible to `accepts_allowed_blocks` because
+that column only ever records EDITOR-stored InnerBlocks) UNION (the
+`sgs/container` fallback, only when the first three are all empty AND the
+parent is genuinely unrestricted).**
 
-⚠ **A real, currently-unresolved gap in this list, surfaced during Spec 44's
-re-verification (2026-09-17), not yet closed here:** `accepts_allowed_blocks`
-only records a child block the EDITOR stored (InnerBlocks). A parent can also
-compose a child at RENDER TIME via `render_block()` — e.g. `sgs/buybox`
-genuinely composes `sgs/option-picker`, with no `accepts_allowed_blocks` entry
-for it at all. That fact now lives in `block_render_composition` (Spec 31
-§13.9), a Spec-31-owned table. **Front C Task 4 (2026-09-17) built a consumer
-for this fact on Spec 44's Stage A side** (`ParentContext.required_composed_
-children`, a Step-0 narrowing signal — see Spec 31 §13.9) — but this spec's
-OWN Tier 3 candidate-set UNION still does NOT include it as a fourth source.
-That remains genuinely unbuilt here — read Spec 31 §13.9's own "consumer
-BUILT" note for what shipped (the Stage A side) and what didn't (this Tier 3
-side) before assuming a render-time-composed child is visible to Tier 3 today.
+**Built** (`_composed_children()` + `build_candidate_set()`,
+`classless_field_resolver.py`) — proven, not just wired: `sgs/buybox` has zero
+array attributes and a genuinely NULL `accepts_allowed_blocks`, so before this
+fix its candidate set was empty and it would have fallen back to a bare
+`sgs/container` guess. It composes `sgs/option-picker` at render time; the
+real candidate set is now non-empty and the fallback is correctly suppressed
+(`test_tier3_composed_block_suppresses_the_container_fallback`) — and a real
+draft field shaped like option-picker's own content (`label` + `optionItems`,
+clearing the >=2 raw-hit floor) resolves all the way through to
+`sgs/option-picker` (`test_tier3_composed_block_actually_resolves_a_real_field`).
+A composed-child candidate carries `kind="composed-block"` (distinct from
+`"block"`, the InnerBlocks case) so the review trail can always tell the two
+sources apart.
 
 ⚠ **A second, separate Spec-31-owned fact — static/singleton structural
 content — GAINED a Tier 4 consumer (Front C Task 4, 2026-09-17).**

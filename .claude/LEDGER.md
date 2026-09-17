@@ -134,40 +134,42 @@ dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestrati
 6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
    Tasks 1 and 3, run last (highest risk).
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094/D1095)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094/D1095/D1096)
 
-**ALL 4 tasks of the plan SHIPPED same day as the council that found them (D1094+D1095).**
-FR-44-1(b) now needs a REAL human `--approve` action (`record_human_approval()`,
-`kind=approval`) — a decision-row write can never open the gate on its own (3-run replay
-proof). FR-44-1(a) now needs `MIN_DISTINCT_ROLES=2` — a same-role-repeated sequence is
-refused regardless of length; real buybox thumbnails (3 kinds) still clear it. Live
-re-measure (`recogniser/measure-classless-baseline.py`): **39 groups (not 35 — real
-discrepancy vs D1088), 0 auto-completed, 2 review, 37 no-match.** Still safe, real signal
-now instead of D1088's void result.
+**ALL 4 plan tasks + the Tier 3 residual SHIPPED same day as the council that found them
+(D1094/D1095/D1096).** FR-44-1(b) now needs a REAL human `--approve` action — a
+decision-row write can never open the gate on its own (3-run replay proof). FR-44-1(a)
+now needs `MIN_DISTINCT_ROLES=2`. Live re-measure: **39 groups (not 35 — real discrepancy
+vs D1088), 0 auto-completed, 2 review, 37 no-match.** Composition + singleton consumers
+built as SEPARATE evidence dimensions (never spliced into the repeater sequence),
+**deliberately informational-only** — proven via a test showing outcome is byte-identical
+regardless of the new signal's value. Real measurement: 0 of 39 Eye Care groups carry a
+singleton corroboration signal (honest null, proven-working via positive controls).
 
-**Task 4 (structural-facts consumer wiring) shipped same session, per Bean's own
-"do the review first, update specs from the results" redirect** — built + tested before
-any spec prose was written. Composition (Stage A `required_composed_children`) +
-singleton (Stage A `static_leaf`, Spec 45 Tier 4 `static_corroboration`) consumers all
-built as SEPARATE evidence dimensions (not spliced into the repeater sequence — resolves
-both parking entries' shared blocker). **Deliberately informational-only** — proven, not
-assumed, via a real test showing `_clause_a()`/outcome are byte-identical regardless of
-`static_leaf`'s value (Bean's explicit call: "choose depending on testing"). Real live
-measurement: **0 of 39 Eye Care groups carry a corroboration signal** — honest null
-result for this draft, proven-working via synthetic + real buybox positive controls.
-Residual left unbuilt: Spec 45 Tier 3's candidate-set UNION still lacks a
-composed-children source. Both rollout flags still default off — zero client-facing
-change all session.
+**Spec 45 Tier 3's composed-children source (D1096) closes the LAST open consumer slot.**
+`sgs/buybox` — zero array attrs, NULL `accepts_allowed_blocks` — would have fallen back to
+a bare `sgs/container` guess before this; now its real composed `sgs/option-picker`
+candidate suppresses that fallback, and a real draft field resolves all the way through to
+it. Both rollout flags still default off — zero client-facing change all session.
 
-**Structural-facts trio COMPLETE — repeaters (D1088/D1089), composition (D1090),
-singletons (D1093), now all CONSUMED too (D1095) — all `/qc-council`/test-validated live.**
+**Two corrections from Bean this session:** (1) "one-off classless" was wrongly reported
+as deferred — it's actually covered by Spec 45 Tier 4 + this session's singleton
+corroboration; Spec 44 §11 corrected. (2) Parking additions were unauthorised — all
+every Front C Spec-44 parking entry removed from `parking.md`/archive; standing rule now: never
+add to parking.md without Bean asking first.
+
+**Structural-facts trio COMPLETE, ALL CONSUMED** — repeaters (D1088/D1089), composition
+(D1090), singletons (D1093) — all `/qc-council`/test-validated live.
 
 **Scope note (unresolved, carried forward):** `sgs/buybox` is arguably the WRONG flagship
 example for a page-agnostic mechanism — inherently product-page-specific; revisit Spec
 44's worked example next pass. Stage B still never extracts a value, identity only.
+Page-routing (Spec 44 §4.5) is intentionally NOT next — Bean's own sequencing: the
+universal mechanism must be proven first.
 
-**Next session — Front C's plan is closed, nothing queued.** Pick up the Tier 3 residual,
-the buybox-flagship note, or Stage-B value-extraction only if prioritised.
+**Next session — Front C is fully closed, nothing queued.** Pick up the buybox-flagship
+note or Stage-B value-extraction only if prioritised; page-routing only once genuinely
+ready to move past the universal pipeline.
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);

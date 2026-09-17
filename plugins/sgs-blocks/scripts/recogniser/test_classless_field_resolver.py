@@ -404,11 +404,23 @@ def test_tier3_gate2_excludes_untrustworthy_allow_lists() -> None:
 
     candidates, _ = cfr.build_candidate_set("sgs/team-member")
     assert candidates == (), f"got {candidates!r}"
-    # product-card still has its own two array attributes; what must be absent
-    # is every slug from its untrusted allow-list.
-    pc = {c.name for c in cfr.build_candidate_set("sgs/product-card")[0]}
-    assert pc == {"colourSwatches", "packSizes"}, f"got {pc!r}"
-    print("  PASS  Tier 3 gate 2: product-card/team-member contribute nothing from accepts_allowed_blocks")
+    # product-card still has its own two array attributes, and now ALSO its
+    # real render-time-composed sgs/option-picker (2026-09-17, the 4th
+    # candidate-set source) — that's a DIFFERENT source from the untrusted
+    # accepts_allowed_blocks list gate 2 exists to exclude, so its presence
+    # does not weaken this test. What must still be absent is every kind="block"
+    # (InnerBlocks) candidate — gate 2's actual property.
+    product_card_candidates = cfr.build_candidate_set("sgs/product-card")[0]
+    pc = {c.name for c in product_card_candidates}
+    assert pc == {"colourSwatches", "packSizes", "sgs/option-picker"}, f"got {pc!r}"
+    assert not any(c.kind == "block" for c in product_card_candidates), (
+        "no InnerBlocks-sourced candidate should ever survive gate 2",
+        product_card_candidates)
+    composed = [c for c in product_card_candidates if c.kind == "composed-block"]
+    assert [c.name for c in composed] == ["sgs/option-picker"], composed
+    print("  PASS  Tier 3 gate 2: product-card/team-member contribute nothing from "
+          "accepts_allowed_blocks; product-card's real composed sgs/option-picker "
+          "still appears, correctly tagged kind='composed-block'")
 
 
 def test_tier3_gate2_positive_control_real_parents_not_excluded() -> None:
@@ -491,6 +503,49 @@ def test_tier3_container_fallback_not_offered_to_an_allow_listed_parent() -> Non
     _candidates, fallback = cfr.build_candidate_set("sgs/team-member")
     assert fallback is False
     print("  PASS  Tier 3 section 9.2: a non-NULL allow-list blocks the container fallback")
+
+
+# ---------------------------------------------------------------- Front C Task 5
+
+def test_tier3_composed_block_suppresses_the_container_fallback() -> None:
+    """THE real before/after proof. sgs/buybox has NO array attributes and a
+    genuinely NULL accepts_allowed_blocks — confirmed live, the exact shape
+    sgs/quote's fallback-fires test above uses as ITS positive control. Before
+    Front C Task 5, buybox's candidate set was ALSO empty and its own field
+    resolution would have fallen back to a bare sgs/container guess. It composes
+    sgs/option-picker at render time (block_render_composition, Spec 31 §13.9),
+    and now that source is wired in, its REAL candidate set is non-empty and the
+    container fallback is correctly suppressed in favour of the real composed
+    child — this is the concrete, measurable "did it actually work" test."""
+    assert cfr._accepts_allowed_blocks("sgs/buybox") is None, (
+        "fixture premise: buybox's own accepts_allowed_blocks must be NULL")
+    candidates, fallback_eligible = cfr.build_candidate_set("sgs/buybox")
+    names = {c.name for c in candidates}
+    assert "sgs/option-picker" in names, f"got {names!r}"
+    assert all(c.kind == "composed-block" for c in candidates), candidates
+    assert fallback_eligible is False, (
+        "the container fallback must be suppressed now a real candidate exists")
+    print(f"  PASS  Task 5: sgs/buybox's real candidate set is now {names} (was "
+          "empty pre-Task-5) — container fallback correctly suppressed")
+
+
+def test_tier3_composed_block_actually_resolves_a_real_field() -> None:
+    """End to end, not just candidate-set membership: a draft nested value
+    shaped like sgs/option-picker's own content (label + optionItems, both
+    real content-bearing attrs, clearing the >=2 hit floor) under sgs/buybox
+    resolves THROUGH the composed-block candidate to sgs/option-picker — the
+    actual field-resolution outcome this whole mechanism exists to produce."""
+    field = cfr.DraftField(
+        key="sizePicker",
+        value={"label": "Size", "optionItems": ["S", "M", "L"]},
+    )
+    result = cfr.resolve_nested_field("sgs/buybox", field)
+    assert isinstance(result, cfr.Tier3Placement), f"got {result!r}"
+    assert result.resolved_kind == "child-block", result
+    assert result.targets == ("sgs/option-picker",), result
+    assert result.hits == 2, result
+    print(f"  PASS  Task 5: a real draft field resolves THROUGH sgs/buybox's "
+          f"composed sgs/option-picker -> {result.targets}, {result.hits} hits")
 
 
 def test_tier3_card_grid_misnamed_field_resolves_by_raw_count() -> None:
@@ -1055,6 +1110,8 @@ def main() -> int:
     test_tier3_gate2_comment_stripper_is_line_bounded()
     test_tier3_container_fallback_fires_on_unrestricted_parent()
     test_tier3_container_fallback_not_offered_to_an_allow_listed_parent()
+    test_tier3_composed_block_suppresses_the_container_fallback()
+    test_tier3_composed_block_actually_resolves_a_real_field()
     test_tier3_card_grid_misnamed_field_resolves_by_raw_count()
     test_tier3_allow_listed_parent_resolves_on_two_or_more_hits()
     test_tier3_brand_logo_negative_control_card_grid_never_wins()
