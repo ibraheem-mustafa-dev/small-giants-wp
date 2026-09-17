@@ -379,6 +379,14 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-active-layout-admin.php';
 Sgs_Active_Layout_Admin::register();
 
+// Auto-seed one published, Active starter post per header/footer/drawer CPT
+// on activation (FR-37-48, Spec 37) — so a fresh install never shows an
+// empty list table. Single canonical trigger: register_activation_hook,
+// guarded per-area on a zero published-post count (see the class for why
+// that guard alone is sufficient to prevent double-seeding).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-footer-starter-seeder.php';
+register_activation_hook( __FILE__, array( Sgs_Header_Footer_Starter_Seeder::class, 'seed_all' ) );
+
 // SGS "_sgs_is_default" post meta (sgs_modal only — sgs_header/sgs_footer
 // coverage was removed the same day, 2026-09-17, once confirmed duplicate of
 // Sgs_Active_Layout's existing "Active" pointer, see class-sgs-cpt-default-meta.php)
