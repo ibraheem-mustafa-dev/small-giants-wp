@@ -196,7 +196,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// KEPT (see file docblock) — pairs THIS block's burger with an
 	// `sgs/nav-drawer` container block. Only the bar has a burger.
 	const {
-		effectiveDrawerRef,
 		drawerState,
 		addDrawer,
 		activeDrawer,
@@ -609,9 +608,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<NavMenuNotices
 					showDrawerNotice={ showDrawerNotice }
 					drawerState={ drawerState }
-					effectiveDrawerRef={ effectiveDrawerRef }
 					addDrawer={ addDrawer }
-					setAttributes={ setAttributes }
 					showActiveDrawerNotice={ showActiveDrawerNotice }
 					activeDrawer={ activeDrawer }
 					resolvedItemsLength={ resolvedItems.length }

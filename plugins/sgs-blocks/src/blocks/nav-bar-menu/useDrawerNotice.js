@@ -20,7 +20,8 @@ import { createBlock, store as blocksStore } from '@wordpress/blocks';
  * @param {string} root0.clientId  This block's clientId.
  * @param {number} root0.ref       The block's `ref` attribute (menu id) — seeded
  *                                 into a newly-created drawer's own nav-menu child.
- * @param {string} root0.drawerRef The block's `drawerRef` attribute.
+ * @param {number} root0.drawerRef The block's `drawerRef` attribute (a `sgs_drawer`
+ *                                 post id, or 0 for "no specific pick" — Task 6/W2-b).
  * @return {Object} { effectiveDrawerRef, drawerState, addDrawer, activeDrawer, showActiveDrawerNotice, showDrawerNotice }.
  */
 export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
@@ -28,11 +29,13 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	//
 	// This menu collapses to a burger below `collapsePoint` and opens
 	// sgs/nav-drawer BY ID (render.php:295-317 → the drawer's <dialog> id,
-	// nav-drawer/render.php:236). Every header STARTER pattern ships a drawer
-	// as a SIBLING of sgs/site-header — but a header built by inserting the
-	// blocks by hand has none, so the burger opens nothing, silently, and a
-	// non-coder cannot diagnose it. That is the only hard FAIL in the FR-37-26
-	// operator-simplicity test (parking P-HEADER-SIMPLICITY-FINDINGS finding 1).
+	// nav-drawer/render.php:236). Every header STARTER pattern used to ship a
+	// drawer as a SIBLING of sgs/site-header (Task 6/W2-d retired this for the
+	// starters — see theme/sgs-theme/patterns/) — but a header built by
+	// inserting the blocks by hand still has none, so the burger opens
+	// nothing, silently, and a non-coder cannot diagnose it. That is the only
+	// hard FAIL in the FR-37-26 operator-simplicity test (parking
+	// P-HEADER-SIMPLICITY-FINDINGS finding 1).
 	//
 	// The drawer CANNOT be seeded from sgs/site-header's own TEMPLATE: its root
 	// is a <dialog> that promotes to the top layer, it must be a sibling of the
@@ -42,10 +45,20 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	//
 	// Informational + fixable, NEVER a save/publish gate (FR-37-19 / P1 DP2a).
 	//
-	// Both sides fall back to 'sgs-nav-drawer' when the attribute is blank
-	// (nav-menu/render.php:295-297, nav-drawer/render.php:61-65) — mirror that
-	// here or a blank-vs-default pair would look mismatched when it is not.
-	const effectiveDrawerRef = ( drawerRef || '' ).trim() || 'sgs-nav-drawer';
+	// ── Task 6/W2-b: this whole sibling-block-matching check is meaningful
+	// ONLY when the operator has NOT picked a specific drawer post above
+	// (drawerRef === 0) — a picked post is validated entirely by
+	// DropdownSettingsPanel.js's own dangling-reference Notice, independent of
+	// any sibling block in this canvas. `hasPickedDrawer` gates every notice
+	// this hook returns so the two mechanisms never contradict each other.
+	//
+	// Both sides fall back to 'sgs-nav-drawer' when no specific pick is made
+	// (nav-bar-menu/render.php's Sgs_Drawer_Render::drawer_ref_for(), and
+	// nav-drawer/render.php:61-65's own default) — a fixed literal here, not
+	// derived from drawerRef, because drawerRef is now a post id rather than
+	// the DOM-id string this comparison needs.
+	const hasPickedDrawer = Number( drawerRef ) > 0;
+	const effectiveDrawerRef = 'sgs-nav-drawer';
 
 	const drawerState = useSelect(
 		( select ) => {
@@ -137,10 +150,10 @@ export default function useDrawerNotice( { clientId, ref, drawerRef } ) {
 	// cannot be previewed here) rather than leaving a non-coder to read its absence
 	// as a fault.
 	const showActiveDrawerNotice =
-		! drawerState.suppress && ! drawerState.matches && activeDrawerMatches;
+		! hasPickedDrawer && ! drawerState.suppress && ! drawerState.matches && activeDrawerMatches;
 
 	const showDrawerNotice =
-		! drawerState.suppress && ! drawerState.matches && ! activeDrawerMatches;
+		! hasPickedDrawer && ! drawerState.suppress && ! drawerState.matches && ! activeDrawerMatches;
 
 	return {
 		effectiveDrawerRef,

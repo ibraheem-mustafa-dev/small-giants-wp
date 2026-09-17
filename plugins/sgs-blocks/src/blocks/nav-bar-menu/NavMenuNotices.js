@@ -13,9 +13,7 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
  * @param {Object}   root0                     Props.
  * @param {boolean}  root0.showDrawerNotice     From useDrawerNotice().
  * @param {Object}   root0.drawerState          From useDrawerNotice().
- * @param {string}   root0.effectiveDrawerRef   From useDrawerNotice() — the drawer id this menu points at.
  * @param {Function} root0.addDrawer            From useDrawerNotice().
- * @param {Function} root0.setAttributes        The block's attribute setter.
  * @param {boolean}  root0.showActiveDrawerNotice From useDrawerNotice().
  * @param {Object}   root0.activeDrawer         From useDrawerNotice().
  * @param {number}   root0.resolvedItemsLength  `resolvedItems.length` from useNavMenuSource().
@@ -23,9 +21,7 @@ import { LINK_COUNT_THRESHOLD } from '../../shared/nav-menu-panels/utils';
 export default function NavMenuNotices( {
 	showDrawerNotice,
 	drawerState,
-	effectiveDrawerRef,
 	addDrawer,
-	setAttributes,
 	showActiveDrawerNotice,
 	activeDrawer,
 	resolvedItemsLength,
@@ -60,34 +56,16 @@ export default function NavMenuNotices( {
 							) }
 						</>
 					) : (
-						<>
-							<p style={ { margin: '0 0 8px' } }>
-								{ sprintf(
-									/* translators: 1: drawer id this menu points at. 2: the drawer id that actually exists. */
-									__(
-										'This burger is set to open a menu panel named “%1$s”, but no panel with that name is here. The panel that does exist is named “%2$s”.',
-										'sgs-blocks'
-									),
-									effectiveDrawerRef,
-									drawerState.firstRef
-								) }
-							</p>
-							<Button
-								variant="primary"
-								size="small"
-								onClick={ () =>
-									setAttributes( {
-										drawerRef: drawerState.firstRef,
-									} )
-								}
-							>
-								{ sprintf(
-									/* translators: %s: the drawer id that actually exists. */
-									__( 'Open “%s” instead', 'sgs-blocks' ),
-									drawerState.firstRef
-								) }
-							</Button>
-						</>
+						<p style={ { margin: 0 } }>
+							{ sprintf(
+								/* translators: %s: the menu panel id that already exists on this page. */
+								__(
+									'This burger is set to open the default menu panel, but the panel already on this page is named “%s” instead. Use the “Panel this burger opens” picker above to choose a specific menu panel, or set that panel as the site’s active one.',
+									'sgs-blocks'
+								),
+								drawerState.firstRef
+							) }
+						</p>
 					) }
 				</Notice>
 			) }
