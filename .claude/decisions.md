@@ -1,5 +1,60 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1093 [ROUTINE] — `block_render_singletons` (Spec 31 §13.10); a real detector-bug found +
+fixed mid-session; full `/brainstorming` → `/subagent-driven-development` → `/qc-council` build
+
+**2026-09-17.** Third table in a structural-facts trio, alongside `block_render_repeaters`
+(D1089) and `block_render_composition` (D1090) — records a block's STATIC/SINGLETON structural
+elements (content rendering exactly once, outside any `foreach`/`render_block()` call), proven
+case: `sgs/buybox`'s main product image. Surfaced by Bean directly challenging an earlier
+"it's natively-sourced so it's out of scope" framing — the correct distinction is
+matching-signal vs write-disposition, not whether an attribute exists; confirmed live that for
+a minimal single-image/single-variant product, buybox's thumbnail gallery, price ladder AND
+axis-picker composition ALL degrade to empty, making static content the ONLY reliable signal
+for the common case.
+
+**Designed via `/brainstorming`, mid-course-corrected twice by Bean:** first from a proposed
+hand-authored register (rejected after `/brainstorming` traced it against Spec 44 §4.3's own
+D248 precedent — "the seeder never did; zero inserts anywhere"), then rescoped from
+Spec-44-owned to Spec-31-owned after Bean flagged it as general framework infrastructure, not
+a classless-recognition concept.
+
+**Built via `/subagent-driven-development`:** implementer (sonnet, commit `920f4d2b9`) reused
+all 6 named primitives from the two sibling seeders, additive-only change to
+`detect_repeaters()`'s return contract. Task reviewer (opus, independent) — Approved, with 3
+Important + 5 Minor findings, most notably confirming disjointness holds BY CONSTRUCTION via an
+independent 87-block sweep (not fixture luck). Fix pass (sonnet, commit `851e931a9`) closed all
+3 Important findings: an unguarded exception that could abort a whole seed run, a disjointness
+test that was checking the seeder against itself rather than the sibling's real output, and a
+missing negative control. Controller-verified independently (not a third subagent) — 11/11 +
+10/10 assertions, zero diff on both consumer files.
+
+**Empirically validated via `/qc-council`** (3 raters, post-build): doc fact-checker found every
+specific number/offset in the new docs TRUSTWORTHY. DB-scale verifier checked disjointness
+across all 87 blocks (not just the hand-checked case) and found a genuine, precise nuance — raw
+candidate spans DO overlap in 4 real places (composition calls nested inside foreach bodies),
+but every one is discarded by the repeater detector's own markup-gate before becoming a row, so
+the property that matters (no markup double-counted across the three TABLES) holds — verified,
+not assumed. Wiring/reuse verifier confirmed the Stage 1 tail step fires in a real
+`/sgs-update --stage 1` run and reuse discipline is genuinely honoured. No blocking findings;
+nothing shipped needed further fixing.
+
+**Real bug found mid-session, unprompted by the build task:** while explaining a "shape"
+example to Bean, re-checking my own claim against live seeded data surfaced that
+`derive_roles()`'s current-state-indicator detector missed a state attribute toggled as a WHOLE
+STRING via a PHP ternary (`echo $cond ? 'aria-current="true"' : ''`) — it only caught the
+shape where the echoed VALUE sits inside an otherwise-static attribute. Fixed with a new
+regex (`_TERNARY_STATE_RE`) matched against unmasked PHP; confirmed the same bug independently
+in `sgs/google-reviews` and a second spot in `sgs/product-card` (same PD-12 feature, shared
+code) — both now correctly detected too. Live reseed: `block_render_repeaters` 54→57 rows.
+New regression test with a real negative control (`test_ternary_whole_attribute_state_is_detected`).
+
+**Consumer wiring (Stage A / Spec 45 Tier 4) deliberately NOT built** for either
+`block_render_composition` or `block_render_singletons` — parked as
+`P-SPEC44-RENDER-COMPOSITION-CONSUMER` / `P-SPEC44-RENDER-SINGLETON-CONSUMER`. Both block on a
+real design decision (how repeater/composition/singleton role sequences merge into one
+fingerprint, given `role_order` is a sorted index not a raw file offset), not a mechanical step.
+
 ## D1092 [ROUTINE] — First `/adversarial-council` on the Front D Spec 37 amendment: NO-GO as written, fixed via `/brainstorming`
 
 **2026-09-17.** 6-persona council (Cynic, Spec-Lawyer, Ship-PM, Abuse-Redteam, Support-Realist,

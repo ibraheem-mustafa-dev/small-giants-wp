@@ -1106,3 +1106,24 @@ history of prunes.)*
   does not just fail to add rows, it would REGRESS the committed file if that regeneration were
   committed. Sync the branch; do not "fix" the generator.
 
+
+### [2026-08-27] `wp post update` with no `--user` silently strips CSS out of block attributes
+- **Pattern key:** `wp-cli-post-update-without-user-strips-css-via-kses`
+- **Rule:** wp-cli runs with NO user unless told otherwise, so WordPress applies KSES to
+  `post_content` on save — and KSES strips CSS out of block-comment attributes. Post 2145's
+  `{"style":{"css":"color: red;"}}` was reduced to `{}`, and a second attempt emptied the post
+  entirely; the identical command with `--user=1` (an administrator, who holds `unfiltered_html`)
+  round-tripped it byte-for-byte. This is NOT specific to one script: any tool writing
+  `post_content` via wp-cli without a user will quietly delete styling. Verify the stored value
+  after writing, never the exit code.
+
+### [2026-08-27] A deploy reported ABORTED while its payload was already live
+- **Pattern key:** `a-deploy-can-report-aborted-after-its-payload-landed`
+- **Rule:** `build-deploy.py` exited `[ABORTED] reason: remote-extract-failed`, yet the files were
+  on the server — and the post-deploy cache purge and verify had been skipped. A failure exit is
+  not proof nothing shipped, any more than a success exit is proof something did. Check the server.
+
+### [2026-08-27] An agent's "completed" status is not proof its background deploy finished
+- **Pattern key:** `agent-completed-status-is-not-proof-background-work-finished`
+- **Feedback file:** [feedback_agent_completed_status_is_not_proof_background_work_finished.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_agent_completed_status_is_not_proof_background_work_finished.md)
+- **Archived:** 2026-09-17, pruned as oldest active entry to stay at cap.

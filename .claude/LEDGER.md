@@ -20,14 +20,15 @@ visual/UX pass — is FULLY DONE, DEPLOYED, LIVE-VERIFIED. See "Prior work (clos
 pointers; it isn't repeated here.
 
 **Spec 44 (classless GROUP recognition) — council re-verified 2026-09-17: NO-GO on
-auto-complete.** All 4 units built (D1088), the seeder-not-wired bug fixed live (D1089, 54
-rows/14 blocks now real), a general render-time block-composition fact built (D1090). Seven
-independent reviewers then read the real code + live DB and found `--classless-auto-complete`
-unsafe: FR-44-1(b)'s "forced human review" is satisfied by the pipeline's own log write, not
-an actual human — confirmed by three reviewers independently, and by directly running the
-code. Both rollout flags stay OFF. Concrete, scoped fixes exist (a real approval step, a
-match-diversity floor, re-measure now the table has real data) — next session's build list.
-Full detail: Front C below.
+auto-complete.** All 4 units built (D1088), the seeder-not-wired bug fixed live (D1089, 54→57
+rows/14 blocks — a real detector bug also fixed mid-session, see D1093), a
+structural-facts TRIO now built: `block_render_composition` (D1090) + `block_render_singletons`
+(D1093), both Spec-31-owned, both `/qc-council`-validated clean, consumer wiring parked for
+both. Seven independent reviewers found `--classless-auto-complete` unsafe: FR-44-1(b)'s
+"forced human review" is satisfied by the pipeline's own log write, not an actual human —
+confirmed by three reviewers independently, and by directly running the code. Both rollout
+flags stay OFF. Concrete, scoped fixes exist (a real approval step, a match-diversity floor,
+re-measure post-fix) — next session's build list. Full detail: Front C below.
 
 **Spec 45 (classless FIELD resolution) — all 4 tiers shipped, D1084/D1087.** Given a draft
 field + a resolved parent block, decides which real attribute it becomes — built, reviewed,
@@ -136,7 +137,7 @@ dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestrati
 6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
    Tasks 1 and 3, run last (highest risk).
 
-### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090)
+### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093)
 
 **Council re-verified 2026-09-17 (7 personas): NO-GO on `--classless-auto-complete`.**
 Root cause, found by 3 of 7 independently: FR-44-1(b)'s "forced human review once" is
@@ -145,17 +146,27 @@ exists anywhere. Also found: the flagship buybox-vs-product-card signal is inert
 the live DB (§3.1's repetition check can never fire); a thin 3-label match can
 false-auto-complete as an empty block (the project's known empty-section-false-win shape);
 last session's "35/0" safety number is void (measured before the seeder held real data).
-`--classless-match` alone: conditional/sandbox-only, not client-safe yet. Fixes are
-concrete, not vague — a real approval step, a match-diversity floor, re-measure post-fix.
-D1089 (same session) fixed the seeder-not-wired bug the council's own fact-checker
-confirmed live (54 rows/14 blocks). D1090: `block_render_composition` (Spec 31 §13.9) —
-a block composing ANOTHER block via `render_block()` at render time, e.g. `sgs/buybox` →
-`sgs/option-picker` — built + seeded + wired, consumer side parked
-(`P-SPEC44-RENDER-COMPOSITION-CONSUMER`). Scope note from this session: `sgs/buybox`
-itself is arguably the WRONG flagship example for a page-agnostic mechanism — it's
-inherently product-page-specific and belongs to a future specialised template/CPT
-pipeline, not general classless recognition; worth revisiting Spec 44's own worked
-example next pass. `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING` still open, unchanged.
+`--classless-match` alone: conditional/sandbox-only, not client-safe yet.
+
+**Structural-facts trio now COMPLETE, all three tables built + validated, consumer wiring
+parked for all three.** `block_render_repeaters` (Spec 44 §4.2, D1088/D1089) — repeated
+content. `block_render_composition` (Spec 31 §13.9, D1090) — a block composing ANOTHER
+block via `render_block()` at render time (e.g. `sgs/buybox` → `sgs/option-picker`).
+`block_render_singletons` (Spec 31 §13.10, D1093) — static/one-off content (e.g. buybox's
+main product image), added after Bean directly corrected an "it's natively-sourced, out of
+scope" framing — matching-signal and write-disposition are separate questions. All three
+`/qc-council`-validated against the live DB post-build, not just code-reviewed. A real
+detector bug (a state attribute toggled as a whole PHP-ternary string) was found and fixed
+mid-session — 3 independent real instances, not hypothetical.
+
+**Scope note carried forward:** `sgs/buybox` itself is arguably the WRONG flagship example
+for a page-agnostic mechanism — it's inherently product-page-specific and belongs to a
+future specialised template/CPT pipeline, not general classless recognition; worth
+revisiting Spec 44's own worked example next pass. `P-SPEC44-STAGE-B-VALUE-EXTRACTION-MISSING`
+still open, unchanged. New: `P-SPEC44-RENDER-COMPOSITION-CONSUMER` +
+`P-SPEC44-RENDER-SINGLETON-CONSUMER` — both block on the same real design question (how
+repeater/composition/singleton role sequences merge into one fingerprint), not a mechanical
+step — see D1093 for the full reasoning.
 
 Separate named tracks, unaffected by this session's build: responsiveness work (already
 designed, `plans/archive/2026-09-14-connect-sc-var-identity-to-responsive-values.md`);
@@ -272,7 +283,7 @@ here):**
   150+ sessions share this tree.
 - **D-ceiling:** verify fresh with
   `grep -oE '^## D[0-9]+' .claude/decisions.md | grep -oE '[0-9]+' | sort -n | tail -1` (was
-  D1090 — re-check, don't trust a cached number here).
+  D1093 — re-check, don't trust a cached number here).
 - **Canary:** sandybrown, WP 7.1. Production homepage page **2742**. Fresh-clone verification
   page **3448** for cloning-pipeline work.
 - **`nav-bar-menu` now has one real visual-diff report** (`reports/visual-diff/nav-bar-menu-2026-09-17.md`,
@@ -295,7 +306,8 @@ here):**
 | **Nav-menu split — ALL 8 STEPS DONE; only gap is a missing visual-diff report** | `C:\Users\Bean\.claude\plans\our-new-draft-from-enchanted-karp.md` (user-level plan file, not under the project's own .claude/plans/); `decisions.md` D1059/D1060/D1076; `.claude/reports/2026-09-14-nav-menu-split-attribute-classification.md` |
 | Ward End Eye Care draft audit + CPT inventory (grounding for the whole eye-care session) | `.claude/reports/2026-09-14-eye-care-draft-exceptions-agreed.md` |
 | **Classless repeater recognition — start here** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.0, DESIGNED not built); `decisions.md` D1081 (3-round trail); Front C above |
-| **Classless GROUP recognition — Spec 44, council-verified NO-GO on auto-complete 2026-09-17** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.1); `decisions.md` D1088/D1089/D1090; Front C above; `plugins/sgs-blocks/scripts/recogniser/render_repeater_recogniser.py` + `array_schema_eliminator.py` + `classless_trust_gate.py` |
+| **Classless GROUP recognition — Spec 44, council-verified NO-GO on auto-complete 2026-09-17** | `specs/44-CLASSLESS-REPEATER-RECOGNITION.md` (v2.3.1); `decisions.md` D1088/D1089/D1090/D1093; Front C above; `plugins/sgs-blocks/scripts/recogniser/render_repeater_recogniser.py` + `array_schema_eliminator.py` + `classless_trust_gate.py` |
+| **Structural-facts trio (repeaters+composition+singletons) — all 3 built, validated, consumer wiring parked** | `specs/31-UNIVERSAL-CLONING-PIPELINE.md` §13.9-§13.10; `decisions.md` D1090/D1093; `plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py` + `seed-render-composition.py` + `seed-render-singletons.py` |
 | **Classless FIELD resolution — Spec 45, all 4 tiers BUILT, still no real input (Spec 44 built but inert)** | `specs/45-CLASSLESS-FIELD-RESOLUTION.md` (v1.6.0); `decisions.md` D1084/D1087; Front E above; `plugins/sgs-blocks/scripts/recogniser/classless_field_resolver.py` |
 | **Form CPT + choice-flow — council-closed, Phase 0 ready to execute (D1072)** | `specs/42-SGS-FORM-CPT-AND-PRICING.md` (v2.1.0) + `specs/43-SGS-CHOICE-FLOW.md` (v1.2.0) + `plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` |
 | Spec 41 nav-menu colour/state (Waves A-C DONE/archived; citations fixed this session) | `specs/41-NAV-MENU-COLOUR-STATE-SYSTEM.md`; `plans/archive/phase-nav-menu-colour-state.md` |

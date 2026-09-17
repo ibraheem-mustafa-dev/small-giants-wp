@@ -4,6 +4,20 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-17] A value-only conditional-attribute detector missed a state attribute toggled as a whole PHP-ternary string
+- **Pattern key:** `whole-attribute-ternary-toggle-invisible-to-value-only-state-detector`
+- **Rule:** a detector that classifies `attr="<?php echo ...?>"` as "toggled state" by checking whether the *value inside the quotes* contains live PHP will miss the equally common shape `<?php echo $cond ? 'attr="true"' : ''; ?>`, where the whole attribute — name and value together — is swapped in or dropped by a ternary. From the detector's own text-scan view the surviving string reads as a plain hardcoded literal, so its own "hardcoded value is chrome, not a signal" guard — correct for the usual case — silently discards a genuinely per-item toggled state. Check for both shapes: value-embedded PHP AND whole-attribute ternary.
+- **What happened:** Bean asked "how can a buybox be confused with a buybox" and I explained a weak 3-label match, describing it as inherent simplicity. Re-verifying my own claim against the live seeded DB (rather than re-asserting it) surfaced that the three-label loop was a SEPARATE repeater from the one I thought, and further investigation found its real per-row "currently selected" marker was being silently dropped by exactly this detector gap — confirmed independently in 2 more real blocks (`sgs/google-reviews`, `sgs/product-card`) sharing the same feature.
+- **Fix:** added a second regex matched against unmasked PHP (not the value-only scan) to catch the whole-attribute ternary shape; reseeded live; added a regression test with a genuine negative control (the old code path re-run against the same real fixture, proven not to catch it).
+
+### [2026-09-17] Asked for design-gate sign-off after Bean had already actively directed every step
+- **Pattern key:** `continuous-engagement-is-sign-off-dont-ask-again`
+- **Feedback file:** [feedback_continuous_engagement_is_sign_off.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_continuous_engagement_is_sign_off.md)
+
+### [2026-09-17] Cited a fixed bug on one WP mechanism (block-level templateLock) as proof for a different mechanism sharing the same name (CPT-level template_lock)
+- **Pattern key:** `prior-art-citation-does-not-transfer-across-code-paths`
+- **Feedback file:** [feedback_prior_art_citation_does_not_transfer_across_code_paths.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_prior_art_citation_does_not_transfer_across_code_paths.md)
+
 ### [2026-09-17] A delete-then-reinsert idempotent seeder pass silently replaced real live data with a stale in-file default
 - **Pattern key:** `delete-then-reinsert-seeder-can-silently-replace-real-data-with-stale-default`
 - **Rule:** a two-step idempotent seeder (DELETE orphans, then INSERT-if-absent from an in-file default dict) is unsafe when the same row can appear in BOTH lists in one run — the delete empties it, then the insert recreates it from whatever the file's own dict says, not the value that was actually live a moment earlier. Caught only because a downstream test (Spec 44 Task 1's `test_tier3_gate1_drops_orphan_candidate_slugs`) asserted the real value and failed — no error, no warning, at the point of loss itself.
@@ -240,26 +254,6 @@
 - **Pattern key:** `wp-component-prop-name-is-not-proof-of-behaviour`
 - **Evidence:** `MediaTypeControl.js` passed `disabled`/`hiddenReason` straight to `ToggleGroupControl` (matching every other disableable control's shape in this codebase). `/qc-inline` checked the claim against the real Gutenberg API rather than trusting the prop name: `ToggleGroupControl` has no group-level `disabled` prop in the stable API (`WordPress/gutenberg#57862`, still open, "Add disabled state for entire component"). The prop was silently ignored — the control stayed fully clickable while `disabled: true`. Per-`ToggleGroupControlOption` `disabled` IS real (`#63450`) and was the fix. **Same session, same day: recurred in `BooleanResponsiveControl.js`** (a DIFFERENT file, DIFFERENT feature — the video autoplay tablet/mobile lock). A subagent's own "fixed and verified" report described the lock working; only a live click test (not a code read) proved the click still went through. Two files, same root cause, both caught only by actually clicking the control in a browser.
 - **Rule:** A prop that compiles and matches the pattern used elsewhere in the codebase is not evidence it does anything — verify a WordPress component's actual prop contract (official docs, or the installed package's own type/source) before relying on it, especially for a prop whose absence fails silently rather than throwing. **Knowing about this bug once did not stop it recurring** — when touching ANY `ToggleGroupControl`/`__experimentalToggleGroupControl` usage with a `disabled` prop in this codebase, check whether it's on the group or on each `ToggleGroupControlOption` before trusting it, and verify with a real click, not a code read.
-
-### [2026-08-27] `wp post update` with no `--user` silently strips CSS out of block attributes
-- **Pattern key:** `wp-cli-post-update-without-user-strips-css-via-kses`
-- **Rule:** wp-cli runs with NO user unless told otherwise, so WordPress applies KSES to
-  `post_content` on save — and KSES strips CSS out of block-comment attributes. Post 2145's
-  `{"style":{"css":"color: red;"}}` was reduced to `{}`, and a second attempt emptied the post
-  entirely; the identical command with `--user=1` (an administrator, who holds `unfiltered_html`)
-  round-tripped it byte-for-byte. This is NOT specific to one script: any tool writing
-  `post_content` via wp-cli without a user will quietly delete styling. Verify the stored value
-  after writing, never the exit code.
-
-### [2026-08-27] A deploy reported ABORTED while its payload was already live
-- **Pattern key:** `a-deploy-can-report-aborted-after-its-payload-landed`
-- **Rule:** `build-deploy.py` exited `[ABORTED] reason: remote-extract-failed`, yet the files were
-  on the server — and the post-deploy cache purge and verify had been skipped. A failure exit is
-  not proof nothing shipped, any more than a success exit is proof something did. Check the server.
-
-### [2026-08-27] An agent's "completed" status is not proof its background deploy finished
-- **Pattern key:** `agent-completed-status-is-not-proof-background-work-finished`
-- **Feedback file:** [feedback_agent_completed_status_is_not_proof_background_work_finished.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_agent_completed_status_is_not_proof_background_work_finished.md)
 
 ### [2026-08-28] A taxonomy-routing "bug" was WooCommerce's Enable Archives toggle, not a template mismatch
 - **Pattern key:** `a-live-defect-can-be-wp-config-not-code`
