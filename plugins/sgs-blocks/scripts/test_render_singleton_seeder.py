@@ -81,7 +81,7 @@ def test_singleton_spans_never_overlap_sibling_claimed_spans() -> None:
     spans_by_file: dict[str, list[tuple[int, int]]] = {}
     _repeaters, rep_warnings = rrs.detect_repeaters(
         "sgs/buybox", sources=sources, spans_out=spans_by_file)
-    _comp_rows, comp_warnings = mod._comp.detect_composition("sgs/buybox", sources=sources)
+    comp_rows, comp_warnings = mod._comp.detect_composition("sgs/buybox", sources=sources)
     assert not rep_warnings and not comp_warnings, (rep_warnings, comp_warnings)
     assert spans_by_file.get(GALLERY_COL), "fixture vacuous — no foreach span claimed"
 
@@ -102,6 +102,59 @@ def test_singleton_spans_never_overlap_sibling_claimed_spans() -> None:
     assert checked > 0
     print(f"  PASS  disjointness: {checked} singleton role offset(s), 0 overlaps "
           f"with sibling-claimed spans")
+
+    # ------------------------------------------------- cross-check vs the REAL
+    # detect_composition() offsets (not this module's own recomputed spans).
+    # The check above compares the seeder's output against `claimed`, which is
+    # itself built from this module's OWN `_render_block_call_spans()` helper —
+    # true by construction, proves nothing about the two detectors genuinely
+    # agreeing. `detect_composition()` scans `_code_view` (string literals kept);
+    # `_render_block_call_spans()` scans `mask_php()`'s view (string literals
+    # blanked) — these CAN diverge in principle. Assert the REAL detector's own
+    # offsets are covered by the same `claimed` spans this module used to blank
+    # its remainder — i.e. an independent source confirms the exclusion, not
+    # just the module's own recomputation of it.
+    assert comp_rows, "fixture vacuous — detect_composition() found no real calls"
+    checked_comp = 0
+    for r in comp_rows:
+        fname = r["source_file"]
+        offset = r["offset"]
+        text = sources_by_file[fname]
+        claimed = list(spans_by_file.get(fname, [])) + mod._render_block_call_spans(text)
+        covered = [(s, e) for s, e in claimed if s <= offset < e]
+        assert covered, (
+            f"{fname}: detect_composition()'s real render_block() offset "
+            f"{offset} is NOT covered by any claimed span — the two "
+            f"detectors have genuinely diverged and singleton seeding could "
+            f"wrongly treat this call as static markup")
+        checked_comp += 1
+    assert checked_comp > 0
+    print(f"  PASS  disjointness (real detect_composition() cross-check): "
+          f"{checked_comp} real composition offset(s), all covered by claimed spans")
+
+    # ------------------------------------------------------- negative control
+    # Prove the blanking step is load-bearing, not a coincidence of the fixture:
+    # running derive_roles() WITHOUT blanking claimed spans first must produce
+    # at least one role offset that DOES fall inside a claimed span — otherwise
+    # this whole disjointness test would pass even against an implementation
+    # that forgot to blank anything at all.
+    raw_overlap_count = 0
+    for fname, text in sources:
+        view = rrs.markup_view(text)
+        claimed = list(spans_by_file.get(fname, [])) + mod._render_block_call_spans(text)
+        raw_roles = rrs.derive_roles(view, text, loop_vars=())
+        for role, offset in raw_roles:
+            if any(s <= offset < e for s, e in claimed):
+                raw_overlap_count += 1
+                print(f"  (negative control) {fname}: unblanked {role}#{offset} "
+                      f"overlaps a claimed span, as expected")
+    assert raw_overlap_count > 0, (
+        "negative control is vacuous — unblanked derive_roles() produced NO "
+        "overlap with claimed spans, so this disjointness test cannot "
+        "distinguish a correct implementation from one that forgot to blank")
+    print(f"  PASS  negative-control: blanking is load-bearing — "
+          f"{raw_overlap_count} unblanked role offset(s) genuinely overlap "
+          f"claimed spans")
 
 
 # ---------------------------------------------------------------- negative control

@@ -44,6 +44,12 @@ DISCLOSED LIMITS (stated, not silent):
   - `role_order` is ONE CONTINUOUS counter across ALL of a block's singletons and
     source_files, identical to `block_render_repeaters`' own PK shape — a
     consumer comparing per-file shape MUST group by `source_file` first.
+  - inherits `render_repeater_seeder.resolve_sources()`'s own duplicate-basename
+    limit: 3 real live blocks (`sgs/gallery`, `sgs/hero`, `sgs/post-grid`) each
+    list `render-helpers.php` twice in their resolved source list. Harmless
+    today only because that file carries zero role signals for those blocks
+    (verified: 0 rows) — if it ever gained a real signal, that duplication
+    could theoretically double-seed a role for one of those three blocks.
 
 Usage:
     python plugins/sgs-blocks/scripts/seed-render-singletons.py --survey
@@ -98,7 +104,15 @@ def _render_block_call_spans(text: str) -> list[tuple[int, int]]:
     spans: list[tuple[int, int]] = []
     for m in _comp._RENDER_BLOCK_CALL_RE.finditer(mask):
         open_paren = m.end() - 1  # the regex itself ends on the call's own '('
-        close_paren = _rrs._match_pair(mask, open_paren, "(", ")")
+        try:
+            close_paren = _rrs._match_pair(mask, open_paren, "(", ")")
+        except _rrs.RepeaterParseError as exc:
+            # Fail-loud per call site, matching both sibling detectors' own
+            # discipline — WARN and skip just this call, never abort the whole run.
+            print(f"[render_singletons] WARN render_block() call at offset "
+                  f"{m.start()} unparseable ({exc}) — NOT counted as a claimed "
+                  f"span; continuing.")
+            continue
         spans.append((m.start(), close_paren + 1))
     return spans
 

@@ -1078,8 +1078,11 @@ buybox's thumbnail gallery AND price-ladder AND axis-picker composition all degr
 to empty/absent — meaning the static parts are the ONLY reliably-present signal for
 the most common real case. Live-verified: `seed-render-singletons.py --survey
 --block sgs/buybox` seeds `image-or-fallback` for `gallery-col.php` at byte offset
-3130, well outside the thumbnail `foreach` body span (4730–5762) and the
-`render_block()` composition call span (34317–34812) in `render.php`.
+3130 — well outside that SAME FILE's own thumbnail `foreach` body span
+(4730–5762). The `render_block()` composition call span (34317–34812) is in a
+DIFFERENT file, `render.php` — no positional comparison applies there at all;
+it is simply that file's own separate fact, not a third offset to compare
+against gallery-col.php's 3130.
 
 ```sql
 CREATE TABLE IF NOT EXISTS block_render_singletons (
