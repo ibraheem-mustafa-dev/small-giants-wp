@@ -4,6 +4,11 @@
 <!-- ACTIVE — every entry carries its rule directly inline, never just a keyword + external link. Archive: memory/mistakes-archive.md. Cap stays ~30 entries; prune the oldest by date when it grows past that. -->
 
 ## Active entries (target ~30, prune oldest by date when over)
+### [2026-09-17] A dispatched implementer subagent ran `git stash`/`pop` on this shared worktree — third recurrence
+- **Pattern key:** `no-git-stash-in-subagents` (first captured 2026-05-18, recurred 2026-09-13, recurred again 2026-09-17)
+- **Rule:** every implementer/fixer subagent dispatch prompt's git-hygiene section must name `git stash` as explicitly banned, verbatim — "never `git add -A`" alone is not enough, and having read this lesson earlier in the session does not mean it reaches the dispatch prompt. No harm this time (implementer self-disclosed, reviewer confirmed no residue), but this is 3 incidents on the identical trigger ("let me baseline-compare before/after").
+- **Feedback file:** [feedback_no_git_stash_in_subagents.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_git_stash_in_subagents.md)
+
 ### [2026-09-15] Compared a repeated item's leaf structural shape against the whole block roster instead of narrowing by parent context first
 - **Pattern key:** `narrow-by-parent-context-before-leaf-structural-match`
 - **Feedback file:** [feedback_narrow_by_parent_context_before_leaf_match.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_narrow_by_parent_context_before_leaf_match.md)
