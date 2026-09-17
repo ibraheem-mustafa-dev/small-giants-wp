@@ -31,21 +31,6 @@ A `**Verify:**` line means the entry may already be complete - check it cheaply 
 
 ## Cloning pipeline + converter
 
-### P-SPEC44-SEEDER-NOT-WIRED
-**Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
-
-Spec 44's `block_render_repeaters` table + seeder
-(`plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py`) is built and self-tested
-but deliberately not called from `/sgs-update` — the live DB table has 0 rows. Stage A
-(`render_repeater_recogniser.py`) can therefore never match anything on real data today,
-even with `--classless-match` on; every boundary reports "unseeded" and falls to Stage B or
-no-match. This is the single cheapest unblock for the whole mechanism doing anything real —
-a ~5-line call in `sgs-update-v2.py` Stage 1 (the module's own docstring names the exact
-call shape).
-
-**Trigger:** the deferred `/adversarial-council` re-verification pass (next session per
-Bean's instruction) — wire the seeder only after that pass, since turning it on changes
-what Stage A can match for the first time.
 
 ### P-SPEC44-DRAFT-CAPABILITY-DETECTOR-MISSING
 **Status:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17

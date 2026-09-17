@@ -1,5 +1,33 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1089 [ROUTINE] — Spec 44 `block_render_repeaters` seeder wired into `/sgs-update`;
+sequencing reordered ahead of the deferred adversarial-council pass
+
+**2026-09-17.** Root-caused via `/systematic-debugging`: the seeder
+(`plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py`, built + self-tested in
+the D1088 build) had zero callers anywhere in the pipeline — the same "built but not wired"
+pattern this codebase has hit repeatedly (D338/D493). `grep` confirmed zero references in
+`sgs-update-v2.py` before the fix. The live table sat at 0 rows, so Stage A recognition
+could never match anything real even with `--classless-match` on.
+
+**Fix:** new Stage 1 tail step `_run_render_repeater_seed()` in `sgs-update-v2.py`,
+mirroring the existing `_run_motion_fx_registry_seed` pattern exactly (idempotent
+subprocess call to the seeder's own `--seed` mode, WARN-not-fail, commits before the
+subprocess to release the write lock). Verified live end-to-end, not just standalone: a
+real `/sgs-update --stage 1` run prints `Stage 1 tail (render-repeater seed):
+render_repeaters: scanned=87, blocks_with_repeaters=14, rows=54`, and a direct read-only
+DB query confirms 54 rows land across 14 real blocks, matching the seeder's own dry-run
+survey exactly.
+
+**Sequencing note:** the parking entry this closes (`P-SPEC44-SEEDER-NOT-WIRED`, now
+archived) had originally named its own trigger as "wire only after the deferred
+`/adversarial-council` pass" — Bean's live instruction this session explicitly reversed
+that order ("deal with the seeder table... then move onto the /adversarial-council").
+Recorded here because it is a real behaviour change to what Spec 44 Stage A can match,
+made before the spec's own required re-verification pass has run — the council (next
+session) should treat this wiring as part of what it is re-verifying, not as settled
+ground.
+
 ## D1088 [ROUTINE] — Spec 44 classless repeater recognition, all 4 tiers built + reviewed;
 adversarial-council re-verification deliberately deferred to next session
 

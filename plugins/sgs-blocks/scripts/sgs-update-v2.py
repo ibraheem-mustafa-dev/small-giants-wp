@@ -2097,6 +2097,42 @@ def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (motion-fx registry seed): WARN {exc}")
 
 
+def _run_render_repeater_seed(conn: sqlite3.Connection) -> None:
+    """Run render_repeater_seeder.py --seed as a Stage 1 tail step (Spec 44 §4.2/§4.3, 2026-09-17).
+
+    `block_render_repeaters` records RENDER-TIME repeaters (a `foreach` in a block's
+    own PHP with no block.json attribute behind it) — the sibling table to
+    `array_item_schema` (seeded earlier in this same Stage 1 run), which can never
+    hold this class of repeater because it has no `items.properties` to derive from.
+    Built self-tested and correct, but left uncalled from any pipeline (parked as
+    P-SPEC44-SEEDER-NOT-WIRED) — the table sat at 0 rows, so Spec 44 Stage A recognition
+    could never match anything on real data even with `--classless-match` on. Same
+    subprocess/WARN-not-fail/idempotent contract as `_run_motion_fx_registry_seed`
+    immediately above: a scanner problem must not take down the rest of `/sgs-update`.
+    """
+    try:
+        seeder_script = REPO_ROOT / "plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py"
+        if not seeder_script.exists():
+            print("Stage 1 tail (render-repeater seed): WARN script missing — not applied")
+            return
+        conn.commit()  # release the write lock for the subprocess's own connection
+        result = subprocess.run(
+            ["python", str(seeder_script), "--seed"],
+            capture_output=True, text=True, timeout=120,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            tail = [ln for ln in (result.stdout or "").splitlines() if "render_repeaters:" in ln]
+            print(f"Stage 1 tail (render-repeater seed): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (render-repeater seed): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (render-repeater seed): WARN {exc}")
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 sub-step — scrape allowedBlocks from edit.js files
 # ---------------------------------------------------------------------------
@@ -4082,6 +4118,12 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         #     scanner, which reads block.json/edit.js/render.php off DISK rather
         #     than through this connection — nothing above it needs its output. ---
         _run_component_adoption_seed(conn)
+
+        # --- Stage 1 tail: seed `block_render_repeaters` (Spec 44 §4.2, 2026-09-17)
+        #     — the render-time-repeater sibling of array_item_schema. Runs after
+        #     that table's own seeding earlier in this Stage 1 pass; order between
+        #     the two does not matter (disjoint tables, no shared writer). ---
+        _run_render_repeater_seed(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(

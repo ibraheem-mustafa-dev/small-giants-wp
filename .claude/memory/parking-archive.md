@@ -4448,3 +4448,24 @@ live DB check and, for `sgs/adaptive-nav`, the real nav blocks that likely super
 (`sgs/nav-bar-menu`/`sgs/nav-drawer`/`sgs/nav-drawer-menu`) — a bigger call than a DB
 cleanup, left for whoever owns that roster decision. `block_composition` orphan count: 7 → 2
 (both explicitly flagged, not silently tolerated).
+
+### P-SPEC44-SEEDER-NOT-WIRED (CLOSED)
+**Was:** OPEN · **Bucket:** pipeline · **Parked:** 2026-09-17
+
+Spec 44's `block_render_repeaters` table + seeder
+(`plugins/sgs-blocks/scripts/recogniser/render_repeater_seeder.py`) was built and
+self-tested but never called from any pipeline entry point — the classic D338/D493
+"built but not wired" pattern (confirmed via `grep`: zero references in
+`sgs-update-v2.py` before this fix). Live table had 0 rows, so Stage A recognition
+could never match anything real even with `--classless-match` on.
+
+**Closed 2026-09-17 via `/systematic-debugging` (Bean-directed re-ordering — wire now,
+`/adversarial-council` re-verification next session, reversing this entry's own original
+trigger note).** Wired as a new Stage 1 tail step (`_run_render_repeater_seed`) in
+`sgs-update-v2.py`, mirroring the existing `_run_motion_fx_registry_seed` pattern exactly
+(idempotent subprocess call, WARN-not-fail, commits before the subprocess to release the
+write lock). Verified live end-to-end: a real `/sgs-update --stage 1` run now prints
+"Stage 1 tail (render-repeater seed): render_repeaters: scanned=87,
+blocks_with_repeaters=14, rows=54" and a direct read-only DB query confirms 54 rows across
+14 real blocks (product-card, trustpilot-reviews, nav-drawer-menu, etc.) — matching the
+standalone script's own dry-run survey exactly.
