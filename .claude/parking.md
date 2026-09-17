@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-09-03
+last_updated: 2026-09-17
 note: "OPEN deferred work ONLY. Four permitted Status values (OPEN | PARTIAL | BLOCKED | DEFERRED) and six buckets. One layout, one Status syntax, residual scope only - no shipped history. The moment an entry is finished it moves VERBATIM to memory/parking-archive.md under a dated pass heading - enforced mechanically by .claude/hooks/handoff-preflight.py, not by prose."
 ---
 
@@ -276,6 +276,32 @@ discipline; (3) check team-member's Stage 11.6 content-keyed parity and strike t
 matches.
 
 ## Framework: blocks, theme, specs
+
+### P-HEADER-CART-BURGER-ACTION-CLUSTER — cart pushes the burger menu inward on mobile
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-17
+
+Root mechanism confirmed live (Playwright, 390px viewport): `framework-header-default.php`'s
+middle row places `sgs/nav-bar-menu` (which renders the burger toggle at mobile widths) BEFORE
+the `sgs/cart`-wrapping container in markup order, so the burger lands mid-row instead of being
+the right-most element. Bean's own instruction: document, don't research or fix yet — this needs
+a proper "action cluster" architecture (icons grouped together, burger always last/right-most),
+not a quick reorder.
+
+**Trigger:** a session with room for genuine research into the right action-cluster pattern,
+not a five-minute markup-order swap.
+
+### P-SPEC37-W2B-DRAWER-POST-PICKER — drawerRef needs a real post-picker UI, no shape decided yet
+**Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-17
+
+FR-37-43 named this "W2-b" on 2026-07-30 and left it with nothing beyond a one-line label — it
+still has no UI shape. FR-37-49 (Spec 37 v1.2.0) needs it before the drawer's sibling-insert
+one-click fix (Spec 36 FR-36-9a clause 2) can be safely retired, so this blocks that FR's build
+start. First check whether `sgs/modal`'s `modalRef` or `sgs/form`'s `formId` already have a
+working editor-side picker control for "choose a post of this CPT type" — if either does, reuse
+that pattern rather than designing one from scratch.
+
+**Trigger:** the next session that picks up Spec 37's FR-37-46 through FR-37-49 build — this is
+the first blocking item, before any code.
 
 ### P-FX-PER-EFFECT-BLOCK-COMPATIBILITY — motion-effects panel is all-or-nothing per block, needs per-effect opt-in
 **Status:** OPEN · **Bucket:** framework · **Parked:** 2026-09-15

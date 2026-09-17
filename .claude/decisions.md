@@ -80,7 +80,7 @@ starts. D3's operational meta fields (`_sgs_is_default`/"Used by" columns) and t
 admin merge (B) already shipped this session, independently, with zero dependency on this
 architecture decision — see LEDGER Front D.
 
- — `block_render_composition` — render-time block composition as a
+## D1090 [ROUTINE] — `block_render_composition` — render-time block composition as a
 Spec 31 data-layer fact, built via `/brainstorming` after a scope correction
 
 **2026-09-17.** Surfaced during Spec 44's `/adversarial-council` re-verification

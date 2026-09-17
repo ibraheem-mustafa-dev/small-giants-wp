@@ -126,9 +126,15 @@ underlying WP mechanism (see FR-37-46), and a scoping pass on FR-37-49's drawer 
   right-most element. Needs a proper "action cluster" architecture (icons grouped together,
   burger always last/right-most) — genuine research task, not a quick reorder.
 
-**Next session:** either continue Wave 2 (the verification spike + W2-b scoping, then build
-FR-37-46 through FR-37-49), or move to Mama's real content authoring per
-`.claude/prompts/2026-09-10-header-footer-implementation.md` — Bean's call.
+**Next session — Wave 2 build, 6 tasks in order, full orchestration plan (per-task model/brief/
+dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`:**
+1. Scope FR-37-49's W2-b (drawer post-picker — no UI shape yet, this wave's first blocker).
+2. Verification spike for FR-37-46 (confirm the WP mechanism actually works as designed).
+3. Build FR-37-46 (template-lock the 3 CPTs) — depends on Task 2.
+4. Build FR-37-48 (auto-seed one post per CPT) — independent, parallel with Task 3.
+5. Build FR-37-47 (starter-preset control) — depends on Task 3.
+6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
+   Tasks 1 and 3, run last (highest risk).
 
 ### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090)
 
