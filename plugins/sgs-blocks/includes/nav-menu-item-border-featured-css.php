@@ -201,8 +201,9 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		}
 
 		/*
-		 * ── ITEM SEPARATOR — NEW, independent vertical divider between adjacent
-		 * TOP-LEVEL BAR items (FR-41-37, 2026-09-13). ────────────────────────────
+		 * ── ITEM SEPARATOR — independent vertical divider between adjacent
+		 * TOP-LEVEL BAR items (FR-41-37, 2026-09-13; geometry + visibility
+		 * corrected 2026-09-17 — see D1086). ─────────────────────────────────
 		 *
 		 * Genuinely separate from the item border/underline family above: that
 		 * family's `right` option ALREADY lets an operator draw a vertical line
@@ -220,64 +221,84 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		 * block never renders the rule at all — not suppressed after the fact,
 		 * never emitted for that context.
 		 *
-		 * Longhand `border-right-*` properties, deliberately NOT the `border-
-		 * width`/`border-style`/`border-color` shorthands the underline family
-		 * uses a few lines above on the SAME `$link_sel` element: the shorthands
-		 * already set all four sides (today's default zeroes right/top/left), so
-		 * a shorthand here would silently reset whatever the underline family
-		 * just wrote. Longhand-after-shorthand on the same selector, later in
-		 * source order, wins for only the properties it names — the underline's
-		 * bottom edge is untouched.
+		 * ⚑ GEOMETRY REWORK (2026-09-17, Bean-reported, live-verified against
+		 * `sites/mamas-munches`). The original shipped version painted a plain
+		 * `border-right` on the LINK's own box — i.e. flush against whichever
+		 * item it belonged to, not centred in the flex `gap` between the two
+		 * items either side of it. It also inherited the underline family's
+		 * "one-sided ownership" framing (a row owns its own bottom edge on the
+		 * drawer's vertical list) applied unmodified to the horizontal axis,
+		 * which is why it read as belonging to only one neighbour instead of
+		 * sitting visually between both.
 		 *
-		 * `:not(:last-child)` on the ITEM (not the link) — the trailing item has
-		 * nothing to its right to divide from.
+		 * Fix: an empty `::before` pseudo-element on every item EXCEPT THE
+		 * FIRST (`:not(:first-child)`), positioned via `left: calc(<gap>/-2)`.
+		 * A flex `gap` is split evenly between two adjacent siblings, so
+		 * shifting a zero-width box half the gap to the LEFT of an item's own
+		 * left edge lands it exactly in the middle of the gap that precedes it
+		 * — no JS measurement, no hardcoded pixel value, and it tracks whatever
+		 * `gap` the operator has set (falls back to block.json's own "8px"
+		 * default when the attribute is genuinely absent).
 		 *
-		 * ⚠ SWEEP (added 2026-09-13, FR-41-37 follow-up): the old blocker — "the
-		 * existing sweep band's geometry offsets against the BOTTOM edge
-		 * specifically, which has no equivalent translation to a RIGHT edge
-		 * without new positioning maths" — is exactly what
-		 * `sgs_directional_sweep_css()` now supplies (any-angle background-
-		 * position maths, includes/sweep-css.php). The band still cannot live on
-		 * `.{bem}__link::after` — that pseudo-element is already claimed by
-		 * the item border-bottom sweep above whenever BOTH treatments are
-		 * 'sweep' on the same row — so it renders on the <li>
-		 * (`.{bem}__item::after`) instead, a DIFFERENT element with no
-		 * competing claim on either of its own pseudo-elements. No Current
+		 * This also settles the "both sides" requirement for free: exactly ONE
+		 * separator paints per gap (n-1 for n items, same count as before), and
+		 * because it now sits centred rather than flush, it visually reads as
+		 * belonging to BOTH the item before it and the item after it — not
+		 * "owned" by either. The first item has nothing before it
+		 * (`:not(:first-child)` excludes it) and the last item's rightmost edge
+		 * was never a paint target to begin with, so neither outer edge of the
+		 * bar gets a stray separator.
+		 *
+		 * `border-left-*` (not `background-color`) so `itemSeparatorStyle`'s
+		 * dashed/dotted options keep working — a filled box can't do a dash
+		 * pattern, a border can.
+		 *
+		 * ⚠ SWEEP (FR-41-37 follow-up, 2026-09-13; re-targeted to the new
+		 * pseudo 2026-09-17): `sgs_directional_sweep_css()` supplies the
+		 * any-angle background-position maths (includes/sweep-css.php). The
+		 * band lives on this SAME `::before` (not a second pseudo) — the item's
+		 * `::after` is still reserved for the item border-bottom sweep above
+		 * whenever BOTH treatments are 'sweep' on the same row. No Current
 		 * state: a between-item rule is not itself "the current page".
+		 *
+		 * Hover/focus triggers on the item that OWNS the pseudo (the one to the
+		 * divider's right) — matches this file's existing LI-scoped hover
+		 * pattern (`:focus-within`, not `:focus-visible`, since the interactive
+		 * element a user actually focuses is the `<a>` inside the `<li>`).
 		 */
 		$item_separator_width     = sgs_css_length_value( (string) ( $attributes['itemSeparatorWidth'] ?? '' ) );
 		$item_separator_style     = sgs_css_keyword_sanitise( (string) ( $attributes['itemSeparatorStyle'] ?? '' ) );
 		$item_separator_colour    = sgs_colour_value( (string) ( $attributes['itemSeparatorColour'] ?? '' ) );
 		$item_separator_hover     = sgs_colour_value( (string) ( $attributes['itemSeparatorColourHover'] ?? '' ) );
 		$item_separator_treatment = (string) ( $attributes['itemSeparatorHoverTreatment'] ?? 'swap' );
+		$item_separator_gap       = sgs_css_length_value( (string) ( $attributes['gap'] ?? '' ) );
+		if ( '' === $item_separator_gap ) {
+			$item_separator_gap = '8px'; // Matches this block's own `gap` attribute default (block.json) — an unset attribute still centres correctly.
+		}
 		if ( '' !== $item_separator_width && '' !== $item_separator_colour ) {
-			$item_separator_sel    = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:last-child) .' . $bem_root . '__link';
-			$item_separator_li_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:last-child)';
+			$item_separator_item_sel = $uid_sel . ' .' . $bem_root . '__bar:not(.' . $bem_root . '__bar--drawer) .' . $bem_root . '__item:not(:first-child)';
+
+			$css .= $item_separator_item_sel . '{position:relative;}';
 
 			if ( 'sweep' === $item_separator_treatment && '' !== $item_separator_hover ) {
 				// The static line is suppressed (transparent) and repainted by the
-				// `::after` band on the <li> — same "one paint, no double line"
-				// discipline as the item border-bottom sweep above.
-				$css .= $item_separator_sel . '{border-right-width:' . $item_separator_width
-					. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
-					. ';border-right-color:transparent;}';
-
+				// sweep gradient on the SAME pseudo — "one paint, no double line".
 				$item_separator_angle = isset( $attributes['itemSeparatorSweepAngle'] ) ? (float) $attributes['itemSeparatorSweepAngle'] : 180.0;
 				$item_separator_sweep = sgs_directional_sweep_css( $item_separator_angle, $item_separator_colour, $item_separator_hover );
 
-				$css .= $item_separator_li_sel . '{position:relative;}';
-				$css .= $item_separator_li_sel . '::after{content:"";position:absolute;top:0;bottom:0;right:calc(-1 * ' . $item_separator_width . ');width:' . $item_separator_width . ';'
+				$css .= $item_separator_item_sel . '::before{content:"";position:absolute;top:0;bottom:0;left:calc(' . $item_separator_gap . ' / -2);'
+					. 'border-left-width:' . $item_separator_width . ';border-left-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' ) . ';border-left-color:transparent;'
 					. 'background-image:' . $item_separator_sweep['gradient'] . ';'
 					. 'background-size:' . $item_separator_sweep['background_size'] . ';background-position:' . $item_separator_sweep['rest_position'] . ';background-repeat:no-repeat;'
 					. 'transition:background-position 300ms ease;pointer-events:none;}';
-				$css .= sgs_hover_state_rules( $item_separator_li_sel, 'background-position:' . $item_separator_sweep['hover_position'], ':focus-within', '::after' );
-				$css .= '@media (prefers-reduced-motion:reduce){' . $item_separator_li_sel . '::after{transition:none;}}';
+				$css .= sgs_hover_state_rules( $item_separator_item_sel, 'background-position:' . $item_separator_sweep['hover_position'], ':focus-within', '::before' );
+				$css .= '@media (prefers-reduced-motion:reduce){' . $item_separator_item_sel . '::before{transition:none;}}';
 			} else {
-				$css .= $item_separator_sel . '{border-right-width:' . $item_separator_width
-					. ';border-right-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
-					. ';border-right-color:' . $item_separator_colour . ';}';
+				$css .= $item_separator_item_sel . '::before{content:"";position:absolute;top:0;bottom:0;left:calc(' . $item_separator_gap . ' / -2);'
+					. 'border-left-width:' . $item_separator_width . ';border-left-style:' . ( '' !== $item_separator_style ? $item_separator_style : 'solid' )
+					. ';border-left-color:' . $item_separator_colour . ';pointer-events:none;}';
 				if ( '' !== $item_separator_hover ) {
-					$css .= sgs_hover_state_rules( $item_separator_sel, 'border-right-color:' . $item_separator_hover, ':focus-visible' );
+					$css .= sgs_hover_state_rules( $item_separator_item_sel, 'border-left-color:' . $item_separator_hover, ':focus-within', '::before' );
 				}
 			}
 		}

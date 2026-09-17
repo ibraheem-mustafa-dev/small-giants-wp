@@ -1,5 +1,51 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1086 [ROUTINE] — `sgs/nav-bar-menu` item separator: centred geometry + resting-state visibility fix
+
+**2026-09-17.** Bean-reported, live-verified against `sites/mamas-munches`. The FR-41-37
+item separator (the between-item vertical divider on the horizontal bar, `itemSeparatorWidth/
+Style/Colour(Hover)`) had three problems, all traced to one root cause: it was built by
+applying the DRAWER's row-separator pattern (a bottom border a row "owns", meant to read as a
+special-state indicator) directly to the bar's horizontal axis, unmodified.
+
+1. **Not centred.** The line was a plain `border-right` on the LINK's own box — flush against
+   whichever item it belonged to, not centred in the flex `gap` between the two items either
+   side of it.
+2. **Read as hover-only.** Live-measured: the resting colour (`border-light`, #E5E7EB)
+   computes to ~1.12:1 contrast against this theme's real header background (#FBF3DC) —
+   technically always painted, but visually indistinguishable from "not there" until the bold
+   accent hover colour landed. Per `measurement-vs-eye.md`: the user's report was correct: the
+   measurement set (computed-style presence) was incomplete without contrast.
+3. **Wrong topology framing.** Reported as "should appear on both sides of a middle item,
+   only the inner side of an edge item" — this is exactly what n-1 separators (one per gap)
+   already gives once centred; the flush positioning just made each line look "owned" by one
+   neighbour instead of shared.
+
+**Fix (`plugins/sgs-blocks/includes/nav-menu-item-border-featured-css.php`):** replaced the
+link-level `border-right` with a `::before` pseudo-element on every item except the first
+(`:not(:first-child)`), positioned `left: calc(<gap>/-2)` — a flex `gap` splits evenly between
+two siblings, so shifting a zero-width box half the gap left of an item's own edge lands it
+exactly centred in the gap before it, with no JS measurement and no hardcoded pixel value (it
+reads the block's own `gap` attribute, falling back to block.json's "8px" default). Sweep
+hover-treatment moved onto the same pseudo (was previously an `::after` on the `<li>`).
+
+**Fix (`plugins/sgs-blocks/src/blocks/nav-bar-menu/block.json`):** `itemSeparatorColour`
+default changed `border-light` → `text-muted`, which measures ~4.7-5.8:1 against real header
+backgrounds tested (a genuine WCAG UI-component-border pass, vs ~1.1:1 before). This diverges
+from the underline/row-separator family's own `border-light` default — deliberately: a
+between-item divider and an under-text underline read very differently against the same
+background, so this is not a consistency regression, just two contexts that need different
+resting contrast.
+
+Live-verified on `sites/mamas-munches` (chrome-devtools MCP): separator now sits at exactly
+half the bar's 28px gap from each item's edge (confirmed via computed `left:-14px`), no
+separator on the first item's outer-left or the last item's outer-right, visible at rest at
+~5.8:1 contrast. Deployed via `build-deploy.py --payload` (shared-worktree scoped dirty gate —
+77 concurrent sessions on this tree, so `--allow-dirty` was avoided). The deploy's own verify
+leg false-alarmed on a stale LOCAL Python cert store (`SSL: CERTIFICATE_VERIFY_FAILED`) —
+independently confirmed via `curl`/`openssl` that the real cert is valid to December and the
+site returns 200; same known false-alarm class as `feedback_deployed_but_broken_can_be_a_local_cert_store_false_alarm.md`.
+
 ## D1085 [ROUTINE] — nav-bar-menu/nav-drawer-menu border census: 2nd delegation blind spot fixed + a real control gap wired up (not removed)
 
 **2026-09-17.** Follow-up to P-NAV-MENU-BORDER-CENSUS-DELEGATED (D1083's ceiling raise

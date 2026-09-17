@@ -857,8 +857,8 @@
 		},
 		"itemSeparatorColour": {
 			"type": "string",
-			"default": "border-light",
-			"description": "FR-41-37 — Normal-state colour, matching the same subtle default (border-light, not accent) the underline/row-separator family uses at rest, for one consistent visual language across all 4 separator contexts."
+			"default": "text-muted",
+			"description": "CORRECTED 2026-09-17 (D1086, Bean-reported live on sites/mamas-munches): the original 'border-light' default (#E5E7EB) measures ~1.12:1 contrast against this theme's actual header background (#FBF3DC) — effectively invisible at rest, which read as \"the separator only exists for hover\" even though it was technically always painted. 'text-muted' (#606D80) measures ~4.7:1 against the same background — a real WCAG UI-component-border pass (3:1 minimum) — while staying visually understated next to the bold 'accent' hover colour. No longer matches the underline/row-separator family's own 'border-light' default 1:1 (that family's resting visibility is a separate, wider question not in this fix's scope), but a between-item divider and an under-text underline read very differently against the same background, so divergent defaults are not a consistency violation here."
 		},
 		"itemSeparatorColourHover": {
 			"type": "string",
