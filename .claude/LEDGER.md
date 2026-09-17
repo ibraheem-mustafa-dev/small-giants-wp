@@ -9,8 +9,9 @@ last_updated: 2026-09-17
 ## Human Summary — FOR BEAN, plain English (read this first)
 
 **THREE OPEN FRONTS: Front C (Spec 44, classless GROUP recognition, built but NOT
-live-trusted), Front D (Mama's/Indus header-footer builder cleanup, mixed — 5 fixes DEPLOYED
-and LIVE-VERIFIED, a further architecture redesign DESIGNED but not yet built), and Front E
+live-trusted), Front D (Mama's/Indus header-footer builder cleanup — Wave 1's 5 fixes and
+Wave 2's Tasks 1-5 of 6 all DEPLOYED, only Task 6 — the drawer post-picker — still open), and
+Front E
 (Spec 45, classless FIELD resolution, built but NOT live-trusted).** Front C is fully built
 (all 4 tiers) but not proven useful on a real draft yet — see below. Two things need Bean
 directly, not a subagent: the drawer-burger click retest, and Spec 42/43 Phase 3's
@@ -106,15 +107,17 @@ interaction, not self-reported — see the register for exactly how each was tes
   after a same-day correction (a duplicate mechanism was built then removed once found to
   overlap the existing "Active" pointer). `689a00e70` + `ddd43e33b`.
 
-**Wave 2 — architecture redesign for the admin/CPT structure (C/D1/D2/G/H), DESIGNED, NOT BUILT.**
-Investigating deeper admin/architecture complaints (empty CPT lists, `sgs/nav-drawer` addable as
-an unbounded sibling block, and WordPress's native starter picker locking child-block editing
-behind an "Edit pattern" click on every preset) found one shared root cause. Design written into
-Spec 37 v1.2.0 as FR-37-46 through FR-37-49, then ran through a 6-persona `/adversarial-council`
-(D1092): NO-GO on the first write-up, fixed the same session, and Bean approved the corrected
-version. **Two items remain before implementation starts:** a verification spike on the
-underlying WP mechanism (see FR-37-46), and a scoping pass on FR-37-49's drawer post-picker
-(W2-b has no UI shape yet).
+**Wave 2 — admin/CPT architecture redesign (C/D1/D2/G/H). Tasks 1-5 of 6 SHIPPED same day
+(2026-09-17), Task 6 still open.** Root cause + design (FR-37-46 through FR-37-49) ran through
+a 6-persona `/adversarial-council` (D1092, NO-GO then fixed), Bean approved, then built:
+Task 1 scoped FR-37-49's W2-b post-picker shape (`261ca4052`), Task 2 verification-spiked
+FR-37-46 (`26db0fb73`), Task 3 built FR-37-46 template-locking (`c67f09970`), Task 4 built
+FR-37-48 auto-seed (`9e3fc6234`), Task 5 built FR-37-47's starter-preset control
+(`081e818ea`+`6dc554461`). **Task 6 (FR-37-49 drawer post-picker + drop embedded drawer) is
+NOT built** — `nav-bar-menu`'s `DropdownSettingsPanel.js` still has a free-text `TextControl`
+bound to `drawerRef`, not Task 1's decided `useEntityRecords` picker, and the 8 header/footer
+starter patterns still embed `sgs/nav-drawer` as a sibling block. Confirmed by a completion
+audit 2026-09-17 — the single remaining item on this front.
 
 **Still open, deliberately not started (Bean's own instruction: document, don't fix yet):**
 - **Cart pushes the burger menu inward on mobile, poorly architected.** Root mechanism confirmed
@@ -124,15 +127,12 @@ underlying WP mechanism (see FR-37-46), and a scoping pass on FR-37-49's drawer 
   right-most element. Needs a proper "action cluster" architecture (icons grouped together,
   burger always last/right-most) — genuine research task, not a quick reorder.
 
-**Next session — Wave 2 build, 6 tasks in order, full orchestration plan (per-task model/brief/
-dependencies/acceptance) at `.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`:**
-1. Scope FR-37-49's W2-b (drawer post-picker — no UI shape yet, this wave's first blocker).
-2. Verification spike for FR-37-46 (confirm the WP mechanism actually works as designed).
-3. Build FR-37-46 (template-lock the 3 CPTs) — depends on Task 2.
-4. Build FR-37-48 (auto-seed one post per CPT) — independent, parallel with Task 3.
-5. Build FR-37-47 (starter-preset control) — depends on Task 3.
-6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — depends on
-   Tasks 1 and 3, run last (highest risk).
+**Next session — only Task 6 remains, per the orchestration plan at
+`.claude/plans/2026-09-17-front-d-wave-2-orchestration.md`:**
+6. Build FR-37-49 (drawer post-picker + drop embedded drawer, W2-b then W2-d) — Task 1's
+   decided shape (a `SelectControl`/`useEntityRecords` picker mirroring `sgs/modal`'s
+   `modalRef`) is ready to implement; also drop the embedded `sgs/nav-drawer` sibling block
+   from the 8 header/footer starter patterns.
 
 ### Front C — Universal-pipeline classless recognition (D1071/D1073/D1074/D1075/D1077/D1078/D1081/D1084/D1088/D1089/D1090/D1093/D1094/D1095/D1096)
 

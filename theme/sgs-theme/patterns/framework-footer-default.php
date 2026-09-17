@@ -49,37 +49,15 @@
 
 		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Quick Links"},"layout":"stack","flexWrap":"wrap"} -->
 
-			<!-- wp:sgs/heading {"content":"Quick Links","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/heading {"level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
-			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"regular"} -->
-			<ul class="is-style-no-bullets has-regular-font-size sgs-link-list" style="padding-left:0;line-height:2.2">
-			<!-- wp:list-item -->
-			<li><a href="#">Home</a></li>
-			<!-- /wp:list-item -->
-
-			<!-- wp:list-item -->
-			<li><a href="#">Shop</a></li>
-			<!-- /wp:list-item -->
-
-			<!-- wp:list-item -->
-			<li><a href="#">About</a></li>
-			<!-- /wp:list-item -->
-
-			<!-- wp:list-item -->
-			<li><a href="#">Contact</a></li>
-			<!-- /wp:list-item -->
-
-			<!-- wp:list-item -->
-			<li><a href="#">Privacy Policy</a></li>
-			<!-- /wp:list-item -->
-			</ul>
-			<!-- /wp:list -->
+			<!-- wp:sgs/text {} /-->
 
 		<!-- /wp:sgs/container -->
 
 		<!-- wp:sgs/container {"tagName":"div","metadata":{"name":"Contact"},"layout":"stack","flexWrap":"wrap"} -->
 
-			<!-- wp:sgs/heading {"content":"Contact","level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
+			<!-- wp:sgs/heading {"level":"h2","textColour":"surface","fontSize":{"desktop":"large"},"fontWeight":"700","margin":{"bottom":"var:preset|spacing|20"}} /-->
 
 			<!-- wp:sgs/business-info {"displayType":"address","textColour":"surface","iconColour":"surface","fontSize":{"desktop":"regular"},"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}} /-->
 

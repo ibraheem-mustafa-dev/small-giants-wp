@@ -113,15 +113,18 @@ QA Gate — Fail-closed behaviour verified live, not just in PHPUnit
 ## far ahead of execution, per this project's own low-time-estimate + no-speculative-build
 ## discipline)
 
-**Phase 1 — `sgs_form` CPT, no mandatory rebuild. Full 8-step execution plan written:**
-`plans/2026-09-15-phase-1-sgs-form-cpt.md` — ready to execute. Spec 42 FR-42-1/2/3 (capability
+**Phase 1 — `sgs_form` CPT, no mandatory rebuild. SHIPPED (2026-09-15).** Full 8-step
+execution plan: `plans/archive/2026-09-15-phase-1-sgs-form-cpt.md` — all 8 steps + 3 QA
+gates done and deployed; archived after this session's completion audit. Spec 42 FR-42-1/2/3 (capability
 `edit_sgs_forms`, no `custom-fields`, 10-revision cap — all already decided, zero
 ambiguity to plan around), FR-42-4/5 (`LinkControl` picker), FR-42-7a (trashed-form
 degrade, two audiences), FR-42-8 (cache-independent lookup — same code path as Phase 0's
 fix). New forms are CPT-backed; existing forms keep working unchanged. No client-visible
 change to anything already live.
 
-**Phase 2 — `sgs/choice-flow`, plain-question step + recommendation terminal only.**
+**Phase 2 — `sgs/choice-flow`, plain-question step + recommendation terminal only. SHIPPED
+(2026-09-15), exceeded scope with a Phase 2b visual pass.** Plan archived to
+`plans/archive/2026-09-15-phase-2-sgs-choice-flow.md`.
 FR-43-1 (plain-question step type), FR-43-2/2a (branching + editor-time validation),
 FR-43-3 (recommendation terminal), FR-43-8 (CPT, same decided values as Phase 1),
 FR-43-9 (the block's own small IAPI store — decided, not a build-time fork), FR-43-11

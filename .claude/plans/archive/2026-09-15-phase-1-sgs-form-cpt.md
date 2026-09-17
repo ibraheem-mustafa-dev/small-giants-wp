@@ -28,7 +28,9 @@ touches one CPT registration pattern already proven 4 times in this exact file.
 - [ ] `Sgs_Block_CPTs::resolve_form( string $slug ): ?WP_Post` exists, slug-keyed,
       fail-closed, mirrors `resolve_modal()`'s shape but resolves by `post_name` not ID
 - [ ] A slug rename is blocked once that form has ≥1 row in `{prefix}sgs_form_submissions`
-- [ ] `sgs/form`'s `formId` control is a `LinkControl` picker (filtered to `sgs_form`,
+- [ ] `sgs/form`'s `formId` control is a `LinkPopoverField` picker (the SGS standard link
+      control, wrapping core's `LinkControl` inside a `<Popover>` — never mounted directly,
+      filtered to `sgs_form`,
       showing a "Form" type badge) for CPT-linked forms — existing free-text/auto-generated
       `formId` values keep working unchanged for forms that have never been linked
 - [ ] A CPT-linked form embed whose referenced post is trashed/unpublished degrades to two
@@ -50,9 +52,20 @@ touches one CPT registration pattern already proven 4 times in this exact file.
 - `plugins/sgs-blocks/src/blocks/form/block.json` — `formId` is currently `{"type":"string",
   "default":""}`, auto-generated client-side as `form-${clientId.substr(0,8)}` on first insert
   (`edit.js` line ~72-77) and editable as free text (`edit.js` line ~448)
-- `plugins/sgs-blocks/src/blocks/form/edit.js` — already mounts `LinkControl` (confirmed via
-  grep) for `successRedirect`, a DIFFERENT attribute (the post-submit redirect URL) — this is
-  precedent for the component, not code to repurpose directly
+- `plugins/sgs-blocks/src/blocks/form/edit.js` — already mounts `LinkPopoverField` (confirmed
+  via grep) for `successRedirect`, a DIFFERENT attribute (the post-submit redirect URL) — this
+  is precedent for the component's USE, not code to repurpose directly
+- `plugins/sgs-blocks/src/components/LinkPopoverControl.js` — the SGS standard link control
+  (Spec 35 §2 LINK). Exports `LinkPopoverContent` (the `<Popover>` primitive, wraps core's
+  `LinkControl` with `settings={[]}` and its own toggle rows — core's staged `settings` prop is
+  never used, because it silently discards a flipped toggle with no blur/close handler) and
+  `LinkPopoverField` (self-contained trigger row + popover, for the single-trigger case this
+  block needs). Raw `wp.blockEditor.LinkControl` is BANNED as a direct sidebar mount project-
+  wide — it overflows a ~248px inspector panel by ~86px (core sets `min-width:350px`, cancelled
+  only inside `.components-popover__content`). **Neither export currently forwards a
+  `suggestionsQuery` prop to its internal `LinkControl`** — step 4 must add one (additive,
+  optional, defaults to undefined so every other consumer is unaffected) to scope suggestions
+  to `sgs_form` posts only
 - `plugins/sgs-blocks/includes/forms/class-form-rest-submission.php::handle_submit` — the
   fail-open bug fixed in Phase 0 (commit `4666a3704`) lives here; FR-42-8 replaces ITS
   config-lookup mechanism for CPT-linked forms only
@@ -209,29 +222,42 @@ Step 3 — Admin submenu + `wp_revisions_to_keep` cap
                  explicitly — this is the negative control for this step)
     Integration: standalone
 
-Step 4 — `formId` becomes a `LinkControl` picker, additive to the existing free-text value
+Step 4 — `formId` becomes a `LinkPopoverField` picker, additive to the existing free-text value
   Model:       sonnet
-  Action:      In `form/edit.js`, add a SECOND `LinkControl` mount (the existing one at line
-               ~488 is for `successRedirect` — do not touch it) filtered via
-               `suggestionsQuery={{ type: 'post', subtype: 'sgs_form' }}`. On selection, its
-               `onChange` writes the resolved post's `slug` into the EXISTING `formId`
-               attribute (not a new attribute — spec §2 says the existing embed attribute
-               carries the slug). Below the picker, keep the current free-text `formId`
-               TextControl visible but relabel it "Form ID (used if no form is linked above)"
-               — this is the additive path: a form that has never used the picker keeps its
-               auto-generated/free-text `formId` working exactly as today. Add the "Form" type
-               badge (FR-42-5) to the `LinkControl`'s suggestion rendering — check
-               `LinkControl`'s `renderSuggestions`/`suggestionsQuery` docs for the WP version
-               this project pins (do not guess the prop shape; confirm against the installed
-               `@wordpress/block-editor` version's actual `LinkControl` API before writing the
-               badge renderer).
-  Files:       plugins/sgs-blocks/src/blocks/form/edit.js
+  Action:      (a) First, extend the SHARED component (not the form block): in
+               `src/components/LinkPopoverControl.js`, add an optional `suggestionsQuery` prop
+               to both `LinkPopoverContent` and `LinkPopoverField`, forwarded straight to the
+               internal `<LinkControl suggestionsQuery={suggestionsQuery} .../>`. Default
+               `undefined` — every existing consumer (`sgs/button`, `sgs/icon`, `sgs/media`,
+               `sgs/product-card`'s `ctaUrl`, this block's own `successRedirect`) passes nothing
+               and gets byte-identical behaviour; only a caller that supplies it gets scoped
+               suggestions. (b) In `form/edit.js`, add a SECOND `LinkPopoverField` mount (the
+               existing one at line ~491 is for `successRedirect` — do not touch it) with
+               `suggestionsQuery={{ type: 'post', subtype: 'sgs_form' }}` and
+               `enableInternalResolution={true}` (this form needs the resolved post's internal
+               ID/kind, not just a URL string — `searchOnly` stays `false`, the default). Its
+               `onChange` receives `{ url, linkId, linkKind }`; write the resolved post's own
+               `slug` (fetch via `wp.data.select('core').getEntityRecord('postType','sgs_form',
+               linkId)` or an equivalent already-cached read, NOT the URL) into the EXISTING
+               `formId` attribute (not a new attribute — spec §2 says the existing embed
+               attribute carries the slug), and set the new `formIsLinked` attribute (from step
+               6) to `true` in the same `setAttributes` call. Below the picker, keep the current
+               free-text `formId` TextControl visible but relabel it "Form ID (used if no form
+               is linked above)" — this is the additive path: a form that has never used the
+               picker keeps its auto-generated/free-text `formId` working exactly as today. The
+               "Form" type badge (FR-42-5) is core's own suggestion-list behaviour for a scoped
+               `subtype` — `LinkControl` already labels results by post type/subtype out of the
+               box; confirm this renders correctly for a non-public CPT before writing any
+               custom badge code (do not build a bespoke renderer speculatively).
+  Files:       plugins/sgs-blocks/src/components/LinkPopoverControl.js,
+               plugins/sgs-blocks/src/blocks/form/edit.js
   Inputs:      step 1-2 (the CPT + `resolve_form()` must exist for the picker to have anything
                real to suggest, though `LinkControl`'s suggestions come from WP core's own
                `/wp/v2/search` REST endpoint, not a custom call)
   Outcome:     a client can open `sgs/form`'s inspector, search + pick a published `sgs_form`
-               post, and see `formId` update to that post's slug; the free-text fallback still
-               works for forms that never touch the picker
+               post via the SGS-standard popover picker, and see `formId` update to that post's
+               slug; the free-text fallback still works for forms that never touch the picker;
+               every other `LinkPopoverField`/`LinkPopoverContent` consumer is unaffected
   Exec:        SEQUENTIAL
   Deps:        steps 1-2 (CPT + `show_in_rest` must be live for `/wp/v2/search?subtype=sgs_form`
                to return anything)
@@ -243,17 +269,23 @@ Step 4 — `formId` becomes a `LinkControl` picker, additive to the existing fre
                base`/`show_in_rest` combination is actually queryable by `/wp/v2/search`
                (WP core's search controller requires the post type to be registered with
                `'show_in_rest' => true` AND `public` is NOT required for `/wp/v2/search`
-               specifically, per WP core's own controller — verify live, don't assume)
+               specifically, per WP core's own controller — verify live, don't assume). If
+               adding `suggestionsQuery` to the shared component breaks an EXISTING consumer's
+               suggestions (it shouldn't — the prop defaults to `undefined`), revert (a) and
+               re-check the diff; this must be a strictly additive change to a shared component
   Cold-Entry:  n/a (mid-stream)
   Test:
-    Happy:       picking a real published `sgs_form` post sets `formId` to its exact slug
+    Happy:       picking a real published `sgs_form` post sets `formId` to its exact slug and
+                 `formIsLinked` to `true`
     Edge:        a form with an existing auto-generated `formId` (e.g. `form-a1b2c3d4`) that
                  has NEVER used the picker: opening the block in the editor shows the free-text
-                 value unchanged, no forced migration
+                 value unchanged, no forced migration, `formIsLinked` stays `false`/absent
     Fail:        searching for a DRAFT `sgs_form` post: it must not appear in suggestions (WP
                  core's search endpoint already excludes non-public-queryable statuses for a
                  non-public CPT by default — confirm this live, it's the kind of assumption
-                 that's cheap to get wrong)
+                 that's cheap to get wrong). Also: an existing consumer of `LinkPopoverField`
+                 (e.g. `sgs/button`'s link picker) must show UNCHANGED, unscoped suggestions
+                 after (a) ships — this is the negative control for the shared-component change
     Integration: WP core's `/wp/v2/search` REST endpoint
 
 Step 5 — `render.php`: CPT-linked forms render the referenced post's content

@@ -1,5 +1,49 @@
 # decisions.md — D-numbered architectural decision log (most recent first)
 
+## D1098 [ROUTINE] — Parallel completion audit of every plan doc except Spec 36/37 +
+Snooza; 7 done/dead plans archived, 2 real gaps fixed, stale status lines corrected
+
+**2026-09-17.** Bean asked for a point-by-point completion check of every plan doc in
+`.claude/plans/` (excluding the merged Spec36/37 track and the Snooza build plan), via
+`/dispatching-parallel-agents` — 11 agents, one per doc (7 top-level + 4 under `strategy/`),
+each verifying against real code/tests rather than trusting the doc's own status prose.
+
+**Findings:** 7 plans were 100% done or dead (abandoned/superseded) — archived to
+`plans/archive/`, citations repointed in `specs/README.md` and
+`plans/2026-09-14-spec42-43-form-choiceflow-phase-plan.md` (never silently dropped, per this
+project's own doc-op convention): `2026-09-15-phase-1-sgs-form-cpt.md`,
+`2026-09-15-phase-2-sgs-choice-flow.md`, `2026-09-16-spec45-classless-field-resolver.md`,
+`2026-09-17-front-c-spec44-trust-gate-and-consumer-wiring.md` (all DONE),
+`2026-09-17-spec44-classless-repeater-recognition.md` (DONE but fully superseded by the
+front-c plan), `strategy/chrome-devtools-stage-8-integration.md` (SUPERSEDED — the MCP-from-
+Node design was proven architecturally impossible per D663; the real, different mechanism
+`stage8-audit.js` already shipped and is live/tested), `strategy/2026-07-17-brand-strip-
+carousel-extension-proposal.md` (ABANDONED — only 2 of 15 proposed items ever built, the
+headline carousel-mode feature never started, no adversarial-council review ever ran despite
+the doc requiring one before build).
+
+**Real defect found + fixed, triangulated by two independent audits:**
+`theme/sgs-theme/patterns/framework-footer-default.php` still hardcoded "Quick Links"/
+"Contact" column headings and a 5-item placeholder link list with `href="#"`, contradicting
+both the header-footer-hardcoding-register's own claimed A7/A9 fix and product-queue.md's
+Goal 3. Fixed: both headings emptied (operator/pipeline fills), the hardcoded list replaced
+with one empty `sgs/text {}`, matching the pattern already used at A2/A4 in the same file.
+`sgs/heading`'s `content` and `sgs/text`'s `text` attrs both default to `""` — confirmed via
+block.json before editing, not assumed.
+
+**Stale status lines corrected:** `specs/README.md`'s Spec 42/43 rows said "no code shipped
+yet" despite Phases 0-2 being fully built; `LEDGER.md`'s Front D section said Wave 2 was
+"DESIGNED, NOT BUILT" despite Tasks 1-5 of 6 having shipped same day (only Task 6, the drawer
+post-picker, remains open).
+
+**Left active, not archived (real remaining scope, not dead):**
+`2026-09-14-spec42-43-form-choiceflow-phase-plan.md` (Phases 3-5 correctly gated on real
+preconditions — WC pricing catalogue, modal engine), `2026-09-17-front-d-wave-2-orchestration.md`
+(Task 6 open), `strategy/2026-07-15-header-footer-hardcoding-register.md` (A11 — a font-size
+question — explicitly deferred to Bean/Opus sign-off by the doc's own text, left untouched),
+`strategy/product-queue.md` (flagged to Bean as ambiguous rather than archived — orphaned from
+`LEDGER.md` for 7 weeks with real unstarted items; not clearly "done" or clearly "abandoned").
+
 ## D1097 [ROUTINE] — Spec 44 §11's per-classifier `Hint.source` prerequisite closed;
 Spec 45 doc-status corrected from stale DRAFT
 
